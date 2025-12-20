@@ -1,4 +1,4 @@
-from leetcode_schema_extractor.爬虫代码.leetcode_crawler import get_problem_list, get_problem_detail
+from crawler.leetcode_crawler import get_problem_list, get_problem_detail
 import json
 
 def main():

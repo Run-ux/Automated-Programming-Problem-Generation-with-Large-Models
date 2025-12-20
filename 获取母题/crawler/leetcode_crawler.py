@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from leetcode_schema_extractor.Gemini.config import LEETCODE_URL, HEADERS
+from ..Gemini.config import LEETCODE_URL, HEADERS
 
 def get_problem_list():
     url = f"{LEETCODE_URL}/api/problems/all/"

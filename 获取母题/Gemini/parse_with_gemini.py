@@ -4,7 +4,7 @@ import json
 import random
 from google import genai
 from google.genai import types
-from leetcode_schema_extractor.Gemini.config import GEMINI_API_KEY
+from .config import GEMINI_API_KEY
 
 # ================= 核心修改区域 =================
 MODEL_ID = "gemini-2.0-flash-lite" 
