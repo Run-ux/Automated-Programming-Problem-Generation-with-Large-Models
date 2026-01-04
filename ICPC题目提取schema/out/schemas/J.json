@@ -1,0 +1,66 @@
+{
+  "name": {
+    "title": "Stacking Cups"
+  },
+  "input_structure": {
+    "type": "scalar_pair",
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "n": {
+        "min": 1,
+        "max": 200000
+      },
+      "h": {
+        "min": 1,
+        "max": 40000000000
+      }
+    },
+    "properties": {
+      "description": "Two integers n and h; n defines number of cups with fixed heights (2i-1 for i=1..n), h is target tower height."
+    }
+  },
+  "core_constraints": [
+    {
+      "name": "use_all_cups",
+      "description": "All n cups must be used exactly once in the stacking order."
+    },
+    {
+      "name": "tower_height_equals_h",
+      "description": "The total vertical height of the stacked cups must equal the given h."
+    },
+    {
+      "name": "cup_nesting_rule",
+      "description": "Cup i fits inside cup j if and only if i < j; this affects how heights accumulate when stacked."
+    }
+  ],
+  "objective": {
+    "type": "construction",
+    "description": "Output any permutation of cup heights that achieves total tower height h, or 'impossible' if none exists."
+  },
+  "invariant": {
+    "name": "stacking_height_formula",
+    "description": "The total height of a stack is determined by summing contributions based on nesting: outermost cup contributes full height, inner cups contribute only their top rim thickness (1 cm) unless they extend above the current top.",
+    "properties": {
+      "height_computation": "For a sequence of cups [c1, c2, ..., cn] (from bottom to top), total height = height(c1) + sum_{i=2 to n} max(0, height(ci) - height(c_{i-1}))",
+      "monotonicity": "If cups are placed in decreasing height order, total height = height of tallest cup; if increasing, total height = sum of all heights minus overlaps."
+    }
+  },
+  "transform_params": {
+    "n": {
+      "min": 1,
+      "max": 200000
+    },
+    "h": {
+      "min": 1,
+      "max": 40000000000
+    },
+    "cup_height_formula": "2*i - 1",
+    "objective_options": [
+      "construction"
+    ],
+    "multi_constraints": true
+  }
+}

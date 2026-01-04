@@ -1,0 +1,61 @@
+{
+  "name": {
+    "title": "Blackboard Game"
+  },
+  "input_structure": {
+    "type": "integer",
+    "length": {
+      "min": 1,
+      "max": 40
+    },
+    "value_range": {
+      "min": 2,
+      "max": 10000000
+    },
+    "properties": {
+      "sum_of_n": 10000000
+    }
+  },
+  "core_constraints": [
+    {
+      "name": "valid_move_prime_multiplication_or_division",
+      "description": "Each move must select a number that is the current circled number multiplied or divided by a prime, and must remain in [1, n]."
+    },
+    {
+      "name": "first_move_must_be_even",
+      "description": "The first move must choose an even integer from [1, n]."
+    },
+    {
+      "name": "numbers_in_range",
+      "description": "All numbers involved must be integers between 1 and n inclusive."
+    }
+  ],
+  "objective": {
+    "type": "decision_with_construction",
+    "description": "Decide whether the first player has a winning strategy; if so, output any winning first move (an even number)."
+  },
+  "invariant": {
+    "name": "game_state_as_number_with_prime_factor_moves",
+    "description": "Game state is fully represented by the currently circled number; valid transitions correspond to multiplying/dividing by primes while staying in [1, n].",
+    "properties": {
+      "state_is_single_integer": true,
+      "transition_based_on_prime_factors": true,
+      "acyclic_game_graph": true
+    }
+  },
+  "transform_params": {
+    "n": {
+      "min": 2,
+      "max": 10000000
+    },
+    "t": {
+      "min": 1,
+      "max": 40
+    },
+    "sum_n_limit": 10000000,
+    "objective_options": [
+      "decision_with_construction"
+    ],
+    "multi_constraints": true
+  }
+}

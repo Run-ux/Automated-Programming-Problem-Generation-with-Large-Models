@@ -1,0 +1,58 @@
+{
+  "name": {
+    "title": "E. Delivery Service"
+  },
+  "input_structure": {
+    "type": "graph",
+    "length": {
+      "min": 2,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 200000
+    },
+    "properties": {
+      "undirected": true,
+      "dynamic_edge_insertion": true
+    }
+  },
+  "core_constraints": [
+    {
+      "name": "bidirectional_connectivity",
+      "description": "Two cities u and v are connected if a package can be delivered from u to v and from v to u through a sequence of couriers meeting in shared cities at compatible times."
+    },
+    {
+      "name": "time_synchronized_handoff",
+      "description": "Packages can only be transferred between couriers who are present in the same city at the same time according to the fixed daily schedule (assumed based on problem narrative)."
+    }
+  ],
+  "objective": {
+    "type": "count",
+    "description": "After each courier is hired, count the number of unordered pairs (u, v) with u < v such that cities u and v are connected."
+  },
+  "invariant": {
+    "name": "union_find_connectivity",
+    "description": "Connectivity evolves monotonically as edges (courier routes) are added; strongly connected components merge over time and never split.",
+    "properties": {
+      "monotonic_component_merge": true,
+      "offline_dynamic_connectivity": false,
+      "supports_incremental_query": true
+    }
+  },
+  "transform_params": {
+    "n": {
+      "min": 2,
+      "max": 200000
+    },
+    "m": {
+      "min": 1,
+      "max": 400000
+    },
+    "objective_options": [
+      "count"
+    ],
+    "multi_constraints": true,
+    "edge_insertion_order_matters": true
+  }
+}

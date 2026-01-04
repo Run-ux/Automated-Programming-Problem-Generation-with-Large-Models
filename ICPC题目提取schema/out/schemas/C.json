@@ -1,0 +1,91 @@
+{
+  "name": {
+    "title": "Bride of Pipe Stream"
+  },
+  "input_structure": {
+    "type": "graph",
+    "length": {
+      "min": 1,
+      "max": 20000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100
+    },
+    "properties": {
+      "directed": true,
+      "nodes": {
+        "stations": {
+          "count_min": 1,
+          "count_max": 10000,
+          "controllable_split": true
+        },
+        "reservoirs": {
+          "count_min": 1,
+          "count_max": 3,
+          "sink": true
+        }
+      },
+      "edges": {
+        "ducts": {
+          "count_min": 1,
+          "count_max": 20000,
+          "fixed_distribution": true
+        }
+      }
+    }
+  },
+  "core_constraints": [
+    {
+      "name": "station_outflow_controllable",
+      "description": "Each station can split its incoming flow arbitrarily among its outgoing ducts."
+    },
+    {
+      "name": "duct_outflow_fixed",
+      "description": "Each duct distributes its inflow to downstream nodes in fixed given percentages summing to at most 100."
+    },
+    {
+      "name": "flow_conservation_per_duct",
+      "description": "For each duct, the sum of output percentages is ≤ 100; remainder is lost (assumed)."
+    },
+    {
+      "name": "single_source",
+      "description": "All flow originates from station 1 (assumed from problem statement)."
+    }
+  ],
+  "objective": {
+    "type": "max_min_flow",
+    "description": "Maximize the minimum percentage of total Flubber received by any reservoir."
+  },
+  "invariant": {
+    "name": "linear_flow_network",
+    "description": "Flow propagation is linear and deterministic given station splitting decisions; optimal solution exists via convex optimization or binary search with feasibility LP (assumed).",
+    "properties": {
+      "linearity": true,
+      "monotonic_feasibility": true,
+      "convex_feasible_region": true
+    }
+  },
+  "transform_params": {
+    "s": {
+      "min": 1,
+      "max": 10000
+    },
+    "r": {
+      "min": 1,
+      "max": 3
+    },
+    "d": {
+      "min": 1,
+      "max": 20000
+    },
+    "percentages": {
+      "min": 1,
+      "max": 100
+    },
+    "objective_options": [
+      "max_min_flow"
+    ],
+    "multi_constraints": true
+  }
+}

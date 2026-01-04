@@ -1,0 +1,66 @@
+{
+  "name": {
+    "title": "Slot Machine"
+  },
+  "input_structure": {
+    "type": "array",
+    "length": {
+      "min": 3,
+      "max": 50
+    },
+    "value_range": {
+      "min": 1,
+      "max": 50
+    },
+    "properties": {
+      "description": "Each element represents the current symbol shown on a wheel; symbols are from a set of size n and each wheel is a cyclic permutation of the same symbol list.",
+      "cyclic": true,
+      "hidden_state": true
+    }
+  },
+  "core_constraints": [
+    {
+      "name": "distinct_symbols_feedback",
+      "description": "After each action, the judge provides k = number of distinct symbols currently visible. This is the only observable feedback (assumed as core constraint due to interaction model)."
+    },
+    {
+      "name": "action_limit",
+      "description": "At most 10000 actions allowed (assumed as core constraint from problem statement)."
+    },
+    {
+      "name": "non_adversarial_judge",
+      "description": "The initial configuration is fixed and not adaptive (assumed as core constraint to ensure solvability)."
+    }
+  ],
+  "objective": {
+    "type": "decision",
+    "description": "Determine a sequence of wheel rotations such that all wheels eventually show the same symbol (i.e., k = 1), using only feedback on distinct symbol count."
+  },
+  "invariant": {
+    "name": "symbol_equality_via_alignment",
+    "description": "All wheels share the same cyclic symbol sequence; therefore, aligning any wheel to match another is always possible via rotation. The hidden state can be inferred indirectly through changes in distinct count feedback (assumed invariant enabling solution).",
+    "properties": {
+      "common_symbol_set": true,
+      "deterministic_feedback": true,
+      "rotations_reversible": true
+    }
+  },
+  "transform_params": {
+    "n": {
+      "min": 3,
+      "max": 50
+    },
+    "max_actions": 10000,
+    "rotation_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "feedback_type_options": [
+      "distinct_count"
+    ],
+    "objective_options": [
+      "decision"
+    ],
+    "multi_constraints": false
+  }
+}

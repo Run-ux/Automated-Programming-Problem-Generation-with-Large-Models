@@ -1,0 +1,56 @@
+{
+  "name": {
+    "title": "A-Skew-ed Reasoning"
+  },
+  "input_structure": {
+    "type": "tree",
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 200000
+    },
+    "properties": {
+      "node_values_are_permutation_of_1_to_n": true,
+      "children_given_by_value_not_index": true,
+      "child_indicator_zero_means_null": true
+    }
+  },
+  "core_constraints": [
+    {
+      "name": "skew_heap_insertion_rule",
+      "description": "The given tree must be constructible by the recursive skew heap insertion procedure applied to some permutation of [1..n]. This includes: (1) each node's value ≤ its children's values (min-heap property); (2) the structural evolution follows the swap-and-insert rule. Assumed based on problem description."
+    },
+    {
+      "name": "binary_tree_validity",
+      "description": "Input describes a valid binary tree with n nodes labeled 1 through n, each appearing exactly once. Assumed from guarantee in input section."
+    }
+  ],
+  "objective": {
+    "type": "lexicographic_extremes",
+    "description": "Find the lexicographically smallest and largest input permutations that produce the given tree via skew heap insertion; if none exist, output 'impossible'."
+  },
+  "invariant": {
+    "name": "skew_heap_construction_invariant",
+    "description": "The insertion process maintains a min-heap ordered binary tree where structure depends deterministically on insertion order and recursive child-swapping. The reconstruction problem relies on reverse-engineering valid insertion sequences consistent with final tree topology and heap order.",
+    "properties": {
+      "heap_order_must_hold": true,
+      "insertion_sequence_determines_structure": true,
+      "child_swaps_are_traceable": true
+    }
+  },
+  "transform_params": {
+    "n": {
+      "min": 1,
+      "max": 200000
+    },
+    "objective_options": [
+      "lex_min_and_max_permutation",
+      "decision_only"
+    ],
+    "allow_impossible_cases": true,
+    "tree_structures": "any_valid_binary_tree_with_labels_1_to_n"
+  }
+}

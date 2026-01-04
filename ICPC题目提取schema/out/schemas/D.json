@@ -1,0 +1,73 @@
+{
+  "name": {
+    "title": "Buggy Rover"
+  },
+  "input_structure": {
+    "type": "grid",
+    "length": {
+      "min": 1,
+      "max": 200
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "grid_chars": [
+        "#",
+        ".",
+        "S"
+      ],
+      "has_single_start": true,
+      "move_sequence_length": {
+        "min": 1,
+        "max": 10000
+      }
+    }
+  },
+  "core_constraints": [
+    {
+      "name": "valid_move_sequence",
+      "description": "All moves in the sequence must lead to flat ('.') cells; rover never steps on '#' or outside grid (assumed from problem statement)."
+    },
+    {
+      "name": "single_start_position",
+      "description": "Grid contains exactly one 'S' as starting position (given explicitly)."
+    },
+    {
+      "name": "direction_ordering_behavior",
+      "description": "At each step, rover selects first valid direction in its current ordering that leads to a flat cell within bounds (assumed from description of rover behavior)."
+    }
+  ],
+  "objective": {
+    "type": "min_count",
+    "description": "Minimize the number of times the direction ordering changed (i.e., cosmic ray hits)."
+  },
+  "invariant": {
+    "name": "state_machine_with_ordering_switches",
+    "description": "The rover's movement is governed by a state (current position and direction ordering); changes only occur at discrete cosmic ray events. Between events, the same ordering explains consecutive moves.",
+    "properties": {
+      "position_monotonic": false,
+      "ordering_persistent_until_change": true,
+      "feasibility_check_per_step": true
+    }
+  },
+  "transform_params": {
+    "grid_size": {
+      "min": 1,
+      "max": 200
+    },
+    "move_sequence_length": {
+      "min": 1,
+      "max": 10000
+    },
+    "obstacle_density": {
+      "min": 0,
+      "max": 1
+    },
+    "objective_options": [
+      "min_count"
+    ],
+    "multi_constraints": true
+  }
+}

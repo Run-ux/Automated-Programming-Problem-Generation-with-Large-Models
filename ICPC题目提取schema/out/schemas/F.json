@@ -1,0 +1,75 @@
+{
+  "name": {
+    "title": "Herding Cats"
+  },
+  "input_structure": {
+    "type": "bipartite_assignment",
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 200000
+    },
+    "properties": {
+      "entities": [
+        "cats",
+        "plants"
+      ],
+      "relations": [
+        "cat_likes_plants",
+        "cat_target_pot"
+      ]
+    }
+  },
+  "core_constraints": [
+    {
+      "name": "cat_stops_at_first_liked_plant",
+      "description": "Each cat walks from pot 1 to m and stops at the first pot containing a plant it likes."
+    },
+    {
+      "name": "plant_assignment_is_permutation",
+      "description": "Each pot must contain exactly one distinct plant (i.e., plants form a permutation of 1..m)."
+    },
+    {
+      "name": "cat_target_pot_must_match_stop_position",
+      "description": "For each cat, the pot where it stops (first liked plant in ordering) must equal its given target pot p."
+    },
+    {
+      "name": "global_sum_limits",
+      "description": "Across test cases: sum(n) ≤ 2e5, sum(m) ≤ 2e5, sum(k) ≤ 5e5 (assumed from input note)."
+    }
+  ],
+  "objective": {
+    "type": "decision",
+    "description": "Determine whether there exists a permutation of plants in pots such that every cat stops at its assigned target pot."
+  },
+  "invariant": {
+    "name": "greedy_assignment_with_ordering_constraint",
+    "description": "The assignment of plants to pots must respect the left-to-right stopping behavior of cats; this induces precedence constraints among plant positions.",
+    "properties": {
+      "precedence_constraints": true,
+      "topological_sort_feasibility": true
+    }
+  },
+  "transform_params": {
+    "n": {
+      "min": 1,
+      "max": 200000
+    },
+    "m": {
+      "min": 1,
+      "max": 200000
+    },
+    "k_per_cat": {
+      "min": 1,
+      "max": 200000
+    },
+    "total_k_limit": 500000,
+    "objective_options": [
+      "decision"
+    ],
+    "multi_constraints": true
+  }
+}

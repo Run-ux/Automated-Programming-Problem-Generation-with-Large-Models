@@ -1,0 +1,79 @@
+{
+  "name": {
+    "title": "Walking on Sunshine"
+  },
+  "input_structure": {
+    "type": "graph",
+    "length": {
+      "min": 0,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -1000000,
+      "max": 1000000
+    },
+    "properties": {
+      "geometric": true,
+      "rectangles_non_overlapping": true,
+      "start_end_points": true
+    }
+  },
+  "core_constraints": [
+    {
+      "name": "sun_direction_constraint",
+      "description": "Sun shines from south (direction (0,1)); walking with any southward component (dy < 0) causes sun exposure."
+    },
+    {
+      "name": "shade_protection",
+      "description": "Inside any shaded rectangle, movement is safe regardless of direction."
+    },
+    {
+      "name": "axis_aligned_rectangles",
+      "description": "Shaded areas are axis-aligned rectangles given by southwest and northeast corners; they do not touch or intersect."
+    },
+    {
+      "name": "movement_cost_only_in_sun",
+      "description": "Only distance traveled outside shaded areas AND with southward movement component counts toward objective."
+    }
+  ],
+  "objective": {
+    "type": "min_distance",
+    "description": "Minimize total Euclidean distance walked while exposed to the sun (i.e., outside shade and moving southward)."
+  },
+  "invariant": {
+    "name": "visibility_graph_shortest_path",
+    "description": "Optimal path consists of straight-line segments between critical points: start, end, and rectangle corners. Safe movement within shade allows free traversal inside rectangles.",
+    "properties": {
+      "critical_points": [
+        "start",
+        "end",
+        "rectangle_corners"
+      ],
+      "euclidean_metric": true,
+      "shortest_path_in_visibility_graph": true
+    }
+  },
+  "transform_params": {
+    "n_rectangles": {
+      "min": 0,
+      "max": 100000
+    },
+    "coordinate_range": {
+      "min": -1000000,
+      "max": 1000000
+    },
+    "sun_direction": {
+      "fixed": [
+        0,
+        1
+      ]
+    },
+    "objective_options": [
+      "min_distance"
+    ],
+    "rectangle_properties": {
+      "non_overlapping": true,
+      "axis_aligned": true
+    }
+  }
+}

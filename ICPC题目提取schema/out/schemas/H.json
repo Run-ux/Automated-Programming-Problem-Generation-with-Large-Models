@@ -1,0 +1,72 @@
+{
+  "name": {
+    "title": "Score Values"
+  },
+  "input_structure": {
+    "type": "custom",
+    "length": {
+      "min": 1,
+      "max": 11
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000000000000
+    },
+    "properties": {
+      "first_line": "m (max score, 1 <= m <= 1e18), n (number of point types, 1 <= n <= 10)",
+      "next_n_lines": "point values p_i (1 <= p_i <= 1000), distinct"
+    }
+  },
+  "core_constraints": [
+    {
+      "name": "score_capped_at_m",
+      "description": "Team score starts at 0 and is incremented by fixed point values; any increment that would exceed m is capped at m."
+    },
+    {
+      "name": "achievable_scores_only",
+      "description": "Only scores that are reachable via non-negative integer combinations of given point values (up to cap m) are considered."
+    },
+    {
+      "name": "digit_6_doubles_as_9",
+      "description": "Digit '6' can be rotated to serve as '9'; therefore, no separate '9' signs are needed."
+    },
+    {
+      "name": "distinct_point_values",
+      "description": "All scoring actions award distinct point amounts (given in input)."
+    }
+  ],
+  "objective": {
+    "type": "minimize_digit_signs",
+    "description": "Minimize the total number of digit signs (for digits 0–8) required to display any achievable score from 0 up to m, considering 6/9 duality."
+  },
+  "invariant": {
+    "name": "reachable_score_set_closure",
+    "description": "The set of achievable scores forms a numerical semigroup capped at m; once a residue class modulo g (gcd of point values) is reachable beyond Frobenius number, all larger values in that class are also reachable.",
+    "properties": {
+      "semigroup_structure": true,
+      "capped_at_m": true,
+      "digit_representation_independent": false
+    }
+  },
+  "transform_params": {
+    "m_range": {
+      "min": 1,
+      "max": "1e18"
+    },
+    "n_range": {
+      "min": 1,
+      "max": 10
+    },
+    "p_range": {
+      "min": 1,
+      "max": 1000
+    },
+    "digit_substitution_rules": [
+      "6_as_9"
+    ],
+    "objective_options": [
+      "minimize_digit_signs"
+    ],
+    "multi_constraints": true
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "name": {
+    "title": "Lava Moat"
+  },
+  "input_structure": {
+    "type": "triangulated_terrain",
+    "length": {
+      "min": 4,
+      "max": 50000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000
+    },
+    "properties": {
+      "distinct_elevations": true,
+      "planar_triangulation": true,
+      "rectangle_domain": true,
+      "boundary_edges_defined": true
+    }
+  },
+  "core_constraints": [
+    {
+      "name": "constant_elevation_path",
+      "description": "The lava moat must lie entirely on a single elevation level (z = constant)."
+    },
+    {
+      "name": "west_to_east_connectivity",
+      "description": "The path must connect the western border (x=0) to the eastern border (x=w)."
+    },
+    {
+      "name": "path_on_terrain_surface",
+      "description": "The path must lie on the piecewise-linear terrain surface defined by the triangulation."
+    },
+    {
+      "name": "linear_interpolation_validity",
+      "description": "Elevation at non-vertex points is determined by linear interpolation within triangles; path must respect this."
+    }
+  ],
+  "objective": {
+    "type": "min_length",
+    "description": "Minimize the Euclidean length of the constant-elevation path connecting west to east borders."
+  },
+  "invariant": {
+    "name": "level_set_connectivity",
+    "description": "For a fixed elevation z, the set of points on the terrain with elevation z forms a collection of curves (level sets); solution exists iff some level set connects west to east.",
+    "properties": {
+      "elevation_monotonicity": false,
+      "piecewise_linear_level_sets": true,
+      "connectivity_check_via_contour_traversal": true
+    }
+  },
+  "transform_params": {
+    "w": {
+      "min": 1,
+      "max": 1000000
+    },
+    "l": {
+      "min": 1,
+      "max": 1000000
+    },
+    "n_vertices": {
+      "min": 4,
+      "max": 50000
+    },
+    "elevation_range": {
+      "min": 0,
+      "max": 1000000
+    },
+    "objective_options": [
+      "min_length"
+    ],
+    "multi_constraints": true
+  }
+}

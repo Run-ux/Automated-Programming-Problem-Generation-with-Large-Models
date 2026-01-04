@@ -1,0 +1,70 @@
+{
+  "name": {
+    "title": "Treasure Map"
+  },
+  "input_structure": {
+    "type": "grid",
+    "length": {
+      "min": 2,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "dimensions": 2,
+      "known_points_sparse": true
+    }
+  },
+  "core_constraints": [
+    {
+      "name": "bilinear_consistency",
+      "description": "For every unit square, the two triangulation-based linear interpolation methods must yield identical depth values at all interior points. This enforces that d(A) + d(C) = d(B) + d(D) for each square with corners A,B,C,D in clockwise order."
+    },
+    {
+      "name": "non_negative_depth",
+      "description": "All grid point depths must be non-negative (d(p) >= 0 for all p)."
+    },
+    {
+      "name": "unique_known_points",
+      "description": "Each (x, y) coordinate appears at most once in the known depth data."
+    }
+  ],
+  "objective": {
+    "type": "min_value",
+    "description": "Minimize the depth value at the treasure location (t_x, t_y), or output 'impossible' if no valid extension exists."
+  },
+  "invariant": {
+    "name": "grid_linear_constraint_system",
+    "description": "The consistency condition d(A)+d(C)=d(B)+d(D) over all unit squares induces a system of linear equations that can be modeled as a graph with parity constraints or as a potential function over a bipartite grid.",
+    "properties": {
+      "bipartite_potential": true,
+      "linear_equations": true,
+      "feasibility_check_required": true
+    }
+  },
+  "transform_params": {
+    "grid_size_n": {
+      "min": 2,
+      "max": 300000
+    },
+    "grid_size_m": {
+      "min": 2,
+      "max": 300000
+    },
+    "known_points_k": {
+      "min": 1,
+      "max": 300000
+    },
+    "depth_value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "objective_options": [
+      "min_value",
+      "decision"
+    ],
+    "multi_constraints": true
+  }
+}
