@@ -1,0 +1,122 @@
+"""
+目标函数（Objective, O）维度的 Prompt 模板
+
+用于抽取题目要求求解的目标类型，包括：
+- 最大值 / 最小值（如最长子数组、最短路径）
+- 计数（如满足条件的区间数量）
+- 判定（是否存在合法解）
+- 构造（输出一个满足条件的方案）
+
+输出 JSON Schema：
+{
+    "type": "max_length | min_cost | count | decision | construction | ...",
+    "description": "目标函数的中文描述"
+}
+"""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Dict, Any
+
+
+def build_system_prompt() -> str:
+    """构建系统提示词（角色定义与输出格式要求）"""
+    return """你是编程竞赛题目目标函数分析专家。
+
+你的任务是识别题目要求求解的目标类型。
+
+常见目标类型：
+1. 最大化（max_*）：如 max_length（最大长度）、max_sum（最大和）、max_value（最大值）
+2. 最小化（min_*）：如 min_cost（最小代价）、min_distance（最短距离）、min_operations（最少操作）
+3. 计数（count）：如统计满足条件的区间数量、方案数量
+4. 判定（decision）：如判断是否存在满足条件的解（输出 Yes/No 或 0/1）
+5. 构造（construction）：如输出一个满足条件的方案或序列
+
+输出要求：
+- 必须输出严格的 JSON 对象，不要输出任何解释文字
+- JSON 必须包含 type 和 description 字段
+- type 必须是简洁的英文标识（如 max_length, count, decision）
+- description 必须清晰描述目标函数的含义
+
+识别原则：
+1. 优先从题目标题和输出要求中识别
+2. 关键词识别：
+   - "最长"、"最大" → max_*
+   - "最短"、"最小" → min_*
+   - "有多少"、"计数" → count
+   - "是否存在"、"能否" → decision
+   - "输出任意"、"构造一个" → construction
+3. 如果题目有多个子问题，选择主要目标
+"""
+
+
+def build_user_prompt(problem: Dict[str, Any]) -> str:
+    """
+    构建用户提示词（题面内容）
+    
+    Args:
+        problem: 题目字典，必须包含以下字段：
+            - title: 题目标题
+            - description: 题目描述
+            - input: 输入格式说明
+            - output: 输出格式说明
+            - constraints: 约束条件
+    
+    Returns:
+        格式化的用户提示词
+    """
+    return f"""请识别以下题目的目标函数：
+
+标题：{problem.get('title', 'N/A')}
+
+题目描述：
+{problem.get('description', '')}
+
+输入格式：
+{problem.get('input', '')}
+
+输出格式（重点关注）：
+{problem.get('output', '')}
+
+约束条件：
+{problem.get('constraints', '')}
+
+---
+
+请输出该题的目标函数 JSON，格式如下：
+
+{{
+    "type": "目标类型（max_length, min_cost, count, decision, construction 等）",
+    "description": "目标函数的中文描述（如：求满足条件的最长子数组长度）"
+}}
+
+注意：
+1. type 必须简洁且符合常见分类（max_*, min_*, count, decision, construction）
+2. description 必须完整描述题目要求输出什么
+3. 如果题目要求输出多个值，选择主要目标（通常是第一个或最重要的）
+4. 常见模式：
+   - 求"最长"、"最大" → max_length 或 max_value
+   - 求"最短"、"最小" → min_cost 或 min_distance
+   - 求"有多少个" → count
+   - 判断"是否存在" → decision
+   - 要求"输出方案" → construction
+"""
+
+
+OBJECTIVE_SCHEMA = {
+    "type": "object",
+    "required": ["type", "description"],
+    "properties": {
+        "type": {
+            "type": "string",
+            "description": "目标类型，如 max_length, min_cost, count, decision, construction"
+        },
+        "description": {
+            "type": "string",
+            "description": "目标函数的中文描述"
+        }
+    }
+}
