@@ -1,0 +1,68 @@
+{
+  "problem_id": "P13688",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 250000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 16777215
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "mode_frequency_constraint",
+            "description": "子序列中的众数在该子序列中出现次数不超过其在整个序列中出现次数的 p%",
+            "formal": "∀x ∈ b, count(x, subseq) ≤ (count(x, b) * p / 100)"
+          },
+          {
+            "name": "distinct_mode_in_subsequence",
+            "description": "子序列中的众数不能在子序列外重复出现",
+            "formal": "∀i, j, a_i = a_j = x, i < j, if a_i ∈ subseq then a_j ∉ subseq"
+          },
+          {
+            "name": "xor_sum_of_modes",
+            "description": "所有非空子序列的 Powerless Suffix Mode 的异或和，若没有则异或 0",
+            "formal": "result = XOR(all PSMs in all non-empty subsequences of b)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足条件的子序列众数异或和的最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子序列的Powerless Suffix Mode的异或和可以由更小子序列的解递推得到。",
+        "properties": {}
+      }
+    }
+  ]
+}

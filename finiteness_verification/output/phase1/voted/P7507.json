@@ -1,0 +1,134 @@
+{
+  "problem_id": "P7507",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 30000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 40000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 30000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 40000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "trial_limit",
+        "description": "每个 0 型机器最多只能对材料加工一次，1 型机器可以无限制加工",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimum_cost_constraint",
+        "description": "加工过程中消耗的加工指数总和不能超过给定的最大值 v",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coordinate_fixed_point",
+        "description": "机械臂的位置必须在 [0, u] 范围内，其中 u 是当前机器的数量",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacent_difference",
+        "description": "插入新机器时，该位置右侧的所有机器向右移动一格",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacent_difference",
+        "description": "删除机器时，该位置右侧的所有机器向左移动一格",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "trial_limit",
+              "description": "每个 0 型机器最多只能对材料加工一次，1 型机器可以无限制加工",
+              "formal": "对于 0 型机器：processing_count <= 1；对于 1 型机器：processing_count >= 0"
+            },
+            {
+              "name": "minimum_cost_constraint",
+              "description": "加工过程中消耗的加工指数总和不能超过给定的最大值 v",
+              "formal": "sum(processing_cost) <= v"
+            },
+            {
+              "name": "coordinate_fixed_point",
+              "description": "机械臂的位置必须在 [0, u] 范围内，其中 u 是当前机器的数量",
+              "formal": "0 <= p <= u"
+            },
+            {
+              "name": "adjacent_difference",
+              "description": "插入新机器时，该位置右侧的所有机器向右移动一格",
+              "formal": "for all i > p: machine_positions[i] = machine_positions[i] + 1"
+            },
+            {
+              "name": "adjacent_difference",
+              "description": "删除机器时，该位置右侧的所有机器向左移动一格",
+              "formal": "for all i > p: machine_positions[i] = machine_positions[i] - 1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求在给定约束条件下，路径上的最大权值和"
+        }
+      }
+    ],
+    "description": "求在给定约束条件下，路径上的最大权值和"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个机器的加工决策基于当前状态下的最优选择。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个机器的加工决策基于当前状态下的最优选择。"
+  }
+}

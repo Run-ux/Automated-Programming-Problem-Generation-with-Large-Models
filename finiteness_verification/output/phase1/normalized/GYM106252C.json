@@ -1,0 +1,70 @@
+{
+  "problem_id": "GYM106252C",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 3,
+          "max": 1500000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 500000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinct_subsets",
+            "description": "每个颜色在序列中恰好出现三次",
+            "formal": "∀i ∈ [1, m], count(sequence, i) = 3"
+          },
+          {
+            "name": "bipartite_matching",
+            "description": "颜色集合被划分为两个非空子集，分别映射为0和1",
+            "formal": "S_0 ∪ S_1 = {1, 2, ..., m}, S_0 ∩ S_1 = ∅, S_0 ≠ ∅, S_1 ≠ ∅, ∀i ∈ S_0, map(i) = 0, ∀i ∈ S_1, map(i) = 1"
+          },
+          {
+            "name": "reconstruction_constraint",
+            "description": "无论如何划分颜色集合，每个图像的特征值必须能够从黑白图像中恢复",
+            "formal": "∀(S_0, S_1), ∀i ∈ [1, n], recover(binary_sequence_i) = x_i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "构造满足特定条件的序列"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个颜色图像的设计可以独立地通过其特征值进行恢复，且每个特征值的恢复仅依赖于该图像对应的黑白序列。",
+        "properties": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "problem_id": "P5364",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "prefix_sum_with_power",
+        "description": "当前元素值为前缀和加上当前索引的K次方",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modulo_accumulation",
+        "description": "所有计算结果对10^9+7取模",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "prefix_sum_with_power",
+              "description": "当前元素值为前缀和加上当前索引的K次方",
+              "formal": "A[i] = (sum(A[0:i]) + (i+1)^K) % (10^9 + 7)"
+            },
+            {
+              "name": "modulo_accumulation",
+              "description": "所有计算结果对10^9+7取模",
+              "formal": "result = result % (10^9 + 7)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求第N个元素的值，该值由前N-1个元素的和加上当前元素编号的K次方计算得出"
+        }
+      }
+    ],
+    "description": "求第N个元素的值，该值由前N-1个元素的和加上当前元素编号的K次方计算得出"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：当前状态的解依赖于前序状态的解，通过递推关系逐步构建最终解",
+          "properties": {
+            "state_dependency": true
+          }
+        }
+      }
+    ],
+    "description": "最优子结构：当前状态的解依赖于前序状态的解，通过递推关系逐步构建最终解"
+  }
+}

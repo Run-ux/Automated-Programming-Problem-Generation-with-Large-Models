@@ -1,0 +1,112 @@
+{
+  "problem_id": "GYM103373E",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 2,
+            "max": 2
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 2
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "non_negative_balance",
+        "description": "在任意时刻，余额必须非负（即不能出现负数）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition_constraint",
+        "description": "生产数量依赖于当前天数的五次方（即生产函数为 q * d^5）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_negative_balance",
+        "description": "每天消耗的数量是常数 p（即消耗函数为 p）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "non_negative_balance",
+              "description": "在任意时刻，余额必须非负（即不能出现负数）",
+              "formal": "∀d, balance(d) ≥ 0"
+            },
+            {
+              "name": "state_transition_constraint",
+              "description": "生产数量依赖于当前天数的五次方（即生产函数为 q * d^5）",
+              "formal": "production(d) = q * d^5"
+            },
+            {
+              "name": "non_negative_balance",
+              "description": "每天消耗的数量是常数 p（即消耗函数为 p）",
+              "formal": "consumption(d) = p"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "构造满足条件的两个整数x和y"
+        }
+      }
+    ],
+    "description": "构造满足条件的两个整数x和y"
+  },
+  "invariant": {
+    "name": "monotonic_sequence_property",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "monotonic_sequence_property",
+          "description": "累积收益随时间单调递增，算法执行过程中每日净收益非负保证了总Eatcoin数量的单调增长",
+          "properties": {
+            "right_monotonic": true
+          }
+        }
+      }
+    ],
+    "description": "累积收益随时间单调递增，算法执行过程中每日净收益非负保证了总Eatcoin数量的单调增长"
+  }
+}

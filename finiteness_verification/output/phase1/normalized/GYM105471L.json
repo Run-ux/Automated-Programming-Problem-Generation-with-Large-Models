@@ -1,0 +1,74 @@
+{
+  "problem_id": "GYM105471L",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 3,
+          "max": 200000
+        },
+        "value_range": {
+          "min": -1000000000,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true,
+          "convex": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "coordinate_fixed_point",
+            "description": "两个多边形必须通过平移向量 (d_x, d_y, 10^9) 重合，不允许旋转"
+          },
+          {
+            "name": "polygon_convexity_constraint",
+            "description": "多边形 P 必须是凸多边形，即每个内角都小于 π"
+          },
+          {
+            "name": "cooldown_period_constraint",
+            "description": "投影面积的多重集 {S_i} 是 cool 的条件是存在一个元素 x 使得 ∑_{y∈S} y = 2x",
+            "formal": "∃ x ∈ S, s.t. ∑_{y∈S} y = 2x"
+          },
+          {
+            "name": "uniform_probability_distribution",
+            "description": "平移向量 (d_x, d_y) 在半径为 r 的圆内均匀随机选择，满足 d_x^2 + d_y^2 ≤ r^2",
+            "formal": "(d_x, d_y) ~ U({(x, y) | x^2 + y^2 ≤ r^2})"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_cost",
+        "description": "求当半径趋向于无穷大时，满足特定条件的投影面积集合的概率极限值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：大问题的解由子问题的解组合而成，通过分析投影面积的分布和概率来求解整体问题",
+        "properties": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "problem_id": "CF1194D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "parallel_operation",
+        "description": "每次移动可以选择固定数量的步数（1, 2 或 k）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "edge_exclusion_constraint",
+        "description": "移动不能超出边界，即芯片不能移出纸条范围",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pairwise_interaction_constraint",
+        "description": "游戏是回合制的，两名玩家轮流进行操作",
+        "confidence": "1/1"
+      },
+      {
+        "name": "global_optimization_objective",
+        "description": "无法进行有效移动的玩家输掉游戏",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "parallel_operation",
+              "description": "每次移动可以选择固定数量的步数（1, 2 或 k）",
+              "formal": "move ∈ {1, 2, k}"
+            },
+            {
+              "name": "edge_exclusion_constraint",
+              "description": "移动不能超出边界，即芯片不能移出纸条范围",
+              "formal": "0 ≤ i - move < n"
+            },
+            {
+              "name": "pairwise_interaction_constraint",
+              "description": "游戏是回合制的，两名玩家轮流进行操作",
+              "formal": "player = (turn % 2 == 0) ? Bob : Alice"
+            },
+            {
+              "name": "global_optimization_objective",
+              "description": "无法进行有效移动的玩家输掉游戏",
+              "formal": "if no valid move, player loses"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "判断在给定条件下是否存在一个先手必胜策略"
+        }
+      }
+    ],
+    "description": "判断在给定条件下是否存在一个先手必胜策略"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：当前状态的最优解可以通过前序状态的最优解推导得出，满足动态规划的核心性质",
+          "properties": {
+            "state_dependency": true
+          }
+        }
+      }
+    ],
+    "description": "最优子结构：当前状态的最优解可以通过前序状态的最优解推导得出，满足动态规划的核心性质"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "problem_id": "P1050",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 2,
+          "max": 2
+        },
+        "value_range": {
+          "min": 1,
+          "max": 10000000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "circular_sequence_constraint",
+            "description": "存在一个正整数 L，使得对于任意正整数 a，n 的 a 次幂和 a+L 次幂的最后 k 位相同（循环长度约束）",
+            "formal": "∃ L > 0, ∀ a ∈ ℕ, (n^a) % 10^k = (n^(a+L)) % 10^k"
+          },
+          {
+            "name": "constant_submatrix",
+            "description": "如果 n 的某个正整数次幂的位数不足 k，则高位补零（填充约束）",
+            "formal": "若 len(n^a) < k, 则 n^a = 0 * (k - len(n^a)) + n^a"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足条件的最小循环长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "当前状态只依赖于有限的前序状态，通过模运算保持状态空间有限",
+        "properties": {
+          "finite_state_space": true
+        }
+      }
+    }
+  ]
+}

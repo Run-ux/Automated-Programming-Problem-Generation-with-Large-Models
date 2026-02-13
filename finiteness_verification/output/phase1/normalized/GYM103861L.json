@@ -1,0 +1,72 @@
+{
+  "problem_id": "GYM103861L",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "string",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "weight_adjustment",
+            "description": "每次更新操作只影响当前索引及其二进制最低位的倍数索引（Fenwick树更新约束）",
+            "formal": "for pos in [1, n]: while pos <= n: c[pos] += val; pos += pos & (-pos)"
+          },
+          {
+            "name": "non_zero_count_constraint",
+            "description": "数组中非零元素的位置由输入字符串确定（部分和约束）",
+            "formal": "c[i] != 0 if and only if input_string[i-1] == '1'"
+          },
+          {
+            "name": "minimum_operation_count_constraint",
+            "description": "求解最小的操作次数使得数组状态与给定的非零位置一致（优化目标约束）",
+            "formal": "minimize k such that after k operations, c[i] != 0 if and only if input_string[i-1] == '1'"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_cost",
+        "description": "求满足条件的最少操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个位置的状态只依赖于其前驱状态",
+        "properties": {
+          "state_dependency": true
+        }
+      }
+    }
+  ]
+}

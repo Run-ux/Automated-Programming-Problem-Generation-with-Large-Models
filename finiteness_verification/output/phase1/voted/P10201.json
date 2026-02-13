@@ -1,0 +1,126 @@
+{
+  "problem_id": "P10201",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 500
+          },
+          "value_range": {
+            "min": 0,
+            "max": 9
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500
+    },
+    "value_range": {
+      "min": 0,
+      "max": 9
+    },
+    "properties": {
+      "connected": true,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacent_difference",
+        "description": "只能在相邻的非封锁区之间移动（图中节点之间的边仅存在于相邻且非封锁的节点之间）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "edge_exclusion_constraint",
+        "description": "不能进入封锁区（图中的某些节点是不可访问的）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modulo_accumulation",
+        "description": "积蓄的力量为经过的所有区域的编号依次相连，对 1145141 取模的结果（路径上的节点值按顺序拼接成一个整数，并对该整数取模）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "vertex_repetition_permissible",
+        "description": "可以重复经过相同的非封锁区，重复经过会重复积蓄力量（路径可以包含重复节点，每个节点的值会被多次计入）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacent_difference",
+              "description": "只能在相邻的非封锁区之间移动（图中节点之间的边仅存在于相邻且非封锁的节点之间）"
+            },
+            {
+              "name": "edge_exclusion_constraint",
+              "description": "不能进入封锁区（图中的某些节点是不可访问的）"
+            },
+            {
+              "name": "modulo_accumulation",
+              "description": "积蓄的力量为经过的所有区域的编号依次相连，对 1145141 取模的结果（路径上的节点值按顺序拼接成一个整数，并对该整数取模）",
+              "formal": "accumulated_power = (c_{i_1,j_1} * 10^k + c_{i_2,j_2} * 10^{k-1} + ... + c_{i_n,j_n}) % 1145141"
+            },
+            {
+              "name": "vertex_repetition_permissible",
+              "description": "可以重复经过相同的非封锁区，重复经过会重复积蓄力量（路径可以包含重复节点，每个节点的值会被多次计入）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "判断是否存在一条路径，使得路径上经过的节点权值依次相连后对给定模数取模的结果等于目标值"
+        }
+      }
+    ],
+    "description": "判断是否存在一条路径，使得路径上经过的节点权值依次相连后对给定模数取模的结果等于目标值"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：从起点到终点的路径问题可以分解为多个子路径问题，每个子路径的最优解组合成全局最优解",
+          "properties": {
+            "subproblem_independence": true,
+            "solution_combinable": true
+          }
+        }
+      }
+    ],
+    "description": "最优子结构：从起点到终点的路径问题可以分解为多个子路径问题，每个子路径的最优解组合成全局最优解"
+  }
+}

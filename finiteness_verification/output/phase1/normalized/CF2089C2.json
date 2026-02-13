@@ -1,0 +1,78 @@
+{
+  "problem_id": "CF2089C2",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": {
+            "n": 1,
+            "l": 1,
+            "k": 0
+          },
+          "max": {
+            "n": 100,
+            "l": 5000,
+            "k": 25
+          }
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "pairwise_exclusion",
+            "description": "每个元素只能被选择一次（图匹配约束）",
+            "formal": "对于每一对 (key, lock)，一旦匹配成功，该 key 和 lock 将不再参与后续的选择"
+          },
+          {
+            "name": "weight_proportional_probability",
+            "description": "每次选择时，选择概率最大的键和锁进行匹配（贪心策略）",
+            "formal": "在每一步中，选择当前未匹配的 (key, lock) 对中概率最大的进行尝试"
+          },
+          {
+            "name": "non_decreasing_sequence",
+            "description": "成员按顺序依次选择键和锁进行尝试（轮次约束）",
+            "formal": "n 个成员按固定顺序轮流选择键和锁，直到所有锁都被打开"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求每个成员期望成功匹配的锁的数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个成员在选择钥匙和锁时，基于历史尝试信息做出的决策是局部最优的，并且这些局部最优解组合起来构成全局最优解。",
+        "properties": {}
+      }
+    }
+  ]
+}

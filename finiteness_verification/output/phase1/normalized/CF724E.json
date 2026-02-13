@@ -1,0 +1,70 @@
+{
+  "problem_id": "CF724E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "edge_weight_decrease",
+            "description": "每个节点的取值不超过其容量上限（即每个城市销售的商品数量不能超过其销售容量）",
+            "formal": "∀i, 0 ≤ sold[i] ≤ s[i]"
+          },
+          {
+            "name": "edge_count",
+            "description": "每对节点之间的传输次数不超过一次，且每次传输的数量不超过给定的最大值（即每对城市之间只能进行一次商品运输，且每次运输的数量不超过 c）",
+            "formal": "∀i, j (1 ≤ i < j ≤ n), 0 ≤ transported[i][j] ≤ c"
+          },
+          {
+            "name": "directed_acyclic_graph",
+            "description": "传输方向必须是从较小索引到较大索引（即商品只能从编号较小的城市运往编号较大的城市）",
+            "formal": "∀i, j (1 ≤ i < j ≤ n), transported[i][j] ≥ 0"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化所有节点在满足容量限制下的总权值和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：大问题的解由子问题的解组合而成，每个城市的最大销售量依赖于前序城市的运输和销售决策",
+        "properties": {}
+      }
+    }
+  ]
+}

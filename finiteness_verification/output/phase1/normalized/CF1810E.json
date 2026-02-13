@@ -1,0 +1,71 @@
+{
+  "problem_id": "CF1810E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 200000
+        },
+        "properties": {
+          "connected": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "source_node_fixed",
+            "description": "初始节点的值必须为0（起点约束）"
+          },
+          {
+            "name": "state_transition_constraint",
+            "description": "击败怪物的顺序依赖于已击败怪物的数量（拓扑排序约束）",
+            "formal": "对于每个节点v，若a_v > 0，则在访问v之前必须已经访问了至少a_v个节点"
+          },
+          {
+            "name": "path_length_constraint",
+            "description": "图中的遍历路径必须满足特定条件（可达性约束）",
+            "formal": "从u到v的移动必须满足：v上的怪物已被击败或当前可以被击败"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "判断是否存在一种顺序，使得所有节点上的值能够按要求被依次处理"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合而成，即当前节点的怪物可以被击败当且仅当其所有前置依赖的怪物已经被击败。",
+        "properties": {
+          "subproblem_independence": true
+        }
+      }
+    }
+  ]
+}

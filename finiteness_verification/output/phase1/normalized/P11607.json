@@ -1,0 +1,77 @@
+{
+  "problem_id": "P11607",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "query_count_constraint",
+            "description": "查询次数不超过 K 次",
+            "formal": "number_of_queries <= k"
+          },
+          {
+            "name": "coordinate_bounds",
+            "description": "每个维度的坐标值在 [0, r] 范围内",
+            "formal": "0 <= v_{i,j} <= r"
+          },
+          {
+            "name": "maximum_coordinate_difference",
+            "description": "每次查询返回当前点与目标点之间的 Chebyshev 距离是否严格小于上一次查询的距离",
+            "formal": "dist(V_i, P) < dist(V_{i-1}, P)"
+          },
+          {
+            "name": "query_response",
+            "description": "第一次查询的回答总是“否”",
+            "formal": "response(V_1) = 0"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "构造一个满足条件的点坐标"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "monotonic_sequence_property",
+        "description": "查询点到目标点的距离单调递减，即每次查询后距离不会增加",
+        "properties": {
+          "distance_decreasing": true
+        }
+      }
+    }
+  ]
+}

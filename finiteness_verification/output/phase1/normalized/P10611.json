@@ -1,0 +1,86 @@
+{
+  "problem_id": "P10611",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 400000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "range_modification",
+            "description": "区间更新操作，将指定行的某个区间内的元素修改为给定值"
+          },
+          {
+            "name": "maximum_product_constraint",
+            "description": "区间查询操作，查询指定子矩阵内元素与序列对应位置元素乘积的最大值"
+          },
+          {
+            "name": "operation_order_dependency",
+            "description": "所有修改操作必须在查询操作之前执行（特殊性质 A）"
+          },
+          {
+            "name": "single_operation_limit",
+            "description": "修改操作只能修改单列（特殊性质 B）"
+          },
+          {
+            "name": "uniform_random_distribution",
+            "description": "数据随机生成（特殊性质 C）"
+          },
+          {
+            "name": "constant_submatrix",
+            "description": "序列 b 中所有元素均为 1（特殊性质 D）"
+          },
+          {
+            "name": "operation_limit",
+            "description": "修改操作出现次数不超过总操作次数的 1/4"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求给定子矩阵中元素与对应序列值乘积的最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：查询操作可以通过子区间的最大值和序列b的乘积来计算，满足区间信息可通过子区间合并",
+        "properties": {
+          "prefix_sum": false,
+          "segment_tree": true
+        }
+      }
+    }
+  ]
+}

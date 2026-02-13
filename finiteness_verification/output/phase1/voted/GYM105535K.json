@@ -1,0 +1,116 @@
+{
+  "problem_id": "GYM105535K",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_length_constraint",
+        "description": "区间长度不超过一年的总天数（即所有月份天数之和）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coordinate_fixed_point",
+        "description": "到达日和离开日必须在对应月份的有效天数范围内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_negative_values",
+        "description": "离开日必须晚于或等于到达日",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_length_constraint",
+              "description": "区间长度不超过一年的总天数（即所有月份天数之和）",
+              "formal": "e_d + sum(a[i] for i in range(s_m, e_m-1)) + (a[e_m] - e_d) <= sum(a[i] for i in range(n))"
+            },
+            {
+              "name": "coordinate_fixed_point",
+              "description": "到达日和离开日必须在对应月份的有效天数范围内",
+              "formal": "1 <= s_d <= a[s_m] and 1 <= e_d <= a[e_m]"
+            },
+            {
+              "name": "non_negative_values",
+              "description": "离开日必须晚于或等于到达日",
+              "formal": "s_d + sum(a[i] for i in range(s_m, e_m-1)) + e_d >= s_d"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "min_time",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "min_time",
+          "description": "求两个给定日期之间的最小天数间隔"
+        }
+      }
+    ],
+    "description": "求两个给定日期之间的最小天数间隔"
+  },
+  "invariant": {
+    "name": "interval_mergeable",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "interval_mergeable",
+          "description": "区间可合并性：通过前缀和计算任意区间的天数，满足区间信息可通过端点差值计算",
+          "properties": {
+            "prefix_sum": true
+          }
+        }
+      }
+    ],
+    "description": "区间可合并性：通过前缀和计算任意区间的天数，满足区间信息可通过端点差值计算"
+  }
+}

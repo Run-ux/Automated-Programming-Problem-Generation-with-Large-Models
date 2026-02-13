@@ -1,0 +1,125 @@
+{
+  "problem_id": "CF446D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 500
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 500
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "graph_connectivity",
+        "description": "从起点到终点必须存在路径（图连通性约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_cost",
+        "description": "进入特定节点会减少生命值（节点访问代价约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "turn_based_operation",
+        "description": "到达终点时剩余生命值必须为2才能触发奖励回合（目标状态约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "node_degree_constraint",
+        "description": "陷阱节点数量不超过101（特殊节点数量上限约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "graph_connectivity",
+              "description": "从起点到终点必须存在路径（图连通性约束）"
+            },
+            {
+              "name": "operation_cost",
+              "description": "进入特定节点会减少生命值（节点访问代价约束）"
+            },
+            {
+              "name": "turn_based_operation",
+              "description": "到达终点时剩余生命值必须为2才能触发奖励回合（目标状态约束）"
+            },
+            {
+              "name": "node_degree_constraint",
+              "description": "陷阱节点数量不超过101（特殊节点数量上限约束）",
+              "formal": "count(trap_nodes) <= 101"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "判断是否存在一条路径使得在到达终点时恰好剩余2个生命值"
+        }
+      }
+    ],
+    "description": "判断是否存在一条路径使得在到达终点时恰好剩余2个生命值"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：大问题的解由子问题的解组合而成，通过动态规划求解路径概率时，当前状态的概率依赖于前序状态的概率",
+          "properties": {
+            "state_dependency": true
+          }
+        }
+      }
+    ],
+    "description": "最优子结构：大问题的解由子问题的解组合而成，通过动态规划求解路径概率时，当前状态的概率依赖于前序状态的概率"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "problem_id": "P8479",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": -1000000000,
+          "max": 1000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_connectedness",
+            "description": "操作0中，所有在路径P(u, v)上或与路径P(u, v)上的结点相邻的结点w的绚丽度l_w将被赋值为k。",
+            "formal": "∀ w ∈ P(u, v) ∪ {x | ∃ y ∈ P(u, v), (x, y) ∈ E}, l_w = k"
+          },
+          {
+            "name": "recursive_sequence_constraint",
+            "description": "操作1中，从u到v的路径上，每个结点w及其不在路径P(u, v)上的邻接点x的绚丽度l_w和l_x按顺序加入序列S。",
+            "formal": "S = [l_w, l_x1, l_x2, ...] where w ∈ P(u, v) and x1, x2, ... are neighbors of w not in P(u, v)"
+          },
+          {
+            "name": "maximum_sum_constraint",
+            "description": "对于每次操作1，需要求出序列S的最大可空子段和。",
+            "formal": "max(∑ S[i:j]) for all 0 ≤ i ≤ j ≤ |S|, including the case where i = j (empty subarray)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求序列的最大可空子段和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：树上路径的最大可空子段和可以通过子路径的最优解组合而成",
+        "properties": {}
+      }
+    }
+  ]
+}

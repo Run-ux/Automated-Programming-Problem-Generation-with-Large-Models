@@ -62,6 +62,14 @@ CRITICAL WARNING:
 4. 识别逻辑约束：如"选择的元素不能重复"、"每个节点最多访问一次"
 5. 排除纯粹的数值范围：如"1 ≤ n ≤ 10^5"不算核心约束，只是输入规模
 6. 排除时间/内存限制：如"Time Limit: 2s"不算业务约束
+
+抽象化要求（CRITICAL）：
+- 约束的 name 和 description 必须用算法/数据结构领域的抽象术语，严禁包含原题目的具体情境词汇
+- 必须将题目情境翻译为算法领域的通用概念
+- 反例：题目说"鲨鱼不能吃同种鱿鱼" → name 不能写 "shark_eat_squid_limit"，应写 "pairwise_exclusion" 或 "matching_constraint"
+- 反例：题目说"每个城市最多修建3条公路" → name 不能写 "city_road_limit"，应写 "degree_upper_bound"
+- 正例：题目说"相邻房间不能涂相同颜色" → name 写 "adjacent_difference"，description 写 "相邻节点取值不同（图着色约束）"
+- 正例：题目说"背包重量不超过W" → name 写 "capacity_constraint"，description 写 "选取元素权重和不超过容量上限"
 """
 
 
@@ -119,6 +127,7 @@ def build_user_prompt(problem: Dict[str, Any]) -> str:
 3. 如果题目没有明显的业务约束，返回空数组 []
 4. 每个约束的 description 必须清晰完整，能够独立理解
 5. formal 字段可选，如果能用数学公式或伪代码表达清楚，则填写
+6. 所有约束的 name 和 description 必须是算法领域的抽象概括，不得包含题目中的具体情境词汇（如角色名、物品名、场景名等），需翻译为通用的算法/数据结构术语
 """
 
 

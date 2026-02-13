@@ -175,6 +175,18 @@ def generate_saturation_curve(
         import matplotlib
         matplotlib.use('Agg')
         import matplotlib.pyplot as plt
+        from matplotlib import rcParams
+
+        rcParams["font.family"] = "sans-serif"
+        rcParams["font.sans-serif"] = [
+            "Microsoft YaHei",
+            "SimHei",
+            "Noto Sans CJK SC",
+            "WenQuanYi Micro Hei",
+            "Arial Unicode MS",
+            "DejaVu Sans",
+        ]
+        rcParams["axes.unicode_minus"] = False
         
         plt.figure(figsize=(10, 6))
         plt.scatter(problem_indices, cumulative_labels, alpha=0.6, label="实际数据")

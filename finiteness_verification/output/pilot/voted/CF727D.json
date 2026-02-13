@@ -1,0 +1,216 @@
+{
+  "problem_id": "CF727D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "3/3",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 6,
+            "max": 6
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000
+          },
+          "properties": {}
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 6,
+            "max": 6
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 6,
+            "max": 6
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 6,
+      "max": 6
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "valid_distribution",
+        "description": "必须为每个参与者分配一个合适的T恤尺寸，即分配的尺寸必须在参与者指定的尺寸集合中。",
+        "confidence": "2/3"
+      },
+      {
+        "name": "tshirt_size_preference",
+        "description": "每个参与者可以指定一个或两个相邻的T恤尺寸，如果指定了两个尺寸，则这两个尺寸必须是相邻的。",
+        "confidence": "2/3"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "tshirt_size_preference",
+              "description": "每个参与者可以指定一个或两个相邻的T恤尺寸，如果指定了两个尺寸，则这两个尺寸必须是相邻的。",
+              "formal": "对于每个参与者 i，其指定的尺寸集合 S_i 满足 |S_i| = 1 或 |S_i| = 2 且 S_i 中的两个尺寸是相邻的。"
+            },
+            {
+              "name": "valid_distribution",
+              "description": "必须为每个参与者分配一个合适的T恤尺寸，即分配的尺寸必须在参与者指定的尺寸集合中。",
+              "formal": "对于每个参与者 i，分配的尺寸 s 必须满足 s ∈ S_i。"
+            },
+            {
+              "name": "enough_tshirts",
+              "description": "每种尺寸的T恤数量有限，必须确保分配后每种尺寸的T恤数量不超出给定的数量。",
+              "formal": "对于每种尺寸 j，分配后的数量 count(j) ≤ 给定的数量 T_j。"
+            }
+          ]
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "tshirt_size_preference",
+              "description": "每个参与者可以指定一个或两个相邻的T恤尺寸，如果指定了两个尺寸，则这两个尺寸必须是相邻的。",
+              "formal": "对于每个参与者 i，其指定的尺寸集合 S_i 满足 |S_i| = 1 或 |S_i| = 2 且 S_i 中的两个尺寸是相邻的。"
+            },
+            {
+              "name": "valid_distribution",
+              "description": "必须为每个参与者分配一个合适的T恤尺寸，且分配的T恤尺寸必须在参与者指定的尺寸范围内。",
+              "formal": "对于每个参与者 i，分配的T恤尺寸 size_i 必须满足 size_i ∈ S_i。"
+            },
+            {
+              "name": "distinct_tshirts",
+              "description": "每个T恤尺寸的数量有限，不能超过给定的数量。",
+              "formal": "对于每个T恤尺寸 s，分配的T恤数量 count(s) ≤ 给定的T恤数量 num(s)。"
+            }
+          ]
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "tshirt_preference",
+              "description": "每个参与者可以指定一个或两个相邻的T恤尺寸，如果指定了两个尺寸，则这两个尺寸必须是相邻的。",
+              "formal": "对于每个参与者 i，其偏好尺寸为 size_i 或 (size_i, size_{i+1})，其中 size_i 和 size_{i+1} 是相邻的。"
+            },
+            {
+              "name": "valid_tshirt_distribution",
+              "description": "必须能够为每个参与者分配一个合适的T恤尺寸，且分配的尺寸必须在参与者的偏好尺寸范围内。",
+              "formal": "对于每个参与者 i，分配的尺寸 tshirt_i 必须满足 tshirt_i ∈ {size_i} 或 tshirt_i ∈ {size_i, size_{i+1}}。"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "decision",
+    "confidence": "3/3",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "decision",
+          "description": "判断是否可以为每个参与者分配一件合适的T恤"
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "type": "decision",
+          "description": "判断是否可以为每个参与者分配一件合适的T恤"
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "type": "decision",
+          "description": "判断是否可以为每个参与者分配一件合适尺寸的T恤"
+        }
+      }
+    ],
+    "description": "判断是否可以为每个参与者分配一件合适的T恤"
+  },
+  "invariant": {
+    "name": "greedy_choice",
+    "confidence": "3/3",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "greedy_choice",
+          "description": "局部最优选择导致全局最优，即每次为参与者分配最合适的T恤尺寸时，优先满足当前参与者的需求，不会影响后续参与者的最优解。",
+          "properties": {}
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "name": "greedy_choice",
+          "description": "在分配T恤的过程中，每次选择当前最优的T恤尺寸进行分配，确保每个参与者都能获得合适的T恤。这种局部最优的选择最终导致全局最优解。",
+          "properties": {}
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "name": "greedy_choice",
+          "description": "局部最优选择导致全局最优，即每次为参与者分配最合适的T恤尺寸，确保尽可能多的满足需求。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "局部最优选择导致全局最优，即每次为参与者分配最合适的T恤尺寸时，优先满足当前参与者的需求，不会影响后续参与者的最优解。"
+  }
+}

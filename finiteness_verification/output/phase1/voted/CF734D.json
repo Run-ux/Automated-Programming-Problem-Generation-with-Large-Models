@@ -1,0 +1,116 @@
+{
+  "problem_id": "CF734D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 500000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500000
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacent_difference",
+        "description": "节点受到相邻节点的威胁（棋盘上国王被攻击）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "valid_cell_only_constraint",
+        "description": "不同类型的节点有不同的移动规则（棋子的移动规则）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinct_positions",
+        "description": "所有节点位置唯一（棋子不能重叠）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacent_difference",
+              "description": "节点受到相邻节点的威胁（棋盘上国王被攻击）",
+              "formal": "对于每个黑色棋子 (x_i, y_i)，如果它能一步到达国王的位置 (x_0, y_0)，则国王处于被攻击状态"
+            },
+            {
+              "name": "valid_cell_only_constraint",
+              "description": "不同类型的节点有不同的移动规则（棋子的移动规则）",
+              "formal": "车 (R) 可以沿水平或垂直方向移动，象 (B) 可以沿对角线移动，后 (Q) 可以沿水平、垂直或对角线移动"
+            },
+            {
+              "name": "distinct_positions",
+              "description": "所有节点位置唯一（棋子不能重叠）",
+              "formal": "对于所有 i ≠ j，(x_i, y_i) ≠ (x_j, y_j)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "判断是否存在一个点，使得从该点出发的任意一条路径能够一步到达给定点"
+        }
+      }
+    ],
+    "description": "判断是否存在一个点，使得从该点出发的任意一条路径能够一步到达给定点"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "当前状态只依赖于棋子的位置和类型，不依赖于之前的计算过程",
+          "properties": {
+            "current_state_dependent_on_piece_position_and_type": true
+          }
+        }
+      }
+    ],
+    "description": "当前状态只依赖于棋子的位置和类型，不依赖于之前的计算过程"
+  }
+}

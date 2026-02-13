@@ -1,0 +1,129 @@
+{
+  "problem_id": "P13024",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 10,
+            "max": 50
+          },
+          "value_range": {
+            "min": 1,
+            "max": 50
+          },
+          "properties": {
+            "ordered": false,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 10,
+      "max": 50
+    },
+    "value_range": {
+      "min": 1,
+      "max": 50
+    },
+    "properties": {
+      "ordered": false,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "query_count_constraint",
+        "description": "查询次数限制，总查询次数不超过 Q 次（或平均每组查询次数不超过 Q/T 次）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinct_elements",
+        "description": "所有元素互不相同",
+        "confidence": "1/1"
+      },
+      {
+        "name": "query_count_constraint",
+        "description": "每次查询返回三个元素中的中位数",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_decreasing_sequence",
+        "description": "输出的顺序可以是升序或降序",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "query_count_constraint",
+              "description": "查询次数限制，总查询次数不超过 Q 次（或平均每组查询次数不超过 Q/T 次）",
+              "formal": "total_queries <= Q"
+            },
+            {
+              "name": "distinct_elements",
+              "description": "所有元素互不相同",
+              "formal": "∀ i, j (1 ≤ i < j ≤ N), x_i ≠ x_j"
+            },
+            {
+              "name": "query_count_constraint",
+              "description": "每次查询返回三个元素中的中位数",
+              "formal": "query(i, j, k) → L, where L is the median of {x_i, x_j, x_k}"
+            },
+            {
+              "name": "non_decreasing_sequence",
+              "description": "输出的顺序可以是升序或降序",
+              "formal": "output ∈ {sorted_order, reversed_sorted_order}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "构造一个满足条件的排列或其逆序"
+        }
+      }
+    ],
+    "description": "构造一个满足条件的排列或其逆序"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：通过询问三个元素的中位数，逐步构建出整个序列的相对顺序。每个子问题的解（即部分元素的相对顺序）可以组合成全局问题的解。",
+          "properties": {
+            "subproblem_independence": false,
+            "subproblem_combinable": true
+          }
+        }
+      }
+    ],
+    "description": "最优子结构：通过询问三个元素的中位数，逐步构建出整个序列的相对顺序。每个子问题的解（即部分元素的相对顺序）可以组合成全局问题的解。"
+  }
+}

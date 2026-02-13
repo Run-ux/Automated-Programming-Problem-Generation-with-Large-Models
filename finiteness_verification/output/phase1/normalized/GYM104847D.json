@@ -1,0 +1,82 @@
+{
+  "problem_id": "GYM104847D",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 2100
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "coordinate_fixed_point",
+            "description": "日期必须合法，即给定的年月日组合必须存在（例如，2月30日是非法的）"
+          },
+          {
+            "name": "value_range_constraint",
+            "description": "年份必须在1900到2100之间，且闰年的判断规则为：能被400整除，或能被4整除但不能被100整除"
+          },
+          {
+            "name": "cyclic_path_length_constraint",
+            "description": "月份转换时，当前年份保持不变，但已选择的日期将被清除"
+          },
+          {
+            "name": "cyclic_path_length_constraint",
+            "description": "年份转换时，当前月份保持不变，但已选择的日期将被清除"
+          },
+          {
+            "name": "distinct_positions",
+            "description": "选择日期时，必须点击周对齐矩阵中的相应单元格，矩阵由4-6行和7列组成，每行对应一个月中的一个或多个星期"
+          },
+          {
+            "name": "distinct_simple_paths",
+            "description": "对于任何存在的新日期，从当前日期到目标日期的操作序列必须唯一"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "构造一个从初始日期到目标日期的操作序列"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "monotonic_sequence_property",
+        "description": "在调整年份和月份时，选择的年份和月份单调变化，即年份只能递增或递减，月份只能向左或向右移动。",
+        "properties": {
+          "year_monotonic": true,
+          "month_monotonic": true
+        }
+      }
+    }
+  ]
+}

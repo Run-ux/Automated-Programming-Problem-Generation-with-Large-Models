@@ -1,0 +1,81 @@
+{
+  "problem_id": "P13961",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "string",
+        "length": {
+          "min": 1,
+          "max": 2500
+        },
+        "value_range": {
+          "min": 65,
+          "max": 87
+        },
+        "properties": {
+          "ordered": true,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "maximum_edge_weight_constraint",
+            "description": "选取元素数量不超过容量上限（手牌数量不能超过 k）",
+            "formal": "hand_size <= k"
+          },
+          {
+            "name": "sequential_batch_processing",
+            "description": "操作必须按顺序执行（上一张卡牌的所有效果触发完毕后才能使用下一张卡牌）",
+            "formal": "for each card in hand: execute(card) -> next_card"
+          },
+          {
+            "name": "stack_size_constraint",
+            "description": "特定操作的前置条件（使用华丽收场时抽牌堆必须为空）",
+            "formal": "if draw_pile == []: use_grand_finale()"
+          },
+          {
+            "name": "operation_independence",
+            "description": "当手牌满时，抽取的卡牌被丢弃（不加入手牌且不触发效果）",
+            "formal": "if hand_size == k: discard(drawn_card)"
+          },
+          {
+            "name": "edge_exclusion_constraint",
+            "description": "存在不可用的元素（伤口卡牌在手牌中时不能被使用）",
+            "formal": "if 'W' in hand: cannot_use('W')"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足条件的最小手牌数量上限"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解组合而成，即在每一步选择使用或丢弃卡牌时，当前状态下的最优手牌上限由之前状态下的最优手牌上限决定。",
+        "properties": {}
+      }
+    }
+  ]
+}

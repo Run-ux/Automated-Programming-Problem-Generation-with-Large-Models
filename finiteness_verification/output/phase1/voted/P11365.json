@@ -1,0 +1,116 @@
+{
+  "problem_id": "P11365",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 500000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 500000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 500000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacent_difference",
+        "description": "二元组 (p, q) 满足 p < q 且 a_p < a_q",
+        "confidence": "1/1"
+      },
+      {
+        "name": "overlapping_interval_constraint",
+        "description": "存在两个区间 [l_u, r_u] 和 [l_v, r_v]，使得 l_u ≤ p ≤ r_u 且 l_v ≤ q ≤ r_v",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pairwise_exclusion",
+        "description": "区间 [l_j, r_j] 之间不重叠，即 r_j < l_{j+1}",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacent_difference",
+              "description": "二元组 (p, q) 满足 p < q 且 a_p < a_q",
+              "formal": "∀ (p, q), p < q ∧ a_p < a_q"
+            },
+            {
+              "name": "overlapping_interval_constraint",
+              "description": "存在两个区间 [l_u, r_u] 和 [l_v, r_v]，使得 l_u ≤ p ≤ r_u 且 l_v ≤ q ≤ r_v",
+              "formal": "∃ u, v, 1 ≤ u < v ≤ m_i, l_u ≤ p ≤ r_u ∧ l_v ≤ q ≤ r_v"
+            },
+            {
+              "name": "pairwise_exclusion",
+              "description": "区间 [l_j, r_j] 之间不重叠，即 r_j < l_{j+1}",
+              "formal": "∀ j, 1 ≤ j < m_i, r_j < l_{j+1}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "统计满足条件的二元组数量"
+        }
+      }
+    ],
+    "description": "统计满足条件的二元组数量"
+  },
+  "invariant": {
+    "name": "interval_mergeable",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "interval_mergeable",
+          "description": "区间信息可通过子区间合并，满足区间可合并性",
+          "properties": {
+            "prefix_sum": true
+          }
+        }
+      }
+    ],
+    "description": "区间信息可通过子区间合并，满足区间可合并性"
+  }
+}

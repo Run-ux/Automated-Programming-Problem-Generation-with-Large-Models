@@ -1,0 +1,124 @@
+{
+  "problem_id": "P13188",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinct_positions",
+        "description": "选取的元素位置必须不同（不能重复选择同一个位置）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "valid_position_count",
+        "description": "选取的元素位置数量不超过 S",
+        "confidence": "1/1"
+      },
+      {
+        "name": "submatrix_transformation",
+        "description": "序列通过递归替换规则生成，L 替换为原始序列，G 替换为 K 个 G",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pattern_matching_substitution",
+        "description": "无论原始序列如何，通过选择的位置能够确定是否存在至少一个 G 元素",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinct_positions",
+              "description": "选取的元素位置必须不同（不能重复选择同一个位置）",
+              "formal": "∀ i, j ∈ selected_positions, i ≠ j"
+            },
+            {
+              "name": "valid_position_count",
+              "description": "选取的元素位置数量不超过 S",
+              "formal": "|selected_positions| ≤ S"
+            },
+            {
+              "name": "submatrix_transformation",
+              "description": "序列通过递归替换规则生成，L 替换为原始序列，G 替换为 K 个 G",
+              "formal": "T(C) = T(C-1) with L → original_sequence and G → K * G"
+            },
+            {
+              "name": "pattern_matching_substitution",
+              "description": "无论原始序列如何，通过选择的位置能够确定是否存在至少一个 G 元素",
+              "formal": "∃ selected_positions ⊆ {1, 2, ..., K^C} such that ∀ original_sequences, can_determine_existence_of_G(selected_positions, original_sequences)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "判断是否存在一个大小不超过S的集合，使得无论原始序列如何，都能确定艺术品中是否至少包含一个G瓷砖"
+        }
+      }
+    ],
+    "description": "判断是否存在一个大小不超过S的集合，使得无论原始序列如何，都能确定艺术品中是否至少包含一个G瓷砖"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：大问题的解可以通过子问题的解组合而成，每个复杂度级别的艺术品可以由前一级别的艺术品通过固定的规则生成。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：大问题的解可以通过子问题的解组合而成，每个复杂度级别的艺术品可以由前一级别的艺术品通过固定的规则生成。"
+  }
+}

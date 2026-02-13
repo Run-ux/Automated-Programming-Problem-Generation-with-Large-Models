@@ -1,0 +1,126 @@
+{
+  "problem_id": "GYM102470B",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "non_decreasing_sequence",
+        "description": "元素必须按照输入顺序处理（栈操作约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "stack_size_constraint",
+        "description": "最多使用两个栈来存储元素（双栈约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_count_constraint",
+        "description": "总操作次数限制（操作次数约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_sequence",
+        "description": "命令必须按顺序执行（顺序约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "non_decreasing_sequence",
+              "description": "元素必须按照输入顺序处理（栈操作约束）",
+              "formal": "对于所有 DROP 和 TAKE 操作，输出的顺序必须与输入的顺序一致"
+            },
+            {
+              "name": "stack_size_constraint",
+              "description": "最多使用两个栈来存储元素（双栈约束）",
+              "formal": "存在两个栈 S1 和 S2，所有元素必须在这两个栈中进行操作"
+            },
+            {
+              "name": "operation_count_constraint",
+              "description": "总操作次数限制（操作次数约束）",
+              "formal": "总的操作次数（包括 DROP, TAKE, MOVE）不超过 6M"
+            },
+            {
+              "name": "operation_sequence",
+              "description": "命令必须按顺序执行（顺序约束）",
+              "formal": "对于每个命令，必须在执行下一个命令之前完成当前命令的所有操作"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "构造一个满足给定操作序列的合法方案，使得所有操作按顺序执行且总移动次数不超过6M"
+        }
+      }
+    ],
+    "description": "构造一个满足给定操作序列的合法方案，使得所有操作按顺序执行且总移动次数不超过6M"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "当前状态只依赖有限的前序状态，即每个操作（DROP, TAKE, MOVE）都基于当前两个堆栈的状态进行决策",
+          "properties": {
+            "finite_preceding_states": true
+          }
+        }
+      }
+    ],
+    "description": "当前状态只依赖有限的前序状态，即每个操作（DROP, TAKE, MOVE）都基于当前两个堆栈的状态进行决策"
+  }
+}

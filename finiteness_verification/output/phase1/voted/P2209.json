@@ -1,0 +1,114 @@
+{
+  "problem_id": "P2209",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 50000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 50000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "maximum_edge_weight_constraint",
+        "description": "选取元素权重和不超过容量上限（卡车油箱容量限制）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_reachability",
+        "description": "从起点到终点的路径必须存在且满足条件（FJ 必须能够到达目的地）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimum_weight_above_threshold",
+        "description": "初始状态下的资源量限制（初始燃油量限制）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "maximum_edge_weight_constraint",
+              "description": "选取元素权重和不超过容量上限（卡车油箱容量限制）",
+              "formal": "sum(weights) <= G"
+            },
+            {
+              "name": "path_reachability",
+              "description": "从起点到终点的路径必须存在且满足条件（FJ 必须能够到达目的地）",
+              "formal": "exists path from 0 to D such that sum(weights) <= G and cost is minimized"
+            },
+            {
+              "name": "minimum_weight_above_threshold",
+              "description": "初始状态下的资源量限制（初始燃油量限制）",
+              "formal": "B <= D"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_cost",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_cost",
+          "description": "求从起点到终点的最小费用路径"
+        }
+      }
+    ],
+    "description": "求从起点到终点的最小费用路径"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在每个加油站决定加油量时，当前决策基于之前所有决策的最优结果。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在每个加油站决定加油量时，当前决策基于之前所有决策的最优结果。"
+  }
+}

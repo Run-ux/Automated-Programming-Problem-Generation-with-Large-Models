@@ -1,0 +1,124 @@
+{
+  "problem_id": "CF747D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": -20,
+            "max": 20
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": -20,
+      "max": 20
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "query_count_constraint",
+        "description": "选取元素的总数量不超过 K（使用次数限制）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_negative_values",
+        "description": "在非负条件下可以无限次使用某一种元素（非负温度下可无限使用夏季轮胎）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_negative_values",
+        "description": "在负条件下不能使用某种元素（负温度下不能使用夏季轮胎）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_cost",
+        "description": "切换元素需要代价（切换轮胎需要代价）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "query_count_constraint",
+              "description": "选取元素的总数量不超过 K（使用次数限制）",
+              "formal": "sum(used_days) <= k"
+            },
+            {
+              "name": "non_negative_values",
+              "description": "在非负条件下可以无限次使用某一种元素（非负温度下可无限使用夏季轮胎）",
+              "formal": "if t_i >= 0, then summer_tires can be used indefinitely"
+            },
+            {
+              "name": "non_negative_values",
+              "description": "在负条件下不能使用某种元素（负温度下不能使用夏季轮胎）",
+              "formal": "if t_i < 0, then summer_tires cannot be used"
+            },
+            {
+              "name": "operation_cost",
+              "description": "切换元素需要代价（切换轮胎需要代价）",
+              "formal": "minimize(switch_count)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "min_cost",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "min_cost",
+          "description": "求满足条件的最少操作次数"
+        }
+      }
+    ],
+    "description": "求满足条件的最少操作次数"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在任意一天选择使用哪种轮胎（夏季或冬季）的决策基于之前天数的最优决策。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在任意一天选择使用哪种轮胎（夏季或冬季）的决策基于之前天数的最优决策。"
+  }
+}

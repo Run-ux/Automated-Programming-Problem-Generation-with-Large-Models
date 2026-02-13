@@ -1,0 +1,86 @@
+{
+  "problem_id": "P7610",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 10
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "maximum_edge_weight_constraint",
+            "description": "选取元素权重和不超过容量上限（生命值和能量值不能超过最大值）"
+          },
+          {
+            "name": "pairwise_exclusion",
+            "description": "选择的元素不能重复（每个角色只能有一个优先目标，且优先目标必须是未死亡的角色）"
+          },
+          {
+            "name": "adjacent_difference",
+            "description": "相邻节点取值不同（普通攻击和技能发动时，优先目标的选择顺序必须满足排列条件）"
+          },
+          {
+            "name": "node_degree_constraint",
+            "description": "每个节点最多访问一次（每个回合中，每个玩家只能进行一次行动，即发动一次技能或进行一次普通攻击）"
+          },
+          {
+            "name": "minimum_maximum_constraint",
+            "description": "最大值减最小值不超过 D（拥有【天赋 — 血肉皮囊】的角色受到的真实伤害减少一半）",
+            "formal": "y - floor(y / 2) <= y / 2"
+          },
+          {
+            "name": "value_range_constraint",
+            "description": "数值范围限制（所有参数及表达式的绝对值均不超过 10^9）"
+          },
+          {
+            "name": "path_completion_constraint",
+            "description": "终止条件（当某方所有角色全部死亡时，游戏结束并判定另一方胜利）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "判断是否存在一方能够获胜，并输出胜者及游戏结束时的状态"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "当前状态只依赖于前一状态，即每个回合的状态更新仅基于上一个回合的状态和当前回合的操作结果",
+        "properties": {
+          "markov_property": true
+        }
+      }
+    }
+  ]
+}

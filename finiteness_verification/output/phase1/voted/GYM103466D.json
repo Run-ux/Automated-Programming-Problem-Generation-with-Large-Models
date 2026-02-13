@@ -1,0 +1,127 @@
+{
+  "problem_id": "GYM103466D",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 2,
+            "max": 200
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 200
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinct_positions",
+        "description": "所有洞的位置互不相同",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coordinate_fixed_point",
+        "description": "初始位置不在任何洞上",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacent_difference",
+        "description": "每次移动到相邻的格子（共享一条边）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_length_constraint",
+        "description": "到达有洞的格子时停止移动",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinct_positions",
+              "description": "所有洞的位置互不相同",
+              "formal": "∀i, j (1 ≤ i < j ≤ k), (x_i, y_i) ≠ (x_j, y_j)"
+            },
+            {
+              "name": "coordinate_fixed_point",
+              "description": "初始位置不在任何洞上",
+              "formal": "(r, c) ∉ {(x_1, y_1), (x_2, y_2), ..., (x_k, y_k)}"
+            },
+            {
+              "name": "adjacent_difference",
+              "description": "每次移动到相邻的格子（共享一条边）",
+              "formal": "从 (x, y) 移动到 (x+1, y) 或 (x-1, y) 或 (x, y+1) 或 (x, y-1)"
+            },
+            {
+              "name": "path_length_constraint",
+              "description": "到达有洞的格子时停止移动",
+              "formal": "如果 (x, y) 是一个洞，则停止移动"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_cost",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_cost",
+          "description": "求从起点到每个终点的期望最短路径长度"
+        }
+      }
+    ],
+    "description": "求从起点到每个终点的期望最短路径长度"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的",
+          "properties": {
+            "subproblem_independence": true,
+            "solution_combinability": true
+          }
+        }
+      }
+    ],
+    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的"
+  }
+}

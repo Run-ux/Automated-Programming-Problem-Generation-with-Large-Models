@@ -1,0 +1,103 @@
+{
+  "problem_id": "P7211",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "bipartite_graph",
+        "length": {
+          "min": 4,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 500
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false,
+          "directed": false,
+          "bipartite": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinct_positions",
+            "description": "集合内元素两两不同（X 性别的变色龙颜色两两不同）",
+            "formal": "∀i, j ∈ X, i ≠ j → C[i] ≠ C[j]"
+          },
+          {
+            "name": "pairwise_matching",
+            "description": "每个元素在另一个集合中有一个匹配的元素（每只 X 性别的变色龙都有一个 Y 性别的变色龙颜色与之相同）",
+            "formal": "∀i ∈ X, ∃!j ∈ Y, C[i] = C[j]"
+          },
+          {
+            "name": "bipartite_matching",
+            "description": "每个元素只能爱另一个集合中的一个元素（每只变色龙只爱异性变色龙）",
+            "formal": "∀i, L[i] ∈ Y if i ∈ X and L[i] ∈ X if i ∈ Y"
+          },
+          {
+            "name": "adjacent_difference",
+            "description": "每个元素与其所爱的元素颜色不同（每只变色龙与其喜欢的变色龙有不同的初始颜色）",
+            "formal": "∀i, C[i] ≠ C[L[i]]"
+          },
+          {
+            "name": "distinct_solution_constraint",
+            "description": "每个元素只能被一个其他元素所爱（不会存在两只变色龙爱一只变色龙）",
+            "formal": "∀i, |{j | L[j] = i}| ≤ 1"
+          },
+          {
+            "name": "query_count_constraint",
+            "description": "查询次数限制（调用 Query 函数的次数不超过 2 * 10^4 次）",
+            "formal": "number of calls to Query ≤ 2 * 10^4"
+          },
+          {
+            "name": "query_count_constraint",
+            "description": "提交答案次数限制（调用 Answer 函数的次数必须为 N 次）",
+            "formal": "number of calls to Answer = N"
+          },
+          {
+            "name": "distinct_solution_constraint",
+            "description": "每次提交的答案必须是不同的（每次提交的变色龙对不同）",
+            "formal": "∀i, j, (a_i, b_i) ≠ (a_j, b_j)"
+          },
+          {
+            "name": "target_sequence",
+            "description": "提交的答案必须正确（提交的变色龙对具有相同的初始颜色）",
+            "formal": "∀(a, b), C[a] = C[b]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "构造一个满足条件的配对方案"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：通过查询会议中变色龙的颜色种类，逐步确定初始颜色相同的变色龙对。每一步的决策基于当前已知信息，并且最终解由这些局部最优解组合而成。",
+        "properties": {}
+      }
+    }
+  ]
+}

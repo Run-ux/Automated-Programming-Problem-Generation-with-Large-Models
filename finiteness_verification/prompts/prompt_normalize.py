@@ -30,6 +30,10 @@ def build_system_prompt() -> str:
 2. 只有在没有任何已有标签能覆盖该含义时，才创建新标签
 3. 规范标签名使用小写英文 + 下划线格式（例如: prefix_sum, binary_tree）
 4. 输出必须是严格 JSON，不要输出任何解释文字
+5. 去情境化检查：如果原始标签包含题目的具体情境词汇（如人名、动物名、物品名），必须将其映射到已有的抽象标签，或创建去情境化的新标签
+6. 新建标签时，标签名和描述必须是算法/数据结构领域的抽象概念，例如：
+   - "shark_eat_rule" 应归一化为 "pairwise_exclusion" 或 "matching_constraint"
+   - "road_network" 应归一化为 "weighted_graph" 或 "undirected_graph"
 """
 
 

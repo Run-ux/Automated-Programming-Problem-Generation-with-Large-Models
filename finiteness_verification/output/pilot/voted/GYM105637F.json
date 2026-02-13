@@ -1,0 +1,222 @@
+{
+  "problem_id": "GYM105637F",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "3/3",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 2,
+            "max": 750
+          },
+          "value_range": {
+            "min": 1,
+            "max": 562500
+          },
+          "properties": {}
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 2,
+            "max": 750
+          },
+          "value_range": {
+            "min": 1,
+            "max": 562500
+          },
+          "properties": {}
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 2,
+            "max": 750
+          },
+          "value_range": {
+            "min": 1,
+            "max": 562500
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 750
+    },
+    "value_range": {
+      "min": 1,
+      "max": 562500
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "corner_heights",
+        "description": "子区域的四个角的高度必须高于该子区域内的其他所有单元格的高度",
+        "confidence": "3/3"
+      },
+      {
+        "name": "distinct_heights",
+        "description": "每个单元格的高度是唯一的，且在1到nm之间（包括1和nm）",
+        "confidence": "3/3"
+      },
+      {
+        "name": "sub_area_size",
+        "description": "子区域的宽度和高度至少为2",
+        "confidence": "3/3"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "sub_area_size",
+              "description": "子区域的宽度和高度至少为2",
+              "formal": "width >= 2 and height >= 2"
+            },
+            {
+              "name": "corner_heights",
+              "description": "子区域的四个角的高度必须高于该子区域内的其他所有单元格的高度",
+              "formal": "for all (i, j) in sub-area, if (i, j) is not a corner then height[i][j] < min(height[corners]) where corners = {(0, 0), (0, width-1), (height-1, 0), (height-1, width-1)}"
+            },
+            {
+              "name": "distinct_heights",
+              "description": "每个单元格的高度是唯一的，且在1到nm之间（包括1和nm）",
+              "formal": "1 <= height[i][j] <= n*m and all heights are distinct"
+            }
+          ]
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "sub_area_size",
+              "description": "子区域的宽度和高度至少为2",
+              "formal": "width >= 2 and height >= 2"
+            },
+            {
+              "name": "corner_heights",
+              "description": "子区域的四个角的高度必须高于该子区域内的其他所有单元格的高度",
+              "formal": "for all (i, j) in sub-area, if (i, j) is not a corner, then height[i][j] < min(height[corners]) where corners are the four corners of the sub-area"
+            },
+            {
+              "name": "distinct_heights",
+              "description": "每个单元格的高度是唯一的",
+              "formal": "all cell heights are distinct"
+            }
+          ]
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "sub_area_size",
+              "description": "子区域的宽度和高度至少为2",
+              "formal": "width >= 2 and height >= 2"
+            },
+            {
+              "name": "corner_heights",
+              "description": "子区域的四个角的高度必须高于该子区域内的其他所有单元格的高度",
+              "formal": "for all (i, j) in sub-area, if (i, j) is not a corner, then height[i][j] < min(height[corners]) where corners are the four corners of the sub-area"
+            },
+            {
+              "name": "distinct_heights",
+              "description": "每个单元格的高度是唯一的，且在1到nm之间（包括1和nm）",
+              "formal": "heights are distinct and 1 <= height[i][j] <= n * m for all (i, j)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "count",
+    "confidence": "3/3",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "count",
+          "description": "统计满足条件的子区域数量，这些子区域的四个角的高度都高于该子区域内的其他单元格高度"
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "type": "count",
+          "description": "统计满足条件的矩形子区域数量，这些子区域的四个角的高度大于其余所有单元格的高度"
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "type": "count",
+          "description": "统计满足条件的矩形子区域数量，这些子区域的四个角的高度都高于该子区域内其他所有单元格的高度"
+        }
+      }
+    ],
+    "description": "统计满足条件的子区域数量，这些子区域的四个角的高度都高于该子区域内的其他单元格高度"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "3/3",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于其子问题的最优解。",
+          "properties": {}
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "问题的解可以通过子问题的解组合而成，即一个矩形区域的有效性可以由其子矩形区域的有效性推导出来。",
+          "properties": {}
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于其子区域的解。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于其子问题的最优解。"
+  }
+}

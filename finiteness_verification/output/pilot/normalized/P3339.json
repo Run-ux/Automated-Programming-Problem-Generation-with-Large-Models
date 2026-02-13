@@ -1,0 +1,171 @@
+{
+  "problem_id": "P3339",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 1,
+          "max": 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 1,
+          "max": 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 1,
+          "max": 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_sequence",
+            "description": "每次操作时，选择一个数x划掉，并任选一个正整数a，在划掉之后需要再写上x-a, x-2a, ..., x-K*a共K个数，且a需满足x-K*a >= 0。若这样的a不存在，则不能划掉这个数。",
+            "formal": "For each operation, choose an integer x and a positive integer a such that x - K * a >= 0. Replace x with x-a, x-2a, ..., x-K*a. If no such a exists, the player cannot perform this operation."
+          },
+          {
+            "name": "game_termination",
+            "description": "当某个人无法操作时则失败，另一方获得胜利。",
+            "formal": "The game ends when a player cannot make a valid move, and the other player wins."
+          }
+        ]
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_sequence",
+            "description": "每次操作时，选择一个数x划掉，并任选一个正整数a，在划掉之后需要再写上x-a, x-2a, ..., x-K*a共K个数，且a需满足x-K*a >= 0。若这样的a不存在，则不能划掉这个数。",
+            "formal": "For each operation, choose an integer x and a positive integer a such that x - K * a >= 0. Replace x with x-a, x-2a, ..., x-K*a. If no such a exists, the number cannot be removed."
+          },
+          {
+            "name": "game_termination",
+            "description": "当某个人无法进行操作时，该玩家失败，另一方获得胜利。",
+            "formal": "The game ends when a player cannot make a valid move, and that player loses."
+          }
+        ]
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_sequence",
+            "description": "每次操作时，选择一个数x划掉，并任选一个正整数a，在划掉之后需要再写上x-a, x-2a, ..., x-K*a共K个数，且a需满足x-K*a >= 0。若这样的a不存在，则不能划掉这个数。",
+            "formal": "For each operation, choose an integer x and a positive integer a such that x - K * a >= 0. Then, replace x with the sequence x-a, x-2a, ..., x-K*a. If no such a exists, the number cannot be removed."
+          },
+          {
+            "name": "game_termination",
+            "description": "当某个人无法进行有效操作时（即找不到满足条件的a），则该人失败，另一方获胜。",
+            "formal": "The game ends when a player cannot make a valid move (i.e., no a satisfies the condition). The player who cannot move loses, and the other player wins."
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "decision",
+        "description": "判断先手是否必胜，输出结果为 Preempt.（先手必胜）、Leapfrog.（后手必胜）或 Je suis un imbecile.（两者皆非）"
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "type": "decision",
+        "description": "判断先手是否必胜，后手是否必胜，或两者皆非"
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "type": "decision",
+        "description": "判断先手是否必胜，后手是否必胜，或两者皆非"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "游戏的胜负状态可以通过子问题（即较小的石子堆）的胜负状态来确定，体现了最优子结构的性质。",
+        "properties": {}
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "游戏的胜负状态可以通过子问题（即较小规模的游戏）的胜负状态来确定，符合动态规划中的最优子结构特性。",
+        "properties": {}
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "游戏的胜负状态可以通过子问题（即较小规模的游戏状态）的胜负状态来确定，符合动态规划中的最优子结构性质。",
+        "properties": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "problem_id": "GYM104013D",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 94
+        },
+        "value_range": {
+          "min": 33,
+          "max": 126
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "edge_count",
+            "description": "每个像素的开关次数不超过 s 次（状态变化约束）",
+            "formal": "对于每个像素 p，其状态变化次数 switch_count(p) <= s"
+          },
+          {
+            "name": "initial_state_connectivity",
+            "description": "所有像素初始状态为关闭（初始状态约束）",
+            "formal": "对于所有像素 p，初始状态 state(p, 0) = off"
+          },
+          {
+            "name": "directed_acyclic_graph",
+            "description": "文本只显示一次且不循环（单次遍历约束）",
+            "formal": "文本 T 只显示一次，不重复显示"
+          },
+          {
+            "name": "distinct_character_position",
+            "description": "字符之间有一列关闭的像素分隔（间隔约束）",
+            "formal": "对于每个字符 c_i 和 c_{i+1}，它们之间有一列关闭的像素"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "构造一个满足条件的最短字符串"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "monotonic_sequence_property",
+        "description": "滑动窗口右端点单调递增，通过逐步扩展窗口来检查像素开关次数是否达到阈值",
+        "properties": {
+          "right_monotonic": true
+        }
+      }
+    }
+  ]
+}

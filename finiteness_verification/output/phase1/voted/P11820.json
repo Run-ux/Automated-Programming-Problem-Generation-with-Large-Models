@@ -1,0 +1,114 @@
+{
+  "problem_id": "P11820",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "pairwise_exclusion",
+        "description": "每个时间段内，每个器材最多只能被一个人使用（区间不重叠约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_selection_constraint",
+        "description": "每个人必须被分配到其预约的时间段内的一个时间点（区间选择约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimum_operation_count_constraint",
+        "description": "尽量减少健身房有人的时刻数量（最小化占用时间约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "pairwise_exclusion",
+              "description": "每个时间段内，每个器材最多只能被一个人使用（区间不重叠约束）",
+              "formal": "对于所有 i, j (i ≠ j)，如果 p_i = p_j，则 x_i ≠ x_j"
+            },
+            {
+              "name": "range_selection_constraint",
+              "description": "每个人必须被分配到其预约的时间段内的一个时间点（区间选择约束）",
+              "formal": "对于所有 i，l_i ≤ x_i ≤ r_i"
+            },
+            {
+              "name": "minimum_operation_count_constraint",
+              "description": "尽量减少健身房有人的时刻数量（最小化占用时间约束）",
+              "formal": "最小化 |{x_1, x_2, ..., x_n}|"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_cost",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_cost",
+          "description": "最小化健身房有人的时刻数量"
+        }
+      }
+    ],
+    "description": "最小化健身房有人的时刻数量"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优解可以通过子问题的最优解组合而成，每个时间段的分配决策基于之前时间段的最优状态。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优解可以通过子问题的最优解组合而成，每个时间段的分配决策基于之前时间段的最优状态。"
+  }
+}

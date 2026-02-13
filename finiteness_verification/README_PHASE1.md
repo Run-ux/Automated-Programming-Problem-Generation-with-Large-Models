@@ -23,11 +23,7 @@ phase1 在 Pilot Run 验证通过后执行，对 1500 题样本进行完整抽�
 ```bash
 cd D:\Automated-Programming-Problem-Generation-with-Large-Models
 
-python -m finiteness_verification.extract \
-    --input finiteness_verification/data/sample_phase1.json \
-    --output finiteness_verification/output/phase1/ \
-    --rounds 3 \
-    --resume
+python -m finiteness_verification.extract --input finiteness_verification/data/sample_phase1.json --output finiteness_verification/output/phase1/ --rounds 3 --resume
 ```
 
 **预计时间**：1500 题 × 4 维 × 3 轮 = 18,000 次 API 调用
@@ -47,9 +43,7 @@ python -m finiteness_verification.extract \
 ### Step 2: 归一化
 
 ```bash
-python -m finiteness_verification.normalize \
-    --input finiteness_verification/output/phase1/raw/ \
-    --output finiteness_verification/output/phase1/normalized/
+python -m finiteness_verification.normalize --input finiteness_verification/output/phase1/raw/ --output finiteness_verification/output/phase1/normalized/
 ```
 
 **说明**：
@@ -66,9 +60,7 @@ python -m finiteness_verification.normalize \
 ### Step 3: 投票
 
 ```bash
-python -m finiteness_verification.vote \
-    --input finiteness_verification/output/phase1/normalized/ \
-    --output finiteness_verification/output/phase1/voted/
+python -m finiteness_verification.vote --input finiteness_verification/output/phase1/normalized/ --output finiteness_verification/output/phase1/voted/
 ```
 
 **输出**：
@@ -80,9 +72,7 @@ python -m finiteness_verification.vote \
 ### Step 4: 饱和曲线分析
 
 ```bash
-python -m finiteness_verification.analyze \
-    --input finiteness_verification/output/phase1/voted/ \
-    --output finiteness_verification/output/phase1/saturation_curves/
+python -m finiteness_verification.analyze --input finiteness_verification/output/phase1/voted/ --output finiteness_verification/output/phase1/saturation_curves/
 ```
 
 **输出**：

@@ -1,0 +1,126 @@
+{
+  "problem_id": "GYM103470E",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 50000
+          },
+          "value_range": {
+            "min": -1000000007,
+            "max": 1000000006
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 50000
+    },
+    "value_range": {
+      "min": -1000000007,
+      "max": 1000000006
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "interval_update_operation",
+        "description": "区间更新操作，将区间 [l, r] 内的每个元素加上一个值 x",
+        "confidence": "1/1"
+      },
+      {
+        "name": "past_state_tracking",
+        "description": "维护序列的历史版本，每个版本对应一次修改后的状态",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_of_squared_distances",
+        "description": "查询指定区间内历史版本的平方和",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modulo_output_constraint",
+        "description": "结果需要对 10^9 + 7 取模",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "interval_update_operation",
+              "description": "区间更新操作，将区间 [l, r] 内的每个元素加上一个值 x",
+              "formal": "for all l ≤ k ≤ r: a_k = a_k + x"
+            },
+            {
+              "name": "past_state_tracking",
+              "description": "维护序列的历史版本，每个版本对应一次修改后的状态",
+              "formal": "a_{i, t} 表示第 i 个元素在第 t 次修改后的值"
+            },
+            {
+              "name": "sum_of_squared_distances",
+              "description": "查询指定区间内历史版本的平方和",
+              "formal": "∑_{i=l_k}^{r_k} ∑_{j=x_k}^{y_k} a_{i, j}^2"
+            },
+            {
+              "name": "modulo_output_constraint",
+              "description": "结果需要对 10^9 + 7 取模",
+              "formal": "result % (10^9 + 7)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "计算指定区间内历史版本值的平方和"
+        }
+      }
+    ],
+    "description": "计算指定区间内历史版本值的平方和"
+  },
+  "invariant": {
+    "name": "interval_mergeable",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "interval_mergeable",
+          "description": "区间信息可通过子区间合并，支持区间更新和查询的高效处理",
+          "properties": {
+            "mergeable": true
+          }
+        }
+      }
+    ],
+    "description": "区间信息可通过子区间合并，支持区间更新和查询的高效处理"
+  }
+}

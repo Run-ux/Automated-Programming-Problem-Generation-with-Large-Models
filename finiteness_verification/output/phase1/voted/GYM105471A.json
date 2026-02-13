@@ -1,0 +1,113 @@
+{
+  "problem_id": "GYM105471A",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": -1000,
+            "max": 1000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": -1000,
+      "max": 1000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "query_range_validity",
+        "description": "对于每个中心点 i，其有效半径 r 必须满足 i+r ≤ n 且 i-r > 0（区间边界约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacent_difference",
+        "description": "对于每个中心点 i 和其有效半径 r，必须满足 A[i+r] - A[i-r] = kr + b（差值约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "maximum_distance_constraint",
+        "description": "rad(i) 定义为最大的整数 r0，使得对于所有 1 ≤ r ≤ r0，r 是中心点 i 的有效半径（最大有效半径定义）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "query_range_validity",
+              "description": "对于每个中心点 i，其有效半径 r 必须满足 i+r ≤ n 且 i-r > 0（区间边界约束）",
+              "formal": "∀i, 1 ≤ i ≤ n, ∀r, 1 ≤ r ≤ rad(i), i + r ≤ n ∧ i - r > 0"
+            },
+            {
+              "name": "adjacent_difference",
+              "description": "对于每个中心点 i 和其有效半径 r，必须满足 A[i+r] - A[i-r] = kr + b（差值约束）",
+              "formal": "∀i, 1 ≤ i ≤ n, ∀r, 1 ≤ r ≤ rad(i), A[i+r] - A[i-r] = kr + b"
+            },
+            {
+              "name": "maximum_distance_constraint",
+              "description": "rad(i) 定义为最大的整数 r0，使得对于所有 1 ≤ r ≤ r0，r 是中心点 i 的有效半径（最大有效半径定义）",
+              "formal": "rad(i) = max{r0 | ∀r, 1 ≤ r ≤ r0, r is a good radius of center i}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求满足条件的最长子数组长度"
+        }
+      }
+    ],
+    "description": "求满足条件的最长子数组长度"
+  },
+  "invariant": {
+    "name": "monotonic_sequence_property",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "monotonic_sequence_property",
+          "description": "双指针左右端点单调前进，区间合法性可单调维护",
+          "properties": {
+            "left_monotonic": true,
+            "right_monotonic": true
+          }
+        }
+      }
+    ],
+    "description": "双指针左右端点单调前进，区间合法性可单调维护"
+  }
+}

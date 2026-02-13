@@ -1,0 +1,120 @@
+{
+  "problem_id": "P1398",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 3,
+            "max": 150
+          },
+          "value_range": {
+            "min": -200,
+            "max": 200
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 150
+    },
+    "value_range": {
+      "min": -200,
+      "max": 200
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "equal_segment_length",
+        "description": "矩形必须按特定方式对齐，N 字由多个矩形组成，每个矩形的左下角和右上角坐标满足特定条件。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "hierarchical_structure",
+        "description": "O 字由一个大矩形挖去一个小矩形得到，小矩形在大矩形内部且边长至少为 3。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "hierarchical_structure",
+        "description": "I 字由三个从下到上的实心矩形组成，这些矩形的左下角和右上角坐标满足特定条件。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "edge_exclusion_constraint",
+        "description": "所有绘制的图形均不能超过纸张的边界。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "equal_segment_length",
+              "description": "矩形必须按特定方式对齐，N 字由多个矩形组成，每个矩形的左下角和右上角坐标满足特定条件。",
+              "formal": "对于 N 字的 K 个矩形：L_i <= R_i, B_i <= T_i; L_i = R_{i-1} + 1 (1 < i <= K); B_{i-1} - 1 <= T_i <= T_{i-1}, B_i <= B_{i-1} (3 <= i < K); B_2 > B_1, T_2 = T_1, B_{K-1} = B_K, T_{K-1} < T_K"
+            },
+            {
+              "name": "hierarchical_structure",
+              "description": "O 字由一个大矩形挖去一个小矩形得到，小矩形在大矩形内部且边长至少为 3。",
+              "formal": "大矩形 A: (u, v), W, H; 小矩形 B: (u+1, v+1), W-2, H-2; W >= 3, H >= 3; u > R_K + 1"
+            },
+            {
+              "name": "hierarchical_structure",
+              "description": "I 字由三个从下到上的实心矩形组成，这些矩形的左下角和右上角坐标满足特定条件。",
+              "formal": "对于 I 字的 3 个矩形：P_i <= G_i, Q_i <= H_i; P_1 = P_3 > u + W, G_1 = G_3; Q_1 = H_1 = Q_2 - 1, H_2 + 1 = Q_3 = H_3; P_1 < P_2 <= G_2 < G_1"
+            },
+            {
+              "name": "edge_exclusion_constraint",
+              "description": "所有绘制的图形均不能超过纸张的边界。",
+              "formal": "所有矩形的坐标必须在 (1, 1) 到 (m, n) 范围内"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化路径上的权值和"
+        }
+      }
+    ],
+    "description": "最大化路径上的权值和"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：大问题的解由子问题的最优解组合而成，通过动态规划求解最大幸运度",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：大问题的解由子问题的最优解组合而成，通过动态规划求解最大幸运度"
+  }
+}

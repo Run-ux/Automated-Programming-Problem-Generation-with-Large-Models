@@ -1,0 +1,107 @@
+{
+  "problem_id": "GYM105839D",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "wave_propagation_constraint",
+        "description": "节点的影响范围是其坐标值加上一个固定偏移量（爆炸半径）的区间内所有节点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "wave_propagation_constraint",
+        "description": "如果一个节点被激活，则其影响范围内的所有节点也会被激活，并且这些新激活的节点会继续触发它们各自影响范围内的节点",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "wave_propagation_constraint",
+              "description": "节点的影响范围是其坐标值加上一个固定偏移量（爆炸半径）的区间内所有节点",
+              "formal": "对于每个节点 i，其影响范围为 [x_i - d_i, x_i + d_i]"
+            },
+            {
+              "name": "wave_propagation_constraint",
+              "description": "如果一个节点被激活，则其影响范围内的所有节点也会被激活，并且这些新激活的节点会继续触发它们各自影响范围内的节点",
+              "formal": "若节点 i 被激活，则所有满足 x_j ∈ [x_i - d_i, x_i + d_i] 的节点 j 也将被激活"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "统计满足条件的节点数量"
+        }
+      }
+    ],
+    "description": "统计满足条件的节点数量"
+  },
+  "invariant": {
+    "name": "monotonic_sequence_property",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "monotonic_sequence_property",
+          "description": "双指针左右端点单调前进，区间合法性可单调维护",
+          "properties": {
+            "left_monotonic": true,
+            "right_monotonic": true
+          }
+        }
+      }
+    ],
+    "description": "双指针左右端点单调前进，区间合法性可单调维护"
+  }
+}

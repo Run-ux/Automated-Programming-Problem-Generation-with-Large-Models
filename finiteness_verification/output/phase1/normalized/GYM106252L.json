@@ -1,0 +1,76 @@
+{
+  "problem_id": "GYM106252L",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "directed_acyclic_graph",
+        "length": {
+          "min": 3,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "directed": true,
+          "acyclic": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinct_elements",
+            "description": "输入节点的状态集合中必须包含至少一个 R、G 和 B，且 * 可以出现任意次数（包括零次）。",
+            "formal": "∀ input nodes, {R, G, B} ⊆ states and * can appear 0 or more times"
+          },
+          {
+            "name": "final_state_equality",
+            "description": "输出节点的状态必须是输入节点中第三个不同颜色状态的值（忽略所有 *），即在 R、G 和 B 中，输出的是首次出现位置最靠后的那个颜色。",
+            "formal": "output = third_distinct_color(input[1:n], ignoring '*')"
+          },
+          {
+            "name": "node_type_uniformity",
+            "description": "每个内部节点必须是两种类型之一：'&' 表示三色 AND 类型，'|' 表示三色 OR 类型。",
+            "formal": "∀ internal nodes, type ∈ {'&', '|'}"
+          },
+          {
+            "name": "precedence_constraint",
+            "description": "每个内部节点有两个前驱节点，前驱节点的索引必须小于当前节点的索引。",
+            "formal": "∀ internal nodes i, ∃ u, v such that 1 ≤ u, v < n + i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "构造一个满足特定逻辑功能的有向无环图"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：大问题的解由子问题的解组合而成，每个节点的状态依赖于其前驱节点的状态组合",
+        "properties": {}
+      }
+    }
+  ]
+}

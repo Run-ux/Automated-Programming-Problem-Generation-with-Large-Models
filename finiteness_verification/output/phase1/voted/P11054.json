@@ -1,0 +1,134 @@
+{
+  "problem_id": "P11054",
+  "source": "luogu",
+  "input_structure": {
+    "type": "undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 2
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "connected": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 2
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "connected": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacent_difference",
+        "description": "相邻节点取值不同（图着色约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "graph_connectivity",
+        "description": "图必须连通",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_connectedness",
+        "description": "单色路径上的所有顶点颜色相同",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connected_component",
+        "description": "单色分支中的所有顶点通过单色路径连接",
+        "confidence": "1/1"
+      },
+      {
+        "name": "color_change_limit",
+        "description": "重新着色实验次数限制",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacent_difference",
+              "description": "相邻节点取值不同（图着色约束）",
+              "formal": "对于所有边 (u, v)，C[u] ≠ C[v]"
+            },
+            {
+              "name": "graph_connectivity",
+              "description": "图必须连通",
+              "formal": "存在一条路径连接任意两个顶点"
+            },
+            {
+              "name": "path_connectedness",
+              "description": "单色路径上的所有顶点颜色相同",
+              "formal": "对于路径 v0, v1, ..., vk，对所有 0 ≤ l < k，C[vl] = C[vl+1]"
+            },
+            {
+              "name": "connected_component",
+              "description": "单色分支中的所有顶点通过单色路径连接",
+              "formal": "顶点 p 和 q 在同一个单色分支中当且仅当存在一条单色路径连接它们"
+            },
+            {
+              "name": "color_change_limit",
+              "description": "重新着色实验次数限制",
+              "formal": "调用 perform_experiment 的次数不超过 2750 次"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "构造一个满足条件的顶点颜色数组"
+        }
+      }
+    ],
+    "description": "构造一个满足条件的顶点颜色数组"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：通过多次实验确定每个顶点的颜色，每次实验的结果可以用来推断部分顶点的颜色，最终组合成全局解",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：通过多次实验确定每个顶点的颜色，每次实验的结果可以用来推断部分顶点的颜色，最终组合成全局解"
+  }
+}

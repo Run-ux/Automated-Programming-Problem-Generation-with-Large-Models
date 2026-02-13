@@ -1,0 +1,114 @@
+{
+  "problem_id": "P5484",
+  "source": "luogu",
+  "input_structure": {
+    "type": "string",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "string",
+          "length": {
+            "min": 1,
+            "max": 2000
+          },
+          "value_range": {
+            "min": 65,
+            "max": 84
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2000
+    },
+    "value_range": {
+      "min": 65,
+      "max": 84
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "pairwise_matching",
+        "description": "两个序列中的元素必须满足一一配对关系（A与T配对，C与G配对）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_length_constraint",
+        "description": "补全后的序列长度必须等于较长序列的长度",
+        "confidence": "1/1"
+      },
+      {
+        "name": "position_constraint",
+        "description": "可以在较短序列的任意位置插入元素以匹配较长序列",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "pairwise_matching",
+              "description": "两个序列中的元素必须满足一一配对关系（A与T配对，C与G配对）",
+              "formal": "∀i, S[i] ∈ {A, C, T, G} ∧ T[i] ∈ {A, C, T, G} ∧ (S[i] = A ↔ T[i] = T) ∧ (S[i] = C ↔ T[i] = G)"
+            },
+            {
+              "name": "path_length_constraint",
+              "description": "补全后的序列长度必须等于较长序列的长度",
+              "formal": "len(S') = n"
+            },
+            {
+              "name": "position_constraint",
+              "description": "可以在较短序列的任意位置插入元素以匹配较长序列",
+              "formal": "∃k1, k2, ..., km+1, 0 ≤ k1 < k2 < ... < km+1 ≤ n, 使得 S'[ki:ki+1] 与 T 的子串匹配"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "统计满足条件的补全方案数量"
+        }
+      }
+    ],
+    "description": "统计满足条件的补全方案数量"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的解可以通过子问题的解组合而成，即通过较小长度序列的匹配方案可以推导出较长序列的匹配方案。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：问题的解可以通过子问题的解组合而成，即通过较小长度序列的匹配方案可以推导出较长序列的匹配方案。"
+  }
+}

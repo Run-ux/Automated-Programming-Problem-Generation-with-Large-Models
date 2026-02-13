@@ -1,0 +1,126 @@
+{
+  "problem_id": "GYM105139G",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 500000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 19
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 19
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacent_difference",
+        "description": "相邻节点取值不同（图着色约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "node_degree_constraint",
+        "description": "同一组石子的自由度等于该组所有石子自由度之和",
+        "confidence": "1/1"
+      },
+      {
+        "name": "cell_clearance_rule",
+        "description": "自由度为零的石子组必须被移除",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adaptive_interactor",
+        "description": "在每次移动后，优先移除对方颜色的死石子组，然后重新计算当前颜色石子的自由度",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacent_difference",
+              "description": "相邻节点取值不同（图着色约束）",
+              "formal": "|x1 - x2| + |y1 - y2| = 1 且 (x1, y1) 和 (x2, y2) 上的石子颜色不同"
+            },
+            {
+              "name": "node_degree_constraint",
+              "description": "同一组石子的自由度等于该组所有石子自由度之和",
+              "formal": "liberties(group) = Σ liberties(stone) for stone in group"
+            },
+            {
+              "name": "cell_clearance_rule",
+              "description": "自由度为零的石子组必须被移除",
+              "formal": "if liberties(group) == 0 then remove(group)"
+            },
+            {
+              "name": "adaptive_interactor",
+              "description": "在每次移动后，优先移除对方颜色的死石子组，然后重新计算当前颜色石子的自由度",
+              "formal": "after move: remove(dead_opponent_stones), recalculate(current_color_liberties)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "计算每一步操作后被移除的黑白棋子数量"
+        }
+      }
+    ],
+    "description": "计算每一步操作后被移除的黑白棋子数量"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "当前状态只依赖于有限的前序状态，即每次放置石子后的局面（包括黑白石子的存活情况）仅由上一步的状态和当前操作决定。",
+          "properties": {
+            "dependency_on_previous_states": true
+          }
+        }
+      }
+    ],
+    "description": "当前状态只依赖于有限的前序状态，即每次放置石子后的局面（包括黑白石子的存活情况）仅由上一步的状态和当前操作决定。"
+  }
+}

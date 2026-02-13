@@ -1,0 +1,67 @@
+{
+  "problem_id": "CF1799D2",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 300000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "state_transition_constraint",
+            "description": "每个任务必须在前一个任务完成后才能开始（顺序依赖约束）",
+            "formal": "for all 2 ≤ i ≤ n, start(a_i) ≥ end(a_{i-1})"
+          },
+          {
+            "name": "path_weight_constraint",
+            "description": "如果当前任务与上一个任务相同，则使用热启动时间；否则，使用冷启动时间（状态转换成本约束）",
+            "formal": "if a_i == a_{i-1}, then cost(a_i) = hot_i; else cost(a_i) = cold_i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_cost",
+        "description": "求完成给定任务序列的最小时间代价"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题的解依赖于前一个子问题的状态。",
+        "properties": {
+          "state_dependency": true
+        }
+      }
+    }
+  ]
+}

@@ -51,6 +51,14 @@ def build_system_prompt() -> str:
 - 对于图/树结构，需要识别节点数、边数范围
 - 对于字符串，需要识别长度范围和字符集
 - 对于数组，需要识别元素个数和元素值域
+
+抽象化要求（CRITICAL）：
+- 所有字段值必须是算法/数据结构领域的抽象概括，严禁包含原题目的具体情境词汇
+- type 字段必须用通用数据结构名称（如 array, graph, tree, string, matrix），不得使用情境名称
+- properties 中的 key 必须是通用的结构性质名称（如 ordered, connected, weighted, directed, bipartite），不得使用情境词
+- 反例：题目说"城市之间的公路网" → type 不能写 "city_road_network"，应写 "weighted_undirected_graph"
+- 反例：题目说"糖果分配到盒子" → type 不能写 "candy_box"，应写 "array"
+- 正例：题目说"朋友关系网络" → type 写 "undirected_graph"，properties 中可标注 "connected": true
 """
 
 
@@ -105,6 +113,7 @@ def build_user_prompt(problem: Dict[str, Any]) -> str:
 1. 如果题目有多个输入数据结构，请选择最主要的核心数据结构
 2. length 和 value_range 的 min/max 必须是整数（如果题面未明确给出，请合理推断）
 3. properties 中只包含明确可识别的性质，不确定的性质不要包含
+4. 所有输出必须是数据结构领域的抽象概念，不得包含题目中的具体情境词汇（如人名、动物名、物品名、地名等）
 """
 
 

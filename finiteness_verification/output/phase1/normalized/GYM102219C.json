@@ -1,0 +1,69 @@
+{
+  "problem_id": "GYM102219C",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinct_operation_types_constraint",
+            "description": "只能选择一个元素（餐厅）进行处理"
+          },
+          {
+            "name": "bottleneck_path",
+            "description": "选取元素的时间成本不能超过给定的容量上限 S",
+            "formal": "t_i <= S"
+          },
+          {
+            "name": "adjacent_difference",
+            "description": "如果选取元素的时间成本超过容量上限，则其价值减少为 f_i - (t_i - S)",
+            "formal": "value = f_i - (t_i - S) if t_i > S, otherwise value = f_i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化选择一个元素后的净收益"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解组合而成，每个餐厅的选择独立且不影响其他选择，满足最优子结构性质",
+        "properties": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "problem_id": "GYM104596B",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "weighted_directed_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_directed_graph",
+          "length": {
+            "min": 2,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 20
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true,
+            "directed": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 20
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true,
+      "directed": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "orientation_constraint",
+        "description": "节点之间的转向角度受限，不能超过给定的最大角度",
+        "confidence": "1/1"
+      },
+      {
+        "name": "vertex_repetition_permissible",
+        "description": "不允许在节点处进行180度转弯（U-turn）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "edge_weight_asymmetry",
+        "description": "图中的边可能具有不对称的旅行时间，即双向边的时间可能不同",
+        "confidence": "1/1"
+      },
+      {
+        "name": "cyclic_path_length_constraint",
+        "description": "起点和终点必须是同一个节点",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "orientation_constraint",
+              "description": "节点之间的转向角度受限，不能超过给定的最大角度",
+              "formal": "对于任意两个相邻边 (u, v) 和 (v, w)，转向角度 |angle(u, v, w)| ≤ α"
+            },
+            {
+              "name": "vertex_repetition_permissible",
+              "description": "不允许在节点处进行180度转弯（U-turn）",
+              "formal": "对于任意边 (u, v)，不允许从 u 到 v 再直接返回 u"
+            },
+            {
+              "name": "edge_weight_asymmetry",
+              "description": "图中的边可能具有不对称的旅行时间，即双向边的时间可能不同",
+              "formal": "对于任意边 (u, v)，可能存在 t(u, v) ≠ t(v, u)"
+            },
+            {
+              "name": "cyclic_path_length_constraint",
+              "description": "起点和终点必须是同一个节点",
+              "formal": "路径必须从节点 1 开始并回到节点 1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_cost",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_cost",
+          "description": "求从起点到指定点再返回起点的最小代价路径"
+        }
+      }
+    ],
+    "description": "求从起点到指定点再返回起点的最小代价路径"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，适用于动态规划求解最短路径问题。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，适用于动态规划求解最短路径问题。"
+  }
+}

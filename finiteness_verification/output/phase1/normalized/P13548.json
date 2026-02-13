@@ -1,0 +1,77 @@
+{
+  "problem_id": "P13548",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 4,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "graph_connectivity",
+            "description": "图必须连通（通过Berlaflot航班可以到达任何城市）"
+          },
+          {
+            "name": "maximum_path_length_constraint",
+            "description": "路径成本等于路径中最大边的成本（Berlaflot和S8 Airlines的定价规则）",
+            "formal": "cost(t1, tk) = max(cost(ti, ti+1)) for all i in [1, k-1]"
+          },
+          {
+            "name": "distinct_solution_constraint",
+            "description": "S8 Airlines提供所有未被Berlaflot连接的城市对之间的双向航班"
+          },
+          {
+            "name": "minimum_path_length_constraint",
+            "description": "S8 Airlines航班的成本等于Berlaflot航线中的最小成本路径"
+          },
+          {
+            "name": "weight_sum_constraint",
+            "description": "Berlaflot航班的新成本等于S8 Airlines航线中的最小成本路径"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_cost",
+        "description": "求每条边在新图中的最小代价"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，具体表现为通过最短路径树来确定每条边的新权重。",
+        "properties": {}
+      }
+    }
+  ]
+}

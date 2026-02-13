@@ -1,0 +1,80 @@
+{
+  "problem_id": "P13680",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 10000
+        },
+        "properties": {
+          "connected": true,
+          "directed": false,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "median_positive_constraint",
+            "description": "每朵花的美丽值为其到根节点路径上所有花的盛开度的中位数，其中中位数定义为将一个包含 m 个数的序列从大到小排序后的第 ⌈m/2⌉ 个数。",
+            "formal": "beauty[i] = median(bloom[j] for j in path(i, root))"
+          },
+          {
+            "name": "beauty_minimization",
+            "description": "选择 k 朵花，使这 k 朵花中美丽值最小的花的美丽值尽可能大。",
+            "formal": "max(min(beauty[i] for i in selected_k_flowers))"
+          },
+          {
+            "name": "distinct_permutation",
+            "description": "每朵花的盛开度构成一个 1 到 n 的排列。",
+            "formal": "bloom is a permutation of [1, 2, ..., n]"
+          },
+          {
+            "name": "tree_structure",
+            "description": "花朵之间由 n-1 根树枝连接，形成一棵树，第 1 朵花是树的根节点。",
+            "formal": "G is a tree with n nodes and n-1 edges, node 1 is the root"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "对于每个k，求出k朵花中美丽值最小的花的最大可能美丽值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：大问题的解由子问题的解组合而成，通过树形结构上的动态规划实现",
+        "properties": {
+          "subproblem_independence": true,
+          "solution_combinable": true
+        }
+      }
+    }
+  ]
+}

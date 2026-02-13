@@ -1,0 +1,76 @@
+{
+  "problem_id": "GYM104713C",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "string",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 63,
+          "max": 90
+        },
+        "properties": {
+          "ordered": true,
+          "circular": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "cyclic_path_length_constraint",
+            "description": "路径长度必须是环的长度的整数倍（即 (d + 1) 整除 N）",
+            "formal": "(d + 1) | N"
+          },
+          {
+            "name": "distinct_simple_paths",
+            "description": "不同路径不能访问相同的节点集合（避免冲突）",
+            "formal": "∀ i, j ∈ [1, m], P_i ≠ P_j, 其中 P_i 和 P_j 分别表示第 i 和第 j 条路径访问的节点集合"
+          },
+          {
+            "name": "uniform_movement",
+            "description": "每条路径上的步长固定且为非负整数 d，且在整个路径上保持不变",
+            "formal": "对于每条路径，每次移动跳过 d 个节点，d 为非负整数"
+          },
+          {
+            "name": "path_category_uniformity",
+            "description": "每条路径上的所有节点必须属于同一类别",
+            "formal": "对于每条路径 P，所有节点 v ∈ P 满足 category(v) = c, 其中 c 是某个固定的类别"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化路径上的权值和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题对应于特定步长d下的最大收益计算",
+        "properties": {}
+      }
+    }
+  ]
+}

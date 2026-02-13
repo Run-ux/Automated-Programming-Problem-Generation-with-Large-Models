@@ -1,0 +1,76 @@
+{
+  "problem_id": "P7855",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 4,
+          "max": 2000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 4
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "coordinate_fixed_point",
+            "description": "序列的首尾元素固定为特定类型（恒人）"
+          },
+          {
+            "name": "alternating_sequence_constraint",
+            "description": "固定的元素（恒人）在序列中交替出现"
+          },
+          {
+            "name": "state_transition_constraint",
+            "description": "暂人状态根据相邻元素的状态进行更新，具体规则如下：\n- 暂卷人：有卷则卷\n- 暂颓人：有颓则颓",
+            "formal": "对于暂卷人 i: \n- 若 a[i-1] 和 a[i+1] 都为颓态且 a[i] 为卷态，则下一秒 a[i] 变为颓态\n- 若 a[i-1] 或 a[i+1] 为卷态且 a[i] 为颓态，则下一秒 a[i] 变为卷态\n对于暂颓人 i:\n- 若 a[i-1] 和 a[i+1] 都为卷态且 a[i] 为颓态，则下一秒 a[i] 变为卷态\n- 若 a[i-1] 或 a[i+1] 为颓态且 a[i] 为卷态，则下一秒 a[i] 变为颓态"
+          },
+          {
+            "name": "minimum_stability_constraint",
+            "description": "状态组是稳定的当且仅当下一秒没有人状态更新"
+          },
+          {
+            "name": "maximum_sum_constraint",
+            "description": "目标是最大化处于卷态的人数（卷数），通过交换小于等于 k 对暂人来实现"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化稳定状态组中的卷数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：通过局部状态的最优解组合成全局最优解，即在确定每个暂人位置后，整个序列的状态可以分解为多个子问题，每个子问题的最优解组合起来构成全局最优解。",
+        "properties": {}
+      }
+    }
+  ]
+}

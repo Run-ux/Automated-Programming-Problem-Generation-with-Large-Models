@@ -1,0 +1,110 @@
+{
+  "problem_id": "P9884",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "maximum_edge_weight_constraint",
+        "description": "每个节点（洞口）在任意时刻最多只能有一个元素（蚂蚁）通过，即离开或进入洞口的蚂蚁数量不能超过1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pairwise_exclusion",
+        "description": "在同一时刻，同一个节点（洞口）不能同时有蚂蚁离开和进入",
+        "confidence": "1/1"
+      },
+      {
+        "name": "vertex_repetition_permissible",
+        "description": "每个元素（蚂蚁）必须且仅能访问一次目标节点（冰箱），即每只蚂蚁必须离开洞口一次并返回一次",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "maximum_edge_weight_constraint",
+              "description": "每个节点（洞口）在任意时刻最多只能有一个元素（蚂蚁）通过，即离开或进入洞口的蚂蚁数量不能超过1",
+              "formal": "对于任意时间 t 和任意洞口 i, |{蚂蚁在 t 时刻通过洞口 i 离开}| + |{蚂蚁在 t 时刻通过洞口 i 进入}| <= 1"
+            },
+            {
+              "name": "pairwise_exclusion",
+              "description": "在同一时刻，同一个节点（洞口）不能同时有蚂蚁离开和进入",
+              "formal": "对于任意时间 t 和任意洞口 i, |{蚂蚁在 t 时刻通过洞口 i 离开}| * |{蚂蚁在 t 时刻通过洞口 i 进入}| = 0"
+            },
+            {
+              "name": "vertex_repetition_permissible",
+              "description": "每个元素（蚂蚁）必须且仅能访问一次目标节点（冰箱），即每只蚂蚁必须离开洞口一次并返回一次",
+              "formal": "对于每只蚂蚁 j, 存在一个唯一的离开时间 t_leave 和一个唯一的返回时间 t_return"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_cost",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_cost",
+          "description": "求完成所有任务所需的最小时间成本"
+        }
+      }
+    ],
+    "description": "求完成所有任务所需的最小时间成本"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：大问题的解由子问题的解组合而成，每个蚂蚁选择最短路径往返的时间总和最小化问题可以分解为多个独立的子问题求解",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：大问题的解由子问题的解组合而成，每个蚂蚁选择最短路径往返的时间总和最小化问题可以分解为多个独立的子问题求解"
+  }
+}

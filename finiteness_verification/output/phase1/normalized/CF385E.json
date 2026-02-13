@@ -1,0 +1,67 @@
+{
+  "problem_id": "CF385E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 6,
+          "max": 6
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "cyclic_path_length_constraint",
+            "description": "移动路径具有周期性，即在 t 秒后的位置可以通过初始位置和速度计算得出（考虑边界条件）",
+            "formal": "(x, y) = ((sx + dx * t) % n, (sy + dy * t) % n)"
+          },
+          {
+            "name": "circular_sequence_constraint",
+            "description": "当移动超出边界时，坐标会从另一侧重新进入（类似于二维环形数组）",
+            "formal": "x = (x + n) % n, y = (y + n) % n"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "构造一个满足给定初始位置和速度条件的最终位置"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "当前状态仅依赖于前一状态，满足马尔可夫性质。在每一步移动中，下一个位置完全由当前位置和速度决定。",
+        "properties": {
+          "markov_property": true
+        }
+      }
+    }
+  ]
+}

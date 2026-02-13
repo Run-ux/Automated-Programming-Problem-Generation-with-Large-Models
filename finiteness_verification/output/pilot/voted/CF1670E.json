@@ -1,0 +1,216 @@
+{
+  "problem_id": "CF1670E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "3/3",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 2,
+            "max": 131072
+          },
+          "value_range": {
+            "min": 1,
+            "max": 262143
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false
+          }
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 2,
+            "max": 131072
+          },
+          "value_range": {
+            "min": 1,
+            "max": 262143
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false
+          }
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 2,
+            "max": 131072
+          },
+          "value_range": {
+            "min": 1,
+            "max": 262143
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 131072
+    },
+    "value_range": {
+      "min": 1,
+      "max": 262143
+    },
+    "properties": {
+      "connected": true,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinct_values",
+        "description": "每个节点和每条边的值必须是唯一的，且在 [1, 2n-1] 范围内。",
+        "confidence": "3/3"
+      },
+      {
+        "name": "minimize_max_cost",
+        "description": "选择一个根节点，使得从该根节点出发到任何节点或边的简单路径的最大成本最小化。路径的成本定义为路径上所有节点和边的值的按位异或结果。",
+        "confidence": "3/3"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinct_values",
+              "description": "每个节点和每条边的值必须是唯一的，且在 [1, 2n-1] 范围内。",
+              "formal": "∀ i, j ∈ {nodes ∪ edges}, value(i) ≠ value(j) ∧ 1 ≤ value(i) ≤ 2n - 1"
+            },
+            {
+              "name": "minimize_max_cost",
+              "description": "选择一个根节点，使得从该根节点出发到任何节点或边的简单路径的最大成本最小化。路径的成本定义为路径上所有节点和边的值的按位异或结果。",
+              "formal": "minimize(max(cost(root, v) for all nodes v and edges e))"
+            }
+          ]
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinct_values",
+              "description": "每个节点和边的值必须是唯一的，且在 [1, 2n-1] 范围内。",
+              "formal": "∀ i, j ∈ {nodes and edges}, if i ≠ j then value(i) ≠ value(j), 1 ≤ value(i) ≤ 2n-1"
+            },
+            {
+              "name": "minimize_max_cost",
+              "description": "选择一个根节点，使得从该根节点到任何节点或边的简单路径的最大成本最小化。路径的成本定义为路径上所有节点和边的值的按位异或结果。",
+              "formal": "minimize(max(cost(root, v) for all nodes v or edges e)), where cost(u, v) = XOR of values on the path from u to v"
+            }
+          ]
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinct_values",
+              "description": "每个节点和每条边的值必须是唯一的，且在 [1, 2n-1] 范围内。",
+              "formal": "∀ i, j ∈ {nodes ∪ edges}, value(i) ≠ value(j) ∧ 1 ≤ value(i) ≤ 2n-1"
+            },
+            {
+              "name": "minimize_max_cost",
+              "description": "选择一个根节点，使得从该根节点出发到任何节点或边的简单路径的最大成本最小化。路径的成本定义为路径上所有节点和边的值的按位异或结果。",
+              "formal": "minimize(max(cost(root, v) for all nodes v and edges e))"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "min_cost",
+    "confidence": "3/3",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "min_cost",
+          "description": "选择一个根节点，并为每个节点和边分配一个值，使得从根节点出发到任何节点或边的简单路径的最大成本（定义为路径上所有节点和边的值的异或）最小化"
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "type": "min_cost",
+          "description": "选择一个根节点，并为每个节点和每条边分配一个值，使得从根节点出发到任意节点或边的路径的最大成本（路径上所有节点和边的值的异或）最小"
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "type": "min_cost",
+          "description": "选择一个根节点，并为每个节点和每条边分配一个值，使得从根节点到任意节点或边的路径的最大成本（定义为路径上所有节点和边的值的异或）最小化"
+        }
+      }
+    ],
+    "description": "选择一个根节点，并为每个节点和边分配一个值，使得从根节点出发到任何节点或边的简单路径的最大成本（定义为路径上所有节点和边的值的异或）最小化"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "3/3",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优解可以通过子问题的最优解组合而成，即树中每个子树的最优解可以合并成整棵树的最优解。",
+          "properties": {}
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优解可以通过子问题的最优解组合而成，即树中每个子树的最优解可以合并成整棵树的最优解。",
+          "properties": {}
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优解可以通过子问题的最优解组合而成，即树中每个节点的最优值依赖于其子树的最优值。",
+          "properties": {
+            "subproblem_independence": true
+          }
+        }
+      }
+    ],
+    "description": "最优解可以通过子问题的最优解组合而成，即树中每个子树的最优解可以合并成整棵树的最优解。"
+  }
+}

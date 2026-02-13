@@ -1,0 +1,112 @@
+{
+  "problem_id": "GYM105257J",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 500000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "maximum_average_constraint",
+        "description": "在给定区间内，计算函数 f(x, y) 的和，并找到使该和最大的右端点 r。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "gcd_constraint",
+        "description": "函数 f(x, y) 的值取决于 x 和 y 的最大公约数 (gcd)。具体来说，当 gcd(x, y) = 1 时，f(x, y) = u；当 gcd(x, y) = x 且 x ≠ 1 时，f(x, y) = -x * y；否则 f(x, y) = 0。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "query_range_validity",
+        "description": "每个查询的左边界 l 必须在 [1, n] 范围内，且查询结果的右边界 r 必须满足 l ≤ r ≤ n。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "maximum_average_constraint",
+              "description": "在给定区间内，计算函数 f(x, y) 的和，并找到使该和最大的右端点 r。",
+              "formal": "maximize sum_{i=l}^r f(x, a_i), 1 ≤ l ≤ r ≤ n"
+            },
+            {
+              "name": "gcd_constraint",
+              "description": "函数 f(x, y) 的值取决于 x 和 y 的最大公约数 (gcd)。具体来说，当 gcd(x, y) = 1 时，f(x, y) = u；当 gcd(x, y) = x 且 x ≠ 1 时，f(x, y) = -x * y；否则 f(x, y) = 0。",
+              "formal": "f(x, y) = u - y if x = 1; u if 1 < x ≤ y and gcd(x, y) = 1; -x * y if x ≠ 1 and gcd(x, y) = x; 0 otherwise"
+            },
+            {
+              "name": "query_range_validity",
+              "description": "每个查询的左边界 l 必须在 [1, n] 范围内，且查询结果的右边界 r 必须满足 l ≤ r ≤ n。",
+              "formal": "1 ≤ l ≤ n, l ≤ r ≤ n"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求给定区间内最大得分和及其对应的最小右端点"
+        }
+      }
+    ],
+    "description": "求给定区间内最大得分和及其对应的最小右端点"
+  },
+  "invariant": {
+    "name": "interval_mergeable",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "interval_mergeable",
+          "description": "区间信息可通过子区间合并，适用于前缀和或线段树等数据结构进行区间查询与更新",
+          "properties": {
+            "prefix_sum_computable": true
+          }
+        }
+      }
+    ],
+    "description": "区间信息可通过子区间合并，适用于前缀和或线段树等数据结构进行区间查询与更新"
+  }
+}

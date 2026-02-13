@@ -1,0 +1,72 @@
+{
+  "problem_id": "P8394",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "string",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 65,
+          "max": 89
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinct_permutation",
+            "description": "每个组内的乘客登船顺序是随机的，且所有可能的顺序出现概率相等（全排列约束）"
+          },
+          {
+            "name": "adjacent_sum_constraint",
+            "description": "一个乘客经过已经入座的乘客时会产生代价，需要最小化这个期望代价（相邻节点通过代价约束）",
+            "formal": "E[passage_cost] = 1 * p_1 + 2 * p_2 + 3 * p_3 + ... 其中 p_k 是经过 k 个已入座乘客的概率"
+          },
+          {
+            "name": "non_decreasing_sequence",
+            "description": "可以决定各组乘客的登船顺序（序列排序约束）"
+          },
+          {
+            "name": "source_node_fixed",
+            "description": "可以为每个乘客选择从最前面或最后面登船（二元选择约束）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_cost",
+        "description": "最小化乘客登船过程中经过已入座乘客的次数的期望值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：大问题的解由子问题的解组合而成，通过确定每个登船组的顺序和乘客登船方向来最小化期望值",
+        "properties": {}
+      }
+    }
+  ]
+}

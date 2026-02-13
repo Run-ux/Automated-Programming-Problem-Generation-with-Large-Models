@@ -1,0 +1,78 @@
+{
+  "problem_id": "GYM102900K",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "connected": false,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "alternating_sequence_constraint",
+            "description": "路径上的节点取值必须交替变化（图着色约束）",
+            "formal": "c_{p_{2k}} = Low 且 c_{p_{2k+1}} = High 对于所有 k ≥ 0"
+          },
+          {
+            "name": "source_node_fixed",
+            "description": "起始节点的取值固定为 Low",
+            "formal": "c_0 = Low"
+          },
+          {
+            "name": "state_transition_constraint",
+            "description": "从一个节点移动到相邻节点时，节点的取值会改变（High 变为 Low 或 Low 变为 High）",
+            "formal": "c_i' = !c_i 当从 i 移动到 j 时"
+          },
+          {
+            "name": "undirected_graph",
+            "description": "图是无向图，每条边连接两个不同的节点",
+            "formal": "对于每条边 (u, v)，有 u ≠ v 且 (u, v) 和 (v, u) 是同一条边"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "判断是否存在满足条件的无限路径"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "当前状态只依赖于前一状态，即价格状态在每次移动后翻转，形成一个确定的状态转移序列",
+        "properties": {
+          "markov_property": true
+        }
+      }
+    }
+  ]
+}

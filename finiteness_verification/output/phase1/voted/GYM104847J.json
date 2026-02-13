@@ -1,0 +1,134 @@
+{
+  "problem_id": "GYM104847J",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 300000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 300000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "graph_connectivity",
+        "description": "图必须是连通的无向图",
+        "confidence": "1/1"
+      },
+      {
+        "name": "tree_structure",
+        "description": "图必须是树结构，即有 n 个顶点和 n-1 条边",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_length_constraint",
+        "description": "对于任意两个顶点 u 和 v，所有在 u 和 v 之间的唯一简单路径上的顶点都必须属于集合 T",
+        "confidence": "1/1"
+      },
+      {
+        "name": "beauty_minimization",
+        "description": "子集 S 的 beauty 定义为覆盖 S 中所有顶点间路径的最小顶点集 T 的大小",
+        "confidence": "1/1"
+      },
+      {
+        "name": "continuous_path_constraint",
+        "description": "S(l, r) 是从 l 到 r 的连续顶点集合",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "graph_connectivity",
+              "description": "图必须是连通的无向图"
+            },
+            {
+              "name": "tree_structure",
+              "description": "图必须是树结构，即有 n 个顶点和 n-1 条边"
+            },
+            {
+              "name": "path_length_constraint",
+              "description": "对于任意两个顶点 u 和 v，所有在 u 和 v 之间的唯一简单路径上的顶点都必须属于集合 T",
+              "formal": "∀u, v ∈ S, ∀w ∈ path(u, v), w ∈ T"
+            },
+            {
+              "name": "beauty_minimization",
+              "description": "子集 S 的 beauty 定义为覆盖 S 中所有顶点间路径的最小顶点集 T 的大小",
+              "formal": "beauty(S) = |T|, where T is the smallest set such that ∀u, v ∈ S, all vertices on the unique simple path between u and v belong to T"
+            },
+            {
+              "name": "continuous_path_constraint",
+              "description": "S(l, r) 是从 l 到 r 的连续顶点集合",
+              "formal": "S(l, r) = {l, l+1, ..., r}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_sum",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_sum",
+          "description": "求所有区间内顶点集合的最小覆盖路径和"
+        }
+      }
+    ],
+    "description": "求所有区间内顶点集合的最小覆盖路径和"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：大问题的解由子问题的解组合而成，具体表现为树上路径覆盖问题可以通过分解为更小的子树路径覆盖问题来解决",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：大问题的解由子问题的解组合而成，具体表现为树上路径覆盖问题可以通过分解为更小的子树路径覆盖问题来解决"
+  }
+}

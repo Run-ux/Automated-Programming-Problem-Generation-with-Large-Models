@@ -1,0 +1,104 @@
+{
+  "problem_id": "P5334",
+  "source": "luogu",
+  "input_structure": {
+    "type": "string",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "string",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 97,
+            "max": 122
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 97,
+      "max": 122
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "circular_sequence_constraint",
+        "description": "对于每个前缀，找到字典序最小的旋转字符串",
+        "confidence": "1/1"
+      },
+      {
+        "name": "first_occurrence_constraint",
+        "description": "如果有多个字典序最小的旋转字符串，选择索引最小的那个",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "circular_sequence_constraint",
+              "description": "对于每个前缀，找到字典序最小的旋转字符串",
+              "formal": "对于字符串 T，定义 T_i = T[i...|T|] :: T[1...i-1] (1 ≤ i ≤ |T|)，求最小的 i 使得 T_i 是 T_1, T_2, ..., T_|T| 中字典序最小的"
+            },
+            {
+              "name": "first_occurrence_constraint",
+              "description": "如果有多个字典序最小的旋转字符串，选择索引最小的那个",
+              "formal": "如果存在多个 i 使得 T_i 是字典序最小的，选择最小的 i"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_cost",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_cost",
+          "description": "对于给定字符串的每个前缀，找到字典序最小的循环排列，并输出该排列的起始位置"
+        }
+      }
+    ],
+    "description": "对于给定字符串的每个前缀，找到字典序最小的循环排列，并输出该排列的起始位置"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：对于每个前缀，其最优解可以通过其子问题的最优解来确定。具体来说，对于字符串S的每一个前缀S[1...i]，其字典序最小的旋转可以通过其子串S[1...i-1]的最优解来推导。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：对于每个前缀，其最优解可以通过其子问题的最优解来确定。具体来说，对于字符串S的每一个前缀S[1...i]，其字典序最小的旋转可以通过其子串S[1...i-1]的最优解来推导。"
+  }
+}

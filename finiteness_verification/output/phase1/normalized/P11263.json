@@ -1,0 +1,71 @@
+{
+  "problem_id": "P11263",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 80
+        },
+        "value_range": {
+          "min": 1,
+          "max": 80
+        },
+        "properties": {
+          "ordered": false,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "non_negative_values",
+            "description": "每个格子的权值必须满足给定的符号要求（正或负）",
+            "formal": "对于每个格子 (i, j)，其权值 w(i, j) 必须满足 w(i, j) < 0 或 w(i, j) > 0"
+          },
+          {
+            "name": "value_range_constraint",
+            "description": "每条线上的整数值必须在 [1, k] 范围内",
+            "formal": "对于每条线 l，其整数值 v(l) 满足 1 ≤ v(l) ≤ k"
+          },
+          {
+            "name": "weight_threshold",
+            "description": "每个格子的权值定义为在其左/上方的线上整数之和减去在其右/下方的线上整数之和",
+            "formal": "w(i, j) = sum(v(l) for l in left_and_top_lines(i, j)) - sum(v(l) for l in right_and_bottom_lines(i, j))"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "统计满足条件的整数分配方案数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：大问题的解由子问题的解组合而成，每个格子的权值要求可以通过子问题的解来满足",
+        "properties": {}
+      }
+    }
+  ]
+}

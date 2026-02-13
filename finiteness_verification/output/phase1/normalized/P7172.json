@@ -1,0 +1,76 @@
+{
+  "problem_id": "P7172",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 40000000000
+        },
+        "properties": {
+          "connected": true,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "value_range_constraint",
+            "description": "序列中的每个元素 a_i 满足 (i(i-1)/2) < a_i <= (i(i+1)/2)",
+            "formal": "∀ i ∈ [1, n], (i(i-1)/2) < a_i ≤ (i(i+1)/2)"
+          },
+          {
+            "name": "tree_structure",
+            "description": "树的结构由序列 a 参数化，每层节点数依次为 1, 2, ..., n+1，且第 i 层的节点编号范围为 (i(i-1)/2 + 1) 到 (i(i+1)/2)",
+            "formal": "Layer i has nodes from (i(i-1)/2 + 1) to (i(i+1)/2)"
+          },
+          {
+            "name": "node_child_count_constraint",
+            "description": "每层中，节点 a_i 有两个孩子，其他同层节点只有一个孩子。按编号从小到大顺序分配孩子，优先选择当前编号最小且未被分配的下层节点",
+            "formal": "Node a_i in layer i has 2 children, other nodes in the same layer have 1 child. Children are assigned in increasing order of node numbers, preferring the smallest unassigned node in the next layer"
+          },
+          {
+            "name": "node_update_operation",
+            "description": "每次查询的节点编号 x_i 和 y_i 通过公式 x_i = ((x'_i - 1 + t * z_{i-1}) % (n+1)(n+2)/2) + 1 和 y_i = ((y'_i - 1 + t * z_{i-1}) % (n+1)(n+2)/2) + 1 计算得出，其中 z_{i-1} 是前一次查询的结果",
+            "formal": "x_i = ((x'_i - 1 + t * z_{i-1}) % (n+1)(n+2)/2) + 1, y_i = ((y'_i - 1 + t * z_{i-1}) % (n+1)(n+2)/2) + 1"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "判断并输出两个节点的最大公共祖先"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：树中任意节点的最大公共祖先问题可以通过其子节点的解组合而成，满足分治法或动态规划中的最优子结构性质",
+        "properties": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "problem_id": "GYM105139F",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 30
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 30
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinct_vertex_colorings",
+        "description": "区间内不同元素数量不超过 K（合并操作后，区间内所有元素的级别必须唯一）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_cost",
+        "description": "合并两个相同级别的元素时，新元素的级别为原级别加一，且合并成本为 2^(l+1)（合并操作的成本计算）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "maximum_operation_count_constraint",
+        "description": "在给定的序列中，最大化合并操作的次数（通过选择合适的合并策略，使得合并操作的次数最多）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinct_vertex_colorings",
+              "description": "区间内不同元素数量不超过 K（合并操作后，区间内所有元素的级别必须唯一）",
+              "formal": "|distinct(A[l:r])| <= K"
+            },
+            {
+              "name": "operation_cost",
+              "description": "合并两个相同级别的元素时，新元素的级别为原级别加一，且合并成本为 2^(l+1)（合并操作的成本计算）",
+              "formal": "cost(l, l) = 2^(l+1)"
+            },
+            {
+              "name": "maximum_operation_count_constraint",
+              "description": "在给定的序列中，最大化合并操作的次数（通过选择合适的合并策略，使得合并操作的次数最多）",
+              "formal": "maximize(merge_count(A))"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化合并操作的次数"
+        }
+      }
+    ],
+    "description": "最大化合并操作的次数"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：大问题的解由子问题的解组合而成，合并操作的成本和结果依赖于子问题的最优解",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：大问题的解由子问题的解组合而成，合并操作的成本和结果依赖于子问题的最优解"
+  }
+}

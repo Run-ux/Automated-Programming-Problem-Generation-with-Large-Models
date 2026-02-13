@@ -1,0 +1,77 @@
+{
+  "problem_id": "P8640",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "circular_permutation",
+            "description": "元素按编号顺序围成一个圈，形成一个循环链表结构"
+          },
+          {
+            "name": "permutation_count_modulo_constraint",
+            "description": "通过指定的两个节点进行重连操作，可以将一个大圈拆分成多个小圈或合并多个小圈为一个大圈"
+          },
+          {
+            "name": "potential_energy_function",
+            "description": "在同一个圈中的任意两个节点 i 和 j 之间产生的能量值为 (t-p) * H_j * F_i，其中 t 是圈的大小，p 是从 j 到 i 的位置距离"
+          },
+          {
+            "name": "weight_adjustment",
+            "description": "节点的属性值（H_i, F_i）可以在过程中发生变化"
+          },
+          {
+            "name": "modulo_accumulation",
+            "description": "最终结果需要对 10^9 + 7 取模"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化每次变换后所有动物产生的能量之和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "当前状态的能量值仅依赖于前一状态的能量值及当前操作的具体影响，满足马尔可夫性质",
+        "properties": {
+          "markov_property": true
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "problem_id": "CF1739E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinct_solution_constraint",
+            "description": "在任意时刻，机器人当前位置到所有脏节点的最短距离必须唯一（即不能有多个最近的脏节点）",
+            "formal": "∀ t, ∃! d_min = min{d(robot_pos(t), dirty_cell) | dirty_cell ∈ D(t)}"
+          },
+          {
+            "name": "source_node_fixed",
+            "description": "机器人的起始位置是干净的",
+            "formal": "robot_pos(0) is clean"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化可以保留的脏单元格数量，使得机器人在清理过程中不会出现故障"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即在确保机器人不发生故障的前提下，最大化未清理脏格子数量的问题可以分解为更小规模的同类问题来解决。",
+        "properties": {}
+      }
+    }
+  ]
+}

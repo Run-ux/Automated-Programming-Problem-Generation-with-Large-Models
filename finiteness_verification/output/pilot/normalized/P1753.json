@@ -1,0 +1,170 @@
+{
+  "problem_id": "P1753",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 100
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 100
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 100
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "matrix_chain_multiplication",
+            "description": "矩阵链乘积的运算次数取决于矩阵的结合顺序，但不满足交换律。需要找到一种结合顺序使得总的运算次数最少。",
+            "formal": "minimize Σ_{i=1}^{n-1} (w_i * w_{i+1} * w_{i+2}) for all possible parenthesizations of M_1 × M_2 × ... × M_n"
+          },
+          {
+            "name": "matrix_dimensions_consistency",
+            "description": "第 i 个矩阵 M_i 的大小为 w_i 行 w_{i+1} 列，即每个矩阵的列数必须与下一个矩阵的行数相匹配。",
+            "formal": "∀ i ∈ [1, n-1], M_i 的列数 = M_{i+1} 的行数"
+          }
+        ]
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "matrix_chain_multiplication",
+            "description": "矩阵链乘积的运算次数取决于矩阵的结合顺序，但不改变矩阵的顺序。"
+          },
+          {
+            "name": "matrix_dimensions_compatibility",
+            "description": "第 i 个矩阵 M_i 的大小为 w_i 行 w_{i+1} 列，相邻矩阵的列数和行数必须匹配才能进行乘法运算。",
+            "formal": "对于所有 1 ≤ i < n, w_{i+1} 必须等于 w_{i+2} 的行数。"
+          }
+        ]
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "matrix_chain_multiplication",
+            "description": "矩阵链乘积的运算次数取决于矩阵的结合顺序，但不满足交换律。需要通过合理安排结合顺序来减少运算次数。",
+            "formal": "minimize(∑_{i=1}^{n-1} w_i * w_{i+1} * w_{i+2})"
+          },
+          {
+            "name": "matrix_dimensions",
+            "description": "第 i 个矩阵 M_i 的大小为 w_i 行 w_{i+1} 列，且矩阵乘法要求前一个矩阵的列数等于后一个矩阵的行数。",
+            "formal": "M_i ∈ R^{w_i × w_{i+1}}"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "min_cost",
+        "description": "求将给定的n个矩阵进行链乘积所需的最少运算次数"
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "type": "min_cost",
+        "description": "求将给定的n个矩阵进行链乘积所需的最少运算次数"
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "type": "min_cost",
+        "description": "求将给定的n个矩阵进行链乘积所需的最少运算次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解组合而成，即矩阵链乘法问题的最小运算次数可以由其子链的最小运算次数决定。",
+        "properties": {}
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "问题的最优解可以通过子问题的最优解组合而成，即矩阵链乘法问题中，整个链乘积的最小运算次数可以由其任意分割点两侧子链乘积的最小运算次数决定。",
+        "properties": {}
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解组合而成，即大问题的最小运算次数可以由其子链乘积的最小运算次数决定。",
+        "properties": {}
+      }
+    }
+  ]
+}

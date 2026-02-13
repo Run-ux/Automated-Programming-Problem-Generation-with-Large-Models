@@ -1,0 +1,114 @@
+{
+  "problem_id": "CF546E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100
+          },
+          "properties": {
+            "connected": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100
+    },
+    "properties": {
+      "connected": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_weight_constraint",
+        "description": "每个节点的流入量等于流出量（流量守恒约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "edge_weight_decrease",
+        "description": "每条边的流量不超过其容量（即相邻节点之间的士兵移动数量不超过该边的存在性）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_negative_values",
+        "description": "每条边的流量非负（即士兵移动数量不能为负数）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_weight_constraint",
+              "description": "每个节点的流入量等于流出量（流量守恒约束）",
+              "formal": "对于每个节点 i，∑(f[i][j] - f[j][i]) = b[i] - a[i]"
+            },
+            {
+              "name": "edge_weight_decrease",
+              "description": "每条边的流量不超过其容量（即相邻节点之间的士兵移动数量不超过该边的存在性）",
+              "formal": "对于每条边 (i, j)，f[i][j] + f[j][i] ≤ 1"
+            },
+            {
+              "name": "non_negative_values",
+              "description": "每条边的流量非负（即士兵移动数量不能为负数）",
+              "formal": "对于每条边 (i, j)，f[i][j] ≥ 0"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "判断是否存在一种分配方案，使得每个节点的权值满足给定条件"
+        }
+      }
+    ],
+    "description": "判断是否存在一种分配方案，使得每个节点的权值满足给定条件"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：每个城市士兵的最终分布可以由其相邻城市的士兵转移情况组合而成，满足网络流或图上的最优子结构",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：每个城市士兵的最终分布可以由其相邻城市的士兵转移情况组合而成，满足网络流或图上的最优子结构"
+  }
+}

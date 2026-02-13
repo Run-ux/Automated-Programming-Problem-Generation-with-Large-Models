@@ -1,0 +1,83 @@
+{
+  "problem_id": "P10851",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 100
+        },
+        "value_range": {
+          "min": 0,
+          "max": 99
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacent_difference",
+            "description": "相邻节点取值相同（图着色约束）",
+            "formal": "对于每个节点 i，如果存在一个相邻节点 j 使得 c[i] == c[j]，则可以移动到 j"
+          },
+          {
+            "name": "graph_connectivity",
+            "description": "图必须连通",
+            "formal": "从任意节点出发，可以到达所有其他节点"
+          },
+          {
+            "name": "maximum_movement_constraint",
+            "description": "移动次数上限",
+            "formal": "K <= 2 * 10^4"
+          },
+          {
+            "name": "alphabet_size_constraint",
+            "description": "颜色范围约束",
+            "formal": "0 <= c[i] <= N"
+          },
+          {
+            "name": "coordinate_fixed_point",
+            "description": "初始位置未知且不影响解法",
+            "formal": "解法对任意初始位置 (s, t) 都有效"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_cost",
+        "description": "求使两个节点在图中相遇所需的最少操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "monotonic_sequence_property",
+        "description": "通过改变房间灯的颜色，引导两个个体在图中移动。每次操作后，两个个体之间的距离非严格减小，直至相遇。",
+        "properties": {
+          "distance_non_increasing": true
+        }
+      }
+    }
+  ]
+}

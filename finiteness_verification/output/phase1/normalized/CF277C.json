@@ -1,0 +1,82 @@
+{
+  "problem_id": "CF277C",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false,
+          "cuts": {
+            "min": 0,
+            "max": 100000
+          }
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "edge_exclusion_constraint",
+            "description": "每次切割必须在未被切割的部分进行（即刀必须接触到未被切割的纸张部分）",
+            "formal": "For each cut (x1, y1, x2, y2), the segment must intersect with at least one uncut part of the paper"
+          },
+          {
+            "name": "boundary_constraint",
+            "description": "禁止沿着纸张的边界进行切割",
+            "formal": "Cuts cannot be made along the borders of the paper (i.e., x1, x2, y1, y2 cannot be 0 or n/m)"
+          },
+          {
+            "name": "coordinate_fixed_point",
+            "description": "切割线段的端点坐标必须是整数",
+            "formal": "Coordinates (xb, yb, xe, ye) must be integers"
+          },
+          {
+            "name": "directional_movement_constraint",
+            "description": "切割线段必须是水平或垂直的",
+            "formal": "Each cut must be either horizontal (yb == ye) or vertical (xb == xe)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "判断是否存在一个先手必胜的策略，并输出该策略的一个可行解"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合而成，且每个子问题的解都是最优的",
+        "properties": {
+          "subproblems_independent": true,
+          "solution_combinable": true
+        }
+      }
+    }
+  ]
+}

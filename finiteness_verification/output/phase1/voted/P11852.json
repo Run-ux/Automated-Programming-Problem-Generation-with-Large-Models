@@ -1,0 +1,116 @@
+{
+  "problem_id": "P11852",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinct_simple_paths",
+        "description": "从起点到终点必须找到两条边不重合的路径",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimum_distance_constraint",
+        "description": "在满足边不重合的路径条件下，最大化最短路径中的最长边长度最小值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "graph_connectivity",
+        "description": "图是连通的，即任意两个节点之间都存在路径",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinct_simple_paths",
+              "description": "从起点到终点必须找到两条边不重合的路径",
+              "formal": "存在两条从 u 到 v 的路径 P1 和 P2，使得 P1 和 P2 的边集不相交"
+            },
+            {
+              "name": "minimum_distance_constraint",
+              "description": "在满足边不重合的路径条件下，最大化最短路径中的最长边长度最小值",
+              "formal": "min(max(edge_length(P1)), max(edge_length(P2))) 最小化"
+            },
+            {
+              "name": "graph_connectivity",
+              "description": "图是连通的，即任意两个节点之间都存在路径",
+              "formal": "对于任意 u, v ∈ V, 存在一条从 u 到 v 的路径"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_max_edge",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_max_edge",
+          "description": "求两点间两条边不重合路径中的最大边权最小值"
+        }
+      }
+    ],
+    "description": "求两点间两条边不重合路径中的最大边权最小值"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即从起点到终点的两条不重叠路径的最短最长边可以通过子路径的最短最长边来确定。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即从起点到终点的两条不重叠路径的最短最长边可以通过子路径的最短最长边来确定。"
+  }
+}

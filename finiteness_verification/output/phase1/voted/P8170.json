@@ -1,0 +1,104 @@
+{
+  "problem_id": "P8170",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 10000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 10000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 10000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "periodic_generation_constraint",
+        "description": "每个元素每天增加一个固定值，然后可以被减少一个固定值最多 k 次（模拟生长和剪枝过程）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimum_maximum_constraint",
+        "description": "在给定的操作次数内，最小化所有元素的最大值（求解最优剪枝策略）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "periodic_generation_constraint",
+              "description": "每个元素每天增加一个固定值，然后可以被减少一个固定值最多 k 次（模拟生长和剪枝过程）",
+              "formal": "对于每个 i (1 ≤ i ≤ N)，height_i = height_i + dailyGrowth_i * M - min(k, (height_i + dailyGrowth_i * M) // x) * x"
+            },
+            {
+              "name": "minimum_maximum_constraint",
+              "description": "在给定的操作次数内，最小化所有元素的最大值（求解最优剪枝策略）",
+              "formal": "min(max(height_i)) for all i (1 ≤ i ≤ N)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_cost",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_cost",
+          "description": "求在给定操作次数限制下，序列中最大值的最小可能值"
+        }
+      }
+    ],
+    "description": "求在给定操作次数限制下，序列中最大值的最小可能值"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即每一天的最优剪枝策略依赖于前一天的状态",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即每一天的最优剪枝策略依赖于前一天的状态"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "problem_id": "P4593",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 0,
+          "max": 50
+        },
+        "value_range": {
+          "min": 1,
+          "max": 10000000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinct_elements",
+            "description": "所有元素必须互不相同（每个怪物血量均不相同）"
+          },
+          {
+            "name": "non_empty_subset",
+            "description": "存在一些缺失的元素（场上没有某些血量的怪物）"
+          },
+          {
+            "name": "global_optimization_objective",
+            "description": "分数计算基于元素值和操作次数（使用亵渎后的得分基于怪的血量和杀死所有怪物所需的亵渎张数）",
+            "formal": "score = sum(x^k for x in elements if x > 0 and k is the number of operations to reduce all elements to 0)"
+          },
+          {
+            "name": "edge_repetition_permissible",
+            "description": "重复操作不计入计分（因怪死亡而重复释放的亵渎不计入操作次数，也不会增加分数）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化特定操作后的得分"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解组合而成，即通过计算每个血量值对应的分数贡献来得到总分数",
+        "properties": {}
+      }
+    }
+  ]
+}

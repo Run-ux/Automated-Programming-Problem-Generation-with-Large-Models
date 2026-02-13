@@ -1,0 +1,179 @@
+{
+  "problem_id": "P14667",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 3,
+            "max": 16
+          },
+          "value_range": {
+            "min": 0,
+            "max": 6
+          },
+          "properties": {
+            "connected": true,
+            "teleport_pairs": 6
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 16
+    },
+    "value_range": {
+      "min": 0,
+      "max": 6
+    },
+    "properties": {
+      "connected": true,
+      "teleport_pairs": 6
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "edge_exclusion_constraint",
+        "description": "网格的边界单元格都是墙，不可穿越。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "graph_connectivity",
+        "description": "所有墙单元格通过四个方向（上下左右）连通，形成一个单一的四向连通分量。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_connectedness",
+        "description": "所有空单元格通过四个方向（上下左右）连通，形成一个单一的四向连通分量，并被墙包围。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacent_difference",
+        "description": "每个传送门单元格的八个相邻单元格都是空单元格。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinct_pairs",
+        "description": "每个传送门单元格属于且仅属于一个传送对，标记为 A, B, C, D, E, F 中的一个字母。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "parallel_operation",
+        "description": "进入传送门单元格后，立即传送到配对的单元格，并在同一方向上额外移动一步。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinct_bomb_locations",
+        "description": "钥匙和宝箱分别位于不同的空单元格上，且不在初始位置。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimum_path_length_constraint",
+        "description": "拾取钥匙后，必须以最少的动作次数到达宝箱。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "valid_position_count",
+        "description": "只能移动到非墙单元格，尝试移动到墙单元格会导致失败。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "activation_trigger_condition",
+        "description": "只有在当前单元格上有未拾取的钥匙时才能拾取钥匙，否则会导致失败。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "edge_exclusion_constraint",
+              "description": "网格的边界单元格都是墙，不可穿越。"
+            },
+            {
+              "name": "graph_connectivity",
+              "description": "所有墙单元格通过四个方向（上下左右）连通，形成一个单一的四向连通分量。"
+            },
+            {
+              "name": "path_connectedness",
+              "description": "所有空单元格通过四个方向（上下左右）连通，形成一个单一的四向连通分量，并被墙包围。"
+            },
+            {
+              "name": "adjacent_difference",
+              "description": "每个传送门单元格的八个相邻单元格都是空单元格。"
+            },
+            {
+              "name": "distinct_pairs",
+              "description": "每个传送门单元格属于且仅属于一个传送对，标记为 A, B, C, D, E, F 中的一个字母。"
+            },
+            {
+              "name": "parallel_operation",
+              "description": "进入传送门单元格后，立即传送到配对的单元格，并在同一方向上额外移动一步。"
+            },
+            {
+              "name": "distinct_bomb_locations",
+              "description": "钥匙和宝箱分别位于不同的空单元格上，且不在初始位置。"
+            },
+            {
+              "name": "minimum_path_length_constraint",
+              "description": "拾取钥匙后，必须以最少的动作次数到达宝箱。"
+            },
+            {
+              "name": "valid_position_count",
+              "description": "只能移动到非墙单元格，尝试移动到墙单元格会导致失败。"
+            },
+            {
+              "name": "activation_trigger_condition",
+              "description": "只有在当前单元格上有未拾取的钥匙时才能拾取钥匙，否则会导致失败。"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_cost",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_cost",
+          "description": "求从初始位置到目标位置的最少操作数"
+        }
+      }
+    ],
+    "description": "求从初始位置到目标位置的最少操作数"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成。在本题中，从起点到钥匙再到宝藏的最短路径可以分解为从起点到钥匙的最短路径和从钥匙到宝藏的最短路径。",
+          "properties": {
+            "subproblems_independence": true,
+            "solution_combinable": true
+          }
+        }
+      }
+    ],
+    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成。在本题中，从起点到钥匙再到宝藏的最短路径可以分解为从起点到钥匙的最短路径和从钥匙到宝藏的最短路径。"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "problem_id": "CF1670E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 131072
+        },
+        "value_range": {
+          "min": 1,
+          "max": 262143
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinct_modulo_values",
+            "description": "所有节点和边的值必须是唯一的，且在 [1, 2n-1] 范围内",
+            "formal": "∀ i, j ∈ {nodes ∪ edges}, value(i) ≠ value(j) ∧ 1 ≤ value(i) ≤ 2n-1"
+          },
+          {
+            "name": "bottleneck_path",
+            "description": "选择一个根节点，使得从该根节点出发到任何节点或边的简单路径的最大成本最小化",
+            "formal": "minimize(max(cost(root, v)) for all v in nodes ∪ edges)"
+          },
+          {
+            "name": "path_weight_constraint",
+            "description": "路径的成本定义为路径上所有节点和边的值的异或和",
+            "formal": "cost(u, v) = XOR(value(x) for all x in path(u, v))"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_cost",
+        "description": "最小化从根节点出发到任意节点或边的简单路径的最大代价，其中代价定义为路径上所有节点和边的值的异或和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，具体表现为树上路径的代价可以通过节点和边的值进行递归计算。",
+        "properties": {}
+      }
+    }
+  ]
+}

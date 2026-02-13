@@ -1,0 +1,102 @@
+{
+  "problem_id": "GYM103640I",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "periodic_generation_constraint",
+        "description": "每个元素的更新周期为30天，且更新不能在周末进行，如果更新日期落在周末，则顺延到下一个周一。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "time_constraint",
+        "description": "所有时间存款的创建日期不能是周末。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "periodic_generation_constraint",
+              "description": "每个元素的更新周期为30天，且更新不能在周末进行，如果更新日期落在周末，则顺延到下一个周一。",
+              "formal": "对于每个时间存款 D_i，其更新日期为 (D_i + 30) % 7。如果更新日期是周六或周日，则更新日期调整为 (D_i + 30) % 7 + 2 - ((D_i + 30) % 7)"
+            },
+            {
+              "name": "time_constraint",
+              "description": "所有时间存款的创建日期不能是周末。",
+              "formal": "对于每个时间存款 D_i，(D_i % 7) 不等于 5 或 6"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求最小等待天数"
+        }
+      }
+    ],
+    "description": "求最小等待天数"
+  },
+  "invariant": {
+    "name": "monotonic_sequence_property",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "monotonic_sequence_property",
+          "description": "时间流逝的单调性：从当前日期到每个存款到期日的时间间隔是单调递增的，且在计算过程中保持这一性质不变。",
+          "properties": {
+            "right_monotonic": true
+          }
+        }
+      }
+    ],
+    "description": "时间流逝的单调性：从当前日期到每个存款到期日的时间间隔是单调递增的，且在计算过程中保持这一性质不变。"
+  }
+}

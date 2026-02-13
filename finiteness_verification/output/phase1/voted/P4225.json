@@ -1,0 +1,144 @@
+{
+  "problem_id": "P4225",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 23
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 23
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacent_difference",
+        "description": "相邻节点取值不同（图着色约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "node_degree_constraint",
+        "description": "每个节点的度数不超过 2（即每个位置最多有两个青蛙）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "movement_constraint",
+        "description": "节点只能向特定方向移动或跳过一个不同方向的节点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pairwise_exclusion",
+        "description": "选择的元素不能重复（即每次只能选择一个游戏进行操作）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "turn_based_operation",
+        "description": "双方轮流行动，每轮只能选择一个游戏进行操作",
+        "confidence": "1/1"
+      },
+      {
+        "name": "reachability_constraint",
+        "description": "从初始状态出发，所有可能的状态必须是可达的",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacent_difference",
+              "description": "相邻节点取值不同（图着色约束）",
+              "formal": "对于任意两个相邻节点 u 和 v，有 color(u) ≠ color(v)"
+            },
+            {
+              "name": "node_degree_constraint",
+              "description": "每个节点的度数不超过 2（即每个位置最多有两个青蛙）",
+              "formal": "对于任意节点 u，有 degree(u) ≤ 2"
+            },
+            {
+              "name": "movement_constraint",
+              "description": "节点只能向特定方向移动或跳过一个不同方向的节点",
+              "formal": "对于任意节点 u，若 u 的方向为 d，则 u 只能向 d 方向移动一格或跳过一个方向为 -d 的节点"
+            },
+            {
+              "name": "pairwise_exclusion",
+              "description": "选择的元素不能重复（即每次只能选择一个游戏进行操作）",
+              "formal": "对于任意两个游戏 i 和 j，若选择了 i，则不能同时选择 j"
+            },
+            {
+              "name": "turn_based_operation",
+              "description": "双方轮流行动，每轮只能选择一个游戏进行操作",
+              "formal": "对于任意轮次 t，玩家只能选择一个未被 kill 的游戏进行操作"
+            },
+            {
+              "name": "reachability_constraint",
+              "description": "从初始状态出发，所有可能的状态必须是可达的",
+              "formal": "对于任意状态 s，存在一条从初始状态到 s 的路径"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "计算在给定条件下，不同胜者情况的概率"
+        }
+      }
+    ],
+    "description": "计算在给定条件下，不同胜者情况的概率"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个状态下的胜率可以由其可达状态的胜率推导得出",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个状态下的胜率可以由其可达状态的胜率推导得出"
+  }
+}

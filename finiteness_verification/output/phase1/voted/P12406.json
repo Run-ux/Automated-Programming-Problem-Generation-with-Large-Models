@@ -1,0 +1,114 @@
+{
+  "problem_id": "P12406",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "minimum_cost_constraint",
+        "description": "操作消耗代价，具体为：循环左移或右移时若 a_1 ≠ 0 则分别消耗 x 或 y 点代价；交换 x, y 消耗 z 点代价。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "constant_submatrix",
+        "description": "当 a_1 = b_1 时，可以将 b 循环左移一位，并令 a_1 = 0，且此操作不消耗代价。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "target_sequence",
+        "description": "最终状态要求对于所有 1 ≤ i ≤ n 有 a_i = 0。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "minimum_cost_constraint",
+              "description": "操作消耗代价，具体为：循环左移或右移时若 a_1 ≠ 0 则分别消耗 x 或 y 点代价；交换 x, y 消耗 z 点代价。",
+              "formal": "if a_1 ≠ 0: left_shift_cost = x, right_shift_cost = y; swap_cost = z"
+            },
+            {
+              "name": "constant_submatrix",
+              "description": "当 a_1 = b_1 时，可以将 b 循环左移一位，并令 a_1 = 0，且此操作不消耗代价。",
+              "formal": "if a_1 == b_1: b = [b_2, ..., b_n, b_1], a_1 = 0, cost = 0"
+            },
+            {
+              "name": "target_sequence",
+              "description": "最终状态要求对于所有 1 ≤ i ≤ n 有 a_i = 0。",
+              "formal": "∀ 1 ≤ i ≤ n, a_i = 0"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_cost",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_cost",
+          "description": "求最小化操作总代价"
+        }
+      }
+    ],
+    "description": "求最小化操作总代价"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优解可以通过子问题的最优解组合而成，即通过一系列操作将排列a变为全0的最小代价可以分解为多个子问题的最优解之和。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优解可以通过子问题的最优解组合而成，即通过一系列操作将排列a变为全0的最小代价可以分解为多个子问题的最优解之和。"
+  }
+}

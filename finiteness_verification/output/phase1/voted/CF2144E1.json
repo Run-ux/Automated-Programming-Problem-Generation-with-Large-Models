@@ -1,0 +1,117 @@
+{
+  "problem_id": "CF2144E1",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 5000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 5000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "prefix_sum_constraint",
+        "description": "从左向右看，能看到的元素必须严格高于之前的所有元素（单调递增子序列约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "suffix_sum_constraint",
+        "description": "从右向左看，能看到的元素必须严格高于之后的所有元素（单调递减子序列约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subarray_partition_constraint",
+        "description": "子序列 a' 的左视图和右视图必须与原序列 a 的左视图和右视图相同",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "prefix_sum_constraint",
+              "description": "从左向右看，能看到的元素必须严格高于之前的所有元素（单调递增子序列约束）",
+              "formal": "对于所有 i < j, 如果 a[i] < a[j] 且 a[i] 是 a[0:i] 中的最大值，则 a[j] 必须是 a[0:j] 中的最大值"
+            },
+            {
+              "name": "suffix_sum_constraint",
+              "description": "从右向左看，能看到的元素必须严格高于之后的所有元素（单调递减子序列约束）",
+              "formal": "对于所有 i > j, 如果 a[i] < a[j] 且 a[i] 是 a[i:n] 中的最大值，则 a[j] 必须是 a[j:n] 中的最大值"
+            },
+            {
+              "name": "subarray_partition_constraint",
+              "description": "子序列 a' 的左视图和右视图必须与原序列 a 的左视图和右视图相同",
+              "formal": "L(a) = L(a') 且 R(a) = R(a')"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "统计满足特定条件的子序列数量"
+        }
+      }
+    ],
+    "description": "统计满足特定条件的子序列数量"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的解可以通过子问题的解组合而成，即满足动态规划的基本性质。对于每个子序列，其左侧和右侧可见塔的高度集合可以由更小子序列的相应集合推导得出。",
+          "properties": {
+            "subproblem_independence": true,
+            "solution_combinable": true
+          }
+        }
+      }
+    ],
+    "description": "最优子结构：问题的解可以通过子问题的解组合而成，即满足动态规划的基本性质。对于每个子序列，其左侧和右侧可见塔的高度集合可以由更小子序列的相应集合推导得出。"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "problem_id": "CF1580D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 4000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 2147483647
+        },
+        "properties": {
+          "ordered": false,
+          "distinct": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinct_simple_paths",
+            "description": "序列中的所有元素互不相同",
+            "formal": "∀ i, j (1 ≤ i < j ≤ n) : a_i ≠ a_j"
+          },
+          {
+            "name": "path_length_constraint",
+            "description": "选择的子序列长度为 m",
+            "formal": "|b| = m"
+          },
+          {
+            "name": "weight_adjustment",
+            "description": "子序列的价值定义为 ∑(m * a_{b_i}) - ∑∑ f(min(b_i, b_j), max(b_i, b_j))，其中 f(i, j) 表示 a[i] 到 a[j] 之间的最小值",
+            "formal": "value(b) = ∑_{i=1}^m (m * a_{b_i}) - ∑_{i=1}^m ∑_{j=1}^m f(min(b_i, b_j), max(b_i, b_j))"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化所选子序列的定义值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，满足动态规划的核心性质",
+        "properties": {
+          "subproblem_independence": true,
+          "solution_combinable": true
+        }
+      }
+    }
+  ]
+}

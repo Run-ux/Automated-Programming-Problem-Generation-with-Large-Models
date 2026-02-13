@@ -1,0 +1,70 @@
+{
+  "problem_id": "GYM105387L",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "graph_connectivity",
+            "description": "从起点到终点必须存在一条连通路径（图的连通性约束）",
+            "formal": "∃ path from row 1 to row n"
+          },
+          {
+            "name": "bottleneck_path",
+            "description": "选择的路径中未着色单元格数量最小化（最短路径约束）",
+            "formal": "minimize |unpainted_cells(path)|"
+          },
+          {
+            "name": "adjacent_difference",
+            "description": "相邻节点取值不同（图着色约束）",
+            "formal": "∀ (u, v) ∈ E, color(u) ≠ color(v)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_cost",
+        "description": "求连接两个指定行的最小代价路径"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即从第一行到第n行的最小着色路径可以由每两行之间的最小着色路径逐步构建。",
+        "properties": {}
+      }
+    }
+  ]
+}

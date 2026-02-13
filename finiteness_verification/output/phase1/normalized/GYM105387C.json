@@ -1,0 +1,68 @@
+{
+  "problem_id": "GYM105387C",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 3,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 2147483647
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "bitwise_xor_operation",
+            "description": "存在一个整数 k，使得对所有元素 t_i 进行异或操作 r_i = t_i xor k 后，序列 r_1, r_2, ..., r_n 满足先非递减后非递增的性质。",
+            "formal": "∃k, ∀i, r_i = t_i ⊕ k 且 ∃p, ∀i < p, r_i ≤ r_{i+1} 且 ∀i ≥ p, r_i ≥ r_{i+1}"
+          },
+          {
+            "name": "non_decreasing_sequence",
+            "description": "序列 r_1, r_2, ..., r_n 应该先非递减后非递增，并且非递减和非递增的区间长度至少为 2。",
+            "formal": "∃p, ∀i < p, r_i ≤ r_{i+1} 且 ∀i ≥ p, r_i ≥ r_{i+1} 且 |{i | r_i ≤ r_{i+1}}| ≥ 2 且 |{i | r_i ≥ r_{i+1}}| ≥ 2"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "构造一个满足条件的整数k，使得对给定序列进行异或操作后，新序列先非递减再非递增"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "monotonic_sequence_property",
+        "description": "序列经过特定操作后，存在一个分界点，使得分界点左侧的子序列非递减，右侧的子序列非递增。这种性质在整个算法执行过程中保持不变。",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      }
+    }
+  ]
+}

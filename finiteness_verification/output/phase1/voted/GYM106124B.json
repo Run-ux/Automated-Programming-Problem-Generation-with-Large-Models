@@ -1,0 +1,134 @@
+{
+  "problem_id": "GYM106124B",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 2,
+            "max": 100
+          },
+          "value_range": {
+            "min": 5,
+            "max": 483
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100
+    },
+    "value_range": {
+      "min": 5,
+      "max": 483
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "maximum_edge_weight_constraint",
+        "description": "选取元素的总厚度不超过容量上限（书架宽度）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "maximum_tree_depth_constraint",
+        "description": "每个元素的高度不超过高度限制（书架高度）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_decreasing_sequence",
+        "description": "堆叠元素按非递增顺序排列（书脊高度）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "stack_size_constraint",
+        "description": "堆叠元素的总厚度不超过高度限制（书架高度）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimum_element_count_constraint",
+        "description": "至少有一个元素在竖直放置集合中，且至少有一个元素在堆叠集合中",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "maximum_edge_weight_constraint",
+              "description": "选取元素的总厚度不超过容量上限（书架宽度）",
+              "formal": "sum(t_i for i in upright_books) + sum(t_j for j in stacked_books) <= W"
+            },
+            {
+              "name": "maximum_tree_depth_constraint",
+              "description": "每个元素的高度不超过高度限制（书架高度）",
+              "formal": "h_i <= H for all i in upright_books"
+            },
+            {
+              "name": "non_decreasing_sequence",
+              "description": "堆叠元素按非递增顺序排列（书脊高度）",
+              "formal": "h_i >= h_{i+1} for all i in stacked_books"
+            },
+            {
+              "name": "stack_size_constraint",
+              "description": "堆叠元素的总厚度不超过高度限制（书架高度）",
+              "formal": "sum(h_i for i in stacked_books) <= H"
+            },
+            {
+              "name": "minimum_element_count_constraint",
+              "description": "至少有一个元素在竖直放置集合中，且至少有一个元素在堆叠集合中",
+              "formal": "len(upright_books) >= 1 and len(stacked_books) >= 1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "构造一个满足条件的书籍排列方案，使得至少有一本书竖直放置且至少有一本书水平堆叠"
+        }
+      }
+    ],
+    "description": "构造一个满足条件的书籍排列方案，使得至少有一本书竖直放置且至少有一本书水平堆叠"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即通过选择部分书籍竖直放置和部分书籍水平堆叠来满足书架的高度和宽度限制。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即通过选择部分书籍竖直放置和部分书籍水平堆叠来满足书架的高度和宽度限制。"
+  }
+}

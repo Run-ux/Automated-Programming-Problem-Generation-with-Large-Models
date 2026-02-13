@@ -1,0 +1,173 @@
+{
+  "problem_id": "CF992E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "king_shaman_power_sum",
+            "description": "一个国王萨满的魔法力量必须等于其所有前任萨满的魔法力量之和。",
+            "formal": "a[j] == sum(a[i] for i in range(1, j)) if j is a king-shaman"
+          },
+          {
+            "name": "unique_king_shaman_index",
+            "description": "如果存在多个国王萨满，输出任意一个国王萨满的索引即可。",
+            "formal": "if multiple king-shamans exist, output any one of their indices"
+          }
+        ]
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "king_shaman_power",
+            "description": "一个萨满可以成为国王萨满，当且仅当他的魔法力量等于所有前驱萨满的魔法力量之和。",
+            "formal": "a[i] == sum(a[j] for j in range(1, i)) if a[i] is a king-shaman"
+          },
+          {
+            "name": "power_update",
+            "description": "每次更新操作会改变某个萨满的魔法力量，并需要重新判断是否存在国王萨满。",
+            "formal": "a[p_i] = x_i; check for king-shaman after each update"
+          }
+        ]
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "king_shaman_power_sum",
+            "description": "一个萨满可以成为国王萨满，如果他的魔法力量等于所有前驱萨满的魔法力量之和。",
+            "formal": "a[i] == sum(a[j] for j in range(0, i)) if a[i] is a king-shaman"
+          },
+          {
+            "name": "power_update",
+            "description": "每次更新操作会改变某个萨满的魔法力量，并且需要重新判断是否存在国王萨满。",
+            "formal": "a[p_i] = x_i; check for king-shamans after each update"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "decision",
+        "description": "判断是否存在至少一个国王萨满，即其魔法力量等于所有前驱萨满的魔法力量之和"
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "type": "decision",
+        "description": "判断在每次修改后是否存在至少一个国王萨满"
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "type": "decision",
+        "description": "判断是否存在至少一个国王萨满，即其魔法力量等于所有前驱萨满的魔法力量之和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "interval_mergeable",
+        "description": "前缀和：区间和可通过端点差值计算，用于快速查询任意区间的总和",
+        "properties": {}
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "name": "interval_mergeable",
+        "description": "前缀和：区间和可通过端点差值计算，通过维护前缀和数组可以快速判断是否存在king-shaman",
+        "properties": {}
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "name": "interval_mergeable",
+        "description": "区间和可通过端点差值计算，即前缀和的性质使得可以快速查询任意区间的总和",
+        "properties": {
+          "prefix_sum": true
+        }
+      }
+    }
+  ]
+}

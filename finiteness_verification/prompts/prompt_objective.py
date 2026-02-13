@@ -50,6 +50,13 @@ def build_system_prompt() -> str:
    - "是否存在"、"能否" → decision
    - "输出任意"、"构造一个" → construction
 3. 如果题目有多个子问题，选择主要目标
+
+抽象化要求（CRITICAL）：
+- type 和 description 必须用算法领域的抽象术语，严禁包含原题目的具体情境词汇
+- 必须将题目情境翻译为通用的算法优化目标
+- 反例：题目说"求鲨鱼能吃到的最多鱿鱼数" → type 不能写 "max_squid"，应写 "max_matching" 或 "max_count"
+- 反例：题目说"求从家到学校的最短路" → description 不能写 "求从家到学校的最短路"，应写 "求两点间最短路径长度"
+- 正例：题目说"收集最多金币" → type 写 "max_sum"，description 写 "最大化路径上的权值和"
 """
 
 
@@ -103,6 +110,7 @@ def build_user_prompt(problem: Dict[str, Any]) -> str:
    - 求"有多少个" → count
    - 判断"是否存在" → decision
    - 要求"输出方案" → construction
+5. 所有输出必须是算法领域的抽象概括，不得包含题目中的具体情境词汇（如角色名、物品名等），需翻译为通用的算法术语
 """
 
 

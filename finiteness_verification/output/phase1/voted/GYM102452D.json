@@ -1,0 +1,114 @@
+{
+  "problem_id": "GYM102452D",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": {
+              "k": 2,
+              "X": 1
+            },
+            "max": {
+              "k": 10,
+              "X": 1000000000
+            }
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": {
+        "k": 2,
+        "X": 1
+      },
+      "max": {
+        "k": 10,
+        "X": 1000000000
+      }
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "labeling_scheme_base_k",
+        "description": "标签使用从 10-k 到 9 的数字，且每个标签的每一位都必须在这个范围内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "label_sequence_constraint",
+        "description": "标签按字典序递增排列",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "labeling_scheme_base_k",
+              "description": "标签使用从 10-k 到 9 的数字，且每个标签的每一位都必须在这个范围内",
+              "formal": "∀i, label[i] ∈ {10-k, 10-k+1, ..., 9}"
+            },
+            {
+              "name": "label_sequence_constraint",
+              "description": "标签按字典序递增排列",
+              "formal": "label[i] < label[i+1]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "构造第X个基于给定基数的标签"
+        }
+      }
+    ],
+    "description": "构造第X个基于给定基数的标签"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的解可以通过子问题的解组合而成，当前标签的生成依赖于前一个标签的状态",
+          "properties": {
+            "subproblem_combination": true
+          }
+        }
+      }
+    ],
+    "description": "最优子结构：问题的解可以通过子问题的解组合而成，当前标签的生成依赖于前一个标签的状态"
+  }
+}

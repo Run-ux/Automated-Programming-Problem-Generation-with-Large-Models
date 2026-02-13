@@ -1,0 +1,73 @@
+{
+  "problem_id": "GYM105408J",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "string",
+        "length": {
+          "min": 1,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "prefix_sum_constraint",
+            "description": "前缀和非负（在任何时刻，已选取的元素中某类元素的数量不少于另一类）",
+            "formal": "对于所有 0 ≤ i < N, sum(prefix[i]) ≥ 0"
+          },
+          {
+            "name": "endpoint_node_constraint",
+            "description": "只能从两端访问（每次只能从序列的两端选取元素）",
+            "formal": "每次选取的元素索引为 0 或当前序列长度-1"
+          },
+          {
+            "name": "distinct_permutation",
+            "description": "不同排列（两个排列被认为是不同的，如果存在至少一对元素 i 和 j，在一个排列中 i 在 j 之前而在另一个排列中 j 在 i 之前）",
+            "formal": "对于两个排列 P1 和 P2，存在 i, j 使得 (P1[i] < P1[j] 且 P2[i] > P2[j]) 或 (P1[i] > P1[j] 且 P2[i] < P2[j])"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足条件的不同排列数量的最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "monotonic_sequence_property",
+        "description": "双指针左右端点单调前进，区间合法性可单调维护",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      }
+    }
+  ]
+}

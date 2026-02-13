@@ -1,0 +1,77 @@
+{
+  "problem_id": "GYM101962B",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "string",
+        "length": {
+          "min": 1,
+          "max": 2000
+        },
+        "value_range": {
+          "min": 97,
+          "max": 122
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacent_difference",
+            "description": "相邻节点取值不同（图着色约束）",
+            "formal": "对于所有 i, s[i] != s[i+1]"
+          },
+          {
+            "name": "pairwise_exclusion",
+            "description": "零瓷砖和一瓷砖不能有不同的颜色",
+            "formal": "对于所有 i, j, 如果 t[i] == t[j] 且 t[i] == '0' 或 t[i] == '1', 则 sofa[i] == sofa[j]"
+          },
+          {
+            "name": "bottleneck_path",
+            "description": "选取元素权重和不超过容量上限（沙发长度不超过房间长度）",
+            "formal": "m <= n"
+          },
+          {
+            "name": "adjacent_difference",
+            "description": "双向放置时，每个位置只计一次",
+            "formal": "如果沙发在位置 i 和 n-i-1 都可以放置，则只计一次"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "统计满足条件的子区间数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：通过端点差值计算区间合法性，满足前缀和的性质",
+        "properties": {
+          "prefix_sum": true
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "problem_id": "CF496E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_inclusion",
+            "description": "每个元素必须被分配到一个满足区间包含关系的集合中（部分必须在演员的音域范围内）",
+            "formal": "∀i, j: (c_i ≤ a_j) ∧ (b_j ≤ d_i)"
+          },
+          {
+            "name": "bottleneck_path",
+            "description": "每个集合最多可以包含 k 个元素（每个演员最多表演 k 个部分）",
+            "formal": "∀i: |{j | part_j assigned to actor_i}| ≤ k_i"
+          },
+          {
+            "name": "pairwise_exclusion",
+            "description": "每个元素只能被分配到一个集合中（每个部分只能由一个演员表演）",
+            "formal": "∀j: |{i | part_j assigned to actor_i}| = 1"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "判断是否存在满足条件的分配方案"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：大问题的解由子问题的解组合而成，每个部分分配给演员的问题可以分解为更小的子问题，并且这些子问题的最优解可以组合成原问题的最优解。",
+        "properties": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "problem_id": "GYM104011D",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacent_difference",
+        "description": "相邻元素差值不超过 m-1（时间戳按天数分组）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_decreasing_sequence",
+        "description": "存在一个最长的连续子序列，使得每个子序列中的元素在不同的天数内",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacent_difference",
+              "description": "相邻元素差值不超过 m-1（时间戳按天数分组）",
+              "formal": "∀i ∈ [1, n-1], a[i+1] - a[i] ≤ m-1"
+            },
+            {
+              "name": "non_decreasing_sequence",
+              "description": "存在一个最长的连续子序列，使得每个子序列中的元素在不同的天数内",
+              "formal": "∃l, r, ∀d ∈ [l, r], ∃i, j, a[i] ≤ d*m < a[j] 且 a[i] 和 a[j] 在不同天数内"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求满足条件的最长连续子序列长度"
+        }
+      }
+    ],
+    "description": "求满足条件的最长连续子序列长度"
+  },
+  "invariant": {
+    "name": "monotonic_sequence_property",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "monotonic_sequence_property",
+          "description": "通过调整时间偏移量，可以找到一个最优的时间偏移值使得连续天数的最大值达到最大。在这个过程中，随着偏移量的增加，连续天数的变化具有单调性。",
+          "properties": {
+            "left_monotonic": false,
+            "right_monotonic": true
+          }
+        }
+      }
+    ],
+    "description": "通过调整时间偏移量，可以找到一个最优的时间偏移值使得连续天数的最大值达到最大。在这个过程中，随着偏移量的增加，连续天数的变化具有单调性。"
+  }
+}

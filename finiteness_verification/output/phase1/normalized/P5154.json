@@ -1,0 +1,70 @@
+{
+  "problem_id": "P5154",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 800
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacent_pairwise_gcd_constraint",
+            "description": "相邻元素不互质时可以消除，并获得相应分数（图着色约束）",
+            "formal": "对于所有 i (1 ≤ i < N)，如果 gcd(A[i], A[i+1]) > 1，则可以消除 A[i] 和 A[i+1]"
+          },
+          {
+            "name": "path_weight_constraint",
+            "description": "每次消除相邻元素时，累加相应的分数（动态规划约束）",
+            "formal": "总得分 = Σ(B[i] + B[i+1]) 对于所有被消除的 (A[i], A[i+1])"
+          },
+          {
+            "name": "path_completion_constraint",
+            "description": "当所有相邻元素都互质时，游戏结束（终止条件约束）",
+            "formal": "对于所有 i (1 ≤ i < N)，gcd(A[i], A[i+1]) = 1 时，游戏结束"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化通过消除相邻且不互质的数对所获得的分数总和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在每一步选择消除一对相邻数时，当前状态的最优解依赖于之前状态的最优解。",
+        "properties": {}
+      }
+    }
+  ]
+}

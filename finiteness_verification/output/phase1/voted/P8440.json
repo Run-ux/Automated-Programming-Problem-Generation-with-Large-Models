@@ -1,0 +1,126 @@
+{
+  "problem_id": "P8440",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": {
+              "r": 1,
+              "k": 0
+            },
+            "max": {
+              "r": 9223372036854775807,
+              "k": 30
+            }
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": {
+        "r": 1,
+        "k": 0
+      },
+      "max": {
+        "r": 9223372036854775807,
+        "k": 30
+      }
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "closed_form_expression",
+        "description": "函数 f(x) 的定义为分段函数，根据 x 的值不同有不同的计算方式。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modulo_accumulation",
+        "description": "求 S = (Σ_{i=0}^r f^k(i)) mod (10^9+7)，其中 f^k(i) 表示 f(i) 的 k 次幂。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "constant_submatrix",
+        "description": "定义 0^0 = 1。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "closed_form_expression",
+              "description": "函数 f(x) 的定义为分段函数，根据 x 的值不同有不同的计算方式。",
+              "formal": "f(x) = {0 if x=0, 1 if x=1, 2*f(x/2) if 2|x and x>0, 2*f((x-1)/2) + (2/(x-1))*f((x-1)/2) + x otherwise}"
+            },
+            {
+              "name": "modulo_accumulation",
+              "description": "求 S = (Σ_{i=0}^r f^k(i)) mod (10^9+7)，其中 f^k(i) 表示 f(i) 的 k 次幂。",
+              "formal": "S = (Σ_{i=0}^r (f(i))^k) % (10^9+7)"
+            },
+            {
+              "name": "constant_submatrix",
+              "description": "定义 0^0 = 1。",
+              "formal": "0^0 = 1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求在给定范围内函数值的k次幂之和的最大值"
+        }
+      }
+    ],
+    "description": "求在给定范围内函数值的k次幂之和的最大值"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：大问题的解由子问题的解组合而成，满足递归定义的函数值可以通过较小规模的子问题求解",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：大问题的解由子问题的解组合而成，满足递归定义的函数值可以通过较小规模的子问题求解"
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "problem_id": "GYM101341K",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "pairwise_exclusion",
+        "description": "选择的区间不能重叠（活动选择约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "global_optimization_objective",
+        "description": "在总效用最大化的前提下，使总时长最小化（多目标优化约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "pairwise_exclusion",
+              "description": "选择的区间不能重叠（活动选择约束）",
+              "formal": "对于所有选中的区间 i 和 j (i ≠ j)，有 b_i ≤ a_j 或 b_j ≤ a_i"
+            },
+            {
+              "name": "global_optimization_objective",
+              "description": "在总效用最大化的前提下，使总时长最小化（多目标优化约束）",
+              "formal": "最大化 ∑c_i 的同时，最小化 ∑(b_i - a_i)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化选择的子集的权值和，同时在权值和相同的情况下最小化总时长"
+        }
+      }
+    ],
+    "description": "最大化选择的子集的权值和，同时在权值和相同的情况下最小化总时长"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，适用于动态规划方法解决该问题",
+          "properties": {
+            "subproblem_independence": true,
+            "solution_combinability": true
+          }
+        }
+      }
+    ],
+    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，适用于动态规划方法解决该问题"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "problem_id": "P7512",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": true,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subarray_partition_constraint",
+            "description": "将数轴上的整点划分成若干个区间，每个区间的左端点和右端点满足 l1=1, rp=n 且对于 1 ≤ i < p 有 ri = li+1-1。",
+            "formal": "l1 = 1, rp = n, ∀ 1 ≤ i < p: ri = li+1 - 1"
+          },
+          {
+            "name": "vertex_coloring_constraint",
+            "description": "每个区间可以标记为黑色或白色，但不允许第一个区间和最后一个区间同时被标记为黑色。",
+            "formal": "∀ 1 ≤ i ≤ p: color[i] ∈ {black, white}, color[1] ≠ black ∨ color[p] ≠ black"
+          },
+          {
+            "name": "range_selection_constraint",
+            "description": "在每个区间内选出一个子区间，称为绝妙子区间。",
+            "formal": "∀ 1 ≤ i ≤ p: ∃ [li, ri] ⊆ [li, ri]"
+          },
+          {
+            "name": "maximal_contiguous_segment",
+            "description": "在每个极长连续黑区间段中各选出一个黑色区间，称为绝妙黑区间。",
+            "formal": "∀ 极长连续黑区间段 [L, R]: ∃ [li, ri] ⊆ [L, R], color[li:ri] = black"
+          },
+          {
+            "name": "maximal_contiguous_segment_selection",
+            "description": "在所有的极长连续黑区间段中钦定若干个称作绝妙极长连续黑区间段。",
+            "formal": "从所有极长连续黑区间段中选择若干个"
+          },
+          {
+            "name": "edge_weight_definition",
+            "description": "方案的权值定义为黑色区间的个数与绝妙极长连续黑区间段个数的和。",
+            "formal": "weight = |{i: color[i] = black}| + |{绝妙极长连续黑区间段}|"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "统计满足条件的方案数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：大问题的解由子问题的解组合而成，每个区间的标记和选择可以独立考虑，并且最终方案的权值可以通过子区间的结果进行合并计算",
+        "properties": {}
+      }
+    }
+  ]
+}

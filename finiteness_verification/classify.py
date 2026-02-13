@@ -71,6 +71,7 @@ def build_classification_prompt(
 2. 如果没有合适的类别，选择 "OTHER"
 3. 输出严格的 JSON 格式：{{"category": "选中的类别", "confidence": "high/medium/low"}}
 4. 不要输出解释文字，只输出 JSON
+5. 分类时关注题目的算法本质，忽略具体情境包装（如角色名、物品名等），从算法/数据结构角度选择类别
 
 置信度标准：
 - high: 非常确定该类别

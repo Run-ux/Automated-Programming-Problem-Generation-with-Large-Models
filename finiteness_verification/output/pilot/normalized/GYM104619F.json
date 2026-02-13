@@ -1,0 +1,187 @@
+{
+  "problem_id": "GYM104619F",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "graph",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "connected": false,
+          "weighted": false
+        }
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "type": "graph",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "connected": false,
+          "weighted": false
+        }
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "type": "graph",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "undirected": true,
+          "simple": true,
+          "connected": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "simple_undirected_graph",
+            "description": "图是简单无向图，即任意一对顶点之间最多只有一条边"
+          },
+          {
+            "name": "sequential_edge_removal",
+            "description": "依次移除给定的边，并在每次移除后报告图中剩余的桥的数量"
+          },
+          {
+            "name": "valid_edges",
+            "description": "每条要移除的边必须是图中存在的边"
+          },
+          {
+            "name": "no_duplicate_removal",
+            "description": "不会重复移除同一条边"
+          }
+        ]
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "simple_undirected_graph",
+            "description": "图是简单无向图，即任意一对顶点之间最多只有一条边"
+          },
+          {
+            "name": "sequential_edge_removal",
+            "description": "依次移除给定的边，并在每次移除后报告图中剩余的桥的数量"
+          },
+          {
+            "name": "valid_edges_to_remove",
+            "description": "要移除的每条边必须是图中存在的边，并且不会重复移除同一条边"
+          }
+        ]
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "simple_undirected_graph",
+            "description": "图是简单无向图，即任意一对顶点之间最多只有一条边"
+          },
+          {
+            "name": "no_duplicate_removal",
+            "description": "每条边只能被移除一次"
+          },
+          {
+            "name": "valid_edges",
+            "description": "每次移除的边必须是当前图中存在的边"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "count",
+        "description": "在每次删除一条边后，计算并输出图中剩余的桥的数量"
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "type": "count",
+        "description": "在每次删除一条边后，计算并输出图中剩余的桥的数量"
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "type": "count",
+        "description": "在每次移除一条边后，计算并输出图中剩余的桥的数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "在每次删除边后，剩余图的桥的数量可以通过子问题（即删除前的状态）的信息推导出来。具体来说，通过维护每个节点的访问时间、回溯时间以及树中的父子关系，可以有效地识别和更新桥。",
+        "properties": {}
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "在每次删除边后，剩余图中的桥的数量可以通过子问题的解（即删除前的状态）来确定。具体来说，每次删除一条边后，通过更新受影响的节点的信息，可以递归地计算出新的桥的数量。",
+        "properties": {
+          "subproblem_independence": true
+        }
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "在每次删除边后，剩余图中的桥的数量可以通过子问题的解来确定。即，当前图的桥数量依赖于上一步操作后的图状态。",
+        "properties": {}
+      }
+    }
+  ]
+}

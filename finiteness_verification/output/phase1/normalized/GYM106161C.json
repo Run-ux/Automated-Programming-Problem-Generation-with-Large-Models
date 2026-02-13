@@ -1,0 +1,82 @@
+{
+  "problem_id": "GYM106161C",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "edge_weight_decrease",
+            "description": "每次只能运送一个乘客"
+          },
+          {
+            "name": "time_ordering_constraint",
+            "description": "乘客必须在其到达时间或之后才能上船"
+          },
+          {
+            "name": "time_limit_per_resource",
+            "description": "每次过河需要固定的时间 k 单位"
+          },
+          {
+            "name": "priority_based_selection",
+            "description": "所有乘客的上船时间必须按时间顺序排列"
+          },
+          {
+            "name": "cooldown_period_constraint",
+            "description": "连续两次上船的时间间隔至少为 k 单位，如果从同一岸出发则至少为 2k 单位"
+          },
+          {
+            "name": "path_completion_constraint",
+            "description": "所有乘客必须成功过河并到达对岸"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_cost",
+        "description": "求所有乘客到达对岸的最短总时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "monotonic_sequence_property",
+        "description": "双指针左右端点单调前进，确保每次选择的乘客都是当前可选乘客中最早到达的，从而保证时间上的最优性。",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      }
+    }
+  ]
+}

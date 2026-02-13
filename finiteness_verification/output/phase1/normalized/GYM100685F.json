@@ -1,0 +1,77 @@
+{
+  "problem_id": "GYM100685F",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "directed_graph",
+        "length": {
+          "min": 2,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000
+        },
+        "properties": {
+          "connected": false,
+          "weighted": false,
+          "acyclic": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "bottleneck_path",
+            "description": "每个节点的水量不能超过其容量上限"
+          },
+          {
+            "name": "balanced_flow_constraint",
+            "description": "当一个节点满水时，水流均匀分配到所有连接的下游节点"
+          },
+          {
+            "name": "directed_acyclic_graph",
+            "description": "图中不存在环路"
+          },
+          {
+            "name": "simple_graph",
+            "description": "任意两个节点之间最多只有一条边"
+          },
+          {
+            "name": "balanced_flow_constraint",
+            "description": "如果一个节点满水且没有下游节点，则多余的水直接流入海中"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求网络流中目标节点的最终值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个水塘的最终水量由其上游水塘的溢出水量决定，且整个系统的最终状态可以通过子问题（每个水塘的状态）的解组合而成。",
+        "properties": {}
+      }
+    }
+  ]
+}

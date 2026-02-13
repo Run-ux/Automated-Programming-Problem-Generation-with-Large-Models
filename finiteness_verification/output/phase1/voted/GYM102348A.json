@@ -1,0 +1,104 @@
+{
+  "problem_id": "GYM102348A",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 5,
+            "max": 5
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 5,
+      "max": 5
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "bottleneck_path",
+        "description": "每个节点的权重和不超过其容量上限（每队球员收到黄牌数量达到上限后被罚下）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pairwise_exclusion",
+        "description": "选择的元素不能重复（每张黄牌只能给一个球员）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "bottleneck_path",
+              "description": "每个节点的权重和不超过其容量上限（每队球员收到黄牌数量达到上限后被罚下）",
+              "formal": "对于每个节点 i，∑(yellow_cards[i]) ≤ capacity[i]"
+            },
+            {
+              "name": "pairwise_exclusion",
+              "description": "选择的元素不能重复（每张黄牌只能给一个球员）",
+              "formal": "对于每张黄牌 j，存在唯一的球员 i 使得 yellow_cards[i] 包含 j"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "计算在给定条件下，可能被移除的元素数量的最小值和最大值"
+        }
+      }
+    ],
+    "description": "计算在给定条件下，可能被移除的元素数量的最小值和最大值"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即通过计算不同分配方案下的最小和最大被罚出场球员数来确定整体的最优解。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即通过计算不同分配方案下的最小和最大被罚出场球员数来确定整体的最优解。"
+  }
+}

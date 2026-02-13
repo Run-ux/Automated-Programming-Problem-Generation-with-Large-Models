@@ -1,0 +1,79 @@
+{
+  "problem_id": "GYM102028B",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "turn_based_operation",
+            "description": "战斗按回合进行，每回合先受到所有存活敌人的攻击，然后选择一个敌人进行攻击"
+          },
+          {
+            "name": "edge_weight_decrease",
+            "description": "每次攻击的伤害值等于当前总攻击次数，即第 i 次攻击的伤害值为 i"
+          },
+          {
+            "name": "edge_weight_decrease",
+            "description": "当一个敌人的生命值小于或等于零时，该敌人立即死亡"
+          },
+          {
+            "name": "global_optimization_objective",
+            "description": "当所有敌人都被击败时，战斗胜利"
+          },
+          {
+            "name": "minimum_operation_count_constraint",
+            "description": "需要找到一种策略，使得在战斗胜利前受到的总伤害最小"
+          },
+          {
+            "name": "non_decreasing_sequence",
+            "description": "在所有最优策略中，选择字典序最小的策略"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_cost",
+        "description": "最小化总代价，同时构造一个字典序最小的最优策略"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每一步选择攻击哪个怪物，使得剩余问题的解也是最优的。通过逐步减少怪物的生命值，最终达到最小化总伤害的目标。",
+        "properties": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "problem_id": "GYM106252M",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 8,
+            "max": 8
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 8,
+      "max": 8
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinct_solution_constraint",
+        "description": "每个团队必须分配一个唯一的种子编号（从1到8）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "priority_based_selection",
+        "description": "在比赛中，较小种子编号的团队使用其a值作为实力，较大种子编号的团队使用其b值作为实力",
+        "confidence": "1/1"
+      },
+      {
+        "name": "maximize_global_optimization_objective",
+        "description": "两个团队比赛时，第一个团队获胜的概率是其实力值除以两个团队的实力值之和",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinct_solution_constraint",
+              "description": "每个团队必须分配一个唯一的种子编号（从1到8）",
+              "formal": "∀i, j ∈ [1, 8], i ≠ j → seed(i) ≠ seed(j)"
+            },
+            {
+              "name": "priority_based_selection",
+              "description": "在比赛中，较小种子编号的团队使用其a值作为实力，较大种子编号的团队使用其b值作为实力",
+              "formal": "if seed(i) < seed(j), then strength(i) = a_i and strength(j) = b_j"
+            },
+            {
+              "name": "maximize_global_optimization_objective",
+              "description": "两个团队比赛时，第一个团队获胜的概率是其实力值除以两个团队的实力值之和",
+              "formal": "P(team i wins against team j) = strength(i) / (strength(i) + strength(j))"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化特定团队在单淘汰赛中获胜的概率"
+        }
+      }
+    ],
+    "description": "最大化特定团队在单淘汰赛中获胜的概率"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题的解是独立且可合并的",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题的解是独立且可合并的"
+  }
+}

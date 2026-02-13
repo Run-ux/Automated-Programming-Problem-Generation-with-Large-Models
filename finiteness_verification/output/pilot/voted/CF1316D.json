@@ -1,0 +1,237 @@
+{
+  "problem_id": "CF1316D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "3/3",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": -1,
+            "max": 1000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": -1,
+            "max": 1000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": -1,
+            "max": 1000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": -1,
+      "max": 1000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "blocked_zone",
+        "description": "玩家在遇到标记为 X 的单元格时必须停止移动，该单元格称为阻塞区。",
+        "confidence": "2/3"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "blocked_zone",
+              "description": "玩家在遇到标记为 X 的单元格时必须停止移动，该单元格称为阻塞区。"
+            },
+            {
+              "name": "movement_instructions",
+              "description": "每个单元格上有一个字符 U, D, L, R 或 X，指示玩家的移动方向或表示阻塞区。U 表示向上移动，D 表示向下移动，L 表示向左移动，R 表示向右移动，X 表示阻塞区。"
+            },
+            {
+              "name": "within_board_boundaries",
+              "description": "玩家根据当前单元格上的字符移动时，永远不会被要求走出棋盘边界。"
+            },
+            {
+              "name": "infinite_movement",
+              "description": "玩家可能会无限地移动，直到进入一个阻塞区。"
+            },
+            {
+              "name": "unique_end_position",
+              "description": "对于每个起始单元格，Alice 记录了玩家最终停下的单元格或玩家永远不会停下。"
+            }
+          ]
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "blocked_zone",
+              "description": "玩家在遇到字符 X 时，会停留在当前单元格，不再移动。",
+              "formal": "If the character in the cell (r, c) is 'X', the player remains in this cell."
+            },
+            {
+              "name": "movement_within_bounds",
+              "description": "玩家根据当前单元格的字符移动时，永远不会走出棋盘边界。",
+              "formal": "For any move from (r, c) to (r', c'), it holds that 1 ≤ r' ≤ n and 1 ≤ c' ≤ n."
+            },
+            {
+              "name": "infinite_movement_or_stop",
+              "description": "玩家从任意一个单元格开始，要么最终停在一个被阻挡的单元格（X），要么无限地移动下去。",
+              "formal": "Starting from any cell (r, c), the player either stops at a blocked zone or moves infinitely."
+            },
+            {
+              "name": "consistent_with_alice_info",
+              "description": "生成的棋盘必须与 Alice 提供的信息一致。对于每个单元格 (r, c)，Alice 给出的停止位置或无限移动的状态必须与实际游戏结果相符。",
+              "formal": "For each cell (r, c), the final position or infinite movement state must match the information provided by Alice."
+            }
+          ]
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "blocked_zone_stops_movement",
+              "description": "当玩家移动到标记为 X 的单元格时，玩家将停止移动。"
+            },
+            {
+              "name": "movement_within_bounds",
+              "description": "玩家根据当前单元格的字符移动时，永远不会移出棋盘边界。"
+            },
+            {
+              "name": "infinite_or_terminating_path",
+              "description": "从任意一个单元格开始，玩家要么最终停在一个被阻挡的单元格上，要么会无限地移动下去。"
+            },
+            {
+              "name": "consistent_with_alice_info",
+              "description": "生成的棋盘必须与 Alice 提供的信息一致，即对于每个起始单元格 (r, c)，玩家最终停留的位置或是否无限移动应符合 Alice 给出的结果。"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "decision",
+    "confidence": "3/3",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "decision",
+          "description": "判断是否存在一个满足Alice给出的所有约束条件的n×n棋盘"
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "type": "decision",
+          "description": "判断是否存在一个满足Alice给出的所有约束条件的棋盘"
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "type": "decision",
+          "description": "判断是否存在一个满足Alice给出的所有约束条件的n×n棋盘"
+        }
+      }
+    ],
+    "description": "判断是否存在一个满足Alice给出的所有约束条件的n×n棋盘"
+  },
+  "invariant": {
+    "name": "state_dependency",
+    "confidence": "3/3",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "state_dependency",
+          "description": "当前格子的状态（即玩家最终会停在哪个格子）只依赖于其相邻格子的状态，符合马尔可夫性质。",
+          "properties": {
+            "markov_property": true
+          }
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "name": "state_dependency",
+          "description": "当前单元格的状态（即最终停在哪个单元格）只依赖于其相邻单元格的状态，符合马尔可夫性质。",
+          "properties": {
+            "markov_property": true
+          }
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "name": "state_dependency",
+          "description": "当前格子的状态（即最终停在哪一个格子）只依赖于其相邻格子的状态，符合马尔可夫性质。",
+          "properties": {
+            "markov_property": true
+          }
+        }
+      }
+    ],
+    "description": "当前格子的状态（即玩家最终会停在哪个格子）只依赖于其相邻格子的状态，符合马尔可夫性质。"
+  }
+}

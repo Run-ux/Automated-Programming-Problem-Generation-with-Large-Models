@@ -1,0 +1,74 @@
+{
+  "problem_id": "CF1641C",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "overlapping_interval_constraint",
+            "description": "在给定区间内，至少存在一个病患或没有病患（区间查询约束）",
+            "formal": "对于每个查询 (l, r, x)，如果 x = 1，则 [l, r] 区间内至少有一个病患；如果 x = 0，则 [l, r] 区间内没有病患"
+          },
+          {
+            "name": "query_count_constraint",
+            "description": "所有查询必须一致，即存在一种队列状态使得所有查询结果都成立（一致性约束）",
+            "formal": "存在一个长度为 n 的二进制数组 A，使得对于每个查询 (l, r, x)，A[l:r] 中的元素满足 x 的条件"
+          },
+          {
+            "name": "distinct_solution_constraint",
+            "description": "根据已有的查询信息，能够确定某个位置的状态（确定性约束）",
+            "formal": "对于每个查询 j，根据之前的查询 (l, r, x) 能够确定 A[j] 的值为 0 或 1，或者无法确定"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "判断给定位置的元素是否可以确定为特定值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "interval_mergeable",
+        "description": "区间信息可通过子区间合并，查询和更新操作基于区间进行，满足区间可合并性",
+        "properties": {
+          "prefix_summable": true,
+          "range_query": true,
+          "range_update": true
+        }
+      }
+    }
+  ]
+}

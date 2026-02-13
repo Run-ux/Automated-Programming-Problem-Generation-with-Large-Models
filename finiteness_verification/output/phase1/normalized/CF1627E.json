@@ -1,0 +1,80 @@
+{
+  "problem_id": "CF1627E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_directed_graph",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": -1000000,
+          "max": 1000000
+        },
+        "properties": {
+          "weighted": true,
+          "directed": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "directed_complete_graph",
+            "description": "边是有向的，只能从低楼层到高楼层（图中的边有方向性）"
+          },
+          {
+            "name": "adjacent_sum_constraint",
+            "description": "相邻节点之间的移动成本与楼层相关（在同层内移动时，损失的健康点数与移动距离成正比）",
+            "formal": "cost(i, j, k) = |j - k| * x_i"
+          },
+          {
+            "name": "source_node_fixed",
+            "description": "起点和终点固定（必须从 (1, 1) 到达 (n, m)）"
+          },
+          {
+            "name": "distinct_simple_paths",
+            "description": "任意两个房间之间最多只有一条梯子（图中任意两个节点之间最多只有一条边）"
+          },
+          {
+            "name": "weight_adjustment",
+            "description": "使用梯子可以增加健康点数（通过某些边可以增加权重）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_cost",
+        "description": "求从起点到终点的最小代价路径"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，满足动态规划的基本性质",
+        "properties": {
+          "subproblem_independence": true,
+          "solution_combinable": true
+        }
+      }
+    }
+  ]
+}

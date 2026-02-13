@@ -1,0 +1,127 @@
+{
+  "problem_id": "P14446",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 1,
+            "max": 200
+          },
+          "value_range": {
+            "min": 0,
+            "max": 200
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200
+    },
+    "value_range": {
+      "min": 0,
+      "max": 200
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "value_range_constraint",
+        "description": "每个元素的值在操作过程中被限制在区间 [l, r] 内，即 x = min(x, a_i) 和 x = max(x, b_i) 保证了 x 的值始终在 [l, r] 范围内。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coordinate_fixed_point",
+        "description": "初始值 x 从区间 [l, r] 中均匀随机选择。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "value_range_constraint",
+        "description": "序列 a 和 b 中缺失的值（用 0 表示）也从区间 [l, r] 中均匀随机选择。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modulo_expected_value_constraint",
+        "description": "最终结果是期望值对 10^9 + 7 取模后的整数。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "value_range_constraint",
+              "description": "每个元素的值在操作过程中被限制在区间 [l, r] 内，即 x = min(x, a_i) 和 x = max(x, b_i) 保证了 x 的值始终在 [l, r] 范围内。",
+              "formal": "∀i, l ≤ x ≤ r"
+            },
+            {
+              "name": "coordinate_fixed_point",
+              "description": "初始值 x 从区间 [l, r] 中均匀随机选择。",
+              "formal": "x ∈ [l, r] uniformly at random"
+            },
+            {
+              "name": "value_range_constraint",
+              "description": "序列 a 和 b 中缺失的值（用 0 表示）也从区间 [l, r] 中均匀随机选择。",
+              "formal": "a_i, b_i ∈ [l, r] uniformly at random if a_i = 0 or b_i = 0"
+            },
+            {
+              "name": "modulo_expected_value_constraint",
+              "description": "最终结果是期望值对 10^9 + 7 取模后的整数。",
+              "formal": "result ≡ E[x] (mod 10^9 + 7)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_expected_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_expected_value",
+          "description": "求在给定操作序列下的最终值的期望值"
+        }
+      }
+    ],
+    "description": "求在给定操作序列下的最终值的期望值"
+  },
+  "invariant": {
+    "name": "monotonic_sequence_property",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "monotonic_sequence_property",
+          "description": "在每一步操作中，变量x的值通过min和max操作进行更新，确保了x的值始终在给定区间内单调变化。",
+          "properties": {
+            "left_monotonic": false,
+            "right_monotonic": true
+          }
+        }
+      }
+    ],
+    "description": "在每一步操作中，变量x的值通过min和max操作进行更新，确保了x的值始终在给定区间内单调变化。"
+  }
+}

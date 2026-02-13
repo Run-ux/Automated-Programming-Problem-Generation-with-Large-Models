@@ -1,0 +1,73 @@
+{
+  "problem_id": "GYM104821M",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "prefix_sum_constraint",
+            "description": "前缀最大值约束，对于每个位置 i，计算从 1 到 i 的最大值 f_i",
+            "formal": "f_i = max(a_1, a_2, ..., a_i)"
+          },
+          {
+            "name": "suffix_sum_constraint",
+            "description": "后缀最大值约束，对于每个位置 i，计算从 i 到 n 的最大值 g_i",
+            "formal": "g_i = max(a_i, a_{i+1}, ..., a_n)"
+          },
+          {
+            "name": "trapping_rain_water",
+            "description": "水坑容量计算公式，对于每个位置 i，计算 min(f_i, g_i) - a_i 的和",
+            "formal": "sum(min(f_i, g_i) - a_i) for i in [1, n]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化可积水的总量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "interval_mergeable",
+        "description": "区间信息可通过子区间合并，前缀和与后缀和的计算满足区间可合并性",
+        "properties": {
+          "prefix_sum_mergeable": true,
+          "suffix_sum_mergeable": true
+        }
+      }
+    }
+  ]
+}

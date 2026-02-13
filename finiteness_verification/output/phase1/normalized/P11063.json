@@ -1,0 +1,77 @@
+{
+  "problem_id": "P11063",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 4,
+          "max": 4
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinct_operation_types_constraint",
+            "description": "执行变换的次数不超过 65 次",
+            "formal": "m ≤ 65"
+          },
+          {
+            "name": "pairwise_interaction_constraint",
+            "description": "数对是有序的，即 (x, y) ≠ (y, x) 如果 x ≠ y",
+            "formal": "(x, y) ≠ (y, x) if x ≠ y"
+          },
+          {
+            "name": "state_transition_constraint",
+            "description": "类型 1 变换：选择 1 ≤ k ≤ x，令 (x, y) 变为 (⌊x/k⌋, y * k)",
+            "formal": "1 ≤ k ≤ x, (x, y) → (⌊x/k⌋, y * k)"
+          },
+          {
+            "name": "state_transition_constraint",
+            "description": "类型 2 变换：选择 1 ≤ k ≤ y，令 (x, y) 变为 (x * k, ⌊y/k⌋)",
+            "formal": "1 ≤ k ≤ y, (x, y) → (x * k, ⌊y/k⌋)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "构造一个满足条件的变换序列"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "状态依赖：当前状态只依赖于有限的前序状态，通过一系列变换逐步逼近目标状态",
+        "properties": {
+          "finite_dependencies": true
+        }
+      }
+    }
+  ]
+}

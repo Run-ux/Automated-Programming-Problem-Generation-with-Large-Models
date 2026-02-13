@@ -1,0 +1,152 @@
+{
+  "problem_id": "P11346",
+  "source": "luogu",
+  "input_structure": {
+    "type": "matrix",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "matrix",
+          "length": {
+            "min": 2,
+            "max": 2000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 4000
+          },
+          "properties": {
+            "ordered": false,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 2000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 4000
+    },
+    "properties": {
+      "ordered": false,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "overlapping_interval_constraint",
+        "description": "两个区间有重叠的时间段（会议时间重叠约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transitive_closure_constraint",
+        "description": "如果存在第三个区间与前两个区间都重叠，则前两个区间也视为相关（传递关系约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pairwise_exclusion",
+        "description": "无关的区间不能分配到同一个集合（会议室分配约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimum_set_cover",
+        "description": "选择最少数量的集合来覆盖所有区间（最小会议室数量约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinct_subintervals",
+        "description": "每个区间的开始和结束时间都是唯一的（区间唯一性约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "no_nested_intervals",
+        "description": "不存在一个区间完全包含另一个区间（禁止嵌套区间约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "directed_acyclic_graph",
+        "description": "不存在一个区间在另一个区间内部开始并在其外部结束（部分有序约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "overlapping_interval_constraint",
+              "description": "两个区间有重叠的时间段（会议时间重叠约束）"
+            },
+            {
+              "name": "transitive_closure_constraint",
+              "description": "如果存在第三个区间与前两个区间都重叠，则前两个区间也视为相关（传递关系约束）"
+            },
+            {
+              "name": "pairwise_exclusion",
+              "description": "无关的区间不能分配到同一个集合（会议室分配约束）"
+            },
+            {
+              "name": "minimum_set_cover",
+              "description": "选择最少数量的集合来覆盖所有区间（最小会议室数量约束）"
+            },
+            {
+              "name": "distinct_subintervals",
+              "description": "每个区间的开始和结束时间都是唯一的（区间唯一性约束）",
+              "formal": "对于每个 i, j (0 ≤ i < j ≤ N-1)，S[i] ≠ S[j], S[i] ≠ E[j], E[i] ≠ S[j], E[i] ≠ E[j]"
+            },
+            {
+              "name": "no_nested_intervals",
+              "description": "不存在一个区间完全包含另一个区间（禁止嵌套区间约束）",
+              "formal": "对于每个 i, j (0 ≤ i, j ≤ N-1)，不存在 i ≠ j, S[i] < S[j] < E[j] < E[i]"
+            },
+            {
+              "name": "directed_acyclic_graph",
+              "description": "不存在一个区间在另一个区间内部开始并在其外部结束（部分有序约束）",
+              "formal": "对于每个 i, j (0 ≤ i, j ≤ N-1)，不存在 i ≠ j, S[i] < S[j] < E[i] < E[j]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "计算在每天总成本最小的情况下，选择取消会议的方法数量"
+        }
+      }
+    ],
+    "description": "计算在每天总成本最小的情况下，选择取消会议的方法数量"
+  },
+  "invariant": {
+    "name": "optimal_substructure",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "optimal_substructure",
+          "description": "最优解可以通过子问题的最优解组合而成，即在每一步取消一个会议后，剩余会议的最优分配方案可以由之前的最优分配方案推导得出。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "最优解可以通过子问题的最优解组合而成，即在每一步取消一个会议后，剩余会议的最优分配方案可以由之前的最优分配方案推导得出。"
+  }
+}

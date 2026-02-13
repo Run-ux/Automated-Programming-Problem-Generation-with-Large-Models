@@ -1,0 +1,250 @@
+{
+  "problem_id": "GYM103411K",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "3/3",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "squid_safe_in_shelter",
+        "description": "如果鱿鱼到达避难所且避难所上没有鲨鱼，则该鱿鱼安全。",
+        "confidence": "2/3"
+      },
+      {
+        "name": "initial_positions",
+        "description": "初始时，没有任何鱿鱼位于避难所或与鲨鱼在同一位置。",
+        "confidence": "2/3"
+      },
+      {
+        "name": "single_squid_movement",
+        "description": "在每个时刻，最多只有一个鱿鱼可以移动。",
+        "confidence": "3/3"
+      },
+      {
+        "name": "shark_eats_squid",
+        "description": "如果在某一时刻鲨鱼和鱿鱼处于同一位置，则鲨鱼会吃掉鱿鱼。",
+        "confidence": "3/3"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "single_squid_movement",
+              "description": "在每个时刻，最多只有一个鱿鱼可以移动。",
+              "formal": "∀t, |{i | squid_i moves at time t}| ≤ 1"
+            },
+            {
+              "name": "shark_eats_squid",
+              "description": "如果在某一时刻鲨鱼和鱿鱼处于同一位置，则鲨鱼会吃掉鱿鱼。",
+              "formal": "∀t, ∀i, if position(shark) = position(squid_i) at time t, then squid_i is eaten"
+            },
+            {
+              "name": "squid_safe_in_shelter",
+              "description": "如果鱿鱼到达避难所且避难所上没有鲨鱼，则该鱿鱼安全。",
+              "formal": "∀i, if position(squid_i) = z and position(shark) ≠ z, then squid_i is safe"
+            },
+            {
+              "name": "initial_positions",
+              "description": "初始时，没有任何鱿鱼位于避难所或与鲨鱼在同一位置。",
+              "formal": "∀i, x_i ≠ y and x_i ≠ z"
+            }
+          ]
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "single_squid_movement",
+              "description": "在每个时刻，最多只有一个鱿鱼可以移动。",
+              "formal": "At any time t, at most one squid can move."
+            },
+            {
+              "name": "shark_eats_squid",
+              "description": "如果在某一时刻鲨鱼和鱿鱼处于同一位置，则鲨鱼会吃掉鱿鱼。",
+              "formal": "If at any time t, the position of a squid is equal to the position of the shark, the squid is eaten by the shark."
+            },
+            {
+              "name": "safe_shelter",
+              "description": "鱿鱼到达避难所且避难所上方没有鲨鱼时，鱿鱼就安全了，不再受到威胁。",
+              "formal": "A squid is safe if it reaches the shelter and the shark is not at the shelter's position."
+            },
+            {
+              "name": "no_initial_overlap",
+              "description": "初始时，没有任何鱿鱼与鲨鱼或避难所在同一位置。",
+              "formal": "Initially, no squid is at the same position as the shark or the shelter (x_i ≠ y and x_i ≠ z for all i)."
+            }
+          ]
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "single_squid_movement",
+              "description": "在每个时刻，最多只有一个鱿鱼可以移动。",
+              "formal": "∀t, |{i | squid_i moves at time t}| ≤ 1"
+            },
+            {
+              "name": "shark_eats_squid",
+              "description": "如果在某一时刻鲨鱼和鱿鱼处于同一位置，则鲨鱼会吃掉鱿鱼。",
+              "formal": "∀t, ∀i, if position(shark) = position(squid_i) at time t, then squid_i is eaten"
+            },
+            {
+              "name": "squid_safe_in_shelter",
+              "description": "如果鱿鱼到达避难所且避难所上没有鲨鱼，则该鱿鱼安全。",
+              "formal": "∀i, if position(squid_i) = z and position(shark) ≠ z, then squid_i is safe"
+            },
+            {
+              "name": "initial_positions",
+              "description": "初始时，没有任何鱿鱼位于避难所或与鲨鱼在同一位置。",
+              "formal": "∀i, x_i ≠ y and x_i ≠ z"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "max_value",
+    "confidence": "3/3",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "max_value",
+          "description": "求能够保证救出的最大数量的鱿鱼"
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "type": "max_value",
+          "description": "求能够保证拯救的最大数量的鱿鱼"
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "type": "max_value",
+          "description": "求能够保证救出的最大数量的鱿鱼"
+        }
+      }
+    ],
+    "description": "求能够保证救出的最大数量的鱿鱼"
+  },
+  "invariant": {
+    "name": "greedy_choice",
+    "confidence": "3/3",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "name": "greedy_choice",
+          "description": "局部最优选择导致全局最优，每次选择最接近避难所且不会被鲨鱼追上的鱿鱼移动，确保尽可能多的鱿鱼能够安全到达避难所。",
+          "properties": {}
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "name": "greedy_choice",
+          "description": "局部最优选择导致全局最优，每次选择最接近避难所且不会被鲨鱼追上的鱿鱼移动，确保尽可能多的鱿鱼能够安全到达避难所。",
+          "properties": {}
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "name": "greedy_choice",
+          "description": "局部最优选择导致全局最优，每次选择最接近避难所且未被鲨鱼追上的鱿鱼移动，确保尽可能多的鱿鱼能够安全到达避难所。",
+          "properties": {}
+        }
+      }
+    ],
+    "description": "局部最优选择导致全局最优，每次选择最接近避难所且不会被鲨鱼追上的鱿鱼移动，确保尽可能多的鱿鱼能够安全到达避难所。"
+  }
+}

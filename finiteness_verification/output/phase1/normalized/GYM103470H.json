@@ -1,0 +1,76 @@
+{
+  "problem_id": "GYM103470H",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacent_difference",
+            "description": "访问一个节点时，其相邻节点的元素会在一定时间后消失（图上的扰动约束）",
+            "formal": "当访问节点 u 时，所有与 u 相邻的节点 v 的元素将在 t_v 秒后消失"
+          },
+          {
+            "name": "maximum_lifetime_constraint",
+            "description": "每个节点的元素在被扰动后会在固定时间内消失（时间窗口约束）",
+            "formal": "对于节点 i，如果在 t' 时刻被扰动，则在 (t' + t_i) 时刻消失"
+          },
+          {
+            "name": "source_node_fixed",
+            "description": "初始位置固定且必须从该位置开始（起点约束）",
+            "formal": "Paimon 在 0 时刻位于节点 1"
+          },
+          {
+            "name": "graph_connectivity",
+            "description": "图是连通的（连通性约束）",
+            "formal": "图是一个连通无向图"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化路径上的权值和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：大问题的解由子问题的解组合而成，每个子树的最大捕获量可以独立计算并合并得到整棵树的最大捕获量",
+        "properties": {}
+      }
+    }
+  ]
+}

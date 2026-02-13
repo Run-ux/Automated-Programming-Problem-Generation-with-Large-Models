@@ -1,0 +1,200 @@
+{
+  "problem_id": "P9434",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false,
+          "unique_positions": true
+        }
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "unique_positions": true,
+          "directions": [
+            "U",
+            "D",
+            "L",
+            "R"
+          ],
+          "inferred": false
+        }
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "unique_positions": true,
+          "directions": [
+            "U",
+            "D",
+            "L",
+            "R"
+          ],
+          "inferred": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinct_positions",
+            "description": "平面上的刺的位置互不相同"
+          },
+          {
+            "name": "yinjianci_definition",
+            "description": "阴间刺定义为满足以下条件的有序刺对 (s1, s2, s3)：s1 朝右，s2 朝左，s3 朝上；x(s1) < x(s2) ≤ x(s3)；y(s2) > y(s1) > y(s3)；x(s2) - x(s1) ≤ d。",
+            "formal": "s1.right && s2.left && s3.up && x(s1) < x(s2) <= x(s3) && y(s2) > y(s1) > y(s3) && x(s2) - x(s1) <= d"
+          },
+          {
+            "name": "down_spikes_irrelevant",
+            "description": "朝下的刺在本题内是没有意义的"
+          }
+        ]
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinct_positions",
+            "description": "平面上的刺的位置互不相同"
+          },
+          {
+            "name": "yinjianci_conditions",
+            "description": "阴间刺的定义：(s1, s2, s3) 为有序刺对，满足以下条件：s1 朝右，s2 朝左，s3 朝上；x(s1) < x(s2) <= x(s3)；y(s2) > y(s1) > y(s3)；x(s2) - x(s1) <= d。",
+            "formal": "s1.right && s2.left && s3.up && x(s1) < x(s2) <= x(s3) && y(s2) > y(s1) > y(s3) && x(s2) - x(s1) <= d"
+          }
+        ]
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinct_positions",
+            "description": "平面上的刺的位置互不相同"
+          },
+          {
+            "name": "yinjianci_definition",
+            "description": "阴间刺定义为满足以下条件的有序刺对 (s1, s2, s3)：s1 朝右，s2 朝左，s3 朝上；x(s1) < x(s2) ≤ x(s3)；y(s2) > y(s1) > y(s3)；x(s2) - x(s1) ≤ d。",
+            "formal": "s1.right && s2.left && s3.up && x(s1) < x(s2) <= x(s3) && y(s2) > y(s1) > y(s3) && x(s2) - x(s1) <= d"
+          },
+          {
+            "name": "down_spikes_irrelevant",
+            "description": "朝下的刺在本题内是没有意义的"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "count",
+        "description": "统计满足条件的阴间刺的数量"
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "type": "count",
+        "description": "统计满足条件的阴间刺的数量"
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "type": "count",
+        "description": "统计满足条件的阴间刺的数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "monotonicity",
+        "description": "在处理每个刺时，通过维护满足条件的刺对 (s1, s2) 的集合，可以确保对于每个新的 s3，只需检查当前集合中的 s2 是否满足条件，从而保证了算法的高效性。",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      }
+    },
+    {
+      "round": 2,
+      "status": "success",
+      "result": {
+        "name": "monotonicity",
+        "description": "双指针左右端点单调前进，通过维护满足条件的刺对来计算阴间刺的数量",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      }
+    },
+    {
+      "round": 3,
+      "status": "success",
+      "result": {
+        "name": "monotonicity",
+        "description": "双指针左右端点单调前进，区间合法性可单调维护",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      }
+    }
+  ]
+}

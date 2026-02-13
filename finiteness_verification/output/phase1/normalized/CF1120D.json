@@ -1,0 +1,71 @@
+{
+  "problem_id": "CF1120D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "tree_structure",
+            "description": "对于每个被选择的顶点，其子树中的所有叶子节点可以独立地进行操作（即加一个整数 x）以达到目标值（这里是 0）。",
+            "formal": "对于每个被选择的顶点 v，存在一个整数 x 使得 ∀ 叶子节点 a ∈ 子树(v)，a 的值可以通过加 x 达到 0。"
+          },
+          {
+            "name": "node_value_constraint",
+            "description": "所有叶子节点必须在至少一个被选择的顶点的子树中，以确保所有叶子节点的值可以被调整为 0。",
+            "formal": "∀ 叶子节点 a, ∃ 一个被选择的顶点 v 使得 a 在子树(v) 中。"
+          },
+          {
+            "name": "bottleneck_path",
+            "description": "选择的顶点集合的总代价最小化，以保证在满足其他约束条件的情况下，总代价最小。",
+            "formal": "minimize Σ c_i for all selected vertices i."
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求最小化购买顶点的总代价，使得能够通过一系列操作将所有叶子节点的值变为零"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：大问题的解由子问题的解组合而成，具体表现为树上每个子树的最优解可以合并成整棵树的最优解。",
+        "properties": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "problem_id": "GYM101149H",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "string",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 40,
+          "max": 41
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "substring_balance_constraint",
+            "description": "字符串必须是平衡括号序列，即每个左括号都有一个对应的右括号，并且左右括号匹配。",
+            "formal": "对于所有 i, j (1 ≤ i < j ≤ n)，如果 s[i] 是 '(', 则存在唯一的 k (i < k ≤ j) 使得 s[k] 是 ')'。"
+          },
+          {
+            "name": "pattern_matching_substitution",
+            "description": "问号 '?' 可以被替换成 '(' 或 ')'，但替换后的字符串必须仍然是平衡括号序列。",
+            "formal": "对于所有 i (1 ≤ i ≤ n)，如果 s[i] 是 '?'，则可以将其替换成 '(' 或 ')'，使得替换后的字符串满足 balanced_parentheses 约束。"
+          },
+          {
+            "name": "initial_state_connectivity",
+            "description": "初始和最终状态的括号计数必须为零，即整个字符串的括号必须完全匹配。",
+            "formal": "sum(1 if s[i] == '(' else -1 for i in range(n)) == 0"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "构造一个满足括号匹配条件的字符串"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "当前状态只依赖于前一状态，通过维护一个平衡计数器来确保括号序列的合法性",
+        "properties": {
+          "balance_counter": true
+        }
+      }
+    }
+  ]
+}

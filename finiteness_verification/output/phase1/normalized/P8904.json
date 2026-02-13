@@ -1,0 +1,67 @@
+{
+  "problem_id": "P8904",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 2000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "prefix_sum_constraint",
+            "description": "对于任意两个节点 i 和 j，如果不存在 k 使得 i < k < j 并且 (k, h_k) 高于连接 (i, h_i) 和 (j, h_j) 的线段，则这两个节点之间互相可见。",
+            "formal": "∀ i, j (i < j), ∄ k (i < k < j) 使得 (h_k > h_i + (h_j - h_i) * (k - i) / (j - i))"
+          },
+          {
+            "name": "weight_adjustment",
+            "description": "每次更新操作增加一个节点的高度，更新后的高度不超过给定的最大值。",
+            "formal": "h_x' = h_x + y, 其中 h_x' ≤ 10^9"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足条件的无序对数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每次更新后可以互相看到的山的无序对数基于之前的状态进行计算。",
+        "properties": {
+          "subproblem_independence": true
+        }
+      }
+    }
+  ]
+}

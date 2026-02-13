@@ -1,0 +1,67 @@
+{
+  "problem_id": "GYM105461I",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "recursive_sequence_constraint",
+            "description": "序列由递推公式定义，即对于 i ≥ 2，有 a_i = (A * a_{i-1} + B * a_{i-2}) mod M。",
+            "formal": "a_i = (A * a_{i-1} + B * a_{i-2}) % M, for i >= 2"
+          },
+          {
+            "name": "cyclic_path_length_constraint",
+            "description": "序列存在一个正整数周期 T，使得从某个 i_0 开始，对于任何 i ≥ i_0，都有 a_i = a_{i+T}。",
+            "formal": "∃T > 0, ∃i_0, ∀i ≥ i_0, a_i = a_{i+T}"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_cost",
+        "description": "求满足条件的最小正整数周期"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "状态依赖：当前状态只依赖于有限的前序状态，具体为前两个状态。",
+        "properties": {
+          "dependency_count": 2
+        }
+      }
+    }
+  ]
+}

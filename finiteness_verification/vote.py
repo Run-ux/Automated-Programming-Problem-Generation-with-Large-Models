@@ -95,14 +95,30 @@ def vote_core_constraints(rounds: List[Dict[str, Any]]) -> Dict[str, Any]:
         投票结果（包含 constraints, all_rounds）
     """
     all_constraint_sets = []
+    success_rounds = []
     for r in rounds:
         if r.get("status") == "success":
+            success_rounds.append(r)
             constraints = r["result"].get("constraints", [])
             constraint_names = {c["name"] for c in constraints}
             all_constraint_sets.append(constraint_names)
     
     if not all_constraint_sets:
         return {"constraints": [], "all_rounds": rounds}
+
+    if len(all_constraint_sets) == 1:
+        constraints = success_rounds[0]["result"].get("constraints", [])
+        voted_constraints = []
+        for c in constraints:
+            voted_constraints.append({
+                "name": c.get("name"),
+                "description": c.get("description", ""),
+                "confidence": "1/1",
+            })
+        return {
+            "constraints": voted_constraints,
+            "all_rounds": rounds,
+        }
     
     all_names = set()
     for s in all_constraint_sets:

@@ -1,0 +1,65 @@
+{
+  "problem_id": "GYM106178E",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "matrix",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": -1000000000,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "non_negative_values",
+            "description": "所有元素的总和非负（即，添加的元素总和大于等于移除的元素总和）",
+            "formal": "sum(X_i for X_i > 0) >= sum(-X_i for X_i < 0)"
+          },
+          {
+            "name": "operation_independence",
+            "description": "每次移除操作必须是有效的，即移除的元素在当前集合中存在",
+            "formal": "For each X_i < 0, there exists a positive X_j = -X_i in the current set"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_cost",
+        "description": "求在每次变更后，将所有元素清零所需的最少操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前状态的最优解可以通过子问题的最优解组合而成，即在每一步操作后，当前所有箱子的最少清空天数可以由之前的状态推导得出。",
+        "properties": {}
+      }
+    }
+  ]
+}
