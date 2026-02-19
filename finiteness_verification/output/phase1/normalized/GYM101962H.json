@@ -1,0 +1,90 @@
+{
+  "problem_id": "GYM101962H",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 2,
+          "max": 10000000000000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "sum_constraint",
+            "description": "两个玩家的筹码数之和不超过预定限制 n",
+            "formal": "x + y <= n"
+          },
+          {
+            "name": "range_bound",
+            "description": "每个玩家的筹码数在 1 到 n 之间",
+            "formal": "1 <= x, y <= n"
+          },
+          {
+            "name": "operation_limit",
+            "description": "游戏必须在有限步内结束，不允许无限循环",
+            "formal": "t(x, y) < ∞"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求所有满足条件的有限游戏的最大持续时间之和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "在游戏过程中，玩家的筹码数量单调减少，直到一方筹码为零。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最大游戏时间 t(x, y) 可以通过子问题 t(x - min(x, y), y + min(x, y)) 或 t(x + min(x, y), y - min(x, y)) 的解来计算。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每一步操作后，新的状态 (x', y') 由当前状态 (x, y) 和操作结果决定，并且满足 x' + y' = x + y。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "每个子问题 (x, y) 的解是独立的，不受其他子问题的影响。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

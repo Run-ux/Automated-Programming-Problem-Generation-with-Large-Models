@@ -1,0 +1,74 @@
+{
+  "problem_id": "GYM105788C",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "square_submatrix_constraint",
+            "description": "只能选择完全由脏格子组成的 k x k 子矩阵进行清理（图着色约束）",
+            "formal": "对于任意 i, j，如果 (i, j) 为脏格子，则 (i, j) 所在的 k x k 子矩阵必须全部为脏格子"
+          },
+          {
+            "name": "coverage",
+            "description": "所有脏格子必须被完全覆盖（覆盖约束）",
+            "formal": "所有标记为 '*' 的格子必须被至少一个 k x k 子矩阵覆盖"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求最小化完成任务所需的时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即每个子矩阵的最优清洁方案可以组合成整个矩阵的最优清洁方案。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：通过将子矩阵的清洁状态合并，可以得到更大范围的清洁状态。这种性质在处理大矩阵时尤为重要，允许通过较小的子问题逐步构建全局解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

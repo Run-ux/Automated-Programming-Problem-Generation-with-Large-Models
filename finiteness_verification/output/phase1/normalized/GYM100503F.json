@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -26,9 +26,9 @@
       "result": {
         "constraints": [
           {
-            "name": "pairwise_exclusion",
-            "description": "相邻元素差值不等于1（删除最少数量的元素以满足条件）",
-            "formal": "对于所有 i = 1...m-1，|r[i] - r[i+1]| ≠ 1"
+            "name": "adjacency_difference",
+            "description": "相邻节点取值差值不为1（图着色约束）",
+            "formal": "|r[i] - r[i+1]| ≠ 1 for all i = 1...m-1"
           }
         ]
       }
@@ -39,8 +39,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_cost",
-        "description": "求满足条件的最少操作次数"
+        "type": "minimize_count",
+        "description": "最小化需要删除的元素数量，使得剩余数组中任意相邻元素的差值不为1"
       }
     }
   ],
@@ -49,9 +49,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "局部最优选择导致全局最优，每步选择后不需要回溯",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，通过删除最少的像素来确保相邻像素颜色差不为1",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，即在每个位置上决定是否删除当前像素时，基于之前已处理部分的最优解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

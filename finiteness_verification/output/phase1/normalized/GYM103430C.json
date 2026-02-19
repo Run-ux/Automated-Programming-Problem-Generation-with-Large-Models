@@ -1,0 +1,80 @@
+{
+  "problem_id": "GYM103430C",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": -1000000,
+          "max": 1000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "exclusion",
+            "description": "每个元素只能被选择一次（每个运动员只能在一个团队中）"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "选取的元素数量不超过给定的上限（团队数量不超过 k）"
+          },
+          {
+            "name": "matching_constraint",
+            "description": "每对元素必须满足特定的匹配条件（每个团队中一个运动员参加 A 项目，另一个参加 B 项目）"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "选择不同类型的元素时会受到惩罚（运动员参加非专长项目时技能值减少 x 或 y）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化k个二元组的权值和，每个二元组由一个A类元素和一个B类元素组成，且每个元素只能使用一次。如果元素在非专长领域使用，则其权值减少固定值。"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过选择最优的运动员配对来最大化总技能值。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，总是选择当前情况下能够带来最大增益的运动员配对，从而逐步构建全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

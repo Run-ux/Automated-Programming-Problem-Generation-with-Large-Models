@@ -2,14 +2,14 @@
   "problem_id": "P13548",
   "source": "luogu",
   "input_structure": {
-    "type": "graph",
+    "type": "weighted_undirected_graph",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 4,
             "max": 200000
@@ -28,7 +28,7 @@
         "round": 2,
         "status": "success",
         "result": {
-          "type": "graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 4,
             "max": 200000
@@ -47,7 +47,7 @@
         "round": 3,
         "status": "success",
         "result": {
-          "type": "graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 4,
             "max": 200000
@@ -79,23 +79,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "network_coverage",
-        "description": "S8 航空公司提供双向航班，连接所有未被 Berlaflot 连接的城市对。",
+        "name": "connectivity",
+        "description": "图必须连通（通过Berlaflot航班可以到达任何城市）",
         "confidence": "3/3"
       },
       {
-        "name": "total_cost_modulo",
-        "description": "S8 航空公司的航班成本等于在 Berlaflot 中从城市 x 到城市 y 的最便宜路线的成本。",
-        "confidence": "3/3"
-      },
-      {
-        "name": "graph_is_tree",
-        "description": "Berlaflot 航班可以连接任意两个城市（可能需要中转），即图是连通的。",
-        "confidence": "3/3"
-      },
-      {
-        "name": "cost_of_route",
-        "description": "任何由多个连续航班组成的路线的成本等于这些航班中最昂贵的一个的成本。",
+        "name": "path_constraint",
+        "description": "路径成本等于路径中最大边的成本（从城市t1到tk的路径成本等于该路径中所有边的最大成本）",
         "confidence": "3/3"
       }
     ],
@@ -106,34 +96,27 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_is_tree",
-              "description": "Berlaflot 航班可以连接任意两个城市（可能需要中转），即图是连通的。",
-              "formal": "对于任意两个城市 u 和 v，存在一条路径使得 u 可以到达 v。"
+              "name": "connectivity",
+              "description": "图必须连通（通过Berlaflot航班可以到达任何城市）"
             },
             {
-              "name": "cost_of_route",
-              "description": "任何由多个连续航班组成的路线的成本等于这些航班中最昂贵的一个的成本。",
-              "formal": "对于从城市 t1 到城市 tk 的路线，成本为 max(c(t1, t2), c(t2, t3), ..., c(tk-1, tk))。"
+              "name": "path_constraint",
+              "description": "路径成本等于路径中最大边的成本（从城市t1到tk的路径成本等于该路径中所有边的最大成本）",
+              "formal": "cost(t1, tk) = max(cost(ti, ti+1)) for all i in [1, k-1]"
             },
             {
-              "name": "network_coverage",
-              "description": "S8 航空公司提供双向航班，连接所有未被 Berlaflot 连接的城市对。",
-              "formal": "对于任意两个城市 x 和 y，如果它们之间没有 Berlaflot 航班，则 S8 提供一个航班。"
+              "name": "connectivity",
+              "description": "S8 Airlines连接所有未被Berlaflot连接的城市对，且通过S8 Airlines也可以到达任何城市"
             },
             {
-              "name": "total_cost_modulo",
-              "description": "S8 航空公司的航班成本等于在 Berlaflot 中从城市 x 到城市 y 的最便宜路线的成本。",
-              "formal": "S8(x, y) = min(max(c(t1, t2), c(t2, t3), ..., c(tk-1, tk)))，其中 t1, t2, ..., tk 是从 x 到 y 的路径。"
+              "name": "path_constraint",
+              "description": "S8 Airlines的航班成本等于Berlaflot航线中的最小路径成本（对于每一对城市x和y，S8 Airlines的航班成本等于Berlaflot航线中的最小路径成本）",
+              "formal": "cost_S8(x, y) = min(max(cost_Berlaflot(ti, ti+1))) for all paths from x to y"
             },
             {
-              "name": "graph_is_tree",
-              "description": "通过 S8 航空公司的航班可以从任何城市到达任何其他城市（可能需要中转），并且路线成本同样是最昂贵的单个航班的成本。",
-              "formal": "对于任意两个城市 u 和 v，存在一条路径使得 u 可以到达 v，并且成本为 max(c(u, v1), c(v1, v2), ..., c(vk, v))。"
-            },
-            {
-              "name": "cost_of_route",
-              "description": "Berlaflot 想要将其第 i 个航班的成本设置为 S8 航空公司从城市 ai 到城市 bi 的最便宜路线的成本。",
-              "formal": "新的 Berlaflot 成本 c'(ai, bi) = S8(ai, bi)。"
+              "name": "operation_limit",
+              "description": "Berlaflot航班的新成本等于S8 Airlines航线中的最小路径成本（对于每一条Berlaflot航班，其新成本等于S8 Airlines航线中的最小路径成本）",
+              "formal": "new_cost_Berlaflot(ai, bi) = cost_S8(ai, bi)"
             }
           ]
         }
@@ -144,34 +127,27 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_is_tree",
-              "description": "Berlaflot 航空公司的航班可以连接任意两个城市（可能需要中转），即图是连通的。",
-              "formal": "对于任意两个城市 u 和 v，存在一条路径使得 u 可以到达 v。"
+              "name": "connectivity",
+              "description": "图必须连通（通过 Berlaflot 航班可以到达任意城市）"
             },
             {
-              "name": "cost_of_route",
-              "description": "任何由多个连续航班组成的路线的成本等于这些航班中最昂贵的一个的成本。",
-              "formal": "对于从城市 t1 到 tk 的路径，成本为 max(c(t1, t2), c(t2, t3), ..., c(tk-1, tk))。"
+              "name": "path_constraint",
+              "description": "路径成本等于路径中最大边的成本（Berlaflot 和 S8 航班的路径成本计算方式）",
+              "formal": "cost(t1, tk) = max(cost(ti, ti+1)) for all i in [1, k-1]"
             },
             {
-              "name": "network_coverage",
-              "description": "S8 航空公司提供双向航班连接所有未被 Berlaflot 连接的城市对。",
-              "formal": "对于任意两个城市 x 和 y，如果它们之间没有 Berlaflot 航班，则 S8 提供航班。"
+              "name": "adjacency_relation",
+              "description": "S8 航空公司提供所有未被 Berlaflot 航班连接的城市对之间的双向航班"
             },
             {
-              "name": "total_cost_modulo",
-              "description": "S8 航空公司的航班成本等于 Berlaflot 航班中从 x 到 y 的最便宜路线的成本。",
-              "formal": "S8(x, y) = min_cost_Berlaflot_route(x, y)。"
+              "name": "path_constraint",
+              "description": "S8 航班的成本等于 Berlaflot 航班中相应城市对的最小路径成本",
+              "formal": "cost_S8(x, y) = min(max(cost_Berlaflot(ti, ti+1))) for all paths from x to y"
             },
             {
-              "name": "graph_is_tree",
-              "description": "通过 S8 航空公司的航班可以从任意一个城市到达另一个城市（可能需要中转），且路线成本同样为最昂贵的单个航班成本。",
-              "formal": "对于任意两个城市 u 和 v，存在一条路径使得 u 可以到达 v，并且成本为 max(c(u, v1), c(v1, v2), ..., c(vk, v))。"
-            },
-            {
-              "name": "cost_of_route",
-              "description": "Berlaflot 航空公司新的航班成本等于 S8 航空公司从 a_i 到 b_i 的最便宜路线的成本。",
-              "formal": "new_cost_Berlaflot(a_i, b_i) = min_cost_S8_route(a_i, b_i)。"
+              "name": "transformation",
+              "description": "Berlaflot 航班的新成本等于 S8 航班中相应城市对的最小路径成本",
+              "formal": "new_cost_Berlaflot(ai, bi) = cost_S8(ai, bi)"
             }
           ]
         }
@@ -182,34 +158,22 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_is_tree",
-              "description": "图必须连通，即通过Berlaflot航班可以到达任何城市（可能需要中转）。",
-              "formal": "对于任意两个城市 u 和 v，存在一条路径使得可以通过Berlaflot航班从 u 到达 v。"
+              "name": "connectivity",
+              "description": "图必须连通（通过 Berlaflot 航班可以到达任何城市）"
             },
             {
-              "name": "maximize_final_attitude",
-              "description": "任何由多个连续航班组成的路线的成本等于这些航班中最昂贵的航班的成本。",
-              "formal": "对于从城市 t1 到 tk 的路线，成本为 max(c(t1, t2), c(t2, t3), ..., c(tk-1, tk))。"
+              "name": "path_constraint",
+              "description": "路径成本等于路径中最大边的成本（Berlaflot 和 S8 航班的路径成本计算方式）",
+              "formal": "cost(path) = max(cost(edge1), cost(edge2), ..., cost(edgek))"
             },
             {
-              "name": "network_coverage",
-              "description": "S8航空公司提供双向航班连接所有未被Berlaflot连接的城市对。",
-              "formal": "对于每一对未被Berlaflot连接的城市 x 和 y，S8航空公司提供一个航班。"
+              "name": "flow_constraint",
+              "description": "S8 航班的成本等于 Berlaflot 航班路径中的最小最大边成本",
+              "formal": "cost(S8(x, y)) = min(max(cost(Berlaflot(path))))"
             },
             {
-              "name": "total_cost_modulo",
-              "description": "S8航空公司的航班成本等于在Berlaflot航空公司中该城市对之间的最小路线成本。",
-              "formal": "对于每个S8航空公司连接的城市对 (x, y)，成本为 min_cost_route_Berlaflot(x, y)。"
-            },
-            {
-              "name": "network_coverage",
-              "description": "通过S8航空公司的航班可以到达任何城市（可能需要中转），且路线成本等于最昂贵的单个航班成本。",
-              "formal": "对于任意两个城市 u 和 v，存在一条路径使得可以通过S8航空公司从 u 到达 v，且成本为 max(c(u, v1), c(v1, v2), ..., c(vk, v))。"
-            },
-            {
-              "name": "cost_of_route",
-              "description": "Berlaflot的新航班成本等于在S8航空公司中该城市对之间的最小路线成本。",
-              "formal": "对于每个Berlaflot连接的城市对 (ai, bi)，新的成本为 min_cost_route_S8(ai, bi)。"
+              "name": "matching_constraint",
+              "description": "每对城市之间要么有 Berlaflot 航班，要么有 S8 航班"
             }
           ]
         }
@@ -217,68 +181,111 @@
     ]
   },
   "objective": {
-    "type": "min_cost",
+    "type": "min_max",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "min_cost",
-          "description": "计算并输出每条Berlaflot航班在改革后的最小成本"
+          "type": "min_max",
+          "description": "求每条边在新图中的最小瓶颈路径值"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "min_cost",
-          "description": "计算每条Berlaflot航班在改革后的最小成本"
+          "type": "min_max",
+          "description": "求每条边在新图中的最小瓶颈路径值"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "min_cost",
-          "description": "计算每条Berlaflot航班在改革后的最小成本"
+          "type": "min_max",
+          "description": "求每条边在新图中的最小瓶颈路径值"
         }
       }
     ],
-    "description": "计算并输出每条Berlaflot航班在改革后的最小成本"
+    "description": "求每条边在新图中的最小瓶颈路径值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "3/3",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最短路径问题中的路径成本由子路径的成本决定。",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：在计算两个城市之间的最小成本路径时，可以将多个子区间的最优解合并以获得全局最优解。",
+        "confidence": "3/3",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的解可以通过子问题的最优解组合而成，即动态规划中的最优子结构特性。在这个问题中，计算S8航空公司航班的成本依赖于Berlaflot航班成本的最小值路径，而最终调整后的Berlaflot航班成本又基于S8的成本，形成了一种递归式的最优解构造。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最短路径问题中的路径成本由子路径的成本决定。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：在计算两个城市之间的最小成本路径时，可以将多个子区间的最优解合并以获得全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：S8 航空公司的飞行成本计算是对称的，即从城市 x 到城市 y 的成本与从城市 y 到城市 x 的成本相同。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的解可以通过子问题的最优解组合而成，即动态规划中的最优子结构特性。在这个问题中，计算两个城市之间的最便宜路径成本可以分解为通过中间城市的路径成本的最小值。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，任意两个城市之间的最短路径可以通过其子路径的最短路径来计算。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：通过合并子区间的最优解可以得到更大区间的最优解。在本题中，可以通过合并子路径的最短路径来计算整个路径的最短路径。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的解可以通过子问题的最优解组合而成，即动态规划中的最优子结构特性。在这个问题中，计算任意两点之间的最小最大路径成本可以分解为更小规模的问题。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即任意两个城市之间的最短路径可以通过中间城市的最短路径组合得到。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：在计算任意两点间的最小最大边权时，可以将路径划分为多个子路径，并通过合并这些子路径的结果来获得最终结果。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "问题的解可以通过子问题的最优解组合而成，即动态规划中的最优子结构特性。在这个问题中，计算S8航空公司航班的成本依赖于Berlaflot航班成本的最小值路径，而最终调整后的Berlaflot航班成本又基于S8的成本，形成了一种递归式的最优解构造。"
+    ]
   }
 }

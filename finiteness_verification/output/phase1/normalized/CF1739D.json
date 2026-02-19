@@ -6,14 +6,14 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "tree",
         "length": {
           "min": 2,
           "max": 200000
         },
         "value_range": {
           "min": 1,
-          "max": 199999
+          "max": 200000
         },
         "properties": {
           "connected": true,
@@ -29,19 +29,19 @@
       "result": {
         "constraints": [
           {
-            "name": "query_count_constraint",
-            "description": "操作次数上限为 K",
+            "name": "operation_limit",
+            "description": "操作次数限制（最多可以执行 k 次操作）",
             "formal": "0 ≤ k ≤ n - 1"
           },
           {
-            "name": "tree_structure",
-            "description": "输入数据构成一棵有根树，根节点编号为 1",
-            "formal": "p_i < i, 2 ≤ i ≤ n"
+            "name": "acyclicity",
+            "description": "树结构约束（给定的图是一个有根树，根节点为 1）",
+            "formal": "G is a rooted tree with root 1"
           },
           {
-            "name": "bottleneck_path",
-            "description": "目标是通过最多 K 次操作使树的高度最小化",
-            "formal": "minimize(max(depth(v))) with at most k operations"
+            "name": "minimize_max_height",
+            "description": "最小化树的高度（通过操作使树的高度最小化）",
+            "formal": "minimize height of the tree"
           }
         ]
       }
@@ -52,8 +52,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求通过最多k次操作后树的最小高度"
+        "type": "minimize_value",
+        "description": "求树的最小高度"
       }
     }
   ],
@@ -62,9 +62,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过调整树的高度来最小化整个树的高度。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过调整树中某些边的连接方式来最小化树的高度，可以分解为对每个子树进行相同操作的问题。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择当前情况下能够最有效地减少树高度的操作（如将深度较大的节点尽可能向上移动），这种局部最优的选择最终能导致全局最优解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

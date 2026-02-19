@@ -1,0 +1,89 @@
+{
+  "problem_id": "P5173",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 2
+        },
+        "value_range": {
+          "min": 1,
+          "max": 3500
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "cyclic_shift_constraint",
+            "description": "路径必须在环形结构上进行，每个节点只能向左右两个相邻节点传递",
+            "formal": "对于每个节点 i, 只能传递给 (i-1) % n 或 (i+1) % n"
+          },
+          {
+            "name": "path_length_constraint",
+            "description": "路径长度固定为 m 步",
+            "formal": "路径长度 |P| = m"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "路径的起点和终点必须相同",
+            "formal": "P[0] == P[m]"
+          },
+          {
+            "name": "distinctness",
+            "description": "不同的传球方法是指接球顺序不同的序列",
+            "formal": "两种方法 P1 和 P2 不同当且仅当 P1 != P2"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足条件的方案数（对给定模数取模）"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即从pG开始传m次球回到pG的方法数可以由传m-1次球到相邻同学的方法数推导得出。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在每一步传球过程中，当前持球者的位置和传球次数的状态转移是确定且一致的，符合动态规划的状态转移方程。",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：由于同学们站成一个圆圈，传球过程中的位置变化具有周期性和循环性，这种环状结构保证了状态空间的有限性和可重复性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

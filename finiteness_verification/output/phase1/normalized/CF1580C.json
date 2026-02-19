@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,19 +28,25 @@
       "result": {
         "constraints": [
           {
-            "name": "circular_sequence_constraint",
-            "description": "每个元素在周期性状态之间切换（工作和维护），且状态切换的时间是固定的。",
-            "formal": "对于每个元素 i，其状态在 t 时刻为 work 或 maintenance，状态切换周期为 x_i + y_i。"
+            "name": "distinctness",
+            "description": "在任何时刻，每种模型的列车最多只有一辆存在（唯一性约束）"
           },
           {
-            "name": "distinct_elements",
-            "description": "在任何时刻，每种类型的元素最多存在一个实例。",
-            "formal": "对于任意时刻 t，集合 S 中的元素 i 的数量不超过 1。"
+            "name": "state_transition",
+            "description": "列车的状态按固定周期变化：工作 x_i 天，维护 y_i 天，然后重复（状态转移约束）",
+            "formal": "状态 = (天数 % (x_i + y_i) < x_i) ? '工作' : '维护'"
           },
           {
-            "name": "sequence_operation_constraint",
-            "description": "元素的添加和移除操作必须符合特定顺序，即在添加某个元素之前不能有同类型元素存在，在移除某个元素时必须确保该元素当前存在。",
-            "formal": "对于每个操作 op, k: 如果 op=1，则 S 中没有 k；如果 op=2，则 S 中包含 k。"
+            "name": "operation_type",
+            "description": "每天的操作类型只能是添加或移除一辆列车（操作类型约束）"
+          },
+          {
+            "name": "inclusion",
+            "description": "移除列车时，该列车必须当前存在于系统中（包含/必选约束）"
+          },
+          {
+            "name": "exclusion",
+            "description": "添加列车时，该模型的列车不能已经存在于系统中（互斥/禁止约束）"
           }
         ]
       }
@@ -51,8 +57,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "计算每个时间点上处于特定状态的元素数量"
+        "type": "enumeration",
+        "description": "计算每个时间点处于特定状态的对象数量"
       }
     }
   ],
@@ -61,11 +67,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "当前状态仅依赖于有限的前序状态，通过维护每个模型列车的工作与维护周期来计算每日处于维护中的列车数量。",
-        "properties": {
-          "finite_dependency": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个列车的状态（工作、维护）根据其周期性模式和当前时间进行更新，且状态转移规则一致。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：在任意给定的时间段内，处于维护状态的列车数量可以通过对每个列车的维护时间段进行累加计算得出。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

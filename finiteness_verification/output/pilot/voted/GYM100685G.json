@@ -20,7 +20,6 @@
           },
           "properties": {
             "connected": true,
-            "weighted": false,
             "directed": true
           }
         }
@@ -40,7 +39,7 @@
           },
           "properties": {
             "connected": true,
-            "directed": true
+            "weighted": false
           }
         }
       },
@@ -59,7 +58,7 @@
           },
           "properties": {
             "connected": true,
-            "directed": true
+            "weighted": false
           }
         }
       }
@@ -74,20 +73,24 @@
     },
     "properties": {
       "connected": true,
-      "weighted": false,
       "directed": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_is_tree",
-        "description": "图是一个有向树，即每个边都有固定方向，并且去掉方向后形成的无向图是一棵树（连通无环）",
+        "name": "connectivity",
+        "description": "图必须连通（树的定义）",
         "confidence": "3/3"
       },
       {
-        "name": "infinite_or_terminating_path",
-        "description": "对于每个查询，需要判断从 x_i 到 y_i 是否存在一条路径",
+        "name": "acyclicity",
+        "description": "图中无环（树的定义）",
+        "confidence": "3/3"
+      },
+      {
+        "name": "path_constraint",
+        "description": "存在从起点到终点的路径",
         "confidence": "3/3"
       }
     ],
@@ -98,12 +101,16 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_is_tree",
-              "description": "图是一个有向树，即每个边都有固定方向，并且去掉方向后形成的无向图是一棵树（连通无环）"
+              "name": "connectivity",
+              "description": "图必须连通（树的定义）"
             },
             {
-              "name": "infinite_or_terminating_path",
-              "description": "对于每个查询，需要判断从 x_i 到 y_i 是否存在一条路径"
+              "name": "acyclicity",
+              "description": "图中无环（树的定义）"
+            },
+            {
+              "name": "path_constraint",
+              "description": "存在从起点到终点的路径"
             }
           ]
         }
@@ -114,14 +121,16 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_is_tree",
-              "description": "图是一个有向树，即一个连通无环的有向图。",
-              "formal": "G is a directed tree"
+              "name": "connectivity",
+              "description": "图必须连通（树结构）"
             },
             {
-              "name": "infinite_or_terminating_path",
-              "description": "对于每个查询，需要判断从起点 x_i 到终点 y_i 是否存在一条路径。",
-              "formal": "For each query (x_i, y_i), determine if there exists a path from x_i to y_i in G"
+              "name": "acyclicity",
+              "description": "图中无环（树结构）"
+            },
+            {
+              "name": "path_constraint",
+              "description": "查询两个节点之间是否存在路径"
             }
           ]
         }
@@ -132,14 +141,16 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_is_tree",
-              "description": "图是一个有向树，即一个连通无环的有向图。",
-              "formal": "G is a directed tree"
+              "name": "connectivity",
+              "description": "图必须连通（树结构）"
             },
             {
-              "name": "infinite_or_terminating_path",
-              "description": "对于每个查询，需要判断从 x_i 到 y_i 是否存在一条路径。",
-              "formal": "For each query (x_i, y_i), determine if there exists a path from x_i to y_i in G."
+              "name": "acyclicity",
+              "description": "图中无环（树结构）"
+            },
+            {
+              "name": "path_constraint",
+              "description": "存在从起点到终点的路径"
             }
           ]
         }
@@ -147,68 +158,106 @@
     ]
   },
   "objective": {
-    "type": "decision",
+    "type": "feasibility",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "decision",
-          "description": "判断图中是否存在从x_i到y_i的路径"
+          "type": "feasibility",
+          "description": "判断给定的两个顶点之间是否存在路径"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "decision",
-          "description": "判断给定的每一对起点和终点之间是否存在路径"
+          "type": "feasibility",
+          "description": "判断两个顶点之间是否存在路径"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "decision",
+          "type": "feasibility",
           "description": "判断给定的两个顶点之间是否存在路径"
         }
       }
     ],
-    "description": "判断图中是否存在从x_i到y_i的路径"
+    "description": "判断给定的两个顶点之间是否存在路径"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "3/3",
+    "invariants": [
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个查询可以独立处理，查询之间互不影响。每个查询的结果仅依赖于图的结构和给定的起点与终点。",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在有向无环图（DAG）中，节点的访问顺序满足拓扑序，即对于任意边 (u, v)，节点 u 在节点 v 之前被访问。",
+        "confidence": "3/3",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "解法中利用了树的结构，通过子问题（子树）的解来构建整个问题的解。对于任意两个节点x和y，如果存在一条路径连接它们，则这条路径必然经过它们的最近公共祖先。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在有向无环图（DAG）中，节点的访问顺序满足拓扑序，即对于任意边 (u, v)，节点 u 在节点 v 之前被访问。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个查询可以独立处理，查询之间互不影响。每个查询的结果仅依赖于图的结构和给定的起点与终点。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "解法中利用了树的结构，通过子问题（子树）的解来构建整个问题的解。对于任意两个节点x和y，如果存在路径，则该路径必然经过它们的最近公共祖先。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在有向无环图（DAG）中，节点的访问顺序满足拓扑序，即对于任意边 (u, v)，节点 u 在节点 v 之前被访问。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在树结构上，每个子树的可达性判断是独立的，可以分别处理。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "解法中利用了树的结构，通过子问题（子树）的解来构建整个问题的解。对于任意两个节点x和y，如果存在路径，则该路径必然经过它们的最近公共祖先。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在有向无环图（DAG）中，节点的访问顺序满足拓扑序，即对于任意边 (u, v)，节点 u 在节点 v 之前被访问。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个查询可以独立处理，查询之间互不影响，每个查询的结果仅依赖于当前查询的起点和终点。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "解法中利用了树的结构，通过子问题（子树）的解来构建整个问题的解。对于任意两个节点x和y，如果存在一条路径连接它们，则这条路径必然经过它们的最近公共祖先。"
+    ]
   }
 }

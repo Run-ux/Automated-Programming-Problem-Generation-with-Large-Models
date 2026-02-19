@@ -1,0 +1,94 @@
+{
+  "problem_id": "P7115",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 2,
+          "max": 50
+        },
+        "value_range": {
+          "min": 1,
+          "max": 50
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "操作次数不能超过 820000 次",
+            "formal": "k <= 820000"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个柱子上的球数不能超过 m 个",
+            "formal": "∀i, |P[i]| <= m"
+          },
+          {
+            "name": "existence_requirement",
+            "description": "移动球时，源柱子上必须至少有一个球",
+            "formal": "∀x, |P[x]| > 0"
+          },
+          {
+            "name": "distinctness",
+            "description": "每种颜色的球最终必须在同一个柱子上",
+            "formal": "∀color, ∃i, ∀j, P[j] 中所有 color 的球都在 P[i] 上"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "每次只能移动柱子最上方的球",
+            "formal": "每次移动 P[x][-1] 到 P[y]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一个满足条件的操作序列，使得所有同种颜色的球被移动到同一根柱子上"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次操作后，球的分布状态满足特定的转移规则，且最终能够达到目标状态。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每种颜色的球的移动可以视为独立的子问题，解决一个子问题不会影响其他子问题的解法。",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在任何时刻，每个柱子上的球数不超过其容量限制，且总球数保持不变。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

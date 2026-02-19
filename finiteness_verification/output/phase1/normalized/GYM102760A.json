@@ -1,0 +1,81 @@
+{
+  "problem_id": "GYM102760A",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 250000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 250000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "每个接收者收到的广告必须来自不同的广告商（即每个接收者的广告来源必须唯一）"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "每个接收者最多可以接收一定数量的广告（即每个接收者的广告数量上限）"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "所有广告商提供的广告总数必须不超过所有接收者能够接收的广告总数（即供需平衡约束）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断在给定的更新条件下，是否可以满足所有广告投放的需求"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：广告的总需求量等于潜在接收者的总容量，且在每次更新后保持不变",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：当前状态下的最大匹配数由其子问题（即更小规模的广告和接收者集合）的最大匹配数决定",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次优先选择能够最大化当前匹配数的广告和接收者组合，以保证全局最优解",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

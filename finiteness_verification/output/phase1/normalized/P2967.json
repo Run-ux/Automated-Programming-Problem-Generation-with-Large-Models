@@ -1,0 +1,79 @@
+{
+  "problem_id": "P2967",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 50
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "flow_constraint",
+            "description": "选取元素权重和不超过容量上限（总花费不超过预算）",
+            "formal": "Σ (P_i + Σ GP_j) <= V"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "每个集合最多选择一个元素（每种游戏机最多买一台，每款游戏最多买一份）",
+            "formal": "对于每个游戏机 i，最多选一个；对于每个游戏 j，最多选一个"
+          },
+          {
+            "name": "acyclicity",
+            "description": "某些元素的选择依赖于其他元素（必须先购买游戏机才能购买其对应的游戏）",
+            "formal": "如果选择了游戏 j，则必须选择该游戏所属的游戏机 i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "在给定预算内，最大化选择物品的总权值和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在给定预算下选择游戏机和游戏的最大生产值可以通过子问题（更小预算下的选择）的最优解来构建。",
+            "properties": {}
+          },
+          {
+            "name": "subset_sum_invariance",
+            "description": "背包约束：每个物品（游戏机或游戏）只能选择一次，并且总花费不能超过给定的预算。通过动态规划的方法，可以确保在不超过预算的情况下选择最大生产值的组合。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

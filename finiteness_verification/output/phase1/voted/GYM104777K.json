@@ -1,0 +1,118 @@
+{
+  "problem_id": "GYM104777K",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "sum_constraint",
+        "description": "每日收入和支出的累积和不超过当前持有的金额，如果支出超过持有金额，则持有金额归零",
+        "confidence": "1/1"
+      },
+      {
+        "name": "query_limit",
+        "description": "每个查询对应一个固定的支出值 X，需要计算在该支出值下 n 天后的最终金额",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "sum_constraint",
+              "description": "每日收入和支出的累积和不超过当前持有的金额，如果支出超过持有金额，则持有金额归零"
+            },
+            {
+              "name": "query_limit",
+              "description": "每个查询对应一个固定的支出值 X，需要计算在该支出值下 n 天后的最终金额"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求在给定每天收入和每日固定支出条件下，n天后剩余的最大金额"
+        }
+      }
+    ],
+    "description": "求在给定每天收入和每日固定支出条件下，n天后剩余的最大金额"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和计算任意区间的总收益，支持快速查询和更新。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每一天结束时的余额由前一天的余额加上当天收入再减去花费决定，形成一个线性的状态转移过程。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和计算任意区间的总收益，支持快速查询和更新。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每一天结束时的余额由前一天的余额加上当天收入再减去花费决定，形成一个线性的状态转移过程。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

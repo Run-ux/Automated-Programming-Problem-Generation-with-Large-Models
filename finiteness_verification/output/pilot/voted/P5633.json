@@ -2,14 +2,14 @@
   "problem_id": "P5633",
   "source": "luogu",
   "input_structure": {
-    "type": "graph",
+    "type": "weighted_undirected_graph",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 1,
             "max": 50000
@@ -19,7 +19,7 @@
             "max": 30000
           },
           "properties": {
-            "connected": false,
+            "connected": true,
             "weighted": true
           }
         }
@@ -28,7 +28,7 @@
         "round": 2,
         "status": "success",
         "result": {
-          "type": "graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 1,
             "max": 50000
@@ -38,7 +38,7 @@
             "max": 30000
           },
           "properties": {
-            "connected": false,
+            "connected": true,
             "weighted": true
           }
         }
@@ -47,7 +47,7 @@
         "round": 3,
         "status": "success",
         "result": {
-          "type": "graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 1,
             "max": 50000
@@ -57,7 +57,7 @@
             "max": 30000
           },
           "properties": {
-            "connected": false,
+            "connected": true,
             "weighted": true
           }
         }
@@ -72,26 +72,21 @@
       "max": 30000
     },
     "properties": {
-      "connected": false,
+      "connected": true,
       "weighted": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "infinite_or_terminating_path",
-        "description": "如果无法找到满足条件的生成树，则输出 'Impossible'",
+        "name": "degree_bound",
+        "description": "指定节点的度数必须为给定值（生成树中特定节点的边数限制）",
         "confidence": "3/3"
       },
       {
-        "name": "node_degree_k",
-        "description": "编号为 s 的节点在生成树中必须恰好连 k 条边",
+        "name": "spanning_constraint",
+        "description": "生成树必须包含所有节点（连通性约束）",
         "confidence": "3/3"
-      },
-      {
-        "name": "minimum_spanning_tree",
-        "description": "生成树的边权总和必须最小",
-        "confidence": "2/3"
       }
     ],
     "all_rounds": [
@@ -101,19 +96,14 @@
         "result": {
           "constraints": [
             {
-              "name": "node_degree_k",
-              "description": "编号为 s 的节点在生成树中必须恰好连 k 条边",
-              "formal": "degree(s) == k"
+              "name": "degree_bound",
+              "description": "指定节点的度数必须为给定值（生成树中特定节点的边数限制）",
+              "formal": "deg(s) = k"
             },
             {
-              "name": "minimum_spanning_tree",
-              "description": "生成树的边权总和必须最小",
-              "formal": "sum(weights of edges in MST) is minimized"
-            },
-            {
-              "name": "infinite_or_terminating_path",
-              "description": "如果无法找到满足条件的生成树，则输出 'Impossible'",
-              "formal": "if no valid MST, output 'Impossible'"
+              "name": "spanning_constraint",
+              "description": "生成树必须包含所有节点（连通性约束）",
+              "formal": "T is a spanning tree of G"
             }
           ]
         }
@@ -124,19 +114,14 @@
         "result": {
           "constraints": [
             {
-              "name": "node_degree_k",
-              "description": "编号为 s 的节点在生成树中必须恰好连 k 条边",
-              "formal": "degree(s) == k"
+              "name": "degree_bound",
+              "description": "指定节点的度数必须为给定值（生成树中某个特定节点的边数固定）",
+              "formal": "deg(s) = k"
             },
             {
-              "name": "minimum_spanning_tree",
-              "description": "生成树的边权总和必须最小",
-              "formal": "sum(weights(T)) is minimized, where T is a spanning tree"
-            },
-            {
-              "name": "infinite_or_terminating_path",
-              "description": "如果不存在满足条件的生成树，则输出 'Impossible'",
-              "formal": "if no valid spanning tree, output 'Impossible'"
+              "name": "spanning_constraint",
+              "description": "生成树必须包含所有节点（连通且无环）",
+              "formal": "T is a spanning tree of G"
             }
           ]
         }
@@ -147,24 +132,14 @@
         "result": {
           "constraints": [
             {
-              "name": "node_degree_k",
-              "description": "编号为 s 的节点在生成树中必须恰好连接 k 条边",
-              "formal": "degree(s) = k"
+              "name": "degree_bound",
+              "description": "指定节点的度数必须为给定值（生成树中某个特定节点的边数固定）",
+              "formal": "deg(s) = k"
             },
             {
-              "name": "graph_is_tree",
-              "description": "生成的树必须是连通的，即所有节点都必须包含在生成树中",
-              "formal": "G' is a connected subgraph of G and includes all n nodes"
-            },
-            {
-              "name": "minimum_weight_tree",
-              "description": "生成树的边权总和必须是最小的",
-              "formal": "sum(weights(T)) is minimized"
-            },
-            {
-              "name": "infinite_or_terminating_path",
-              "description": "如果无法找到满足条件的生成树，则输出 'Impossible'",
-              "formal": "if no valid T, output 'Impossible'"
+              "name": "spanning_constraint",
+              "description": "生成树必须包含所有节点（连通且无环）",
+              "formal": "T is a spanning tree of G"
             }
           ]
         }
@@ -172,68 +147,106 @@
     ]
   },
   "objective": {
-    "type": "min_cost",
+    "type": "minimize_value",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "min_cost",
-          "description": "求满足条件的生成树的最小边权总和"
+          "type": "minimize_value",
+          "description": "求满足特定节点度数限制的生成树的最小边权和"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "min_cost",
-          "description": "求满足条件的生成树的最小边权总和"
+          "type": "minimize_value",
+          "description": "求满足特定节点度数限制的最小生成树的边权总和"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "min_cost",
-          "description": "求满足条件的生成树的最小边权总和"
+          "type": "minimize_value",
+          "description": "求满足度限制条件的生成树的最小边权和"
         }
       }
     ],
-    "description": "求满足条件的生成树的最小边权总和"
+    "description": "求满足特定节点度数限制的生成树的最小边权和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "3/3",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：生成树的最优解可以通过子问题的最优解组合得到",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "matroid_exchange",
+        "description": "拟阵交换性：在满足度限制的情况下，通过交换边来保持生成树的最小权值",
+        "confidence": "3/3",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的最优解可以通过子问题的最优解组合而成，即生成树的最小边权总和可以通过考虑包含特定节点的子树的最小边权总和来求得。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：生成树的最优解可以通过子问题的最优解组合得到",
+              "properties": {}
+            },
+            {
+              "name": "matroid_exchange",
+              "description": "拟阵交换性：在满足度限制的情况下，通过交换边来保持生成树的最小权值",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优解可以通过子问题的最优解组合而成，即生成树的最小边权和可以通过考虑包含特定节点的子树来求解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：生成树的最小边权总和可以通过子问题的最优解组合得到",
+              "properties": {}
+            },
+            {
+              "name": "matroid_exchange",
+              "description": "拟阵交换性：在满足度限制的情况下，通过交换边可以逐步优化生成树的边权总和",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的最优解可以通过子问题的最优解组合而成，即生成树的最小边权总和可以通过考虑包含特定节点的子树的最优解来构建。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：生成树的最优解可以通过子问题的最优解组合得到",
+              "properties": {}
+            },
+            {
+              "name": "matroid_exchange",
+              "description": "拟阵交换性：在满足度限制的情况下，通过交换边可以逐步构建出最优生成树",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "问题的最优解可以通过子问题的最优解组合而成，即生成树的最小边权总和可以通过考虑包含特定节点的子树的最小边权总和来求得。"
+    ]
   }
 }

@@ -1,0 +1,89 @@
+{
+  "problem_id": "CF1380E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "每个塔中的圆盘按半径从大到小排列（有序性约束）",
+            "formal": "对于每个塔 T，T[i] > T[i+1] 对所有 0 ≤ i < |T| - 1 成立"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "移动的圆盘必须满足目标塔顶圆盘大于每个被移动的圆盘（相邻关系约束）",
+            "formal": "若将圆盘 D 从塔 A 移动到塔 B，则 B.top > D"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每次操作只能从一个塔中取出若干个连续的顶部圆盘并放到另一个塔的顶部（操作次数限制）",
+            "formal": "每次操作选择两个不同的塔 A 和 B，从 A 中取出若干个连续的顶部圆盘放到 B 的顶部"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个塔至少包含一个圆盘（度数约束）",
+            "formal": "对于每个塔 T，|T| ≥ 1"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "求将所有元素合并到一个序列所需的最小操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，每次合并两个塔的操作可以看作是解决一个子问题，最终所有塔合并成一个塔的难度是由这些子问题的解决定的。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择两个塔进行合并时，总是选择当前最优的合并操作（即尽可能减少合并次数），这种局部最优的选择能够导致全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次合并操作后，新的塔的状态（即塔内盘子的排列）仍然满足从底到顶半径递减的条件，且新塔的难度值可以通过之前塔的难度值计算得出。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

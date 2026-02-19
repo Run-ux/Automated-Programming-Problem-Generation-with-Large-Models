@@ -1,0 +1,128 @@
+{
+  "problem_id": "P8383",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "directed": true,
+            "weighted": false,
+            "connected": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 10000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "directed": true,
+      "weighted": false,
+      "connected": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "terminal_vertex_count_constraint",
+        "description": "每个节点的输出状态由其输入状态决定，具体规则如下：1. 输入中 0 的个数多于 1 的个数则输出 0；2. 输入中 0 的个数等于 1 的个数则输出 0.5；3. 输入中 0 的个数少于 1 的个数则输出 1。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "fixed_position_constraint",
+        "description": "特定节点（如编号为 0 和 1 的节点）具有固定的输出状态。节点 0 的输出永远为 0，节点 1 的输出永远为 1。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "terminal_vertex_count_constraint",
+              "description": "每个节点的输出状态由其输入状态决定，具体规则如下：1. 输入中 0 的个数多于 1 的个数则输出 0；2. 输入中 0 的个数等于 1 的个数则输出 0.5；3. 输入中 0 的个数少于 1 的个数则输出 1。",
+              "formal": "output(i) = 0 if count(0 in inputs(i)) > count(1 in inputs(i)), 0.5 if count(0 in inputs(i)) == count(1 in inputs(i)), 1 if count(0 in inputs(i)) < count(1 in inputs(i))"
+            },
+            {
+              "name": "fixed_position_constraint",
+              "description": "特定节点（如编号为 0 和 1 的节点）具有固定的输出状态。节点 0 的输出永远为 0，节点 1 的输出永远为 1。",
+              "formal": "output(0) = 0, output(1) = 1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "确定每个节点的状态是否可以被明确计算"
+        }
+      }
+    ],
+    "description": "确定每个节点的状态是否可以被明确计算"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个门的输出状态仅依赖于其输入状态，且遵循固定的规则进行状态转移。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：电路中的门可以按照某种顺序处理，使得在处理某个门时，所有依赖它的门已经处理完毕。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个门的输出状态仅依赖于其输入状态，且遵循固定的规则进行状态转移。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：电路中的门可以按照某种顺序处理，使得在处理某个门时，所有依赖它的门已经处理完毕。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

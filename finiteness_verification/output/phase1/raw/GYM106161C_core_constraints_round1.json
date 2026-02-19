@@ -7,27 +7,22 @@
     "constraints": [
       {
         "name": "capacity_constraint",
-        "description": "每次只能运送一个乘客"
+        "description": "每次操作只能处理一个元素（船每次只能载一名乘客）"
       },
       {
-        "name": "arrival_time_constraint",
-        "description": "乘客必须在其到达时间或之后才能上船"
+        "name": "ordering",
+        "description": "操作顺序必须满足时间先后关系（乘客只能在到达时间或之后上船，且上船时间必须严格递增）",
+        "formal": "t_i < t_{i+1} 且 t_i >= a_{id_i} 或 t_i >= b_{id_i}"
       },
       {
-        "name": "crossing_time_constraint",
-        "description": "每次过河需要固定的时间 k 单位"
+        "name": "time_interval_constraint",
+        "description": "相邻操作之间的时间间隔至少为 k（两次上船时间间隔至少为 k 单位时间）",
+        "formal": "t_i - t_{i-1} >= k"
       },
       {
-        "name": "schedule_ordering",
-        "description": "所有乘客的上船时间必须按时间顺序排列"
-      },
-      {
-        "name": "boarding_interval_constraint",
-        "description": "连续两次上船的时间间隔至少为 k 单位，如果从同一岸出发则至少为 2k 单位"
-      },
-      {
-        "name": "complete_crossing",
-        "description": "所有乘客必须成功过河并到达对岸"
+        "name": "same_bank_time_interval_constraint",
+        "description": "从同一侧连续上船的时间间隔至少为 2k（从同一侧连续上船的时间间隔至少为 2k 单位时间）",
+        "formal": "如果 tp_i = tp_{i-1}，则 t_i - t_{i-1} >= 2k"
       }
     ]
   },

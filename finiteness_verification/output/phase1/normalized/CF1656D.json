@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -26,12 +26,14 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_modulo_values",
-            "description": "选取的 k 个正整数在模 k 意义下具有 k 个不同的余数"
+            "name": "distinctness",
+            "description": "选取的 k 个正整数在模 k 意义下具有 k 个不同的余数",
+            "formal": "对于任意 i, j (1 ≤ i < j ≤ k)，有 a_i % k ≠ a_j % k"
           },
           {
-            "name": "adjacent_sum_constraint",
-            "description": "选取的 k 个正整数之和等于给定的正整数 n"
+            "name": "sum_constraint",
+            "description": "选取的 k 个正整数之和等于 n",
+            "formal": "∑_{i=1}^k a_i = n"
           }
         ]
       }
@@ -42,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在一个整数k（k >= 2），使得给定的正整数n可以表示为k个不同余数的正整数之和"
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的整数k"
       }
     }
   ],
@@ -52,9 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，即如果n是k-good的，则存在k个数满足条件，这些数的选择依赖于更小规模的问题",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即如果n是k-good，则存在k个数满足条件，这些数的和为n且模k余数各不相同。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在寻找k的过程中，优先考虑较小的k值，因为较小的k值更容易满足条件。一旦找到一个满足条件的k值，即可停止搜索。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

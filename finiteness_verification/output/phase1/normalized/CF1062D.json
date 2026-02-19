@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "integer",
+        "type": "primitive_type",
         "length": {
           "min": 1,
           "max": 1
@@ -26,14 +26,19 @@
       "result": {
         "constraints": [
           {
-            "name": "transformation_exclusion",
-            "description": "每对整数 (a, b) 只能进行一次变换，且不能反向变换（即 a 变换到 b 后不能再从 b 变换回 a）",
-            "formal": "对于每对 (a, b)，只能执行一次 a -> b 或 b -> a 的变换"
+            "name": "transformation",
+            "description": "元素 a 可以通过乘以一个绝对值大于 1 的整数 x 转换为 b，且转换后不能再进行反向转换（a 和 b 之间的转换是单向的）",
+            "formal": "∃x (1 < |x|) ∧ (a · x = b ∨ b · x = a) → (a, b) ∈ T ∧ (b, a) ∉ T"
           },
           {
-            "name": "multiplicative_constraint",
-            "description": "整数 a 可以变换为整数 b 当且仅当存在一个绝对值大于 1 的整数 x 使得 a * x = b 或 b * x = a",
-            "formal": "∃x (|x| > 1) 使得 a * x = b 或 b * x = a"
+            "name": "sum_constraint",
+            "description": "每次成功转换后，得分增加 |x| 点，其中 x 是用于转换的整数",
+            "formal": "score += |x|"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每个转换操作只能执行一次，即每对 (a, b) 只能转换一次",
+            "formal": "(a, b) ∈ T → (a, b) ∉ T' for any subsequent transformation set T'"
           }
         ]
       }
@@ -44,8 +49,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_sum",
-        "description": "最大化路径上的权值和"
+        "type": "maximize_value",
+        "description": "最大化通过一系列变换操作后可获得的总分"
       }
     }
   ],
@@ -54,9 +59,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题的解是独立且最优的",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过选择合适的变换路径来最大化得分。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择当前能获得最大得分的变换操作，局部最优选择将导致全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个整数到另一个整数的变换过程中，状态转移的一致性保证了每一步变换的有效性和合法性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

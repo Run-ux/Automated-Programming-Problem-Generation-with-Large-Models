@@ -2,14 +2,14 @@
   "problem_id": "CF1016D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 2,
             "max": 100
@@ -38,11 +38,6 @@
         "name": "xor_constraint",
         "description": "每行元素的异或值等于给定的行异或值",
         "confidence": "1/1"
-      },
-      {
-        "name": "xor_constraint",
-        "description": "每列元素的异或值等于给定的列异或值",
-        "confidence": "1/1"
       }
     ],
     "all_rounds": [
@@ -53,13 +48,11 @@
           "constraints": [
             {
               "name": "xor_constraint",
-              "description": "每行元素的异或值等于给定的行异或值",
-              "formal": "∀ i ∈ [1, n], XOR(c[i][1], c[i][2], ..., c[i][m]) = a[i]"
+              "description": "每行元素的异或值等于给定的行异或值"
             },
             {
               "name": "xor_constraint",
-              "description": "每列元素的异或值等于给定的列异或值",
-              "formal": "∀ j ∈ [1, m], XOR(c[1][j], c[2][j], ..., c[n][j]) = b[j]"
+              "description": "每列元素的异或值等于给定的列异或值"
             }
           ]
         }
@@ -67,36 +60,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足给定行和列异或值约束的矩阵"
+          "type": "feasibility",
+          "description": "判断是否存在满足给定行和列异或值约束的矩阵"
         }
       }
     ],
-    "description": "构造一个满足给定行和列异或值约束的矩阵"
+    "description": "判断是否存在满足给定行和列异或值约束的矩阵"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "xor_invariant",
+        "description": "矩阵的行和列的异或值保持一致，满足给定的行异或值和列异或值约束",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "矩阵中的每个元素可以独立确定，不受其他元素的影响，满足子问题独立性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：矩阵的行和列的异或值可以通过子问题的解组合而成，满足动态规划的最优子结构性质",
-          "properties": {
-            "subproblem_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "xor_invariant",
+              "description": "矩阵的行和列的异或值保持一致，满足给定的行异或值和列异或值约束",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "矩阵中的每个元素可以独立确定，不受其他元素的影响，满足子问题独立性",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：矩阵的行和列的异或值可以通过子问题的解组合而成，满足动态规划的最优子结构性质"
+    ]
   }
 }

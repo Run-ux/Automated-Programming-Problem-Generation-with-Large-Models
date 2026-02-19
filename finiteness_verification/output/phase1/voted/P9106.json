@@ -1,0 +1,153 @@
+{
+  "problem_id": "P9106",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -100000,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": false,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -100000,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": false,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "concurrency",
+        "description": "多个程序并行执行，指令交错执行（并发约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "全局变量 x 和私有计数器 y 的值通过特定指令进行状态转移（状态转移约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_type",
+        "description": "每个程序的指令只能是 W, Z, +c, -c 四种类型之一（操作类型限制）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "fixed_initial_placement",
+        "description": "所有计数器 y 和变量 x 的初始值都是 0（初始状态约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "concurrency",
+              "description": "多个程序并行执行，指令交错执行（并发约束）"
+            },
+            {
+              "name": "state_transition",
+              "description": "全局变量 x 和私有计数器 y 的值通过特定指令进行状态转移（状态转移约束）"
+            },
+            {
+              "name": "operation_type",
+              "description": "每个程序的指令只能是 W, Z, +c, -c 四种类型之一（操作类型限制）"
+            },
+            {
+              "name": "fixed_initial_placement",
+              "description": "所有计数器 y 和变量 x 的初始值都是 0（初始状态约束）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求在所有可能的交错执行顺序下，全局变量x的最小最终值"
+        }
+      }
+    ],
+    "description": "求在所有可能的交错执行顺序下，全局变量x的最小最终值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个程序的状态（私有计数器 y 和全局变量 x）在执行指令时按照确定的规则进行更新，确保状态转移的一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：私有计数器 y 的值可以通过一系列加减操作累加得到，最终写入全局变量 x 时，可以看作是多个区间的和。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个程序的执行过程可以视为独立的子问题，尽管它们共享全局变量 x，但每个程序的私有计数器 y 的更新是独立的。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个程序的状态（私有计数器 y 和全局变量 x）在执行指令时按照确定的规则进行更新，确保状态转移的一致性。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：私有计数器 y 的值可以通过一系列加减操作累加得到，最终写入全局变量 x 时，可以看作是多个区间的和。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个程序的执行过程可以视为独立的子问题，尽管它们共享全局变量 x，但每个程序的私有计数器 y 的更新是独立的。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "integer",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1
@@ -26,12 +26,12 @@
       "result": {
         "constraints": [
           {
-            "name": "value_range_constraint",
-            "description": "输入年份必须在指定范围内（1995到2019）",
+            "name": "range_bound",
+            "description": "输入年份必须在指定范围内（1995 到 2019）",
             "formal": "1995 ≤ y ≤ 2019"
           },
           {
-            "name": "output_format_constraint",
+            "name": "report_generation_constraint",
             "description": "输出格式必须与给定的示例完全一致"
           }
         ]
@@ -43,8 +43,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造并输出指定年份的竞赛获胜者信息"
+        "type": "construction",
+        "description": "构造并输出给定年份对应的特定格式字符串"
       }
     }
   ],
@@ -53,11 +53,13 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "状态依赖：当前查询结果仅依赖于预定义的静态数据表，不涉及动态计算或状态转移",
-        "properties": {
-          "static_data_table": true
-        }
+        "invariants": [
+          {
+            "name": "table_lookup_invariance",
+            "description": "查询表不变量：给定年份范围内的每个年份对应一个固定的输出结果，查询操作基于预定义的映射关系进行",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

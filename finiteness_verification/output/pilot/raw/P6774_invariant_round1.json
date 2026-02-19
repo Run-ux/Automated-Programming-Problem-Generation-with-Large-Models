@@ -4,12 +4,26 @@
   "dimension": "invariant",
   "round": 1,
   "result": {
-    "name": "interval_mergeable",
-    "description": "区间可合并性，通过前缀和或线段树等数据结构可以高效计算任意区间的遗憾次数",
-    "properties": {
-      "prefix_sum": true,
-      "segment_tree": true
-    }
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "事件的坐标满足单调性，即对于任意两个事件 (i, p_i) 和 (j, p_j)，如果 i < j，则 x_i < x_j。这保证了事件在 x 轴上的顺序是固定的。",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "通过前缀和可以计算区间内的遗憾次数。具体来说，可以通过维护一个前缀数组来快速计算某个时代内包含的所有事件形成的遗憾次数。",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "每个时代的遗憾次数可以通过子问题的解来计算。具体来说，可以通过动态规划或分治的方法，将大问题分解为小问题，并通过子问题的解来合成最终结果。",
+        "properties": {}
+      }
+    ]
   },
   "status": "success"
 }

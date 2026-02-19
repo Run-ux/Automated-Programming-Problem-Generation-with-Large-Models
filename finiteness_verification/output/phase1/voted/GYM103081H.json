@@ -1,0 +1,144 @@
+{
+  "problem_id": "GYM103081H",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "每个元素在序列中只能出现一次（去重约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "每个元素的值域限制在 [0, N] 范围内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "每一天的子集 S(i) 是 {0, ..., N-1} 的一个子集，表示当天展示的元素",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "计算 x_{i+1} 时，累加的是 S(d_i) 中大于等于 x_i 的元素个数",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "每个元素在序列中只能出现一次（去重约束）",
+              "formal": "∀i, j ∈ [0, N-1], i ≠ j → d_i ≠ d_j"
+            },
+            {
+              "name": "range_bound",
+              "description": "每个元素的值域限制在 [0, N] 范围内",
+              "formal": "∀i ∈ [0, N-1], 0 ≤ d_i ≤ N"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "每一天的子集 S(i) 是 {0, ..., N-1} 的一个子集，表示当天展示的元素",
+              "formal": "S(i) ⊆ {0, ..., N-1}"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "计算 x_{i+1} 时，累加的是 S(d_i) 中大于等于 x_i 的元素个数",
+              "formal": "x_{i+1} = (x_i + |{y ∈ S(d_i) | y ≥ x_i}|) mod N"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造并输出一个根据给定规则计算得到的序列最终值"
+        }
+      }
+    ],
+    "description": "构造并输出一个根据给定规则计算得到的序列最终值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：当前状态值由前一状态值和当前操作（添加或移除元素）决定，且状态转移规则一致。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：在计算过程中，对于给定的区间，其贡献可以通过端点差值计算得出，即满足区间和的性质。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：当前状态值由前一状态值和当前操作（添加或移除元素）决定，且状态转移规则一致。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：在计算过程中，对于给定的区间，其贡献可以通过端点差值计算得出，即满足区间和的性质。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "problem_id": "P6959",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1
+        },
+        "value_range": {
+          "min": 268435456,
+          "max": 2147483647
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制（最多30000次请求）",
+            "formal": "requests <= 30000"
+          },
+          {
+            "name": "range_bound",
+            "description": "输入值的范围约束（a必须在0到n-1之间）",
+            "formal": "0 <= a < n"
+          },
+          {
+            "name": "coprime_constraint",
+            "description": "d与m互质（d和m的最大公约数为1）",
+            "formal": "gcd(d, m) = 1"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "计算过程中的模运算约束（所有乘法和取模运算都在模n下进行）",
+            "formal": "x * y % n"
+          },
+          {
+            "name": "bitwise_swap_operation",
+            "description": "位运算约束（d的二进制表示中，每一位是否为1决定了乘法操作是否执行）",
+            "formal": "if (d & (1 << i)) != 0: r = r * a % n"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造并输出满足给定条件的整数d"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "计算过程中，每次迭代的乘法操作次数单调递增，且每次迭代的时间复杂度与当前值的位数相关。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "通过测量不同输入a的计算时间，可以逐步推断出d的二进制表示中的每一位，从而构建出完整的d。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "每次迭代中，状态（即r和a的值）根据当前位i的值进行更新，且更新规则一致。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

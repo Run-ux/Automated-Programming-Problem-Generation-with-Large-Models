@@ -6,19 +6,16 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "array",
         "length": {
-          "min": 1,
-          "max": 200000
-        },
-        "value_range": {
           "min": 1,
           "max": 1
         },
-        "properties": {
-          "connected": true,
-          "directed": false
-        }
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {}
       }
     }
   ],
@@ -29,19 +26,26 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "相邻节点取值不同（图着色约束）",
+            "name": "connectivity",
+            "description": "图必须连通（深度优先搜索生成的树是连通的）"
+          },
+          {
+            "name": "acyclicity",
+            "description": "图必须无环（深度优先搜索生成的树是无环的）"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "相邻节点只能通过边连接（每个节点只能与相邻节点相连）",
             "formal": "|z - x| + |w - y| = 1, z ∈ {1, 2}, w ∈ {1, 2, ..., m}"
           },
           {
-            "name": "vertex_repetition_permissible",
-            "description": "每个节点最多访问一次（DFS 约束）",
-            "formal": "每个节点 (x, y) 只能被访问一次"
+            "name": "distinctness",
+            "description": "每个节点只能访问一次（深度优先搜索过程中不重复访问节点）"
           },
           {
-            "name": "tree_structure",
-            "description": "生成的树必须连通（连通性约束）",
-            "formal": "所有节点通过边集 E 连接成一棵树"
+            "name": "modular_arithmetic",
+            "description": "结果需要取模（最终结果对 998244353 取模）",
+            "formal": "result % 998244353"
           }
         ]
       }
@@ -52,8 +56,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "计算满足条件的生成树数量"
+        "type": "enumeration",
+        "description": "求满足条件的方案数（取模后）"
       }
     }
   ],
@@ -62,12 +66,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，满足动态规划的基本性质",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即通过较小规模的网格计算出较大规模网格的解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在深度优先搜索过程中，从一个状态转移到另一个状态时，状态之间的转换是确定且一致的。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

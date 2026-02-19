@@ -1,0 +1,151 @@
+{
+  "problem_id": "P12032",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 5000000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 5000000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "ordering",
+        "description": "数组必须非递减（经过懒惰排序后，数组 B 必须是非递减的）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "部分元素值已知（Q 个位置的值是固定的）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制（每个元素最多传递一次盒子）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "ordering",
+              "description": "数组必须非递减（经过懒惰排序后，数组 B 必须是非递减的）",
+              "formal": "B[i] <= B[i+1] for all 0 <= i < N-1"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "部分元素值已知（Q 个位置的值是固定的）",
+              "formal": "a[c_i] = v_i for all 1 <= i <= Q"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制（每个元素最多传递一次盒子）",
+              "formal": "Each a[i] can only pass one box to a[i+1]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足条件的方案数（模10^9 + 7）"
+        }
+      }
+    ],
+    "description": "求满足条件的方案数（模10^9 + 7）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "在每次传递过程中，每个位置的值单调递增或保持不变，直到最终稳定。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的最优解可以通过子问题的最优解来构造。具体来说，每个子区间的排序结果可以独立处理，并且这些子区间的组合能够形成全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子区间之间的排序过程是独立的，一个子区间的排序不会影响另一个子区间的排序。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "在每次传递过程中，每个位置的值单调递增或保持不变，直到最终稳定。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "问题的最优解可以通过子问题的最优解来构造。具体来说，每个子区间的排序结果可以独立处理，并且这些子区间的组合能够形成全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子区间之间的排序过程是独立的，一个子区间的排序不会影响另一个子区间的排序。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

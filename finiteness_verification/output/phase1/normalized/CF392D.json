@@ -1,0 +1,78 @@
+{
+  "problem_id": "CF392D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "coverage",
+            "description": "所有元素在三个数组的前 u, v, w 个元素中至少出现一次（覆盖约束）"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "u + v + w 的和最小化（和约束）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化三个整数之和，使得每个在三个数组中出现的元素至少在一个指定长度的前缀中出现"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在确定 u, v, w 时，每个子问题的解都是当前问题的最优解的一部分。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着 u, v, w 的增加，覆盖的元素数量非递减。通过逐步增加 u, v, w 的值，可以确保找到最小的 u + v + w 使得所有元素都被覆盖。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在确定 u, v, w 时，每个子问题的解是独立的，即 a, b, c 数组中的元素覆盖情况互不影响。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -30,12 +30,14 @@
       "result": {
         "constraints": [
           {
-            "name": "source_node_fixed",
-            "description": "存在一个拓扑排序，使得每个节点在其前置节点之后出现"
+            "name": "acyclicity",
+            "description": "存在一个拓扑排序，使得每个节点在其前置节点之后出现（有向无环图的拓扑排序约束）",
+            "formal": "对于所有 i, p_i > 0 时，p_i 在 q 中必须出现在 i 之前"
           },
           {
-            "name": "adjacent_difference",
-            "description": "对于每一对特殊节点 (x, y)，在排列中 x 必须紧接在 y 之前出现"
+            "name": "adjacency_relation",
+            "description": "某些特定的相邻对 (x_i, y_i) 必须在排列中连续出现（相邻关系约束）",
+            "formal": "对于所有的 i ∈ [1, k]，存在 j ∈ [1, n-1] 使得 q_j = x_i 且 q_{j+1} = y_i"
           }
         ]
       }
@@ -46,8 +48,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足所有约束条件的排列"
+        "type": "feasibility",
+        "description": "判断是否存在满足所有约束条件的排列"
       }
     }
   ],
@@ -56,12 +58,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，满足拓扑排序和特殊对约束",
-        "properties": {
-          "topological_ordering": true,
-          "pairwise_constraints": true
-        }
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：存在一个有效的拓扑排序，使得每个节点在其所有前驱节点之后出现，满足DAG上的顺序依赖",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理每个特殊对 (x, y) 时，确保 x 在 y 之前出现，且这种约束可以通过状态转移一致地维护",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

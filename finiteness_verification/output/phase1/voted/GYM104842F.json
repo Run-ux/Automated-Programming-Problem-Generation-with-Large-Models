@@ -1,0 +1,135 @@
+{
+  "problem_id": "GYM104842F",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 3,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制：每次操作只能从一个单元格移动行李到相邻的两个单元格，且该单元格的行李数量必须比相邻单元格多至少2个",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "总和约束：初始行李分布和目标行李分布的总和必须相等",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制：每次操作只能从一个单元格移动行李到相邻的两个单元格，且该单元格的行李数量必须比相邻单元格多至少2个"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "总和约束：初始行李分布和目标行李分布的总和必须相等"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一种操作序列，使得数组能够从初始状态转换到目标状态"
+        }
+      }
+    ],
+    "description": "判断是否存在一种操作序列，使得数组能够从初始状态转换到目标状态"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "flow_conservation",
+        "description": "在操作过程中，每个节点的净流量（流入减去流出）保持不变，即总物品数量守恒。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "对于任意一个节点，其物品数量不会无限制地增加或减少，而是受到相邻节点物品数量的约束，形成一种单调变化的趋势。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "每个节点的操作独立于其他节点，只要满足局部条件即可进行操作，不影响其他节点的状态。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "flow_conservation",
+              "description": "在操作过程中，每个节点的净流量（流入减去流出）保持不变，即总物品数量守恒。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "对于任意一个节点，其物品数量不会无限制地增加或减少，而是受到相邻节点物品数量的约束，形成一种单调变化的趋势。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false
+              }
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "每个节点的操作独立于其他节点，只要满足局部条件即可进行操作，不影响其他节点的状态。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -2,14 +2,14 @@
   "problem_id": "CF1537D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 10000
@@ -35,18 +35,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "path_validity",
-        "description": "每次操作必须选择当前数的一个非平凡因子（即不是1也不是自身）进行减法操作",
+        "name": "optimal_play",
+        "description": "双方玩家都采取最优策略进行游戏",
         "confidence": "1/1"
       },
       {
-        "name": "turn_based_operation",
-        "description": "两名玩家轮流进行操作，且每名玩家在自己的回合内必须进行一次有效操作",
+        "name": "operation_type",
+        "description": "每次操作必须选择当前数的一个非1且非自身的因数进行减法操作",
         "confidence": "1/1"
       },
       {
-        "name": "termination_condition",
-        "description": "当某名玩家无法进行有效操作时，该玩家输掉游戏",
+        "name": "turn_based",
+        "description": "游戏按回合制进行，Alice先手，Bob后手，交替进行",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "当某一方无法进行合法操作时，该方失败",
         "confidence": "1/1"
       }
     ],
@@ -57,16 +62,20 @@
         "result": {
           "constraints": [
             {
-              "name": "path_validity",
-              "description": "每次操作必须选择当前数的一个非平凡因子（即不是1也不是自身）进行减法操作"
+              "name": "optimal_play",
+              "description": "双方玩家都采取最优策略进行游戏"
             },
             {
-              "name": "turn_based_operation",
-              "description": "两名玩家轮流进行操作，且每名玩家在自己的回合内必须进行一次有效操作"
+              "name": "operation_type",
+              "description": "每次操作必须选择当前数的一个非1且非自身的因数进行减法操作"
             },
             {
-              "name": "termination_condition",
-              "description": "当某名玩家无法进行有效操作时，该玩家输掉游戏"
+              "name": "turn_based",
+              "description": "游戏按回合制进行，Alice先手，Bob后手，交替进行"
+            },
+            {
+              "name": "operation_limit",
+              "description": "当某一方无法进行合法操作时，该方失败"
             }
           ]
         }
@@ -74,34 +83,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "game_outcome",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断在给定初始值下，先手玩家是否能赢得游戏"
+          "type": "game_outcome",
+          "description": "判断先手玩家是否能在双方都采取最优策略的情况下获胜"
         }
       }
     ],
-    "description": "判断在给定初始值下，先手玩家是否能赢得游戏"
+    "description": "判断先手玩家是否能在双方都采取最优策略的情况下获胜"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前状态的最优解可以通过其子问题的最优解来确定，即游戏胜负取决于当前数的所有非平凡因子所对应的状态的胜负情况。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态转移到另一个状态的过程是通过减去该状态的一个非平凡因子实现的，且每个状态的合法性仅依赖于其数值本身。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：当前状态的最优解可以通过其子问题的最优解组合而成，适用于动态规划或博弈论中的递归求解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：当前状态的最优解可以通过其子问题的最优解来确定，即游戏胜负取决于当前数的所有非平凡因子所对应的状态的胜负情况。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态转移到另一个状态的过程是通过减去该状态的一个非平凡因子实现的，且每个状态的合法性仅依赖于其数值本身。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：当前状态的最优解可以通过其子问题的最优解组合而成，适用于动态规划或博弈论中的递归求解"
+    ]
   }
 }

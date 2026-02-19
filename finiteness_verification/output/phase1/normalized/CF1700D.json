@@ -1,0 +1,93 @@
+{
+  "problem_id": "CF1700D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "flow_constraint",
+            "description": "每个锁的容量有限，超过容量的水会转移到下一个锁"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "水流从一个锁转移到下一个锁，直到最后一个锁溢出到河中"
+          },
+          {
+            "name": "operation_limit",
+            "description": "所有锁必须在给定的时间内完全填满"
+          },
+          {
+            "name": "operation_limit",
+            "description": "需要计算最小的管道开启数量以满足时间要求"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "求满足条件的最小操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "水位上升过程中的单调性：每个锁的水量随时间非递减，且一旦达到容量上限则不再增加",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：在给定时间内填满所有锁的问题可以分解为填满前i个锁的子问题，并且这些子问题的解可以用于构建原问题的解",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：为了在最短时间内填满所有锁，优先开启那些能够最快填满当前未满锁的管道",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：进入系统的水流总量等于系统中各锁内存储的水量与流出系统的水量之和",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

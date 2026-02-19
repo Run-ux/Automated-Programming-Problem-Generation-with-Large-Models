@@ -1,0 +1,134 @@
+{
+  "problem_id": "P7468",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 500
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000006
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000006
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "pattern_matching",
+        "description": "字符串的生成规则为：初始字符串为 'a'，每次将当前字符串中的 'a' 替换为 'b'，'b' 替换为 'a'，并将新字符串拼接到原字符串后。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "只考虑奖励关卡（字符 'b'）的得分，忽略普通关卡（字符 'a'）的得分。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "总得分对 10^9 + 7 取模。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "pattern_matching",
+              "description": "字符串的生成规则为：初始字符串为 'a'，每次将当前字符串中的 'a' 替换为 'b'，'b' 替换为 'a'，并将新字符串拼接到原字符串后。",
+              "formal": "s_0 = 'a'; s_{i+1} = s_i + (s_i 中 'a' 替换为 'b', 'b' 替换为 'a')"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "只考虑奖励关卡（字符 'b'）的得分，忽略普通关卡（字符 'a'）的得分。",
+              "formal": "score = sum(f(i) for i in range(n) if s[i] == 'b')"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "总得分对 10^9 + 7 取模。",
+              "formal": "result = score % (10^9 + 7)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求特定条件下路径上的权值和"
+        }
+      }
+    ],
+    "description": "求特定条件下路径上的权值和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：当前状态的得分可以通过前一个状态的得分递推计算，满足状态机 DP 的转移一致性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过多项式函数计算每个奖励关卡的得分，并将这些得分累加得到总得分",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：当前状态的得分可以通过前一个状态的得分递推计算，满足状态机 DP 的转移一致性",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过多项式函数计算每个奖励关卡的得分，并将这些得分累加得到总得分",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

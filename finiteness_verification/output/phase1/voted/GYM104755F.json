@@ -1,0 +1,160 @@
+{
+  "problem_id": "GYM104755F",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 2000
+          },
+          "value_range": {
+            "min": -100000000,
+            "max": 100000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2000
+    },
+    "value_range": {
+      "min": -100000000,
+      "max": 100000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "选取的点集必须是给定点集的子集（即，只能选择给定的 pinholes 和 floor points）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "所有需要照亮的点必须被选中的灯照亮（覆盖约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "没有其他点被照亮（互斥约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "pinholes 的位置必须是唯一的（唯一性约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "选取的点集必须是给定点集的子集（即，只能选择给定的 pinholes 和 floor points）",
+              "formal": "C ⊆ A, D ⊆ B"
+            },
+            {
+              "name": "coverage",
+              "description": "所有需要照亮的点必须被选中的灯照亮（覆盖约束）",
+              "formal": "∀b ∈ B, ∃c ∈ C 使得 (b - c) / (0 - 2) = (a - c) / (1 - 2) 对某个 a ∈ A 成立"
+            },
+            {
+              "name": "exclusion",
+              "description": "没有其他点被照亮（互斥约束）",
+              "formal": "∀x ∉ B, 不存在 c ∈ C 使得 (x - c) / (0 - 2) = (a - c) / (1 - 2) 对某个 a ∈ A 成立"
+            },
+            {
+              "name": "distinctness",
+              "description": "pinholes 的位置必须是唯一的（唯一性约束）",
+              "formal": "∀i ≠ j, a_i ≠ a_j"
+            },
+            {
+              "name": "distinctness",
+              "description": "需要照亮的点的位置必须是唯一的（唯一性约束）",
+              "formal": "∀i ≠ j, b_i ≠ b_j"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一种方案，使得给定的点集能够被完全且仅被覆盖"
+        }
+      }
+    ],
+    "description": "判断是否存在一种方案，使得给定的点集能够被完全且仅被覆盖"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合得到，即每个点的照明状态可以由其左侧和右侧的点的照明状态决定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态到另一个状态的转移是确定且一致的，即通过在天花板上放置灯的位置来决定地板上的哪些点被照亮。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：不同区间的照明信息可以通过合并操作得到整个区间的照明信息，即多个灯的照射范围可以合并成一个总的照射范围。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解组合得到，即每个点的照明状态可以由其左侧和右侧的点的照明状态决定。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态到另一个状态的转移是确定且一致的，即通过在天花板上放置灯的位置来决定地板上的哪些点被照亮。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：不同区间的照明信息可以通过合并操作得到整个区间的照明信息，即多个灯的照射范围可以合并成一个总的照射范围。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

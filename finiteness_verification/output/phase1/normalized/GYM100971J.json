@@ -6,14 +6,14 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 2,
           "max": 200000
         },
         "value_range": {
-          "min": 0,
-          "max": 2
+          "min": 1,
+          "max": 3
         },
         "properties": {
           "connected": true
@@ -28,16 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "graph_connectivity",
-            "description": "图必须连通（所有自由节点之间可以通过边相互到达）"
+            "name": "connectivity",
+            "description": "图必须连通（所有自由单元格之间可以通过共享边的路径互相到达）"
           },
           {
-            "name": "distinct_positions",
-            "description": "两个机器人初始位置不同"
+            "name": "distinctness",
+            "description": "两个机器人初始位置不同（位于不同的自由单元格中）"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "机器人不能同时占据同一个节点或通过彼此移动"
+            "name": "exclusion",
+            "description": "机器人不能同时占据同一单元格或穿过彼此（移动过程中不能重叠）"
           }
         ]
       }
@@ -48,8 +48,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在满足条件的解"
+        "type": "feasibility",
+        "description": "判断是否存在一种方案使得两个点可以互换位置"
       }
     }
   ],
@@ -58,9 +58,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过解决子问题来构建最终解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在无向图中，通过将每个顶点拆分为两个（进入和离开），可以构建一个有向无环图（DAG），从而保证路径的唯一性和可追溯性。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：机器人移动过程中，从一个状态转移到另一个状态的过程中，始终满足状态转移的一致性和合法性。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在解决机器人交换问题时，每个子问题（即每个状态）的解是独立的，不会受到其他子问题的影响。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

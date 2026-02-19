@@ -6,19 +6,19 @@
   "result": {
     "constraints": [
       {
-        "name": "distinct_values",
-        "description": "所有节点和边的值必须是唯一的，且在 [1, 2n-1] 范围内",
-        "formal": "∀ i, j ∈ {nodes ∪ edges}, value(i) ≠ value(j) ∧ 1 ≤ value(i) ≤ 2n-1"
+        "name": "distinctness",
+        "description": "所有节点和边的值必须是唯一的（无重复）",
+        "formal": "∀ i, j ∈ [1, 2n-1], i ≠ j → value(i) ≠ value(j)"
       },
       {
-        "name": "minimize_max_cost",
-        "description": "选择一个根节点，使得从该根节点出发到任何节点或边的简单路径的最大成本最小化",
-        "formal": "minimize(max(cost(root, v)) for all v in nodes ∪ edges)"
+        "name": "range_bound",
+        "description": "所有节点和边的值必须在 [1, 2n-1] 范围内",
+        "formal": "∀ i ∈ [1, n] ∪ [1, n-1], 1 ≤ value(i) ≤ 2n-1"
       },
       {
-        "name": "cost_definition",
-        "description": "路径的成本定义为路径上所有节点和边的值的异或和",
-        "formal": "cost(u, v) = XOR(value(x) for all x in path(u, v))"
+        "name": "min_max_xor_path_cost",
+        "description": "选择一个根节点，使得从该根节点到任何节点或边的简单路径的最大异或成本最小化",
+        "formal": "minimize(max(cost(root, u) for all nodes u and edges e))"
       }
     ]
   },

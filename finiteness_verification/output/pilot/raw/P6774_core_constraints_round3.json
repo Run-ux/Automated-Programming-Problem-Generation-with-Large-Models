@@ -6,34 +6,29 @@
   "result": {
     "constraints": [
       {
-        "name": "event_inclusion",
-        "description": "时代 i 包含事件 j 当且仅当 (r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2})",
-        "formal": "(r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2})"
+        "name": "pairwise_comparison",
+        "description": "对于每对事件 (i, j)，如果 (x_i, y_i) ≤ (x_j, y_j)，则形成一次遗憾。",
+        "formal": "∀ i, j ∈ [1, n], (x_i, y_i) ≤ (x_j, y_j) → 形成一次遗憾"
       },
       {
-        "name": "regret_definition",
-        "description": "两个事件 i, j 形成一次遗憾当且仅当 (x_i, y_i) ≤ (x_j, y_j)",
-        "formal": "(x_i, y_i) ≤ (x_j, y_j)"
+        "name": "rectangle_containment",
+        "description": "一个时代包含的事件必须满足其矩形范围内的坐标条件，即 (r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2})。",
+        "formal": "∀ 时代 i, 事件 j, (r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2}) → 时代 i 包含事件 j"
       },
       {
-        "name": "tears_of_era",
-        "description": "一个时代的眼泪的大小是该时代内所有事件形成的遗憾次数",
-        "formal": "tears_of_era(i) = |{(j, k) | (x_j, y_j) ≤ (x_k, y_k), 事件 j 和 k 都在时代 i 内}|"
+        "name": "special_constraint_A",
+        "description": "对于所有时代 i，有 c_{i,1} = 1, c_{i,2} = n。",
+        "formal": "∀ 时代 i, c_{i,1} = 1 ∧ c_{i,2} = n"
       },
       {
-        "name": "special_limit_A",
-        "description": "对于所有时代 i，有 c_{i,1} = 1, c_{i,2} = n",
-        "formal": "c_{i,1} = 1, c_{i,2} = n"
+        "name": "special_constraint_B",
+        "description": "任意两个不同时代所代表的矩形，它们要么是包含关系（一个矩形在另一个矩形内，边界允许重合），要么是相离关系（两矩形不包含共同点，边界不允许重合）。",
+        "formal": "∀ 时代 i, j (i ≠ j), 矩形 i 和 矩形 j 要么是包含关系，要么是相离关系"
       },
       {
-        "name": "special_limit_B",
-        "description": "任意两个不同时代所代表的矩形，它们要么是包含关系（一个矩形在另一个矩形内，边界允许重合），要么是相离关系（两矩形不包含共同点，边界不允许重合）",
-        "formal": "对于任意 i ≠ j，(r_{i,1}, r_{i,2}, c_{i,1}, c_{i,2}) 和 (r_{j,1}, r_{j,2}, c_{j,1}, c_{j,2}) 要么满足 (r_{i,1} ≤ r_{j,1} ≤ r_{j,2} ≤ r_{i,2} 且 c_{i,1} ≤ c_{j,1} ≤ c_{j,2} ≤ c_{i,2})，要么满足 (r_{i,2} < r_{j,1} 或 r_{j,2} < r_{i,1} 或 c_{i,2} < c_{j,1} 或 c_{j,2} < c_{i,1})"
-      },
-      {
-        "name": "special_limit_C",
-        "description": "最多有 50 对事件 (i, j) (1 ≤ i < j ≤ n) 不满足 (i, p_i) ≤ (j, p_j)",
-        "formal": "|{(i, j) | 1 ≤ i < j ≤ n 且 (i, p_i) ≰ (j, p_j)}| ≤ 50"
+        "name": "special_constraint_C",
+        "description": "最多有 50 对事件 (i, j) (1 ≤ i < j ≤ n) 不满足 (i, p_i) ≤ (j, p_j)。",
+        "formal": "∃ 至多 50 对 (i, j) (1 ≤ i < j ≤ n), (i, p_i) ≰ (j, p_j)"
       }
     ]
   },

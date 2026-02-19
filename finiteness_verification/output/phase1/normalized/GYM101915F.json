@@ -1,0 +1,82 @@
+{
+  "problem_id": "GYM101915F",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 11
+        },
+        "value_range": {
+          "min": 1,
+          "max": 12
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "输入的序列是有序的（非递减）",
+            "formal": "A[i] <= A[i+1] for all 0 <= i < N-2"
+          },
+          {
+            "name": "distinctness",
+            "description": "输入的序列中所有元素都是唯一的（无重复）",
+            "formal": "A[i] != A[j] for all 0 <= i < j < N-1"
+          },
+          {
+            "name": "subsequence_constraint",
+            "description": "输入的序列是完整序列的一个子序列，且缺少一个元素",
+            "formal": "There exists a unique integer x in [1, N] such that x is not in A"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "确定缺失的元素"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "输入序列的单调性：问题编号按递增顺序排列，缺失的问题编号在序列中是唯一的",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间和性质：通过计算已知问题编号的和与完整序列和的差值来确定缺失的问题编号",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

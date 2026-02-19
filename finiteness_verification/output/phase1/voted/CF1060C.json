@@ -1,0 +1,137 @@
+{
+  "problem_id": "CF1060C",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 2000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 4000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 4000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "sum_constraint",
+        "description": "子矩阵元素和不超过给定值 x",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "找到满足条件的子矩阵中面积最大的一个",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "sum_constraint",
+              "description": "子矩阵元素和不超过给定值 x",
+              "formal": "sum(c[i][j] for i in range(x1, x2+1) for j in range(y1, y2+1)) <= x"
+            },
+            {
+              "name": "coverage",
+              "description": "找到满足条件的子矩阵中面积最大的一个",
+              "formal": "max((x2 - x1 + 1) * (y2 - y1 + 1) for all valid (x1, x2, y1, y2))"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "在满足子矩阵元素和不超过给定值的条件下，最大化子矩阵的面积"
+        }
+      }
+    ],
+    "description": "在满足子矩阵元素和不超过给定值的条件下，最大化子矩阵的面积"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：子矩阵的和可以通过端点差值计算，满足前缀和性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：通过双指针或滑动窗口技术，维护一个合法的子矩阵，其边界单调前进",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最大面积的子矩阵可以通过较小的子问题组合得到，即大问题的解由子问题解合成",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：子矩阵的和可以通过端点差值计算，满足前缀和性质",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：通过双指针或滑动窗口技术，维护一个合法的子矩阵，其边界单调前进",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最大面积的子矩阵可以通过较小的子问题组合得到，即大问题的解由子问题解合成",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

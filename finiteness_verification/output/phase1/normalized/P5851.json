@@ -1,0 +1,85 @@
+{
+  "problem_id": "P5851",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": false,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "每个区间是唯一的，没有两个区间完全相同",
+            "formal": "∀ i, j ∈ [1, M], (i ≠ j) → (l_i, r_i) ≠ (l_j, r_j)"
+          },
+          {
+            "name": "coverage",
+            "description": "选择的序列中，每个区间的派在被当前奶牛吃之前至少有一个剩余",
+            "formal": "∀ i ∈ [1, K], ∃ p ∈ [l_{c_i}, r_{c_i}] 使得 p 在 c_1, c_2, ..., c_{i-1} 吃完后仍然存在"
+          },
+          {
+            "name": "non_intersecting_segments",
+            "description": "选择的序列中的区间不能完全覆盖前面的区间",
+            "formal": "∀ i, j ∈ [1, K], (i < j) → [l_{c_i}, r_{c_i}] ⊈ [l_{c_j}, r_{c_j}]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化满足条件的序列中元素权值和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择奶牛序列时，当前选择的奶牛及其之前的奶牛构成的子序列也必须是满足条件的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过维护每个区间的派是否被吃掉的状态，可以利用前缀和的思想来快速计算某个区间内剩余派的数量。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，优先选择体重最大的且其喜欢的派至少有一个未被吃掉的奶牛，以确保当前步骤下的局部最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

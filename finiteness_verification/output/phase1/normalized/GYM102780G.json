@@ -1,0 +1,84 @@
+{
+  "problem_id": "GYM102780G",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 4
+        },
+        "value_range": {
+          "min": 1,
+          "max": 20
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制，即翻转沙漏的次数不超过 k 次。",
+            "formal": "r <= k"
+          },
+          {
+            "name": "cyclic_shift_constraint",
+            "description": "时间序列必须严格递增，且初始时间为 0，结束时间为 k。",
+            "formal": "t_1 = 0, t_r = k, t_i < t_{i+1} for all i"
+          },
+          {
+            "name": "operation_type",
+            "description": "每次翻转沙漏时，至少有一个沙漏的沙子已经流尽。",
+            "formal": "At time t_i, at least one hourglass must have run out of sand."
+          },
+          {
+            "name": "terminal_vertex",
+            "description": "最后一个时间点为 k 且没有沙漏被翻转。",
+            "formal": "t_r = k, m_r = 0"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种方案，使得通过给定的计时器可以测量出指定的时间间隔"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：通过组合较短时间的测量方案可以得到更长时间的测量方案，即问题的最优解可以通过子问题的最优解来构造。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，总是选择当前能够达到的最大时间增量，从而逐步逼近目标时间。这种局部最优的选择最终能导致全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

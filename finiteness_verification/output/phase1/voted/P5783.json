@@ -1,0 +1,124 @@
+{
+  "problem_id": "P5783",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 65535
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 65535
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "modular_arithmetic",
+        "description": "所有数增加 d 后，结果模 65536（即在模 65536 的意义下进行加法操作）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "bitwise_swap_operation",
+        "description": "统计有多少整数的第 i 位非 0（即与 2^i 按位与的结果为正）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "modular_arithmetic",
+              "description": "所有数增加 d 后，结果模 65536（即在模 65536 的意义下进行加法操作）",
+              "formal": "x' = (x + d) % 65536"
+            },
+            {
+              "name": "bitwise_swap_operation",
+              "description": "统计有多少整数的第 i 位非 0（即与 2^i 按位与的结果为正）",
+              "formal": "count(x & (1 << i) > 0)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "统计满足特定条件的元素数量"
+        }
+      }
+    ],
+    "description": "统计满足特定条件的元素数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和可以高效计算区间内的位统计值",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "modular_invariance",
+        "description": "模运算不变量：所有数的修改操作均在模 65536 的情况下进行，保证了数值范围的封闭性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和可以高效计算区间内的位统计值",
+              "properties": {}
+            },
+            {
+              "name": "modular_invariance",
+              "description": "模运算不变量：所有数的修改操作均在模 65536 的情况下进行，保证了数值范围的封闭性",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

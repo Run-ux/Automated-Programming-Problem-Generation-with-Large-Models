@@ -1,0 +1,155 @@
+{
+  "problem_id": "P2948",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 10000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 10000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 10000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "总时间不超过 T，所有操作（上课和滑雪）的总时间不能超过给定的时间限制 T",
+        "confidence": "1/1"
+      },
+      {
+        "name": "attribute_constraint",
+        "description": "技能要求约束，Bessie 的当前技能水平必须大于等于滑雪道所需的技能水平 C_i 才能滑下该滑雪道",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_order",
+        "description": "操作顺序约束，Bessie 可以选择在任意时刻开始上课或滑雪，但必须在完成当前活动后才能开始下一个活动",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移约束，Bessie 的技能水平在每次上课后会变为课程指定的技能水平 A_i，而不是累加",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "总时间不超过 T，所有操作（上课和滑雪）的总时间不能超过给定的时间限制 T"
+            },
+            {
+              "name": "attribute_constraint",
+              "description": "技能要求约束，Bessie 的当前技能水平必须大于等于滑雪道所需的技能水平 C_i 才能滑下该滑雪道"
+            },
+            {
+              "name": "operation_order",
+              "description": "操作顺序约束，Bessie 可以选择在任意时刻开始上课或滑雪，但必须在完成当前活动后才能开始下一个活动"
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移约束，Bessie 的技能水平在每次上课后会变为课程指定的技能水平 A_i，而不是累加"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "最大化在时间限制内可以完成的路径数量"
+        }
+      }
+    ],
+    "description": "最大化在时间限制内可以完成的路径数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每个时间点选择是否参加课程或滑雪，最终的最大滑雪次数由这些子问题的最优解决定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：时间是单调递增的，Bessie的能力和可滑雪的次数随时间推移而变化，但总是在增加或保持不变。",
+        "confidence": "1/1",
+        "properties": {
+          "time_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在每个时间点，Bessie的状态（包括当前时间、能力、已滑雪次数）可以唯一确定，并且下一个状态仅依赖于当前状态和当前决策（参加课程或滑雪）。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每个时间点选择是否参加课程或滑雪，最终的最大滑雪次数由这些子问题的最优解决定。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：时间是单调递增的，Bessie的能力和可滑雪的次数随时间推移而变化，但总是在增加或保持不变。",
+              "properties": {
+                "time_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在每个时间点，Bessie的状态（包括当前时间、能力、已滑雪次数）可以唯一确定，并且下一个状态仅依赖于当前状态和当前决策（参加课程或滑雪）。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

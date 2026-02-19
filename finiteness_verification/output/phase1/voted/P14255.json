@@ -1,0 +1,161 @@
+{
+  "problem_id": "P14255",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "range_bound",
+        "description": "城市位置是严格递增的，即 p_1 < p_2 < ... < p_n",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "列车一旦被停开，在后续所有时刻都视作已停开，不会被恢复",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "停开的列车集合在后续事件中不会增加新的元素，只会保持或减少",
+        "confidence": "1/1"
+      },
+      {
+        "name": "query_limit",
+        "description": "查询从城市 x 搭乘至城市 y 的最小花费，若不存在这样的列车则输出 -1",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "range_bound",
+              "description": "城市位置是严格递增的，即 p_1 < p_2 < ... < p_n",
+              "formal": "p_1 < p_2 < ... < p_n"
+            },
+            {
+              "name": "exclusion",
+              "description": "列车一旦被停开，在后续所有时刻都视作已停开，不会被恢复",
+              "formal": "如果列车 (i, j) 在事件 t 被停开，则对于所有 t' > t，列车 (i, j) 仍然停开"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "停开的列车集合在后续事件中不会增加新的元素，只会保持或减少",
+              "formal": "S_i ⊆ S_{i+1} for all i"
+            },
+            {
+              "name": "query_limit",
+              "description": "查询从城市 x 搭乘至城市 y 的最小花费，若不存在这样的列车则输出 -1",
+              "formal": "对于每个类型 2 事件 (x, y)，输出 min(p_j - p_i) if (i, j) 未停开，否则输出 -1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求两点间最短路径长度"
+        }
+      }
+    ],
+    "description": "求两点间最短路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "区间合法性可单调维护，即停开的列车区间不会恢复且新的停开区间只会增加",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "停开的列车区间可以通过合并操作进行有效管理，以快速查询和更新",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解组合得到，即最小花费可通过已知区间的最小花费计算得出",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "区间合法性可单调维护，即停开的列车区间不会恢复且新的停开区间只会增加",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "停开的列车区间可以通过合并操作进行有效管理，以快速查询和更新",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解可以通过子问题的最优解组合得到，即最小花费可通过已知区间的最小花费计算得出",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

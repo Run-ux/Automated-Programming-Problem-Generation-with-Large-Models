@@ -2,14 +2,14 @@
   "problem_id": "GYM102028L",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 4,
             "max": 100000
@@ -41,18 +41,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "connected_subgraph",
-        "description": "选取的边诱导子图必须是连通的（连通性约束）",
+        "name": "connectivity",
+        "description": "所选边诱导的子图必须是连通的",
         "confidence": "1/1"
       },
       {
-        "name": "edge_induced_subgraph",
-        "description": "子图必须是由选定的边及其端点构成的边诱导子图（边诱导子图约束）",
+        "name": "subgraph_constraint",
+        "description": "子图必须是边诱导的，即由所选边及其端点构成",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_edges",
-        "description": "选取的四条边必须是不同的（无重复边约束）",
+        "name": "acyclicity",
+        "description": "输入的图是简单无向图，不含自环和重边",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "选择的四条边必须是不同的",
         "confidence": "1/1"
       }
     ],
@@ -63,16 +68,20 @@
         "result": {
           "constraints": [
             {
-              "name": "connected_subgraph",
-              "description": "选取的边诱导子图必须是连通的（连通性约束）"
+              "name": "connectivity",
+              "description": "所选边诱导的子图必须是连通的"
             },
             {
-              "name": "edge_induced_subgraph",
-              "description": "子图必须是由选定的边及其端点构成的边诱导子图（边诱导子图约束）"
+              "name": "subgraph_constraint",
+              "description": "子图必须是边诱导的，即由所选边及其端点构成"
             },
             {
-              "name": "distinct_edges",
-              "description": "选取的四条边必须是不同的（无重复边约束）"
+              "name": "acyclicity",
+              "description": "输入的图是简单无向图，不含自环和重边"
+            },
+            {
+              "name": "distinctness",
+              "description": "选择的四条边必须是不同的"
             }
           ]
         }
@@ -80,34 +89,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "maximize_probability",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "计算满足条件的边诱导子图的数量"
+          "type": "maximize_probability",
+          "description": "最大化给定条件下特定子图连通的概率"
         }
       }
     ],
-    "description": "计算满足条件的边诱导子图的数量"
+    "description": "最大化给定条件下特定子图连通的概率"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即计算四个边形成的连通子图的概率可以分解为更小规模的子问题",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在计算不同边组合形成连通子图的概率时，各个子问题之间是相互独立的，不会互相影响",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过组合子问题的解来获得，即大问题的解由子问题的解组合而成",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即计算四个边形成的连通子图的概率可以分解为更小规模的子问题",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在计算不同边组合形成连通子图的概率时，各个子问题之间是相互独立的，不会互相影响",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过组合子问题的解来获得，即大问题的解由子问题的解组合而成"
+    ]
   }
 }

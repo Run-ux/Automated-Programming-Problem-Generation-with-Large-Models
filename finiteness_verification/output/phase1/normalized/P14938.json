@@ -1,0 +1,86 @@
+{
+  "problem_id": "P14938",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 5000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 5000
+        },
+        "properties": {
+          "connected": true,
+          "directed": true,
+          "rooted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每个节点的出度不超过 k（添加的有向边数量限制）",
+            "formal": "∀v ∈ V, out_degree(v) ≤ k"
+          },
+          {
+            "name": "revisiting_allowed",
+            "description": "选择一个节点 u，删除所有从 u 可以到达的节点（包括 u 本身），并将 u 加入序列 a 的末尾",
+            "formal": "remove all nodes reachable from u, then append u to sequence a"
+          },
+          {
+            "name": "distinctness",
+            "description": "两个序列 {a}, {b} 本质不同当且仅当长度不同或存在某个位置 i 使得 a_i ≠ b_i",
+            "formal": "{a} ≠ {b} if |a| ≠ |b| or ∃i, a_i ≠ b_i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足条件的序列数量（对给定模数取模）"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个子树的最优解可以合并成整个树的最优解",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：不同子树的子问题可以独立求解，互不影响",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在删除节点的过程中，状态转移满足一定的规则，确保每一步操作后状态的一致性和合法性",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

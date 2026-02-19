@@ -6,19 +6,19 @@
   "result": {
     "constraints": [
       {
-        "name": "max_networks_joinable",
-        "description": "Ali的程序最多可以连接M个WiFi网络。",
-        "formal": "M <= N"
+        "name": "subset_constraint",
+        "description": "选取的子集大小不超过 M（最多选择 M 个网络）",
+        "formal": "|S| <= M"
       },
       {
-        "name": "network_coverage",
-        "description": "每个WiFi网络覆盖一个以(x, y)为中心，半径为R的圆。",
-        "formal": "distance(point, (x, y)) <= R"
+        "name": "coverage",
+        "description": "所选网络必须覆盖同一个点（所有选中的网络在某一点上都有信号）",
+        "formal": "∃p, ∀i ∈ S, p ∈ circle(i)"
       },
       {
-        "name": "total_speed_sum",
-        "description": "当Ali的程序连接多个网络时，总速度是所有连接网络速度的总和。",
-        "formal": "total_speed = sum(S_i for all connected networks i)"
+        "name": "sum_constraint",
+        "description": "目标是最大化所选网络的速度和（总速度最大）",
+        "formal": "maximize(∑s_i for i in S)"
       }
     ]
   },

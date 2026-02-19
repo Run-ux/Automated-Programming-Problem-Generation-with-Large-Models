@@ -1,0 +1,145 @@
+{
+  "problem_id": "P8983",
+  "source": "luogu",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 3,
+            "max": 50
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 50
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "相邻行元素差值不超过 C（矩阵中相邻行的元素差值约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每种操作可以使用的次数不限，但对于每一行，你只可以进行这些操作中的一种或不操作（操作次数和类型限制）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pairwise_exclusion",
+        "description": "任意相邻两行最多有一行进行操作（相邻行操作互斥约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "相邻行元素差值不超过 C（矩阵中相邻行的元素差值约束）",
+              "formal": "|G[i, j] - G[i-1, p_j]| <= C 且 |G[i, j] - G[i+1, q_j]| <= C"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每种操作可以使用的次数不限，但对于每一行，你只可以进行这些操作中的一种或不操作（操作次数和类型限制）",
+              "formal": "对于每一行 i，只能选择一种操作 A_i 或不操作"
+            },
+            {
+              "name": "pairwise_exclusion",
+              "description": "任意相邻两行最多有一行进行操作（相邻行操作互斥约束）",
+              "formal": "对于任意 i, i+1，最多有一个进行了操作"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足条件的最小代价"
+        }
+      }
+    ],
+    "description": "求满足条件的最小代价"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即每行的操作选择依赖于其相邻行的状态。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：当前行的状态（是否进行操作）和操作的选择依赖于前一行的状态，且满足特定的约束条件（相邻两行最多有一行进行操作）。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在确定了某一行的操作后，该行对后续行的影响是固定的，后续行的决策可以独立于之前的行进行。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即每行的操作选择依赖于其相邻行的状态。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：当前行的状态（是否进行操作）和操作的选择依赖于前一行的状态，且满足特定的约束条件（相邻两行最多有一行进行操作）。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在确定了某一行的操作后，该行对后续行的影响是固定的，后续行的决策可以独立于之前的行进行。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

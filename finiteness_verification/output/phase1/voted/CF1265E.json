@@ -2,14 +2,14 @@
   "problem_id": "CF1265E",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -18,9 +18,7 @@
             "min": 1,
             "max": 100
           },
-          "properties": {
-            "ordered": true
-          }
+          "properties": {}
         }
       }
     ],
@@ -32,20 +30,23 @@
       "min": 1,
       "max": 100
     },
-    "properties": {
-      "ordered": true
-    }
+    "properties": {}
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "weight_proportional_probability",
-        "description": "每个元素的概率值在 [1, 100] 范围内",
+        "name": "probability_distribution",
+        "description": "每个元素具有独立的概率分布，第 i 个元素成功的概率为 p_i/100",
         "confidence": "1/1"
       },
       {
-        "name": "modulo_expected_value_constraint",
-        "description": "期望值计算结果需对 998244353 取模",
+        "name": "operation_limit",
+        "description": "操作必须按顺序进行，从第一个元素开始依次进行",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "结果需要取模 998244353",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +57,24 @@
         "result": {
           "constraints": [
             {
-              "name": "weight_proportional_probability",
-              "description": "每个元素的概率值在 [1, 100] 范围内",
-              "formal": "1 ≤ p_i ≤ 100"
+              "name": "probability_distribution",
+              "description": "每个元素具有独立的概率分布，第 i 个元素成功的概率为 p_i/100",
+              "formal": "P(success for element i) = p_i / 100"
             },
             {
-              "name": "modulo_expected_value_constraint",
-              "description": "期望值计算结果需对 998244353 取模",
-              "formal": "result ≡ (p * q^(-1)) (mod 998244353)"
+              "name": "operation_limit",
+              "description": "操作必须按顺序进行，从第一个元素开始依次进行",
+              "formal": "for i from 1 to n, process element i in order"
+            },
+            {
+              "name": "probability_distribution",
+              "description": "需要计算直到某个条件满足的期望天数",
+              "formal": "E[days until success] = sum of probabilities * days"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "结果需要取模 998244353",
+              "formal": "result ≡ (p * q^(-1)) mod 998244353"
             }
           ]
         }
@@ -71,37 +82,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "maximize_probability",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求期望最小化达到目标状态的代价"
+          "type": "maximize_probability",
+          "description": "求期望天数，使得在给定概率下事件首次发生的期望时间"
         }
       }
     ],
-    "description": "求期望最小化达到目标状态的代价"
+    "description": "求期望天数，使得在给定概率下事件首次发生的期望时间"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，即当前状态的期望值依赖于前一个状态的期望值。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移方程保持一致性，即每个镜子的期望天数计算方式相同。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的",
-          "properties": {
-            "subproblem_independence": true,
-            "subproblem_optimality": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，即当前状态的期望值依赖于前一个状态的期望值。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移方程保持一致性，即每个镜子的期望天数计算方式相同。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的"
+    ]
   }
 }

@@ -1,0 +1,119 @@
+{
+  "problem_id": "GYM103411A",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 3,
+            "max": 3
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 3
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "每个会议的最大容量为 n，其中 c 个位置必须分配给教师，剩余位置分配给学生",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "每个会议的最大容量为 n，其中 c 个位置必须分配给教师，剩余位置分配给学生",
+              "formal": "n - c"
+            },
+            {
+              "name": "flow_constraint",
+              "description": "总的学生数量不能超过所有会议的剩余容量之和",
+              "formal": "k * (n - c)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "最大化在给定约束下的元素数量"
+        }
+      }
+    ],
+    "description": "最大化在给定约束下的元素数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个子问题（每场会议）的最优解可以独立计算并汇总成全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个子问题（每场会议）的解不影响其他子问题的解，即每场会议的最大学生数可以独立计算。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个子问题（每场会议）的最优解可以独立计算并汇总成全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个子问题（每场会议）的解不影响其他子问题的解，即每场会议的最大学生数可以独立计算。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

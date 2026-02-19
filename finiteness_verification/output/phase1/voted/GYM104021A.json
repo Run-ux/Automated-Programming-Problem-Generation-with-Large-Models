@@ -1,0 +1,144 @@
+{
+  "problem_id": "GYM104021A",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 5,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 50000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 5,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 50000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "选取的元素必须具有不同的名称（唯一性约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "选取的元素必须是给定集合的一个子集（子集约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "flow_constraint",
+        "description": "选取的元素数量固定为 5（容量约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "attribute_constraint",
+        "description": "选取的元素中，具有特定属性（颜色或名称）的元素会增加额外的得分（属性加成约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "选取的元素必须具有不同的名称（唯一性约束）",
+              "formal": "|distinct(names)| = 5"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "选取的元素必须是给定集合的一个子集（子集约束）",
+              "formal": "selected_cards ⊆ all_cards"
+            },
+            {
+              "name": "flow_constraint",
+              "description": "选取的元素数量固定为 5（容量约束）",
+              "formal": "|selected_cards| = 5"
+            },
+            {
+              "name": "attribute_constraint",
+              "description": "选取的元素中，具有特定属性（颜色或名称）的元素会增加额外的得分（属性加成约束）",
+              "formal": "event_point += bonus_points(color, names)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化在给定约束条件下的总权重和，其中权重受特定属性的影响"
+        }
+      }
+    ],
+    "description": "最大化在给定约束条件下的总权重和，其中权重受特定属性的影响"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，选择五张不同名字的卡片以最大化事件点数的问题可以分解为选择每张卡片是否加入当前最优解的子问题。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：局部最优选择能够导致全局最优解。在本题中，优先选择具有高功率和符合奖励条件（颜色或名字）的卡片，逐步构建最终的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，选择五张不同名字的卡片以最大化事件点数的问题可以分解为选择每张卡片是否加入当前最优解的子问题。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：局部最优选择能够导致全局最优解。在本题中，优先选择具有高功率和符合奖励条件（颜色或名字）的卡片，逐步构建最终的最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

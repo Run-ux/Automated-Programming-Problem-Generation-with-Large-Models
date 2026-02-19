@@ -1,0 +1,112 @@
+{
+  "problem_id": "P6474",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 2,
+          "max": 350
+        },
+        "value_range": {
+          "min": 1,
+          "max": 350
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distance_bound",
+            "description": "移动时不能进入卫兵所在的格子或卫兵的观察范围"
+          },
+          {
+            "name": "circular_boundary_constraint",
+            "description": "坐标必须在地图范围内，即 1 ≤ x ≤ m 且 1 ≤ y ≤ n"
+          },
+          {
+            "name": "operation_limit",
+            "description": "隐身技能使用次数限制为 c1"
+          },
+          {
+            "name": "operation_limit",
+            "description": "瞬移技能使用次数限制为 c2"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "正常移动时，每秒可以向八连通的任意方向前进一格"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "使用瞬移技能时，只能向上下左右四个方向移动 d 格"
+          },
+          {
+            "name": "exclusion",
+            "description": "即使使用隐身技能，也不能进入卫兵所在的格子"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "在所用时间相同情况下，使用的两种技能总次数尽可能少"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "在所用时间与技能次数相同情况下，使用的隐身次数尽可能少"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求从起点到终点的最短路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从起点到终点的最短路径可以由一系列局部最短路径组成",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在状态机中，每个状态的转移规则保持一致，即当前状态和动作（正常移动、隐身、瞬移）决定下一个状态，并且这种转移规则在整个过程中是不变的",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：时间步长随算法执行单调递增，即每一步操作后的时间不会减少",
+            "properties": {
+              "time_monotonic": true
+            }
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：不同子问题的求解过程相互独立，即从一个点出发到达另一个点的最短路径计算不依赖于其他路径的计算结果",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

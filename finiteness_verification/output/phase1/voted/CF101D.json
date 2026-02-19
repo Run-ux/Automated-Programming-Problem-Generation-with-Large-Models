@@ -41,28 +41,28 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "tree_structure",
-        "description": "图结构为树，即无环连通图",
+        "name": "acyclicity",
+        "description": "图是树结构，即无环且连通",
         "confidence": "1/1"
       },
       {
-        "name": "bottleneck_path",
-        "description": "每条边最多使用两次",
+        "name": "degree_bound",
+        "description": "每个节点的度数不超过 n-1（树的性质）",
         "confidence": "1/1"
       },
       {
-        "name": "graph_connectivity",
+        "name": "connectivity",
         "description": "必须访问所有节点",
         "confidence": "1/1"
       },
       {
-        "name": "graph_connectivity",
-        "description": "起始节点固定",
+        "name": "fixed_start_node",
+        "description": "起始节点固定为 1",
         "confidence": "1/1"
       },
       {
-        "name": "graph_connectivity",
-        "description": "目标节点随机且等概率分布于除起始节点外的其他节点",
+        "name": "random_position_constraint",
+        "description": "目标节点位置随机，等概率分布于其他 n-1 个节点中",
         "confidence": "1/1"
       }
     ],
@@ -73,24 +73,28 @@
         "result": {
           "constraints": [
             {
-              "name": "tree_structure",
-              "description": "图结构为树，即无环连通图"
+              "name": "acyclicity",
+              "description": "图是树结构，即无环且连通"
             },
             {
-              "name": "bottleneck_path",
+              "name": "degree_bound",
+              "description": "每个节点的度数不超过 n-1（树的性质）"
+            },
+            {
+              "name": "degree_bound",
               "description": "每条边最多使用两次"
             },
             {
-              "name": "graph_connectivity",
+              "name": "connectivity",
               "description": "必须访问所有节点"
             },
             {
-              "name": "graph_connectivity",
-              "description": "起始节点固定"
+              "name": "fixed_start_node",
+              "description": "起始节点固定为 1"
             },
             {
-              "name": "graph_connectivity",
-              "description": "目标节点随机且等概率分布于除起始节点外的其他节点"
+              "name": "random_position_constraint",
+              "description": "目标节点位置随机，等概率分布于其他 n-1 个节点中"
             }
           ]
         }
@@ -98,34 +102,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_probability",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "最小化从起点到所有其他点的平均路径长度"
+          "type": "minimize_probability",
+          "description": "最小化找到目标节点的期望时间"
         }
       }
     ],
-    "description": "最小化从起点到所有其他点的平均路径长度"
+    "description": "最小化找到目标节点的期望时间"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过计算每个子树的期望时间来求得整个树的期望时间。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从当前节点到其子节点的状态转移过程中，状态转移的一致性保证了算法的正确性。具体来说，每个节点的期望时间是基于其子节点的期望时间计算的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在计算每个子树的期望时间时，不同子树之间的计算是相互独立的，不会互相影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个子树的最优解可以递归地构建出整个树的最优解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过计算每个子树的期望时间来求得整个树的期望时间。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从当前节点到其子节点的状态转移过程中，状态转移的一致性保证了算法的正确性。具体来说，每个节点的期望时间是基于其子节点的期望时间计算的。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在计算每个子树的期望时间时，不同子树之间的计算是相互独立的，不会互相影响。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个子树的最优解可以递归地构建出整个树的最优解"
+    ]
   }
 }

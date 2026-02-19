@@ -1,0 +1,169 @@
+{
+  "problem_id": "GYM105627C",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 2000000000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 2000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2000000000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 2000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制为 q 次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "插入或删除的值 p_i 和 k_i 的绝对值不超过 2 * 10^9",
+        "confidence": "1/1"
+      },
+      {
+        "name": "valid_operation_constraint",
+        "description": "所有操作都是有效的，不会执行不可能的操作（如删除不存在的元素）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "total_movement_count",
+        "description": "从保留列表移动到数组中的元素总数不超过 2 * 10^9",
+        "confidence": "1/1"
+      },
+      {
+        "name": "query_middle_element",
+        "description": "每次操作后需要查询数组的中间元素（如果数组长度为 n，则查询 ⌈n/2⌉ 位置的元素）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制为 q 次",
+              "formal": "q <= 5 * 10^5"
+            },
+            {
+              "name": "degree_bound",
+              "description": "插入或删除的值 p_i 和 k_i 的绝对值不超过 2 * 10^9",
+              "formal": "1 <= |p_i|, |k_i| <= 2 * 10^9"
+            },
+            {
+              "name": "valid_operation_constraint",
+              "description": "所有操作都是有效的，不会执行不可能的操作（如删除不存在的元素）",
+              "formal": "所有操作在当前数组状态下都是合法的"
+            },
+            {
+              "name": "total_movement_count",
+              "description": "从保留列表移动到数组中的元素总数不超过 2 * 10^9",
+              "formal": "总移动元素数 <= 2 * 10^9"
+            },
+            {
+              "name": "query_middle_element",
+              "description": "每次操作后需要查询数组的中间元素（如果数组长度为 n，则查询 ⌈n/2⌉ 位置的元素）",
+              "formal": "查询第 ⌈n/2⌉ 个元素"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造并输出每次操作后数组的中位数"
+        }
+      }
+    ],
+    "description": "构造并输出每次操作后数组的中位数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "数组长度单调增加或减少，插入操作使数组长度增加，删除操作使数组长度减少",
+        "confidence": "1/1",
+        "properties": {
+          "length_monotonic": true
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "数组的中间元素可以通过前缀和计算得出，即通过端点差值计算区间和",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "每次操作后，数组的状态（包括长度和内容）保持一致性和可预测性，状态转移规则明确且不变",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "数组长度单调增加或减少，插入操作使数组长度增加，删除操作使数组长度减少",
+              "properties": {
+                "length_monotonic": true
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "数组的中间元素可以通过前缀和计算得出，即通过端点差值计算区间和",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "每次操作后，数组的状态（包括长度和内容）保持一致性和可预测性，状态转移规则明确且不变",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

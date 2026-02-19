@@ -1,0 +1,97 @@
+{
+  "problem_id": "P10863",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 30
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "在合并过程中，区间内的元素必须具有唯一性（即不能存在两个相同级别的书）",
+            "formal": "|distinct(A[l:r])| = |A[l:r]|"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "在合并过程中，需要最大化最终的级别",
+            "formal": "maximize(final_level)"
+          },
+          {
+            "name": "cost_constraint",
+            "description": "合并操作的总成本需要计算并取模 10^9 + 7",
+            "formal": "total_cost % (10^9 + 7)"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每个操作的具体参数由随机函数生成，且操作类型和参数范围受限",
+            "formal": "opt <- rnd() % p + 1, l, r, k, pos, t <- rnd() % n + 1 or rnd() % q + 1 or rnd() % i"
+          },
+          {
+            "name": "state_transition",
+            "description": "操作 4 可以将序列恢复到之前某个操作后的状态，包括初始状态",
+            "formal": "restore(sequence, t)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求通过合并指定区间内的元素所能达到的最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：合并操作的最优解可以通过子问题的最优解组合得到",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择当前可合并的最高级别书籍进行合并，能够最大化最终结果",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：区间的合并操作可以分解为子区间的合并，并且子区间的合并结果可以进一步合并",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在合并过程中，状态的转移遵循一定的规则，确保每次合并后的状态是有效的",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "problem_id": "CF1826E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 500
+        },
+        "value_range": {
+          "min": 1,
+          "max": 5000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "在每个城市中，所选模型的评分必须严格递增（即对于任意城市 i 和索引 t (2 ≤ t ≤ k)，必须满足 r_{i, j_{t-1}} < r_{i, j_t}）",
+            "formal": "∀ i, t (2 ≤ t ≤ k), r_{i, j_{t-1}} < r_{i, j_t}"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化满足条件的权值和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，选择模型及其顺序的问题可以分解为在每个城市中选择满足严格递增条件的模型序列，并且这些序列的最优解可以合并成全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：在每个城市中，所选模型的评分必须严格递增。这意味着在构建模型序列时，每个新加入的模型的评分必须大于前一个模型的评分。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

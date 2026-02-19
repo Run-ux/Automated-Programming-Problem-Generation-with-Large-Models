@@ -1,0 +1,81 @@
+{
+  "problem_id": "GYM105578H",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（通过已有的 (n-2) 条带风景的道路和一条额外的带风景的道路）"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数至少为 1（因为存在从一个城市到其他城市的路径）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "访问所有风景点时，最多只能经过一条没有风景的道路"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "导览图是所有可能道路的一个子集"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足条件的方案数（常取模）"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，适用于动态规划求解",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "连通性不变量：在添加一条无风景道路后，图中所有节点通过风景道路可达，保证了图的连通性",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

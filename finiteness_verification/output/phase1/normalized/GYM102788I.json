@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "integer",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1
@@ -28,17 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "even_number_constraint",
-            "description": "输入的整数必须是偶数（元素数量为偶数）"
+            "name": "parity",
+            "description": "输入的整数 n 必须是偶数",
+            "formal": "n % 2 == 0"
           },
           {
-            "name": "minimum_distance_constraint",
-            "description": "每对孔之间的距离必须是固定的 k 值（成对元素间距固定）",
-            "formal": "对于所有 i, (i+1) * k = 1 cm"
+            "name": "distance_bound",
+            "description": "每次操作必须同时生成两个距离为 k 的孔，且 k 可以取任意正整数值",
+            "formal": "k ∈ {1, 2, 3, ..., n}"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "不允许单独打一个孔（不允许单个元素操作）"
+            "name": "operation_limit",
+            "description": "操作次数限制，即使用孔距为 k 的打孔器进行操作的次数必须使得总孔数为 n",
+            "formal": "∑ (operations with distance k) = n / 2"
           }
         ]
       }
@@ -49,8 +51,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足条件的孔距数量"
+        "type": "enumeration",
+        "description": "求满足条件的所有可能的孔距数量及其具体值"
       }
     }
   ],
@@ -59,9 +61,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过其子问题的解组合而成，即大问题的解依赖于小规模问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "modular_invariance",
+            "description": "解法中使用的距离 k 必须是 n/2 的因数，以确保所有孔可以被均匀地打出来",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解组合得到，即通过找到所有满足条件的 k 值来构建最终的解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

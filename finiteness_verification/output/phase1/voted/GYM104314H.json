@@ -2,14 +2,14 @@
   "problem_id": "GYM104314H",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100
@@ -42,12 +42,12 @@
     "constraints": [
       {
         "name": "pairwise_exclusion",
-        "description": "每对元素在集合中唯一，不存在重复的元素对",
+        "description": "每对元素之间必须是唯一的，即没有重复的元素对",
         "confidence": "1/1"
       },
       {
-        "name": "hint_inference",
-        "description": "通过给定的提示信息可以推断出唯一的解",
+        "name": "logical_inference_constraint",
+        "description": "通过部分信息（如左数和右数）可以唯一确定一个元素对",
         "confidence": "1/1"
       }
     ],
@@ -59,11 +59,11 @@
           "constraints": [
             {
               "name": "pairwise_exclusion",
-              "description": "每对元素在集合中唯一，不存在重复的元素对"
+              "description": "每对元素之间必须是唯一的，即没有重复的元素对"
             },
             {
-              "name": "hint_inference",
-              "description": "通过给定的提示信息可以推断出唯一的解"
+              "name": "logical_inference_constraint",
+              "description": "通过部分信息（如左数和右数）可以唯一确定一个元素对"
             }
           ]
         }
@@ -71,36 +71,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足特定条件的元素对"
+          "type": "feasibility",
+          "description": "判断是否存在唯一满足条件的解"
         }
       }
     ],
-    "description": "构造一个满足特定条件的元素对"
+    "description": "判断是否存在唯一满足条件的解"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "pairwise_exclusion",
+        "description": "唯一性：存在唯一的数对满足特定条件，使得两个玩家能够通过对话确定该数对",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "flow_conservation",
+        "description": "信息交换不变量：玩家之间的对话和提示不会改变问题的本质，即最终确定的数对是唯一的且不依赖于具体的对话内容",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，且子问题之间相互独立",
-          "properties": {
-            "subproblem_independence": true
-          }
+          "invariants": [
+            {
+              "name": "pairwise_exclusion",
+              "description": "唯一性：存在唯一的数对满足特定条件，使得两个玩家能够通过对话确定该数对",
+              "properties": {}
+            },
+            {
+              "name": "flow_conservation",
+              "description": "信息交换不变量：玩家之间的对话和提示不会改变问题的本质，即最终确定的数对是唯一的且不依赖于具体的对话内容",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，且子问题之间相互独立"
+    ]
   }
 }

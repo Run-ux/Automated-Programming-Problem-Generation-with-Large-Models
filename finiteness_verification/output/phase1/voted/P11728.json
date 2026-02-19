@@ -1,0 +1,170 @@
+{
+  "problem_id": "P11728",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "state_transition",
+        "description": "每个机器人在接收到命令后，其速度会被重置为新的值，并且以该速度匀速移动",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "事件按时间顺序给出，即 t_1 <= t_2 <= ... <= t_m",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每个 `command` 操作只影响一个特定的机器人，不同的机器人之间互不影响",
+        "confidence": "1/1"
+      },
+      {
+        "name": "query_limit",
+        "description": "对于每个 `query` 询问，需要输出当前离原点最远的机器人距离",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "state_transition",
+              "description": "每个机器人在接收到命令后，其速度会被重置为新的值，并且以该速度匀速移动",
+              "formal": "v_i(t) = x_i, if t >= t_command; v_i(t) = 0, otherwise"
+            },
+            {
+              "name": "ordering",
+              "description": "事件按时间顺序给出，即 t_1 <= t_2 <= ... <= t_m",
+              "formal": "t_i <= t_{i+1} for all i in [1, m-1]"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每个 `command` 操作只影响一个特定的机器人，不同的机器人之间互不影响",
+              "formal": "command(k_i, x_i) affects only robot k_i"
+            },
+            {
+              "name": "query_limit",
+              "description": "对于每个 `query` 询问，需要输出当前离原点最远的机器人距离",
+              "formal": "query(t) -> max(|a_i + v_i * (t - t_last_command)|) for all i in [1, n]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求在给定时间点上，所有移动点中距离原点最远的距离"
+        }
+      }
+    ],
+    "description": "求在给定时间点上，所有移动点中距离原点最远的距离"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "事件时间单调递增，保证了处理顺序的正确性",
+        "confidence": "1/1",
+        "properties": {
+          "time_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "每个机器人的状态（位置和速度）在每次操作后按确定规则更新",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "机器人位置的变化可以通过初始位置和速度随时间的线性关系计算",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "graph_diameter_invariance",
+        "description": "在任意时刻，最远距离的机器人可以通过当前所有机器人位置的最大值确定",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "事件时间单调递增，保证了处理顺序的正确性",
+              "properties": {
+                "time_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "每个机器人的状态（位置和速度）在每次操作后按确定规则更新",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "机器人位置的变化可以通过初始位置和速度随时间的线性关系计算",
+              "properties": {}
+            },
+            {
+              "name": "graph_diameter_invariance",
+              "description": "在任意时刻，最远距离的机器人可以通过当前所有机器人位置的最大值确定",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

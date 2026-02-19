@@ -2,14 +2,14 @@
   "problem_id": "P3300",
   "source": "luogu",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 100000
@@ -19,7 +19,6 @@
             "max": 6
           },
           "properties": {
-            "ordered": true,
             "inferred": true
           }
         }
@@ -34,30 +33,24 @@
       "max": 6
     },
     "properties": {
-      "ordered": true,
       "inferred": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "连通块必须包含至少一个建筑（图中的某些节点必须属于同一个连通分量）",
+        "name": "connectivity",
+        "description": "连通块必须包含至少一个建筑（O）",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "相邻的建筑节点必须通过道路节点连接（图中相邻节点的边约束）",
+        "name": "degree_bound",
+        "description": "道路（|, -, +）连接的格子数有限制，分别表示上下、左右、上下左右的连接",
         "confidence": "1/1"
       },
       {
-        "name": "submatrix_increasing_constraint",
-        "description": "查询子矩阵内的连通块数量（子图连通分量计数）",
-        "confidence": "1/1"
-      },
-      {
-        "name": "adaptive_interactor",
-        "description": "支持动态修改图中的节点类型（动态图更新操作）",
+        "name": "subset_constraint",
+        "description": "询问的区域是整个地图的一个子集，形式为 $N_i \times M$ 的矩形",
         "confidence": "1/1"
       }
     ],
@@ -68,20 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "连通块必须包含至少一个建筑（图中的某些节点必须属于同一个连通分量）"
+              "name": "connectivity",
+              "description": "连通块必须包含至少一个建筑（O）"
             },
             {
-              "name": "adjacent_difference",
-              "description": "相邻的建筑节点必须通过道路节点连接（图中相邻节点的边约束）"
+              "name": "degree_bound",
+              "description": "道路（|, -, +）连接的格子数有限制，分别表示上下、左右、上下左右的连接"
             },
             {
-              "name": "submatrix_increasing_constraint",
-              "description": "查询子矩阵内的连通块数量（子图连通分量计数）"
-            },
-            {
-              "name": "adaptive_interactor",
-              "description": "支持动态修改图中的节点类型（动态图更新操作）"
+              "name": "subset_constraint",
+              "description": "询问的区域是整个地图的一个子集，形式为 $N_i \times M$ 的矩形"
             }
           ]
         }
@@ -97,28 +86,46 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "统计给定子矩阵中连通块的数量"
+          "description": "求给定区域内连通块的数量"
         }
       }
     ],
-    "description": "统计给定子矩阵中连通块的数量"
+    "description": "求给定区域内连通块的数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：通过修改操作更新连通块信息，确保每次修改后连通块信息的一致性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：在处理询问时，可以通过合并子区间的连通块信息来计算整个区间的连通块数量",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过维护连通块信息来解决区间查询问题",
-          "properties": {
-            "subproblem_combination": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过修改操作更新连通块信息，确保每次修改后连通块信息的一致性",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：在处理询问时，可以通过合并子区间的连通块信息来计算整个区间的连通块数量",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过维护连通块信息来解决区间查询问题"
+    ]
   }
 }

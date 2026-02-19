@@ -2,14 +2,14 @@
   "problem_id": "GYM104976M",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 3,
             "max": 300000
@@ -39,18 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "v_diagram_structure",
-        "description": "序列必须满足 V 图结构，即存在一个索引 i (1 < i < n)，使得 a[1:i] 非递增且 a[i:n] 非递减",
+        "name": "subsequence_constraint",
+        "description": "选取的子序列必须是原序列的连续子序列（通过删除原序列两端的元素获得）",
         "confidence": "1/1"
       },
       {
-        "name": "continuous_path_constraint",
-        "description": "子序列 b 必须是原序列 a 的连续子序列，可以通过从 a 的开头和结尾删除一些元素（可能为零）获得",
-        "confidence": "1/1"
-      },
-      {
-        "name": "maximum_average_constraint",
-        "description": "目标是找到具有最大平均值的 V 图子序列 b",
+        "name": "ordering",
+        "description": "序列必须满足 V 形结构，即存在一个索引 i (1 < i < n)，使得 a[1:i] 非递增且 a[i:n] 非递减",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "v_diagram_structure",
-              "description": "序列必须满足 V 图结构，即存在一个索引 i (1 < i < n)，使得 a[1:i] 非递增且 a[i:n] 非递减"
+              "name": "subsequence_constraint",
+              "description": "选取的子序列必须是原序列的连续子序列（通过删除原序列两端的元素获得）",
+              "formal": "b = a[l:r] for some 1 <= l <= r <= n"
             },
             {
-              "name": "continuous_path_constraint",
-              "description": "子序列 b 必须是原序列 a 的连续子序列，可以通过从 a 的开头和结尾删除一些元素（可能为零）获得"
-            },
-            {
-              "name": "maximum_average_constraint",
-              "description": "目标是找到具有最大平均值的 V 图子序列 b"
+              "name": "ordering",
+              "description": "序列必须满足 V 形结构，即存在一个索引 i (1 < i < n)，使得 a[1:i] 非递增且 a[i:n] 非递减",
+              "formal": "∃i (1 < i < n) such that a[1:i] is non-increasing and a[i:n] is non-decreasing"
             }
           ]
         }
@@ -93,19 +86,39 @@
     "description": "求满足条件的子序列的最大平均值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最大平均值的子序列可以通过其子问题的最优解来构造",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：区间的和可以通过端点差值计算，从而方便地求出平均值",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过计算每个可能的V型子序列的平均值来找到最大平均值",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最大平均值的子序列可以通过其子问题的最优解来构造",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：区间的和可以通过端点差值计算，从而方便地求出平均值",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过计算每个可能的V型子序列的平均值来找到最大平均值"
+    ]
   }
 }

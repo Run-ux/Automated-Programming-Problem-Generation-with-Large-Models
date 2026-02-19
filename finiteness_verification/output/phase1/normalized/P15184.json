@@ -1,0 +1,92 @@
+{
+  "problem_id": "P15184",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": false,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distance_bound",
+            "description": "总行程距离不超过给定的预算 B",
+            "formal": "sum(dist(a, b)) <= B"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "最小化总的 CO₂ 成本",
+            "formal": "min(sum(cost(a, b, i)))"
+          },
+          {
+            "name": "connectivity",
+            "description": "车站之间只能通过已有的连接和运输模式进行旅行，不允许直接驾车",
+            "formal": "if (a, b) 有连接，则只能通过连接的运输模式旅行"
+          },
+          {
+            "name": "distance_bound",
+            "description": "仅允许从家到目的地、从家到车站、从车站到目的地使用汽车旅行",
+            "formal": "car travel allowed only between home and destination, home and stations, or stations and destination"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求在给定距离预算内，从起点到终点的最小CO₂成本"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从起点到终点的最小CO₂成本路径可以由从起点到中间点和从中间点到终点的最小CO₂成本路径组合而成。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在状态机DP中，当前状态的成本可以通过前一个状态的成本加上转移成本来计算。具体来说，从一个站点到另一个站点的成本可以通过前一个站点的成本加上当前连接的成本来更新。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着路径长度的增加，总成本不会减少。即在预算范围内，更长的路径不会比更短的路径有更低的CO₂成本。",
+            "properties": {
+              "cost_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

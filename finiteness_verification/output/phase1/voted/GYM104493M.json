@@ -2,14 +2,14 @@
   "problem_id": "GYM104493M",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1000000
@@ -39,13 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "centroid_position_fixed",
-        "description": "多边形的质心必须位于圆内（几何约束）",
+        "name": "coverage",
+        "description": "覆盖区域必须在给定的圆形区域内（圆桌）",
         "confidence": "1/1"
       },
       {
-        "name": "uniform_alignment",
-        "description": "多边形至少有一条边平行于 x 轴（方向约束）",
+        "name": "orientation",
+        "description": "多边形的一条边必须平行于 x 轴",
+        "confidence": "1/1"
+      },
+      {
+        "name": "geometric_center_constraint",
+        "description": "多边形的质心必须位于圆形区域内",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "centroid_position_fixed",
-              "description": "多边形的质心必须位于圆内（几何约束）"
+              "name": "coverage",
+              "description": "覆盖区域必须在给定的圆形区域内（圆桌）",
+              "formal": "所有多边形的顶点和中心必须在半径为 R 的圆内"
             },
             {
-              "name": "uniform_alignment",
-              "description": "多边形至少有一条边平行于 x 轴（方向约束）"
+              "name": "orientation",
+              "description": "多边形的一条边必须平行于 x 轴",
+              "formal": "存在一条边 (x1, y1) 到 (x2, y2)，使得 y1 = y2"
+            },
+            {
+              "name": "geometric_center_constraint",
+              "description": "多边形的质心必须位于圆形区域内",
+              "formal": "多边形的质心 (cx, cy) 满足 cx^2 + cy^2 <= R^2"
             }
           ]
         }
@@ -84,19 +96,39 @@
     "description": "最大化覆盖面积"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最大覆盖面积可以通过局部最优覆盖方案组合而成",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：正多边形的对称性质使得其在圆桌上的放置方式可以简化为有限种情况，从而减少计算复杂度",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过解决较小规模的问题来构建最终解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最大覆盖面积可以通过局部最优覆盖方案组合而成",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：正多边形的对称性质使得其在圆桌上的放置方式可以简化为有限种情况，从而减少计算复杂度",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过解决较小规模的问题来构建最终解"
+    ]
   }
 }

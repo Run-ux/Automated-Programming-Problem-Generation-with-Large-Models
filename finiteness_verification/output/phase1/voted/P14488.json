@@ -1,0 +1,120 @@
+{
+  "problem_id": "P14488",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "divisibility",
+        "description": "求和项中的索引 i, j, k 通过 gcd(i, j), gcd(i, k), gcd(j, k) 进行关联",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "最终结果需要对 2^64 取模",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "divisibility",
+              "description": "求和项中的索引 i, j, k 通过 gcd(i, j), gcd(i, k), gcd(j, k) 进行关联",
+              "formal": "对于所有 i, j, k ∈ [1, n]，计算 A_i * B_j * C_k * D_{gcd(i, j)} * E_{gcd(i, k)} * F_{gcd(j, k)}"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "最终结果需要对 2^64 取模",
+              "formal": "result = (sum % 2^64)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求给定序列下特定三重和式的最大值"
+        }
+      }
+    ],
+    "description": "求给定序列下特定三重和式的最大值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合得到，具体表现为通过计算较小规模的 gcd 值来构建较大规模的解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和等技术，可以将区间内的贡献值进行累加，从而高效地计算出整个区间的贡献。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解组合得到，具体表现为通过计算较小规模的 gcd 值来构建较大规模的解。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和等技术，可以将区间内的贡献值进行累加，从而高效地计算出整个区间的贡献。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

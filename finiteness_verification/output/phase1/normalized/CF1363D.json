@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 1000
@@ -28,24 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "pairwise_exclusion",
-            "description": "子集必须互不相交（即任意两个子集的交集为空）",
-            "formal": "∀ i ≠ j, S_i ∩ S_j = ∅"
+            "name": "query_limit",
+            "description": "查询次数限制为12次",
+            "formal": "queries <= 12"
           },
           {
-            "name": "query_count_constraint",
-            "description": "查询次数不超过 12 次",
-            "formal": "query_count ≤ 12"
+            "name": "intersection",
+            "description": "子集之间必须互不相交",
+            "formal": "S_i ∩ S_j = ∅ for all i ≠ j"
           },
           {
-            "name": "non_empty_subset",
-            "description": "每个子集必须非空",
-            "formal": "∀ i, |S_i| > 0"
+            "name": "exclusion",
+            "description": "每个密码元素是数组中不在对应子集中的最大值",
+            "formal": "P_i = max(A[j] | j ∉ S_i)"
           },
           {
-            "name": "maximum_exclusion_constraint",
-            "description": "密码中的每个元素是数组中不在对应子集内的最大值",
-            "formal": "P_i = max(A[j] for j ∉ S_i)"
+            "name": "out_of_bounds_constraint",
+            "description": "无效查询返回-1，程序应立即终止",
+            "formal": "if query is invalid, x = -1 and terminate program"
           }
         ]
       }
@@ -56,8 +56,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足条件的序列"
+        "type": "construction",
+        "description": "构造一个满足给定条件的序列"
       }
     }
   ],
@@ -66,9 +66,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过查询子集的最大值来逐步确定整个数组的最大值分布",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个密码位的值依赖于数组A中未被当前子集包含的最大值，这可以通过查询子集外的最大值来确定。",
+            "properties": {}
+          },
+          {
+            "name": "query_independence",
+            "description": "查询独立性：每次查询的结果仅依赖于当前查询的子集，与之前的查询结果无关。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

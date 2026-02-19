@@ -1,0 +1,139 @@
+{
+  "problem_id": "CF1129C",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 3000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 3000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "字符串 S 的每个子串需要被翻译成 Morse 代码，并且这些子串必须对应有效的英文字符序列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "某些特定的子串不对应任何英文字符，即 '0011', '0101', '1110', '1111' 是无效的 Morse 代码",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "结果需要对 10^9 + 7 取模",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "字符串 S 的每个子串需要被翻译成 Morse 代码，并且这些子串必须对应有效的英文字符序列",
+              "formal": "对于 S 的每个子串 T，T 必须能被翻译成一个或多个有效的英文字符"
+            },
+            {
+              "name": "exclusion",
+              "description": "某些特定的子串不对应任何英文字符，即 '0011', '0101', '1110', '1111' 是无效的 Morse 代码",
+              "formal": "S 中不能包含 '0011', '0101', '1110', '1111' 这些子串"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "在每次修改后，需要计算并报告 S 的所有非空子串中能够表示的有效英文字符序列的数量",
+              "formal": "对于每次修改后的 S，计算所有非空子串 T 能够表示的有效英文字符序列的数量"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "结果需要对 10^9 + 7 取模",
+              "formal": "答案 % (10^9 + 7)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足条件的子串数量（模10^9+7）"
+        }
+      }
+    ],
+    "description": "求满足条件的子串数量（模10^9+7）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前字符串的解依赖于其所有可能的前缀子串的解，通过动态规划的方式构建整体解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：任意合法的Morse编码子串（即能表示一个或多个字母的子串）的数量可以通过其组成子串的数量累加得到",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：当前字符串的解依赖于其所有可能的前缀子串的解，通过动态规划的方式构建整体解",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：任意合法的Morse编码子串（即能表示一个或多个字母的子串）的数量可以通过其组成子串的数量累加得到",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "problem_id": "CF1978D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "optimization_objective",
+        "description": "具有最大票数的候选人获胜，如果多个候选人票数相同，则编号最小的候选人获胜",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "排除某个候选人后，该候选人的所有支持者变为未决定的选民，并投票给编号最小的候选人",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "optimization_objective",
+              "description": "具有最大票数的候选人获胜，如果多个候选人票数相同，则编号最小的候选人获胜"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "未决定的选民将投票给编号最小的候选人"
+            },
+            {
+              "name": "exclusion",
+              "description": "排除某个候选人后，该候选人的所有支持者变为未决定的选民，并投票给编号最小的候选人"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "对于每个候选人，需要排除的最少候选人数，使得该候选人能够获胜"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求使每个候选者获胜所需的最小排除候选者数量"
+        }
+      }
+    ],
+    "description": "求使每个候选者获胜所需的最小排除候选者数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个候选人的获胜条件可以通过排除其他候选人的子问题来确定，且这些子问题的解可以组合成原问题的解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着排除的候选人数量增加，某个候选人的得票数（包括其粉丝和未决定选民的投票）单调递增。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：为了使某个候选人获胜，优先排除对其威胁最大的候选人，即得票数较高的候选人。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个候选人的获胜条件可以通过排除其他候选人的子问题来确定，且这些子问题的解可以组合成原问题的解。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着排除的候选人数量增加，某个候选人的得票数（包括其粉丝和未决定选民的投票）单调递增。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：为了使某个候选人获胜，优先排除对其威胁最大的候选人，即得票数较高的候选人。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

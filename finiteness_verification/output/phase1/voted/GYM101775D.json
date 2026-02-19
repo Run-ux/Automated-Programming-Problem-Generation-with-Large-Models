@@ -2,14 +2,14 @@
   "problem_id": "GYM101775D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -40,22 +40,22 @@
     "constraints": [
       {
         "name": "geometric_progression_constraint",
-        "description": "序列中的每个元素与其后一个元素的比值为常数D（D > 1），且序列长度至少为3",
+        "description": "序列中的每个元素与其后一个元素的比值为常数D（D > 1）",
         "confidence": "1/1"
       },
       {
-        "name": "positive_integer_range_constraint",
-        "description": "序列中的所有元素必须是正整数",
+        "name": "distance_bound",
+        "description": "序列长度至少为3个正整数",
         "confidence": "1/1"
       },
       {
-        "name": "non_zero_prefix_constraint",
+        "name": "no_leading_zeros_constraint",
         "description": "序列中的每个数字不能有前导零",
         "confidence": "1/1"
       },
       {
-        "name": "interval_inclusion_constraint",
-        "description": "计算在给定区间 [L, R] 内满足条件的数字数量",
+        "name": "inclusion",
+        "description": "计算在给定区间 [L, R] 内符合条件的数字数量",
         "confidence": "1/1"
       }
     ],
@@ -67,19 +67,23 @@
           "constraints": [
             {
               "name": "geometric_progression_constraint",
-              "description": "序列中的每个元素与其后一个元素的比值为常数D（D > 1），且序列长度至少为3"
+              "description": "序列中的每个元素与其后一个元素的比值为常数D（D > 1）",
+              "formal": "对于所有 i (0 ≤ i < n - 1)，a[i] * D = a[i + 1]"
             },
             {
-              "name": "positive_integer_range_constraint",
-              "description": "序列中的所有元素必须是正整数"
+              "name": "distance_bound",
+              "description": "序列长度至少为3个正整数",
+              "formal": "n ≥ 3"
             },
             {
-              "name": "non_zero_prefix_constraint",
-              "description": "序列中的每个数字不能有前导零"
+              "name": "no_leading_zeros_constraint",
+              "description": "序列中的每个数字不能有前导零",
+              "formal": "每个数字 a[i] 不以0开头"
             },
             {
-              "name": "interval_inclusion_constraint",
-              "description": "计算在给定区间 [L, R] 内满足条件的数字数量"
+              "name": "inclusion",
+              "description": "计算在给定区间 [L, R] 内符合条件的数字数量",
+              "formal": "L ≤ x ≤ R"
             }
           ]
         }
@@ -87,34 +91,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的整数数量"
+          "type": "enumeration",
+          "description": "求给定区间内满足特定条件的数的数量"
         }
       }
     ],
-    "description": "统计满足条件的整数数量"
+    "description": "求给定区间内满足特定条件的数的数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：Happy Number 的判定可以分解为子问题的组合，每个子问题的解是独立且最优的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：在给定范围内查找 Happy Number 可以通过将区间划分为更小的子区间，并合并子区间的解来实现。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过枚举可能的几何序列因子和长度来构建满足条件的数",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：Happy Number 的判定可以分解为子问题的组合，每个子问题的解是独立且最优的。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：在给定范围内查找 Happy Number 可以通过将区间划分为更小的子区间，并合并子区间的解来实现。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过枚举可能的几何序列因子和长度来构建满足条件的数"
+    ]
   }
 }

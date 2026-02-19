@@ -1,0 +1,79 @@
+{
+  "problem_id": "GYM104160A",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": -1000000000,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "intersection",
+            "description": "每个集合中的区间是两两不相交的",
+            "formal": "对于任意两个区间 [l1, r1] 和 [l2, r2]，有 (r1 < l2) 或 (r2 < l1)"
+          },
+          {
+            "name": "probability_distribution",
+            "description": "从每个区间中随机选取一个实数时，概率分布是均匀的",
+            "formal": "P(x ∈ [l1, r1]) = P(x ∈ [l2, r2]) 当且仅当 r1 - l1 = r2 - l2"
+          },
+          {
+            "name": "probability_distribution",
+            "description": "输出的期望绝对差值必须满足给定的误差范围",
+            "formal": "|a - b| / max(1, |b|) ≤ 10^-9，其中 a 是你的输出，b 是标准答案"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_probability",
+        "description": "最小化两个独立随机变量的期望绝对差值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过端点差值计算区间和，适用于处理均匀分布的区间概率问题",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：子区间的统计信息可以合并以得到更大区间的统计信息，适用于处理多个区间的数据聚合",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

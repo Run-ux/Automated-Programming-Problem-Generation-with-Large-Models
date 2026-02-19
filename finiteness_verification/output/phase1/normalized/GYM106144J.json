@@ -1,0 +1,79 @@
+{
+  "problem_id": "GYM106144J",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 999999999
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "digit_exclusion",
+            "description": "输入整数的十进制表示中不包含数字0",
+            "formal": "∀i, n[i] ≠ 0"
+          },
+          {
+            "name": "cyclic_shift_constraint",
+            "description": "定义了一个循环移位操作，将整数n的最右位移动到最左位，其余位依次右移",
+            "formal": "n → x = (n % 10) * 10^(m-1) + floor(n / 10)"
+          },
+          {
+            "name": "constant_value_constraint",
+            "description": "寻找所有满足 n → x = n + x 的 x 值",
+            "formal": "n → x = n + x"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足特定条件的x值的数量，并按升序输出这些x值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "cyclic_permutation_invariance",
+            "description": "循环置换：通过右移操作，数字的每一位在一定次数的操作后会回到初始位置，形成一个循环置换。",
+            "properties": {}
+          },
+          {
+            "name": "periodicity_invariance",
+            "description": "周期性：对于给定的n，存在一个最小正整数k，使得对任意x，有(n → x) = (n → (x + k))。即操作具有周期性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

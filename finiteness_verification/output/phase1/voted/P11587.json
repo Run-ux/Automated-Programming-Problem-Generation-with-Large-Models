@@ -1,0 +1,155 @@
+{
+  "problem_id": "P11587",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "每个企业只对特定难度范围内的题目感兴趣，需要从该范围内选择题目组成比赛",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "每场比赛中的题目不能重复使用",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个难度级别的题目数量有限制，且难度不确定的题目可以分配到相邻两个难度级别中",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "需要最大化出售的比赛数量",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "每个企业只对特定难度范围内的题目感兴趣，需要从该范围内选择题目组成比赛",
+              "formal": "对于每个 j (0 ≤ j ≤ M-1)，选择的题目难度必须在 [L[j], U[j]] 范围内"
+            },
+            {
+              "name": "distinctness",
+              "description": "每场比赛中的题目不能重复使用",
+              "formal": "对于每个 j (0 ≤ j ≤ M-1)，选择的题目集合 S_j 中的元素必须是唯一的"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个难度级别的题目数量有限制，且难度不确定的题目可以分配到相邻两个难度级别中",
+              "formal": "对于每个 i (0 ≤ i ≤ N-1)，A[i] 是难度为 i 级的题目数量；对于每个 i (0 ≤ i ≤ N-2)，B[i] 是难度不确定是 i 级还是 i+1 级的题目数量"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "需要最大化出售的比赛数量",
+              "formal": "对于每个 j (0 ≤ j ≤ M-1)，最大化 S_j 的值"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "最大化可以出售给每个企业的比赛数量"
+        }
+      }
+    ],
+    "description": "最大化可以出售给每个企业的比赛数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即对于每个企业，其最大可出售的比赛数量可以通过确定难度不确定题目的分配来最大化",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在分配难度不确定的题目时，优先满足当前企业的最大需求，可以确保全局最优解。通过局部最优选择（即尽可能多地分配题目给当前企业），最终达到全局最优",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：对于每个企业感兴趣的难度区间，可以通过前缀和的方式快速计算出该区间的题目总数，从而方便地进行题目分配",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即对于每个企业，其最大可出售的比赛数量可以通过确定难度不确定题目的分配来最大化",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在分配难度不确定的题目时，优先满足当前企业的最大需求，可以确保全局最优解。通过局部最优选择（即尽可能多地分配题目给当前企业），最终达到全局最优",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：对于每个企业感兴趣的难度区间，可以通过前缀和的方式快速计算出该区间的题目总数，从而方便地进行题目分配",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

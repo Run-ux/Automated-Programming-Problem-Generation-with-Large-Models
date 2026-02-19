@@ -2,14 +2,14 @@
   "problem_id": "GYM101853E",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 16
@@ -36,7 +36,7 @@
     "constraints": [
       {
         "name": "pairwise_exclusion",
-        "description": "选取的元素不能有相邻关系（水平、垂直或对角线相邻）",
+        "description": "选取的元素不能有相邻关系（包括水平、垂直和对角线相邻）",
         "confidence": "1/1"
       }
     ],
@@ -48,7 +48,8 @@
           "constraints": [
             {
               "name": "pairwise_exclusion",
-              "description": "选取的元素不能有相邻关系（水平、垂直或对角线相邻）"
+              "description": "选取的元素不能有相邻关系（包括水平、垂直和对角线相邻）",
+              "formal": "对于任意两个被选中的单元格 (x1, y1) 和 (x2, y2)，|x1 - x2| + |y1 - y2| > 1"
             }
           ]
         }
@@ -71,21 +72,39 @@
     "description": "最大化不相邻单元格的权值和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最大和的非相邻子集可以由更小子集的最大和递推得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在计算某个子问题的最优解时，其结果不受其他子问题的影响。每个子问题的求解是独立的，且只依赖于更小规模的子问题。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，且子问题之间相互独立",
-          "properties": {
-            "subproblem_independence": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最大和的非相邻子集可以由更小子集的最大和递推得到。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在计算某个子问题的最优解时，其结果不受其他子问题的影响。每个子问题的求解是独立的，且只依赖于更小规模的子问题。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，且子问题之间相互独立"
+    ]
   }
 }

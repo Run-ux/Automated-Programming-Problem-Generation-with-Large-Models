@@ -2,14 +2,14 @@
   "problem_id": "GYM104805J",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 2,
             "max": 10000
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
+        "name": "adjacency_difference",
         "description": "相邻节点在某一位上取值不同（图着色约束）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_operation_types_constraint",
-        "description": "所有节点的取值序列互不相同（无重复路径约束）",
+        "name": "distinctness",
+        "description": "所有节点的取值必须唯一（无重复线程）",
         "confidence": "1/1"
       },
       {
-        "name": "circular_sequence_constraint",
-        "description": "首尾节点也视为相邻（环形图约束）",
+        "name": "ordering",
+        "description": "节点的顺序不能通过反转得到另一个节点（非对称性）",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
+              "name": "adjacency_difference",
               "description": "相邻节点在某一位上取值不同（图着色约束）",
-              "formal": "对于任意相邻的两个线程 i 和 j，存在且仅存在一个位置 p (1 ≤ p ≤ k)，使得 thread[i][p] ≠ thread[j][p]"
+              "formal": "对于任意相邻的两个线程 i 和 j，存在且仅存在一个位置 p 使得 thread[i][p] != thread[j][p]"
             },
             {
-              "name": "distinct_operation_types_constraint",
-              "description": "所有节点的取值序列互不相同（无重复路径约束）",
-              "formal": "对于任意两个线程 i 和 j (i ≠ j)，thread[i] ≠ thread[j]"
+              "name": "distinctness",
+              "description": "所有节点的取值必须唯一（无重复线程）",
+              "formal": "对于所有的线程 i 和 j (i ≠ j)，thread[i] ≠ thread[j]"
             },
             {
-              "name": "circular_sequence_constraint",
-              "description": "首尾节点也视为相邻（环形图约束）",
-              "formal": "第一个线程和最后一个线程也视为相邻"
+              "name": "ordering",
+              "description": "节点的顺序不能通过反转得到另一个节点（非对称性）",
+              "formal": "对于所有的线程 i 和 j (i ≠ j)，thread[i] ≠ reverse(thread[j])"
             }
           ]
         }
@@ -81,34 +81,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的方案，使得每条线上的珠子颜色排列符合给定规则"
+          "type": "construction",
+          "description": "构造一个满足特定条件的方案，或判定不存在"
         }
       }
     ],
-    "description": "构造一个满足条件的方案，使得每条线上的珠子颜色排列符合给定规则"
+    "description": "构造一个满足特定条件的方案，或判定不存在"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "matroid_exchange",
+        "description": "拟阵交换性：通过交换相邻线程上的珠子，可以确保每对相邻线程恰好有一个不同的珠子颜色，且所有线程互不相同。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：线程的排列和珠子的颜色可以通过对称变换来生成新的有效方案，但不会改变问题的基本结构。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个线程的颜色序列可以由前一个线程的颜色序列通过改变一个珠子的颜色来生成。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "matroid_exchange",
+              "description": "拟阵交换性：通过交换相邻线程上的珠子，可以确保每对相邻线程恰好有一个不同的珠子颜色，且所有线程互不相同。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：线程的排列和珠子的颜色可以通过对称变换来生成新的有效方案，但不会改变问题的基本结构。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个线程的颜色序列可以由前一个线程的颜色序列通过改变一个珠子的颜色来生成。"
+    ]
   }
 }

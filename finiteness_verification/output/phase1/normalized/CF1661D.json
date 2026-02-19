@@ -1,0 +1,77 @@
+{
+  "problem_id": "CF1661D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subsequence_constraint",
+            "description": "操作只能在数组的子段上进行，且子段长度固定为 k",
+            "formal": "对于每个操作，选择一个子段 [l, l + k - 1]，其中 1 ≤ l ≤ n - k + 1"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "每次操作对子段中的元素增加固定的算术序列 1, 2, ..., k",
+            "formal": "对于子段 [l, l + k - 1]，a[l + i] += (i + 1) for i in [0, k-1]"
+          },
+          {
+            "name": "ordering",
+            "description": "最终数组 a 的每个元素必须大于等于对应位置的 b 数组元素",
+            "formal": "对于所有 i ∈ [1, n]，a[i] ≥ b[i]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "最小化操作次数以满足数组条件"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过动态规划方法求解时，当前状态的最优解依赖于之前状态的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：对于任意两个不相交的区间，它们的和等于各自区间的和。在本题中，对数组a的某个子段进行操作时，可以将该子段视为一个整体，其对结果的影响是可加的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

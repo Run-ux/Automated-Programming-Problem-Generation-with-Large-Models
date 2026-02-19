@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 3000
@@ -28,9 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "median_positive_constraint",
-            "description": "子序列的最小值和最大值的平均值等于其中位数",
-            "formal": "对于子序列 C，令 D 为 C 的排序版本，则 (D[1] + D[k]) / 2 == D[ceil(k/2)]"
+            "name": "mean_median_constraint",
+            "description": "子序列的最小值和最大值的平均值等于中位数",
+            "formal": "对于子序列 C，(min(C) + max(C)) / 2 = median(C)"
+          },
+          {
+            "name": "subsequence_constraint",
+            "description": "子序列必须保持原序列中的相对顺序",
+            "formal": "B 是 A 的子序列，如果 B 可以通过删除 A 中的一些或不删除任何元素得到，且剩余元素的顺序不变"
           }
         ]
       }
@@ -42,7 +47,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "求满足条件的最长子序列长度"
+        "description": "求满足特定条件的最长子序列长度"
       }
     }
   ],
@@ -51,9 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：最长好子序列的解可以通过其子序列的解组合而成，即大问题的解由子问题的解组合而成。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最长好子序列的解可以通过其子序列的解来构建，即问题的最优解包含子问题的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在动态规划过程中，当前状态的值由之前的状态值通过特定规则计算得出，保持一致性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

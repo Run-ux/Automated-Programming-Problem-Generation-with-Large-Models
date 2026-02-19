@@ -1,0 +1,79 @@
+{
+  "problem_id": "GYM105788H",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 9
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "所有未知元素（'x'）必须被替换为不同的数字，且这些数字不能重复",
+            "formal": "∀ x_i, x_j ∈ X, i ≠ j → x_i ≠ x_j"
+          },
+          {
+            "name": "exclusion",
+            "description": "未知元素（'x'）不能被替换为特定的禁止数字 k",
+            "formal": "∀ x_i ∈ X, x_i ≠ k"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "替换后的字符串经过多次数字和运算后，最终结果必须等于 k 且是可能的最小值",
+            "formal": "min(sum_digits(replace(s, X))) = k"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种替换方案，使得最终计算结果为给定值且该结果是最小可能的"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，通过替换未知数x为不同的数字，使得最终得到的单个数字是最小且等于k的过程可以分解为多个子问题，每个子问题都是选择一个合适的数字替换x以达到局部最优。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择替换x时，总是选择当前情况下可以使结果最接近目标值k且不违反规则（即不重复使用已用过的数字）的数字进行替换，从而逐步逼近全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -2,14 +2,14 @@
   "problem_id": "GYM105408J",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 10000
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "prefix_sum_constraint",
-        "description": "前缀和非负（在任何时刻，已选取的元素中某类元素的数量不少于另一类）",
+        "name": "non_negative_prefix_sum",
+        "description": "前缀和非负（在任何时刻，Shikanoko 吃的饼干数量不少于 Koshi 吃的饼干数量）",
         "confidence": "1/1"
       },
       {
-        "name": "endpoint_node_constraint",
-        "description": "只能从两端访问（每次只能从序列的两端选取元素）",
+        "name": "revisiting_allowed",
+        "description": "只能从两端取元素（Koshi 只能从饼干包的两端取饼干）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_permutation",
-        "description": "不同排列（两个排列被认为是不同的，如果存在至少一对元素 i 和 j，在一个排列中 i 在 j 之前而在另一个排列中 j 在 i 之前）",
+        "name": "distinctness",
+        "description": "排列唯一性（不同的吃饼干顺序必须是不同的排列）",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "prefix_sum_constraint",
-              "description": "前缀和非负（在任何时刻，已选取的元素中某类元素的数量不少于另一类）",
-              "formal": "对于所有 0 ≤ i < N, sum(prefix[i]) ≥ 0"
+              "name": "non_negative_prefix_sum",
+              "description": "前缀和非负（在任何时刻，Shikanoko 吃的饼干数量不少于 Koshi 吃的饼干数量）",
+              "formal": "对于任意 0 ≤ i ≤ N, sum(M[0:i]) - (i - sum(M[0:i])) ≥ 0"
             },
             {
-              "name": "endpoint_node_constraint",
-              "description": "只能从两端访问（每次只能从序列的两端选取元素）",
-              "formal": "每次选取的元素索引为 0 或当前序列长度-1"
+              "name": "revisiting_allowed",
+              "description": "只能从两端取元素（Koshi 只能从饼干包的两端取饼干）",
+              "formal": "每次操作只能选择 M[0] 或 M[N-1]"
             },
             {
-              "name": "distinct_permutation",
-              "description": "不同排列（两个排列被认为是不同的，如果存在至少一对元素 i 和 j，在一个排列中 i 在 j 之前而在另一个排列中 j 在 i 之前）",
-              "formal": "对于两个排列 P1 和 P2，存在 i, j 使得 (P1[i] < P1[j] 且 P2[i] > P2[j]) 或 (P1[i] > P1[j] 且 P2[i] < P2[j])"
+              "name": "distinctness",
+              "description": "排列唯一性（不同的吃饼干顺序必须是不同的排列）",
+              "formal": "对于两个不同的天数 d1 和 d2，存在 i, j 使得在 d1 中 i 在 j 之前被吃掉，而在 d2 中 j 在 i 之前被吃掉"
             }
           ]
         }
@@ -81,37 +81,71 @@
     ]
   },
   "objective": {
-    "type": "maximize_value",
+    "type": "maximize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_value",
-          "description": "求满足条件的不同排列数量的最大值"
+          "type": "maximize_count",
+          "description": "求满足条件的不同排列数的最大值"
         }
       }
     ],
-    "description": "求满足条件的不同排列数量的最大值"
+    "description": "求满足条件的不同排列数的最大值"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "双指针左右端点单调前进，确保从两端取元素时的顺序合法性",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在每一步操作中，当前状态到下一个状态的转移是确定且一致的",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个子问题的解法不受其他子问题的影响，可以独立求解",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "双指针左右端点单调前进，区间合法性可单调维护",
-          "properties": {
-            "left_monotonic": true,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针左右端点单调前进，确保从两端取元素时的顺序合法性",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在每一步操作中，当前状态到下一个状态的转移是确定且一致的",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个子问题的解法不受其他子问题的影响，可以独立求解",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "双指针左右端点单调前进，区间合法性可单调维护"
+    ]
   }
 }

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 2,
           "max": 1000
@@ -28,16 +28,20 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_subset_selection",
-            "description": "矩阵中恰好有一个元素被隐藏（值为-1）"
+            "name": "existence_requirement",
+            "description": "矩阵中恰好有一个元素被隐藏，其值为 -1"
           },
           {
-            "name": "non_negative_values",
-            "description": "初始矩阵的所有元素均为0，即所有操作前矩阵的元素非负"
+            "name": "non_negative",
+            "description": "初始矩阵的所有元素均为 0"
           },
           {
-            "name": "adjacent_difference",
-            "description": "每次操作选择一行或一列，并将该行或该列的所有元素增加一个任意正整数"
+            "name": "positive_integer_constraint",
+            "description": "每次操作对选定的行或列中的所有元素加上一个正整数"
+          },
+          {
+            "name": "distinctness",
+            "description": "隐藏的元素在矩阵中的位置是唯一的"
           }
         ]
       }
@@ -48,7 +52,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
+        "type": "construction",
         "description": "构造一个满足条件的矩阵元素值"
       }
     }
@@ -58,9 +62,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：矩阵中任意非隐藏元素的值可由其所在行和列的操作序列唯一确定，隐藏元素的初始值可通过其他元素的值推导得出。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：矩阵中任意行或列的增量可以通过计算其他行或列的差值来确定，从而恢复隐藏元素的初始值。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过选择不同的行和列进行增量操作，矩阵的状态可以逐步更新，且每次操作后矩阵的性质保持一致。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

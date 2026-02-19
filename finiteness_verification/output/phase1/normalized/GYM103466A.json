@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -26,7 +26,7 @@
       "result": {
         "constraints": [
           {
-            "name": "pairwise_divisibility_constraint",
+            "name": "divisibility",
             "description": "在任意大小为 k 的子集中，存在两个不同的元素 u 和 v 使得 u 是 v 的因子",
             "formal": "∀ T ⊆ {1, 2, ..., n}, |T| = k, ∃ u, v ∈ T, u ≠ v, u | v"
           }
@@ -39,8 +39,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求满足条件的最小整数值"
+        "type": "minimize_value",
+        "description": "求满足条件的最小整数k"
       }
     }
   ],
@@ -49,9 +49,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即对于任意给定的n，其最小k值可通过较小规模问题的解推导得出",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即对于任意一个集合T，其满足条件的最小k值可以通过更小子集的最优解推导得出。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在构建满足条件的最小集合时，每次选择当前最优（即最大独立集）的选择策略能够保证最终得到全局最优解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

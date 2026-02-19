@@ -1,0 +1,89 @@
+{
+  "problem_id": "P11632",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1152921504606846975
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_xor_constraint",
+            "description": "所有元素的按位异或和为0（Nim游戏后手获胜条件）",
+            "formal": "XOR(a_1, a_2, ..., a_n) = 0"
+          },
+          {
+            "name": "minimum_value_constraint",
+            "description": "添加最少数量的石子使得所有元素的按位异或和为0",
+            "formal": "minimize k such that XOR(a_1 + b_1, a_2 + b_2, ..., a_n + b_n) = 0 and b_i >= 0 for all i"
+          },
+          {
+            "name": "distinctness",
+            "description": "提供m种不同的最小添加石子方案，每种方案中至少有一个石子堆添加的石子数量不同",
+            "formal": "Find m distinct solutions (b_1, b_2, ..., b_n) such that XOR(a_1 + b_1, a_2 + b_2, ..., a_n + b_n) = 0 and b_i >= 0 for all i"
+          },
+          {
+            "name": "non_empty_query",
+            "description": "每个方案中添加的石子数量总和必须等于k",
+            "formal": "For each solution (b_1, b_2, ..., b_n), sum(b_i) = k"
+          },
+          {
+            "name": "non_negative_pairwise_product",
+            "description": "每个石子堆添加的石子数量必须大于0",
+            "formal": "For each b_i in the solution, b_i >= 1 if b_i > 0"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化添加石子的总数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，通过异或和为0的条件，可以将问题分解为多个子问题，每个子问题的最优解组合起来构成全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：局部最优选择导致全局最优。在本题中，每次选择添加最少石子使得异或和为0的策略是局部最优选择，并且这种选择最终能够达到全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

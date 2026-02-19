@@ -41,13 +41,33 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "bipartite_matching",
-        "description": "图必须是二分图，即可以将节点分为两个集合，使得每条边的两个端点分别属于不同的集合",
+        "name": "connectivity",
+        "description": "图必须连通（从任意节点到任意节点都存在路径）",
         "confidence": "1/1"
       },
       {
-        "name": "bottleneck_path",
-        "description": "所有从起点到终点的最短路径上，每条边的两个端点必须由不同类型的海关单位监控",
+        "name": "bipartiteness",
+        "description": "图可以被二分（所有边的两个端点分别属于不同的集合）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个节点的度数不超过给定的道路数量",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "挪威和瑞典的海关单位总数等于节点数，且挪威单位数量为 k",
+        "confidence": "1/1"
+      },
+      {
+        "name": "matching_constraint",
+        "description": "每条边的两个端点不能同时被同一国家的海关单位监视",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "从起点到终点的最短路径上的所有边都必须被不同国家的海关单位监视",
         "confidence": "1/1"
       }
     ],
@@ -58,12 +78,28 @@
         "result": {
           "constraints": [
             {
-              "name": "bipartite_matching",
-              "description": "图必须是二分图，即可以将节点分为两个集合，使得每条边的两个端点分别属于不同的集合"
+              "name": "connectivity",
+              "description": "图必须连通（从任意节点到任意节点都存在路径）"
             },
             {
-              "name": "bottleneck_path",
-              "description": "所有从起点到终点的最短路径上，每条边的两个端点必须由不同类型的海关单位监控"
+              "name": "bipartiteness",
+              "description": "图可以被二分（所有边的两个端点分别属于不同的集合）"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个节点的度数不超过给定的道路数量"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "挪威和瑞典的海关单位总数等于节点数，且挪威单位数量为 k"
+            },
+            {
+              "name": "matching_constraint",
+              "description": "每条边的两个端点不能同时被同一国家的海关单位监视"
+            },
+            {
+              "name": "path_constraint",
+              "description": "从起点到终点的最短路径上的所有边都必须被不同国家的海关单位监视"
             }
           ]
         }
@@ -71,14 +107,14 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
+          "type": "feasibility",
           "description": "判断是否存在一种分配方案，使得所有从起点到终点的最短路径上至少有一条边被同国的海关单位监控"
         }
       }
@@ -86,19 +122,50 @@
     "description": "判断是否存在一种分配方案，使得所有从起点到终点的最短路径上至少有一条边被同国的海关单位监控"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即在每个检查点放置海关单位的选择依赖于其相邻检查点的状态。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个检查点到另一个检查点的状态转移满足一定的规则，确保任何走私者通过最快路径时都会被发现。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "flow_conservation",
+        "description": "流守恒：在网络中，流入和流出每个节点的流量必须相等，确保所有可能的路径都被覆盖。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在每个检查点放置海关单位的选择依赖于其相邻检查点的最优选择。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即在每个检查点放置海关单位的选择依赖于其相邻检查点的状态。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个检查点到另一个检查点的状态转移满足一定的规则，确保任何走私者通过最快路径时都会被发现。",
+              "properties": {}
+            },
+            {
+              "name": "flow_conservation",
+              "description": "流守恒：在网络中，流入和流出每个节点的流量必须相等，确保所有可能的路径都被覆盖。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在每个检查点放置海关单位的选择依赖于其相邻检查点的最优选择。"
+    ]
   }
 }

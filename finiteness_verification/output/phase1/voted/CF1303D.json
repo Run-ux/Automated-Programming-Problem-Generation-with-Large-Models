@@ -1,0 +1,154 @@
+{
+  "problem_id": "CF1303D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "选取元素权重和不超过容量上限（填满袋子）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "divisibility",
+        "description": "每个元素的值为2的非负整数次幂",
+        "confidence": "1/1"
+      },
+      {
+        "name": "partition_constraint",
+        "description": "计算最小的分割次数以满足容量约束",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "选取元素权重和不超过容量上限（填满袋子）",
+              "formal": "sum(a_i) >= n"
+            },
+            {
+              "name": "divisibility",
+              "description": "每个元素的值为2的非负整数次幂",
+              "formal": "a_i = 2^k, k ∈ ℕ"
+            },
+            {
+              "name": "divisibility",
+              "description": "每个元素可以被等分为两个相同大小的部分",
+              "formal": "a_i / 2 = a_i' (a_i' 为新的元素)"
+            },
+            {
+              "name": "partition_constraint",
+              "description": "计算最小的分割次数以满足容量约束",
+              "formal": "min(divisions) such that sum(a_i) >= n"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求最小化操作次数以满足条件"
+        }
+      }
+    ],
+    "description": "求最小化操作次数以满足条件"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，通过将盒子分成更小的部分来填充袋子的过程可以分解为一系列子问题，每个子问题的最优解组合起来形成整个问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择当前最优的操作（即尽可能使用最大的盒子或其分割后的部分）能够逐步逼近全局最优解。在本题中，优先使用最大的盒子或其分割后的部分来填充袋子，可以确保最终使用的分割次数最少。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "divide_conquer",
+        "description": "二进制分割不变量：每个盒子的大小是2的幂次，因此可以不断将其分为两个相等的部分。这种分割方式保证了每一步操作都是有效的，并且可以逐步逼近目标大小。",
+        "confidence": "1/1",
+        "properties": {
+          "power_of_two": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，通过将盒子分成更小的部分来填充袋子的过程可以分解为一系列子问题，每个子问题的最优解组合起来形成整个问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择当前最优的操作（即尽可能使用最大的盒子或其分割后的部分）能够逐步逼近全局最优解。在本题中，优先使用最大的盒子或其分割后的部分来填充袋子，可以确保最终使用的分割次数最少。",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "二进制分割不变量：每个盒子的大小是2的幂次，因此可以不断将其分为两个相等的部分。这种分割方式保证了每一步操作都是有效的，并且可以逐步逼近目标大小。",
+              "properties": {
+                "power_of_two": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

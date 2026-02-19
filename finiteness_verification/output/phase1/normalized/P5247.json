@@ -1,0 +1,86 @@
+{
+  "problem_id": "P5247",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 5000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 5000
+        },
+        "properties": {
+          "connected": false,
+          "weighted": false,
+          "simple": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须保持连通性，即在进行边的添加和删除操作后，查询的两个节点是否连通"
+          },
+          {
+            "name": "operation_type",
+            "description": "操作类型限制为三种：添加一条边、删除一条边、查询两个节点是否连通"
+          },
+          {
+            "name": "bitwise_xor_operation",
+            "description": "输入的节点编号需要通过异或操作解码，实际操作的节点编号是 x xor last，其中 last 是一个维护的变量"
+          },
+          {
+            "name": "transformation_rule",
+            "description": "每次查询操作后，根据查询结果更新 last 变量：如果两个节点连通，则 last 更新为 u；否则更新为 v"
+          },
+          {
+            "name": "exclusion",
+            "description": "图中不允许自环和重边，即添加的边必须是新的且删除的边必须存在"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断两个节点是否连通"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：图的连通性在每次操作后保持一致，即每次添加或删除边后，图的连通分量结构能够正确更新。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个连通分量的维护和查询是独立的，不同连通分量之间的操作不会互相影响。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

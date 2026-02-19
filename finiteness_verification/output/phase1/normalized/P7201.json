@@ -1,0 +1,85 @@
+{
+  "problem_id": "P7201",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过 2（每位朋友最多只与两位其他朋友分享答案）",
+            "formal": "∀v ∈ V, deg(v) ≤ 2"
+          },
+          {
+            "name": "capacity_constraint",
+            "description": "选取元素权重和不超过容量上限（每次宴会的饮料总量限制）",
+            "formal": "∑(D_i for i in selected_friends) ≤ S_i"
+          },
+          {
+            "name": "matching_constraint",
+            "description": "匹配关系中不能形成环（朋友 A 分享给 B 后，B 不能再分享回 A）",
+            "formal": "不存在 (A, B) 和 (B, A) 同时在匹配集中"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化满足条件的节点数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在给定饮料总量的情况下，最大化分享答案的朋友数量可以分解为更小规模的问题来求解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，优先满足需求量较小的朋友，这样可以在有限的饮料总量下使更多朋友能够参与分享。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：根据当前已分配的饮料量和剩余饮料量，动态更新每个朋友的状态（是否已经满足需求并开始分享），确保状态的一致性和正确性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

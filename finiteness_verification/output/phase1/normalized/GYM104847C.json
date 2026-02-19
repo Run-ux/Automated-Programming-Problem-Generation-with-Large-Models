@@ -1,0 +1,85 @@
+{
+  "problem_id": "GYM104847C",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "non_empty_query",
+            "description": "每个区间内必须存在一个最小的未被禁止的频率",
+            "formal": "∀i ∈ [1, k], ∃x ≥ 0, x ≠ a_j ∀j ∈ [l_i, l_{i+1}-1]"
+          },
+          {
+            "name": "exclusion",
+            "description": "紧急频率不能与任何区间的选定频率相同",
+            "formal": "y ≠ f_i ∀i ∈ [1, k]"
+          },
+          {
+            "name": "repetition",
+            "description": "时间必须被划分为k个非空且连续的区间",
+            "formal": "∑_{i=1}^k l_i = n 且 l_i > 0 ∀i ∈ [1, k]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化在给定划分下的最大可用频率"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解组合得到，即通过将时间划分为k个连续的子区间，每个子区间的最优频率选择可以独立计算，并且这些子问题的最优解可以合并为整个问题的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "在确定每个子区间的最优频率时，随着子区间长度的增加，可用的最小频率不会减少。这保证了在寻找最优划分的过程中，可以利用单调性来优化搜索过程。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "对于给定的子区间数量k，存在一种贪心策略能够确保找到使得紧急频率最小化的划分方式。具体来说，在每一步中选择当前情况下可获得的最小未被禁止的频率作为该子区间的代表频率，这种局部最优的选择最终能导致全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

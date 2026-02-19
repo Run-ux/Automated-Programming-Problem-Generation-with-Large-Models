@@ -41,13 +41,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "bipartite_matching",
-        "description": "图必须能够被划分为两个独立的子集，每个节点属于且仅属于一个子集",
+        "name": "partition",
+        "description": "将节点集划分为两个互斥的子集，每个节点属于且仅属于一个子集（图的二分约束）",
         "confidence": "1/1"
       },
       {
-        "name": "maximum_edge_weight_constraint",
-        "description": "两个子集内的最大边权重必须相等",
+        "name": "maximum_value_constraint",
+        "description": "两个子集中的最大边权值必须相等",
+        "confidence": "1/1"
+      },
+      {
+        "name": "edge_removal",
+        "description": "连接不同子集的边将被删除",
         "confidence": "1/1"
       }
     ],
@@ -58,12 +63,16 @@
         "result": {
           "constraints": [
             {
-              "name": "bipartite_matching",
-              "description": "图必须能够被划分为两个独立的子集，每个节点属于且仅属于一个子集"
+              "name": "partition",
+              "description": "将节点集划分为两个互斥的子集，每个节点属于且仅属于一个子集（图的二分约束）"
             },
             {
-              "name": "maximum_edge_weight_constraint",
-              "description": "两个子集内的最大边权重必须相等"
+              "name": "maximum_value_constraint",
+              "description": "两个子集中的最大边权值必须相等"
+            },
+            {
+              "name": "edge_removal",
+              "description": "连接不同子集的边将被删除"
             }
           ]
         }
@@ -71,34 +80,69 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否存在一种划分方式使得两个子集的最大边权相等"
+          "type": "feasibility",
+          "description": "判断是否存在一种划分方式使得两个子集的最大边权相等，并输出所有可能的相等最大边权值"
         }
       }
     ],
-    "description": "判断是否存在一种划分方式使得两个子集的最大边权相等"
+    "description": "判断是否存在一种划分方式使得两个子集的最大边权相等，并输出所有可能的相等最大边权值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，通过将城市划分为两个集合，每个集合内的道路最大值相等，可以确保整个问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "二分搜索：通过二分查找确定可能的最大道路美丽值，使得两个集合内的最大道路美丽值相等。搜索区间单调缩小，直到找到满足条件的最大值。",
+        "confidence": "1/1",
+        "properties": {
+          "search_interval_monotonic": true
+        }
+      },
+      {
+        "name": "partition_balance",
+        "description": "图划分不变量：将图中的节点划分为两个集合，使得每个集合内的边权最大值相等。这种划分方式保证了两个集合的美丽值相等。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过二分查找最大可行的道路美丽值，并验证其可行性来划分王国。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，通过将城市划分为两个集合，每个集合内的道路最大值相等，可以确保整个问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "二分搜索：通过二分查找确定可能的最大道路美丽值，使得两个集合内的最大道路美丽值相等。搜索区间单调缩小，直到找到满足条件的最大值。",
+              "properties": {
+                "search_interval_monotonic": true
+              }
+            },
+            {
+              "name": "partition_balance",
+              "description": "图划分不变量：将图中的节点划分为两个集合，使得每个集合内的边权最大值相等。这种划分方式保证了两个集合的美丽值相等。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过二分查找最大可行的道路美丽值，并验证其可行性来划分王国。"
+    ]
   }
 }

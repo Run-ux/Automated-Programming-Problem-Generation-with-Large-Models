@@ -58,12 +58,14 @@
       "result": {
         "constraints": [
           {
-            "name": "rounds_fixed",
-            "description": "游戏进行的轮数固定为 2022^1204 轮"
+            "name": "sum_constraint",
+            "description": "所有玩家的初始存款总和在游戏过程中保持不变",
+            "formal": "Σ(a_i) = Σ(b_i), 其中 a_i 是初始存款, b_i 是最终存款"
           },
           {
-            "name": "output_precision",
-            "description": "输出结果的绝对或相对误差不超过 10^-6。形式化表达为：(|a - b| / max(1, |b|)) ≤ 10^-6，其中 a 是你的答案，b 是标准答案"
+            "name": "operation_limit",
+            "description": "游戏进行固定轮数，每轮操作相同",
+            "formal": "游戏进行 2022^1204 轮"
           }
         ]
       }
@@ -74,12 +76,19 @@
       "result": {
         "constraints": [
           {
-            "name": "rounds_fixed",
-            "description": "游戏进行的轮数固定为 2022^1204 轮"
+            "name": "sum_constraint",
+            "description": "所有玩家的初始存款总和在游戏过程中保持不变",
+            "formal": "Σ(a_i) = Σ(b_i), 其中 a_i 是初始存款, b_i 是最终存款"
           },
           {
-            "name": "output_precision",
-            "description": "输出结果的绝对或相对误差不超过 10^-6。形式化表达为：(|a - b| / max(1, |b|)) ≤ 10^-6，其中 a 是你的答案，b 是标准答案"
+            "name": "operation_limit",
+            "description": "游戏进行固定轮数，每轮操作相同",
+            "formal": "游戏进行 2022^1204 轮"
+          },
+          {
+            "name": "range_bound",
+            "description": "输出结果的绝对或相对误差不超过 10^-6",
+            "formal": "|a - b| / max(1, |b|) ≤ 10^-6, 其中 a 是程序输出, b 是标准答案"
           }
         ]
       }
@@ -90,12 +99,19 @@
       "result": {
         "constraints": [
           {
-            "name": "rounds_fixed",
-            "description": "游戏进行的轮数固定为 2022^1204 轮"
+            "name": "sum_constraint",
+            "description": "所有玩家的初始存款总和在游戏过程中保持不变",
+            "formal": "Σ(a_i) = Σ(b_i), 其中 a_i 是初始存款，b_i 是最终存款"
           },
           {
-            "name": "output_precision",
-            "description": "输出结果的绝对或相对误差不超过 10^-6。形式化表达为：(|a-b| / max(1, |b|)) ≤ 10^-6，其中 a 是你的答案，b 是标准答案"
+            "name": "operation_limit",
+            "description": "游戏进行固定轮数后结束",
+            "formal": "轮数 = 2022^1204"
+          },
+          {
+            "name": "range_bound",
+            "description": "输出结果的绝对或相对误差不超过 10^-6",
+            "formal": "|a - b| / max(1, |b|) ≤ 10^-6, 其中 a 是程序输出，b 是标准答案"
           }
         ]
       }
@@ -107,7 +123,7 @@
       "status": "success",
       "result": {
         "type": "construction",
-        "description": "构造每个玩家在游戏结束后拥有的存款数额"
+        "description": "构造并输出每个玩家在游戏结束后的存款值"
       }
     },
     {
@@ -115,7 +131,7 @@
       "status": "success",
       "result": {
         "type": "construction",
-        "description": "构造每个玩家在游戏结束后拥有的存款数量"
+        "description": "构造并输出每个玩家在游戏结束后的存款值"
       }
     },
     {
@@ -123,7 +139,7 @@
       "status": "success",
       "result": {
         "type": "construction",
-        "description": "构造每个玩家在游戏结束后拥有的存款金额"
+        "description": "构造并输出每个玩家在游戏结束后的存款值"
       }
     }
   ],
@@ -132,33 +148,54 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "state_dependency",
-        "description": "每个玩家的存款仅依赖于前一轮的状态，即当前状态只依赖于上一轮的状态。",
-        "properties": {
-          "markov_property": true
-        }
+        "invariants": [
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在每一轮游戏中，所有玩家的总存款保持不变。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：每个玩家的操作是相同的，因此最终每个玩家的存款将趋于平均值。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "state_dependency",
-        "description": "当前状态只依赖于前一状态，即每轮游戏后玩家的存款仅由上一轮的状态决定。",
-        "properties": {
-          "markov_property": true
-        }
+        "invariants": [
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在每一轮游戏中，所有玩家的总存款保持不变。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：每个玩家的最终存款只与初始存款和游戏轮数有关，而与玩家的具体编号无关。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "state_dependency",
-        "description": "当前玩家的存款状态仅依赖于上一轮的状态，即每轮游戏结束后每个玩家的存款是基于前一轮所有玩家存款计算得出的。",
-        "properties": {
-          "markov_property": true
-        }
+        "invariants": [
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在每一轮游戏中，所有玩家的总存款保持不变。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：每个玩家的存款变化是周期性的，且经过足够多轮后会回到初始状态。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

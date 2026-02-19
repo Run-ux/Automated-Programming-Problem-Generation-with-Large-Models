@@ -1,0 +1,77 @@
+{
+  "problem_id": "GYM106118J",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "从起点到每个节点再返回起点的路径必须是唯一的，且路径长度最短"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点（包括起点和所有房子）的度数有限制，即每个节点最多有固定数量的边连接"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "每个节点属于一个特定的子集（Good Kid 或 Bad Kid），且路径选择时需要考虑子集属性"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求所有路径的最短总距离"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。对于每个房子，从工作坊到该房子再返回工作坊的最短路径可以分解为两个子问题的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：从工作坊到某个房子的最短路径与从该房子回到工作坊的最短路径是对称的。因此，只需要计算一次最短路径即可。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

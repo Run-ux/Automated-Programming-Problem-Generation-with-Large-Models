@@ -1,0 +1,80 @@
+{
+  "problem_id": "P11313",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 400000
+        },
+        "properties": {
+          "connected": true,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "每个元素至少出现一次（每种花至少出现一株）",
+            "formal": "∀i ∈ [1, K], count(i) ≥ 1"
+          },
+          {
+            "name": "connectivity",
+            "description": "每个元素的出现位置形成一个四连通块（每种花所在的格子形成一个四连通块）",
+            "formal": "∀i ∈ [1, K], positions(i) 形成一个四连通块"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "每个元素与其四连通邻居中恰好有两个相同（与格子 (i,j) 四连通的格子中，恰好有两个格子种的花与 (i,j) 种的花的品种相同）",
+            "formal": "∀(i, j), |{ (x, y) | (x, y) 与 (i, j) 四连通且 A[x][y] = A[i][j] }| = 2"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在满足给定条件的方案"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "flow_conservation",
+            "description": "每种花所在的格子形成一个四连通块，且每个格子恰好有两个相邻格子种的花与该格子相同",
+            "properties": {}
+          },
+          {
+            "name": "constraint_satisfaction",
+            "description": "每种花至少出现一株，且满足四连通块和相邻条件时，方案是可行的",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

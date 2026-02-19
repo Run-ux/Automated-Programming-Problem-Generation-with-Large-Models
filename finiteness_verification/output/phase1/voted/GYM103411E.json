@@ -1,0 +1,147 @@
+{
+  "problem_id": "GYM103411E",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 3,
+            "max": 30000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 3
+          },
+          "properties": {
+            "connected": false,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 30000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 3
+    },
+    "properties": {
+      "connected": false,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "每个帝国的城市必须能够通过安全路径（不经过敌对帝国的城市）到达至少一个该帝国的军营。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个城市只能属于一个帝国。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "每个帝国至少拥有一个城市。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "每个帝国的城市必须能够通过安全路径（不经过敌对帝国的城市）到达至少一个该帝国的军营。",
+              "formal": "对于每个帝国 i，存在一个子图 G_i，其中所有节点属于帝国 i，并且从每个节点到至少一个军营节点存在一条路径。"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个城市只能属于一个帝国。",
+              "formal": "对于每个城市 j，存在唯一的帝国 i 使得 e_j = i。"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "每个帝国至少拥有一个城市。",
+              "formal": "对于每个帝国 i，存在至少一个城市 j 使得 e_j = i。"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "对于每个帝国，求解并输出在满足所有城市都能通过安全路径到达至少一个本帝国的军事基地的前提下，需要设置的最少军事基地数量及其位置"
+        }
+      }
+    ],
+    "description": "对于每个帝国，求解并输出在满足所有城市都能通过安全路径到达至少一个本帝国的军事基地的前提下，需要设置的最少军事基地数量及其位置"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个帝国的最小安全路径覆盖问题可以分解为更小子问题的最优解组合，且这些子问题的最优解能够合成原问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在解决每个帝国的安全路径覆盖问题时，不同子问题（即不同的连通分量）之间是相互独立的，一个子问题的解决方案不影响另一个子问题的解决方案。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在处理图中的连通分量时，可以通过拓扑排序来确保处理顺序满足依赖关系，从而保证每个节点在其所有前驱节点被处理后才被处理。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个帝国的最小安全路径覆盖问题可以分解为更小子问题的最优解组合，且这些子问题的最优解能够合成原问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在解决每个帝国的安全路径覆盖问题时，不同子问题（即不同的连通分量）之间是相互独立的，一个子问题的解决方案不影响另一个子问题的解决方案。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在处理图中的连通分量时，可以通过拓扑排序来确保处理顺序满足依赖关系，从而保证每个节点在其所有前驱节点被处理后才被处理。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

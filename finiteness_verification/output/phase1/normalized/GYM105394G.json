@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 1,
           "max": 100
@@ -26,16 +26,24 @@
       "result": {
         "constraints": [
           {
-            "name": "region_size_constraint",
-            "description": "每个区域的大小固定为5（即每个区域由5个单元格组成）"
+            "name": "geometric_area_constraint",
+            "description": "每个区域的大小必须为 5（即五连块）",
+            "formal": "∀ region R, |R| = 5"
           },
           {
-            "name": "adjacent_shape_difference",
-            "description": "相邻区域不能有相同的形状（图着色约束）"
+            "name": "adjacency_difference",
+            "description": "相邻区域不能有相同的形状",
+            "formal": "∀ adjacent regions R1, R2, shape(R1) ≠ shape(R2)"
           },
           {
-            "name": "shape_rotation_reflection_invariant",
-            "description": "旋转和镜像后的形状被视为相同形状"
+            "name": "transformation",
+            "description": "允许旋转和镜像，但视为相同形状",
+            "formal": "∀ pentomino P, rotations(P) ∪ reflections(P) = {P}"
+          },
+          {
+            "name": "coverage",
+            "description": "网格必须被完全覆盖，且每个单元格属于一个且仅一个区域",
+            "formal": "∪ all regions R = grid, and ∀ cell c, ∃! region R, c ∈ R"
           }
         ]
       }
@@ -46,8 +54,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足条件的网格划分方案"
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的网格划分方案"
       }
     }
   ],
@@ -56,11 +64,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的解是独立且最优的",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在划分网格时，每个子区域的填充可以独立进行，互不影响。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：通过旋转和镜像操作，不同的形状可以视为相同的形状，从而简化问题。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

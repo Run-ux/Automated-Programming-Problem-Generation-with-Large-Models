@@ -29,16 +29,16 @@
       "result": {
         "constraints": [
           {
-            "name": "directed_acyclic_graph",
-            "description": "图是有向无环图（DAG），从起点到终点的路径不会访问同一个节点两次"
+            "name": "acyclicity",
+            "description": "图中不存在环（无向或有向），确保路径不会重复访问同一个节点"
           },
           {
-            "name": "path_weight_constraint",
-            "description": "每条路径上收集的蘑菇和浆果在当天市场价下的收益，蘑菇收益必须大于浆果收益"
+            "name": "path_constraint",
+            "description": "从起点到终点存在一条路径，且路径上的每个节点只能访问一次"
           },
           {
-            "name": "distinct_simple_paths",
-            "description": "任意两个节点之间最多只有一条直接路径"
+            "name": "sum_constraint",
+            "description": "在每条路径上收集的蘑菇和浆果的总价值满足条件：蘑菇的总价值大于浆果的总价值"
           }
         ]
       }
@@ -49,8 +49,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在一条从起点到终点的路径，使得路径上某类权值和大于另一类权值和"
+        "type": "feasibility",
+        "description": "判断是否存在一条从起点到终点的路径，使得路径上某种权值的总和大于另一种权值的总和"
       }
     }
   ],
@@ -59,9 +59,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：从起点到终点的路径收益最大化问题可以分解为多个子路径上的局部最优解组合而成，每条子路径的收益独立计算且满足全局最优条件",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：路径的遍历顺序满足有向无环图（DAG）上的拓扑排序，确保从起点到终点的路径不会形成环。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：对于每个节点，其到达终点的最大收益可以通过其后继节点的最大收益来计算。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，选择当前局部最优解（即最大收益路径），以确保全局最优解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

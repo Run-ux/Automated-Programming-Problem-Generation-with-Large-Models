@@ -2,21 +2,21 @@
   "problem_id": "GYM102006D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 500
           },
           "value_range": {
             "min": 0,
-            "max": 100000000
+            "max": 2
           },
           "properties": {
             "inferred": true
@@ -30,7 +30,7 @@
     },
     "value_range": {
       "min": 0,
-      "max": 100000000
+      "max": 2
     },
     "properties": {
       "inferred": true
@@ -39,8 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "相邻节点取值不同（图着色约束）",
+        "name": "adjacency_relation",
+        "description": "相邻节点取值不同（不允许在一行中出现连续的 '\\' 和 '/'）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation",
+        "description": "允许将特定类型的节点转换为其他类型（可以将类型 2 和 3 的单元格转换为任何类型）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "flow_constraint",
+        "description": "每个桶的容量有限制（每个桶有一个固定的分数，球落入桶中会增加总分）",
         "confidence": "1/1"
       }
     ],
@@ -51,9 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "相邻节点取值不同（图着色约束）",
-              "formal": "对于所有 1 ≤ i < c, g[i][j] ≠ g[i+1][j] 且 g[i][j] ∈ {'\\', '/'}"
+              "name": "adjacency_relation",
+              "description": "相邻节点取值不同（不允许在一行中出现连续的 '\\' 和 '/'）",
+              "formal": "对于所有 i, j，如果 g[i][j] = '\\'，则 g[i][j+1] ≠ '/'"
+            },
+            {
+              "name": "transformation",
+              "description": "允许将特定类型的节点转换为其他类型（可以将类型 2 和 3 的单元格转换为任何类型）",
+              "formal": "对于所有 i, j，如果 g[i][j] ∈ {2, 3}，则 g[i][j] 可以被转换为 {1, 2, 3} 中的任意一个"
+            },
+            {
+              "name": "flow_constraint",
+              "description": "每个桶的容量有限制（每个桶有一个固定的分数，球落入桶中会增加总分）",
+              "formal": "对于每个桶 i，存在一个分数 s_i，每有一个球落入桶 i，总分增加 s_i"
             }
           ]
         }
@@ -76,19 +96,50 @@
     "description": "最大化路径上的权值和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个子网格的最优配置可以独立计算并合并以形成全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步决策中，选择当前情况下局部最优的改变（如将某些单元格改为特定类型），能够逐步逼近全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态之间的转换规则保持一致，例如，根据当前行的状态和操作来决定下一行的状态。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题的最优解对整体最优解有贡献。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个子网格的最优配置可以独立计算并合并以形成全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步决策中，选择当前情况下局部最优的改变（如将某些单元格改为特定类型），能够逐步逼近全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态之间的转换规则保持一致，例如，根据当前行的状态和操作来决定下一行的状态。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题的最优解对整体最优解有贡献。"
+    ]
   }
 }

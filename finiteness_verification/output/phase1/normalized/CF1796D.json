@@ -1,0 +1,72 @@
+{
+  "problem_id": "CF1796D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": -1000000000,
+          "max": 1000000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制为一次，且必须在 k 个不同位置上进行加 x 操作，其余位置进行减 x 操作",
+            "formal": "恰好一次操作：选择 k 个不同位置 i1, i2, ..., ik，使得 a'[i] = a[i] + x (i ∈ {i1, i2, ..., ik}) 和 a'[j] = a[j] - x (j ∉ {i1, i2, ..., ik})"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "目标是最大化数组 a' 的子数组和的最大值 f(a')",
+            "formal": "maximize f(a') = max(0, max_{1 ≤ i ≤ j ≤ n} Σ_{l=i}^j a'[l])"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化数组操作后的最大子数组和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过调整k个位置的值来最大化子数组和的问题可以分解为更小规模的子问题。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：子数组的和可以通过其端点的前缀和差值计算，即使在对某些元素进行加减操作后，该性质仍然成立。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "problem_id": "CF1451E1",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 4,
+            "max": 65536
+          },
+          "value_range": {
+            "min": 0,
+            "max": 65535
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 4,
+      "max": 65536
+    },
+    "value_range": {
+      "min": 0,
+      "max": 65535
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "query_limit",
+        "description": "查询次数限制，最多不超过 n+2 次查询",
+        "confidence": "1/1"
+      },
+      {
+        "name": "value_range",
+        "description": "数组元素的值域约束，每个元素的值在 [0, n-1] 范围内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "数组长度必须是 2 的幂",
+        "confidence": "1/1"
+      },
+      {
+        "name": "out_of_bounds_constraint",
+        "description": "无效查询或超出查询次数时返回 -1，并终止程序",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_order",
+        "description": "交互器是非自适应的，数组不会随查询改变",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "query_limit",
+              "description": "查询次数限制，最多不超过 n+2 次查询",
+              "formal": "queries <= n + 2"
+            },
+            {
+              "name": "value_range",
+              "description": "数组元素的值域约束，每个元素的值在 [0, n-1] 范围内",
+              "formal": "0 <= a[i] < n"
+            },
+            {
+              "name": "range_bound",
+              "description": "数组长度必须是 2 的幂",
+              "formal": "n = 2^k, k 是非负整数"
+            },
+            {
+              "name": "out_of_bounds_constraint",
+              "description": "无效查询或超出查询次数时返回 -1，并终止程序",
+              "formal": "if (invalid_query || queries > n + 2) then x = -1 and terminate"
+            },
+            {
+              "name": "operation_order",
+              "description": "交互器是非自适应的，数组不会随查询改变",
+              "formal": "a is fixed and does not change with queries"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造隐藏数组的元素"
+        }
+      }
+    ],
+    "description": "构造隐藏数组的元素"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "divide_conquer",
+        "description": "大问题的解由子问题解合成，通过递归地将数组分成更小的部分来解决问题",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "搜索区间单调缩小，通过二分查找的方式逐步缩小查询范围",
+        "confidence": "1/1",
+        "properties": {
+          "search_space_reduction": true
+        }
+      },
+      {
+        "name": "bitwise_independence",
+        "description": "位运算性质不变量，利用位运算的特性进行查询和计算",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "divide_conquer",
+              "description": "大问题的解由子问题解合成，通过递归地将数组分成更小的部分来解决问题",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "搜索区间单调缩小，通过二分查找的方式逐步缩小查询范围",
+              "properties": {
+                "search_space_reduction": true
+              }
+            },
+            {
+              "name": "bitwise_independence",
+              "description": "位运算性质不变量，利用位运算的特性进行查询和计算",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "problem_id": "P8047",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_tree",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（行星和边形成了一棵树）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径上的所有边的权值的异或和等于 0 的路径是无聊的"
+          },
+          {
+            "name": "operation_limit",
+            "description": "按一定顺序摧毁边，每次摧毁一条边"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足特定条件的点对数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次摧毁一条边后，树的连通性发生变化，但每个子树内部的异或和性质保持不变。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：路径上的边权值异或和可以通过子路径的异或和计算。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在每次摧毁一条边后，形成的两个子树可以独立处理，互不影响。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

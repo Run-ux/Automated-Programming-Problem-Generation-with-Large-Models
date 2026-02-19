@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 6,
           "max": 6
@@ -26,12 +26,12 @@
       "result": {
         "constraints": [
           {
-            "name": "non_intersecting_rectangles",
-            "description": "三个矩形可以相切但不能重叠（布局约束）"
+            "name": "non_intersecting_segments",
+            "description": "矩形之间不能重叠（允许接触）"
           },
           {
-            "name": "rectilinear_partition",
-            "description": "每个矩形的边必须保持水平或垂直（方向约束）"
+            "name": "rectangular_layout",
+            "description": "矩形的边必须保持水平或垂直方向"
           }
         ]
       }
@@ -43,7 +43,7 @@
       "status": "success",
       "result": {
         "type": "minimize_value",
-        "description": "求包含多个矩形的最小矩形面积"
+        "description": "求包含三个给定矩形的最小矩形面积"
       }
     }
   ],
@@ -52,9 +52,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过考虑所有可能的建筑布局方式来找到最小面积的土地。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最小面积的解可以通过子问题的最优解组合得到，即三个矩形的最优布局可以通过两两矩形的最优布局递推得出。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在确定一个矩形的位置时，选择当前最优的位置（例如，使得剩余空间最大化）可以逐步构建全局最优解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

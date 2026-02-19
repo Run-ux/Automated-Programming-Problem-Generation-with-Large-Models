@@ -1,0 +1,126 @@
+{
+  "problem_id": "P4001",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 3,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "从源点到汇点的最大流等于参与伏击的狼的最小数量",
+        "confidence": "1/1"
+      },
+      {
+        "name": "capacity_constraint",
+        "description": "每条边的容量表示该道路上最多能够通过的兔子数，即需要安排同样数量的狼来封锁这条道路",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "从源点到汇点的最大流等于参与伏击的狼的最小数量",
+              "formal": "min_cut = max_flow"
+            },
+            {
+              "name": "capacity_constraint",
+              "description": "每条边的容量表示该道路上最多能够通过的兔子数，即需要安排同样数量的狼来封锁这条道路",
+              "formal": "capacity(e) = number_of_wolves_needed(e)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求从起点到终点的最小割"
+        }
+      }
+    ],
+    "description": "求从起点到终点的最小割"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即从起点到终点的最小割可以通过计算每个节点间的最小割来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "flow_conservation",
+        "description": "流守恒：在网络流中，除了源点和汇点外，所有节点的流入量等于流出量，保证了流量的平衡。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即从起点到终点的最小割可以通过计算每个节点间的最小割来确定。",
+              "properties": {}
+            },
+            {
+              "name": "flow_conservation",
+              "description": "流守恒：在网络流中，除了源点和汇点外，所有节点的流入量等于流出量，保证了流量的平衡。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

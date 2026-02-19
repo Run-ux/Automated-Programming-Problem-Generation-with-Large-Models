@@ -1,0 +1,94 @@
+{
+  "problem_id": "P4964",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 2000000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1999999
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "range_bound",
+            "description": "每个学生的能力值和对讲机接收范围有明确的数值范围约束",
+            "formal": "0 ≤ w_i < n, 0 ≤ d_i"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "一个学生可以接收到其对讲机接收范围内的其他学生的广播",
+            "formal": "f_i = 1 if (w_i ≥ x) or (∃ j ∈ [i - d_i, i + d_i], f_j = 1)"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作次数有限制，共 m 次操作",
+            "formal": "m 次操作"
+          },
+          {
+            "name": "state_transition",
+            "description": "绫小路的能力值可以被修改，影响后续的操作结果",
+            "formal": "w_c 可以被修改为任意值 x"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "每次询问需要计算满足条件的学生总数",
+            "formal": "∑ f_i, 其中 f_i 定义如上"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化满足条件的节点数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个学生的能力值和接收范围决定了其是否能解出题目，且一旦解出题目会广播给其他学生，形成一个状态转移过程。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：每个学生的接收范围定义了一个区间，在这个区间内的学生如果解出题目，可以影响到该区间的其他学生。这种影响可以通过区间的端点差值计算。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着题目的难度增加，能够解出题目的学生数量是非递增的。即对于任意两个难度 x1 和 x2 (x1 < x2)，满足 f(x1) >= f(x2)，其中 f(x) 表示难度为 x 时能够解出题目的学生数量。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

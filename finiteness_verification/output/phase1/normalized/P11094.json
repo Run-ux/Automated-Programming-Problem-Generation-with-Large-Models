@@ -1,0 +1,92 @@
+{
+  "problem_id": "P11094",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacency_relation",
+            "description": "相邻节点不能在一定距离内存在未处理的节点（倒下的树不能碰到一定范围内的其他树）",
+            "formal": "对于每个节点 i，如果向右倒下，则不存在 j 使得 x_i < x_j < x_i + h_i；如果向左倒下，则不存在 j 使得 x_i - h_i < x_j < x_i"
+          },
+          {
+            "name": "circular_boundary_constraint",
+            "description": "边界节点有特殊限制（最左边和最右边的树不能倒出边界）",
+            "formal": "对于最左边的树，如果 x_1 - h_1 < x_1 则不能向左倒下；对于最右边的树，如果 x_n + h_n > x_n 则不能向右倒下"
+          },
+          {
+            "name": "range_bound",
+            "description": "操作范围限制（只能砍伐指定范围内的树）",
+            "formal": "对于每个申请 (l_i, r_i)，只允许砍伐从 l_i 到 r_i 编号的树木"
+          },
+          {
+            "name": "exclusion",
+            "description": "被砍伐的树不能影响范围外的树（倒下的树不能触碰范围外的树）",
+            "formal": "被砍伐的树可以倒到 l_i 的左边或 r_i 的右边，但不能超出 [x_1, x_n] 范围，也不允许触碰 l_i 到 r_i 范围之外的其它树木"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足条件的最大元素数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，区间合法性可单调维护",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，通过子区间的最优解合成大区间的最优解",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间信息可通过子区间合并，适用于处理多个申请的区间合并操作",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

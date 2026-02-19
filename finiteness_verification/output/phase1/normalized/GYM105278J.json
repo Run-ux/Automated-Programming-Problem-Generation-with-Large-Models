@@ -6,17 +6,17 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "circular_array",
         "length": {
           "min": 1,
           "max": 200000
         },
         "value_range": {
-          "min": 65,
-          "max": 76
+          "min": 0,
+          "max": 1
         },
         "properties": {
-          "circular": true,
+          "ordered": false,
           "inferred": true
         }
       }
@@ -29,16 +29,19 @@
       "result": {
         "constraints": [
           {
-            "name": "circular_sequence_constraint",
-            "description": "数组必须被划分为 K 个连续子数组，且这些子数组在环形数组中是相邻的"
+            "name": "cyclic_shift_constraint",
+            "description": "将数组划分为 K 个连续子数组，每个子数组的元素必须相邻（循环数组）",
+            "formal": "A[1..N] 被划分为 K 个子数组 A[a_1..a_2-1], A[a_2..a_3-1], ..., A[a_k..N, 1..a_1-1]"
           },
           {
-            "name": "weight_proportional_probability",
-            "description": "每个子数组中的多数元素决定该子数组的投票结果，若无多数则不投票"
+            "name": "majority_element_constraint",
+            "description": "每个子数组中，'J' 的数量必须大于 'L' 的数量，才能算作支持 Jota",
+            "formal": "对于每个子数组 S_i，如果 count('J', S_i) > count('L', S_i)，则 S_i 支持 Jota"
           },
           {
-            "name": "global_optimization_objective",
-            "description": "Jota 赢得选举的条件是超过一半的子数组投票给 Jota"
+            "name": "optimization_objective",
+            "description": "支持 Jota 的子数组数量必须超过 K/2 才能获胜",
+            "formal": "count(S_i 支持 Jota) > K/2"
           }
         ]
       }
@@ -49,8 +52,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在一种分组方式使得满足给定条件"
+        "type": "feasibility",
+        "description": "判断是否存在一种分组方式，使得某一类元素在超过半数的子数组中占多数"
       }
     }
   ],
@@ -59,9 +62,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过划分数组为K个子数组，每个子数组的最优解（支持Jota的选票数）可以组合成整个问题的最优解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过划分数组为K个子数组，每个子数组内部的J和L数量关系决定了整个数组的划分结果。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，优先选择当前局部最优解（即尽可能多的包含J），以期望达到全局最优解，使得Jota赢得选举。",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：由于数组是循环的，因此在处理时需要考虑从任意位置开始的循环分割，确保无论从哪个位置开始分割，最终都能找到满足条件的K个子数组。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

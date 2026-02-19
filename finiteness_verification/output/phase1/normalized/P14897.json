@@ -1,0 +1,90 @@
+{
+  "problem_id": "P14897",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 3,
+          "max": 100
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100
+        },
+        "properties": {
+          "connected": false,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数必须为偶数，以满足欧拉回路的条件",
+            "formal": "∀v ∈ V, deg(v) % 2 == 0"
+          },
+          {
+            "name": "connectivity",
+            "description": "图必须是连通的，以确保存在欧拉回路",
+            "formal": "G is connected"
+          },
+          {
+            "name": "distinct_edges",
+            "description": "每条边在路径中只能出现一次",
+            "formal": "Each edge (u, v) appears exactly once in the Eulerian tour"
+          },
+          {
+            "name": "pairwise_exclusion",
+            "description": "新增的边不能与已有的边重复",
+            "formal": "∀(c_i, d_i) ∉ E and (c_i, d_i) are distinct"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一组额外的边，使得图中存在欧拉回路"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "odd_degree_partition_invariance",
+            "description": "图中每个顶点的度数为偶数，这是欧拉回路存在的必要条件",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "图是连通的，这是欧拉回路存在的另一个必要条件",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "通过添加最少数量的边使得所有顶点的度数变为偶数，从而满足欧拉回路的条件",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

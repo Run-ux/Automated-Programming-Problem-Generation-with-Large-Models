@@ -1,0 +1,91 @@
+{
+  "problem_id": "GYM100503J",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 20
+        },
+        "value_range": {
+          "min": 1,
+          "max": 20
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_constraint",
+            "description": "选取的子集大小不超过 k",
+            "formal": "|S| <= k"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "相邻元素不能同时出现在集合中",
+            "formal": "forall i, if i in S then (i-1) not in S and (i+1) not in S"
+          },
+          {
+            "name": "coverage",
+            "description": "所有大小不超过 k 的子集必须出现且仅出现一次",
+            "formal": "forall S, |S| <= k, S appears exactly once"
+          },
+          {
+            "name": "state_transition",
+            "description": "每次操作只能添加或移除一个元素，且相邻元素替换时需满足特定规则",
+            "formal": "Each operation is either +i, -i, ++i, or --i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一个满足条件的序列，使得每个不超过给定大小的子集恰好出现一次"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个时刻舞台上的舞者集合通过添加或移除舞者进行合法的状态转移，且每次转移后舞台上的舞者数量不超过k。",
+            "properties": {
+              "max_dancers": true
+            }
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个舞者集合的出现与否可以独立考虑，不受其他集合的影响，满足分治或动态规划中的子问题独立性。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：整个舞蹈编排的最优解可以通过子问题（即每个舞者集合的出现）的最优解组合而成。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

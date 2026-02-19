@@ -1,0 +1,126 @@
+{
+  "problem_id": "P15110",
+  "source": "luogu",
+  "input_structure": {
+    "type": "directed_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "directed_graph",
+          "length": {
+            "min": 1,
+            "max": 500000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 2147483647
+          },
+          "properties": {
+            "weighted": true,
+            "connected": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 2147483647
+    },
+    "properties": {
+      "weighted": true,
+      "connected": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "pairwise_difference_constraint",
+        "description": "评价者和被评价者的 rating 差值影响评价结果，如果评价者 rating 大于等于被评价者，则评价结果比实际 rating 小 1；反之则大 1。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "每个人都至少被评价了一次。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "pairwise_difference_constraint",
+              "description": "评价者和被评价者的 rating 差值影响评价结果，如果评价者 rating 大于等于被评价者，则评价结果比实际 rating 小 1；反之则大 1。",
+              "formal": "w_i = r_{v_i} - 1, if r_{u_i} >= r_{v_i}; w_i = r_{v_i} + 1, if r_{u_i} < r_{v_i}"
+            },
+            {
+              "name": "coverage",
+              "description": "每个人都至少被评价了一次。",
+              "formal": "∀ v ∈ [1, n], ∃ i ∈ [1, m] s.t. v_i = v"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一组满足所有给定约束条件的整数解"
+        }
+      }
+    ],
+    "description": "判断是否存在一组满足所有给定约束条件的整数解"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个节点的 rating 可以通过其邻居节点的 rating 和评价关系推导出来，满足 DAG 上的最优子结构。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在有向图中，节点的 rating 依赖于其前驱节点的 rating，可以通过拓扑排序来确定节点的处理顺序。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个节点的 rating 可以通过其邻居节点的 rating 和评价关系推导出来，满足 DAG 上的最优子结构。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在有向图中，节点的 rating 依赖于其前驱节点的 rating，可以通过拓扑排序来确定节点的处理顺序。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "directed_graph",
+        "type": "weighted_undirected_graph",
         "length": {
           "min": 2,
           "max": 200
@@ -16,8 +16,9 @@
           "max": 1000000
         },
         "properties": {
+          "connected": false,
           "weighted": true,
-          "connected": false
+          "directed": true
         }
       }
     }
@@ -29,20 +30,24 @@
       "result": {
         "constraints": [
           {
-            "name": "edge_reversal_count_constraint",
-            "description": "最多可以翻转一条边的方向"
+            "name": "operation_limit",
+            "description": "最多翻转一条边",
+            "formal": "flip_count <= 1"
           },
           {
-            "name": "path_existence",
-            "description": "必须存在从起点到终点再返回起点的路径，否则输出-1"
+            "name": "path_constraint",
+            "description": "从起点到终点再返回起点的路径代价最小化",
+            "formal": "minimize(path_cost(1 -> N) + path_cost(N -> 1))"
           },
           {
-            "name": "directed_graph",
-            "description": "图是有向图"
+            "name": "cost_constraint",
+            "description": "翻转边的代价计入总代价",
+            "formal": "total_cost = path_cost(1 -> N) + path_cost(N -> 1) + flip_cost"
           },
           {
-            "name": "no_self_loops",
-            "description": "图中没有自环"
+            "name": "connectivity",
+            "description": "图必须连通，即存在从起点到终点再返回起点的路径",
+            "formal": "exists_path(1 -> N) and exists_path(N -> 1)"
           }
         ]
       }
@@ -53,8 +58,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求从起点到终点再返回起点的最小代价和，允许翻转一条边"
+        "type": "minimize_value",
+        "description": "求在翻转至多一条边的情况下，从起点到终点再返回起点的最小路径代价和"
       }
     }
   ],
@@ -63,9 +68,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：从起点到终点再返回的最短路径可以通过子问题的最优解组合而成，翻转一条边的决策不影响子问题的独立性",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从起点到终点再返回的最短路径可以分解为两个子问题的最优解，即从起点到终点的最短路径和从终点回到起点的最短路径。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过翻转一条边的状态（方向），可以改变路径的成本。在动态规划或图论算法中，这种状态转移保持一致性。",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在考虑翻转边的情况下，从起点到终点再返回的总流量守恒，即每个节点的流入等于流出。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

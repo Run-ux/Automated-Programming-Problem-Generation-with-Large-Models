@@ -1,0 +1,124 @@
+{
+  "problem_id": "GYM105394M",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -200000,
+            "max": 200000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -200000,
+      "max": 200000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "相邻元素差值固定为1（相邻节点取值差值约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "总调整代价最小化（和约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "相邻元素差值固定为1（相邻节点取值差值约束）",
+              "formal": "对于所有 1 < i < n, |t[i] - t[i-1]| = 1 且 |t[i+1] - t[i]| = 1"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "总调整代价最小化（和约束）",
+              "formal": "minimize Σ|t'[i] - t[i]|，其中 t' 是调整后的序列"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "最小化调整值的总和"
+        }
+      }
+    ],
+    "description": "最小化调整值的总和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最小化总调音努力可以分解为对每个键的局部最优调整",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择当前局部最优解（即最小化当前键的调音努力）能够导致全局最优解（即最小化所有键的总调音努力）",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最小化总调音努力可以分解为对每个键的局部最优调整",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择当前局部最优解（即最小化当前键的调音努力）能够导致全局最优解（即最小化所有键的总调音努力）",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,25 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_positions",
-            "description": "每个位置最多只有一个元素（即每片荷叶上最多只有一只青蛙）"
+            "name": "distinctness",
+            "description": "每个节点最多只能有一个元素（即每个位置最多只能有一只青蛙）",
+            "formal": "∀i, count(frogs[i]) ≤ 1"
           },
           {
-            "name": "non_decreasing_sequence",
-            "description": "初始位置严格递增（即青蛙的初始位置按顺序排列，且没有重复）",
+            "name": "ordering",
+            "description": "初始位置严格递增（即初始时青蛙的位置是有序的）",
             "formal": "x_1 < x_2 < ... < x_n"
           },
           {
-            "name": "adjacent_difference",
-            "description": "跳跃时只能跳到最近的空闲位置（即青蛙总是跳到下一个空闲的荷叶）"
+            "name": "adjacency_relation",
+            "description": "每次跳跃必须跳到最近的空闲位置（即每次跳跃必须跳到下一个空闲的节点）",
+            "formal": "jump(i) = min{j > i | frogs[j] == 0}"
           },
           {
-            "name": "orientation_constraint",
-            "description": "跳跃方向固定（即青蛙总是向一个方向跳跃，不会反向跳跃）"
-          },
-          {
-            "name": "continuous_path_constraint",
-            "description": "跳跃按时间顺序进行（即每次跳跃都在前一次跳跃完成后发生）"
+            "name": "path_constraint",
+            "description": "跳跃方向固定为向右（即青蛙总是向编号更大的位置跳跃）",
+            "formal": "∀i, jump(i) > i"
           }
         ]
       }
@@ -57,8 +56,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造每次跳跃后青蛙所在的位置序列"
+        "type": "construction",
+        "description": "构造每次跳跃后青蛙所处的新的位置序列"
       }
     }
   ],
@@ -67,12 +66,25 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "双指针左右端点单调前进，区间合法性可单调维护",
-        "properties": {
-          "left_monotonic": false,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，青蛙跳跃方向始终向右且跳至最近的空闲位置",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "每次跳跃选择局部最优解（即最近的空闲位置），最终达到全局最优解（所有跳跃路径最短）",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每只青蛙的状态（当前位置）在跳跃后更新为新的位置，且新位置总是满足约束条件（即空闲且编号更大）",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

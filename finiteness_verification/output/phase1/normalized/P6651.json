@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "directed_acyclic_graph",
+        "type": "directed_graph",
         "length": {
           "min": 2,
           "max": 2000
@@ -30,20 +30,20 @@
       "result": {
         "constraints": [
           {
-            "name": "path_connectedness",
-            "description": "链的定义是：路径 w0 → w1 → ... → wp，其中 w0 的入度为 0，wp 的出度为 0。"
+            "name": "acyclicity",
+            "description": "图必须是无环的（有向无环图）"
           },
           {
-            "name": "distinct_simple_paths",
-            "description": "两条链是不同的，当且仅当它们的长度不同，或者经过的点集不同。"
+            "name": "path_constraint",
+            "description": "链的定义为从入度为0的点到出度为0的点的一条路径"
           },
           {
-            "name": "no_new_path_creation",
-            "description": "删除某些点后新产生的链不计入答案。"
+            "name": "distinctness",
+            "description": "每次询问中去掉的点编号互不相同"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "每次询问中给出的 k 个点互不相同。"
+            "name": "operation_limit",
+            "description": "每次询问独立，且删除某些点后新产生的链不计入答案"
           }
         ]
       }
@@ -54,8 +54,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "计算在删除指定点后，图中剩余的独立路径数量"
+        "type": "enumeration",
+        "description": "求去掉指定点后剩余的链的数量，答案对10^9+7取模"
       }
     }
   ],
@@ -64,9 +64,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成。在本题中，去掉某些点后剩余链的数量可以通过子图中的链数量来计算。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在有向无环图中，节点的删除和剩余链的计算基于拓扑排序，确保了处理顺序的正确性",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每次询问独立，删除不同点集后的剩余链数计算互不影响",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个子图中的链数可以通过其子图的链数来计算，满足动态规划的最优子结构性质",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

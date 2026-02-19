@@ -1,0 +1,126 @@
+{
+  "problem_id": "GYM105657G",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "directed_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "directed_graph",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 200000
+          },
+          "properties": {
+            "directed": true,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 200000
+    },
+    "properties": {
+      "directed": true,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "frequency_bound",
+        "description": "每个位置的蘑菇类型出现次数至少为 k 时，记录该类型",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "按照指向移动，形成路径，并在路径上收集蘑菇",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "frequency_bound",
+              "description": "每个位置的蘑菇类型出现次数至少为 k 时，记录该类型",
+              "formal": "对于每个 s, 找到第一个满足 count(t_c) >= k 的 t_c"
+            },
+            {
+              "name": "path_constraint",
+              "description": "按照指向移动，形成路径，并在路径上收集蘑菇",
+              "formal": "从 s 开始，每次移动到 a_c，直到找到满足频率约束的蘑菇类型"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求每个起始位置下，首次出现次数达到给定阈值的元素类型，并输出加权和"
+        }
+      }
+    ],
+    "description": "求每个起始位置下，首次出现次数达到给定阈值的元素类型，并输出加权和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "cycle_invariant",
+        "description": "环不变量：在遍历过程中，如果遇到已经访问过的节点，则形成一个环。环内的蘑菇类型和数量是固定的，可以用于计算任意起点的最终结果。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个位置到另一个位置的过程中，每次移动都会根据当前位置的指向进行状态转移，并且每次转移后都会收集当前节点的蘑菇类型。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "cycle_invariant",
+              "description": "环不变量：在遍历过程中，如果遇到已经访问过的节点，则形成一个环。环内的蘑菇类型和数量是固定的，可以用于计算任意起点的最终结果。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个位置到另一个位置的过程中，每次移动都会根据当前位置的指向进行状态转移，并且每次转移后都会收集当前节点的蘑菇类型。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

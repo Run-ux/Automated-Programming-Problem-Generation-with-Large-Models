@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,12 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "operation_sequence",
-            "description": "每次操作必须按顺序执行两个步骤，且不能改变顺序"
+            "name": "operation_limit",
+            "description": "操作次数限制，字符串必须通过一系列操作最终变为空串",
+            "formal": "s -> ε 通过一系列操作"
           },
           {
-            "name": "substring_deletion_constraint",
-            "description": "字符串在每次操作后会减少字符，直到字符串为空"
+            "name": "alphabet_constraint",
+            "description": "字符集约束，字符串仅由0和1组成",
+            "formal": "s ∈ {0, 1}^n"
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移约束，每次操作必须删除一个0和一个1，并且顺序不能改变",
+            "formal": "s' = s - {0, 1} 且 操作顺序固定"
           }
         ]
       }
@@ -45,7 +52,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "最大化可执行的操作次数"
+        "description": "最大化可以执行的操作次数"
       }
     }
   ],
@@ -54,9 +61,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "局部最优选择导致全局最优：每次操作尽可能多地删除字符，以最大化操作次数",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次操作都选择当前最优的字符对进行删除，以最大化操作次数",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构建，即在剩余字符串上继续执行相同的操作策略",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

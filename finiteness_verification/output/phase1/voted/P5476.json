@@ -1,0 +1,155 @@
+{
+  "problem_id": "P5476",
+  "source": "luogu",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 2500
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2500
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "square_submatrix_constraint",
+        "description": "选取的子矩阵必须完全位于给定的矩阵范围内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "选取的子矩阵不能包含特定元素（渡渡鸟的蛋）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "每个种类的贝壳在子矩阵中只能被计算一次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "子矩阵的边长固定为 K",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "square_submatrix_constraint",
+              "description": "选取的子矩阵必须完全位于给定的矩阵范围内",
+              "formal": "∀ (i, j) ∈ submatrix, 1 ≤ i, j ≤ N"
+            },
+            {
+              "name": "exclusion",
+              "description": "选取的子矩阵不能包含特定元素（渡渡鸟的蛋）",
+              "formal": "∀ (i, j) ∈ submatrix, (i, j) ∉ eggs"
+            },
+            {
+              "name": "distinctness",
+              "description": "每个种类的贝壳在子矩阵中只能被计算一次",
+              "formal": "value(submatrix) = Σ distinct(shell_types_in_submatrix)"
+            },
+            {
+              "name": "range_bound",
+              "description": "子矩阵的边长固定为 K",
+              "formal": "submatrix_size = K × K"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_probability",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_probability",
+          "description": "最大化在给定约束下，随机选择一个子矩阵使得其权值和至少达到指定阈值的概率"
+        }
+      }
+    ],
+    "description": "最大化在给定约束下，随机选择一个子矩阵使得其权值和至少达到指定阈值的概率"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，即在给定时间点的最大收益可以通过之前时间点的状态转移得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个时间点到下一个时间点，状态（如贝壳和蛋的位置）的变化是确定的，并且这种变化不会破坏算法的正确性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：对于任意两个不相交的时间段，它们的影响可以独立计算并合并，从而得到整个时间段的结果。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，即在给定时间点的最大收益可以通过之前时间点的状态转移得到。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个时间点到下一个时间点，状态（如贝壳和蛋的位置）的变化是确定的，并且这种变化不会破坏算法的正确性。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：对于任意两个不相交的时间段，它们的影响可以独立计算并合并，从而得到整个时间段的结果。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

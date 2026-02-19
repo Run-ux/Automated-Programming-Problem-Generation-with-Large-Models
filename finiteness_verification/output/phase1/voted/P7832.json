@@ -1,0 +1,147 @@
+{
+  "problem_id": "P7832",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 200000
+          },
+          "properties": {
+            "connected": false,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 200000
+    },
+    "properties": {
+      "connected": false,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "bfs_traversal",
+        "description": "访问顺序必须符合广度优先搜索（BFS）的顺序，即每个节点在被访问前至少有一个相邻节点已经被访问过。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "monotonic_distance",
+        "description": "从起始节点到当前节点的距离单调不降。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "permutation_constraint",
+        "description": "必须按照编号 1 到 n 的顺序访问每个节点一次。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "bfs_traversal",
+              "description": "访问顺序必须符合广度优先搜索（BFS）的顺序，即每个节点在被访问前至少有一个相邻节点已经被访问过。",
+              "formal": "对于每个节点 v，存在一个已访问的相邻节点 u 使得 u 在 BFS 树中是 v 的父节点。"
+            },
+            {
+              "name": "monotonic_distance",
+              "description": "从起始节点到当前节点的距离单调不降。",
+              "formal": "对于所有节点 i 和 j，如果 i < j，则 dist(start, i) <= dist(start, j)，其中 dist 表示最短路径距离。"
+            },
+            {
+              "name": "permutation_constraint",
+              "description": "必须按照编号 1 到 n 的顺序访问每个节点一次。",
+              "formal": "访问顺序为 [1, 2, ..., n]。"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求最少需要添加的边数以满足特定遍历顺序"
+        }
+      }
+    ],
+    "description": "求最少需要添加的边数以满足特定遍历顺序"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "访问顺序的单调性：每个城市与首个城市的距离单调不降",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：按照 BFS 序访问城市，满足有向无环图的拓扑排序性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解组合得到，即在当前层选择最优路径扩展到下一层",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "访问顺序的单调性：每个城市与首个城市的距离单调不降",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：按照 BFS 序访问城市，满足有向无环图的拓扑排序性质",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的最优解组合得到，即在当前层选择最优路径扩展到下一层",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

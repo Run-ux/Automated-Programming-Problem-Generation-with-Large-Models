@@ -2,14 +2,14 @@
   "problem_id": "P8300",
   "source": "luogu",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 300000
@@ -39,23 +39,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_positions",
-        "description": "每个节点最多只能有一个元素（公司）",
+        "name": "pairwise_exclusion",
+        "description": "每个节点最多只能被一个元素占用（公司搬入时，原公司搬出）",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "元素的值（公司账户余额）在相邻时间点之间按固定规则更新（每日利润累加）",
+        "name": "range_query_max",
+        "description": "查询区间内的最大值（Mirko 检查经过的办公室中当前最富有的公司的账户余额）",
         "confidence": "1/1"
       },
       {
-        "name": "maximum_sum_constraint",
-        "description": "查询区间内所有元素的最大值（最富有的公司账户余额）",
+        "name": "ordering",
+        "description": "事件按时间顺序给出且每天最多发生一个事件（所有 T 严格递增）",
         "confidence": "1/1"
       },
       {
-        "name": "adaptive_interactor",
-        "description": "当新元素（公司）进入时，旧元素（公司）被替换并移除",
+        "name": "delayed_access_constraint",
+        "description": "新元素在插入后的下一个时间单位才开始生效（新公司直到搬入后的第二天才开始营业）",
         "confidence": "1/1"
       }
     ],
@@ -66,22 +66,20 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_positions",
-              "description": "每个节点最多只能有一个元素（公司）"
+              "name": "pairwise_exclusion",
+              "description": "每个节点最多只能被一个元素占用（公司搬入时，原公司搬出）"
             },
             {
-              "name": "adjacent_difference",
-              "description": "元素的值（公司账户余额）在相邻时间点之间按固定规则更新（每日利润累加）",
-              "formal": "S[t+1] = S[t] + Z"
+              "name": "range_query_max",
+              "description": "查询区间内的最大值（Mirko 检查经过的办公室中当前最富有的公司的账户余额）"
             },
             {
-              "name": "maximum_sum_constraint",
-              "description": "查询区间内所有元素的最大值（最富有的公司账户余额）",
-              "formal": "max(S[A:B])"
+              "name": "ordering",
+              "description": "事件按时间顺序给出且每天最多发生一个事件（所有 T 严格递增）"
             },
             {
-              "name": "adaptive_interactor",
-              "description": "当新元素（公司）进入时，旧元素（公司）被替换并移除"
+              "name": "delayed_access_constraint",
+              "description": "新元素在插入后的下一个时间单位才开始生效（新公司直到搬入后的第二天才开始营业）"
             }
           ]
         }
@@ -104,21 +102,50 @@
     "description": "求区间内最大值"
   },
   "invariant": {
-    "name": "interval_mergeable",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "事件时间严格递增，确保处理顺序的单调性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间内公司账户余额的最大值可通过子区间的最大值合并计算",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "每个办公室的状态（空或有公司）和公司账户余额随时间变化的一致性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间信息可通过子区间合并，适用于查询和更新操作频繁的场景",
-          "properties": {
-            "mergeable": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "事件时间严格递增，确保处理顺序的单调性",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间内公司账户余额的最大值可通过子区间的最大值合并计算",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "每个办公室的状态（空或有公司）和公司账户余额随时间变化的一致性",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "区间信息可通过子区间合并，适用于查询和更新操作频繁的场景"
+    ]
   }
 }

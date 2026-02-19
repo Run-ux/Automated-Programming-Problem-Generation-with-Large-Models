@@ -1,0 +1,164 @@
+{
+  "problem_id": "GYM106175F",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 10
+          },
+          "value_range": {
+            "min": 1000,
+            "max": 1000000
+          },
+          "properties": {
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 10
+    },
+    "value_range": {
+      "min": 1000,
+      "max": 1000000
+    },
+    "properties": {
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "选取元素权重和不超过容量上限（初始资本）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "每年的利息总和最大化",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制为给定的年数",
+        "confidence": "1/1"
+      },
+      {
+        "name": "divisibility",
+        "description": "元素值必须是某个固定值的倍数（债券价值必须是1000的倍数）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "每个元素的收益不超过其价值的一定比例（债券利息不超过其价值的10%）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "选取元素权重和不超过容量上限（初始资本）"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "每年的利息总和最大化"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制为给定的年数"
+            },
+            {
+              "name": "divisibility",
+              "description": "元素值必须是某个固定值的倍数（债券价值必须是1000的倍数）"
+            },
+            {
+              "name": "range_bound",
+              "description": "每个元素的收益不超过其价值的一定比例（债券利息不超过其价值的10%）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化给定时间内的资本增长"
+        }
+      }
+    ],
+    "description": "最大化给定时间内的资本增长"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每一年结束时，当前资本的最大值可以由前一年的最优解和当年的操作（买卖债券）决定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着时间的推移，资本总额不会减少，只会增加或保持不变。每年的资本总额是非递减的。",
+        "confidence": "1/1",
+        "properties": {
+          "capital_non_decreasing": true
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步操作中，选择当前最优的债券购买策略（如购买利息最高的债券），以最大化当年的收益。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每一年结束时，当前资本的最大值可以由前一年的最优解和当年的操作（买卖债券）决定。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着时间的推移，资本总额不会减少，只会增加或保持不变。每年的资本总额是非递减的。",
+              "properties": {
+                "capital_non_decreasing": true
+              }
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步操作中，选择当前最优的债券购买策略（如购买利息最高的债券），以最大化当年的收益。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

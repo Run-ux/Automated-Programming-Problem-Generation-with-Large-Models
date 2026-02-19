@@ -1,0 +1,82 @@
+{
+  "problem_id": "P9346",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 2,
+          "max": 5000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 5000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（所有花瓣通过边连接成一个连通图）"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过 2 时，图被视为满足某种条件（花瓣凋零）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_probability",
+        "description": "求随机过程的期望步数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "树的边数随时间单调递减，直至所有花瓣度数不超过2",
+            "properties": {
+              "edge_decrease": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "期望凋零时间可由子树的期望凋零时间组合得到",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "每次断开一条边后，树的状态（即每个节点的度数）发生一致性的变化",
+            "properties": {
+              "consistent_state_change": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

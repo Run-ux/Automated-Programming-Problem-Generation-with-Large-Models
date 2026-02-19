@@ -1,0 +1,84 @@
+{
+  "problem_id": "P6930",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 50
+        },
+        "value_range": {
+          "min": 65,
+          "max": 85
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_constraint",
+            "description": "选取的元素必须是给定集合的一个子集（从18张牌中选择）"
+          },
+          {
+            "name": "distinctness",
+            "description": "每个玩家手中的牌必须是唯一的，不能有重复"
+          },
+          {
+            "name": "inclusion",
+            "description": "每条建议中的三个元素（人、武器、房间）必须包含在所有已知的元素集合中"
+          },
+          {
+            "name": "exclusion",
+            "description": "如果某个玩家展示了证据，则该玩家手中不包含建议中的其他两个元素"
+          },
+          {
+            "name": "state_transition",
+            "description": "根据其他玩家的反馈，更新自己对未知元素的猜测状态"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否可以确定三个未知变量的值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：根据玩家的建议和证据更新当前玩家的知识状态，确保每次状态转移后，玩家的知识状态保持一致且正确。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最终确定的凶手、武器和房间的选择基于所有已知信息的最优组合。每个子问题（即每条建议及其证据）的解构成了整个问题的解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

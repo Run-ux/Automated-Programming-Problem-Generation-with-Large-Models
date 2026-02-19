@@ -41,13 +41,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "path_length_constraint",
-        "description": "存在从节点 x 到节点 y 且长度为 k 的路径，同时存在从节点 y 到节点 x 且长度为 k 的路径",
+        "name": "path_constraint",
+        "description": "存在从节点 x 到节点 y 的路径，且路径长度为 k",
         "confidence": "1/1"
       },
       {
-        "name": "cyclic_path_length_constraint",
-        "description": "存在一个长度为 2k 的环路，使得某个节点在 k 小时后返回到初始节点",
+        "name": "cycle_count_constraint",
+        "description": "存在一个长度为 2k 的环，即从某个节点出发经过 k 小时到达另一个节点再返回原节点",
         "confidence": "1/1"
       }
     ],
@@ -58,12 +58,19 @@
         "result": {
           "constraints": [
             {
-              "name": "path_length_constraint",
-              "description": "存在从节点 x 到节点 y 且长度为 k 的路径，同时存在从节点 y 到节点 x 且长度为 k 的路径"
+              "name": "path_constraint",
+              "description": "存在从节点 x 到节点 y 的路径，且路径长度为 k",
+              "formal": "∃ path(x, y) with length = k"
             },
             {
-              "name": "cyclic_path_length_constraint",
-              "description": "存在一个长度为 2k 的环路，使得某个节点在 k 小时后返回到初始节点"
+              "name": "path_constraint",
+              "description": "存在从节点 y 到节点 x 的路径，且路径长度为 k",
+              "formal": "∃ path(y, x) with length = k"
+            },
+            {
+              "name": "cycle_count_constraint",
+              "description": "存在一个长度为 2k 的环，即从某个节点出发经过 k 小时到达另一个节点再返回原节点",
+              "formal": "∃ cycle of length 2k"
             }
           ]
         }
@@ -71,34 +78,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的路径数量"
+          "type": "enumeration",
+          "description": "求满足条件的路径对或单个路径的数量"
         }
       }
     ],
-    "description": "统计满足条件的路径数量"
+    "description": "求满足条件的路径对或单个路径的数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "topological_order",
+        "description": "在有向无环图（DAG）中，节点的拓扑序决定了路径的存在性。对于任意两个节点x和y，如果存在从x到y的路径，则x在拓扑序中先于y。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "cycle_invariant",
+        "description": "在有向图中，如果存在长度为k的路径从x到y，并且也存在长度为k的路径从y到x，则x和y之间必然存在一个长度为k的环。这个环的性质在整个算法过程中保持不变。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，即通过计算从每个节点出发在k小时内可到达的节点集合来确定最终解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "topological_order",
+              "description": "在有向无环图（DAG）中，节点的拓扑序决定了路径的存在性。对于任意两个节点x和y，如果存在从x到y的路径，则x在拓扑序中先于y。",
+              "properties": {}
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "在有向图中，如果存在长度为k的路径从x到y，并且也存在长度为k的路径从y到x，则x和y之间必然存在一个长度为k的环。这个环的性质在整个算法过程中保持不变。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，即通过计算从每个节点出发在k小时内可到达的节点集合来确定最终解。"
+    ]
   }
 }

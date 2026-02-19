@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 3,
           "max": 100000
@@ -28,13 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "strictly_increasing_sequence",
-            "description": "序列必须严格递增（从底到顶的卡片值必须单调递增）"
+            "name": "ordering",
+            "description": "序列必须严格递增（从底到顶）",
+            "formal": "对于所有 i, A[i] < A[i+1]"
           },
           {
-            "name": "maximum_difference_constraint",
-            "description": "相邻元素差值不超过 d（当前玩家的卡片值与堆顶卡片值之差不超过 d 时，才能放置卡片）",
-            "formal": "x - y <= d, 其中 x 是当前玩家的卡片值，y 是堆顶卡片值"
+            "name": "range_bound",
+            "description": "相邻元素差值不超过 d",
+            "formal": "对于所有 i, A[i+1] - A[i] <= d"
+          },
+          {
+            "name": "distinctness",
+            "description": "所有元素必须唯一",
+            "formal": "对于所有 i != j, A[i] != A[j]"
           }
         ]
       }
@@ -45,8 +51,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求满足条件的最小整数值"
+        "type": "feasibility",
+        "description": "判断是否存在一个整数d，使得按照给定策略可以保证所有卡片按递增顺序排列"
       }
     }
   ],
@@ -55,11 +61,20 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "序列构建过程中，新加入的元素始终满足与前一个元素的差值不超过给定阈值d，确保了序列的单调递增性质。",
-        "properties": {
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "堆顶值与当前玩家卡牌值之间的差值限制保证了堆的单调递增性质，确保每一步操作后堆顶值始终小于等于下一个要放置的卡牌值。",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解来构建。对于任意给定的d值，如果存在一种策略使得所有玩家都能按照规则成功出牌，则该d值为可行解；反之则不是。因此，寻找最小的可行d值可以视为一个具有最优子结构的问题。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

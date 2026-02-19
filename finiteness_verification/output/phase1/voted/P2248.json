@@ -1,0 +1,135 @@
+{
+  "problem_id": "P2248",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "exclusion",
+        "description": "某些元素不能出现在同一区间内（图着色约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "maximum_to_minimum_ratio_constraint",
+        "description": "区间内最大值与最小值的差值乘以常数 S 加上常数 K 的和作为代价",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "exclusion",
+              "description": "某些元素不能出现在同一区间内（图着色约束）",
+              "formal": "对于每对 (p_i, q_i)，a_{p_i} 和 a_{q_i} 不能在同一段中"
+            },
+            {
+              "name": "maximum_to_minimum_ratio_constraint",
+              "description": "区间内最大值与最小值的差值乘以常数 S 加上常数 K 的和作为代价",
+              "formal": "代价 = K + S * (P - Q)，其中 P 是区间的最大值，Q 是区间的最小值"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足条件的分段方案中每段代价之和的最小值"
+        }
+      }
+    ],
+    "description": "求满足条件的分段方案中每段代价之和的最小值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即分段代价之和最小的方案可以通过前缀段的最优解递推得到",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：当前段的代价计算依赖于该段的最大值和最小值，且这些值可以从前一段的状态信息中递推获得",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：在处理不能共存的数对时，可以通过合并相邻区间来维护区间的合法性，并确保代价计算的正确性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即分段代价之和最小的方案可以通过前缀段的最优解递推得到",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：当前段的代价计算依赖于该段的最大值和最小值，且这些值可以从前一段的状态信息中递推获得",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：在处理不能共存的数对时，可以通过合并相邻区间来维护区间的合法性，并确保代价计算的正确性",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

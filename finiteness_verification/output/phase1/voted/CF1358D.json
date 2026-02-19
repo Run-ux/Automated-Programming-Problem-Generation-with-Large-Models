@@ -1,0 +1,134 @@
+{
+  "problem_id": "CF1358D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "range_bound",
+        "description": "选取的天数必须是连续的（即，选择的 x 天必须是连续的日期）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "选取的天数总和必须等于 x",
+        "confidence": "1/1"
+      },
+      {
+        "name": "linear_relation",
+        "description": "每一天的价值取决于它在月份中的位置（即，第 j 天的价值为 j）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "range_bound",
+              "description": "选取的天数必须是连续的（即，选择的 x 天必须是连续的日期）",
+              "formal": "存在 l, r 使得 r - l + 1 = x 且 l 到 r 是连续的"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "选取的天数总和必须等于 x",
+              "formal": "∑(days[l:r]) = x"
+            },
+            {
+              "name": "linear_relation",
+              "description": "每一天的价值取决于它在月份中的位置（即，第 j 天的价值为 j）",
+              "formal": "value(day) = day_of_month(day)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化连续子数组的权值和"
+        }
+      }
+    ],
+    "description": "最大化连续子数组的权值和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，通过动态规划求解连续区间内的最大值",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间和可通过端点差值计算，利用前缀和快速计算任意区间的总和",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，通过动态规划求解连续区间内的最大值",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间和可通过端点差值计算，利用前缀和快速计算任意区间的总和",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

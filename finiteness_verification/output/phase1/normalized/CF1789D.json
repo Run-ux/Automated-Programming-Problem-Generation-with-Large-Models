@@ -1,0 +1,84 @@
+{
+  "problem_id": "CF1789D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 2000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制为 n 次以内",
+            "formal": "m <= n"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "每次操作通过位移和异或运算改变 a 的值",
+            "formal": "a = (a << k) ^ a 或 a = (a >> k) ^ a, 其中 1 <= k <= n 或 -n <= k <= -1"
+          },
+          {
+            "name": "transformation",
+            "description": "通过一系列位移和异或操作将 a 转换为 b",
+            "formal": "a -> b 通过一系列 (a << k) ^ a 或 (a >> k) ^ a 操作"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种操作序列，使得在最多n次操作内将一个二进制数a转换为另一个二进制数b"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过一系列位移和异或操作，可以逐步将初始状态转换为目标状态，且每一步操作都是可逆的。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每次位移操作只影响当前状态的部分位，不同位的操作相互独立。",
+            "properties": {}
+          },
+          {
+            "name": "idempotency",
+            "description": "幂等性：对于相同的位移操作，多次执行与一次执行的结果相同。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

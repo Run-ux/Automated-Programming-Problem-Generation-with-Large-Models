@@ -6,24 +6,29 @@
   "result": {
     "constraints": [
       {
-        "name": "dominance_constraint",
-        "description": "一个元素的攻击值必须严格大于另一个元素的防御值才能击败它（偏序关系约束）"
+        "name": "pairwise_beating",
+        "description": "一个元素的攻击值必须严格大于另一个元素的防御值才能击败它（图着色约束）",
+        "formal": "s.beats(t) if s.attack > t.defence"
       },
       {
         "name": "cyclic_replacement",
-        "description": "被击败的元素会返回到原持有者的手中，允许在后续回合中再次使用（循环替换约束）"
+        "description": "被击败的元素会返回到玩家手中，允许在后续回合中再次使用（循环替换约束）",
+        "formal": "after s.beats(t), t returns to player's hand"
       },
       {
         "name": "optimal_play",
-        "description": "双方玩家都采取最优策略，即如果存在必胜策略则选择必胜策略，否则选择平局策略（最优策略约束）"
+        "description": "双方玩家都采取最优策略进行游戏（最优策略约束）",
+        "formal": "both players play optimally"
       },
       {
         "name": "game_termination",
-        "description": "当当前玩家无法找到可以击败对手上一张卡牌的卡牌时，游戏结束且该玩家失败（终止条件约束）"
+        "description": "如果当前玩家没有可以击败对手刚出的牌，则该玩家输掉游戏（终止条件约束）",
+        "formal": "if no card in current player's hand can beat the opponent's last card, current player loses"
       },
       {
         "name": "draw_condition",
-        "description": "如果游戏进行超过 100^500 回合，则宣布为平局（超长回合平局约束）"
+        "description": "如果游戏持续超过 $100^{500}$ 回合，则宣布平局（平局条件约束）",
+        "formal": "if game lasts for 100^500 moves, it's a draw"
       }
     ]
   },

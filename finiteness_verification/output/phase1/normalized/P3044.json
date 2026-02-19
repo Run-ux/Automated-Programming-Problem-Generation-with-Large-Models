@@ -1,0 +1,81 @@
+{
+  "problem_id": "P3044",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过 M（边的数量）"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "选择的农场位置必须是不包含市场的城镇集合中的一个元素"
+          },
+          {
+            "name": "connectivity",
+            "description": "图必须连通，所有节点之间都存在路径"
+          },
+          {
+            "name": "path_constraint",
+            "description": "从选定的农场出发，访问 K 个市场并返回农场的总路径长度最小化"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求从一个点出发访问多个指定点再返回该点的最短路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，选择一个城镇作为农场位置的最优解可以通过计算从该城镇到所有市场城镇的最短路径之和来确定。",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在网络流模型中，每个节点的流入量等于流出量。在本题中，每个城镇的进入路径总长度等于离开路径总长度，确保了路径的连通性和完整性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

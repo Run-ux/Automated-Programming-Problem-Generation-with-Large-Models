@@ -54,6 +54,7 @@ CRITICAL WARNING:
 - JSON 必须包含 constraints 数组字段
 - 每个约束必须包含 name 和 description 字段
 - formal 字段可选（形式化表达，如数学公式或伪代码）
+- 如果推荐清单中没有合适标签，必须自由新增更准确的标签，不要为了套用而强行归类
 
 约束识别原则：
 1. 识别限制条件：如"区间内不同元素个数不超过 K"、"路径长度不超过 L"
@@ -70,6 +71,76 @@ CRITICAL WARNING:
 - 反例：题目说"每个城市最多修建3条公路" → name 不能写 "city_road_limit"，应写 "degree_upper_bound"
 - 正例：题目说"相邻房间不能涂相同颜色" → name 写 "adjacent_difference"，description 写 "相邻节点取值不同（图着色约束）"
 - 正例：题目说"背包重量不超过W" → name 写 "capacity_constraint"，description 写 "选取元素权重和不超过容量上限"
+
+推荐的约束类型清单（优先从中选择，但允许必要时新增）：
+图论约束：
+- connectivity（连通性）
+- acyclicity（无环性）
+- planarity（平面性）
+- bipartiteness（二部性）
+- degree_bound（度数约束）
+- path_constraint（路径约束）
+- matching_constraint（匹配约束）
+- flow_constraint（流量/容量约束）
+- coloring_constraint（染色约束）
+- spanning_constraint（生成结构约束）
+
+序列/数组约束：
+- ordering（有序性）
+- distinctness（唯一性/去重）
+- adjacency_relation（相邻关系）
+- frequency_bound（频次约束）
+- subsequence_constraint（子序列约束）
+- permutation_constraint（排列约束）
+
+数值/代数约束：
+- range_bound（值域约束）
+- sum_constraint（和约束）
+- divisibility（整除/同余）
+- parity（奇偶性）
+- linear_relation（线性关系）
+- modular_arithmetic（模运算约束）
+
+几何约束：
+- convexity（凸性）
+- distance_bound（距离约束）
+- intersection（相交关系）
+- orientation（方向/朝向约束）
+
+集合/组合约束：
+- subset_constraint（子集约束）
+- partition（划分约束）
+- coverage（覆盖约束）
+- exclusion（互斥/禁止）
+- inclusion（包含/必选）
+
+操作/过程约束：
+- operation_limit（操作次数限制）
+- operation_type（操作类型限制）
+- state_transition（状态转移约束）
+- concurrency（并发/同步约束）
+- reversibility（可逆性）
+- transformation（变换/操作规则）
+
+字符串约束：
+- palindrome（回文约束）
+- pattern_matching（模式匹配）
+- alphabet_constraint（字符集约束）
+- repetition（重复性/周期性）
+
+博弈/交互约束：
+- turn_based（回合制）
+- optimal_play（最优策略）
+- query_limit（询问次数限制）
+
+概率/随机约束：
+- probability_distribution（概率分布约束）
+- independence（独立性约束）
+
+规则：
+1. 优先使用上述清单中的标签作为 name。
+2. 如果确实没有匹配项，允许创建新标签（必须抽象化且简洁）。
+3. 避免对同一约束创建多种同义标签。
 """
 
 
@@ -128,6 +199,7 @@ def build_user_prompt(problem: Dict[str, Any]) -> str:
 4. 每个约束的 description 必须清晰完整，能够独立理解
 5. formal 字段可选，如果能用数学公式或伪代码表达清楚，则填写
 6. 所有约束的 name 和 description 必须是算法领域的抽象概括，不得包含题目中的具体情境词汇（如角色名、物品名、场景名等），需翻译为通用的算法/数据结构术语
+7. 如果推荐清单中没有合适标签，必须自由新增更准确的标签，不要为了套用而强行归类
 """
 
 

@@ -28,20 +28,20 @@
       "result": {
         "constraints": [
           {
-            "name": "graph_connectivity",
-            "description": "图可能不连通，需要判断是否存在从起点到终点的路径"
+            "name": "connectivity",
+            "description": "图必须连通（存在从顶点1到顶点n的路径）"
           },
           {
-            "name": "undirected_graph",
+            "name": "adjacency_relation",
             "description": "图是无向图"
           },
           {
-            "name": "weighted_graph",
+            "name": "distance_bound",
             "description": "图中的边有权重"
           },
           {
-            "name": "path_length_constraint",
-            "description": "如果不存在从起点到终点的路径，则输出 -1"
+            "name": "connectivity",
+            "description": "如果不存在从顶点1到顶点n的路径，则输出-1"
           }
         ]
       }
@@ -52,7 +52,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_distance",
+        "type": "minimize_value",
         "description": "求两点间最短路径长度"
       }
     }
@@ -62,9 +62,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：从起点到任意顶点的最短路径，可以由该顶点与其前驱顶点之间的最短路径组合而成",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从起点到任意顶点的最短路径可以通过其前驱顶点的最短路径推导出来",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择当前已知最短路径的顶点进行扩展，确保局部最优解逐步构建全局最优解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

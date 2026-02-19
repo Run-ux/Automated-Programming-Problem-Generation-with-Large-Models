@@ -2,14 +2,14 @@
   "problem_id": "GYM105484D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -39,18 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "non_collinear_point_set",
-        "description": "在任何行、列或对角线上，不能有三个相同的标记（图着色约束）",
+        "name": "no_three_consecutive_elements",
+        "description": "在任何行、列或对角线上，不允许出现三个相同的标记（'x' 或 'o'）",
         "confidence": "1/1"
       },
       {
-        "name": "turn_based_operation",
-        "description": "两名玩家轮流在一个空格中放置标记（交替操作约束）",
-        "confidence": "1/1"
-      },
-      {
-        "name": "valid_position_count",
-        "description": "每一步操作必须是有效的，即不能导致任何行、列或对角线上出现三个相同的标记（合法性约束）",
+        "name": "optimal_play",
+        "description": "双方玩家都采取最优策略进行游戏",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "non_collinear_point_set",
-              "description": "在任何行、列或对角线上，不能有三个相同的标记（图着色约束）",
-              "formal": "对于任意行、列或对角线 L，L 中的相同标记数量不超过 2"
+              "name": "no_three_consecutive_elements",
+              "description": "在任何行、列或对角线上，不允许出现三个相同的标记（'x' 或 'o'）",
+              "formal": "对于任意 3x3 矩阵 M，不存在 i, j 使得 M[i][j] = M[i][j+1] = M[i][j+2] 或 M[i][j] = M[i+1][j] = M[i+2][j] 或 M[i][i] = M[i+1][i+1] = M[i+2][i+2] 或 M[i][2-i] = M[i+1][1-i] = M[i+2][-i]"
             },
             {
-              "name": "turn_based_operation",
-              "description": "两名玩家轮流在一个空格中放置标记（交替操作约束）",
-              "formal": "Alice 和 Bob 轮流选择一个空格并放置他们的标记"
-            },
-            {
-              "name": "valid_position_count",
-              "description": "每一步操作必须是有效的，即不能导致任何行、列或对角线上出现三个相同的标记（合法性约束）",
-              "formal": "每次放置标记后，所有行、列和对角线上的相同标记数量不超过 2"
+              "name": "optimal_play",
+              "description": "双方玩家都采取最优策略进行游戏",
+              "formal": "每个玩家在每一步都选择最优的移动以确保胜利"
             }
           ]
         }
@@ -81,34 +71,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "game_outcome",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断在给定初始状态和双方最优策略下，先手玩家是否能获胜"
+          "type": "game_outcome",
+          "description": "确定在给定初始状态下的博弈结果，即先手胜或后手胜"
         }
       }
     ],
-    "description": "判断在给定初始状态和双方最优策略下，先手玩家是否能获胜"
+    "description": "确定在给定初始状态下的博弈结果，即先手胜或后手胜"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前状态的最优解可以通过子问题的最优解来构建，每个子问题对应一个独立的游戏板。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：游戏状态的变化遵循确定的规则，每次操作后的新状态由当前状态和所选操作唯一决定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个游戏板的状态变化独立于其他游戏板，可以分别处理。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：当前状态的最优解可以通过子问题的最优解组合而成，每个玩家在每一步都选择对自己最有利的策略以确保最终胜利。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：当前状态的最优解可以通过子问题的最优解来构建，每个子问题对应一个独立的游戏板。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：游戏状态的变化遵循确定的规则，每次操作后的新状态由当前状态和所选操作唯一决定。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个游戏板的状态变化独立于其他游戏板，可以分别处理。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：当前状态的最优解可以通过子问题的最优解组合而成，每个玩家在每一步都选择对自己最有利的策略以确保最终胜利。"
+    ]
   }
 }

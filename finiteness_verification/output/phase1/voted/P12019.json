@@ -1,0 +1,142 @@
+{
+  "problem_id": "P12019",
+  "source": "luogu",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 2000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "相邻节点的传播规则（空节点被相邻的至少一个洪水节点淹没，建筑物节点被相邻的至少两个洪水节点淹没）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "circular_boundary_constraint",
+        "description": "洪水不能流出网格边界",
+        "confidence": "1/1"
+      },
+      {
+        "name": "existence_requirement",
+        "description": "初始时至少有一个空节点",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "相邻节点的传播规则（空节点被相邻的至少一个洪水节点淹没，建筑物节点被相邻的至少两个洪水节点淹没）"
+            },
+            {
+              "name": "circular_boundary_constraint",
+              "description": "洪水不能流出网格边界"
+            },
+            {
+              "name": "existence_requirement",
+              "description": "初始时至少有一个空节点"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求所有空格子作为初始洪水点时，最终被洪水淹没的格子数之和"
+        }
+      }
+    ],
+    "description": "求所有空格子作为初始洪水点时，最终被洪水淹没的格子数之和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "洪水扩散过程中的单元格状态变化是单调的，即一旦某个空单元格被淹没，它将保持被淹没状态。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "每个空单元格的淹没范围可以分解为子问题的最优解，即从初始淹没点开始的扩散过程可以看作是由多个局部最优解组成的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "单元格的状态转移规则是一致的，即空单元格在相邻单元格被淹没时会变成被淹没状态，建筑物在相邻至少两个单元格被淹没时会倒塌并变成被淹没状态。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "洪水扩散过程中的单元格状态变化是单调的，即一旦某个空单元格被淹没，它将保持被淹没状态。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "每个空单元格的淹没范围可以分解为子问题的最优解，即从初始淹没点开始的扩散过程可以看作是由多个局部最优解组成的。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "单元格的状态转移规则是一致的，即空单元格在相邻单元格被淹没时会变成被淹没状态，建筑物在相邻至少两个单元格被淹没时会倒塌并变成被淹没状态。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

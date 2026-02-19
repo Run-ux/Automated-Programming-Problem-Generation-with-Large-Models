@@ -29,20 +29,20 @@
       "result": {
         "constraints": [
           {
-            "name": "bipartite_matching",
-            "description": "图的顶点必须被分成两个集合，每个集合中的顶点数量相等"
+            "name": "bipartiteness",
+            "description": "图必须是二分图（可以分为两个独立的集合，每个集合内的节点不相邻）"
           },
           {
-            "name": "vertex_coloring_constraint",
-            "description": "每个顶点只能有一种颜色，且两种颜色的顶点数量相等"
+            "name": "degree_bound",
+            "description": "每个顶点的度数为2（每个三元组内的三个顶点两两相连）"
           },
           {
-            "name": "complete_subgraph",
-            "description": "图由多个完全子图组成，每个完全子图包含三个顶点，且不同完全子图之间没有边"
+            "name": "coloring_constraint",
+            "description": "每个顶点必须被涂成红色或蓝色，且红色和蓝色顶点数量相等"
           },
           {
-            "name": "weighted_vertex_coloring",
-            "description": "着色方案的权重是连接不同颜色顶点的边的权重之和，需要找到最大权重的着色方案"
+            "name": "sum_constraint",
+            "description": "颜色权重和最大化（连接不同颜色顶点的边的权重和最大）"
           }
         ]
       }
@@ -54,7 +54,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计具有最大权值和的二分图染色方案数量"
+        "description": "求具有最大权重的二分图合法着色方案数"
       }
     }
   ],
@@ -63,9 +63,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优解可以通过子问题的最优解组合而成，每个三元组的最优着色方案可以独立计算并合并得到全局最优解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个三元组的最优解可以独立计算，并且这些局部最优解可以组合成全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个三元组的着色方案可以独立计算，不受其他三元组的影响。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

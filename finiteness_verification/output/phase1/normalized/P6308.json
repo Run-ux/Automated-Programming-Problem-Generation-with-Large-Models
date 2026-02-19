@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 500000
@@ -28,19 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "range_selection_constraint",
-            "description": "对区间 [s, s+l-1] 内的每个元素 a[s+i-1] 加上 w * i^k，其中 1 ≤ i ≤ l",
-            "formal": "for all i in [1, l]: a[s + i - 1] = (a[s + i - 1] + w * i^k) % 2^64"
+            "name": "range_bound",
+            "description": "操作中的指数 k 的值域约束，满足 0 ≤ k ≤ m",
+            "formal": "0 ≤ k_i ≤ m"
           },
           {
-            "name": "value_range_constraint",
-            "description": "指数 k 的取值范围为 0 到 m",
-            "formal": "0 ≤ k ≤ m"
+            "name": "interval_operation_constraint",
+            "description": "每次操作的区间 [s, s+l-1] 必须在序列范围内，即 1 ≤ s ≤ n-l+1",
+            "formal": "1 ≤ s_i ≤ n - l_i + 1"
           },
           {
-            "name": "query_range_validity",
-            "description": "操作的区间 [s, s+l-1] 必须在序列范围内，即 1 ≤ s ≤ n-l+1",
-            "formal": "1 ≤ s ≤ n - l + 1"
+            "name": "modular_arithmetic",
+            "description": "序列中的每个元素对 2^64 取模后的结果作为最终输出",
+            "formal": "a[i] = a[i] % 2^64"
           }
         ]
       }
@@ -51,8 +51,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个经过多次区间更新后的序列"
+        "type": "construction",
+        "description": "构造并输出经过一系列区间操作后的序列"
       }
     }
   ],
@@ -61,11 +61,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间可合并性：通过端点差值计算区间和，支持区间操作的高效合并与更新",
-        "properties": {
-          "prefix_sum": true
-        }
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：区间和可以通过端点差值计算，满足前缀和的性质",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：区间信息可以通过子区间合并，适用于线段树等数据结构",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,135 @@
+{
+  "problem_id": "CF1474D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制，允许使用超级能力不超过一次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "相邻元素关系约束，如果某个元素被移除，则其相邻的两个元素不会变成相邻",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制，允许使用超级能力不超过一次",
+              "formal": "superability_usage <= 1"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "相邻元素关系约束，如果某个元素被移除，则其相邻的两个元素不会变成相邻",
+              "formal": "if a[i] == 0, then (i-1) and (i+1) are not adjacent"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一种操作方案，使得所有元素可以通过至多一次特殊操作被移除"
+        }
+      }
+    ],
+    "description": "判断是否存在一种操作方案，使得所有元素可以通过至多一次特殊操作被移除"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，且子问题之间相互独立。",
+        "confidence": "1/1",
+        "properties": {
+          "subproblem_independence": true
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：通过局部最优选择（如选择相邻堆进行操作）可以逐步达到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：可以通过端点差值计算区间的总和，适用于前缀和等技术。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，且子问题之间相互独立。",
+              "properties": {
+                "subproblem_independence": true
+              }
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：通过局部最优选择（如选择相邻堆进行操作）可以逐步达到全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：可以通过端点差值计算区间的总和，适用于前缀和等技术。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

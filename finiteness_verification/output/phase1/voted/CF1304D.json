@@ -1,0 +1,158 @@
+{
+  "problem_id": "CF1304D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 200000
+          },
+          "properties": {
+            "ordered": false,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 200000
+    },
+    "properties": {
+      "ordered": false,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "ordering",
+        "description": "序列中的相邻元素必须满足给定的比较关系（< 或 >）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "permutation_constraint",
+        "description": "序列必须是 1 到 n 的一个排列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "第一个序列的最长递增子序列长度应尽可能小",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "ordering",
+              "description": "序列中的相邻元素必须满足给定的比较关系（< 或 >）",
+              "formal": "对于所有 1 ≤ i < n，如果 s[i] == '<'，则 a[i] < a[i+1]；如果 s[i] == '>'，则 a[i] > a[i+1]"
+            },
+            {
+              "name": "permutation_constraint",
+              "description": "序列必须是 1 到 n 的一个排列",
+              "formal": "a 是 [1, 2, ..., n] 的一个排列"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "第一个序列的最长递增子序列长度应尽可能小",
+              "formal": "minimize LIS(a)"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "第二个序列的最长递增子序列长度应尽可能大",
+              "formal": "maximize LIS(a)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造满足给定比较关系的两个排列，一个使最长递增子序列长度最小化，另一个使最长递增子序列长度最大化"
+        }
+      }
+    ],
+    "description": "构造满足给定比较关系的两个排列，一个使最长递增子序列长度最小化，另一个使最长递增子序列长度最大化"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在构建序列时，每个子序列的最长递增子序列长度决定了整个序列的LIS长度。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：根据比较符号 '<' 和 '>' 的约束，序列中的元素必须满足特定的顺序关系。这种顺序关系保证了某些部分的单调递增或递减。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：为了使LIS最小化或最大化，可以局部地选择当前最优的元素放置位置，从而逐步构建出全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在构建序列时，每个子序列的最长递增子序列长度决定了整个序列的LIS长度。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：根据比较符号 '<' 和 '>' 的约束，序列中的元素必须满足特定的顺序关系。这种顺序关系保证了某些部分的单调递增或递减。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false
+              }
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：为了使LIS最小化或最大化，可以局部地选择当前最优的元素放置位置，从而逐步构建出全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

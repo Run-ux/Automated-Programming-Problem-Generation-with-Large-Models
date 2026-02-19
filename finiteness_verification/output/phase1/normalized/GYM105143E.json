@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "tree",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,19 +28,23 @@
       "result": {
         "constraints": [
           {
-            "name": "subset_inclusion",
-            "description": "在时间 t 时，虚假消息覆盖的节点集合必须完全包含在反驳消息覆盖的节点集合中（即 V(r, t) ⊆ V'(r', t)）",
-            "formal": "∀t, V(r, t) ⊆ V'(r', t)"
+            "name": "acyclicity",
+            "description": "图结构为树，即无环连通图"
           },
           {
-            "name": "speed_ratio_constraint",
-            "description": "反驳消息的传播速度是虚假消息传播速度的 k 倍（即每单位时间内反驳消息可以覆盖的距离是虚假消息的 k 倍）",
-            "formal": "dis(r', v) ≤ k(t - t_0) for all v in V'(r', t)"
+            "name": "distance_bound",
+            "description": "假消息从节点 r 传播到距离不超过 t 的所有节点，即 V(r, t) = {v | dis(r, v) ≤ t}",
+            "formal": "V(r, t) = {v | dis(r, v) ≤ t}"
           },
           {
-            "name": "tree_structure",
-            "description": "消息传播和反驳发生在一棵树上，树有 n 个节点和 n-1 条边",
-            "formal": "G = (V, E), |V| = n, |E| = n - 1"
+            "name": "operation_limit",
+            "description": "反驳消息从节点 r' 传播到距离不超过 k(t - t0) 的所有节点，即 V'(r', t) = {v | dis(r', v) ≤ k(t - t0)}",
+            "formal": "V'(r', t) = {v | dis(r', v) ≤ k(t - t0)}"
+          },
+          {
+            "name": "coverage",
+            "description": "反驳消息必须覆盖所有被假消息覆盖的节点，即 V(r, t) ⊆ V'(r', t)",
+            "formal": "V(r, t) ⊆ V'(r', t)"
           }
         ]
       }
@@ -51,8 +55,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求满足条件的最早时间"
+        "type": "minimize_value",
+        "description": "求满足覆盖条件的最小时间"
       }
     }
   ],
@@ -61,9 +65,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，即在树上选择一个节点作为起点进行反驳时，该节点的选择和反驳速度k决定了整个反驳过程的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "传播时间的单调性：随着反驳速度k的增加，最早完全覆盖假新闻的时间单调不增",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：对于任意给定的k值，找到最早的t使得V(r,t)⊆V'(r',t)，可以分解为在树上寻找满足条件的最远节点的问题",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个节点到另一个节点的状态转移（即消息或反驳信息的传播）遵循固定的规则，且该规则在整个算法执行过程中保持一致",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

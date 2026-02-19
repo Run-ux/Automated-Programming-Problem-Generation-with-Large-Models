@@ -1,0 +1,88 @@
+{
+  "problem_id": "CF1439D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500
+        },
+        "value_range": {
+          "min": 1,
+          "max": 500
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "每个计算机最多只能被一个参与者占用"
+          },
+          {
+            "name": "ordering",
+            "description": "参与者按顺序进入房间，且每个参与者必须找到一个未被占用的计算机坐下"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "参与者从指定方向进入房间，并在遇到第一个未被占用的计算机时坐下"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "计算所有满足条件的 (a, b) 对应的参与者疯狂值之和"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求所有满足条件的方案中，特定指标（参与者疯狂度总和）的总和，并对给定的质数取模"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "参与者进入房间的方向和顺序决定了他们最终坐下的位置，且每个参与者在找到空位前会一直沿着一个方向前进。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的解可以通过子问题的解来构建。具体来说，对于每一个参与者，其最终坐下的位置取决于之前所有参与者的安排。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "随着每个参与者的进入，房间的状态（哪些计算机被占用）会发生变化，但这种变化是确定性的，并且只依赖于当前状态和新进入的参与者。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

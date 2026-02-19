@@ -1,0 +1,157 @@
+{
+  "problem_id": "P1456",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 32768
+          },
+          "properties": {
+            "weighted": true,
+            "connected": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 32768
+    },
+    "properties": {
+      "weighted": true,
+      "connected": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "exclusion",
+        "description": "两个节点之间不能存在边（即两个猴子不能互相认识）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connected_components",
+        "description": "通过合并操作将两个节点及其所有相关联的节点合并到同一个集合中（即两个猴子及其朋友在冲突后互相认识）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "halving_operation",
+        "description": "节点的值在特定操作后减半（即猴子的强力度在决斗后减半）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "maximum_value_constraint",
+        "description": "查询集合中的最大值（即查询猴子及其朋友中最强的猴子的强力度）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "exclusion",
+              "description": "两个节点之间不能存在边（即两个猴子不能互相认识）"
+            },
+            {
+              "name": "connected_components",
+              "description": "通过合并操作将两个节点及其所有相关联的节点合并到同一个集合中（即两个猴子及其朋友在冲突后互相认识）"
+            },
+            {
+              "name": "halving_operation",
+              "description": "节点的值在特定操作后减半（即猴子的强力度在决斗后减半）"
+            },
+            {
+              "name": "maximum_value_constraint",
+              "description": "查询集合中的最大值（即查询猴子及其朋友中最强的猴子的强力度）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求每次冲突后，如果两只猴子不认识，则输出它们及其朋友中最强的猴子在决斗后的力量值"
+        }
+      }
+    ],
+    "description": "求每次冲突后，如果两只猴子不认识，则输出它们及其朋友中最强的猴子在决斗后的力量值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "disjoint_set_union",
+        "description": "并查集维护连通性：冲突后，两只猴子及其朋友形成一个连通分量，后续冲突中可以直接判断是否在同一分量内",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "强度值单调递减：每次决斗后，参与决斗的最强猴子的强度值减半，强度值不会增加",
+        "confidence": "1/1",
+        "properties": {
+          "strength_decrease": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个连通分量中的最强猴子是该分量内的局部最优解，合并后的连通分量的最强猴子可以通过比较两个分量的最强猴子得到",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "disjoint_set_union",
+              "description": "并查集维护连通性：冲突后，两只猴子及其朋友形成一个连通分量，后续冲突中可以直接判断是否在同一分量内",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "强度值单调递减：每次决斗后，参与决斗的最强猴子的强度值减半，强度值不会增加",
+              "properties": {
+                "strength_decrease": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个连通分量中的最强猴子是该分量内的局部最优解，合并后的连通分量的最强猴子可以通过比较两个分量的最强猴子得到",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

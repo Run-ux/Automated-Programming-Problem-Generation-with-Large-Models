@@ -2,24 +2,25 @@
   "problem_id": "CF113D",
   "source": "codeforces",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 1,
             "max": 22
           },
           "value_range": {
             "min": 0,
-            "max": 21
+            "max": 0
           },
           "properties": {
-            "connected": true
+            "connected": true,
+            "weighted": false
           }
         }
       }
@@ -30,37 +31,38 @@
     },
     "value_range": {
       "min": 0,
-      "max": 21
+      "max": 0
     },
     "properties": {
-      "connected": true
+      "connected": true,
+      "weighted": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图必须连通，即从任意节点可以到达其他所有节点",
+        "name": "connectivity",
+        "description": "图必须连通，即从任意一个节点可以到达其他所有节点",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "每个节点有概率 p_i 保持不动，否则等概率选择相邻节点进行转移",
+        "name": "acyclicity",
+        "description": "图中没有重边和自环，即每对节点之间最多只有一条边且没有自环",
         "confidence": "1/1"
       },
       {
-        "name": "pairwise_interaction_constraint",
-        "description": "两个个体在相同节点相遇时视为相遇事件发生",
+        "name": "probability_distribution",
+        "description": "每个节点有一个停留概率 p_i，表示在该节点停留的概率，且 0.01 ≤ p_i ≤ 0.99",
         "confidence": "1/1"
       },
       {
-        "name": "edge_exclusion_constraint",
-        "description": "边（走廊）上不能发生相遇事件",
+        "name": "adjacency_relation",
+        "description": "相邻节点之间的转移是等概率的，即如果节点 i 有 k 个邻居，则转移到每个邻居的概率为 (1 - p_i) / k",
         "confidence": "1/1"
       },
       {
-        "name": "parallel_operation",
-        "description": "两个个体同时行动，且行动独立",
+        "name": "intersection_constraint",
+        "description": "两个节点同时出现在同一个节点时视为相遇，即两个节点在同一时刻选择进入同一个房间",
         "confidence": "1/1"
       }
     ],
@@ -71,24 +73,24 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "图必须连通，即从任意节点可以到达其他所有节点"
+              "name": "connectivity",
+              "description": "图必须连通，即从任意一个节点可以到达其他所有节点"
             },
             {
-              "name": "adjacent_difference",
-              "description": "每个节点有概率 p_i 保持不动，否则等概率选择相邻节点进行转移"
+              "name": "acyclicity",
+              "description": "图中没有重边和自环，即每对节点之间最多只有一条边且没有自环"
             },
             {
-              "name": "pairwise_interaction_constraint",
-              "description": "两个个体在相同节点相遇时视为相遇事件发生"
+              "name": "probability_distribution",
+              "description": "每个节点有一个停留概率 p_i，表示在该节点停留的概率，且 0.01 ≤ p_i ≤ 0.99"
             },
             {
-              "name": "edge_exclusion_constraint",
-              "description": "边（走廊）上不能发生相遇事件"
+              "name": "adjacency_relation",
+              "description": "相邻节点之间的转移是等概率的，即如果节点 i 有 k 个邻居，则转移到每个邻居的概率为 (1 - p_i) / k"
             },
             {
-              "name": "parallel_operation",
-              "description": "两个个体同时行动，且行动独立"
+              "name": "intersection_constraint",
+              "description": "两个节点同时出现在同一个节点时视为相遇，即两个节点在同一时刻选择进入同一个房间"
             }
           ]
         }
@@ -96,36 +98,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "maximize_probability",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "计算每个节点作为相遇点的概率"
+          "type": "maximize_probability",
+          "description": "求每个房间作为相遇点的概率"
         }
       }
     ],
-    "description": "计算每个节点作为相遇点的概率"
+    "description": "求每个房间作为相遇点的概率"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在每一步中，两个角色的状态转移概率仅依赖于当前状态和转移规则，且转移规则在整个过程中保持一致。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "flow_conservation",
+        "description": "流守恒：在每个房间（节点）上，进入该房间的概率总和等于离开该房间的概率总和加上留在该房间的概率。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个房间的相遇概率计算可以视为独立的子问题，这些子问题可以通过动态规划或递归方法解决。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "当前状态的概率只依赖于前一时刻所有可能状态的概率，满足马尔可夫性质",
-          "properties": {
-            "markov_property": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在每一步中，两个角色的状态转移概率仅依赖于当前状态和转移规则，且转移规则在整个过程中保持一致。",
+              "properties": {}
+            },
+            {
+              "name": "flow_conservation",
+              "description": "流守恒：在每个房间（节点）上，进入该房间的概率总和等于离开该房间的概率总和加上留在该房间的概率。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个房间的相遇概率计算可以视为独立的子问题，这些子问题可以通过动态规划或递归方法解决。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "当前状态的概率只依赖于前一时刻所有可能状态的概率，满足马尔可夫性质"
+    ]
   }
 }

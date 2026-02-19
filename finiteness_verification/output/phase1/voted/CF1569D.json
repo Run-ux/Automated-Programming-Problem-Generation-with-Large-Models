@@ -2,69 +2,60 @@
   "problem_id": "CF1569D",
   "source": "codeforces",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "array",
           "length": {
-            "min": 2,
-            "max": 400000
+            "min": 1,
+            "max": 1000
           },
           "value_range": {
             "min": 0,
             "max": 1000000
           },
           "properties": {
-            "directed": false,
-            "weighted": false,
-            "connected": true
+            "ordered": true
           }
         }
       }
     ],
     "length": {
-      "min": 2,
-      "max": 400000
+      "min": 1,
+      "max": 1000
     },
     "value_range": {
       "min": 0,
       "max": 1000000
     },
     "properties": {
-      "directed": false,
-      "weighted": false,
-      "connected": true
+      "ordered": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "path_weight_constraint",
+        "name": "distance_bound",
         "description": "两点之间的最短路径（仅沿街道行走）严格大于它们的曼哈顿距离",
         "confidence": "1/1"
       },
       {
-        "name": "non_collinear_point_set",
-        "description": "所有人的坐标点互不相同",
+        "name": "distinctness",
+        "description": "所有人的位置坐标是唯一的，即没有两个人在同一个位置",
         "confidence": "1/1"
       },
       {
-        "name": "weighted_graph",
-        "description": "城市可以表示为一个网格，其中垂直和水平街道覆盖整个城市",
+        "name": "range_bound",
+        "description": "城市可以表示为一个从 (0, 0) 到 (10^6, 10^6) 的网格，边界也是街道",
         "confidence": "1/1"
       },
       {
-        "name": "coordinate_fixed_point",
-        "description": "垂直街道的 x 坐标和水平街道的 y 坐标都是严格递增的，并且边界街道是固定的",
-        "confidence": "1/1"
-      },
-      {
-        "name": "vertex_repetition_permissible",
-        "description": "每个人的位置必须在某条垂直或水平街道上",
+        "name": "adjacency_relation",
+        "description": "每个人的位置必须在某条垂直或水平街道上，或者同时在两条街道的交点上",
         "confidence": "1/1"
       }
     ],
@@ -75,24 +66,20 @@
         "result": {
           "constraints": [
             {
-              "name": "path_weight_constraint",
+              "name": "distance_bound",
               "description": "两点之间的最短路径（仅沿街道行走）严格大于它们的曼哈顿距离"
             },
             {
-              "name": "non_collinear_point_set",
-              "description": "所有人的坐标点互不相同"
+              "name": "distinctness",
+              "description": "所有人的位置坐标是唯一的，即没有两个人在同一个位置"
             },
             {
-              "name": "weighted_graph",
-              "description": "城市可以表示为一个网格，其中垂直和水平街道覆盖整个城市"
+              "name": "range_bound",
+              "description": "城市可以表示为一个从 (0, 0) 到 (10^6, 10^6) 的网格，边界也是街道"
             },
             {
-              "name": "coordinate_fixed_point",
-              "description": "垂直街道的 x 坐标和水平街道的 y 坐标都是严格递增的，并且边界街道是固定的"
-            },
-            {
-              "name": "vertex_repetition_permissible",
-              "description": "每个人的位置必须在某条垂直或水平街道上"
+              "name": "adjacency_relation",
+              "description": "每个人的位置必须在某条垂直或水平街道上，或者同时在两条街道的交点上"
             }
           ]
         }
@@ -108,29 +95,63 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "统计满足特定条件的点对数量"
+          "description": "计算满足特定条件的点对数量"
         }
       }
     ],
-    "description": "统计满足特定条件的点对数量"
+    "description": "计算满足特定条件的点对数量"
   },
   "invariant": {
-    "name": "monotonic_sequence",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "坐标轴上的点按顺序排列，垂直和水平街道的坐标单调递增，保证了在处理过程中可以利用有序性进行高效计算。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "通过前缀和的方式可以高效地计算出某个区间内的不便对数量，利用端点差值计算区间贡献。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的解可以通过子问题的解来构建，即通过计算每个子区间的不便对数量来得到整个区域的不便对数量。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence",
-          "description": "双指针左右端点单调前进，区间合法性可单调维护",
-          "properties": {
-            "left_monotonic": true,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "坐标轴上的点按顺序排列，垂直和水平街道的坐标单调递增，保证了在处理过程中可以利用有序性进行高效计算。",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "通过前缀和的方式可以高效地计算出某个区间内的不便对数量，利用端点差值计算区间贡献。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "问题的解可以通过子问题的解来构建，即通过计算每个子区间的不便对数量来得到整个区域的不便对数量。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "双指针左右端点单调前进，区间合法性可单调维护"
+    ]
   }
 }

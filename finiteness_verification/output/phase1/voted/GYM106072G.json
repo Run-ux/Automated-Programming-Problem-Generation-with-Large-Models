@@ -2,14 +2,14 @@
   "problem_id": "GYM106072G",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -39,23 +39,28 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "median_positive_constraint",
-        "description": "数组的中位数必须等于给定值（A 和 B）",
+        "name": "permutation_constraint",
+        "description": "输入的数组 p 和 q 是长度为 n 的排列",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_permutation",
-        "description": "排列长度必须为奇数",
+        "name": "parity",
+        "description": "排列的长度 n 是奇数",
         "confidence": "1/1"
       },
       {
-        "name": "operation_independence",
-        "description": "每个位置只能执行一次操作",
+        "name": "mean_median_constraint",
+        "description": "需要通过操作使得排列 p 的中位数等于 A，排列 q 的中位数等于 B",
         "confidence": "1/1"
       },
       {
-        "name": "minimum_cost_constraint",
-        "description": "需要最小化操作成本",
+        "name": "operation_limit",
+        "description": "每个位置 i 只能进行一次操作",
+        "confidence": "1/1"
+      },
+      {
+        "name": "cost_constraint",
+        "description": "操作的成本在 x 到 y 之间",
         "confidence": "1/1"
       }
     ],
@@ -66,20 +71,24 @@
         "result": {
           "constraints": [
             {
-              "name": "median_positive_constraint",
-              "description": "数组的中位数必须等于给定值（A 和 B）"
+              "name": "permutation_constraint",
+              "description": "输入的数组 p 和 q 是长度为 n 的排列"
             },
             {
-              "name": "distinct_permutation",
-              "description": "排列长度必须为奇数"
+              "name": "parity",
+              "description": "排列的长度 n 是奇数"
             },
             {
-              "name": "operation_independence",
-              "description": "每个位置只能执行一次操作"
+              "name": "mean_median_constraint",
+              "description": "需要通过操作使得排列 p 的中位数等于 A，排列 q 的中位数等于 B"
             },
             {
-              "name": "minimum_cost_constraint",
-              "description": "需要最小化操作成本"
+              "name": "operation_limit",
+              "description": "每个位置 i 只能进行一次操作"
+            },
+            {
+              "name": "cost_constraint",
+              "description": "操作的成本在 x 到 y 之间"
             }
           ]
         }
@@ -87,14 +96,14 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
+          "type": "minimize_value",
           "description": "求在满足特定条件下的最小代价"
         }
       }
@@ -102,19 +111,50 @@
     "description": "求在满足特定条件下的最小代价"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在调整数组p和q以满足中位数要求时，可以将问题分解为更小规模的子问题来解决。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：对于每个位置i，选择代价最小的操作（交换或不交换），能够逐步逼近全局最优解。通过局部最优选择，最终达到整体最优。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在处理每个查询时，从当前状态到下一个状态的转移是确定且一致的，确保了算法的正确性和一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过调整数组中的元素位置来满足特定条件（如中位数要求）",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在调整数组p和q以满足中位数要求时，可以将问题分解为更小规模的子问题来解决。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：对于每个位置i，选择代价最小的操作（交换或不交换），能够逐步逼近全局最优解。通过局部最优选择，最终达到整体最优。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在处理每个查询时，从当前状态到下一个状态的转移是确定且一致的，确保了算法的正确性和一致性。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过调整数组中的元素位置来满足特定条件（如中位数要求）"
+    ]
   }
 }

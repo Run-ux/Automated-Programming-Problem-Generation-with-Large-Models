@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,12 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "reachable_position_constraint",
-            "description": "在给定时间内，从当前位置移动到目标位置的可达性约束（即在 t_i 时刻前，必须能够从上一个位置移动到 a_i 位置）",
-            "formal": "对于每个 i (1 ≤ i ≤ n)，存在 j < i 使得 |a_i - a_j| ≤ v * (t_i - t_j)"
+            "name": "reachability_constraint",
+            "description": "在给定时间内，从当前位置移动到目标位置的可达性约束（即在 t_i 时间内，可以从当前点移动到 a_i 位置）",
+            "formal": "对于每个 i, |current_position - a_i| <= v * (t_i - t_{i-1})"
           },
           {
-            "name": "non_decreasing_sequence",
+            "name": "cyclic_shift_constraint",
             "description": "时间序列严格递增约束（即踢球的时间是严格递增的）",
             "formal": "t_1 < t_2 < ... < t_n"
           }
@@ -47,7 +47,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "最大化满足条件的事件数量"
+        "description": "最大化可以监控的事件数量"
       }
     }
   ],
@@ -56,12 +56,26 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "双指针左右端点单调前进，通过维护一个时间窗口来决定是否可以监测到当前踢球事件",
-        "properties": {
-          "left_monotonic": true,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "时间序列严格递增，位置变化受限于速度约束，导致可监测的踢球事件数量随时间单调增加",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "在任意时刻的最大可监测踢球事件数依赖于之前时刻的最佳选择，即问题的最优解包含子问题的最优解",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "每一步选择当前能到达的最近的踢球事件位置，以最大化总的监测事件数，局部最优选择导致全局最优",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

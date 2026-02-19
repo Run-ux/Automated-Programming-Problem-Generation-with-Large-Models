@@ -1,0 +1,87 @@
+{
+  "problem_id": "CF138D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 20
+        },
+        "value_range": {
+          "min": 0,
+          "max": 2
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "turn_based",
+            "description": "游戏是回合制的，两名玩家轮流进行操作"
+          },
+          {
+            "name": "optimal_play",
+            "description": "对手总是采取最优策略，即在每一步都选择对自己最有利的操作"
+          },
+          {
+            "name": "state_transition",
+            "description": "每个操作会改变游戏状态，具体来说，选择一个活动单元格后，根据该单元格中的字符执行相应的操作，并将该单元格标记为非活动"
+          },
+          {
+            "name": "operation_limit",
+            "description": "当所有单元格都变为非活动时，当前玩家无法进行操作，从而输掉游戏"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种策略使得先手玩家在最优策略下能够获胜"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：当前局面的胜负状态由其所有可能的后续局面的胜负状态决定，且这些后续局面是独立的子问题。",
+            "properties": {
+              "subproblem_independence": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个玩家的操作会导致游戏状态从一个合法状态转移到另一个合法状态，且这种转移具有确定性。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：游戏的状态可以看作是一个有向无环图（DAG），其中每个节点表示一个游戏状态，边表示从一个状态到另一个状态的合法操作。最终的胜负状态可以通过拓扑排序来确定。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

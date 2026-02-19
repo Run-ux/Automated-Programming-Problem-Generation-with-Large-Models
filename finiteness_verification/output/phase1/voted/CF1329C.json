@@ -2,14 +2,14 @@
   "problem_id": "CF1329C",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1048575
@@ -39,23 +39,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "tree_structure",
-        "description": "数组构成最大堆，即对于任意 1 < i < 2^h，a[i] < a[⌊i/2⌋]",
+        "name": "distinctness",
+        "description": "数组中的所有元素必须是唯一的（去重约束）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_simple_paths",
-        "description": "数组中的所有元素都是不同的正整数",
+        "name": "ordering",
+        "description": "数组必须满足最大堆的性质，即对于任意 1 < i < 2^h，a[i] < a[⌊i/2⌋]",
         "confidence": "1/1"
       },
       {
-        "name": "bottleneck_path",
-        "description": "需要将堆的高度从 h 降低到 g，且最终剩余的 2^g-1 个元素必须位于索引 1 到 2^g-1 之间",
+        "name": "subset_constraint",
+        "description": "最终保留的元素必须位于数组的前 2^g-1 个位置",
         "confidence": "1/1"
       },
       {
-        "name": "query_count_constraint",
-        "description": "需要执行 2^h - 2^g 次操作来移除元素",
+        "name": "operation_limit",
+        "description": "必须执行 2^h - 2^g 次删除操作以减少堆的高度",
         "confidence": "1/1"
       }
     ],
@@ -66,20 +66,24 @@
         "result": {
           "constraints": [
             {
-              "name": "tree_structure",
-              "description": "数组构成最大堆，即对于任意 1 < i < 2^h，a[i] < a[⌊i/2⌋]"
+              "name": "distinctness",
+              "description": "数组中的所有元素必须是唯一的（去重约束）",
+              "formal": "|distinct(a[1:n])| = n"
             },
             {
-              "name": "distinct_simple_paths",
-              "description": "数组中的所有元素都是不同的正整数"
+              "name": "ordering",
+              "description": "数组必须满足最大堆的性质，即对于任意 1 < i < 2^h，a[i] < a[⌊i/2⌋]",
+              "formal": "∀ 1 < i < 2^h, a[i] < a[⌊i/2⌋]"
             },
             {
-              "name": "bottleneck_path",
-              "description": "需要将堆的高度从 h 降低到 g，且最终剩余的 2^g-1 个元素必须位于索引 1 到 2^g-1 之间"
+              "name": "subset_constraint",
+              "description": "最终保留的元素必须位于数组的前 2^g-1 个位置",
+              "formal": "a[1:2^g-1] ⊆ a[1:2^h-1]"
             },
             {
-              "name": "query_count_constraint",
-              "description": "需要执行 2^h - 2^g 次操作来移除元素"
+              "name": "operation_limit",
+              "description": "必须执行 2^h - 2^g 次删除操作以减少堆的高度",
+              "formal": "number of operations = 2^h - 2^g"
             }
           ]
         }
@@ -87,14 +91,14 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
+          "type": "minimize_value",
           "description": "最小化剩余元素的总和"
         }
       }
@@ -102,19 +106,50 @@
     "description": "最小化剩余元素的总和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "priority_queue_invariant",
+        "description": "堆结构不变量：在操作过程中，剩余元素始终满足最大堆的性质，即每个节点的值大于或等于其子节点的值。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，在减少堆高度的过程中，每次选择删除的元素都是为了使得最终剩余元素的和最小化。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择删除的元素都是当前情况下最优的选择，即选择删除后能使得剩余元素和最小化的元素。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在减少堆的高度过程中，每一步操作都基于当前状态下的最优选择。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "priority_queue_invariant",
+              "description": "堆结构不变量：在操作过程中，剩余元素始终满足最大堆的性质，即每个节点的值大于或等于其子节点的值。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，在减少堆高度的过程中，每次选择删除的元素都是为了使得最终剩余元素的和最小化。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择删除的元素都是当前情况下最优的选择，即选择删除后能使得剩余元素和最小化的元素。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在减少堆的高度过程中，每一步操作都基于当前状态下的最优选择。"
+    ]
   }
 }

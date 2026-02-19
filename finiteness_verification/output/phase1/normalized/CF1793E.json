@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 300000
@@ -15,7 +15,9 @@
           "min": 1,
           "max": 300000
         },
-        "properties": {}
+        "properties": {
+          "ordered": false
+        }
       }
     }
   ],
@@ -26,14 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "constraint_satisfaction",
-            "description": "每个元素的满意度要求必须被满足（即至少有 a_i 个元素选择相同的值）",
-            "formal": "对于每个 i，需要至少 a_i 个 j 使得 A[j] = A[i]"
+            "name": "frequency_bound",
+            "description": "每个元素的频次必须满足给定的下界（即每个读者需要至少 a_j 个读者阅读同一本书）",
+            "formal": "对于每个 j，满足 count(book[j]) >= a[j]"
           },
           {
-            "name": "value_range_coverage",
-            "description": "所有可能的值必须被覆盖（即每个书都必须有人读）",
-            "formal": "对于每个 k_j，需要恰好 k_j 个不同的 A[i]"
+            "name": "partition",
+            "description": "所有元素必须被划分到 k 个非空子集中（即每本书必须有人读）",
+            "formal": "将 n 个读者划分为 k 个非空子集"
           }
         ]
       }
@@ -45,7 +47,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "最大化满足条件的元素数量"
+        "description": "最大化满足条件的读者数量"
       }
     }
   ],
@@ -54,11 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题的解都是独立且最优的。",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个子问题的解都是全局最优解的一部分。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：通过局部最优选择（如优先满足要求读者最多的书籍分配）可以逐步构建全局最优解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

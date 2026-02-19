@@ -1,0 +1,92 @@
+{
+  "problem_id": "GYM105839I",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": -1,
+          "max": 1
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "maximum_destruction_count",
+            "description": "连续失败次数不超过 3 次"
+          },
+          {
+            "name": "fixed_position_constraint",
+            "description": "初始金额为 210 磅"
+          },
+          {
+            "name": "maximum_value_constraint",
+            "description": "目标金额为 1000 磅或更多"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作次数不超过 100 次"
+          },
+          {
+            "name": "budget_uniformity_constraint",
+            "description": "每次下注的金额必须是当前可用金额的一部分"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化最终金额"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "赌注金额和总金额的单调性：每次下注后，总金额在赢的情况下单调增加，在输的情况下单调减少，但不会连续减少超过三次。",
+            "properties": {
+              "total_amount_monotonic": true,
+              "bet_amount_monotonic": false
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每轮游戏后的状态（当前金额）由前一轮的状态和本轮的结果（赢或输）决定，且状态转移规则一致。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择最优的下注金额和颜色以最大化收益，局部最优选择导致全局最优。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

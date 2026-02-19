@@ -1,0 +1,79 @@
+{
+  "problem_id": "P4022",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subsequence_constraint",
+            "description": "一个01串是“熟悉”的，当且仅当它是一个标准作文库中某个串的连续子串，并且长度不少于L。",
+            "formal": "对于每个01串A，存在标准作文库中的某个串B，使得A是B的一个长度不少于L的连续子串。"
+          },
+          {
+            "name": "coverage",
+            "description": "一篇作文是“熟悉的文章”，当且仅当可以将其分割成若干段子串，其中“熟悉”的子串的长度总和不少于总长度的90%。",
+            "formal": "对于作文A，存在一种分割方式，使得所有“熟悉”的子串的长度总和 >= 0.9 * |A|。"
+          },
+          {
+            "name": "maximum_value_constraint",
+            "description": "L0是能够让作文成为“熟悉的文章”的所有L的最大值（如果不存在这样的L，则L0=0）。",
+            "formal": "L0 = max(L)，使得作文A是“熟悉的文章”。"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足条件的最长子串长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，对于一个给定的 $L$ 值，如果存在一种分割方法使得熟悉子串的总长度不少于总长度的 90%，那么这个分割方法可以由更小的子问题的最优解组合而成。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和或类似的方法，可以在常数时间内计算任意区间的熟悉子串长度总和。这使得在处理连续子串时能够高效地进行区间操作。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

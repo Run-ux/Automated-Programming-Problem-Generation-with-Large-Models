@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "directed_acyclic_graph",
+        "type": "directed_tree",
         "length": {
           "min": 1,
           "max": 100000
@@ -29,16 +29,16 @@
       "result": {
         "constraints": [
           {
-            "name": "graph_connectivity",
-            "description": "图必须连通（树结构约束）"
+            "name": "connectivity",
+            "description": "图必须连通（树结构）"
           },
           {
-            "name": "tree_structure",
-            "description": "图是具有固定方向边的树（有向无环图约束）"
+            "name": "acyclicity",
+            "description": "图中无环（树结构）"
           },
           {
-            "name": "path_existence",
-            "description": "对于每个查询，判断是否存在从 x 到 y 的路径（可达性约束）"
+            "name": "path_constraint",
+            "description": "查询的两个节点之间存在路径"
           }
         ]
       }
@@ -49,8 +49,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断两点间是否存在路径"
+        "type": "feasibility",
+        "description": "判断给定的两个顶点之间是否存在路径"
       }
     }
   ],
@@ -59,9 +59,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成。在树形结构中，从一个节点到另一个节点的路径存在性可以通过其子树中的路径信息来确定。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在有向无环图（DAG）中，节点的处理顺序满足拓扑排序的性质，即每个节点在其所有前驱节点被处理之后才被处理。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在树结构中，从根到任意叶子节点的路径是唯一的，因此每个子树的解可以独立计算，并且不会受到其他子树的影响。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

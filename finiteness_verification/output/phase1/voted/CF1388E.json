@@ -1,0 +1,149 @@
+{
+  "problem_id": "CF1388E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 2000
+          },
+          "value_range": {
+            "min": -1000000,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2000
+    },
+    "value_range": {
+      "min": -1000000,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "intersection",
+        "description": "投影在OX轴上不相交但可以接触（几何约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "orientation",
+        "description": "投影方向向量的y坐标必须小于0（几何约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distance_bound",
+        "description": "最小化最右端投影的右端点与最左端投影的左端点之间的差值（优化目标）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "intersection",
+              "description": "投影在OX轴上不相交但可以接触（几何约束）",
+              "formal": "对于所有i, j (i ≠ j)，投影区间 [xli', xri'] 和 [xlj', xrj'] 不重叠，但可以相邻"
+            },
+            {
+              "name": "orientation",
+              "description": "投影方向向量的y坐标必须小于0（几何约束）",
+              "formal": "b < 0"
+            },
+            {
+              "name": "distance_bound",
+              "description": "最小化最右端投影的右端点与最左端投影的左端点之间的差值（优化目标）",
+              "formal": "minimize (max(xr_i') - min(xl_i'))"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "最小化投影后的区间总跨度"
+        }
+      }
+    ],
+    "description": "最小化投影后的区间总跨度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "投影向量的斜率单调递增，使得投影区间的右端点随斜率增加而单调递增",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "投影区间可以通过子区间的合并来计算，确保投影不相交",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解组合得到，即最小化投影区间的总长度可以通过局部最优解组合得到",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "投影向量的斜率单调递增，使得投影区间的右端点随斜率增加而单调递增",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "投影区间可以通过子区间的合并来计算，确保投影不相交",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解可以通过子问题的最优解组合得到，即最小化投影区间的总长度可以通过局部最优解组合得到",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

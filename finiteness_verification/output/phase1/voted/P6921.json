@@ -1,0 +1,123 @@
+{
+  "problem_id": "P6921",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 2
+          },
+          "value_range": {
+            "min": 10,
+            "max": 1000000000000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 2
+    },
+    "value_range": {
+      "min": 10,
+      "max": 1000000000000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "range_bound",
+        "description": "选取的基数 b 必须使得年龄 y 在该基数下的表示只包含 0 到 9 的数字",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "range_bound",
+              "description": "选取的基数 b 必须使得年龄 y 在该基数下的表示只包含 0 到 9 的数字",
+              "formal": "∀d in digits(y_b), 0 ≤ d ≤ 9"
+            },
+            {
+              "name": "range_bound",
+              "description": "选取的基数 b 必须使得年龄 y 在该基数下的表示转换为十进制后不小于给定的下界 ℓ",
+              "formal": "y_b ≥ ℓ"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求满足条件的最大基数"
+        }
+      }
+    ],
+    "description": "求满足条件的最大基数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "搜索区间单调缩小，通过二分查找确定最大基底b",
+        "confidence": "1/1",
+        "properties": {
+          "search_interval_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，即在满足条件的最大基底b下，年龄y的表示形式是通过逐步验证每个可能的基底得到的",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "搜索区间单调缩小，通过二分查找确定最大基底b",
+              "properties": {
+                "search_interval_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，即在满足条件的最大基底b下，年龄y的表示形式是通过逐步验证每个可能的基底得到的",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

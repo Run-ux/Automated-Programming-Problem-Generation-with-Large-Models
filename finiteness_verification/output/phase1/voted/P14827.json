@@ -1,0 +1,170 @@
+{
+  "problem_id": "P14827",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "棋子必须从初始位置 (x0, 1) 移动到终点 (xi, n)，且只能通过合法的移动和传送操作。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每次操作（向上、向左、向右移动）消耗 1 个韭菜盒子，传送不消耗韭菜盒子。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每条水平线 y=t 上恰好有两个传送门，且每个传送门的 x 坐标值是整数。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "棋子在某条水平线 y=t 的某个传送门上时，可以选择传送至该水平线上的另一个传送门的位置。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "棋子必须从初始位置 (x0, 1) 移动到终点 (xi, n)，且只能通过合法的移动和传送操作。",
+              "formal": "存在路径 P 使得 (x0, 1) -> (xi, n)，且每一步操作符合规则"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每次操作（向上、向左、向右移动）消耗 1 个韭菜盒子，传送不消耗韭菜盒子。",
+              "formal": "cost(up) = cost(left) = cost(right) = 1, cost(teleport) = 0"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每条水平线 y=t 上恰好有两个传送门，且每个传送门的 x 坐标值是整数。",
+              "formal": "∀ t ∈ [1, n], ∃ a_{t,0}, a_{t,1} ∈ ℤ, a_{t,0} < a_{t,1}"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "棋子在某条水平线 y=t 的某个传送门上时，可以选择传送至该水平线上的另一个传送门的位置。",
+              "formal": "if (x, y) is on a portal, then (x, y) can teleport to the other portal on the same line"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求两点间最短路径长度"
+        }
+      }
+    ],
+    "description": "求两点间最短路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从 $(x_0, 1)$ 到 $(x_i, n)$ 的最少消耗可以由从 $(x_0, 1)$ 到 $(x_j, k)$ 和从 $(x_j, k)$ 到 $(x_i, n)$ 的最少消耗组合得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：棋子在 $y$ 轴方向上的移动是单调递增的，即每次操作后 $y$ 坐标值不会减少。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：棋子的状态（位置）通过确定的操作（向上、向左、向右或传送）进行转移，并且这些操作满足一定的约束条件。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：棋子在 $x$ 轴方向上的移动消耗可以通过区间的端点差值计算，即从 $x_1$ 移动到 $x_2$ 的消耗为 $|x_1 - x_2|$。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从 $(x_0, 1)$ 到 $(x_i, n)$ 的最少消耗可以由从 $(x_0, 1)$ 到 $(x_j, k)$ 和从 $(x_j, k)$ 到 $(x_i, n)$ 的最少消耗组合得到。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：棋子在 $y$ 轴方向上的移动是单调递增的，即每次操作后 $y$ 坐标值不会减少。",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：棋子的状态（位置）通过确定的操作（向上、向左、向右或传送）进行转移，并且这些操作满足一定的约束条件。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：棋子在 $x$ 轴方向上的移动消耗可以通过区间的端点差值计算，即从 $x_1$ 移动到 $x_2$ 的消耗为 $|x_1 - x_2|$。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

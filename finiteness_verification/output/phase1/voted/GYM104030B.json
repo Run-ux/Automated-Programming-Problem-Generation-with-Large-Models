@@ -2,14 +2,14 @@
   "problem_id": "GYM104030B",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 2,
             "max": 300000
@@ -39,13 +39,28 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "parallel_operation",
-        "description": "所有节点上的元素不能同时聚集在同一个节点上（图遍历约束）",
+        "name": "degree_bound",
+        "description": "每个节点的度数不超过 n-1（树的性质）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_permutation",
-        "description": "输出的顺序必须是节点的一个排列（全排列约束）",
+        "name": "connectivity",
+        "description": "图必须连通（树的性质）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "acyclicity",
+        "description": "图必须无环（树的性质）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "permutation_constraint",
+        "description": "输出的顺序必须是顶点的一个排列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "每一步操作后，所有蚂蚁不能同时位于同一个顶点",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +71,24 @@
         "result": {
           "constraints": [
             {
-              "name": "parallel_operation",
-              "description": "所有节点上的元素不能同时聚集在同一个节点上（图遍历约束）",
-              "formal": "∀i, j (1 ≤ i < j ≤ n), ∃v, u (v ≠ u) 使得第 i 步和第 j 步的蚂蚁不在同一节点"
+              "name": "degree_bound",
+              "description": "每个节点的度数不超过 n-1（树的性质）"
             },
             {
-              "name": "distinct_permutation",
-              "description": "输出的顺序必须是节点的一个排列（全排列约束）",
-              "formal": "p 是 [1, 2, ..., n] 的一个排列"
+              "name": "connectivity",
+              "description": "图必须连通（树的性质）"
+            },
+            {
+              "name": "acyclicity",
+              "description": "图必须无环（树的性质）"
+            },
+            {
+              "name": "permutation_constraint",
+              "description": "输出的顺序必须是顶点的一个排列"
+            },
+            {
+              "name": "state_transition",
+              "description": "每一步操作后，所有蚂蚁不能同时位于同一个顶点"
             }
           ]
         }
@@ -71,36 +96,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的顶点访问顺序"
+          "type": "feasibility",
+          "description": "判断是否存在一种顶点排列顺序，使得在按照该顺序依次访问每个顶点时，所有蚂蚁不会同时聚集在同一顶点"
         }
       }
     ],
-    "description": "构造一个满足条件的顶点访问顺序"
+    "description": "判断是否存在一种顶点排列顺序，使得在按照该顺序依次访问每个顶点时，所有蚂蚁不会同时聚集在同一顶点"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "symmetry",
+        "description": "对称性：蚂蚁在树上相遇等价于穿越，可消除个体差异",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在树结构中，存在一种顺序使得每次选择的节点不会导致所有蚂蚁汇聚到同一节点",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "当前状态只依赖于有限的前序状态，即蚂蚁在树上的分布情况仅由上一步操作决定",
-          "properties": {
-            "markov_property": true
-          }
+          "invariants": [
+            {
+              "name": "symmetry",
+              "description": "对称性：蚂蚁在树上相遇等价于穿越，可消除个体差异",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在树结构中，存在一种顺序使得每次选择的节点不会导致所有蚂蚁汇聚到同一节点",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "当前状态只依赖于有限的前序状态，即蚂蚁在树上的分布情况仅由上一步操作决定"
+    ]
   }
 }

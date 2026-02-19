@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -15,7 +15,9 @@
           "min": 0,
           "max": 1000000000
         },
-        "properties": {}
+        "properties": {
+          "ordered": false
+        }
       }
     }
   ],
@@ -26,18 +28,18 @@
       "result": {
         "constraints": [
           {
-            "name": "bitwise_and_constraint",
-            "description": "只有当两个整数的按位与结果为0时，才计入求和项",
+            "name": "bitwise_and_zero_constraint",
+            "description": "仅当 i 和 j 的按位与结果为 0 时，才计入求和项",
             "formal": "i & j == 0"
           },
           {
             "name": "logarithmic_sum_constraint",
-            "description": "求和项是基于对数函数的值进行计算",
-            "formal": "floor(log2(i + j) + 1)"
+            "description": "求和项为 ⌊log₂(i + j) + 1⌋，其中 i 和 j 满足按位与为 0 的条件",
+            "formal": "⌊log₂(i + j) + 1⌋"
           },
           {
-            "name": "modulo_arithmetic_constraint",
-            "description": "最终结果需要取模 10^9 + 7",
+            "name": "modular_arithmetic",
+            "description": "最终结果需要对 10^9 + 7 取模",
             "formal": "result % (10^9 + 7)"
           }
         ]
@@ -49,8 +51,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "计算满足特定条件的点对数量"
+        "type": "enumeration",
+        "description": "求满足条件的元素对数，并计算每个元素对对应的值的总和"
       }
     }
   ],
@@ -59,12 +61,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，满足动态规划的基本性质",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，满足动态规划的基本性质",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过端点差值计算区间的贡献，适用于前缀和等技术",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

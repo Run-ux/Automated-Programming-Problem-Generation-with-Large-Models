@@ -1,0 +1,75 @@
+{
+  "problem_id": "P13336",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "directed_graph",
+        "length": {
+          "min": 2,
+          "max": 100
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100
+        },
+        "properties": {
+          "connected": true,
+          "directed": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "路径约束：从每个节点出发的路径选择取决于访问该节点的次数。奇数次访问时必须选择左路径，偶数次访问时必须选择右路径。",
+            "formal": "对于节点 i 的第 k 次访问，如果 k 是奇数，则选择 L_i；如果 k 是偶数，则选择 R_i。"
+          },
+          {
+            "name": "acyclicity",
+            "description": "无环性：所有路径都是单向的，且不能形成环路，否则将无法到达目标节点 N。",
+            "formal": "图中不存在有向环。"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求从起点到终点的最短路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态到另一个状态的转移规则是确定且一致的，即每次访问某个节点时，根据访问次数的奇偶性决定走左路径还是右路径。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在有向无环图（DAG）中，存在一种顺序使得每个节点在其所有后继节点之前被访问。本题中，从起点到终点的路径形成了一种隐含的拓扑序。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

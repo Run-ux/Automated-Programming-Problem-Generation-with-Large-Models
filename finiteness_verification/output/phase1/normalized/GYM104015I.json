@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "tree",
         "length": {
           "min": 2,
           "max": 200000
@@ -28,16 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "bipartite_matching",
-            "description": "图的顶点集可以被划分为两个不相交的子集，每个子集内的顶点互不相邻（二分图约束）"
+            "name": "bipartiteness",
+            "description": "图必须是二分图（即可以将顶点分为两个不相交的集合，使得每条边连接不同集合中的顶点）"
           },
           {
-            "name": "equal_segment_length",
-            "description": "两个子集的顶点数量相等（等分约束）"
+            "name": "degree_bound",
+            "description": "每个顶点的度数为1或2（即每个顶点最多只能有一个相邻顶点颜色不同）"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "两个子集之间恰好有一条边连接（单跨边约束）"
+            "name": "subset_constraint",
+            "description": "顶点集必须被划分为两个等大的子集（即一半顶点涂成黑色，另一半顶点涂成白色）"
           }
         ]
       }
@@ -48,8 +48,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在一种二分图着色方案，使得两种颜色的顶点数量相等且仅有一条边连接不同颜色的顶点"
+        "type": "feasibility",
+        "description": "判断是否存在一种二分图着色方案，使得每种颜色的顶点数相等且仅有一条边连接不同颜色的顶点"
       }
     }
   ],
@@ -58,11 +58,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：树的任意子树的合法着色方案可以组合成整个树的合法着色方案",
-        "properties": {
-          "subtree_independence": true
-        }
+        "invariants": [
+          {
+            "name": "bipartite_graph_property",
+            "description": "二分图划分：树的顶点可以被划分为两个独立集，使得每个边恰好连接两个不同集合中的顶点",
+            "properties": {}
+          },
+          {
+            "name": "partition_balance",
+            "description": "平衡约束：两个独立集的大小相等，且仅有一个跨集边",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

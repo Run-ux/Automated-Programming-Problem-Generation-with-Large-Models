@@ -1,0 +1,86 @@
+{
+  "problem_id": "P14080",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通"
+          },
+          {
+            "name": "undirected_graph",
+            "description": "图是无向图"
+          },
+          {
+            "name": "weighted_edges",
+            "description": "图的边有权重"
+          },
+          {
+            "name": "spanning_constraint",
+            "description": "移除某条边后，如果图不再连通，则最小生成树不存在"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求移除每条边后图的最小生成树中所有边的边权和，若不存在则输出-1"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最小生成树的解包含子问题的最优解，即移除某条边后的最小生成树可以通过原图的最小生成树和该边的信息推导得出",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在构建最小生成树的过程中，每次选择当前权值最小且不形成环的边，这种局部最优选择能够导致全局最优解",
+            "properties": {}
+          },
+          {
+            "name": "matroid_exchange",
+            "description": "拟阵交换性：在最小生成树算法中，如果一条边不在当前最小生成树中，但加入后会形成环，则可以用这条边替换环中的某条边，保持生成树的最小性",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "problem_id": "CF1404C",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 300000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "prefix_suffix_elimination",
+            "description": "可以移除数组中满足 a[i] = i 的元素，移除后剩余部分拼接在一起。",
+            "formal": "For each i, if a[i] = i, remove a[i] and concatenate the remaining parts."
+          },
+          {
+            "name": "range_bound",
+            "description": "数组的权重定义为可以移除的最大元素数量。",
+            "formal": "Weight of a = max number of elements that can be removed."
+          },
+          {
+            "name": "independence",
+            "description": "每个查询是独立的，即每次查询的结果不影响其他查询。",
+            "formal": "Each query (x, y) is independent of others."
+          },
+          {
+            "name": "operation_limit",
+            "description": "在每次查询中，将前 x 个元素和后 y 个元素替换为 n+1，使其无法被移除。",
+            "formal": "Replace the first x elements and the last y elements with n+1, making them impossible to remove."
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化可移除元素的数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的最优解来构建，即在处理每个查询时，可以利用已计算的子数组的最优解来推导当前查询的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "prefix_decomposability",
+            "description": "前缀可分解性：对于每个查询，可以通过前缀和后缀的处理结果来分解和合并，从而高效地计算出答案。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

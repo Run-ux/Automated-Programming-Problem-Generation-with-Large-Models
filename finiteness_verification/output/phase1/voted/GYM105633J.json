@@ -2,14 +2,14 @@
   "problem_id": "GYM105633J",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1000
@@ -19,7 +19,7 @@
             "max": 100000
           },
           "properties": {
-            "inferred": true
+            "ordered": false
           }
         }
       }
@@ -33,24 +33,24 @@
       "max": 100000
     },
     "properties": {
-      "inferred": true
+      "ordered": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "total_sum_constraint",
-        "description": "选取元素的权重和必须等于预定总重量",
+        "name": "sum_constraint",
+        "description": "选取元素的权重和必须等于预定总重量 s",
         "confidence": "1/1"
       },
       {
-        "name": "interval_constraint",
+        "name": "range_bound",
         "description": "每个元素的实际值在给定范围内",
         "confidence": "1/1"
       },
       {
-        "name": "minimum_error_constraint",
-        "description": "最小化最大误差，即实际值与目标值的最大绝对差",
+        "name": "minimize_max_error",
+        "description": "最小化最大误差，即实际值与目标值的最大差值",
         "confidence": "1/1"
       }
     ],
@@ -61,18 +61,18 @@
         "result": {
           "constraints": [
             {
-              "name": "total_sum_constraint",
-              "description": "选取元素的权重和必须等于预定总重量",
+              "name": "sum_constraint",
+              "description": "选取元素的权重和必须等于预定总重量 s",
               "formal": "sum(a_i * x_i) = s, 其中 0 <= x_i <= 1"
             },
             {
-              "name": "interval_constraint",
+              "name": "range_bound",
               "description": "每个元素的实际值在给定范围内",
-              "formal": "l_i / M * a_i <= y_i <= r_i / M * a_i, 其中 y_i 是第 i 个元素的实际值"
+              "formal": "l_i / M * a_i <= y_i <= r_i / M * a_i"
             },
             {
-              "name": "minimum_error_constraint",
-              "description": "最小化最大误差，即实际值与目标值的最大绝对差",
+              "name": "minimize_max_error",
+              "description": "最小化最大误差，即实际值与目标值的最大差值",
               "formal": "minimize(max(|y_a - y_t|)), 其中 y_a 在 [sum(l_i * x_i), sum(r_i * x_i)] 范围内"
             }
           ]
@@ -81,34 +81,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求最小化最大误差值"
+          "type": "minimize_value",
+          "description": "最小化最大误差"
         }
       }
     ],
-    "description": "求最小化最大误差值"
+    "description": "最小化最大误差"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即混合溶液中YY的实际含量误差最小值可以通过考虑每个容器的贡献来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：每个容器对最终混合溶液中YY含量的贡献是线性的，可以将各个容器的贡献累加起来计算总含量。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题的解是独立且最优的",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即混合溶液中YY的实际含量误差最小值可以通过考虑每个容器的贡献来确定。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：每个容器对最终混合溶液中YY含量的贡献是线性的，可以将各个容器的贡献累加起来计算总含量。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题的解是独立且最优的"
+    ]
   }
 }

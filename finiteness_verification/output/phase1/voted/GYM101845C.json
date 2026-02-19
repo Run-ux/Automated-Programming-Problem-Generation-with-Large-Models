@@ -1,0 +1,136 @@
+{
+  "problem_id": "GYM101845C",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 50000
+          },
+          "value_range": {
+            "min": 33,
+            "max": 126
+          },
+          "properties": {
+            "weighted": true,
+            "directed": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 50000
+    },
+    "value_range": {
+      "min": 33,
+      "max": 126
+    },
+    "properties": {
+      "weighted": true,
+      "directed": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_cost",
+        "description": "每个字符转换到另一个字符有特定的成本，且成本为正整数。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "injective_mapping",
+        "description": "每个字符只能转换为一个不同的字符，不能转换为自身。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "existence_requirement",
+        "description": "如果无法通过给定的字符转换规则将原始字符串转换为目标字符串，则输出 -1。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_cost",
+              "description": "每个字符转换到另一个字符有特定的成本，且成本为正整数。",
+              "formal": "cost(a, b) > 0 for all a, b in ASCII where a ≠ b"
+            },
+            {
+              "name": "injective_mapping",
+              "description": "每个字符只能转换为一个不同的字符，不能转换为自身。",
+              "formal": "a ≠ b for all (a, b) in transformation pairs"
+            },
+            {
+              "name": "existence_requirement",
+              "description": "如果无法通过给定的字符转换规则将原始字符串转换为目标字符串，则输出 -1。",
+              "formal": "if no valid sequence of transformations exists, output -1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求从初始状态到目标状态的最小代价"
+        }
+      }
+    ],
+    "description": "求从初始状态到目标状态的最小代价"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：原问题的最优解可以通过子问题的最优解组合得到，每个字符转换的最小成本可以独立计算并累加。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个字符的转换成本计算是独立的，不受其他字符转换的影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：原问题的最优解可以通过子问题的最优解组合得到，每个字符转换的最小成本可以独立计算并累加。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个字符的转换成本计算是独立的，不受其他字符转换的影响。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

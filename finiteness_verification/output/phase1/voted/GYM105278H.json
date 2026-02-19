@@ -2,24 +2,21 @@
   "problem_id": "GYM105278H",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 20
           },
-          "value_range": {
-            "min": -1000000000,
-            "max": 1000000000
-          },
+          "value_range": {},
           "properties": {
-            "ordered": false
+            "charset": "a-z"
           }
         }
       }
@@ -28,29 +25,26 @@
       "min": 1,
       "max": 20
     },
-    "value_range": {
-      "min": -1000000000,
-      "max": 1000000000
-    },
+    "value_range": {},
     "properties": {
-      "ordered": false
+      "charset": "a-z"
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "state_transition_constraint",
-        "description": "根据当前值和增量计算新值，判断是否达到新的状态（等级）",
+        "name": "state_transition",
+        "description": "根据当前状态和变化量确定新的状态（根据当前评分和变化量确定新的评分）",
         "confidence": "1/1"
       },
       {
-        "name": "path_boundary_crossing",
-        "description": "每个状态（等级）有明确的上下界，新值必须落在某个状态范围内才能触发状态转换",
+        "name": "range_bound",
+        "description": "新状态必须在有效范围内（新评分必须在有效的评分范围内）",
         "confidence": "1/1"
       },
       {
-        "name": "state_transition_constraint",
-        "description": "只有当第一次达到某个状态时才进行状态转换（获得徽章），否则不进行转换",
+        "name": "existence_requirement",
+        "description": "只有当首次达到某个状态时才进行处理（只有当用户首次达到某个评分等级时才发放徽章）",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +55,19 @@
         "result": {
           "constraints": [
             {
-              "name": "state_transition_constraint",
-              "description": "根据当前值和增量计算新值，判断是否达到新的状态（等级）",
-              "formal": "new_value = current_value + delta; if (new_value in new_state_range) then transition_to_new_state"
+              "name": "state_transition",
+              "description": "根据当前状态和变化量确定新的状态（根据当前评分和变化量确定新的评分）",
+              "formal": "new_state = current_state + delta"
             },
             {
-              "name": "path_boundary_crossing",
-              "description": "每个状态（等级）有明确的上下界，新值必须落在某个状态范围内才能触发状态转换",
-              "formal": "for each state S, lower_bound(S) <= new_value < upper_bound(S)"
+              "name": "range_bound",
+              "description": "新状态必须在有效范围内（新评分必须在有效的评分范围内）",
+              "formal": "min_rating <= new_state <= max_rating"
             },
             {
-              "name": "state_transition_constraint",
-              "description": "只有当第一次达到某个状态时才进行状态转换（获得徽章），否则不进行转换",
-              "formal": "if (new_value in new_state_range and not previously_achieved(new_state)) then transition_to_new_state"
+              "name": "existence_requirement",
+              "description": "只有当首次达到某个状态时才进行处理（只有当用户首次达到某个评分等级时才发放徽章）",
+              "formal": "if (new_state in [rank1, rank2, ...] and not achieved_before) then process()"
             }
           ]
         }
@@ -81,37 +75,58 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否达到新的等级"
+          "type": "feasibility",
+          "description": "判断是否满足条件并输出特定结果"
         }
       }
     ],
-    "description": "判断是否达到新的等级"
+    "description": "判断是否满足条件并输出特定结果"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "用户评级随评分单调递增，新的评级不会低于当前评级",
+        "confidence": "1/1",
+        "properties": {
+          "rating_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "用户评级状态转移的一致性，根据当前评分和变化量确定新的评级",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "状态转移方向受限（仅向右/向上），满足单调性：用户的当前评级和最大评级随时间非严格递增",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "用户评级随评分单调递增，新的评级不会低于当前评级",
+              "properties": {
+                "rating_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "用户评级状态转移的一致性，根据当前评分和变化量确定新的评级",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "状态转移方向受限（仅向右/向上），满足单调性：用户的当前评级和最大评级随时间非严格递增"
+    ]
   }
 }

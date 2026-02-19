@@ -6,14 +6,19 @@
   "result": {
     "constraints": [
       {
-        "name": "dependency_order",
-        "description": "节点的访问顺序必须满足依赖关系（拓扑排序约束）",
-        "formal": "对于每个节点 i，如果 a_i > 0，则节点 a_i 必须在节点 i 之前被访问"
+        "name": "degree_upper_bound",
+        "description": "每个节点的出度不超过 1（每个课程最多是另一个课程的先修课）",
+        "formal": "∀i, out_degree(i) ≤ 1"
       },
       {
         "name": "capacity_constraint",
-        "description": "每组选取元素数量不超过 K（容量上限约束）",
-        "formal": "每组课程数量 |S| <= k"
+        "description": "每学期选择的课程数量不超过 k（每学期最多选 k 门课）",
+        "formal": "∀semester, |courses_in_semester| ≤ k"
+      },
+      {
+        "name": "ordering",
+        "description": "课程之间存在先修关系，必须按顺序完成（拓扑排序约束）",
+        "formal": "对于所有 (u, v) ∈ prerequisites, u 必须在 v 之前完成"
       }
     ]
   },

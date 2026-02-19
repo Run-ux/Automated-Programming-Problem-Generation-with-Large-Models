@@ -1,0 +1,134 @@
+{
+  "problem_id": "P14203",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 3000000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 10000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 3000000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 10000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "majority_element_constraint",
+        "description": "区间内绝对众数的值，即出现次数超过区间长度一半的元素。若不存在，则该值为一个极大常数。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "k_mex_constraint",
+        "description": "区间内的 mex 值，即最小的不存在于该区间的自然数。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "求所有满足 mex(l, r) ≥ f(l, r) 的区间 (l, r) 的数量。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "majority_element_constraint",
+              "description": "区间内绝对众数的值，即出现次数超过区间长度一半的元素。若不存在，则该值为一个极大常数。",
+              "formal": "f(l, r) = argmax_{x in {a_l, ..., a_r}} count(x) if count(x) > (r - l + 1) / 2 else 10^100"
+            },
+            {
+              "name": "k_mex_constraint",
+              "description": "区间内的 mex 值，即最小的不存在于该区间的自然数。",
+              "formal": "mex(l, r) = min({x in N | x ∉ {a_l, ..., a_r}})"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "求所有满足 mex(l, r) ≥ f(l, r) 的区间 (l, r) 的数量。",
+              "formal": "sum_{l=1}^{n} sum_{r=l}^{n} [mex(l, r) >= f(l, r)]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求满足条件的子数组数量"
+        }
+      }
+    ],
+    "description": "求满足条件的子数组数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即大区间的结果依赖于小区间的结果。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：区间的某些性质（如绝对众数和mex值）可以通过子区间的性质合并得到。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即大区间的结果依赖于小区间的结果。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：区间的某些性质（如绝对众数和mex值）可以通过子区间的性质合并得到。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "problem_id": "CF1083C",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 199999
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "permutation_constraint",
+            "description": "节点上的值构成一个排列，即每个节点的值是唯一的且在 [0, n-1] 范围内",
+            "formal": "p 是一个从 0 到 n-1 的排列"
+          },
+          {
+            "name": "acyclicity",
+            "description": "给定的图是一个树结构，即连通无环图，根节点为 1",
+            "formal": "G 是一棵以 1 为根的树"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径 l 是树中的一条简单路径，路径上的节点集合 V(l) 包含路径上所有节点的值",
+            "formal": "l 是树中的一条简单路径，V(l) = { p[u_1], p[u_2], ..., p[u_k] }"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "MEX(S) 函数定义为不在集合 S 中的最小非负整数",
+            "formal": "MEX(S) = min { x | x ∉ S, x ≥ 0 }"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "对于类型 2 查询，需要找到所有可能路径 l 的 MEX(V(l)) 的最大值",
+            "formal": "查询类型 2: max { MEX(V(l)) | l 是树中的一条简单路径 }"
+          },
+          {
+            "name": "operation_type",
+            "description": "对于类型 1 查询，可以交换两个节点上的值",
+            "formal": "查询类型 1: 交换 p[i] 和 p[j]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求所有可能路径上MEX值的最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最大 MEX 值可以通过子路径的 MEX 值组合得到，即树上任意路径的 MEX 可以通过其子路径的 MEX 计算得出。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：树上路径的 MEX 值可以通过其子路径的 MEX 值进行合并计算。具体来说，两条路径的 MEX 值可以通过它们的并集来确定。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理查询时，节点值的交换操作不会改变树的整体结构，但会影响路径上的 MEX 值。每次交换后，路径的 MEX 值可以通过更新后的节点值重新计算。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

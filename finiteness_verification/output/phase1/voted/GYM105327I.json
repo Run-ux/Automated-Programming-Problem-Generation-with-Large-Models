@@ -2,14 +2,14 @@
   "problem_id": "GYM105327I",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -35,13 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "edge_exclusion_constraint",
-        "description": "选取的子集不能包含特定元素（过敏原约束）",
+        "name": "subset_constraint",
+        "description": "选取的元素集合必须是给定集合的子集（即，每个食物的成分必须是给定成分的子集）",
         "confidence": "1/1"
       },
       {
-        "name": "divisor_frequency_constraint",
-        "description": "每个元素由其质因数唯一确定（食物成分分解约束）",
+        "name": "exclusion",
+        "description": "选取的元素集合不能包含某些禁止的元素（即，每个人的食物组合不能包含其过敏的成分）",
         "confidence": "1/1"
       }
     ],
@@ -52,14 +52,14 @@
         "result": {
           "constraints": [
             {
-              "name": "edge_exclusion_constraint",
-              "description": "选取的子集不能包含特定元素（过敏原约束）",
-              "formal": "对于每个查询 X_i，计算满足 ∀p ∈ prime_factors(X_i), p ∉ prime_factors(V_j) 的 V_j 子集数量"
+              "name": "subset_constraint",
+              "description": "选取的元素集合必须是给定集合的子集（即，每个食物的成分必须是给定成分的子集）",
+              "formal": "∀i, V_i ⊆ P, 其中 P 是所有基本成分的集合"
             },
             {
-              "name": "divisor_frequency_constraint",
-              "description": "每个元素由其质因数唯一确定（食物成分分解约束）",
-              "formal": "V_i = ∏_{p ∈ P} p^{e_p}, 其中 P 是质数集合，e_p 是非负整数"
+              "name": "exclusion",
+              "description": "选取的元素集合不能包含某些禁止的元素（即，每个人的食物组合不能包含其过敏的成分）",
+              "formal": "∀i, ∀j, (V_i ∩ X_j) = ∅, 其中 X_j 是第 j 个人的过敏成分集合"
             }
           ]
         }
@@ -67,37 +67,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "计算满足条件的子集数量"
+          "type": "enumeration",
+          "description": "计算满足条件的组合数（常取模）"
         }
       }
     ],
-    "description": "计算满足条件的子集数量"
+    "description": "计算满足条件的组合数（常取模）"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个食物的可组合性取决于其成分与过敏源的独立匹配情况，整体解由各独立成分的解合成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "prime_factorization_ordering",
+        "description": "质因数分解不变量：每种食物和每个人的过敏源都可以唯一地分解为一组质数及其幂次，这种分解方式在算法执行过程中保持不变。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinability": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个食物的可组合性取决于其成分与过敏源的独立匹配情况，整体解由各独立成分的解合成。",
+              "properties": {}
+            },
+            {
+              "name": "prime_factorization_ordering",
+              "description": "质因数分解不变量：每种食物和每个人的过敏源都可以唯一地分解为一组质数及其幂次，这种分解方式在算法执行过程中保持不变。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的"
+    ]
   }
 }

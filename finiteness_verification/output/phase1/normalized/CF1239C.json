@@ -1,0 +1,83 @@
+{
+  "problem_id": "CF1239C",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "只有当所有编号小于当前节点的节点都处于占用状态时，当前节点才能进行操作（顺序访问约束）"
+          },
+          {
+            "name": "exclusion",
+            "description": "在任意时刻，只有一个节点可以使用资源（互斥访问约束）"
+          },
+          {
+            "name": "ordering",
+            "description": "在多个节点同时满足条件时，编号最小的节点优先进行操作（左优先约束）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造每个乘客获得热水的时间序列"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "乘客使用水箱的时间是单调递增的，即每个乘客开始使用水箱的时间不会早于前一个乘客结束使用水箱的时间。",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "在任何时刻，只有最左侧的空闲乘客（即座位编号最小的空闲乘客）会去使用水箱。这种局部最优选择导致全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "乘客的状态（等待、使用水箱、已完成）在时间推进过程中保持一致性，状态转移符合题设规则。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

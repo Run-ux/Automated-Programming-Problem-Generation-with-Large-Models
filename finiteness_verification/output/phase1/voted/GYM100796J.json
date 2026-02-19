@@ -2,21 +2,21 @@
   "problem_id": "GYM100796J",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
           },
           "value_range": {
-            "min": 1,
-            "max": 100000
+            "min": 0,
+            "max": 2
           },
           "properties": {
             "ordered": true
@@ -29,8 +29,8 @@
       "max": 100000
     },
     "value_range": {
-      "min": 1,
-      "max": 100000
+      "min": 0,
+      "max": 2
     },
     "properties": {
       "ordered": true
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "permutation_invariant",
-        "description": "元素顺序不变（队列约束）",
+        "name": "ordering",
+        "description": "元素顺序固定，不允许交换（序列中的元素顺序在操作过程中保持不变）",
         "confidence": "1/1"
       },
       {
-        "name": "operation_independence",
-        "description": "每个时间点仅发生一次操作（单次操作约束）",
+        "name": "operation_type",
+        "description": "每次操作只能是进入或离开（每次操作只能是一个人进入或一个人离开）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_positions",
-        "description": "每个元素具有唯一索引（唯一标识约束）",
+        "name": "state_transition",
+        "description": "状态转移必须按照给定的顺序进行（操作按输入顺序依次执行，不能跳过或改变顺序）",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "permutation_invariant",
-              "description": "元素顺序不变（队列约束）",
-              "formal": "对于所有操作，队列中的元素顺序保持不变"
+              "name": "ordering",
+              "description": "元素顺序固定，不允许交换（序列中的元素顺序在操作过程中保持不变）"
             },
             {
-              "name": "operation_independence",
-              "description": "每个时间点仅发生一次操作（单次操作约束）",
-              "formal": "对于每个时间点 t，只能执行一个操作（进入或离开）"
+              "name": "operation_type",
+              "description": "每次操作只能是进入或离开（每次操作只能是一个人进入或一个人离开）"
             },
             {
-              "name": "distinct_positions",
-              "description": "每个元素具有唯一索引（唯一标识约束）",
-              "formal": "每个进入的元素都有一个唯一的索引 i，且在离开时使用该索引进行标识"
+              "name": "state_transition",
+              "description": "状态转移必须按照给定的顺序进行（操作按输入顺序依次执行，不能跳过或改变顺序）"
             }
           ]
         }
@@ -81,36 +78,62 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "minimize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "计算在每次离开操作时需要重新进入的乘客数量"
+          "type": "minimize_count",
+          "description": "求每次离开操作时需要重新进入的人数"
         }
       }
     ],
-    "description": "计算在每次离开操作时需要重新进入的乘客数量"
+    "description": "求每次离开操作时需要重新进入的人数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "乘客进入和离开的顺序是单调的，不会发生交换。进入和离开操作保持了队列的顺序不变。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false,
+          "order_preservation": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移一致性：每次操作（进入或离开）后，队列的状态可以唯一确定，并且新的状态只依赖于前一个状态和当前操作。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "当前状态只依赖于有限的前序状态，即乘客进出顺序和位置决定了后续操作的结果",
-          "properties": {
-            "dependency_on_previous_states": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "乘客进入和离开的顺序是单调的，不会发生交换。进入和离开操作保持了队列的顺序不变。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false,
+                "order_preservation": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移一致性：每次操作（进入或离开）后，队列的状态可以唯一确定，并且新的状态只依赖于前一个状态和当前操作。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "当前状态只依赖于有限的前序状态，即乘客进出顺序和位置决定了后续操作的结果"
+    ]
   }
 }

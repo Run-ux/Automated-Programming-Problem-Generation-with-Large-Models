@@ -1,0 +1,102 @@
+{
+  "problem_id": "CF1301D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 3,
+          "max": 3
+        },
+        "value_range": {
+          "min": [
+            1,
+            1,
+            1
+          ],
+          "max": [
+            500,
+            500,
+            1000000000
+          ]
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "路径长度必须等于给定的 k 千米，且不能重复经过同一条道路"
+          },
+          {
+            "name": "boundary_constraint",
+            "description": "路径不能超出网格边界"
+          },
+          {
+            "name": "operation_limit",
+            "description": "步骤数 a 不能超过 3000"
+          },
+          {
+            "name": "repetition",
+            "description": "每一步中的移动字符串 s 的长度不能超过 4，并且需要重复 f 次"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的路径"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "路径长度单调递增，每一步移动都增加总路径长度",
+            "properties": {
+              "path_length_monotonic": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移一致性，当前位置和方向的组合决定了下一步的合法移动",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量，确保不会重复访问同一个道路",
+            "properties": {
+              "no_repeated_roads": true
+            }
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量，按照网格结构的顺序进行移动，确保不违反单向道路的约束",
+            "properties": {
+              "directional_constraints": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

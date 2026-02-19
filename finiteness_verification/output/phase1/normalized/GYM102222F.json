@@ -1,0 +1,75 @@
+{
+  "problem_id": "GYM102222F",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 200
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": false,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "路径上的所有节点的权重（风险）不超过给定阈值 w",
+            "formal": "∀ (u, v) ∈ P, r[u] ≤ w 且 r[v] ≤ w"
+          },
+          {
+            "name": "path_constraint",
+            "description": "找到从起点 u 到终点 v 的最短路径",
+            "formal": "minimize ∑ d[i, j] for all (i, j) in path P from u to v"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求两点间满足特定条件的最短路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最短路径问题的解可以通过子路径的最优解组合得到，且这些子路径同样满足风险阈值约束",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个城市到另一个城市的最短路径状态可以基于已知的较短路径状态进行更新，同时保证不经过超过给定风险阈值的城市",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

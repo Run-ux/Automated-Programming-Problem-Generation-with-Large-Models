@@ -1,0 +1,85 @@
+{
+  "problem_id": "CF1307D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（任意两个节点之间存在路径）"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数有限制（每对节点之间最多有一条边）"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "特殊节点集合大小固定（k 个特殊节点）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "最短路径长度需要最大化（在添加一条边后，从起点到终点的最短路径长度应尽可能长）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化两点间最短路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最短路径问题的解可以通过子问题的最优解组合得到，即从起点到终点的最短路径可以由从起点到中间点和从中间点到终点的最短路径组成。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在求解最短路径的过程中，通过添加一条边后，新的最短路径可以通过已有的最短路径信息进行更新。具体来说，如果在两个特殊节点之间添加一条边，那么从起点到终点的最短路径可能会发生变化，但这种变化是基于已有的最短路径信息进行的。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：为了最大化最短路径，在选择添加的边时，优先考虑能够使最短路径变长的边。具体来说，选择两个特殊节点之间的边，使得这条边对最短路径的影响最大。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

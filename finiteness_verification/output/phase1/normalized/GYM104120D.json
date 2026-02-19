@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -28,12 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "operation_independence",
-            "description": "操作序列必须以类型 1 的操作开始"
+            "name": "operation_type",
+            "description": "操作类型限制（操作只能是四种类型之一）",
+            "formal": "type ∈ {1, 2, 3, 4}"
           },
           {
-            "name": "query_range_validity",
-            "description": "在类型 2、3 和 4 的操作中，引用的元素必须是之前已经添加到数组中的有效元素"
+            "name": "acyclicity",
+            "description": "操作依赖约束（某些操作依赖于之前的操作结果，且这些结果必须仍然在数组中）",
+            "formal": "对于 type = 2, 3, 4 的操作，B < i 且 B 对应的值仍在数组中"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "初始操作约束（第一个操作必须是类型 1）",
+            "formal": "第一个操作的 type = 1"
           }
         ]
       }
@@ -44,8 +51,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在满足条件的解"
+        "type": "construction",
+        "description": "对于每个查询操作，输出满足条件的值"
       }
     }
   ],
@@ -54,11 +61,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "当前状态只依赖有限的前序状态，满足动态规划的状态转移特性",
-        "properties": {
-          "finite_dependencies": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个操作根据其类型对当前状态进行更新，且更新规则一致。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：对于某些操作，可以通过已有的区间信息（如前缀和）来计算新的区间值。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个操作的处理结果只依赖于当前状态和该操作的参数，与其他操作无关。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

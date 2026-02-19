@@ -1,0 +1,149 @@
+{
+  "problem_id": "GYM106073I",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "相邻节点在坐标轴上对齐（共享 x 坐标或 y 坐标）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distance_bound",
+        "description": "每个节点的半径必须严格小于其与下一个节点的欧几里得距离",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "所有节点位于不同的点",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "相邻节点在坐标轴上对齐（共享 x 坐标或 y 坐标）",
+              "formal": "对于所有 1 ≤ i < N，(x_i = x_{i+1} 或 y_i = y_{i+1})"
+            },
+            {
+              "name": "distance_bound",
+              "description": "每个节点的半径必须严格小于其与下一个节点的欧几里得距离",
+              "formal": "对于所有 1 ≤ i < N，R_i < √((x_i - x_{i+1})^2 + (y_i - y_{i+1})^2)"
+            },
+            {
+              "name": "distinctness",
+              "description": "所有节点位于不同的点",
+              "formal": "对于所有 1 ≤ i < j ≤ N，(x_i, y_i) ≠ (x_j, y_j)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化满足条件的初始半径值"
+        }
+      }
+    ],
+    "description": "最大化满足条件的初始半径值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "双指针或滑动窗口的单调性：当前星体与下一个星体之间的距离决定了最大半径，且这个距离是单调递增的",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个星体的最大半径选择依赖于前一个星体的最大半径选择，整个序列的最优解由子问题的最优解组成",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：对于每个星体，选择尽可能大的半径，使得后续星体的选择仍然可行，局部最优选择导致全局最优",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针或滑动窗口的单调性：当前星体与下一个星体之间的距离决定了最大半径，且这个距离是单调递增的",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个星体的最大半径选择依赖于前一个星体的最大半径选择，整个序列的最优解由子问题的最优解组成",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：对于每个星体，选择尽可能大的半径，使得后续星体的选择仍然可行，局部最优选择导致全局最优",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

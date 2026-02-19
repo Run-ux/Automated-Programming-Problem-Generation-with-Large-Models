@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "tree",
         "length": {
           "min": 1,
           "max": 100000
@@ -29,16 +29,20 @@
       "result": {
         "constraints": [
           {
-            "name": "minimum_distance_constraint",
-            "description": "查询操作中，受影响的节点集合为与指定节点距离不超过给定值的所有节点"
+            "name": "acyclicity",
+            "description": "图必须是一棵树（无环连通图）"
           },
           {
-            "name": "weight_adjustment",
-            "description": "支持单点更新操作，即修改某个节点的权值"
+            "name": "distance_bound",
+            "description": "查询的范围是基于树上距离的，不超过给定的距离 k"
           },
           {
-            "name": "adaptive_interactor",
-            "description": "查询和更新操作需要在线处理，输入中的参数需异或上一次输出的结果进行解密"
+            "name": "transformation",
+            "description": "节点的值可以被更新"
+          },
+          {
+            "name": "query_limit",
+            "description": "操作具有在线性，需要异或上一次输出来解密输入"
           }
         ]
       }
@@ -50,7 +54,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "求给定点为中心，指定半径内的所有节点权值和"
+        "description": "求指定节点在给定距离内的所有节点的权值和"
       }
     }
   ],
@@ -59,9 +63,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过点分治将原树分解为多个子树，每个子树的解可以合并得到整个问题的解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：点分树结构中，每个节点的状态更新依赖于其子树的状态，且状态更新过程满足一致性。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：在处理地震影响范围时，可以通过前缀和的方式计算受影响城市的总价值，即区间和可通过端点差值计算。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：点分树的构建和查询过程中，不同子树之间的状态更新是相互独立的，不会互相干扰。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

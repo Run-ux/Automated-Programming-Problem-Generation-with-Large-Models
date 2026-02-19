@@ -1,0 +1,93 @@
+{
+  "problem_id": "GYM101246D",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "turn_based",
+            "description": "两名玩家轮流进行操作，每轮只能移动到相邻节点"
+          },
+          {
+            "name": "state_transition",
+            "description": "每个节点的状态可以是未着火、已着火或机器人所在位置，状态会随时间变化"
+          },
+          {
+            "name": "connectivity",
+            "description": "图是连通的，即任意两个节点之间存在路径"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "机器人每次只能移动到与当前节点直接相连的节点"
+          },
+          {
+            "name": "operation_limit",
+            "description": "如果机器人移动到一个已经着火的节点，则游戏结束"
+          },
+          {
+            "name": "optimal_play",
+            "description": "两名玩家都采取最优策略，避免机器人被烧毁"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "game_outcome",
+        "description": "确定在两名玩家轮流操作下，最终哪名玩家会输掉游戏"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：机器人在图上的移动和火势蔓延遵循固定的规则，每个状态的转移是确定的。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：火势蔓延的过程可以看作是从起火点（首都）开始的广度优先搜索，形成一个层次结构。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个玩家在每一步的选择都是基于当前状态下的最优决策，确保整个过程中的策略是最优的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -2,14 +2,14 @@
   "problem_id": "CF1716D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 2
@@ -19,7 +19,7 @@
             "max": 200000
           },
           "properties": {
-            "ordered": true
+            "ordered": false
           }
         }
       }
@@ -33,19 +33,19 @@
       "max": 200000
     },
     "properties": {
-      "ordered": true
+      "ordered": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "modulo_expected_value_constraint",
-        "description": "每次移动的长度必须是递增整数序列的倍数（第 i 次移动的长度必须是 (k + i - 1) 的倍数）",
+        "name": "divisibility",
+        "description": "每次移动的长度必须是递增整数的倍数（第 i 次移动的长度必须能被 k + i - 1 整除）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_simple_paths",
-        "description": "不同的路径是指访问过的坐标集合不同",
+        "name": "range_bound",
+        "description": "目标点 x 的范围在 [1, n] 内",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "modulo_expected_value_constraint",
-              "description": "每次移动的长度必须是递增整数序列的倍数（第 i 次移动的长度必须是 (k + i - 1) 的倍数）",
+              "name": "divisibility",
+              "description": "每次移动的长度必须是递增整数的倍数（第 i 次移动的长度必须能被 k + i - 1 整除）",
               "formal": "对于第 i 次移动，设移动长度为 d_i，则 d_i % (k + i - 1) == 0"
             },
             {
-              "name": "distinct_simple_paths",
-              "description": "不同的路径是指访问过的坐标集合不同",
-              "formal": "两条路径 P1 和 P2 不同当且仅当 set(P1) != set(P2)"
+              "name": "range_bound",
+              "description": "目标点 x 的范围在 [1, n] 内",
+              "formal": "x ∈ [1, n]"
             }
           ]
         }
@@ -71,37 +71,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "计算从起点到每个目标点的路径数量"
+          "type": "enumeration",
+          "description": "求从起点到每个目标点的路径方案数（取模）"
         }
       }
     ],
-    "description": "计算从起点到每个目标点的路径数量"
+    "description": "求从起点到每个目标点的路径方案数（取模）"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：到达每个点的方案数由其前驱点的方案数决定，满足动态规划的状态转移方程",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态到下一个状态的转移规则保持一致，即每次移动长度必须满足特定的整除条件",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个位置的解依赖于之前位置的解",
-          "properties": {
-            "subproblem_independence": false,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：到达每个点的方案数由其前驱点的方案数决定，满足动态规划的状态转移方程",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态到下一个状态的转移规则保持一致，即每次移动长度必须满足特定的整除条件",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个位置的解依赖于之前位置的解"
+    ]
   }
 }

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "weighted_undirected_graph",
         "length": {
           "min": 2,
           "max": 200000
@@ -29,16 +29,16 @@
       "result": {
         "constraints": [
           {
-            "name": "tree_structure",
-            "description": "图必须是树结构（连通无环）"
+            "name": "acyclicity",
+            "description": "图结构为树（无环连通图）"
           },
           {
-            "name": "node_degree_constraint",
-            "description": "每个节点最多选择一条出边作为免费边"
+            "name": "degree_bound",
+            "description": "每个节点最多选择一条出边作为免费道路"
           },
           {
-            "name": "minimum_maximum_constraint",
-            "description": "最小化所有路径中最大费用"
+            "name": "minimize_max_min_difference",
+            "description": "最小化所有路径中最大路径费用"
           }
         ]
       }
@@ -49,8 +49,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "最小化所有直接路径中最大费用"
+        "type": "min_max",
+        "description": "最小化所有路径中最大费用"
       }
     }
   ],
@@ -59,12 +59,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个城市的道路选择依赖于其子树中的最优解",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过选择每个城市的一条免费道路来最小化最大总费用。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，选择当前最优的道路作为免费道路，可以逐步构建全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "acyclic_connected_graph",
+            "description": "树结构不变量：输入的图是一个无环连通图（树），因此任何两个节点之间的路径是唯一的，这保证了算法的有效性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,87 @@
+{
+  "problem_id": "P12740",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "turn_based",
+            "description": "游戏是回合制的，两位玩家轮流行动"
+          },
+          {
+            "name": "operation_type",
+            "description": "Bajtuś 的操作是从任意一个堆中取走任意非零数量的石头；Bajtoni 的操作是从某对堆中选择一个堆，取走任意非零数量的石头，并将这些石头放入该对的另一个堆中"
+          },
+          {
+            "name": "state_transition",
+            "description": "游戏状态由每对堆中的石头数量决定，每次操作后状态发生变化"
+          },
+          {
+            "name": "optimal_play",
+            "description": "双方都采取最优策略，Bajtuś 追求最快胜利，Bajtoni 追求最长游戏时间"
+          },
+          {
+            "name": "operation_limit",
+            "description": "无法进行有效操作的玩家输掉游戏"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求在双方采取最优策略下的最大回合数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：游戏状态的转移规则保持一致，Bajtuś 和 Bajtoni 的行动分别对应不同的状态转移方式，且这些转移方式在每一步中都是确定的。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：游戏的最终结果（回合数）可以通过分解为多个子问题（每对堆的状态）来求解，每个子问题的最优解组合起来构成整体的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：Bajtuś 在每一步中选择最优策略（即尽可能快地赢得游戏），而 Bajtoni 选择最优策略以延长游戏时间。这种局部最优选择导致全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 5000
@@ -28,12 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "non_zero_count_constraint",
-            "description": "生成的数中不能包含数字0"
+            "name": "exclusion",
+            "description": "生成的数中不能包含特定数字（本题为0）"
           },
           {
-            "name": "non_decreasing_sequence",
-            "description": "生成的数必须是非递减顺序排列的最小可能值，且大于或等于原始数"
+            "name": "ordering",
+            "description": "生成的数必须大于或等于原始数，且在所有满足条件的数中最小"
           }
         ]
       }
@@ -44,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求满足条件的最小整数值"
+        "type": "minimize_value",
+        "description": "求大于或等于给定值的最小无零数"
       }
     }
   ],
@@ -54,9 +54,21 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "局部最优选择导致全局最优：通过从左到右遍历数字，找到第一个可以替换为非零且最小的数的位置，确保生成的数是大于或等于原数的最小值",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "生成的数在字典序上单调递增，确保找到的第一个满足条件的数即为最小解",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "从左到右遍历数字，遇到第一个0时，通过局部最优选择（替换为最小非零数）来构造全局最优解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

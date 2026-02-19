@@ -1,0 +1,121 @@
+{
+  "problem_id": "GYM104077J",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_size_minimum_constraint",
+        "description": "在长度为 i 的区间内最多选择 2 个元素（对于每个被选择的元素 a_i）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_size_minimum_constraint",
+              "description": "在长度为 i 的区间内最多选择 2 个元素（对于每个被选择的元素 a_i）",
+              "formal": "对于每个被选择的 a_i，任意区间 [j, j + i - 1] 内最多选择 2 个元素，其中 1 ≤ j ≤ n - i + 1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化满足条件的子序列元素和"
+        }
+      }
+    ],
+    "description": "最大化满足条件的子序列元素和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即选择元素的最大和可以通过考虑每个位置是否选择该元素及其对后续选择的影响来决定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：在计算某个区间的贡献时，可以利用前缀和等方法将区间和通过端点差值计算，从而快速求解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：动态规划中的状态转移方程保证了从一个状态到另一个状态的转换是合法且一致的，即当前状态的选择依赖于之前的状态，并且满足题目约束条件。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即选择元素的最大和可以通过考虑每个位置是否选择该元素及其对后续选择的影响来决定。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：在计算某个区间的贡献时，可以利用前缀和等方法将区间和通过端点差值计算，从而快速求解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：动态规划中的状态转移方程保证了从一个状态到另一个状态的转换是合法且一致的，即当前状态的选择依赖于之前的状态，并且满足题目约束条件。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "problem_id": "GYM100495H",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "t": {
+              "min": 1,
+              "max": 100
+            },
+            "x": {
+              "min": 0,
+              "max": 100
+            },
+            "y": {
+              "min": 0,
+              "max": 100
+            },
+            "q": {
+              "min": 97,
+              "max": 117
+            }
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "t": {
+        "min": 1,
+        "max": 100
+      },
+      "x": {
+        "min": 0,
+        "max": 100
+      },
+      "y": {
+        "min": 0,
+        "max": 100
+      },
+      "q": {
+        "min": 97,
+        "max": 117
+      }
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "相邻节点移动约束（只能向四个方向之一移动或保持不动）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "window_constraint",
+        "description": "时间窗口内收集约束（在特定时间点 t 收集对应的元素，且不能同时收集两种类型的元素）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "互斥约束（同一时间内只能收集一种类型的元素，另一种类型会污染结果）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "revisiting_allowed",
+        "description": "初始位置自由选择约束（初始时刻可以放置在任意位置）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "相邻节点移动约束（只能向四个方向之一移动或保持不动）"
+            },
+            {
+              "name": "window_constraint",
+              "description": "时间窗口内收集约束（在特定时间点 t 收集对应的元素，且不能同时收集两种类型的元素）"
+            },
+            {
+              "name": "exclusion",
+              "description": "互斥约束（同一时间内只能收集一种类型的元素，另一种类型会污染结果）"
+            },
+            {
+              "name": "revisiting_allowed",
+              "description": "初始位置自由选择约束（初始时刻可以放置在任意位置）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "最大化两种类型元素的独立收集数量"
+        }
+      }
+    ],
+    "description": "最大化两种类型元素的独立收集数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "时间 t 单调递增，杯移动方向受限（仅相邻或不动），满足 DAG 上的最优子结构",
+        "confidence": "1/1",
+        "properties": {
+          "time_monotonic": true,
+          "direction_restricted": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "在每个时间点 t 的最优解包含前一个时间点 t-1 的最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移一致性：从当前状态到下一个状态的转移规则一致，且依赖于前一状态",
+        "confidence": "1/1",
+        "properties": {
+          "consistent_transition": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "时间 t 单调递增，杯移动方向受限（仅相邻或不动），满足 DAG 上的最优子结构",
+              "properties": {
+                "time_monotonic": true,
+                "direction_restricted": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "在每个时间点 t 的最优解包含前一个时间点 t-1 的最优解",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移一致性：从当前状态到下一个状态的转移规则一致，且依赖于前一状态",
+              "properties": {
+                "consistent_transition": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

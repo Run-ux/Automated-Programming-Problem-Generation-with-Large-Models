@@ -2,14 +2,14 @@
   "problem_id": "GYM104453F",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 3,
             "max": 3
@@ -35,7 +35,7 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "polygon_convexity_constraint",
+        "name": "geometric_shape_constraint",
         "description": "输入的三个点必须构成一个非退化的三角形（即三点不共线）",
         "confidence": "1/1"
       }
@@ -47,9 +47,8 @@
         "result": {
           "constraints": [
             {
-              "name": "polygon_convexity_constraint",
-              "description": "输入的三个点必须构成一个非退化的三角形（即三点不共线）",
-              "formal": "area(triangle) > 0"
+              "name": "geometric_shape_constraint",
+              "description": "输入的三个点必须构成一个非退化的三角形（即三点不共线）"
             }
           ]
         }
@@ -72,21 +71,28 @@
     "description": "计算给定顶点的三角形面积"
   },
   "invariant": {
-    "name": "interval_mergeable",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "convexity",
+        "description": "凸性不变量：三角形的面积计算基于顶点坐标，满足几何凸性的性质",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间可合并性：通过端点坐标计算几何图形的面积，满足区间信息可通过子区间合并的性质",
-          "properties": {
-            "mergeable_by_coordinates": true
-          }
+          "invariants": [
+            {
+              "name": "convexity",
+              "description": "凸性不变量：三角形的面积计算基于顶点坐标，满足几何凸性的性质",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "区间可合并性：通过端点坐标计算几何图形的面积，满足区间信息可通过子区间合并的性质"
+    ]
   }
 }

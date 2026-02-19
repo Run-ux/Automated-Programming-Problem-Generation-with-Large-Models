@@ -1,0 +1,167 @@
+{
+  "problem_id": "CF1396C",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "每次只能重装一把枪（操作次数限制）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "相邻关卡之间可以移动（图的相邻节点关系）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "在传送过程中不能进行重装或射击操作（状态转移约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "必须先消灭所有普通怪物才能攻击 boss（有序性约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "每关的怪物集合包含一定数量的普通怪物和一个 boss（子集约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "每次只能重装一把枪（操作次数限制）"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "相邻关卡之间可以移动（图的相邻节点关系）",
+              "formal": "对于每个关卡 i (1 < i < n)，相邻关卡为 i-1 和 i+1；对于关卡 1，相邻关卡为 2；对于关卡 n，相邻关卡为 n-1"
+            },
+            {
+              "name": "state_transition",
+              "description": "在传送过程中不能进行重装或射击操作（状态转移约束）"
+            },
+            {
+              "name": "ordering",
+              "description": "必须先消灭所有普通怪物才能攻击 boss（有序性约束）"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "每关的怪物集合包含一定数量的普通怪物和一个 boss（子集约束）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求完成所有任务所需的最短时间"
+        }
+      }
+    ],
+    "description": "求完成所有任务所需的最短时间"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个阶段的最小时间可以由前一阶段的最小时间和当前阶段的操作时间决定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在解决每个阶段的问题时，选择移动到相邻阶段或留在当前阶段的操作是基于当前状态的最优决策，并且这种决策具有单调性，即一旦决定移动到下一个阶段，则不会回头处理之前的阶段。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个阶段转移到另一个阶段的过程中，状态的转移遵循一定的规则，确保了状态之间的转换是一致的。例如，只有在当前阶段的所有怪物被消灭后才能攻击boss，且在攻击boss失败后必须移动到相邻阶段。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个阶段的最小时间可以由前一阶段的最小时间和当前阶段的操作时间决定。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在解决每个阶段的问题时，选择移动到相邻阶段或留在当前阶段的操作是基于当前状态的最优决策，并且这种决策具有单调性，即一旦决定移动到下一个阶段，则不会回头处理之前的阶段。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个阶段转移到另一个阶段的过程中，状态的转移遵循一定的规则，确保了状态之间的转换是一致的。例如，只有在当前阶段的所有怪物被消灭后才能攻击boss，且在攻击boss失败后必须移动到相邻阶段。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

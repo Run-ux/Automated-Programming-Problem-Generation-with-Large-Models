@@ -1,0 +1,138 @@
+{
+  "problem_id": "GYM104454I",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 10000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 10000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subsequence_constraint",
+        "description": "在给定区间内找到最长的相同值子序列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "子序列必须完全位于给定区间内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "prefix_coverage",
+        "description": "如果有多个相同长度的子序列，选择最左边的那个（即最小的起始位置）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subsequence_constraint",
+              "description": "在给定区间内找到最长的相同值子序列",
+              "formal": "max_length(l) such that t[i] = t[i + 1] = ... = t[i + l - 1] for i in [s, s + w - 1]"
+            },
+            {
+              "name": "range_bound",
+              "description": "子序列必须完全位于给定区间内",
+              "formal": "[x, x + l - 1] ⊆ [s, s + w - 1]"
+            },
+            {
+              "name": "prefix_coverage",
+              "description": "如果有多个相同长度的子序列，选择最左边的那个（即最小的起始位置）",
+              "formal": "if multiple segments of length l, choose the one with the smallest x"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求满足条件的最长子数组长度"
+        }
+      }
+    ],
+    "description": "求满足条件的最长子数组长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即t(n)的值依赖于t(n/2)或t(3n+1)的值。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在搜索最长相同值段时，通过滑动窗口的方式，窗口的右端点单调递增。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即t(n)的值依赖于t(n/2)或t(3n+1)的值。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在搜索最长相同值段时，通过滑动窗口的方式，窗口的右端点单调递增。",
+              "properties": {
+                "right_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

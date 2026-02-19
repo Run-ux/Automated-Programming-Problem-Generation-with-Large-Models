@@ -100,7 +100,7 @@ def vote_core_constraints(rounds: List[Dict[str, Any]]) -> Dict[str, Any]:
         if r.get("status") == "success":
             success_rounds.append(r)
             constraints = r["result"].get("constraints", [])
-            constraint_names = {c["name"] for c in constraints}
+            constraint_names = {c["name"] for c in constraints if c.get("name")}
             all_constraint_sets.append(constraint_names)
     
     if not all_constraint_sets:
@@ -109,12 +109,16 @@ def vote_core_constraints(rounds: List[Dict[str, Any]]) -> Dict[str, Any]:
     if len(all_constraint_sets) == 1:
         constraints = success_rounds[0]["result"].get("constraints", [])
         voted_constraints = []
+        seen_names: set[str] = set()
         for c in constraints:
-            voted_constraints.append({
-                "name": c.get("name"),
-                "description": c.get("description", ""),
-                "confidence": "1/1",
-            })
+            name = c.get("name")
+            if name and name not in seen_names:
+                seen_names.add(name)
+                voted_constraints.append({
+                    "name": name,
+                    "description": c.get("description", ""),
+                    "confidence": "1/1",
+                })
         return {
             "constraints": voted_constraints,
             "all_rounds": rounds,
@@ -186,36 +190,74 @@ def vote_invariant(rounds: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     对 Invariant 维度进行投票
     
-    投票字段：name
+    投票字段：invariants[*].name
     
     Args:
         rounds: 3 轮抽取结果（已归一化）
     
     Returns:
-        投票结果（包含 name, description, confidence, all_rounds）
+        投票结果（包含 invariants, all_rounds）
     """
-    names = [r["result"].get("name") for r in rounds if r.get("status") == "success"]
-    
-    if not names:
-        return {"name": None, "confidence": "0/3", "all_rounds": rounds}
-    
-    counter = Counter(names)
-    most_common_name, count = counter.most_common(1)[0]
-    
-    confidence = f"{count}/{len(rounds)}"
-    
-    voted_result = {
-        "name": most_common_name,
-        "confidence": confidence,
+    all_invariant_sets = []
+    success_rounds = []
+    for r in rounds:
+        if r.get("status") == "success":
+            success_rounds.append(r)
+            invariants = r["result"].get("invariants", [])
+            invariant_names = {i.get("name") for i in invariants if i.get("name")}
+            all_invariant_sets.append(invariant_names)
+
+    if not all_invariant_sets:
+        return {"invariants": [], "all_rounds": rounds}
+
+    if len(all_invariant_sets) == 1:
+        invariants = success_rounds[0]["result"].get("invariants", [])
+        voted_invariants = []
+        seen_names: set[str] = set()
+        for inv in invariants:
+            name = inv.get("name")
+            if name and name not in seen_names:
+                seen_names.add(name)
+                voted_invariants.append(
+                    {
+                        "name": name,
+                        "description": inv.get("description", ""),
+                        "confidence": "1/1",
+                        "properties": inv.get("properties", {}),
+                    }
+                )
+        return {
+            "invariants": voted_invariants,
+            "all_rounds": rounds,
+        }
+
+    all_names = set()
+    for s in all_invariant_sets:
+        all_names.update(s)
+
+    voted_invariants = []
+    for name in all_names:
+        count = sum(1 for s in all_invariant_sets if name in s)
+        if count >= 2:
+            for r in rounds:
+                if r.get("status") == "success":
+                    for inv in r["result"].get("invariants", []):
+                        if inv.get("name") == name:
+                            voted_invariants.append(
+                                {
+                                    "name": inv.get("name"),
+                                    "description": inv.get("description", ""),
+                                    "confidence": f"{count}/{len(rounds)}",
+                                    "properties": inv.get("properties", {}),
+                                }
+                            )
+                            break
+                    break
+
+    return {
+        "invariants": voted_invariants,
         "all_rounds": rounds,
     }
-    
-    for r in rounds:
-        if r.get("status") == "success" and r["result"].get("name") == most_common_name:
-            voted_result["description"] = r["result"].get("description", "")
-            break
-    
-    return voted_result
 
 
 def vote_single_problem(normalized_data: Dict[str, Any]) -> Dict[str, Any]:

@@ -1,0 +1,159 @@
+{
+  "problem_id": "P7710",
+  "source": "luogu",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 1,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 513
+          },
+          "properties": {
+            "rooted": true,
+            "weighted": false,
+            "connected": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 513
+    },
+    "properties": {
+      "rooted": true,
+      "weighted": false,
+      "connected": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distance_modulo_constraint",
+        "description": "在子树中选择与根节点距离模 x 等于 y 的节点进行操作",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subtree_transformation",
+        "description": "操作仅限于指定节点的子树内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "value_modification",
+        "description": "更新节点的权值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "node_query_value",
+        "description": "查询单个节点的权值",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distance_modulo_constraint",
+              "description": "在子树中选择与根节点距离模 x 等于 y 的节点进行操作",
+              "formal": "对于节点 a 的子树中的每个节点 v，如果 dist(a, v) % x == y，则对 v 进行操作"
+            },
+            {
+              "name": "subtree_transformation",
+              "description": "操作仅限于指定节点的子树内",
+              "formal": "对于操作 1 a x y z，只对节点 a 的子树内的节点进行操作"
+            },
+            {
+              "name": "value_modification",
+              "description": "更新节点的权值",
+              "formal": "对于操作 1 a x y z，将满足条件的节点的权值增加 z"
+            },
+            {
+              "name": "node_query_value",
+              "description": "查询单个节点的权值",
+              "formal": "对于操作 2 a，查询节点 a 的当前权值"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "查询节点的权值"
+        }
+      }
+    ],
+    "description": "查询节点的权值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：子树中节点的权值更新可以通过父节点的状态进行递归传递，满足树形 DP 的状态转移一致性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：子树中特定距离模数相同的节点权值可以批量更新，通过前缀和的方式实现区间和的快速计算",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个子树的权值更新操作是独立的，不影响其他子树的权值，满足分治或 DP 中子问题相互独立的性质",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：子树中节点的权值更新可以通过父节点的状态进行递归传递，满足树形 DP 的状态转移一致性",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：子树中特定距离模数相同的节点权值可以批量更新，通过前缀和的方式实现区间和的快速计算",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个子树的权值更新操作是独立的，不影响其他子树的权值，满足分治或 DP 中子问题相互独立的性质",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

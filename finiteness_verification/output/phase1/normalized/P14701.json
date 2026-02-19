@@ -1,0 +1,87 @@
+{
+  "problem_id": "P14701",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 500
+        },
+        "value_range": {
+          "min": 1,
+          "max": 250000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "每个子网格内的元素必须按照从1到k的顺序排列，其中k是子网格内最大元素值",
+            "formal": "∀ subgrid S, ∀ i, j ∈ S, if i < j then A[i] < A[j]"
+          },
+          {
+            "name": "path_constraint",
+            "description": "每个元素只能从其所在行或列的一个端点进入，并且不能改变方向直到找到其位置",
+            "formal": "∀ element e, ∃ unique path from an end of its row or column to its position without changing direction"
+          },
+          {
+            "name": "distinctness",
+            "description": "每个子网格内的元素必须唯一，即没有重复的元素",
+            "formal": "∀ subgrid S, |S| = |distinct(S)|"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足条件的子矩阵数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "子网格内的车辆进入顺序单调递增，确保每个子网格内的车辆可以按照规则停放",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "子网格的有效性可以通过其子网格的有效性来判断，满足最优子结构性质",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "子网格的有效性可以通过合并更小的子网格来确定，具有区间可合并性",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

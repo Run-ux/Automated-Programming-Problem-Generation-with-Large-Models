@@ -2,14 +2,14 @@
   "problem_id": "GYM106034H",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100
@@ -35,8 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "相邻节点取值不同（图着色约束）",
+        "name": "adjacency_relation",
+        "description": "相邻元素取值不同（图着色约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "frequency_bound",
+        "description": "每个颜色的元素数量有限制",
         "confidence": "1/1"
       }
     ],
@@ -47,9 +52,12 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "相邻节点取值不同（图着色约束）",
-              "formal": "对于所有 1 ≤ i < m, c_i ≠ c_{i+1}"
+              "name": "adjacency_relation",
+              "description": "相邻元素取值不同（图着色约束）"
+            },
+            {
+              "name": "frequency_bound",
+              "description": "每个颜色的元素数量有限制"
             }
           ]
         }
@@ -57,34 +65,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否存在一种排列方式，使得相邻元素不同"
+          "type": "feasibility",
+          "description": "判断是否存在一种排列方式使得相邻元素不同"
         }
       }
     ],
-    "description": "判断是否存在一种排列方式，使得相邻元素不同"
+    "description": "判断是否存在一种排列方式使得相邻元素不同"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择当前剩余数量最多的颜色，确保相邻颜色不同，从而构建合法的序列。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，如果前 k 个位置的序列是合法的，那么在此基础上添加一个合法的颜色块后，新的序列也是合法的。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "局部最优选择导致全局最优：每次选择当前剩余数量最多的不同颜色的立方体，确保相邻立方体颜色不同",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择当前剩余数量最多的颜色，确保相邻颜色不同，从而构建合法的序列。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，如果前 k 个位置的序列是合法的，那么在此基础上添加一个合法的颜色块后，新的序列也是合法的。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "局部最优选择导致全局最优：每次选择当前剩余数量最多的不同颜色的立方体，确保相邻立方体颜色不同"
+    ]
   }
 }

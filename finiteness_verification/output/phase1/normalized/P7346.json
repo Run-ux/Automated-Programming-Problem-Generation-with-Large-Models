@@ -1,0 +1,89 @@
+{
+  "problem_id": "P7346",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": -2147483648,
+          "max": 2147483647
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制，共有 m 次操作。",
+            "formal": "m <= 5 * 10^5"
+          },
+          {
+            "name": "bitwise_xor_operation",
+            "description": "对序列中满足 i % x == 0 的元素 a_i 进行异或操作。",
+            "formal": "a_i = a_i ^ y for all i such that i % x == 0"
+          },
+          {
+            "name": "logical_inference_constraint",
+            "description": "如果 a_x <= y，则执行编号为 u 到 v 的所有类型为 1 的操作。",
+            "formal": "if a_x <= y then execute operations from u to v where op == 1"
+          },
+          {
+            "name": "reflection_constraint",
+            "description": "若操作类型为 3，则在 [u, i) 范围内不能有类型为 3 或 4 的操作；若操作类型为 4，则在 (x, i) 范围内不能有类型为 3 或 4 的操作。",
+            "formal": "if op_i == 3 then no op == 3 or 4 in [u, i); if op_i == 4 then no op == 3 or 4 in (x, i)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "根据给定的操作序列，构造并输出每次查询操作的结果"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个操作根据当前序列状态进行，且操作结果唯一确定新的序列状态",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：异或操作在区间上具有可加性，即对同一区间的多次异或操作可以合并为一次操作",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每次操作只影响特定的下标，不同操作之间的影响是独立的",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

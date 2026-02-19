@@ -1,0 +1,90 @@
+{
+  "problem_id": "P2538",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "maximum_to_minimum_ratio_constraint",
+            "description": "所有节点到最近特殊节点的距离的最大值最小化",
+            "formal": "minimize(max(dist(c)))"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过 2（每个城市最多连接两条道路）",
+            "formal": "∀i, degree(i) ≤ 2"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "选择的特殊节点集合是原有特殊节点集合的超集（新增城堡不能减少已有城堡数量）",
+            "formal": "new_castles ⊇ original_castles"
+          },
+          {
+            "name": "subset_size_minimum_constraint",
+            "description": "选择的特殊节点数量不超过 k（新增城堡数量限制）",
+            "formal": "|new_castles - original_castles| ≤ k"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "min_max",
+        "description": "最小化所有点到最近设施的最大距离"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每个子树中选择建立城堡的位置，使得该子树内的所有城市到最近城堡的最大距离最小化。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步决策中，选择当前情况下最优的选择（例如，在不超过 k 个没有城堡的城市中建立城堡），能够逐步逼近全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过动态规划或递归的方式，从一个状态转移到另一个状态时，保持了状态之间的转移一致性。例如，从根节点到叶子节点的过程中，每个节点的状态由其子节点的状态决定。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

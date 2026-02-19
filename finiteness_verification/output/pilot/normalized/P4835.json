@@ -64,12 +64,17 @@
       "result": {
         "constraints": [
           {
-            "name": "different_teacher",
-            "description": "每个学生在第二年必须选择与第一年不同的老师"
+            "name": "permutation_constraint",
+            "description": "每个学生对其他学生的印象排序是一个排列（即每个学生对其他学生的印象是唯一的）"
           },
           {
-            "name": "impression_constraint",
-            "description": "所有选择同一个老师的学生间彼此印象都是前 T 好的，T 为最小的非负整数"
+            "name": "distinctness",
+            "description": "每个学生选择的老师必须与第一年不同"
+          },
+          {
+            "name": "range_bound",
+            "description": "所有选择同一个老师的学生间彼此印象都是前 T 好的，T 是最小的非负整数",
+            "formal": "对于每个老师 t，选择 t 的学生集合 S 中，任意两个学生 i, j ∈ S，它们之间的印象排名差值不超过 T"
           }
         ]
       }
@@ -80,12 +85,17 @@
       "result": {
         "constraints": [
           {
-            "name": "different_teacher",
-            "description": "每个学生在第二年必须选择与第一年不同的老师"
+            "name": "permutation_constraint",
+            "description": "每个学生对其他学生的印象排序是一个排列（即每个学生对其他学生的印象是唯一的）"
           },
           {
-            "name": "impression_constraint",
-            "description": "所有选择同一个老师的学生间彼此印象都是前 T 好的，T 为最小的非负整数"
+            "name": "distinctness",
+            "description": "每个学生选择的老师必须与第一年不同"
+          },
+          {
+            "name": "range_bound",
+            "description": "所有选择同一个老师的学生间彼此印象都是前 T 好的，T 是最小的非负整数",
+            "formal": "对于每个老师 t，选择 t 的学生集合 S_t 中，任意两个学生 i, j ∈ S_t，i 对 j 的印象排名 ≤ T"
           }
         ]
       }
@@ -96,12 +106,16 @@
       "result": {
         "constraints": [
           {
-            "name": "different_teacher",
-            "description": "每个学生在第二年必须选择与第一年不同的老师"
+            "name": "permutation_constraint",
+            "description": "每个学生对其他学生的印象排序是一个排列（即每个学生对其他学生的印象是唯一的）"
           },
           {
-            "name": "impression_constraint",
-            "description": "所有选择同一个老师的学生间彼此印象都是前 T 好的，T 是最小的非负整数"
+            "name": "distinctness",
+            "description": "每个学生选择的老师必须与第一年不同"
+          },
+          {
+            "name": "range_bound",
+            "description": "所有选择同一个老师的学生间彼此印象都是前 T 好的，其中 T 是最小的非负整数"
           }
         ]
       }
@@ -112,24 +126,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_value",
-        "description": "求满足条件的最小非负整数T，使得所有同学选择了和第一年不同的老师，并且所有选择同一个老师的学生间彼此印象都是前T好的"
+        "type": "min_max",
+        "description": "最小化所有选择同一老师的学生间最坏印象的排名"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "min_value",
-        "description": "求最小的非负整数T，使得所有同学选择了和第一年不同的老师，并且所有选择同一个老师的学生间彼此印象都是前T好的"
+        "type": "min_max",
+        "description": "最小化在满足所有学生选择不同老师的前提下，同一老师下学生间最坏印象的排名"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "min_value",
-        "description": "求最小的非负整数T，使得所有同学选择了和第一年不同的老师，并且所有选择同一个老师的学生间彼此印象都是前T好的"
+        "type": "min_max",
+        "description": "最小化在满足所有学生选择不同老师的前提下，同一老师下学生间最坏印象的排名"
       }
     }
   ],
@@ -138,27 +152,59 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的最优解可以通过子问题的最优解组合而成，即通过考虑每个学生选择不同老师后，基于其他学生的印象排序来决定最终的最小T值。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，通过解决较小规模的问题来构建全局最优解",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，每次选择当前情况下印象最好的学生进行分配",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的最优解可以通过子问题的最优解组合而成，即通过解决每个学生选择老师的问题来找到整体最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，通过解决较小规模的问题来构建全局最优解",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，每次选择当前情况下印象最好的学生进行分配",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量，每个学生的选课状态根据其对其他学生的印象和已分配的学生状态进行更新",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的最优解可以通过子问题的最优解组合而成，即每个学生选择老师的问题可以分解为更小规模的学生选课问题，并且这些子问题的最优解能够组合成原问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个学生选择老师的问题可以分解为更小规模的学生选择老师的问题，并且这些子问题的最优解可以合并成原问题的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，总是选择当前情况下局部最优的选择，即每次选择使得当前最坏印象最小化，最终能够得到全局最优解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

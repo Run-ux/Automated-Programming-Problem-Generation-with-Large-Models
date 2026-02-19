@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 6,
           "max": 6
@@ -28,20 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "edge_exclusion_constraint",
-            "description": "球在碰到走廊的边界（地板、天花板或墙壁）时，按照反射定律反弹（入射角等于反射角）。"
+            "name": "rectangle_shape",
+            "description": "点的坐标必须在指定的矩形区域内（0 ≤ x ≤ a, 0 ≤ z ≤ b）",
+            "formal": "0 ≤ x₀ ≤ a, 0 ≤ z₀ ≤ b"
           },
           {
-            "name": "coordinate_fixed_point",
-            "description": "球击中门时的坐标 (x0, 0, z0) 必须满足 0 ≤ x0 ≤ a 和 0 ≤ z0 ≤ b。"
+            "name": "reflection_constraint",
+            "description": "当球碰到边界时，按照反射定律反弹（入射角等于反射角）",
+            "formal": "反射定律：入射角 = 反射角"
           },
           {
-            "name": "source_node_fixed",
-            "description": "球的初始位置是走廊中心点 (a/2, m, b/2)，其中 m 是 Valera 离门的距离。"
+            "name": "fixed_start_node",
+            "description": "球的初始位置在走廊中心（x, y, z）= (a/2, m, b/2)",
+            "formal": "(x, y, z) = (a/2, m, b/2)"
           },
           {
-            "name": "orientation_constraint",
-            "description": "球的速度向量 (vx, vy, vz) 满足 |vx|, |vy|, |vz| ≤ 100，且 vy < 0, vz ≥ 0。"
+            "name": "orientation",
+            "description": "球的速度方向限制（v_y < 0, v_z ≥ 0）",
+            "formal": "v_y < 0, v_z ≥ 0"
           }
         ]
       }
@@ -52,8 +56,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足条件的点坐标"
+        "type": "construction",
+        "description": "构造满足条件的点坐标"
       }
     }
   ],
@@ -62,13 +66,25 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence",
-        "description": "球的运动轨迹在y轴方向上单调递减，直到y坐标为0时停止。同时，球在x和z方向上的位置随时间线性变化。",
-        "properties": {
-          "left_monotonic": false,
-          "right_monotonic": false,
-          "window_shrinkable": false
-        }
+        "invariants": [
+          {
+            "name": "symmetry",
+            "description": "对称性：碰撞等价于穿越，可消除个体差异。在本题中，球在走廊内的反弹可以视为穿越一个无限重复的走廊网格。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：球在y轴方向上的运动是单调递减的，直到y=0时停止。",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "cyclic_invariance",
+            "description": "周期性：球在x和z轴方向上的运动具有周期性，即在每次碰撞后，球在x和z轴方向上的位移保持不变。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

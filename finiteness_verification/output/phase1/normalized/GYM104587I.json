@@ -1,0 +1,95 @@
+{
+  "problem_id": "GYM104587I",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 500
+        },
+        "value_range": {
+          "min": -10000,
+          "max": 10000
+        },
+        "properties": {
+          "weighted": true,
+          "directed": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "学生只能沿着指定的路径（即图中的边）行走，不能离开这些路径。",
+            "formal": "学生的位置始终在给定的路径集合中"
+          },
+          {
+            "name": "intersection",
+            "description": "学生和学者的路径只能在交点处相遇，且交点必须是路径的交点。",
+            "formal": "学生和学者的路径在某一点 (x, y) 相遇，且该点是路径的交点"
+          },
+          {
+            "name": "operation_limit",
+            "description": "学生必须在学者到达终点之前或同时到达交点。",
+            "formal": "t_student <= t_fellow"
+          },
+          {
+            "name": "ratio_constraint",
+            "description": "学生和学者的速度比值固定，且学生速度不超过学者速度。",
+            "formal": "v_student / v_fellow = k, 0 < k <= 1"
+          },
+          {
+            "name": "exclusion",
+            "description": "共线的路径不会相交，共线的路径和学者路径也不会相交。",
+            "formal": "如果两条路径共线，则它们不相交；如果学者路径和某条路径共线，则它们不相交"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求两点间最短相遇时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "时间推进的单调性：学生和学者的移动时间是单调递增的，且两者相遇的时间点是唯一的",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：学生在任意时刻到达某个交点的最短时间可以通过之前到达其他交点的最短时间来计算",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：学生从一个交点到另一个交点的状态转移是基于已知路径和速度的确定性过程",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

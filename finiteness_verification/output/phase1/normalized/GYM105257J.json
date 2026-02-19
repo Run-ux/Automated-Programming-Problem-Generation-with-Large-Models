@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 500000
@@ -26,19 +26,24 @@
       "result": {
         "constraints": [
           {
-            "name": "maximum_average_constraint",
-            "description": "在给定区间内，计算函数 f(x, y) 的和，并找到使该和最大的右端点 r。",
-            "formal": "maximize sum_{i=l}^r f(x, a_i), 1 ≤ l ≤ r ≤ n"
+            "name": "range_bound",
+            "description": "区间内元素的取值范围有限制",
+            "formal": "1 ≤ a_i ≤ 10^6"
+          },
+          {
+            "name": "window_constraint",
+            "description": "查询范围在给定的区间内",
+            "formal": "l_i ≤ r_i ≤ n"
           },
           {
             "name": "gcd_constraint",
-            "description": "函数 f(x, y) 的值取决于 x 和 y 的最大公约数 (gcd)。具体来说，当 gcd(x, y) = 1 时，f(x, y) = u；当 gcd(x, y) = x 且 x ≠ 1 时，f(x, y) = -x * y；否则 f(x, y) = 0。",
+            "description": "函数 f(x, y) 的计算依赖于 x 和 y 的最大公约数关系",
             "formal": "f(x, y) = u - y if x = 1; u if 1 < x ≤ y and gcd(x, y) = 1; -x * y if x ≠ 1 and gcd(x, y) = x; 0 otherwise"
           },
           {
-            "name": "query_range_validity",
-            "description": "每个查询的左边界 l 必须在 [1, n] 范围内，且查询结果的右边界 r 必须满足 l ≤ r ≤ n。",
-            "formal": "1 ≤ l ≤ n, l ≤ r ≤ n"
+            "name": "maximize_subset_sum",
+            "description": "每个查询需要找到使 score(i, l, r) 最大的 r 值",
+            "formal": "maximize score(i, l, r) for each query (u_i, l_i)"
           }
         ]
       }
@@ -50,7 +55,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "求给定区间内最大得分和及其对应的最小右端点"
+        "description": "求给定区间内最大得分和对应的最小右端点"
       }
     }
   ],
@@ -59,11 +64,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间信息可通过子区间合并，适用于前缀和或线段树等数据结构进行区间查询与更新",
-        "properties": {
-          "prefix_sum_computable": true
-        }
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：可以通过端点差值计算区间和，适用于前缀和的计算",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，适用于动态规划求解最大得分",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

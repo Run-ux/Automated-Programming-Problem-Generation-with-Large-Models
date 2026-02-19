@@ -1,0 +1,157 @@
+{
+  "problem_id": "P9402",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 10000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "从起点到终点的路径必须经过至多 k 次换乘",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个节点在一条公交线路上最多停靠一次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "temporal_dependency_constraint",
+        "description": "等待下一班公交车的时间取决于当前时间和发车间隔",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "公交线路停靠点的顺序是固定的，不能改变",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "从起点到终点的路径必须经过至多 k 次换乘"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个节点在一条公交线路上最多停靠一次"
+            },
+            {
+              "name": "temporal_dependency_constraint",
+              "description": "等待下一班公交车的时间取决于当前时间和发车间隔"
+            },
+            {
+              "name": "ordering",
+              "description": "公交线路停靠点的顺序是固定的，不能改变"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求从起点到终点的最短时间"
+        }
+      }
+    ],
+    "description": "求从起点到终点的最短时间"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从学校到家的最短时间可以由各个换乘点之间的最短时间组合而成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在每一步决策中，当前状态（位置和时间）通过选择不同的公交线路转移到下一个状态，且这种转移是确定性的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着换乘次数的增加，到达目的地的时间不会减少，即换乘次数越多，总时间越长或保持不变。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从学校到家的最短时间可以由各个换乘点之间的最短时间组合而成。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在每一步决策中，当前状态（位置和时间）通过选择不同的公交线路转移到下一个状态，且这种转移是确定性的。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着换乘次数的增加，到达目的地的时间不会减少，即换乘次数越多，总时间越长或保持不变。",
+              "properties": {
+                "right_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

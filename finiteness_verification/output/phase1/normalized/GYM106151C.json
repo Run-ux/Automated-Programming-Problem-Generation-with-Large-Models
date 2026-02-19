@@ -1,0 +1,81 @@
+{
+  "problem_id": "GYM106151C",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "directed_graph",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "weighted": true,
+          "directed": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "图是有向图，边的方向固定"
+          },
+          {
+            "name": "binary_matrix_constraint",
+            "description": "每条边的权重为 0 或 1，表示门是否锁定"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "从指定起点（房间 1）到指定终点（房间 N）的路径约束"
+          },
+          {
+            "name": "connectivity",
+            "description": "如果终点不可达，则输出 -1"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求两点间最短路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从起点到任意房间的最短时间可以通过其前驱房间的最短时间计算得出",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前房间的状态（即到达该房间的最短时间）仅依赖于其前驱房间的状态，且这种依赖关系在整个搜索过程中保持一致",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

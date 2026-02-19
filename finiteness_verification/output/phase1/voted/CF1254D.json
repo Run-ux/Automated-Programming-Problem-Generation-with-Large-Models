@@ -2,14 +2,14 @@
   "problem_id": "CF1254D",
   "source": "codeforces",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 1,
             "max": 150000
@@ -19,7 +19,8 @@
             "max": 10000000
           },
           "properties": {
-            "connected": true
+            "connected": true,
+            "weighted": false
           }
         }
       }
@@ -33,34 +34,40 @@
       "max": 10000000
     },
     "properties": {
-      "connected": true
+      "connected": true,
+      "weighted": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "tree_structure",
-        "description": "图必须是树结构（无环连通图）",
+        "name": "connectivity",
+        "description": "图必须连通（树的定义）",
         "confidence": "1/1"
       },
       {
-        "name": "parallel_operation",
-        "description": "操作序列中包含两种类型的操作，且至少有一种查询操作",
+        "name": "acyclicity",
+        "description": "图必须无环（树的定义）",
         "confidence": "1/1"
       },
       {
-        "name": "weight_adjustment",
-        "description": "节点值可以通过第一种操作进行更新",
+        "name": "operation_limit",
+        "description": "操作次数限制为 q 次",
         "confidence": "1/1"
       },
       {
-        "name": "modulo_expected_value_constraint",
-        "description": "第二种操作需要计算并输出某个节点的期望值",
+        "name": "operation_type",
+        "description": "操作类型限制为两种：第一种是修改节点值，第二种是查询节点值",
         "confidence": "1/1"
       },
       {
-        "name": "gcd_constraint",
-        "description": "期望值以分数形式表示，并通过模逆元转换为整数输出",
+        "name": "range_bound",
+        "description": "节点值的修改范围在 0 到 10^7 之间",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "输出结果需要进行模运算，模数为 998244353",
         "confidence": "1/1"
       }
     ],
@@ -71,24 +78,28 @@
         "result": {
           "constraints": [
             {
-              "name": "tree_structure",
-              "description": "图必须是树结构（无环连通图）"
+              "name": "connectivity",
+              "description": "图必须连通（树的定义）"
             },
             {
-              "name": "parallel_operation",
-              "description": "操作序列中包含两种类型的操作，且至少有一种查询操作"
+              "name": "acyclicity",
+              "description": "图必须无环（树的定义）"
             },
             {
-              "name": "weight_adjustment",
-              "description": "节点值可以通过第一种操作进行更新"
+              "name": "operation_limit",
+              "description": "操作次数限制为 q 次"
             },
             {
-              "name": "modulo_expected_value_constraint",
-              "description": "第二种操作需要计算并输出某个节点的期望值"
+              "name": "operation_type",
+              "description": "操作类型限制为两种：第一种是修改节点值，第二种是查询节点值"
             },
             {
-              "name": "gcd_constraint",
-              "description": "期望值以分数形式表示，并通过模逆元转换为整数输出"
+              "name": "range_bound",
+              "description": "节点值的修改范围在 0 到 10^7 之间"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "输出结果需要进行模运算，模数为 998244353"
             }
           ]
         }
@@ -96,37 +107,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_expected_value",
+    "type": "maximize_probability",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_expected_value",
-          "description": "计算树上节点值的期望值"
+          "type": "maximize_probability",
+          "description": "最大化路径上的期望值"
         }
       }
     ],
-    "description": "计算树上节点值的期望值"
+    "description": "最大化路径上的期望值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：树上节点值的更新和查询操作满足从根到叶子或叶子到根的状态一致性传递。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：对于树上的路径，其信息（如期望值）可以通过子路径的信息合并得到，适用于处理链式结构上的区间问题。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：在进行树上操作时，每个节点的最优解依赖于其子节点的最优解，这是动态规划方法的基础。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "状态依赖：当前节点的状态值仅由其父节点及子节点的状态值决定，满足树形DP的性质",
-          "properties": {
-            "parent_dependency": true,
-            "child_dependency": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：树上节点值的更新和查询操作满足从根到叶子或叶子到根的状态一致性传递。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：对于树上的路径，其信息（如期望值）可以通过子路径的信息合并得到，适用于处理链式结构上的区间问题。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：在进行树上操作时，每个节点的最优解依赖于其子节点的最优解，这是动态规划方法的基础。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "状态依赖：当前节点的状态值仅由其父节点及子节点的状态值决定，满足树形DP的性质"
+    ]
   }
 }

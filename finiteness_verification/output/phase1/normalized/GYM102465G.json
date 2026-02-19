@@ -6,10 +6,10 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
-          "max": 1000
+          "max": 2500
         },
         "value_range": {
           "min": 97,
@@ -28,19 +28,29 @@
       "result": {
         "constraints": [
           {
-            "name": "substring_replacement_rule",
-            "description": "字符串 S(i) 可以通过从另一个字符串 S(x) 中提取子串来构建，子串的起始和结束位置分别为 lo 和 hi（左闭右开）。",
-            "formal": "S(i) = S(x)[lo:hi]"
+            "name": "substring_selection",
+            "description": "从一个字符串中提取子串，子串的起始和结束位置在给定范围内",
+            "formal": "S(i) = S(x)[lo:hi], 0 <= x < i, 0 <= lo <= hi <= length(S(x))"
           },
           {
-            "name": "substring_merge_operation",
-            "description": "字符串 S(i) 可以通过将两个其他字符串 S(x) 和 S(y) 拼接来构建。",
-            "formal": "S(i) = S(x) + S(y)"
+            "name": "concatenation_inclusion",
+            "description": "将两个字符串连接成一个新的字符串",
+            "formal": "S(i) = S(x) + S(y), 0 <= x, y < i"
           },
           {
-            "name": "path_length_constraint",
-            "description": "任何生成的字符串 S(i) 的长度不会超过 2^63 - 1。",
+            "name": "distance_bound",
+            "description": "任何生成的字符串长度不会超过给定的最大值",
             "formal": "length(S(i)) <= 2^63 - 1"
+          },
+          {
+            "name": "alphabet_constraint",
+            "description": "字符串中的字符必须是小写字母",
+            "formal": "S(0) ∈ {a, b, ..., z}^*"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "最终字符串的所有字符的ASCII码之和对给定模数取模",
+            "formal": "result = (Σ ASCII(S(N-1)[i])) % 1000000007"
           }
         ]
       }
@@ -51,8 +61,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_value",
-        "description": "最大化路径上的权值和"
+        "type": "enumeration",
+        "description": "求最终字符串中所有字符的ASCII码值之和，结果对给定模数取模"
       }
     }
   ],
@@ -61,12 +71,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：最终字符串的校验和可以通过其子字符串的校验和组合计算得出，满足动态规划中的最优子结构性质",
-        "properties": {
-          "subproblem_independence": true,
-          "subproblem_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最终字符串的ASCII码和可以通过其子串的ASCII码和计算得到，满足动态规划中的最优子结构性质。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过子串的ASCII码和可以计算出整个字符串的ASCII码和，符合前缀和的性质。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

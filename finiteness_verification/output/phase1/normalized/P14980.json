@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,19 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "transitive_closure_constraint",
-            "description": "节点会跟随其指向的节点，直到找到一个具有特定属性的节点或形成环（路径追踪约束）",
-            "formal": "对于每个节点 i，如果 a_i ≠ i 且 a_i 没有聚会，则 i 会跟随 a_i"
+            "name": "acyclicity",
+            "description": "问题可以抽象为有向图，每头奶牛指向其最好的朋友"
           },
           {
-            "name": "persistent_preference_constraint",
-            "description": "一旦某个节点设置了某种属性，该属性将持续存在，直到被新的属性覆盖（状态持久化约束）",
-            "formal": "如果节点 i 在第 t 天设置了聚会类型 v，则该聚会类型将持续到 i 设置新的聚会类型为止"
+            "name": "path_constraint",
+            "description": "每头奶牛会沿着指向其最好朋友的路径寻找聚会，直到找到聚会或放弃"
           },
           {
-            "name": "adjacent_difference",
-            "description": "相邻节点可以具有相同的属性（图着色约束）",
-            "formal": "允许 a_i = a_j，即多头奶牛可以有相同的最好朋友"
+            "name": "state_transition",
+            "description": "每个晚上，每头奶牛的状态（参加哪种类型的聚会）会根据当前和之前晚上的聚会类型进行更新"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每头奶牛在每个晚上只能选择一个聚会参加，且只能跟随其最好的朋友的路径"
+          },
+          {
+            "name": "distinctness",
+            "description": "每头奶牛在同一时间只能参加一种类型的聚会"
           }
         ]
       }
@@ -51,7 +56,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
+        "type": "enumeration",
         "description": "计算每个晚上参加不同类型聚会的奶牛数量"
       }
     }
@@ -61,11 +66,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "当前状态只依赖于有限的前序状态，即每头奶牛的聚会参与情况仅由其自身及最好朋友的状态决定",
-        "properties": {
-          "dependency_on_finite_previous_states": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每头奶牛的聚会选择基于其最好朋友的选择，形成一个依赖链。每个晚上，奶牛的状态（参加哪种类型的聚会）由其最好朋友的状态决定。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在每晚的聚会安排中，奶牛之间的依赖关系形成了一个有向无环图（DAG）。每头奶牛的状态更新顺序遵循拓扑排序，确保所有依赖都已处理。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,79 @@
+{
+  "problem_id": "P14241",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 499999
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "exact_coloring_count",
+            "description": "区间内恰好有一个红球时，传感器激活",
+            "formal": "∃! i ∈ [l, r] 使得 ball[i] 为红色"
+          },
+          {
+            "name": "operation_order",
+            "description": "每次操作的真实位置依赖于前一次操作的结果",
+            "formal": "a_i = (a'_i + v_{i-1}) % n"
+          },
+          {
+            "name": "distinctness",
+            "description": "所有操作的位置互不相同",
+            "formal": "∀ i ≠ j, a_i ≠ a_j"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "每次操作后，计算处于激活状态的传感器编号平方和的最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过维护区间的红球数量，可以计算出每个传感器的状态变化",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次操作后，红球数量的变化导致传感器状态的更新，且这种更新是确定性的",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

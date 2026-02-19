@@ -6,19 +6,24 @@
   "result": {
     "constraints": [
       {
-        "name": "wave_propagation_condition",
-        "description": "波传播条件：从节点 i 出发的波只能在满足高度差条件 a[i] - a[k] ≥ |i - k| 时破坏节点 k，否则波停止传播。",
-        "formal": "对于任意节点 i 和 k，若 a[i] - a[k] < |i - k|，则波无法从 i 传播到 k"
+        "name": "adjacency_relation",
+        "description": "相邻节点的值差必须满足特定条件（如果 a[i] - a[k] ≥ |i - k|，则节点 k 被破坏）",
+        "formal": "对于所有 i, k，如果 a[i] - a[k] ≥ |i - k|，则节点 k 被破坏"
       },
       {
-        "name": "sequential_destruction",
-        "description": "顺序破坏：每次打击必须在前一次打击的所有波完全停止后才能进行。",
-        "formal": "第 i 次打击只能在第 i-1 次打击的所有波停止后进行"
+        "name": "operation_limit",
+        "description": "操作次数有限制（总共 M 次操作）",
+        "formal": "M 次操作"
       },
       {
-        "name": "unique_targets",
-        "description": "唯一目标：每个被打击的目标节点在所有打击中只出现一次。",
-        "formal": "对于所有打击 b_1, b_2, ..., b_M，b_i ≠ b_j 对于所有 i ≠ j"
+        "name": "distinctness",
+        "description": "每次操作的目标节点必须是唯一的（每个 b_i 不重复）",
+        "formal": "b_1, b_2, ..., b_M 是互不相同的整数"
+      },
+      {
+        "name": "state_transition",
+        "description": "每次操作后状态更新（只有当上一次操作的冲击波完全消失后，才能进行下一次操作）",
+        "formal": "每次操作后等待前一次操作的所有影响结束"
       }
     ]
   },

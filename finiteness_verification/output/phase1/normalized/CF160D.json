@@ -29,24 +29,20 @@
       "result": {
         "constraints": [
           {
-            "name": "graph_connectivity",
+            "name": "connectivity",
             "description": "图必须连通"
           },
           {
-            "name": "simple_graph",
-            "description": "图中没有自环和重边"
+            "name": "acyclicity",
+            "description": "子图必须无环（生成树约束）"
           },
           {
-            "name": "spanning_tree",
-            "description": "生成树是包含所有顶点的无环连通子图"
+            "name": "spanning_constraint",
+            "description": "子图必须包含所有顶点（生成树约束）"
           },
           {
-            "name": "minimum_spanning_tree",
-            "description": "最小生成树是权重和最小的生成树"
-          },
-          {
-            "name": "edge_labeling",
-            "description": "每条边必须被分类为：在任何MST中、至少在一个MST中、不在任何MST中"
+            "name": "sum_constraint",
+            "description": "选取的边权和最小（最小生成树约束）"
           }
         ]
       }
@@ -57,8 +53,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断每条边是否在任意最小生成树中、至少在一个最小生成树中或不在任何最小生成树中"
+        "type": "feasibility",
+        "description": "判断每条边是否在至少一个最小生成树中"
       }
     }
   ],
@@ -67,12 +63,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：最小生成树的构造过程中，每一步选择的边都是当前情况下最优的选择，且最终形成的树是全局最优解",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinability": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最小生成树的子树也是其对应子图的最小生成树",
+            "properties": {}
+          },
+          {
+            "name": "matroid_exchange",
+            "description": "拟阵交换性：在最小生成树中，如果存在一条边e不在当前MST中但权重小于等于MST中的某条边f，则可以通过交换e和f得到另一个MST",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

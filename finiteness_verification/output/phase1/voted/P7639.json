@@ -1,0 +1,142 @@
+{
+  "problem_id": "P7639",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "ordering_constraint",
+        "description": "一个节点的威慑力超过另一个节点的士兵数时，前者可以征服后者（图中的边关系）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pairwise_exclusion",
+        "description": "如果多个节点对同一节点具有同等威慑力，则该节点不会被任何一个节点征服（互斥约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "labeling_constraint",
+        "description": "每个节点最终必须被分配为王国首都、民主国家首都或服从于其他节点（覆盖约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "ordering_constraint",
+              "description": "一个节点的威慑力超过另一个节点的士兵数时，前者可以征服后者（图中的边关系）"
+            },
+            {
+              "name": "pairwise_exclusion",
+              "description": "如果多个节点对同一节点具有同等威慑力，则该节点不会被任何一个节点征服（互斥约束）"
+            },
+            {
+              "name": "labeling_constraint",
+              "description": "每个节点最终必须被分配为王国首都、民主国家首都或服从于其他节点（覆盖约束）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判定每个城市是否为王国的首都、民主国家的首都或服从其他城市的首都"
+        }
+      }
+    ],
+    "description": "判定每个城市是否为王国的首都、民主国家的首都或服从其他城市的首都"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "partial_order_invariance",
+        "description": "城市间的支配关系：每个城市要么被另一个城市支配，要么成为独立的首都（王国或民主国家）。这种支配关系在整个算法过程中保持不变。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "non_dominated_elements",
+        "description": "未被支配的城市集合：在处理过程中，未被其他城市支配的城市集合始终保持不变。这些城市最终会成为独立的首都。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "dominated_elements",
+        "description": "被支配的城市集合：在处理过程中，被其他城市支配的城市集合始终保持不变。这些城市最终会服从某个首都。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "partial_order_invariance",
+              "description": "城市间的支配关系：每个城市要么被另一个城市支配，要么成为独立的首都（王国或民主国家）。这种支配关系在整个算法过程中保持不变。",
+              "properties": {}
+            },
+            {
+              "name": "non_dominated_elements",
+              "description": "未被支配的城市集合：在处理过程中，未被其他城市支配的城市集合始终保持不变。这些城市最终会成为独立的首都。",
+              "properties": {}
+            },
+            {
+              "name": "dominated_elements",
+              "description": "被支配的城市集合：在处理过程中，被其他城市支配的城市集合始终保持不变。这些城市最终会服从某个首都。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

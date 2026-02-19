@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 100000
@@ -28,12 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "每次操作后，左右手的卡片数值必须分别在给定的区间内"
+            "name": "range_bound",
+            "description": "每次操作后，左右手卡片的数值必须分别在给定的区间内",
+            "formal": "a_{l, i} ≤ x ≤ b_{l, i} 且 a_{r, i} ≤ y ≤ b_{r, i}"
           },
           {
-            "name": "transformation_exclusion",
-            "description": "每次操作只能替换一张卡片（左手或右手）"
+            "name": "operation_limit",
+            "description": "每次操作只能替换一张卡片（左手或右手）",
+            "formal": "每次操作选择一个位置进行替换"
           }
         ]
       }
@@ -44,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在一种方案满足所有查询条件"
+        "type": "feasibility",
+        "description": "判断是否存在一种方案，使得在每次操作后，两个变量的值分别满足给定的区间约束"
       }
     }
   ],
@@ -54,11 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "当前状态仅依赖于前一状态，每次操作后卡片的值由上一步的状态决定",
-        "properties": {
-          "dependency_on_previous_state": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次操作后，左右手卡片的值必须满足给定区间的约束条件，且每次替换只能改变一个卡片的值。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：对于每个查询，左右手卡片的值必须分别属于两个独立的区间。这些区间可以通过合并和更新来维护。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

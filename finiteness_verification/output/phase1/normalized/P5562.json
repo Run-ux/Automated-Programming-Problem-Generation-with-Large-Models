@@ -1,0 +1,74 @@
+{
+  "problem_id": "P5562",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 3
+        },
+        "value_range": {
+          "min": 0,
+          "max": 999
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_constraint",
+            "description": "输入的密码中，任意两位与标准密码相符就能点亮神龛获得水晶之心（子集约束）",
+            "formal": "对于任意两个位置 i, j (0 ≤ i < j < 3)，存在一个标准密码 S，使得输入密码 P 满足 P[i] = S[i] 且 P[j] = S[j]"
+          },
+          {
+            "name": "operation_limit",
+            "description": "使用最少的输入密码次数来保证能获得水晶之心（操作次数限制）",
+            "formal": "最小化 k，使得在 k 次尝试内一定能找到满足条件的密码"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "求满足条件的最少操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过选择最少的输入密码次数来保证能获得水晶之心的问题可以分解为更小规模的子问题，并且这些子问题的最优解可以合并成原问题的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，选择当前看起来最优的选择（即选择一个密码），最终能够保证整体的最优解。通过局部最优选择（每次选择一个密码）来达到全局最优解（最少的输入密码次数）。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

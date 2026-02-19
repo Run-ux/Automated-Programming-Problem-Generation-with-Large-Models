@@ -1,0 +1,155 @@
+{
+  "problem_id": "P11729",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 10,
+            "max": 50
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 10,
+      "max": 50
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "acyclicity",
+        "description": "购买的 VIP 航线形成原图的一个生成森林，即不能存在环",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "从任意一个分公司出发都可以只经过 VIP 航线到达另一个分公司，即所有分公司在生成森林中必须连通",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "两个 VIP 航线购买方案被认为是不同的，当且仅当存在至少一条航线只在其中一个购买方案中被买为 VIP",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "acyclicity",
+              "description": "购买的 VIP 航线形成原图的一个生成森林，即不能存在环"
+            },
+            {
+              "name": "connectivity",
+              "description": "从任意一个分公司出发都可以只经过 VIP 航线到达另一个分公司，即所有分公司在生成森林中必须连通"
+            },
+            {
+              "name": "distinctness",
+              "description": "两个 VIP 航线购买方案被认为是不同的，当且仅当存在至少一条航线只在其中一个购买方案中被买为 VIP"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足条件的生成森林的前 k 小总费用"
+        }
+      }
+    ],
+    "description": "求满足条件的生成森林的前 k 小总费用"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：生成森林的最小费用可以通过子问题的最优解组合得到",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在求解生成森林的过程中，各个子问题（即不同连通分量）的解是相互独立的",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "matroid_exchange",
+        "description": "拟阵交换性：生成森林的边集满足拟阵性质，可以进行贪心选择",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "cycle_invariant",
+        "description": "环不变量：生成森林中不存在环，且从任意一个分公司出发都可以只经过 VIP 航线到达另一个分公司",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：生成森林的最小费用可以通过子问题的最优解组合得到",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在求解生成森林的过程中，各个子问题（即不同连通分量）的解是相互独立的",
+              "properties": {}
+            },
+            {
+              "name": "matroid_exchange",
+              "description": "拟阵交换性：生成森林的边集满足拟阵性质，可以进行贪心选择",
+              "properties": {}
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "环不变量：生成森林中不存在环，且从任意一个分公司出发都可以只经过 VIP 航线到达另一个分公司",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

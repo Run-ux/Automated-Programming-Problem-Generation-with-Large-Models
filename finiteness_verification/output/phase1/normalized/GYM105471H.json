@@ -1,0 +1,98 @@
+{
+  "problem_id": "GYM105471H",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 1048576
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1048576
+        },
+        "properties": {
+          "ordered": false,
+          "permutation": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "permutation_constraint",
+            "description": "输入序列是一个长度为 2^n 的排列（即每个元素在 [1, 2^n] 范围内且互不相同）",
+            "formal": "a_1, a_2, ..., a_{2^n} 是一个长度为 2^n 的排列"
+          },
+          {
+            "name": "operation_limit",
+            "description": "最多可以进行 k 次操作，每次操作可以选择两个不同的选手并交换他们的水平",
+            "formal": "最多进行 k 次操作，每次选择 i, j (i ≠ j 且 i, j ≠ x) 并交换 a_i 和 a_j"
+          },
+          {
+            "name": "pairwise_matching",
+            "description": "每轮比赛中，编号最小的选手与编号次小的选手进行比赛，以此类推。每场比赛中，水平较低的选手被淘汰，水平较高的选手晋级",
+            "formal": "每轮比赛中，(a_{2i-1}, a_{2i}) 进行比赛，较小者被淘汰，较大者晋级"
+          },
+          {
+            "name": "maximum_win_count_constraint",
+            "description": "对于每个选手 x，计算其在最多 k 次操作后能赢得的最大比赛场数",
+            "formal": "对于每个 x ∈ [1, 2^n]，计算在最多 k 次操作后，x 能赢得的最大比赛场数"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化特定元素在满足条件的序列中的胜出次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个子问题的最优解可以组合成整个问题的最优解，即每轮比赛的结果依赖于前一轮比赛的结果",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解由子问题解合成，每轮比赛将选手分为两组进行比较，最终结果由各组的胜者决定",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：每轮比赛中，选手编号保持不变，且每轮淘汰一半选手，剩余选手编号仍然有序",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每轮比赛中的各个子问题（即每对选手的比赛）是独立的，互不影响",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

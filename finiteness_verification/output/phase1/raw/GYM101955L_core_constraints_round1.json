@@ -7,11 +7,13 @@
     "constraints": [
       {
         "name": "disjoint_areas",
-        "description": "所有影响区域互不相交（圆与圆之间没有重叠部分）"
+        "description": "所有机械臂的影响区域互不相交且没有一个区域包含整个原始模具（几何约束：互斥）",
+        "formal": "∀ i, j (i ≠ j) : circle(x_i, y_i, r_i) ∩ circle(x_j, y_j, r_j) = ∅ 且 ∀ i: circle(x_i, y_i, r_i) ⊄ circle(0, 0, R)"
       },
       {
-        "name": "no_containment",
-        "description": "没有任何一个影响区域包含整个原始模具（即每个圆的半径小于原始圆的半径）"
+        "name": "distance_bound",
+        "description": "剩余区域的直径是该区域内任意两点间距离的最大值（几何约束：距离约束）",
+        "formal": "diameter(S) = sup { d(p, q) | p, q ∈ S }"
       }
     ]
   },

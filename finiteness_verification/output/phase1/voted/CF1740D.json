@@ -1,0 +1,153 @@
+{
+  "problem_id": "CF1740D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": false,
+            "permutation": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": false,
+      "permutation": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "permutation_constraint",
+        "description": "初始卡片堆的数字是1到k的一个排列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "目标卡片堆必须按照从1到k的顺序排列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "每次操作只能将卡片移动到相邻的单元格（共享边的单元格）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_type",
+        "description": "每次操作只能移动当前单元格顶部的卡片，并将其放置在目标单元格的顶部",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "permutation_constraint",
+              "description": "初始卡片堆的数字是1到k的一个排列"
+            },
+            {
+              "name": "ordering",
+              "description": "目标卡片堆必须按照从1到k的顺序排列"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "每次操作只能将卡片移动到相邻的单元格（共享边的单元格）"
+            },
+            {
+              "name": "operation_type",
+              "description": "每次操作只能移动当前单元格顶部的卡片，并将其放置在目标单元格的顶部"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一种移动方案，使得从初始位置到目标位置的卡片排列满足给定条件"
+        }
+      }
+    ],
+    "description": "判断是否存在一种移动方案，使得从初始位置到目标位置的卡片排列满足给定条件"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：卡片在移动过程中，每个位置的卡片堆栈状态可以由前一个状态通过合法操作（将顶部卡片移动到相邻单元格）转换而来。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：卡片从起点(1, 1)到终点(n, m)的移动顺序遵循某种拓扑排序，即只有当所有前置条件满足时（例如，目标位置为空或已有的卡片编号大于当前卡片），才能进行移动。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：对于每张卡片的移动路径，可以视为一系列独立的子问题，这些子问题的解法不影响其他卡片的移动路径。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：卡片在移动过程中，每个位置的卡片堆栈状态可以由前一个状态通过合法操作（将顶部卡片移动到相邻单元格）转换而来。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：卡片从起点(1, 1)到终点(n, m)的移动顺序遵循某种拓扑排序，即只有当所有前置条件满足时（例如，目标位置为空或已有的卡片编号大于当前卡片），才能进行移动。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：对于每张卡片的移动路径，可以视为一系列独立的子问题，这些子问题的解法不影响其他卡片的移动路径。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

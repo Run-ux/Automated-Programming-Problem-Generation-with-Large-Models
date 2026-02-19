@@ -1,0 +1,85 @@
+{
+  "problem_id": "CF1942C2",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每个顶点的度数不超过2（即每个顶点最多作为两条对角线的端点）"
+          },
+          {
+            "name": "non_self_intersecting_constraint",
+            "description": "对角线不能相交（即选择的顶点形成的对角线必须是非交叉的）"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "最大化三角形的数量（即通过选择顶点形成尽可能多的三角形）"
+          },
+          {
+            "name": "degree_bound",
+            "description": "可选顶点数量上限为y（即除了Bessie已选择的x个顶点外，最多再选择y个顶点）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化非交叉三角形的数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择顶点形成三角形时，每个子问题的最优解可以合并为全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择当前局部最优的顶点来形成三角形，最终能够达到全局最优。具体来说，在选择顶点时，优先选择能够形成最多三角形的顶点。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过动态规划或类似方法，从一个状态转移到另一个状态的过程中，状态转移的一致性和正确性保持不变。例如，从已选择的顶点集合转移到新的顶点集合时，状态转移规则保持一致。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

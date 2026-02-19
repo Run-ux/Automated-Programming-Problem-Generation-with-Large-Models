@@ -1,0 +1,134 @@
+{
+  "problem_id": "P6683",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "linear_relation",
+        "description": "选取元素的线性组合必须满足给定的比例关系（如盐、胡椒粉和大蒜粉的比例）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "选取的元素集合必须是当前可用元素集合的子集（即只能使用架子上现有的调料瓶）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimum_index_constraint",
+        "description": "在满足比例关系的前提下，选取的元素数量应尽可能少（即使用的瓶子数量最少）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "linear_relation",
+              "description": "选取元素的线性组合必须满足给定的比例关系（如盐、胡椒粉和大蒜粉的比例）",
+              "formal": "存在非负实数 α，使得 ∑(α * S_i) = S_f, ∑(α * P_i) = P_f, ∑(α * G_i) = G_f"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "选取的元素集合必须是当前可用元素集合的子集（即只能使用架子上现有的调料瓶）",
+              "formal": "所选瓶子编号集合 ⊆ 当前架子上的瓶子编号集合"
+            },
+            {
+              "name": "minimum_index_constraint",
+              "description": "在满足比例关系的前提下，选取的元素数量应尽可能少（即使用的瓶子数量最少）",
+              "formal": "minimize |selected_bottles| subject to linear_relation"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求满足给定比例约束的最少元素数量"
+        }
+      }
+    ],
+    "description": "求满足给定比例约束的最少元素数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在当前调料瓶集合中找到满足比例要求的最小瓶子数量可以通过已知的子集最优解推导出来。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每次架子上的调料瓶发生变化（新增或移除）后，通过更新当前状态来维持一个能够反映当前调料瓶集合是否能满足评审员要求的状态，并且该状态可以用于后续的操作。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在当前调料瓶集合中找到满足比例要求的最小瓶子数量可以通过已知的子集最优解推导出来。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次架子上的调料瓶发生变化（新增或移除）后，通过更新当前状态来维持一个能够反映当前调料瓶集合是否能满足评审员要求的状态，并且该状态可以用于后续的操作。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

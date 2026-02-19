@@ -2,14 +2,14 @@
   "problem_id": "CF1682D",
   "source": "codeforces",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 200000
@@ -39,23 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图必须连通（树的定义）",
+        "name": "connectivity",
+        "description": "图必须连通（生成的树必须是连通的）",
         "confidence": "1/1"
       },
       {
-        "name": "edge_count",
-        "description": "边的数量为 n-1（树的定义）",
+        "name": "spanning_constraint",
+        "description": "生成的树必须包含 n 个节点和 n-1 条边",
         "confidence": "1/1"
       },
       {
-        "name": "binary_edge_weight",
-        "description": "二进制字符串 s 的长度为 n，且每个字符为 0 或 1",
-        "confidence": "1/1"
-      },
-      {
-        "name": "adjacent_difference",
-        "description": "相邻节点不能通过直线连接（即相邻节点不能直接相连）",
+        "name": "non_self_intersecting_constraint",
+        "description": "所有边在圆上绘制时不能相交",
         "confidence": "1/1"
       }
     ],
@@ -66,20 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "图必须连通（树的定义）"
+              "name": "connectivity",
+              "description": "图必须连通（生成的树必须是连通的）"
             },
             {
-              "name": "edge_count",
-              "description": "边的数量为 n-1（树的定义）"
+              "name": "spanning_constraint",
+              "description": "生成的树必须包含 n 个节点和 n-1 条边"
             },
             {
-              "name": "binary_edge_weight",
-              "description": "二进制字符串 s 的长度为 n，且每个字符为 0 或 1"
-            },
-            {
-              "name": "adjacent_difference",
-              "description": "相邻节点不能通过直线连接（即相邻节点不能直接相连）"
+              "name": "non_self_intersecting_constraint",
+              "description": "所有边在圆上绘制时不能相交"
             }
           ]
         }
@@ -87,36 +78,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否存在满足条件的生成树"
+          "type": "feasibility",
+          "description": "判断是否存在满足给定条件的生成树"
         }
       }
     ],
-    "description": "判断是否存在满足条件的生成树"
+    "description": "判断是否存在满足给定条件的生成树"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "cycle_invariant",
+        "description": "环不变量：在构造树的过程中，节点之间的连接关系保持环的结构不变，即每个节点只能与相邻节点或跨越其他节点连接以形成一棵树。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：由于节点是按圆形排列的，因此在构建树时可以利用对称性来简化问题。例如，如果一个解决方案适用于某一部分，则可以通过旋转或翻转来应用于其他部分。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在处理每个测试用例时，可以将问题分解为独立的子问题，每个子问题的解不影响其他子问题的解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，满足树的连通性和边的选择条件",
-          "properties": {
-            "subproblem_combination": true
-          }
+          "invariants": [
+            {
+              "name": "cycle_invariant",
+              "description": "环不变量：在构造树的过程中，节点之间的连接关系保持环的结构不变，即每个节点只能与相邻节点或跨越其他节点连接以形成一棵树。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：由于节点是按圆形排列的，因此在构建树时可以利用对称性来简化问题。例如，如果一个解决方案适用于某一部分，则可以通过旋转或翻转来应用于其他部分。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在处理每个测试用例时，可以将问题分解为独立的子问题，每个子问题的解不影响其他子问题的解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，满足树的连通性和边的选择条件"
+    ]
   }
 }

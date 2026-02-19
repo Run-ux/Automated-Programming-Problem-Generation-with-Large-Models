@@ -1,0 +1,149 @@
+{
+  "problem_id": "P2131",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 5000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "ordered": true,
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 5000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "ordered": true,
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subtree_weight_difference",
+        "description": "任意非叶子节点的左子树权值和右子树权值相差不超过1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "leaf_weight_constraint",
+        "description": "叶子结点的权值只能是0或1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_type",
+        "description": "操作类型限制为交换两个叶子结点的权值",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subtree_weight_difference",
+              "description": "任意非叶子节点的左子树权值和右子树权值相差不超过1",
+              "formal": "|weight(left_subtree) - weight(right_subtree)| <= 1"
+            },
+            {
+              "name": "leaf_weight_constraint",
+              "description": "叶子结点的权值只能是0或1",
+              "formal": "leaf_weight ∈ {0, 1}"
+            },
+            {
+              "name": "operation_type",
+              "description": "操作类型限制为交换两个叶子结点的权值",
+              "formal": "swap(leaf1, leaf2)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求使二叉树任意非叶子节点的左右子树权值差不超过1所需的最少操作次数"
+        }
+      }
+    ],
+    "description": "求使二叉树任意非叶子节点的左右子树权值差不超过1所需的最少操作次数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个非叶子节点的平衡状态由其左右子树的平衡状态决定，且可以通过子问题的最优解构造出整个问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在调整子树平衡时，局部最优的选择（即最小化当前子树的不平衡度）能够导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个子树的平衡调整可以独立进行，不受其他子树的影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个非叶子节点的平衡状态由其左右子树的平衡状态决定，且可以通过子问题的最优解构造出整个问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在调整子树平衡时，局部最优的选择（即最小化当前子树的不平衡度）能够导致全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个子树的平衡调整可以独立进行，不受其他子树的影响。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

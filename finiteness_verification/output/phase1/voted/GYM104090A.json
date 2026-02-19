@@ -2,14 +2,14 @@
   "problem_id": "GYM104090A",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -35,18 +35,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "minimum_sum_constraint",
-        "description": "选取两个非负整数 s 和 d，使得 (a_k + s + k * d) % m 的和最小化",
+        "name": "modular_arithmetic",
+        "description": "所有操作和结果都必须在模 m 的意义下进行（模运算约束）",
         "confidence": "1/1"
       },
       {
-        "name": "non_decreasing_sequence",
-        "description": "对序列中的每个元素 a_k 添加一个形式为 s + k * d 的算术级数项",
+        "name": "sum_constraint",
+        "description": "目标是使序列元素的和在模 m 意义下的值最小化（和约束）",
         "confidence": "1/1"
       },
       {
-        "name": "non_negative_values",
-        "description": "选择的 s 和 d 必须是非负整数且小于 m",
+        "name": "linear_relation",
+        "description": "可以向序列中的每个元素添加一个等差数列（s + kd），其中 s 和 d 是非负整数（线性变换约束）",
         "confidence": "1/1"
       }
     ],
@@ -57,16 +57,16 @@
         "result": {
           "constraints": [
             {
-              "name": "minimum_sum_constraint",
-              "description": "选取两个非负整数 s 和 d，使得 (a_k + s + k * d) % m 的和最小化"
+              "name": "modular_arithmetic",
+              "description": "所有操作和结果都必须在模 m 的意义下进行（模运算约束）"
             },
             {
-              "name": "non_decreasing_sequence",
-              "description": "对序列中的每个元素 a_k 添加一个形式为 s + k * d 的算术级数项"
+              "name": "sum_constraint",
+              "description": "目标是使序列元素的和在模 m 意义下的值最小化（和约束）"
             },
             {
-              "name": "non_negative_values",
-              "description": "选择的 s 和 d 必须是非负整数且小于 m"
+              "name": "linear_relation",
+              "description": "可以向序列中的每个元素添加一个等差数列（s + kd），其中 s 和 d 是非负整数（线性变换约束）"
             }
           ]
         }
@@ -74,34 +74,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求序列元素在给定操作后模m的最小和"
+          "type": "minimize_value",
+          "description": "求序列元素在经过特定操作后的最小和模m值"
         }
       }
     ],
-    "description": "求序列元素在给定操作后模m的最小和"
+    "description": "求序列元素在经过特定操作后的最小和模m值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "modular_invariance",
+        "description": "模数运算不变量：在模数m下的运算结果保持一致，即(a + b) % m = ((a % m) + (b % m)) % m",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最小化总和的解可以通过对每个元素独立选择最优的s和d来构造",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过选择合适的s和d，使得序列的最小和可以由每个元素加上s+kd后的最小和组成。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "modular_invariance",
+              "description": "模数运算不变量：在模数m下的运算结果保持一致，即(a + b) % m = ((a % m) + (b % m)) % m",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最小化总和的解可以通过对每个元素独立选择最优的s和d来构造",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过选择合适的s和d，使得序列的最小和可以由每个元素加上s+kd后的最小和组成。"
+    ]
   }
 }

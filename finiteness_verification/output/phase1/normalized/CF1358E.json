@@ -1,0 +1,76 @@
+{
+  "problem_id": "CF1358E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 500000
+        },
+        "value_range": {
+          "min": -1000000000,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "sum_constraint",
+            "description": "每个长度为 k 的子数组的和必须大于 0（即总收益必须为正）",
+            "formal": "∀ i ∈ [1, n-k+1], Σ_{j=i}^{i+k-1} a_j > 0"
+          },
+          {
+            "name": "subsequence_constraint",
+            "description": "前半部分子序列的长度为 ⌈n/2⌉，后半部分子序列的长度为 ⌊n/2⌋ 且所有元素相同",
+            "formal": "a_1, a_2, ..., a_{⌈n/2⌉} 和 a_{⌈n/2⌉+1}, a_{⌈n/2⌉+2}, ..., a_n 其中 a_{⌈n/2⌉+1} = a_{⌈n/2⌉+2} = ... = a_n"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一个长度k的子数组，使得所有长度为k的连续子数组的和都大于0"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：任意连续子区间的和可以通过端点的前缀和差值计算",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：在寻找合适的 k 时，随着 k 的增加，连续子区间的和呈现单调变化趋势",
+            "properties": {
+              "right_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

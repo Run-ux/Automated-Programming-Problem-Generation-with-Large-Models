@@ -2,14 +2,14 @@
   "problem_id": "P11054",
   "source": "luogu",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 2,
             "max": 2
@@ -39,28 +39,28 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "相邻节点取值不同（图着色约束）",
+        "name": "connectivity",
+        "description": "图是连通的，即每对顶点之间都存在一条路径",
         "confidence": "1/1"
       },
       {
-        "name": "graph_connectivity",
-        "description": "图必须连通",
+        "name": "coloring_constraint",
+        "description": "每个顶点的颜色在 0 到 N-1 之间，且没有顶点的颜色是斯芬克斯之色（N）",
         "confidence": "1/1"
       },
       {
-        "name": "path_connectedness",
+        "name": "uniform_color_path",
         "description": "单色路径上的所有顶点颜色相同",
         "confidence": "1/1"
       },
       {
-        "name": "connected_component",
-        "description": "单色分支中的所有顶点通过单色路径连接",
+        "name": "connected_component_color_constraint",
+        "description": "两个顶点在同一个单色分支中当且仅当它们被某条单色路径连接",
         "confidence": "1/1"
       },
       {
-        "name": "color_change_limit",
-        "description": "重新着色实验次数限制",
+        "name": "operation_limit",
+        "description": "重新着色实验最多进行 2750 次",
         "confidence": "1/1"
       }
     ],
@@ -71,29 +71,24 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "相邻节点取值不同（图着色约束）",
-              "formal": "对于所有边 (u, v)，C[u] ≠ C[v]"
+              "name": "connectivity",
+              "description": "图是连通的，即每对顶点之间都存在一条路径"
             },
             {
-              "name": "graph_connectivity",
-              "description": "图必须连通",
-              "formal": "存在一条路径连接任意两个顶点"
+              "name": "coloring_constraint",
+              "description": "每个顶点的颜色在 0 到 N-1 之间，且没有顶点的颜色是斯芬克斯之色（N）"
             },
             {
-              "name": "path_connectedness",
-              "description": "单色路径上的所有顶点颜色相同",
-              "formal": "对于路径 v0, v1, ..., vk，对所有 0 ≤ l < k，C[vl] = C[vl+1]"
+              "name": "uniform_color_path",
+              "description": "单色路径上的所有顶点颜色相同"
             },
             {
-              "name": "connected_component",
-              "description": "单色分支中的所有顶点通过单色路径连接",
-              "formal": "顶点 p 和 q 在同一个单色分支中当且仅当存在一条单色路径连接它们"
+              "name": "connected_component_color_constraint",
+              "description": "两个顶点在同一个单色分支中当且仅当它们被某条单色路径连接"
             },
             {
-              "name": "color_change_limit",
-              "description": "重新着色实验次数限制",
-              "formal": "调用 perform_experiment 的次数不超过 2750 次"
+              "name": "operation_limit",
+              "description": "重新着色实验最多进行 2750 次"
             }
           ]
         }
@@ -101,34 +96,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的顶点颜色数组"
+          "type": "construction",
+          "description": "构造一个顶点颜色数组，使得该数组与图中实际的顶点颜色一致"
         }
       }
     ],
-    "description": "构造一个满足条件的顶点颜色数组"
+    "description": "构造一个顶点颜色数组，使得该数组与图中实际的顶点颜色一致"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：通过多次实验确定每个顶点的颜色，每次实验的结果可以用于推断部分顶点的颜色，最终通过组合这些局部最优解得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每次重新着色实验后，图的单色分支数量发生变化，但这种变化是基于当前颜色状态和实验操作的确定性结果。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在确定每个顶点的颜色时，可以通过独立的实验来验证相邻顶点的颜色关系，不同顶点的颜色确定过程互不影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：通过多次实验确定每个顶点的颜色，每次实验的结果可以用来推断部分顶点的颜色，最终组合成全局解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：通过多次实验确定每个顶点的颜色，每次实验的结果可以用于推断部分顶点的颜色，最终通过组合这些局部最优解得到全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次重新着色实验后，图的单色分支数量发生变化，但这种变化是基于当前颜色状态和实验操作的确定性结果。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在确定每个顶点的颜色时，可以通过独立的实验来验证相邻顶点的颜色关系，不同顶点的颜色确定过程互不影响。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：通过多次实验确定每个顶点的颜色，每次实验的结果可以用来推断部分顶点的颜色，最终组合成全局解"
+    ]
   }
 }

@@ -1,0 +1,82 @@
+{
+  "problem_id": "GYM106063E",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 15000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 100000000
+        },
+        "properties": {
+          "connected": false,
+          "weighted": true,
+          "directed": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "flow_constraint",
+            "description": "每个节点的权重和不超过其容量上限"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "从源节点到汇节点的最大流问题，每条边的流量不能超过其容量"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的出度和入度受到楼梯数量的限制"
+          },
+          {
+            "name": "connectivity",
+            "description": "楼层之间的连通性由楼梯决定，玩家只能通过楼梯移动到下一层"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化每轮结束时存活的玩家数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每层的最大存活玩家数可以通过前一层的最优解计算得出，满足动态规划的最优子结构性质",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从当前层到下一层的状态转移是通过楼梯连接的房间进行的，且每个房间的容量限制了可转移的玩家数量",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

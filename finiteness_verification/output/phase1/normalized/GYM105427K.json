@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 1000000000000000000
@@ -29,8 +29,8 @@
       "result": {
         "constraints": [
           {
-            "name": "query_count_constraint",
-            "description": "读取操作次数上限为 2 * ceil(log2(N)) 次",
+            "name": "operation_limit",
+            "description": "读取操作次数限制为 2 * ceil(log2(N)) 次",
             "formal": "reads <= 2 * ceil(log2(N))"
           }
         ]
@@ -42,8 +42,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断能否在给定的读取次数限制内确定非零字节序列的长度"
+        "type": "feasibility",
+        "description": "确定字符串的实际长度N"
       }
     }
   ],
@@ -52,11 +52,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "搜索区间单调缩小，每次读取操作后，根据返回值调整搜索范围，确保最终定位到目标值N",
-        "properties": {
-          "search_range_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "divide_conquer",
+            "description": "通过二分查找的方式逐步缩小搜索区间，每次查询中间位置的字节来确定字符串的实际长度N的位置。",
+            "properties": {
+              "search_interval_monotonic": true
+            }
+          },
+          {
+            "name": "monotonicity",
+            "description": "在二分查找过程中，左端点和右端点单调地向目标值靠近，且搜索区间单调递减。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true,
+              "window_shrinkable": true
+            }
+          }
+        ]
       }
     }
   ]

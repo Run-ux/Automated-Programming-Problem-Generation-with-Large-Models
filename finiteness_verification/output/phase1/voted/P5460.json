@@ -1,0 +1,151 @@
+{
+  "problem_id": "P5460",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 32
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 32
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "prefix_suffix_elimination",
+        "description": "匹配规则基于前缀，最长前缀优先生效",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "同一时刻不会有多个匹配的规则的前缀一样长",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sequence_pattern_constraint",
+        "description": "事件按顺序处理，每个事件可能是添加或删除规则",
+        "confidence": "1/1"
+      },
+      {
+        "name": "interval_operation_constraint",
+        "description": "查询在指定时间区间内匹配规则的变化次数",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "prefix_suffix_elimination",
+              "description": "匹配规则基于前缀，最长前缀优先生效"
+            },
+            {
+              "name": "distinctness",
+              "description": "同一时刻不会有多个匹配的规则的前缀一样长"
+            },
+            {
+              "name": "sequence_pattern_constraint",
+              "description": "事件按顺序处理，每个事件可能是添加或删除规则"
+            },
+            {
+              "name": "interval_operation_constraint",
+              "description": "查询在指定时间区间内匹配规则的变化次数"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "计算在给定时间区间内，某个元素匹配到的生效规则变化的次数"
+        }
+      }
+    ],
+    "description": "计算在给定时间区间内，某个元素匹配到的生效规则变化的次数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个事件（Add/Del）会导致前缀匹配规则的状态发生变化，且这种变化是基于当前状态的确定性转移。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：在给定的时间区间内，可以将多个事件的影响合并为一个结果，即查询某个IP地址在一段时间内的匹配规则变化次数可以通过合并子区间的答案得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：对于任意一个时间点，最长匹配前缀的规则是基于之前所有事件的最优解。这个问题的解法依赖于子问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个事件（Add/Del）会导致前缀匹配规则的状态发生变化，且这种变化是基于当前状态的确定性转移。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：在给定的时间区间内，可以将多个事件的影响合并为一个结果，即查询某个IP地址在一段时间内的匹配规则变化次数可以通过合并子区间的答案得到。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：对于任意一个时间点，最长匹配前缀的规则是基于之前所有事件的最优解。这个问题的解法依赖于子问题的最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "matrix",
         "length": {
           "min": 1,
           "max": 100000
@@ -16,8 +16,7 @@
           "max": 100000
         },
         "properties": {
-          "ordered": false,
-          "inferred": true
+          "ordered": false
         }
       }
     },
@@ -25,7 +24,7 @@
       "round": 2,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "matrix",
         "length": {
           "min": 1,
           "max": 100000
@@ -35,8 +34,7 @@
           "max": 100000
         },
         "properties": {
-          "ordered": false,
-          "inferred": true
+          "ordered": false
         }
       }
     },
@@ -44,7 +42,7 @@
       "round": 3,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "matrix",
         "length": {
           "min": 1,
           "max": 100000
@@ -54,8 +52,7 @@
           "max": 100000
         },
         "properties": {
-          "ordered": false,
-          "inferred": true
+          "ordered": false
         }
       }
     }
@@ -67,34 +64,19 @@
       "result": {
         "constraints": [
           {
-            "name": "event_inclusion",
-            "description": "时代 i 包含事件 j 当且仅当 (r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2})",
-            "formal": "(r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2})"
+            "name": "ordering",
+            "description": "对于每对事件 (i, j)，如果 (x_i, y_i) ≤ (x_j, y_j)，则形成一次遗憾。",
+            "formal": "∀ i, j (1 ≤ i < j ≤ n), (x_i, y_i) ≤ (x_j, y_j) → 遗憾(i, j)"
           },
           {
-            "name": "regret_definition",
-            "description": "两个事件 i, j 满足 (x_i, y_i) ≤ (x_j, y_j)，则这两个事件形成了一次遗憾",
-            "formal": "(x_i, y_i) ≤ (x_j, y_j)"
+            "name": "inclusion",
+            "description": "每个时代用一个矩形表示，包含所有满足 (r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2}) 的事件。",
+            "formal": "∀ i (1 ≤ i ≤ m), 事件 j 被时代 i 包含 ↔ (r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2})"
           },
           {
-            "name": "tears_of_era",
-            "description": "一个时代的眼泪的大小是该时代内所有事件形成的遗憾次数",
-            "formal": "sum((x_i, y_i) ≤ (x_j, y_j) for all events i, j in era)"
-          },
-          {
-            "name": "special_limit_A",
-            "description": "对于所有时代 i，有 c_{i,1} = 1, c_{i,2} = n",
-            "formal": "c_{i,1} = 1, c_{i,2} = n"
-          },
-          {
-            "name": "special_limit_B",
-            "description": "任意两个不同时代所代表的矩形，它们要么是包含关系（一个矩形在另一个矩形内，边界允许重合），要么是相离关系（两矩形不包含共同点，边界不允许重合）",
-            "formal": "For any two eras i and j, either (r_{i,1}, c_{i,1}) ≤ (r_{j,1}, c_{j,1}) and (r_{i,2}, c_{i,2}) ≥ (r_{j,2}, c_{j,2}) or (r_{i,2}, c_{i,2}) < (r_{j,1}, c_{j,1}) or (r_{j,2}, c_{j,2}) < (r_{i,1}, c_{i,1})"
-          },
-          {
-            "name": "special_limit_C",
-            "description": "最多有 50 对事件 (i, j) (1 ≤ i < j ≤ n) 不满足 (i, p_i) ≤ (j, p_j)",
-            "formal": "count((i, p_i) ≤ (j, p_j) for 1 ≤ i < j ≤ n) ≤ 50"
+            "name": "operation_limit",
+            "description": "每个时代的遗憾次数是该时代内所有事件形成的遗憾的总和。",
+            "formal": "时代 i 的遗憾次数 = ∑ 遗憾(j, k) 其中 (j, k) 是时代 i 内的所有事件对"
           }
         ]
       }
@@ -105,34 +87,34 @@
       "result": {
         "constraints": [
           {
-            "name": "event_inclusion",
-            "description": "时代 i 包含事件 j 当且仅当 (r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2})",
-            "formal": "(r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2})"
+            "name": "ordering",
+            "description": "对于每对事件 (i, j)，如果 (x_i, y_i) ≤ (x_j, y_j)，则形成一次遗憾。",
+            "formal": "∀ i, j (1 ≤ i < j ≤ n), (x_i, y_i) ≤ (x_j, y_j) → 遗憾(i, j)"
           },
           {
-            "name": "regret_definition",
-            "description": "两个事件 i, j 形成一次遗憾当且仅当 (x_i, y_i) ≤ (x_j, y_j)",
-            "formal": "(x_i, y_i) ≤ (x_j, y_j)"
+            "name": "inclusion",
+            "description": "每个时代用一个矩形表示，包含所有满足 (r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2}) 的事件。",
+            "formal": "∀ 时代 i, 事件 j, (r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2}) → 事件 j 在时代 i 内"
           },
           {
-            "name": "tears_of_era",
-            "description": "一个时代的眼泪的大小是该时代内所有事件形成的遗憾次数",
-            "formal": "tears_of_era(i) = |{(j, k) | (x_j, y_j) ≤ (x_k, y_k), 事件 j 和 k 都在时代 i 内}|"
+            "name": "distinctness",
+            "description": "事件的坐标 (i, p_i) 中的 p_i 是 1 到 n 的排列。",
+            "formal": "p_i 是 1 到 n 的排列"
           },
           {
-            "name": "special_limit_A",
-            "description": "对于所有时代 i，有 c_{i,1} = 1, c_{i,2} = n",
-            "formal": "c_{i,1} = 1, c_{i,2} = n"
+            "name": "custom_constraint",
+            "description": "对于所有时代 i，有 c_{i,1} = 1, c_{i,2} = n。",
+            "formal": "∀ 时代 i, c_{i,1} = 1 ∧ c_{i,2} = n"
           },
           {
-            "name": "special_limit_B",
-            "description": "任意两个不同时代所代表的矩形，它们要么是包含关系（一个矩形在另一个矩形内，边界允许重合），要么是相离关系（两矩形不包含共同点，边界不允许重合）",
-            "formal": "对于任意两个时代 i, j，要么 (r_{i,1}, c_{i,1}) ≤ (r_{j,1}, c_{j,1}) 且 (r_{i,2}, c_{i,2}) ≥ (r_{j,2}, c_{j,2})，要么 (r_{i,2}, c_{i,2}) < (r_{j,1}, c_{j,1}) 或 (r_{j,2}, c_{j,2}) < (r_{i,1}, c_{i,1})"
+            "name": "custom_constraint",
+            "description": "任意两个不同时代所代表的矩形，要么是包含关系，要么是相离关系。",
+            "formal": "∀ 时代 i, j (i ≠ j), 矩形 i 包含 矩形 j 或 矩形 i 与 矩形 j 相离"
           },
           {
-            "name": "special_limit_C",
-            "description": "最多有 50 对事件 (i, j) (1 ≤ i < j ≤ n) 不满足 (i, p_i) ≤ (j, p_j)",
-            "formal": "|{(i, j) | 1 ≤ i < j ≤ n, (i, p_i) ≰ (j, p_j)}| ≤ 50"
+            "name": "custom_constraint",
+            "description": "最多有 50 对事件 (i, j) 不满足 (i, p_i) ≤ (j, p_j)。",
+            "formal": "|{(i, j) | (i, p_i) ≰ (j, p_j)}| ≤ 50"
           }
         ]
       }
@@ -143,34 +125,29 @@
       "result": {
         "constraints": [
           {
-            "name": "event_inclusion",
-            "description": "时代 i 包含事件 j 当且仅当 (r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2})",
-            "formal": "(r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2})"
+            "name": "ordering",
+            "description": "对于每对事件 (i, j)，如果 (x_i, y_i) ≤ (x_j, y_j)，则形成一次遗憾。",
+            "formal": "∀ i, j ∈ [1, n], (x_i, y_i) ≤ (x_j, y_j) → 形成一次遗憾"
           },
           {
-            "name": "regret_definition",
-            "description": "两个事件 i, j 形成一次遗憾当且仅当 (x_i, y_i) ≤ (x_j, y_j)",
-            "formal": "(x_i, y_i) ≤ (x_j, y_j)"
+            "name": "inclusion",
+            "description": "一个时代包含的事件必须满足其矩形范围内的坐标条件，即 (r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2})。",
+            "formal": "∀ 时代 i, 事件 j, (r_{i,1}, c_{i,1}) ≤ (x_j, y_j) ≤ (r_{i,2}, c_{i,2}) → 时代 i 包含事件 j"
           },
           {
-            "name": "tears_of_era",
-            "description": "一个时代的眼泪的大小是该时代内所有事件形成的遗憾次数",
-            "formal": "tears_of_era(i) = |{(j, k) | (x_j, y_j) ≤ (x_k, y_k), 事件 j 和 k 都在时代 i 内}|"
+            "name": "custom_constraint",
+            "description": "对于所有时代 i，有 c_{i,1} = 1, c_{i,2} = n。",
+            "formal": "∀ 时代 i, c_{i,1} = 1 ∧ c_{i,2} = n"
           },
           {
-            "name": "special_limit_A",
-            "description": "对于所有时代 i，有 c_{i,1} = 1, c_{i,2} = n",
-            "formal": "c_{i,1} = 1, c_{i,2} = n"
+            "name": "custom_constraint",
+            "description": "任意两个不同时代所代表的矩形，它们要么是包含关系（一个矩形在另一个矩形内，边界允许重合），要么是相离关系（两矩形不包含共同点，边界不允许重合）。",
+            "formal": "∀ 时代 i, j (i ≠ j), 矩形 i 和 矩形 j 要么是包含关系，要么是相离关系"
           },
           {
-            "name": "special_limit_B",
-            "description": "任意两个不同时代所代表的矩形，它们要么是包含关系（一个矩形在另一个矩形内，边界允许重合），要么是相离关系（两矩形不包含共同点，边界不允许重合）",
-            "formal": "对于任意 i ≠ j，(r_{i,1}, r_{i,2}, c_{i,1}, c_{i,2}) 和 (r_{j,1}, r_{j,2}, c_{j,1}, c_{j,2}) 要么满足 (r_{i,1} ≤ r_{j,1} ≤ r_{j,2} ≤ r_{i,2} 且 c_{i,1} ≤ c_{j,1} ≤ c_{j,2} ≤ c_{i,2})，要么满足 (r_{i,2} < r_{j,1} 或 r_{j,2} < r_{i,1} 或 c_{i,2} < c_{j,1} 或 c_{j,2} < c_{i,1})"
-          },
-          {
-            "name": "special_limit_C",
-            "description": "最多有 50 对事件 (i, j) (1 ≤ i < j ≤ n) 不满足 (i, p_i) ≤ (j, p_j)",
-            "formal": "|{(i, j) | 1 ≤ i < j ≤ n 且 (i, p_i) ≰ (j, p_j)}| ≤ 50"
+            "name": "custom_constraint",
+            "description": "最多有 50 对事件 (i, j) (1 ≤ i < j ≤ n) 不满足 (i, p_i) ≤ (j, p_j)。",
+            "formal": "∃ 至多 50 对 (i, j) (1 ≤ i < j ≤ n), (i, p_i) ≰ (j, p_j)"
           }
         ]
       }
@@ -181,24 +158,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算每个时代内包含的所有事件所形成的遗憾次数"
+        "type": "maximize_count",
+        "description": "计算每个给定矩形区域内满足特定顺序关系的点对数量"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算每个时代内包含的所有事件形成的遗憾次数"
+        "type": "maximize_count",
+        "description": "计算每个给定矩形区域内满足特定顺序关系的点对数量"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算每个时代内包含的所有事件形成的遗憾次数"
+        "type": "maximize_count",
+        "description": "计算每个给定矩形区域内满足特定顺序关系的点对数量"
       }
     }
   ],
@@ -207,35 +184,78 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间可合并性，通过前缀和或线段树等数据结构可以高效计算任意区间的遗憾次数",
-        "properties": {
-          "prefix_sum": true,
-          "segment_tree": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "事件的坐标满足单调性，即对于任意两个事件 (i, p_i) 和 (j, p_j)，如果 i < j，则 x_i < x_j。这保证了事件在 x 轴上的顺序是固定的。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": false
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "通过前缀和可以计算区间内的遗憾次数。具体来说，可以通过维护一个前缀数组来快速计算某个时代内包含的所有事件形成的遗憾次数。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "每个时代的遗憾次数可以通过子问题的解来计算。具体来说，可以通过动态规划或分治的方法，将大问题分解为小问题，并通过子问题的解来合成最终结果。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "monotonicity",
-        "description": "事件的坐标满足单调性，可以利用双指针或滑动窗口来高效计算每个时代的眼泪大小",
-        "properties": {
-          "left_monotonic": true,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个时代的眼泪大小可以通过其包含的事件子集计算得出，且该子集的遗憾次数是独立于其他时代的。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和可以高效计算任意区间的遗憾次数，即区间内的遗憾次数可以通过端点差值计算。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：事件按坐标排序后，对于每个时代，其包含的事件范围是单调递增的，可以通过双指针或滑动窗口维护。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间信息可通过子区间合并，适用于前缀和或线段树等数据结构来高效计算时代的眼泪大小",
-        "properties": {
-          "prefix_sum": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个时代的遗憾次数可以通过其包含的事件子集计算得出，且该子集的遗憾次数是独立于其他时代计算的。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：在给定的时代矩形内，事件形成的遗憾次数可以通过区间端点的差值进行计算。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：对于每个时代，其包含的事件集合随着时代矩形的变化而单调变化。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          }
+        ]
       }
     }
   ]

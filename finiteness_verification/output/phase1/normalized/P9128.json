@@ -1,0 +1,94 @@
+{
+  "problem_id": "P9128",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "spanning_constraint",
+            "description": "必须遍历所有节点（生成结构约束，即必须访问每个节点至少一次）"
+          },
+          {
+            "name": "degree_bound",
+            "description": "图是树结构，每个节点的度数不超过 N-1（度数约束，即每个节点最多有 N-1 条边）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径长度取决于节点之间的距离和草生长速率（路径约束，即路径长度由节点间的距离和草生长速率决定）"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每个节点只在第一次访问时需要施肥（操作次数限制，即每个节点只需施肥一次）"
+          },
+          {
+            "name": "state_transition",
+            "description": "节点的草量随时间线性增长（状态转移约束，即节点的草量随时间线性增加）"
+          },
+          {
+            "name": "terminal_vertex_count_constraint",
+            "description": "根据 T 的值，结束节点可以是任意节点或必须回到起始节点（结束节点约束，即根据参数 T 决定是否必须返回起始节点）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求最小化时间和肥料消耗的总和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，每个子树的最优路径和最小化肥量可以独立计算并合并。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在遍历树的过程中，从一个节点到其子节点的状态转移保持一致性，即当前节点的最优解依赖于其子节点的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在树结构中，父节点必须在其所有子节点之前被访问，确保了DFS或BFS等遍历方法的有效性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

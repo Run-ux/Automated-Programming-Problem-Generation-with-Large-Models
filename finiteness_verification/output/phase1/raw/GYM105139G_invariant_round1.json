@@ -4,11 +4,18 @@
   "dimension": "invariant",
   "round": 1,
   "result": {
-    "name": "state_dependency",
-    "description": "当前状态只依赖于有限的前序状态，即每次放置石子后的局面（包括黑白石子的存活情况）仅由上一步的状态和当前操作决定。",
-    "properties": {
-      "dependency_on_previous_states": true
-    }
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每次放置石子后，根据当前棋盘状态更新黑白双方的自由度，并移除自由度为0的石子组。此过程确保了每一步操作后的棋盘状态都是合法且一致的。",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在处理石子移除时，优先移除对方颜色的死石子，再重新计算己方石子的自由度。这一顺序保证了在每一步操作中，先处理依赖关系较高的事件（即移除对方死石子），从而维持了整个游戏进程中的正确性。",
+        "properties": {}
+      }
+    ]
   },
   "status": "success"
 }

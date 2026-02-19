@@ -1,0 +1,80 @@
+{
+  "problem_id": "P3329",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 150
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000
+        },
+        "properties": {
+          "weighted": true,
+          "connected": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "minimum_edge_count",
+            "description": "对于给定的无向图，需要计算所有点对 (s, t) 的最小割容量，并统计其中不超过给定值 x 的点对数量",
+            "formal": "对于每个询问 x，统计满足 min_cut(s, t) <= x 的点对 (s, t) 的数量"
+          },
+          {
+            "name": "undirected_graph",
+            "description": "输入的图是无向图，边有权重",
+            "formal": "G = (V, E) 是无向图，每条边 e ∈ E 有一个权重 c(e)"
+          },
+          {
+            "name": "distinctness",
+            "description": "对于满足条件的点对 (p, q) 和 (q, p)，只统计一次",
+            "formal": "对于每个询问 x，统计满足 min_cut(p, q) <= x 的点对 (p, q)，且 (p, q) 和 (q, p) 只计数一次"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足特定条件的无序点对数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "flow_conservation",
+            "description": "在网络流中，每个节点的流入量等于流出量，除了源点和汇点外，所有节点满足流量守恒性质。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最小割问题可以通过子问题的最优解来构建全局最优解。具体来说，对于任意一个割，其容量可以由子图中的边权值累加得到，并且这些子图的割也是最优的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

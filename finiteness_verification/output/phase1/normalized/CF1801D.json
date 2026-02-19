@@ -1,0 +1,77 @@
+{
+  "problem_id": "CF1801D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "directed_graph",
+        "length": {
+          "min": 1,
+          "max": 3000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "weighted": true,
+          "connected": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "flow_constraint",
+            "description": "从起点到终点的路径上，每条边的权重和不超过初始金额加上通过表演获得的金额"
+          },
+          {
+            "name": "operation_limit",
+            "description": "在每个节点上可以进行多次操作（表演），每次操作增加一定数量的金额"
+          },
+          {
+            "name": "path_constraint",
+            "description": "图中的边是有向的，只能从一个节点指向另一个节点，不能反向"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "求满足条件的最小操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从当前城市到目标城市的最小花费可以通过从当前城市到其他城市的最小花费加上从其他城市到目标城市的最小花费来计算。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每个城市，如果当前拥有的金币不足以支付前往下一个城市的费用，则选择进行表演以获得足够的金币。这种局部最优的选择（尽可能少的表演次数）能够导致全局最优解（最少的表演次数）。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

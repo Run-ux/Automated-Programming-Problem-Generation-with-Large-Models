@@ -1,0 +1,95 @@
+{
+  "problem_id": "CF1137D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "directed_graph",
+        "length": {
+          "min": 2,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 9
+        },
+        "properties": {
+          "connected": true,
+          "directed": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每个节点的出度为1，除了起点和终点外每个节点的入度也为1。起点没有入边，终点有两条入边。",
+            "formal": "∀v ∈ V, outdeg(v) = 1; ∀v ∈ V - {home, finish}, indeg(v) = 1; indeg(home) = 0; indeg(finish) = 2"
+          },
+          {
+            "name": "path_constraint",
+            "description": "图由两部分组成：一个环形路径（表示湖岸）和一条从起点到环形路径的链路（表示从家到湖的路径）。",
+            "formal": "G = (V, E) = (C ∪ P, E_C ∪ E_P), 其中 C 是一个环，P 是一条链，且存在一条从 P 的最后一个节点到 C 中某个节点的边。"
+          },
+          {
+            "name": "query_limit",
+            "description": "查询次数限制为 q = 3 * (t + c)，其中 t 是链路的长度，c 是环的长度。",
+            "formal": "q = 3 * (t + c)"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每次操作必须移动至少一个玩家。",
+            "formal": "每次操作的玩家数量 ≥ 1"
+          },
+          {
+            "name": "state_transition",
+            "description": "每次操作后，Misha 会告知哪些玩家在同一个节点上，哪些玩家在不同的节点上。",
+            "formal": "每次操作后返回 k 个组，每组内的玩家在同一个节点上，不同组的玩家在不同的节点上。"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种策略使得所有玩家能够到达终点"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个玩家的状态（位置）根据移动指令单调变化，且所有玩家最终会汇聚到同一个顶点（终点）",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：图的结构保证了从起点到终点存在一个唯一的路径，使得所有玩家能够按照一定的顺序到达终点",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：在湖边的道路上形成一个环，玩家在环上的移动具有周期性，可以通过多次移动来检测和利用这个环",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "problem_id": "P10756",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subsequence_similarity_constraint",
+        "description": "两个排列的相似度定义为从每个排列中取一个长度为 K 的子区间，计算这两个子区间的交集大小的最大值。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacent_swap_operation",
+        "description": "每一天，排列 p 中的两个相邻元素会互换位置，并且这个变化是永久性的。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "max_similarity_pairs_count",
+        "description": "需要计算达到最大相似度的子区间对的数量。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subsequence_similarity_constraint",
+              "description": "两个排列的相似度定义为从每个排列中取一个长度为 K 的子区间，计算这两个子区间的交集大小的最大值。",
+              "formal": "similarity(p, q) = max(|p[i:i+K] ∩ q[j:j+K]|) for all 0 ≤ i, j < N-K+1"
+            },
+            {
+              "name": "adjacent_swap_operation",
+              "description": "每一天，排列 p 中的两个相邻元素会互换位置，并且这个变化是永久性的。",
+              "formal": "p[t], p[t+1] = p[t+1], p[t] for t in [0, N-2]"
+            },
+            {
+              "name": "max_similarity_pairs_count",
+              "description": "需要计算达到最大相似度的子区间对的数量。",
+              "formal": "count = |{(i, j) | |p[i:i+K] ∩ q[j:j+K]| == similarity(p, q)}|"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求两个排列中长度为K的子区间交集大小的最大值"
+        }
+      }
+    ],
+    "description": "求两个排列中长度为K的子区间交集大小的最大值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过维护前缀信息，可以高效计算任意子区间的交集大小",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每次交换操作后，可以通过更新受影响的子区间信息来维持整体状态的一致性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过维护前缀信息，可以高效计算任意子区间的交集大小",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次交换操作后，可以通过更新受影响的子区间信息来维持整体状态的一致性",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

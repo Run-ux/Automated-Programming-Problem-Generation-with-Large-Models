@@ -1,0 +1,145 @@
+{
+  "problem_id": "CF1574E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 2,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": -1,
+            "max": 1
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": -1,
+      "max": 1
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "sum_constraint",
+        "description": "每个 2x2 子矩阵的元素和必须为 2（即每个 2x2 子矩阵中恰好有两个 1 和两个 0）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "query_limit",
+        "description": "处理三种类型的查询：设置单元格值、清除单元格值、查询当前矩阵的填充方案数",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "结果需要对 998244353 取模",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "sum_constraint",
+              "description": "每个 2x2 子矩阵的元素和必须为 2（即每个 2x2 子矩阵中恰好有两个 1 和两个 0）",
+              "formal": "对于所有 2x2 子矩阵 S，sum(S) = 2"
+            },
+            {
+              "name": "query_limit",
+              "description": "处理三种类型的查询：设置单元格值、清除单元格值、查询当前矩阵的填充方案数",
+              "formal": "处理 k 次查询，每次查询类型为 t_i ∈ {-1, 0, 1}，分别表示清除、查询、设置单元格 (x_i, y_i)"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "结果需要对 998244353 取模",
+              "formal": "result ≡ result % 998244353"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足条件的矩阵填充方案数"
+        }
+      }
+    ],
+    "description": "求满足条件的矩阵填充方案数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个2x2子矩阵的填充方式受到其相邻子矩阵的影响，且这种影响是确定性的，满足状态机DP的状态转移一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：整个矩阵的合法填充方案数可以通过其子矩阵的合法填充方案数递归计算得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：不同子矩阵之间的合法填充方案可以合并，以得到更大范围内的合法填充方案。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个2x2子矩阵的填充方式受到其相邻子矩阵的影响，且这种影响是确定性的，满足状态机DP的状态转移一致性。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：整个矩阵的合法填充方案数可以通过其子矩阵的合法填充方案数递归计算得出。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：不同子矩阵之间的合法填充方案可以合并，以得到更大范围内的合法填充方案。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

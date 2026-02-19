@@ -2,14 +2,14 @@
   "problem_id": "CF1763D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100
@@ -39,18 +39,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "palindromic_path",
-        "description": "序列必须是先递增后递减的双调序列（存在一个峰值点 k，使得 2 ≤ k ≤ n-1，在 k 之前元素递增，在 k 之后元素递减）",
+        "name": "permutation_constraint",
+        "description": "排列必须是先递增后递减的双调排列",
         "confidence": "1/1"
       },
       {
-        "name": "coordinate_fixed_point",
-        "description": "序列中指定位置 i 和 j 的元素值分别为 x 和 y（B[i] = x, B[j] = y），且 x ≠ y",
+        "name": "existence_requirement",
+        "description": "指定位置 i 和 j 的元素值分别为 x 和 y",
         "confidence": "1/1"
       },
       {
-        "name": "position_constraint",
-        "description": "指定位置 i 必须小于 j（i < j）",
+        "name": "distinctness",
+        "description": "排列中的所有元素必须唯一",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "排列在某个点 k 之前严格递增，在 k 之后严格递减",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +66,20 @@
         "result": {
           "constraints": [
             {
-              "name": "palindromic_path",
-              "description": "序列必须是先递增后递减的双调序列（存在一个峰值点 k，使得 2 ≤ k ≤ n-1，在 k 之前元素递增，在 k 之后元素递减）"
+              "name": "permutation_constraint",
+              "description": "排列必须是先递增后递减的双调排列"
             },
             {
-              "name": "coordinate_fixed_point",
-              "description": "序列中指定位置 i 和 j 的元素值分别为 x 和 y（B[i] = x, B[j] = y），且 x ≠ y"
+              "name": "existence_requirement",
+              "description": "指定位置 i 和 j 的元素值分别为 x 和 y"
             },
             {
-              "name": "position_constraint",
-              "description": "指定位置 i 必须小于 j（i < j）"
+              "name": "distinctness",
+              "description": "排列中的所有元素必须唯一"
+            },
+            {
+              "name": "ordering",
+              "description": "排列在某个点 k 之前严格递增，在 k 之后严格递减"
             }
           ]
         }
@@ -78,37 +87,60 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的排列数量"
+          "type": "enumeration",
+          "description": "求满足特定条件的排列数量"
         }
       }
     ],
-    "description": "统计满足条件的排列数量"
+    "description": "求满足特定条件的排列数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合得到，即在确定了某个位置的值后，剩余部分的排列数可以由更小规模的问题递归求解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在构建 bitonic 排列时，前半部分是严格递增的，后半部分是严格递减的。这种单调性保证了排列的 bitonic 性质。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": false
+        }
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过递归或动态规划求解",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解组合得到，即在确定了某个位置的值后，剩余部分的排列数可以由更小规模的问题递归求解。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在构建 bitonic 排列时，前半部分是严格递增的，后半部分是严格递减的。这种单调性保证了排列的 bitonic 性质。",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": false
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过递归或动态规划求解"
+    ]
   }
 }

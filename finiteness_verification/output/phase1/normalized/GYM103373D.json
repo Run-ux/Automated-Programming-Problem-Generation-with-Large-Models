@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "integer",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1
@@ -26,12 +26,20 @@
       "result": {
         "constraints": [
           {
-            "name": "uniform_distribution",
-            "description": "第一个元素随机分配到其他位置，后续元素在自身位置被占用时随机选择一个空位"
+            "name": "permutation_constraint",
+            "description": "乘客的座位分配是一个排列，每个乘客最终会坐在一个唯一的座位上"
           },
           {
-            "name": "operation_independence",
-            "description": "一旦某个位置被占据，该位置不会被重新分配"
+            "name": "fixed_start_node",
+            "description": "第一个乘客（醉汉）随机选择一个座位坐下，其他乘客按顺序登机并选择座位"
+          },
+          {
+            "name": "revisiting_allowed",
+            "description": "一旦某个乘客坐下了，其他乘客不会移动他"
+          },
+          {
+            "name": "random_position_constraint",
+            "description": "如果某个乘客发现自己的座位被占了，他会随机选择一个空位坐下"
           }
         ]
       }
@@ -42,8 +50,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "计算特定事件发生的概率"
+        "type": "minimize_probability",
+        "description": "最小化特定事件发生的概率"
       }
     }
   ],
@@ -52,9 +60,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个乘客的选择仅依赖于当前状态下的座位情况",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "symmetry",
+            "description": "对称性：问题的解与乘客的具体编号无关，只与座位总数和醉酒乘客的行为有关",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：当前乘客的座位选择依赖于之前乘客的选择结果，且最终解可以通过子问题的解合成",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

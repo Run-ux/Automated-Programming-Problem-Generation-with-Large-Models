@@ -1,0 +1,89 @@
+{
+  "problem_id": "GYM106185F",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 97,
+          "max": 98
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "alternating_pattern_constraint",
+            "description": "序列中必须存在交替的子序列，使得从左到右依次交换相邻的不同元素后，能够达到目标状态。",
+            "formal": "存在一个子序列 S 使得 S[i] != S[i+1] 且通过交换 S 中的相邻不同元素可以将初始状态转换为目标状态"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制，最多允许 10,000 次命令。",
+            "formal": "操作次数 <= 10,000"
+          },
+          {
+            "name": "state_transition",
+            "description": "每次操作只能在特定条件下进行，即当前状态必须满足特定的条件才能执行下一步操作。",
+            "formal": "对于每个操作 A 或 B，只有在当前状态满足特定条件时才能执行"
+          },
+          {
+            "name": "operation_order",
+            "description": "操作必须按顺序进行，不能同时进行多个操作。",
+            "formal": "每次只能执行一个操作，且操作之间不能重叠"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一个操作序列，使得初始状态能够转换为目标状态"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次操作后，系统从一个合法状态转移到另一个合法状态，且状态的合法性在操作前后保持不变。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个操作（Amy 或 Bessie 的动作）只影响特定的局部状态，不影响其他部分的状态，从而可以独立处理。",
+            "properties": {}
+          },
+          {
+            "name": "exchange_argument",
+            "description": "交换论证：通过交换相邻元素的位置，逐步逼近目标状态。每一步操作都是局部最优选择，最终能够达到全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

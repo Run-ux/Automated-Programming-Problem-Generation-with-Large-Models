@@ -1,0 +1,79 @@
+{
+  "problem_id": "CF1614E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "state_transition",
+            "description": "状态转移约束：温度在每天根据给定规则进行更新（即从当前温度 P 更新到下一个温度 T）",
+            "formal": "P_{i+1} = f(P_i, T_i)"
+          },
+          {
+            "name": "query_limit",
+            "description": "询问次数限制：每天的查询次数有限制，且总查询次数不超过 2 * 10^5",
+            "formal": "sum(k_i) <= 2 * 10^5"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "模运算约束：查询中的实际温度通过模运算计算得出，即 x_i = (x'_i + lastans) % (10^9 + 1)",
+            "formal": "x_i = (x'_i + lastans) % (10^9 + 1)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造每个查询对应的房屋温度值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：温度变化根据当前温度和外部温度进行确定性转换，满足状态机的转移一致性",
+            "properties": {}
+          },
+          {
+            "name": "prefix_decomposability",
+            "description": "前缀可分解性：每个查询可以基于前一天的结果进行计算，形成一个前缀依赖结构",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

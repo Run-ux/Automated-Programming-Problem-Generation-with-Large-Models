@@ -2,14 +2,14 @@
   "problem_id": "GYM102219C",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 10000
@@ -19,7 +19,7 @@
             "max": 1000000000
           },
           "properties": {
-            "ordered": false
+            "inferred": true
           }
         }
       }
@@ -33,24 +33,24 @@
       "max": 1000000000
     },
     "properties": {
-      "ordered": false
+      "inferred": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_operation_types_constraint",
-        "description": "只能选择一个元素（餐厅）进行处理",
+        "name": "flow_constraint",
+        "description": "选取元素的时间不超过给定的容量上限",
         "confidence": "1/1"
       },
       {
-        "name": "bottleneck_path",
-        "description": "选取元素的时间成本不能超过给定的容量上限 S",
+        "name": "distance_bound",
+        "description": "选取元素的价值减去超出容量的部分，计算最终收益",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "如果选取元素的时间成本超过容量上限，则其价值减少为 f_i - (t_i - S)",
+        "name": "inclusion",
+        "description": "每次只能选择一个元素进行处理",
         "confidence": "1/1"
       }
     ],
@@ -61,18 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_operation_types_constraint",
-              "description": "只能选择一个元素（餐厅）进行处理"
-            },
-            {
-              "name": "bottleneck_path",
-              "description": "选取元素的时间成本不能超过给定的容量上限 S",
+              "name": "flow_constraint",
+              "description": "选取元素的时间不超过给定的容量上限",
               "formal": "t_i <= S"
             },
             {
-              "name": "adjacent_difference",
-              "description": "如果选取元素的时间成本超过容量上限，则其价值减少为 f_i - (t_i - S)",
-              "formal": "value = f_i - (t_i - S) if t_i > S, otherwise value = f_i"
+              "name": "distance_bound",
+              "description": "选取元素的价值减去超出容量的部分，计算最终收益",
+              "formal": "f_i - (t_i - S) if t_i > S, otherwise f_i"
+            },
+            {
+              "name": "inclusion",
+              "description": "每次只能选择一个元素进行处理",
+              "formal": "choose exactly one i in [1, N]"
             }
           ]
         }
@@ -88,26 +89,46 @@
         "status": "success",
         "result": {
           "type": "maximize_value",
-          "description": "最大化选择一个元素后的净收益"
+          "description": "最大化选择一个餐厅后的净收益"
         }
       }
     ],
-    "description": "最大化选择一个元素后的净收益"
+    "description": "最大化选择一个餐厅后的净收益"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个餐厅的选择问题可以分解为更小的子问题，且全局最优解可以通过子问题的最优解组合得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，选择当前情况下最优的餐厅，最终能够得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优解可以通过子问题的最优解组合而成，每个餐厅的选择独立且不影响其他选择，满足最优子结构性质",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个餐厅的选择问题可以分解为更小的子问题，且全局最优解可以通过子问题的最优解组合得到。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，选择当前情况下最优的餐厅，最终能够得到全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优解可以通过子问题的最优解组合而成，每个餐厅的选择独立且不影响其他选择，满足最优子结构性质"
+    ]
   }
 }

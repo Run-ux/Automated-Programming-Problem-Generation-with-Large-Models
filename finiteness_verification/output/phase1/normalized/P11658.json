@@ -1,0 +1,84 @@
+{
+  "problem_id": "P11658",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "pairwise_exclusion",
+            "description": "两个区间 [l, r] 和 [L, R] 的 XOR 集合必须不相交（即 g(l, r) ∩ g(L, R) = ∅）",
+            "formal": "g(l, r) ∩ g(L, R) = ∅ for all l, r, L, R such that r ≤ L"
+          },
+          {
+            "name": "transformation",
+            "description": "对于 01 串 H 中的每个 1，可以任意修改对应位置的 A_i 值，且修改后的值可以不在 [0, 2^k-1] 范围内",
+            "formal": "If H_i = 1, B_i can be any non-negative integer (not necessarily in [0, 2^k-1])"
+          },
+          {
+            "name": "invariance_under_translation",
+            "description": "对于 01 串 H 中的每个 0，对应的 A_i 值不能被修改，即 B_i = A_i",
+            "formal": "If H_i = 0, B_i = A_i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_probability",
+        "description": "求满足条件的01串个数的期望值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即「可用的」01 串 H 的个数可以通过其子区间上的解来计算。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过端点差值可以计算出区间的 XOR 值集合，从而判断两个区间是否存在交集。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在动态规划过程中，状态转移的一致性和正确性保证了算法的正确性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

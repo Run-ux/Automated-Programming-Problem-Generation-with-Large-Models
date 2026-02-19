@@ -1,0 +1,97 @@
+{
+  "problem_id": "P5010",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacency_relation",
+            "description": "相邻元素差值在给定范围内（L < a_i - a_{i-1} < R）",
+            "formal": "∀ i ∈ (1, len], L < a_i - a_{i-1} < R"
+          },
+          {
+            "name": "ordering",
+            "description": "IBvl序列中的元素相对顺序应与原序列中的相对顺序一致",
+            "formal": "若 a_i 在 IBvl 序列中位于 a_j 之前，则在原序列中 a_i 也必须位于 a_j 之前"
+          },
+          {
+            "name": "string_length_constraint",
+            "description": "在所有满足条件的序列中，选择长度最长的序列",
+            "formal": "len = max(len(IBvl)) 其中 IBvl 满足上述约束"
+          },
+          {
+            "name": "kth_smallest_constraint",
+            "description": "输出字典序第 k 小的 IBvl 序列的位置",
+            "formal": "输出第 k 小的 IBvl 序列的每个元素在原序列中的位置"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足条件的最长子序列长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，满足动态规划的基本性质",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：在构建最长IBvl序列的过程中，元素之间的差值保持在给定的范围内，且序列长度随处理过程单调增加",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和等方法可以高效计算区间内的差值，从而判断是否满足IBvl序列的条件",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子问题的解不影响其他子问题的解，可以在动态规划中独立求解",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

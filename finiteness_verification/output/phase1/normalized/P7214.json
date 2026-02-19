@@ -1,0 +1,84 @@
+{
+  "problem_id": "P7214",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "coverage",
+            "description": "区间覆盖约束，选择的治疗方案必须覆盖所有村民（即所有房屋）",
+            "formal": "∪[L_i, R_i] = [1, N]"
+          },
+          {
+            "name": "wave_propagation_constraint",
+            "description": "感染传播约束，如果一个村民被感染，其相邻的村民也会被感染",
+            "formal": "if infected(i), then infected(i-1) and infected(i+1)"
+          },
+          {
+            "name": "revisiting_allowed",
+            "description": "再感染约束，被治愈的村民有可能再次被感染",
+            "formal": "cured(i) -> possibly infected(i) again"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "成本最小化约束，选择的治疗方案总花费最小",
+            "formal": "minimize Σ C_i for selected intervals"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求最小化总花费以满足所有节点被覆盖"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每个时间点上选择最优的治疗方案组合以达到最小花费。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：不同治疗方案覆盖的区间信息可以合并，从而计算出整个区间的治愈状态和总花费。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

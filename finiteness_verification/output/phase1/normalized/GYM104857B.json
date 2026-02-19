@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 500
@@ -28,19 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "fifo_operation_constraint",
-            "description": "只能对队列进行两种操作：从一个队列的前端移除元素并将其添加到另一个队列的后端，或者将一个元素直接添加到某个队列的后端。",
-            "formal": "Operations: dequeue(A) -> enqueue(B), enqueue(A, x), enqueue(B, x)"
+            "name": "ordering",
+            "description": "序列必须能够通过两个队列的操作排序为非递减顺序",
+            "formal": "存在一种操作序列，使得最终队列中的元素按非递减顺序排列"
           },
           {
-            "name": "non_decreasing_sequence",
-            "description": "最终所有元素必须按非递减顺序排列。",
-            "formal": "Final sequence: b_1 <= b_2 <= ... <= b_m"
+            "name": "frequency_bound",
+            "description": "每个整数 i 的出现次数不超过 n",
+            "formal": "0 ≤ a_i ≤ n"
           },
           {
-            "name": "distinct_element_count_constraint",
-            "description": "每个整数 i (1 ≤ i ≤ n) 的出现次数为 a_i，且总共有 m 个整数需要排序。",
-            "formal": "a_i = count(i in b), sum(a_i) = m"
+            "name": "sum_constraint",
+            "description": "所有整数的总和 m 不超过 500",
+            "formal": "1 ≤ ∑(a_i) ≤ 500"
           }
         ]
       }
@@ -51,8 +51,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足条件的序列数量"
+        "type": "enumeration",
+        "description": "求满足条件的序列数量（模998244353）"
       }
     }
   ],
@@ -61,9 +61,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过动态规划方法求解序列的合法性",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即在任意时刻，队列A和B的状态决定了后续操作的可行性。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态到另一个状态的转换是确定且一致的，具体来说，每次从队列A或B中取出元素的操作不会破坏已有的排序顺序。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

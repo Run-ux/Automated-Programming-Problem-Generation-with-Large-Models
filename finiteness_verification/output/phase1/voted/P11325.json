@@ -1,0 +1,176 @@
+{
+  "problem_id": "P11325",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 500000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 500000
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "ordering",
+        "description": "区间左端点按非递减顺序排列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "permutation_constraint",
+        "description": "数组 a 是 1 到 n 的一个排列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "每个区间 [l_i, r_i] 是 [1, n] 的子集",
+        "confidence": "1/1"
+      },
+      {
+        "name": "frequency_bound",
+        "description": "特殊性质 A：满足 c_i > 0 的 i 不超过 1 个",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "ordering",
+              "description": "区间左端点按非递减顺序排列",
+              "formal": "l_1 <= l_2 <= ... <= l_n"
+            },
+            {
+              "name": "ordering",
+              "description": "区间右端点按非递减顺序排列",
+              "formal": "r_1 <= r_2 <= ... <= r_n"
+            },
+            {
+              "name": "permutation_constraint",
+              "description": "数组 a 是 1 到 n 的一个排列",
+              "formal": "a 是 1 到 n 的一个排列"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "每个区间 [l_i, r_i] 是 [1, n] 的子集",
+              "formal": "1 <= l_i <= r_i <= n"
+            },
+            {
+              "name": "frequency_bound",
+              "description": "特殊性质 A：满足 c_i > 0 的 i 不超过 1 个",
+              "formal": "|{i | c_i > 0}| <= 1"
+            },
+            {
+              "name": "frequency_bound",
+              "description": "特殊性质 B：满足 c_i < 0 的 i 不超过 2 个",
+              "formal": "|{i | c_i < 0}| <= 2"
+            },
+            {
+              "name": "frequency_bound",
+              "description": "特殊性质 C：满足 c_i < 0 的 i 不超过 10 个",
+              "formal": "|{i | c_i < 0}| <= 10"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求在所有满足条件的区间组合中，算法结束后 sum 的最大值"
+        }
+      }
+    ],
+    "description": "求在所有满足条件的区间组合中，算法结束后 sum 的最大值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "双指针左右端点单调前进，区间合法性可单调维护",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：队列中的元素始终满足从队头到队尾的值递减",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和计算区间的贡献值",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针左右端点单调前进，区间合法性可单调维护",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：队列中的元素始终满足从队头到队尾的值递减",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和计算区间的贡献值",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

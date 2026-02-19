@@ -1,0 +1,147 @@
+{
+  "problem_id": "P8560",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 3,
+            "max": 3
+          },
+          "value_range": {
+            "min": {
+              "n": 2,
+              "k": 0,
+              "d": 2
+            },
+            "max": {
+              "n": 900000000,
+              "k": 5000000,
+              "d": 900000000
+            }
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 3
+    },
+    "value_range": {
+      "min": {
+        "n": 2,
+        "k": 0,
+        "d": 2
+      },
+      "max": {
+        "n": 900000000,
+        "k": 5000000,
+        "d": 900000000
+      }
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "tree_weight_constraint",
+        "description": "树的权值定义为根节点的所有子树权值之和加上一个常数 d，特别地，单节点树的权值为 1。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "power_sum_constraint",
+        "description": "求所有 n 个节点的这种树的权值的 k 次方和，答案对 998244353 取模。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "tree_weight_constraint",
+              "description": "树的权值定义为根节点的所有子树权值之和加上一个常数 d，特别地，单节点树的权值为 1。",
+              "formal": "weight(T) = sum(weight(T_i)) + d, if T has children; weight(T) = 1, if T is a single node"
+            },
+            {
+              "name": "power_sum_constraint",
+              "description": "求所有 n 个节点的这种树的权值的 k 次方和，答案对 998244353 取模。",
+              "formal": "result = (sum(weight(T)^k for all T with n nodes)) % 998244353"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求所有满足条件的二叉树权值的k次方和，答案对给定模数取模"
+        }
+      }
+    ],
+    "description": "求所有满足条件的二叉树权值的k次方和，答案对给定模数取模"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，即树的权值和可以通过其子树的权值和来计算。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：通过定义状态表示和状态转移方程，确保从较小规模的问题逐步转移到较大规模的问题时，状态转移的一致性和正确性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在动态规划过程中，不同子树的权值计算是相互独立的，可以分别求解后再合并结果。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，即树的权值和可以通过其子树的权值和来计算。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过定义状态表示和状态转移方程，确保从较小规模的问题逐步转移到较大规模的问题时，状态转移的一致性和正确性。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在动态规划过程中，不同子树的权值计算是相互独立的，可以分别求解后再合并结果。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

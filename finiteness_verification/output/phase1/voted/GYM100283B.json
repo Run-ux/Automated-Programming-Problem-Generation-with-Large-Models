@@ -41,18 +41,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图必须连通，即任意两个节点之间至少存在一条路径",
+        "name": "connectivity",
+        "description": "图必须连通（任意两个节点之间至少存在一条路径）",
         "confidence": "1/1"
       },
       {
-        "name": "undirected_graph",
-        "description": "图是无向的，每条边连接两个节点且没有自环和重边",
-        "confidence": "1/1"
-      },
-      {
-        "name": "bottleneck_path",
-        "description": "对于每个节点 i，需要计算从 i 到其他所有节点 j 的 mini-max 路径的成本总和。mini-max 路径是指路径上最大边权值最小的路径",
+        "name": "path_constraint",
+        "description": "对于每个节点，计算到其他所有节点的 mini-max 路径的成本和。mini-max 路径是指连接两个节点且路径上最大边权重最小的路径。",
         "confidence": "1/1"
       }
     ],
@@ -63,16 +58,13 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "图必须连通，即任意两个节点之间至少存在一条路径"
+              "name": "connectivity",
+              "description": "图必须连通（任意两个节点之间至少存在一条路径）"
             },
             {
-              "name": "undirected_graph",
-              "description": "图是无向的，每条边连接两个节点且没有自环和重边"
-            },
-            {
-              "name": "bottleneck_path",
-              "description": "对于每个节点 i，需要计算从 i 到其他所有节点 j 的 mini-max 路径的成本总和。mini-max 路径是指路径上最大边权值最小的路径"
+              "name": "path_constraint",
+              "description": "对于每个节点，计算到其他所有节点的 mini-max 路径的成本和。mini-max 路径是指连接两个节点且路径上最大边权重最小的路径。",
+              "formal": "对于每个节点 i, 计算 ∑_{j=1, j≠i}^N min_max_path_cost(i, j)"
             }
           ]
         }
@@ -80,34 +72,69 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "min_max",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求每个节点到其他所有节点的最小最大路径代价之和"
+          "type": "min_max",
+          "description": "对于每个节点，求其到其他所有节点的最小瓶颈路径的成本之和"
         }
       }
     ],
-    "description": "求每个节点到其他所有节点的最小最大路径代价之和"
+    "description": "对于每个节点，求其到其他所有节点的最小瓶颈路径的成本之和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：从任意节点到其他所有节点的最小最大路径成本可以通过子问题的最优解组合得到",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着路径成本的增加，能够到达的节点集合单调不减",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：在处理不同路径时，可以将多个子路径的信息合并以计算整体路径的成本",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，具体表现为每个节点到其他所有节点的最小最大路径成本可以通过已知的局部最优路径成本计算得出",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：从任意节点到其他所有节点的最小最大路径成本可以通过子问题的最优解组合得到",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着路径成本的增加，能够到达的节点集合单调不减",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：在处理不同路径时，可以将多个子路径的信息合并以计算整体路径的成本",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，具体表现为每个节点到其他所有节点的最小最大路径成本可以通过已知的局部最优路径成本计算得出"
+    ]
   }
 }

@@ -2,14 +2,14 @@
   "problem_id": "P11421",
   "source": "luogu",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -39,23 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_exclusion",
-        "description": "每个整数在匹配集合中出现至多一次（匹配约束）",
+        "name": "matching_constraint",
+        "description": "二元组 (i, j) 构成匹配当且仅当 b_i = 0 且 b_j = 1",
         "confidence": "1/1"
       },
       {
-        "name": "maximum_equal_elements",
-        "description": "在满足匹配条件的前提下，使相等值的二元组数量最多（最大化相等元素对）",
+        "name": "distinctness",
+        "description": "每个整数 i 在极大匹配方案 S_max 中出现至多一次",
         "confidence": "1/1"
       },
       {
-        "name": "maximum_pairwise_matching",
-        "description": "在满足匹配条件和相等值最大化的前提下，使匹配集合的大小最大（最大化匹配集大小）",
-        "confidence": "1/1"
-      },
-      {
-        "name": "pairwise_matching",
-        "description": "二元组 (i, j) 构成匹配当且仅当 b_i = 0 且 b_j = 1（匹配条件）",
+        "name": "constant_value_constraint",
+        "description": "在满足匹配条件的前提下，满足 a_u = a_v 的二元组 (u, v) 数量最多",
         "confidence": "1/1"
       }
     ],
@@ -66,20 +61,20 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_exclusion",
-              "description": "每个整数在匹配集合中出现至多一次（匹配约束）"
+              "name": "matching_constraint",
+              "description": "二元组 (i, j) 构成匹配当且仅当 b_i = 0 且 b_j = 1"
             },
             {
-              "name": "maximum_equal_elements",
-              "description": "在满足匹配条件的前提下，使相等值的二元组数量最多（最大化相等元素对）"
+              "name": "distinctness",
+              "description": "每个整数 i 在极大匹配方案 S_max 中出现至多一次"
             },
             {
-              "name": "maximum_pairwise_matching",
-              "description": "在满足匹配条件和相等值最大化的前提下，使匹配集合的大小最大（最大化匹配集大小）"
+              "name": "matching_constraint",
+              "description": "在满足匹配条件的前提下，极大匹配方案 S_max 的大小 |S_max| 最大"
             },
             {
-              "name": "pairwise_matching",
-              "description": "二元组 (i, j) 构成匹配当且仅当 b_i = 0 且 b_j = 1（匹配条件）"
+              "name": "constant_value_constraint",
+              "description": "在满足匹配条件的前提下，满足 a_u = a_v 的二元组 (u, v) 数量最多"
             }
           ]
         }
@@ -87,34 +82,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_value",
+    "type": "maximize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_value",
-          "description": "求满足条件的最大匹配数量"
+          "type": "maximize_count",
+          "description": "求满足条件的二元组集合的最大大小"
         }
       }
     ],
-    "description": "求满足条件的最大匹配数量"
+    "description": "求满足条件的二元组集合的最大大小"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：极大匹配方案的大小可以通过子问题的最优解来构造，即每个子区间的极大匹配方案可以合并成整个区间的极大匹配方案。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在每次修改操作后，通过维护当前状态（如匹配对的数量和匹配对的具体位置），可以高效地更新极大匹配方案。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：在处理修改操作时，可以通过合并相邻区间的匹配信息来维护全局的极大匹配方案。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：极大匹配方案的大小可以通过子问题的最优解组合而成，即在每次修改后，新的极大匹配方案可以通过之前的极大匹配方案和当前修改的影响来确定。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：极大匹配方案的大小可以通过子问题的最优解来构造，即每个子区间的极大匹配方案可以合并成整个区间的极大匹配方案。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在每次修改操作后，通过维护当前状态（如匹配对的数量和匹配对的具体位置），可以高效地更新极大匹配方案。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：在处理修改操作时，可以通过合并相邻区间的匹配信息来维护全局的极大匹配方案。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：极大匹配方案的大小可以通过子问题的最优解组合而成，即在每次修改后，新的极大匹配方案可以通过之前的极大匹配方案和当前修改的影响来确定。"
+    ]
   }
 }

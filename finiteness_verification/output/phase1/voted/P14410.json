@@ -1,0 +1,169 @@
+{
+  "problem_id": "P14410",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 2000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 999999999
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 999999999
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "degree_bound",
+        "description": "每个节点的度数不超过 1，即每个员工只能进出公司一次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pairwise_exclusion",
+        "description": "任意两个节点的进出时间不重叠，即没有两名员工在同一时刻进出公司",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "选择 K 个节点（员工）持有钥匙，且这些节点的选择是固定的，不能互相传递",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "门锁的状态可以在特定条件下切换，只有持有钥匙的员工或在公司内部的员工可以开关门锁",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "持有钥匙的员工离开公司时可以选择是否关闭门锁，但没有钥匙的员工离开公司时不允许关闭门锁",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "所有返回公司的员工必须能够进入公司，即每个员工返回公司时门锁必须处于开启状态或该员工持有钥匙",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "degree_bound",
+              "description": "每个节点的度数不超过 1，即每个员工只能进出公司一次"
+            },
+            {
+              "name": "pairwise_exclusion",
+              "description": "任意两个节点的进出时间不重叠，即没有两名员工在同一时刻进出公司"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "选择 K 个节点（员工）持有钥匙，且这些节点的选择是固定的，不能互相传递"
+            },
+            {
+              "name": "state_transition",
+              "description": "门锁的状态可以在特定条件下切换，只有持有钥匙的员工或在公司内部的员工可以开关门锁"
+            },
+            {
+              "name": "operation_limit",
+              "description": "持有钥匙的员工离开公司时可以选择是否关闭门锁，但没有钥匙的员工离开公司时不允许关闭门锁"
+            },
+            {
+              "name": "coverage",
+              "description": "所有返回公司的员工必须能够进入公司，即每个员工返回公司时门锁必须处于开启状态或该员工持有钥匙"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化时间区间内门锁关闭的总时间"
+        }
+      }
+    ],
+    "description": "最大化时间区间内门锁关闭的总时间"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在给定钥匙分配的情况下，门锁关闭时间的最大值可以通过子区间内的最优解组合得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每个决策点（员工进出公司时），选择当前最优的开关门策略，以最大化门锁关闭的时间。具体来说，优先选择让持有钥匙的员工在离开时关闭门锁，并在返回时开启门锁。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：门锁关闭的总时间可以通过各个子区间的关闭时间累加得到，即通过计算每个子区间内门锁关闭的时间并累加来得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在给定钥匙分配的情况下，门锁关闭时间的最大值可以通过子区间内的最优解组合得到。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每个决策点（员工进出公司时），选择当前最优的开关门策略，以最大化门锁关闭的时间。具体来说，优先选择让持有钥匙的员工在离开时关闭门锁，并在返回时开启门锁。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：门锁关闭的总时间可以通过各个子区间的关闭时间累加得到，即通过计算每个子区间内门锁关闭的时间并累加来得到全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

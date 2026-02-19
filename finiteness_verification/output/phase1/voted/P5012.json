@@ -1,0 +1,166 @@
+{
+  "problem_id": "P5012",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 2147483647
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 2147483647
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "range_bound",
+        "description": "选择的数 x 必须使得标记区间的个数在给定的 l 和 r 范围内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "得分是每个连续标记区间的长度平方和除以选择的数 x",
+        "confidence": "1/1"
+      },
+      {
+        "name": "query_limit",
+        "description": "有 T 组询问，每组询问需要满足特定条件",
+        "confidence": "1/1"
+      },
+      {
+        "name": "maximum_value_constraint",
+        "description": "输出每一次询问能得到的最大分数和对应的 x，如果无解输出 -1 -1",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "range_bound",
+              "description": "选择的数 x 必须使得标记区间的个数在给定的 l 和 r 范围内",
+              "formal": "l <= count_of_marked_intervals(x) <= r"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "得分是每个连续标记区间的长度平方和除以选择的数 x",
+              "formal": "score = (sum_of_squared_lengths_of_marked_intervals) / x"
+            },
+            {
+              "name": "query_limit",
+              "description": "有 T 组询问，每组询问需要满足特定条件",
+              "formal": "T queries, each with specific conditions"
+            },
+            {
+              "name": "query_limit",
+              "description": "查询是强制在线的，需要根据上一次的结果计算当前的 l 和 r",
+              "formal": "l = (a * lastans + x - 1) % n + 1; r = (b * lastans + y - 1) % n + 1; if (l > r) swap(l, r)"
+            },
+            {
+              "name": "maximum_value_constraint",
+              "description": "输出每一次询问能得到的最大分数和对应的 x，如果无解输出 -1 -1",
+              "formal": "output max(score, x) for each query, or -1 -1 if no solution"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化满足区间个数限制条件下的得分"
+        }
+      }
+    ],
+    "description": "最大化满足区间个数限制条件下的得分"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。对于每个可能的选择x，得分计算依赖于连续标记区间的长度平方和，这些区间可以视为子问题。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：得分是通过计算每个连续标记区间的长度平方和得到的，这些区间的长度可以通过端点差值计算。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着选择的数x的增加，标记的区间数量可能会减少，但每个区间的长度会增加，从而影响得分的变化趋势。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。对于每个可能的选择x，得分计算依赖于连续标记区间的长度平方和，这些区间可以视为子问题。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：得分是通过计算每个连续标记区间的长度平方和得到的，这些区间的长度可以通过端点差值计算。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着选择的数x的增加，标记的区间数量可能会减少，但每个区间的长度会增加，从而影响得分的变化趋势。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

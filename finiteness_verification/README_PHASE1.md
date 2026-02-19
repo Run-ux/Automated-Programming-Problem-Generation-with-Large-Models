@@ -2,7 +2,7 @@
 
 ## 📋 概述
 
-phase1 在 Pilot Run 验证通过后执行，对 1500 题样本进行完整抽取，并生成饱和曲线以判定标签集合是否"有限且可列"。
+phase1 在 Pilot Run 验证通过后执行，对 3000 题样本进行完整抽取，并生成饱和曲线以判定标签集合是否"有限且可列"。
 
 ---
 
@@ -16,24 +16,28 @@ phase1 在 Pilot Run 验证通过后执行，对 1500 题样本进行完整抽�
 
 ---
 
-### Step 1: Phase 1 全量抽取（1500 题）
+### Step 1: Phase 1 全量抽取（3000 题）
 
-使用与 Pilot Run 相同的管线，对 1500 题样本进行抽取：
+使用与 Pilot Run 相同的管线，对 3000 题样本进行抽取：
 
 ```bash
 cd D:\Automated-Programming-Problem-Generation-with-Large-Models
 
 python -m finiteness_verification.extract --input finiteness_verification/data/sample_phase1.json --output finiteness_verification/output/phase1/ --rounds 3 --resume
+
+# 可选参数
+# --temperature 0.4   # 抽取阶段 LLM 采样温度（默认 0.4）
+# --log-level INFO    # 日志级别（DEBUG/INFO/WARNING/ERROR）
 ```
 
-**预计时间**：1500 题 × 4 维 × 3 轮 = 18,000 次 API 调用
+**预计时间**：3000 题 × 4 维 × 3 轮 = 36,000 次 API 调用
 
 - 速率限制：1 秒/次
-- **预计耗时**：约 5 小时（18000 秒 ≈ 5 小时）
+- **预计耗时**：约 10 小时（36000 秒 ≈ 10 小时）
 
 **输出**：
 
-- `finiteness_verification/output/phase1/raw/` — 18,000 个原始 JSON 文件
+- `finiteness_verification/output/phase1/raw/` — 36,000 个原始 JSON 文件
 - `finiteness_verification/output/phase1/logs/extract.log` — 运行日志
 
 **断点续传**：如果中断，使用 `--resume` 参数继续（会跳过已完成文件）
@@ -43,17 +47,26 @@ python -m finiteness_verification.extract --input finiteness_verification/data/s
 ### Step 2: 归一化
 
 ```bash
-python -m finiteness_verification.normalize --input finiteness_verification/output/phase1/raw/ --output finiteness_verification/output/phase1/normalized/
+python -m finiteness_verification.normalize \
+    --input finiteness_verification/output/phase1/raw/ \
+    --output finiteness_verification/output/phase1/normalized/ \
+    --embedding-threshold 0.85
+
+# 可选参数
+# --log-level INFO    # 日志级别（DEBUG/INFO/WARNING/ERROR）
 ```
 
 **说明**：
 
-- 归一化使用 LLM（模型：qwen-flash），每题每维仅调用 1 次
+- 归一化使用“embedding 相似度 + LLM 兜底”（模型：qwen-flash）
+- 每题每维仅调用 1 次 LLM，embedding 用于先行归并相近标签
 
 **输出**：
 
-- `finiteness_verification/output/phase1/normalized/` — 1500 个归一化文件
+- `finiteness_verification/output/phase1/normalized/` — 3000 个归一化文件
 - `finiteness_verification/output/phase1/label_registry/` — 动态标签注册表（四维各一个 JSON）
+
+**断点续跑**：normalize 会自动跳过已存在的 `normalized/{problem_id}.json`，如需重跑可删除对应文件
 
 ---
 
@@ -61,11 +74,14 @@ python -m finiteness_verification.normalize --input finiteness_verification/outp
 
 ```bash
 python -m finiteness_verification.vote --input finiteness_verification/output/phase1/normalized/ --output finiteness_verification/output/phase1/voted/
+
+# 可选参数
+# --log-level INFO    # 日志级别（DEBUG/INFO/WARNING/ERROR）
 ```
 
 **输出**：
 
-- `finiteness_verification/output/phase1/voted/` — 1500 个投票结果文件
+- `finiteness_verification/output/phase1/voted/` — 3000 个投票结果文件（invariant 为多条不变量）
 
 ---
 
@@ -73,17 +89,20 @@ python -m finiteness_verification.vote --input finiteness_verification/output/ph
 
 ```bash
 python -m finiteness_verification.analyze --input finiteness_verification/output/phase1/voted/ --output finiteness_verification/output/phase1/saturation_curves/
+
+# 可选参数
+# --log-level INFO    # 日志级别（DEBUG/INFO/WARNING/ERROR）
 ```
 
 **输出**：
 
-- `labels_per_dimension.json` — 每维的唯一标签集合
-- `saturation_curves/saturation_input_structure.png` — I 维饱和曲线
-- `saturation_curves/saturation_core_constraints.png` — C 维饱和曲线
-- `saturation_curves/saturation_objective.png` — O 维饱和曲线
-- `saturation_curves/saturation_invariant.png` — V 维饱和曲线
-- `saturation_curves/metrics.json` — 收敛指标（R²、尾部新增率、总标签数）
-- `saturation_curves/finiteness_judgment.json` — 有限性判定结果
+- `finiteness_verification/output/phase1/labels_per_dimension.json` — 每维的唯一标签集合
+- `finiteness_verification/output/phase1/saturation_curves/saturation_input_structure.png` — I 维饱和曲线
+- `finiteness_verification/output/phase1/saturation_curves/saturation_core_constraints.png` — C 维饱和曲线
+- `finiteness_verification/output/phase1/saturation_curves/saturation_objective.png` — O 维饱和曲线
+- `finiteness_verification/output/phase1/saturation_curves/saturation_invariant.png` — V 维饱和曲线
+- `finiteness_verification/output/phase1/saturation_curves/metrics.json` — 收敛指标（R²、尾部新增率、总标签数）
+- `finiteness_verification/output/phase1/saturation_curves/finiteness_judgment.json` — 有限性判定结果
 
 ---
 
@@ -92,8 +111,8 @@ python -m finiteness_verification.analyze --input finiteness_verification/output
 ### 检查抽取完整性
 
 ```bash
-# 检查 voted 文件数量（应为 1500）
-python -c "import os; files = os.listdir('finiteness_verification/output/phase1/voted/'); print(f'Voted files: {len(files)}'); assert len(files) == 1500"
+# 检查 voted 文件数量（应为 3000）
+python -c "import os; files = os.listdir('finiteness_verification/output/phase1/voted/'); print(f'Voted files: {len(files)}'); assert len(files) == 3000"
 ```
 
 ### 查看收敛指标
@@ -128,9 +147,9 @@ for dim, judgment in judgments.items():
 
 ### "有限且可列"的量化阈值
 
-| 指标                 | 强收敛（FINITE） | 中等收敛（LIKELY_FINITE） | 不确定（UNCERTAIN） |
-| -------------------- | ---------------- | ------------------------- | ------------------- |
-| **R²**        | > 0.95           | > 0.90                    | > 0.80              |
+| 指标           | 强收敛（FINITE） | 中等收敛（LIKELY_FINITE） | 不确定（UNCERTAIN） |
+| -------------- | ---------------- | ------------------------- | ------------------- |
+| **R²**         | > 0.95           | > 0.90                    | > 0.80              |
 | **尾部新增率** | < 2%             | < 5%                      | < 10%               |
 
 **判定逻辑**：
@@ -152,9 +171,9 @@ for dim, judgment in judgments.items():
 
 ```
 finiteness_verification/output/phase1/
-├── raw/                           # 原始抽取（18,000 个文件）
-├── normalized/                    # 归一化结果（1,500 个文件）
-├── voted/                         # 投票结果（1,500 个文件）
+├── raw/                           # 原始抽取（36,000 个文件）
+-├── normalized/                    # 归一化结果（3,000 个文件）
+-├── voted/                         # 投票结果（3,000 个文件；invariant 为数组）
 ├── labels_per_dimension.json      # 每维标签集合
 ├── saturation_curves/
 │   ├── saturation_input_structure.png
@@ -200,7 +219,7 @@ matplotlib.use('Agg')  # 使用非交互式后端
 
 **原因**：数据点不足或拟合失败
 
-**解决**：检查 voted/ 目录中文件数量是否符合预期（1500 个）
+**解决**：检查 voted/ 目录中文件数量是否符合预期（3000 个）
 
 ---
 

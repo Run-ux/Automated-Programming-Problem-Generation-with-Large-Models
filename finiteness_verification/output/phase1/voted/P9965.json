@@ -1,0 +1,129 @@
+{
+  "problem_id": "P9965",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "每种工具最多只能使用一次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation",
+        "description": "第一类工具可以把一个指定颜色的球变成任意颜色的球",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "每种工具最多只能使用一次",
+              "formal": "每个工具 i 的使用次数 ≤ 1"
+            },
+            {
+              "name": "transformation",
+              "description": "第一类工具可以把一个指定颜色的球变成任意颜色的球",
+              "formal": "对于任意颜色 i，可以将一个 i 颜色的球变成任意颜色 j 的球"
+            },
+            {
+              "name": "transformation",
+              "description": "第二类工具可以把一个指定颜色的球变成两个这种颜色的球",
+              "formal": "对于任意颜色 i，可以将一个 i 颜色的球变成两个 i 颜色的球"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "最大化每种颜色球的数量以及总球数"
+        }
+      }
+    ],
+    "description": "最大化每种颜色球的数量以及总球数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每种颜色的球的最大数量可以通过子问题的最优解来计算，即通过使用工具将一种颜色的球转化为其他颜色的球或增加数量。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，优先使用能够最大化当前颜色球数量的工具，这种局部最优选择最终导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每种颜色的球的最大数量可以通过子问题的最优解来计算，即通过使用工具将一种颜色的球转化为其他颜色的球或增加数量。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，优先使用能够最大化当前颜色球数量的工具，这种局部最优选择最终导致全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

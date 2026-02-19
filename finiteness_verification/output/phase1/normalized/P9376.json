@@ -1,0 +1,79 @@
+{
+  "problem_id": "P9376",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 2,
+          "max": 100000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "每次操作是对一个数进行的，且每次询问间相互独立，即操作不会真的进行。",
+            "formal": "对于每个询问 (l, r, B)，操作次数是独立计算的，不改变原序列 A。"
+          },
+          {
+            "name": "transformation",
+            "description": "定义数 x 在 B 进制下的一次操作为以下两种操作中的任意一种：令 x → ⌊x/B⌋ 或令 x → x * B + t，其中 t ∈ [0, B-1]。",
+            "formal": "x' = ⌊x/B⌋ 或 x' = x * B + t, 其中 t ∈ [0, B-1]"
+          },
+          {
+            "name": "consistency_constraint",
+            "description": "将序列 A 中下标在 [l, r] 之内的数在 B 进制下操作，至少多少次才能将所有数变为相同。",
+            "formal": "min(operations) such that ∀i, j ∈ [l, r], A[i] = A[j] after operations"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "求将区间内所有数变为相同所需的最少操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：将序列中所有数变为相同的操作次数可以通过子区间操作次数的组合来计算",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：不同区间的操作次数可以通过某种方式合并，以得到更大区间的操作次数",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

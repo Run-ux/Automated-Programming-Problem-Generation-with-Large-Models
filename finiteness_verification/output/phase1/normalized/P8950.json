@@ -1,0 +1,85 @@
+{
+  "problem_id": "P8950",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 998244352
+        },
+        "properties": {
+          "weighted": true,
+          "directed": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "reachability_constraint",
+            "description": "所有节点必须能够到达至少一个目标节点（连通性约束）",
+            "formal": "∀v ∈ V, ∃u ∈ K, v 可以通过边集 E 到达 u"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "目标节点集合是从所有节点中等概率随机选择的子集（子集约束）",
+            "formal": "K ⊆ V, |K| = k, 且 K 是从 V 中等概率随机选择的"
+          },
+          {
+            "name": "minimum_cost_flow",
+            "description": "需要找到一种方案使得所有节点都能到达目标节点集合中的至少一个节点，且总费用最小（最小费用流约束）",
+            "formal": "minimize Σ w_i * x_i, s.t. ∀v ∈ V, ∃u ∈ K, v 可以通过边集 E 到达 u, 其中 x_i 表示是否选择边 i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_probability",
+        "description": "最小化在所有可能的k个城市集合中，使得所有城市都能到达至少一个选定城市的最小修建费用的期望值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，适用于动态规划算法",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在网络流模型中，每个节点的流入量等于流出量，适用于最小费用最大流等网络流算法",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在有向无环图（DAG）上，存在一个拓扑排序，使得对于任意边 (u, v)，节点 u 在节点 v 之前，适用于拓扑排序和相关算法",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

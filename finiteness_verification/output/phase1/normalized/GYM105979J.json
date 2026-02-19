@@ -1,0 +1,81 @@
+{
+  "problem_id": "GYM105979J",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "minimum_index_constraint",
+            "description": "团队的总能力由其成员中最小的能力值决定（即团队能力为所有成员能力的最小值）",
+            "formal": "T_a = min(a_1, a_2, ..., a_K)"
+          },
+          {
+            "name": "permutation_constraint",
+            "description": "参与者的技能值是唯一的，形成从 1 到 N 的一个排列",
+            "formal": "a_i ∈ {1, 2, ..., N} 且 a_i 各不相同"
+          },
+          {
+            "name": "subset_sum_modulo_constraint",
+            "description": "计算所有可能的 K 人团队的总能力之和，并对结果取模 998244353",
+            "formal": "sum(T_a) % 998244353"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求所有可能的大小为K的子集的最小值之和，并对结果取模"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即团队能力由其成员中最小的能力决定，而这些成员的选择可以分解为更小规模的问题。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着团队规模的增加，团队的最小能力值呈现非递增趋势。对于给定的N和K，当K增大时，团队的最小能力值不会增加。",
+            "properties": {
+              "right_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "problem_id": "P4649",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 10000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "图必须是无环的（树状结构）"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过 10"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径必须是偶数条边组成的简单回路"
+          },
+          {
+            "name": "exclusion",
+            "description": "路径中不能包含已经访问过的节点或边"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求最小化切断所有偶数长度环所需的总费用"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最小割问题的全局最优解由局部最优割边集组成。",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在网络流模型中，除了源点和汇点外，所有节点的流入量等于流出量，保证了流量平衡。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在求解过程中，不同子问题的解互不影响，可以并行或独立求解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -28,14 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "wave_propagation_constraint",
-            "description": "节点的影响范围是其坐标值加上一个固定偏移量（爆炸半径）的区间内所有节点",
-            "formal": "对于每个节点 i，其影响范围为 [x_i - d_i, x_i + d_i]"
+            "name": "influence_area_coverage",
+            "description": "每个元素的影响范围是其坐标加上或减去一个给定的值（即爆炸半径）",
+            "formal": "∀i, influence(i) = [x_i - d_i, x_i + d_i]"
           },
           {
-            "name": "wave_propagation_constraint",
-            "description": "如果一个节点被激活，则其影响范围内的所有节点也会被激活，并且这些新激活的节点会继续触发它们各自影响范围内的节点",
-            "formal": "若节点 i 被激活，则所有满足 x_j ∈ [x_i - d_i, x_i + d_i] 的节点 j 也将被激活"
+            "name": "reachability_constraint",
+            "description": "如果一个元素被影响，它会进一步影响其影响范围内的所有其他元素，形成传递闭包",
+            "formal": "if i is influenced, then all j in influence(i) are also influenced"
           }
         ]
       }
@@ -47,7 +47,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计满足条件的节点数量"
+        "description": "求从给定点出发，通过连通性传递影响的节点总数"
       }
     }
   ],
@@ -56,12 +56,26 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "双指针左右端点单调前进，区间合法性可单调维护",
-        "properties": {
-          "left_monotonic": true,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：通过子区间的爆炸范围合并，可以计算出总爆炸范围",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：爆炸范围的扩展是单调递增的，一旦某个矿被引爆，其影响范围内的所有矿也会被引爆",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个矿的状态（是否已爆炸）在遍历过程中保持一致，且新的爆炸事件会导致状态更新",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

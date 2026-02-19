@@ -1,0 +1,86 @@
+{
+  "problem_id": "GYM101590B",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 86399
+        },
+        "value_range": {
+          "min": 0,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "intersection",
+            "description": "每个区间只能选择一个，且不能有重叠（互斥约束）",
+            "formal": "对于任意两个区间 [s1, e1] 和 [s2, e2]，如果选择其中一个，则另一个不能被选择，即 (e1 <= s2 或 e2 <= s1)"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "选取区间的总时间不超过一天的时间上限（容量约束）",
+            "formal": "∑(e_i - s_i) ≤ 86400"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "最终收益必须非负（利润约束）",
+            "formal": "总收益 ≥ 0"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化在给定时间区间内选择不重叠区间的总收益"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，每个子问题表示在某个时间点之前的最大收益。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：对于任意两个时间点，如果一个时间点晚于另一个时间点，则其对应的最优解不会早于前一个时间点的最优解。",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过计算每个区间的净收益（收益减去成本），可以将这些净收益累加来得到总收益。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

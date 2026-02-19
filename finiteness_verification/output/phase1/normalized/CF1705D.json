@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 3,
           "max": 200000
@@ -28,12 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "相邻节点取值不同（操作只能改变相邻三个节点的状态）"
+            "name": "transformation",
+            "description": "通过特定操作将初始状态转换为目标状态（状态转移约束）",
+            "formal": "s -> t 通过一系列翻转操作"
           },
           {
-            "name": "transformation_exclusion",
-            "description": "初始状态和目标状态之间存在可行的转换路径，否则输出 -1"
+            "name": "operation_limit",
+            "description": "操作次数最小化（操作次数限制）",
+            "formal": "minimize number of operations to transform s to t"
           }
         ]
       }
@@ -44,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_cost",
-        "description": "求将一个二进制串转换为另一个二进制串所需的最少操作次数"
+        "type": "minimize_count",
+        "description": "求将一个二进制字符串转换为另一个二进制字符串所需的最小操作次数"
       }
     }
   ],
@@ -54,11 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题的解是独立且最优的",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。对于任意一个位置，其状态转换依赖于前一个位置的状态。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前状态仅由前一状态和操作决定，且这种状态转移是确定性的。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

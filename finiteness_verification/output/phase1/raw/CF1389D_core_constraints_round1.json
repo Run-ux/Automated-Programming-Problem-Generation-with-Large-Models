@@ -6,19 +6,19 @@
   "result": {
     "constraints": [
       {
-        "name": "capacity_constraint",
-        "description": "选取元素权重和不超过容量上限（总交集长度需达到或超过 k）",
-        "formal": "I >= k"
+        "name": "sum_constraint",
+        "description": "总交集长度需要达到或超过给定的阈值 k",
+        "formal": "∑ intersection_length([al_i, ar_i], [bl_i, br_i]) >= k"
       },
       {
-        "name": "interval_extension",
-        "description": "区间可以向左或向右扩展一个单位长度",
-        "formal": "transform [x, y] to [x-1, y] or [x, y+1]"
+        "name": "range_bound",
+        "description": "每个区间的端点在扩展过程中必须保持有序性，即左端点小于等于右端点",
+        "formal": "∀ i, al_i ≤ ar_i ∧ bl_i ≤ br_i"
       },
       {
-        "name": "initial_intervals_equal",
-        "description": "初始时，所有区间的值相同",
-        "formal": "∀i, [al_i, ar_i] = [l_1, r_1] and [bl_i, br_i] = [l_2, r_2]"
+        "name": "operation_limit",
+        "description": "每次操作只能选择一个区间并将其扩展 1 个单位长度",
+        "formal": "∀ i, (al_i' = al_i - 1 ∧ ar_i' = ar_i) ∨ (al_i' = al_i ∧ ar_i' = ar_i + 1) ∨ (bl_i' = bl_i - 1 ∧ br_i' = br_i) ∨ (bl_i' = bl_i ∧ br_i' = br_i + 1)"
       }
     ]
   },

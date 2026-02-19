@@ -1,0 +1,138 @@
+{
+  "problem_id": "P11678",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 500000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 500000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "cost_constraint",
+        "description": "每条水渠的使用成本与提供的水量成正比，且只能为相邻两个节点提供等量的水",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "每条水渠只能灌溉相邻的两株植物",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "计算前 i-1 条水渠灌溉前 i 株植物的最小费用",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "cost_constraint",
+              "description": "每条水渠的使用成本与提供的水量成正比，且只能为相邻两个节点提供等量的水",
+              "formal": "cost(i, k) = c_i * k, where k is the amount of water provided to both plant i and i+1"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "每条水渠只能灌溉相邻的两株植物",
+              "formal": "watering(i, k) affects plants i and i+1"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "计算前 i-1 条水渠灌溉前 i 株植物的最小费用",
+              "formal": "min_cost[i] = min cost to water plants 1 to i using channels 1 to i-1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足条件的最小费用"
+        }
+      }
+    ],
+    "description": "求满足条件的最小费用"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即前 i 株植物的最小灌溉费用可以由前 i-1 株植物的最小灌溉费用和第 i 条水渠的使用情况推导出来。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着考虑的植物数量增加，所使用的水渠数量也单调递增，不会出现回退现象。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即前 i 株植物的最小灌溉费用可以由前 i-1 株植物的最小灌溉费用和第 i 条水渠的使用情况推导出来。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着考虑的植物数量增加，所使用的水渠数量也单调递增，不会出现回退现象。",
+              "properties": {
+                "right_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

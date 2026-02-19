@@ -1,0 +1,151 @@
+{
+  "problem_id": "CF1023D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 200000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 200000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "range_bound",
+        "description": "数组中的每个元素值必须在1到q之间（0表示可以是任意1到q之间的值）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "每个位置从1到n至少被一个查询覆盖",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "数组中的非零元素值必须按照查询顺序递增，即如果a[i]和a[j]都是非零且i < j，则a[i] ≤ a[j]",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "range_bound",
+              "description": "数组中的每个元素值必须在1到q之间（0表示可以是任意1到q之间的值）",
+              "formal": "1 ≤ a[i] ≤ q 或 a[i] = 0"
+            },
+            {
+              "name": "coverage",
+              "description": "每个位置从1到n至少被一个查询覆盖",
+              "formal": "∀ i ∈ [1, n], ∃ j ∈ [1, q] 使得 l_j ≤ i ≤ r_j"
+            },
+            {
+              "name": "ordering",
+              "description": "数组中的非零元素值必须按照查询顺序递增，即如果a[i]和a[j]都是非零且i < j，则a[i] ≤ a[j]",
+              "formal": "对于所有 i, j (1 ≤ i < j ≤ n)，若 a[i] ≠ 0 且 a[j] ≠ 0，则 a[i] ≤ a[j]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断给定数组是否可以通过一系列区间更新操作得到，并在可行时构造一个满足条件的数组"
+        }
+      }
+    ],
+    "description": "判断给定数组是否可以通过一系列区间更新操作得到，并在可行时构造一个满足条件的数组"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "查询操作的顺序决定了数组中元素值的单调性，即对于任意位置i和j，如果i < j且a[i] != 0且a[j] != 0，则a[i] <= a[j]。这是因为后一个查询会覆盖前一个查询的结果。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间更新操作可以合并处理，即多个连续的相同值区间可以通过一次查询操作来实现。这保证了最终数组的可恢复性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移过程中，每个位置的状态（值）仅依赖于其左侧最近的非零值以及当前查询编号。这种状态转移的一致性确保了数组的正确恢复。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "查询操作的顺序决定了数组中元素值的单调性，即对于任意位置i和j，如果i < j且a[i] != 0且a[j] != 0，则a[i] <= a[j]。这是因为后一个查询会覆盖前一个查询的结果。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间更新操作可以合并处理，即多个连续的相同值区间可以通过一次查询操作来实现。这保证了最终数组的可恢复性。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移过程中，每个位置的状态（值）仅依赖于其左侧最近的非零值以及当前查询编号。这种状态转移的一致性确保了数组的正确恢复。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

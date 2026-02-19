@@ -1,0 +1,89 @@
+{
+  "problem_id": "GYM103960D",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 3,
+          "max": 3
+        },
+        "value_range": {
+          "min": {
+            "N": 1,
+            "x": 0,
+            "y": 0
+          },
+          "max": {
+            "N": 20,
+            "x": 1048575,
+            "y": 1048575
+          }
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "state_transition",
+            "description": "粒子的位置更新规则为：激活吸引子后，粒子移动到当前位置和吸引子位置的中点"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "粒子的初始位置固定在 (2^(N-1), 2^(N-1))"
+          },
+          {
+            "name": "connectivity",
+            "description": "目标位置 (x, y) 必须是可以通过激活吸引子达到的"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "求将粒子从初始位置移动到目标位置所需的最少操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：粒子位置的更新始终通过与吸引点的中点计算，确保了状态转移的一致性和可预测性。",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：问题可以通过递归地将大问题分解为子问题来解决，每个子问题的解可以合并以得到最终解。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "二分搜索不变量：在确定吸引点激活次数的过程中，搜索区间单调缩小，确保了搜索过程的有效性。",
+            "properties": {
+              "search_interval_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

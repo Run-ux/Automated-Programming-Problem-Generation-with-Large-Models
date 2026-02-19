@@ -2,14 +2,14 @@
   "problem_id": "P5313",
   "source": "luogu",
   "input_structure": {
-    "type": "array",
+    "type": "matrix",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "array",
+          "type": "matrix",
           "length": {
             "min": 1,
             "max": 100000
@@ -27,7 +27,7 @@
         "round": 2,
         "status": "success",
         "result": {
-          "type": "array",
+          "type": "matrix",
           "length": {
             "min": 1,
             "max": 100000
@@ -45,7 +45,7 @@
         "round": 3,
         "status": "success",
         "result": {
-          "type": "array",
+          "type": "matrix",
           "length": {
             "min": 1,
             "max": 100000
@@ -75,14 +75,14 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "arithmetic_sequence_within_range",
-        "description": "存在一个 a，满足 0 ≤ a < b，使得 a, a+b, a+2b, ..., a+(x-1)b 都在区间 [l, r] 内至少出现过一次。",
-        "confidence": "2/3"
+        "name": "range_bound",
+        "description": "输出最大的 x，使得存在一个满足条件的等差数列",
+        "confidence": "3/3"
       },
       {
-        "name": "no_valid_solution_for_a",
-        "description": "如果不存在 [0, b-1] 内的数，则输出 0。",
-        "confidence": "2/3"
+        "name": "range_continuity",
+        "description": "存在一个等差数列，其公差为 b，首项 a 满足 0 ≤ a < b，且该数列的所有项都在区间 [l, r] 内至少出现一次",
+        "confidence": "3/3"
       }
     ],
     "all_rounds": [
@@ -92,14 +92,19 @@
         "result": {
           "constraints": [
             {
-              "name": "arithmetic_sequence_within_range",
-              "description": "存在一个 a，满足 0 ≤ a < b，使得 a, a+b, a+2b, ..., a+(x-1)b 都在区间 [l, r] 内至少出现过一次。",
-              "formal": "∃a (0 ≤ a < b) s.t. ∀i (0 ≤ i < x), a + i * b ∈ [l, r]"
+              "name": "range_continuity",
+              "description": "存在一个等差数列，其公差为 b，首项 a 满足 0 ≤ a < b，且该数列的所有项都在区间 [l, r] 内至少出现一次",
+              "formal": "∃a (0 ≤ a < b) 使得 ∀i (0 ≤ i < x), a + i * b ∈ [l, r] 且 a + i * b 在序列中至少出现一次"
             },
             {
-              "name": "no_valid_solution_for_a",
-              "description": "如果不存在 [0, b-1] 内的数，则输出 0。",
-              "formal": "if ∀a (0 ≤ a < b), a ∉ [l, r] then output 0"
+              "name": "range_bound",
+              "description": "输出最大的 x，使得存在一个满足条件的等差数列",
+              "formal": "max(x) 使得 ∃a (0 ≤ a < b) 使得 ∀i (0 ≤ i < x), a + i * b ∈ [l, r] 且 a + i * b 在序列中至少出现一次"
+            },
+            {
+              "name": "exclusion",
+              "description": "如果不存在满足条件的 a，则输出 0",
+              "formal": "若 ∀a (0 ≤ a < b) 使得 ∄i (0 ≤ i < x), a + i * b ∈ [l, r] 或 a + i * b 不在序列中，则输出 0"
             }
           ]
         }
@@ -110,14 +115,14 @@
         "result": {
           "constraints": [
             {
-              "name": "arithmetic_sequence_within_range",
-              "description": "存在一个 a，满足 0 ≤ a < b，使得 a, a+b, a+2b, ..., a+(x-1)b 都在区间 [l, r] 内至少出现过一次。",
-              "formal": "∃a (0 ≤ a < b) s.t. ∀i (0 ≤ i < x), a + i * b ∈ [l, r]"
+              "name": "range_continuity",
+              "description": "存在一个等差数列，其项在给定区间内至少出现一次",
+              "formal": "∃a, 0 ≤ a < b, ∀i ∈ [0, x-1], a + i * b ∈ [l, r] 且 a + i * b 在序列中出现"
             },
             {
-              "name": "no_valid_solution_for_a",
-              "description": "如果不存在 [0, b-1] 内的数，则输出 0。",
-              "formal": "if ∀a (0 ≤ a < b), a ∉ [l, r] then output 0"
+              "name": "range_bound",
+              "description": "找到最大的 x 使得等差数列的每一项都在区间 [l, r] 内至少出现一次",
+              "formal": "max(x) s.t. ∃a, 0 ≤ a < b, ∀i ∈ [0, x-1], a + i * b ∈ [l, r] 且 a + i * b 在序列中出现"
             }
           ]
         }
@@ -128,24 +133,14 @@
         "result": {
           "constraints": [
             {
-              "name": "sequence_values_in_range",
-              "description": "序列中的每个元素都在 [0, 10^5] 范围内。",
-              "formal": "0 <= A[i] <= 10^5 for all i in [0, n-1]"
+              "name": "range_continuity",
+              "description": "存在一个等差数列，其首项 a 和公差 b 满足 0 ≤ a < b，且该数列的所有项都在给定区间 [l, r] 内至少出现一次",
+              "formal": "∃a, b (0 ≤ a < b) 使得 ∀i ∈ [0, x-1], a + i * b ∈ [l, r] 且在序列中至少出现一次"
             },
             {
-              "name": "query_value_in_range",
-              "description": "每次查询的 l 和 r 必须满足 0 ≤ l ≤ r < n。",
-              "formal": "0 <= l <= r < n"
-            },
-            {
-              "name": "b_positive_integer",
-              "description": "每次查询的 b 必须是正整数。",
-              "formal": "b > 0"
-            },
-            {
-              "name": "arithmetic_sequence_exists",
-              "description": "对于每次查询，需要找到最大的 x，使得存在一个 a (0 ≤ a < b)，使得 a, a+b, a+2b, ..., a+(x-1)b 都在区间 [l, r] 内至少出现过一次。如果不存在这样的 a，则输出 0。",
-              "formal": "max(x) such that ∃a (0 ≤ a < b) and ∀i (0 ≤ i < x), A[l:r] contains a + i * b"
+              "name": "range_bound",
+              "description": "输出最大的 x，使得存在一个等差数列满足上述条件",
+              "formal": "max(x) 使得 ∃a, b (0 ≤ a < b) 使得 ∀i ∈ [0, x-1], a + i * b ∈ [l, r] 且在序列中至少出现一次"
             }
           ]
         }
@@ -153,73 +148,114 @@
     ]
   },
   "objective": {
-    "type": "max_value",
+    "type": "maximize_value",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "max_value",
-          "description": "对于每个查询操作，输出最大的x，使得存在一个a，满足0≤a<b，使得a, a+b, a+2b, …, a+(x-1)b都在区间[l, r]内至少出现过一次。"
+          "type": "maximize_value",
+          "description": "求满足条件的最长子序列长度"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "max_value",
-          "description": "求满足条件的最大x值，使得存在一个a，满足0≤a<b，使得a, a+b, a+2b, ..., a+(x-1)b都在区间[l, r]内至少出现过一次"
+          "type": "maximize_value",
+          "description": "求满足条件的最长子数组长度"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "max_value",
-          "description": "求满足条件的最大x值，使得存在一个a，满足0≤a<b，使得a, a+b, a+2b, …, a+(x-1)b都在区间[l, r]内至少出现过一次"
+          "type": "maximize_value",
+          "description": "求满足条件的最长子数组长度"
         }
       }
     ],
-    "description": "对于每个查询操作，输出最大的x，使得存在一个a，满足0≤a<b，使得a, a+b, a+2b, …, a+(x-1)b都在区间[l, r]内至少出现过一次。"
+    "description": "求满足条件的最长子序列长度"
   },
   "invariant": {
-    "name": "interval_mergeable",
-    "confidence": "3/3",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个查询操作的解可以通过子区间的解来构建，即查询 [l, r] 的解可以通过查询 [l, mid] 和 [mid+1, r] 的解来得到。",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：通过线段树等数据结构，可以将子区间的查询结果合并为父区间的查询结果，从而支持高效的区间查询。",
+        "confidence": "3/3",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间信息可通过子区间合并，前缀和或线段树等数据结构支持区间查询与更新。",
-          "properties": {
-            "prefix_sum_computable": true,
-            "segment_tree_applicable": true
-          }
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：通过线段树等数据结构，可以将子区间的查询结果合并为父区间的查询结果，从而支持高效的区间查询。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个查询操作的解可以通过子区间的解来构建，即查询 [l, r] 的解可以通过查询 [l, mid] 和 [mid+1, r] 的解来得到。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间信息可通过子区间合并，支持高效的区间查询和更新操作",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间信息可通过子区间合并，支持区间查询和更新操作",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解可以通过子问题的最优解组合得到，适用于动态规划或分治法",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间信息可通过子区间合并，适用于前缀和或线段树等数据结构中区间的操作",
-          "properties": {
-            "prefix_sum_calculable": true
-          }
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间信息可通过子区间合并，支持区间查询和更新操作",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解可以通过子问题的最优解组合得到，适用于动态规划或分治法",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "在处理区间查询时，区间的边界单调变化，确保查询效率",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "区间信息可通过子区间合并，前缀和或线段树等数据结构支持区间查询与更新。"
+    ]
   }
 }

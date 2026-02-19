@@ -1,0 +1,75 @@
+{
+  "problem_id": "GYM106331F",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "weighted": true,
+          "directed": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "每个节点有一个唯一的父节点（树结构约束）",
+            "formal": "∀i, 1 ≤ p[i] ≤ n 且 p[i] ≠ i"
+          },
+          {
+            "name": "accumulated_sum_constraint",
+            "description": "击败一个节点后，其父节点的值会增加该节点的值（累积约束）",
+            "formal": "v[p[i]] += v[i]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化路径上的权值和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，通过解决每个子树的最大风格值来构建全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量，当前节点的状态由其子节点的状态决定，且状态转移函数保持一致性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "problem_id": "P5467",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200
+        },
+        "value_range": {
+          "min": -1000000,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "convexity",
+            "description": "多边形是凸的（对于部分数据）",
+            "formal": "对于任意三点 A, B, C 在多边形上，三角形 ABC 的内部完全包含在多边形内"
+          },
+          {
+            "name": "invariance_under_translation",
+            "description": "多边形绕原点旋转后，其内部点的相对位置不变",
+            "formal": "对于任意角度 α，旋转后的多边形 P' 与原多边形 P 有相同的内部点集"
+          },
+          {
+            "name": "intersection",
+            "description": "计算点是否严格在多边形内部",
+            "formal": "对于任意点 (x, y)，判断其是否严格在多边形 P 内部"
+          },
+          {
+            "name": "geometric_angle_constraint",
+            "description": "旋转角度区间内的概率分布",
+            "formal": "P_i = (Σ(r_j - l_j)) / (2π)，其中 (l_j, r_j) 是旋转后恰好消灭 i 个敌人的角度区间"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_probability",
+        "description": "最大化期望消灭的敌人数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "convexity",
+            "description": "凸性不变量：多边形的旋转角度与消灭敌人的数量之间的关系满足凸性结构，可以通过几何性质进行计算",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：在所有可能的旋转角度范围内，消灭特定数量敌人的角度区间可以被分解为多个子区间，并且这些区间的长度可以直接相加来计算概率",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

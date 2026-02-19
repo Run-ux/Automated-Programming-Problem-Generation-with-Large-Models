@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 500000
@@ -26,9 +26,14 @@
       "result": {
         "constraints": [
           {
-            "name": "maximum_gcd_product_constraint",
-            "description": "对于每个区间 [i, j]，计算该区间内的最大值与 gcd(i, j) 的平方的乘积，并累加所有区间的乘积结果。",
-            "formal": "sum_{i=1}^N sum_{j=i}^N (max(a_i, a_{i+1}, ..., a_j) * gcd(i, j)^2) % (10^9 + 7)"
+            "name": "sum_constraint",
+            "description": "求和约束：计算区间内最大值与区间端点的gcd平方的乘积之和",
+            "formal": "sum_{i=1}^N sum_{j=i}^N max(a_i, a_{i+1}, ..., a_j) * gcd(i, j)^2"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "模运算约束：最终结果需要对 10^9 + 7 取模",
+            "formal": "result % (10^9 + 7)"
           }
         ]
       }
@@ -40,7 +45,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "求所有子区间内最大值与区间端点最大公约数平方乘积的总和"
+        "description": "求所有子数组的最大值与子数组起始和结束位置最大公约数平方的乘积之和"
       }
     }
   ],
@@ -49,9 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解可以通过子问题的解组合而成，适用于动态规划方法求解区间最大值和GCD平方乘积的累积和",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即最大值和GCD的计算可以分解为更小范围内的子问题。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和等方法，可以在常数时间内计算任意区间的最大值和GCD的乘积。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

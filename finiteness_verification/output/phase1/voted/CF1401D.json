@@ -2,14 +2,14 @@
   "problem_id": "CF1401D",
   "source": "codeforces",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 2,
             "max": 100000
@@ -41,28 +41,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "tree_structure",
-        "description": "输入的图必须是一棵树（无环连通图）",
+        "name": "connectivity",
+        "description": "图必须连通（树结构）",
         "confidence": "1/1"
       },
       {
-        "name": "weighted_graph",
-        "description": "每条边必须被标记一个整数",
+        "name": "sum_constraint",
+        "description": "所有节点对之间的路径和的最大值，即最大化分布指数",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_sum_constraint",
-        "description": "定义 f(u, v) 为从节点 u 到节点 v 的简单路径上所有边标记值的和",
-        "confidence": "1/1"
-      },
-      {
-        "name": "value_distribution_rule",
-        "description": "分布指数定义为所有节点对 (i, j) 的 f(i, j) 之和，其中 1 ≤ i < j ≤ n",
-        "confidence": "1/1"
-      },
-      {
-        "name": "modulo_expected_value_constraint",
-        "description": "结果需要对 10^9 + 7 取模",
+        "name": "modular_arithmetic",
+        "description": "结果需要取模 10^9 + 7",
         "confidence": "1/1"
       }
     ],
@@ -73,24 +63,16 @@
         "result": {
           "constraints": [
             {
-              "name": "tree_structure",
-              "description": "输入的图必须是一棵树（无环连通图）"
+              "name": "connectivity",
+              "description": "图必须连通（树结构）"
             },
             {
-              "name": "weighted_graph",
-              "description": "每条边必须被标记一个整数"
+              "name": "sum_constraint",
+              "description": "所有节点对之间的路径和的最大值，即最大化分布指数"
             },
             {
-              "name": "adjacent_sum_constraint",
-              "description": "定义 f(u, v) 为从节点 u 到节点 v 的简单路径上所有边标记值的和"
-            },
-            {
-              "name": "value_distribution_rule",
-              "description": "分布指数定义为所有节点对 (i, j) 的 f(i, j) 之和，其中 1 ≤ i < j ≤ n"
-            },
-            {
-              "name": "modulo_expected_value_constraint",
-              "description": "结果需要对 10^9 + 7 取模"
+              "name": "modular_arithmetic",
+              "description": "结果需要取模 10^9 + 7"
             }
           ]
         }
@@ -113,19 +95,39 @@
     "description": "最大化所有节点对之间的路径权值和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：树的每条边的权重分配可以独立优化，且整个树的最大分布指数由各子树的最大分布指数合成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从根节点到任意节点的路径权重和可以通过子节点的路径权重和递归计算得到。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过树的边权分配最大化路径和的总和",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：树的每条边的权重分配可以独立优化，且整个树的最大分布指数由各子树的最大分布指数合成。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从根节点到任意节点的路径权重和可以通过子节点的路径权重和递归计算得到。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过树的边权分配最大化路径和的总和"
+    ]
   }
 }

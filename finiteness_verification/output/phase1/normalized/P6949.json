@@ -1,0 +1,79 @@
+{
+  "problem_id": "P6949",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 5999
+        },
+        "value_range": {
+          "min": 0,
+          "max": 2
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "star_graph_structure",
+            "description": "图的结构由顶点和边组成，顶点在特定位置，边分为水平边和对角边",
+            "formal": "Graph G = (V, E), V = {v_i,j | 1 ≤ i ≤ r, 1 ≤ j ≤ c}, E = {e_h, e_d}"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "水平边用三个连字符表示，对角边用斜杠或反斜杠表示，并且边字符必须位于对应的顶点之间",
+            "formal": "e_h = '---', e_d ∈ {'/', '\\'}"
+          },
+          {
+            "name": "geometric_center_constraint",
+            "description": "顶点的位置在奇数行上，具体位置为 4k+1 行上的 1, 5, 9, ... 和 4k+3 行上的 3, 7, 11, ...",
+            "formal": "v_i,j ∈ {(4k+1, 4m+1) | k, m ∈ Z} ∪ {(4k+3, 4m+3) | k, m ∈ Z}"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "计算给定图中所有三角形的数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解组合得到，即大图中的三角形数量可以由更小的子图中的三角形数量计算得出。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在遍历图的过程中，当前状态（如已访问的节点和边）到下一个状态（如新访问的节点和边）的转移是确定且一致的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

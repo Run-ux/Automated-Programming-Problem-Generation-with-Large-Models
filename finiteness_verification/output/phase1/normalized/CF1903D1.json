@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -27,11 +27,13 @@
         "constraints": [
           {
             "name": "operation_limit",
-            "description": "每次查询中，可以对数组元素进行的操作次数不超过给定的上限 k_i"
+            "description": "每个查询中，可以进行的操作次数不超过 k_i",
+            "formal": "0 <= k_i <= 10^18"
           },
           {
-            "name": "query_independence_constraint",
-            "description": "每个查询是独立的，即前一个查询的结果不会影响后一个查询"
+            "name": "optimization_objective",
+            "description": "在最多 k 次操作后，数组的按位与值最大化",
+            "formal": "maximize AND(a_1, a_2, ..., a_n) after at most k operations"
           }
         ]
       }
@@ -43,7 +45,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "求在给定操作次数限制下，数组元素经过最多k次增加1操作后，能够达到的最大按位与结果"
+        "description": "最大化数组在给定操作次数内的位与结果"
       }
     }
   ],
@@ -52,12 +54,20 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个位上的最大AND值依赖于前一个位的状态和当前位的操作次数",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，每个位上的最大 AND 值可以独立计算并合并",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着操作次数 k 的增加，数组的最大 AND 值非严格递增",
+            "properties": {
+              "right_monotonic": true
+            }
+          }
+        ]
       }
     }
   ]

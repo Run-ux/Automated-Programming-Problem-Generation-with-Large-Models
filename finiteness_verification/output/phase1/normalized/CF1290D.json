@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1024
@@ -15,9 +15,7 @@
           "min": 1,
           "max": 1024
         },
-        "properties": {
-          "inferred": true
-        }
+        "properties": {}
       }
     }
   ],
@@ -28,29 +26,29 @@
       "result": {
         "constraints": [
           {
-            "name": "query_count_constraint",
-            "description": "查询次数上限（不超过 3n^2 / 2k 次）",
+            "name": "query_limit",
+            "description": "查询次数限制（最多可以进行 (3n^2)/(2k) 次查询）",
             "formal": "queries <= 3 * n^2 / (2 * k)"
           },
           {
-            "name": "query_count_constraint",
-            "description": "重置记忆次数上限（不超过 30,000 次）",
+            "name": "operation_limit",
+            "description": "重置记忆次数限制（最多可以重置 30000 次）",
             "formal": "resets <= 30000"
           },
           {
-            "name": "query_count_constraint",
-            "description": "记忆队列大小固定为 k",
-            "formal": "|S| = k"
+            "name": "range_bound",
+            "description": "记忆队列大小限制（记忆队列的最大长度为 k）",
+            "formal": "size(S) <= k"
           },
           {
-            "name": "distinct_substrings",
-            "description": "数组中不同元素的数量 d 需要被确定",
-            "formal": "d = |distinct(a_1, a_2, ..., a_n)|"
+            "name": "distinctness",
+            "description": "需要找出数组中的不同元素数量（即求出数组 a 中的不同值的数量 d）",
+            "formal": "d = |distinct(a)|"
           },
           {
-            "name": "query_count_constraint",
-            "description": "每次查询返回是否在最近 k 个元素中出现过",
-            "formal": "response(c) = (a_c in S)"
+            "name": "operation_type",
+            "description": "操作类型限制（只能进行查询和重置两种操作）",
+            "formal": "operations ∈ {query, reset}"
           }
         ]
       }
@@ -62,7 +60,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计数组中不同元素的数量"
+        "description": "求序列中不同元素的数量"
       }
     }
   ],
@@ -71,9 +69,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：通过询问和记忆重置，逐步确定每个咖啡品种是否已经出现过，从而构建出整个城市的咖啡品种多样性。每次查询的结果都依赖于之前查询的累积信息。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "divide_conquer",
+            "description": "通过分治策略将大问题分解为子问题，每个子问题的解可以合并成原问题的解",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "在每次查询后，朋友的记忆状态（队列）会根据查询结果进行更新，保持一致性",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "各个子问题的求解过程相互独立，不会互相影响",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

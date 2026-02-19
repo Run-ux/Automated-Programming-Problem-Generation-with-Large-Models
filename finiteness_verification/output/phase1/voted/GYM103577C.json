@@ -1,0 +1,124 @@
+{
+  "problem_id": "GYM103577C",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 5000
+          },
+          "value_range": {
+            "min": 97,
+            "max": 122
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 5000
+    },
+    "value_range": {
+      "min": 97,
+      "max": 122
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "suffix_length_constraint",
+        "description": "字符串的最长前缀同时也是后缀的长度，称为该字符串的 level。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "accumulated_sum_constraint",
+        "description": "字符串的 transmissibility 定义为所有子串的 level 之和。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "suffix_length_constraint",
+              "description": "字符串的最长前缀同时也是后缀的长度，称为该字符串的 level。",
+              "formal": "level(s) = max { |p| : p is a prefix of s and p is also a suffix of s }"
+            },
+            {
+              "name": "accumulated_sum_constraint",
+              "description": "字符串的 transmissibility 定义为所有子串的 level 之和。",
+              "formal": "transmissibility(s) = Σ level(s[i:j]) for all 0 ≤ i ≤ j < |s|"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求所有子串的特定属性值之和的最大化"
+        }
+      }
+    ],
+    "description": "求所有子串的特定属性值之和的最大化"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "prefix_decomposability",
+        "description": "前缀可分解性：通过计算每个前缀的最长公共前后缀长度，可以将问题分解为子问题并逐步求解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和的思想，可以将所有子串的 level 值累加得到最终结果",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "prefix_decomposability",
+              "description": "前缀可分解性：通过计算每个前缀的最长公共前后缀长度，可以将问题分解为子问题并逐步求解",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和的思想，可以将所有子串的 level 值累加得到最终结果",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

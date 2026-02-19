@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "tree",
         "length": {
           "min": 1,
           "max": 2000
@@ -29,14 +29,12 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "相邻节点的颜色必须是 Rubik's 立方体中相邻的面的颜色",
-            "formal": "对于每条边 (u, v)，color(u) 和 color(v) 必须是 Rubik's 立方体中相邻的面的颜色"
+            "name": "coloring_constraint",
+            "description": "相邻节点的颜色必须是 Rubik's 立方体中相邻的面的颜色"
           },
           {
-            "name": "coordinate_fixed_point",
-            "description": "部分节点已经预先着色，这些节点的颜色不能改变",
-            "formal": "对于每个预着色节点 v，color(v) 已经确定且不可更改"
+            "name": "fixed_start_node",
+            "description": "部分节点的颜色已经预先确定，且这些节点不能被重新着色"
           }
         ]
       }
@@ -47,8 +45,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "计算满足条件的着色方案数量"
+        "type": "enumeration",
+        "description": "求满足条件的方案数（常取模）"
       }
     }
   ],
@@ -57,12 +55,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个节点的颜色选择依赖于其子节点的颜色选择",
-        "properties": {
-          "subproblem_independence": false,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：树的每个子树的合法着色方案数可以独立计算，并且整个树的合法着色方案数可以通过其子树的合法着色方案数合成。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从根节点到叶子节点，每个节点的颜色选择依赖于其父节点的颜色。这种依赖关系保持一致，确保了状态转移的一致性。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在计算某个节点的合法着色方案时，其左右子树的合法着色方案是相互独立的，可以分别计算后再合并。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

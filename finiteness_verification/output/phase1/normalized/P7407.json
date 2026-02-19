@@ -1,0 +1,85 @@
+{
+  "problem_id": "P7407",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "weighted": true,
+          "connected": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每个节点的每种颜色边的数量不超过1（度数约束）",
+            "formal": "∀v ∈ V, ∀c ∈ [1, M], |{e ∈ E | e.color = c ∧ (e.u = v ∨ e.v = v)}| ≤ 1"
+          },
+          {
+            "name": "path_constraint",
+            "description": "存在一条从起点到终点的路径，且路径上的每条边的颜色在给定的颜色序列中唯一出现（路径约束）",
+            "formal": "∃ path from 1 to N such that ∀e ∈ path, e.color is unique in the given color sequence"
+          },
+          {
+            "name": "cost_minimization",
+            "description": "最小化改变边颜色的总代价（优化目标）",
+            "formal": "minimize Σ P_i for edges whose colors are changed"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求从起点到终点的最小代价"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从起点到终点的最小代价路径可以通过从起点到中间点和从中间点到终点的最小代价路径组合得到。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在每一步移动中，机器人根据当前颜色选择唯一的可行边进行移动，确保了状态转移的一致性和唯一性。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子问题（即从一个节点到另一个节点的最小代价）的求解是独立的，不受其他子问题的影响。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

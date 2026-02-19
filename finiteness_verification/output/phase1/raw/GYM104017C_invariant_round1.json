@@ -4,12 +4,26 @@
   "dimension": "invariant",
   "round": 1,
   "result": {
-    "name": "monotonicity",
-    "description": "双指针左右端点单调前进，通过维护一个时间窗口来决定是否可以监测到当前踢球事件",
-    "properties": {
-      "left_monotonic": true,
-      "right_monotonic": true
-    }
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "时间序列严格递增，位置变化受限于速度约束，导致可监测的踢球事件数量随时间单调增加",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "在任意时刻的最大可监测踢球事件数依赖于之前时刻的最佳选择，即问题的最优解包含子问题的最优解",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "每一步选择当前能到达的最近的踢球事件位置，以最大化总的监测事件数，局部最优选择导致全局最优",
+        "properties": {}
+      }
+    ]
   },
   "status": "success"
 }

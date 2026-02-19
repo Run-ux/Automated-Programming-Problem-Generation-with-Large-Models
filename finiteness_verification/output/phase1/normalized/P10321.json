@@ -1,0 +1,90 @@
+{
+  "problem_id": "P10321",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1
+        },
+        "value_range": {
+          "min": 1,
+          "max": 20000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "每次操作（填写表格）的魔力消耗是固定的，且每次操作只能在未被填写的位置进行"
+          },
+          {
+            "name": "ordering",
+            "description": "表格按第一关键字 a 从小到大，第二关键字 b 从小到大的顺序枚举位置 (a, b)"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "对于每个 (a, b) 位置，需要找到所有未被填写的 (ai, bi) 位置（其中 ai ≤ n）并填写相同的值"
+          },
+          {
+            "name": "range_bound",
+            "description": "表格中的 a 和 b 满足 1 ≤ b ≤ a ≤ n"
+          },
+          {
+            "name": "linear_relation",
+            "description": "计算魔力消耗时，d_a = ⌊1 + log₁₀(a)⌋，且魔力消耗为 d_a * log₂(d_a)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求完成任务所需的最小代价"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "枚举顺序的单调性：以 a 为第一关键字从小到大，以 b 为第二关键字从小到大的顺序枚举位置 (a, b)。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：通过计算较小的 a 和 b 的值来推导较大的 a 和 b 的值，从而减少重复计算。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：在计算魔力消耗时，可以通过累加每个位置的魔力消耗来得到总消耗。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

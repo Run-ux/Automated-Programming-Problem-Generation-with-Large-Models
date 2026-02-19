@@ -1,0 +1,141 @@
+{
+  "problem_id": "GYM102483A",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "ordering",
+        "description": "所有节点在 x 轴和 y 轴上必须保持有序（即对于任意 i < j，有 x_i ≤ x_j 且 y_i ≤ y_j）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "连接每个节点到其指定位置的成本是距离的平方，总成本为所有连接成本之和",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "ordering",
+              "description": "所有节点在 x 轴和 y 轴上必须保持有序（即对于任意 i < j，有 x_i ≤ x_j 且 y_i ≤ y_j）",
+              "formal": "∀i, j (1 ≤ i < j ≤ n) : x_i ≤ x_j ∧ y_i ≤ y_j"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "连接每个节点到其指定位置的成本是距离的平方，总成本为所有连接成本之和",
+              "formal": "total_cost = Σ (distance(i, s_i, t_i))^2, 其中 distance(i, s_i, t_i) = sqrt((x_i - s_i)^2 + (y_i - t_i)^2)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "最小化所有连接点的加权路径长度总和"
+        }
+      }
+    ],
+    "description": "最小化所有连接点的加权路径长度总和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "双指针或滑动窗口中的单调性：在处理团队位置时，团队的x和y坐标均保持非递减顺序。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "动态规划中的最优子结构：问题的最优解可以通过子问题的最优解来构建。对于每个团队的位置选择，其成本取决于之前团队的选择。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：局部最优选择导致全局最优。在确定每个团队的位置时，选择当前最小化总成本的位置。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针或滑动窗口中的单调性：在处理团队位置时，团队的x和y坐标均保持非递减顺序。",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "动态规划中的最优子结构：问题的最优解可以通过子问题的最优解来构建。对于每个团队的位置选择，其成本取决于之前团队的选择。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：局部最优选择导致全局最优。在确定每个团队的位置时，选择当前最小化总成本的位置。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "problem_id": "P12357",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "选择的相邻节点数量不超过 2（最多两个相邻城市）"
+          },
+          {
+            "name": "inclusion",
+            "description": "所选节点及其子树中的所有节点都包含在管辖范围内（以被选中城市为根的子树中的所有城市都在王子的管辖下）"
+          },
+          {
+            "name": "matching_constraint",
+            "description": "贸易关系双方都在管辖范围内时，该贸易关系的利润才计入总利润（当且仅当贸易关系双方都在王子管辖下，这个贸易关系的利润才可以归王子）"
+          },
+          {
+            "name": "connectivity",
+            "description": "图是连通的（EJOI 大陆是一个树形结构，保证你可以从任意一个城市到达另外一个城市）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "对于每个可能的根节点，求其管辖范围内（包括根节点及其至多两个子树）的最大权值和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即以某个城市为根的子树的最大利润可以由其子树的最大利润组合得到",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在以某个城市为根的子树中，通过选择至多两个相邻的城市作为管辖范围，可以确定该子树的最大利润，并且这种选择方式满足状态转移的一致性",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子树的最优解计算是独立的，不受其他子树的影响，可以在不同的子树上并行计算",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

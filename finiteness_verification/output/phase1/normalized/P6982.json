@@ -1,0 +1,96 @@
+{
+  "problem_id": "P6982",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "query_limit",
+            "description": "查询次数限制为 n + 500 次",
+            "formal": "number_of_queries <= n + 500"
+          },
+          {
+            "name": "string_length_constraint",
+            "description": "每次查询的字符串长度必须等于 n",
+            "formal": "length(Q) == n"
+          },
+          {
+            "name": "binary_string",
+            "description": "每次查询的字符串只能包含字符 '0' 和 '1'",
+            "formal": "Q[i] ∈ {0, 1} for all i in [0, n-1]"
+          },
+          {
+            "name": "jump_operation_constraint",
+            "description": "JUMP 查询的响应值只能是 0、n/2 或 n",
+            "formal": "JUMP(Q) ∈ {0, n/2, n}"
+          },
+          {
+            "name": "operation_limit",
+            "description": "当查询结果为 n 时，表示找到隐藏字符串 S 并终止程序",
+            "formal": "if JUMP(Q) == n then terminate"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一个与隐藏字符串完全匹配的位串"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "通过二分搜索的方式逐步缩小解空间，每次查询将可能的解集分为两部分，并根据反馈选择其中一部分继续搜索",
+            "properties": {
+              "search_space_reduction": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "在每次查询后，根据返回的结果更新当前状态，逐步逼近目标字符串S",
+            "properties": {}
+          },
+          {
+            "name": "exchange_argument",
+            "description": "通过交换某些位来构造新的查询字符串，以验证和调整当前假设的字符串，确保最终找到正确的字符串S",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

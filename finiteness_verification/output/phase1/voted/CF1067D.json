@@ -1,0 +1,146 @@
+{
+  "problem_id": "CF1067D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000000
+          },
+          "properties": {
+            "ordered": false,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000000
+    },
+    "properties": {
+      "ordered": false,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制（总时间 t 内最多进行 t 次尝试）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "probability_distribution",
+        "description": "概率分布约束（每次尝试成功的概率为 p_i，失败的概率为 1 - p_i）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation",
+        "description": "变换/操作规则（每个任务可以升级一次，升级后奖励从 a_i 变为 b_i）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "independence",
+        "description": "独立性约束（每次尝试的结果独立于其他尝试）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制（总时间 t 内最多进行 t 次尝试）",
+              "formal": "t 次操作"
+            },
+            {
+              "name": "probability_distribution",
+              "description": "概率分布约束（每次尝试成功的概率为 p_i，失败的概率为 1 - p_i）",
+              "formal": "P(success) = p_i, P(failure) = 1 - p_i"
+            },
+            {
+              "name": "transformation",
+              "description": "变换/操作规则（每个任务可以升级一次，升级后奖励从 a_i 变为 b_i）",
+              "formal": "upgrade(i) => reward(i) = b_i"
+            },
+            {
+              "name": "independence",
+              "description": "独立性约束（每次尝试的结果独立于其他尝试）",
+              "formal": "P(success at time t) is independent of previous attempts"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_probability",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_probability",
+          "description": "最大化在给定时间内完成任务的期望收益"
+        }
+      }
+    ],
+    "description": "最大化在给定时间内完成任务的期望收益"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每个时间点选择完成某个任务或升级某个任务的决策基于当前状态下的最大期望收益。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，总是选择当前状态下期望收益最大的任务进行尝试，这种局部最优的选择最终能够导致全局最优的期望收益。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每个时间点选择完成某个任务或升级某个任务的决策基于当前状态下的最大期望收益。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，总是选择当前状态下期望收益最大的任务进行尝试，这种局部最优的选择最终能够导致全局最优的期望收益。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

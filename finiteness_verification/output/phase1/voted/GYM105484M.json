@@ -1,0 +1,161 @@
+{
+  "problem_id": "GYM105484M",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 3,
+            "max": 100
+          },
+          "value_range": {
+            "min": -10000,
+            "max": 10000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 100
+    },
+    "value_range": {
+      "min": -10000,
+      "max": 10000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "convexity",
+        "description": "目标形状为凸多边形",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distance_bound",
+        "description": "目标多边形与原点的距离大于攻击范围半径 d",
+        "confidence": "1/1"
+      },
+      {
+        "name": "orientation",
+        "description": "Neuvillette 从初始方向 (x0, y0) 开始，每单位时间逆时针旋转 1 弧度",
+        "confidence": "1/1"
+      },
+      {
+        "name": "accumulated_sum_constraint",
+        "description": "如果目标多边形与攻击范围有交集，则每单位时间造成 1 点持续伤害",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "convexity",
+              "description": "目标形状为凸多边形"
+            },
+            {
+              "name": "distance_bound",
+              "description": "目标多边形与原点的距离大于攻击范围半径 d"
+            },
+            {
+              "name": "orientation",
+              "description": "Neuvillette 从初始方向 (x0, y0) 开始，每单位时间逆时针旋转 1 弧度"
+            },
+            {
+              "name": "distance_bound",
+              "description": "攻击范围是距离射线（从 (0,0) 指向 Neuvillette 面向的方向）不超过 d 的所有点的集合"
+            },
+            {
+              "name": "accumulated_sum_constraint",
+              "description": "如果目标多边形与攻击范围有交集，则每单位时间造成 1 点持续伤害"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求在给定时间内，目标受到的总伤害值"
+        }
+      }
+    ],
+    "description": "求在给定时间内，目标受到的总伤害值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "convexity",
+        "description": "凸性不变量：目标形状为凸多边形，其几何性质保证了在旋转过程中与攻击范围的交集计算具有确定性和可预测性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：Neuvillette的攻击方向随时间单调递增（逆时针旋转），使得攻击范围与目标的交集变化具有单调性",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：在每个时间单位内，目标受到的伤害可以通过计算当前攻击范围与目标的交集面积来累加得到总伤害",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "convexity",
+              "description": "凸性不变量：目标形状为凸多边形，其几何性质保证了在旋转过程中与攻击范围的交集计算具有确定性和可预测性",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：Neuvillette的攻击方向随时间单调递增（逆时针旋转），使得攻击范围与目标的交集变化具有单调性",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：在每个时间单位内，目标受到的伤害可以通过计算当前攻击范围与目标的交集面积来累加得到总伤害",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

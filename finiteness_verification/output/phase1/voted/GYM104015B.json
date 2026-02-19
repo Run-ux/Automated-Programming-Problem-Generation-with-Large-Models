@@ -1,0 +1,134 @@
+{
+  "problem_id": "GYM104015B",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 3,
+            "max": 100
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 100
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "相邻节点可以通过边或对角线直接到达（图的邻接关系约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "从起点 (1, 1) 到终点 (2, n) 必须存在一条路径（连通性约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "某些节点不可访问（互斥/禁止约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "相邻节点可以通过边或对角线直接到达（图的邻接关系约束）",
+              "formal": "|x1 - x2| <= 1 且 |y1 - y2| <= 1"
+            },
+            {
+              "name": "connectivity",
+              "description": "从起点 (1, 1) 到终点 (2, n) 必须存在一条路径（连通性约束）",
+              "formal": "存在路径 P 使得 (1, 1) 可达 (2, n)"
+            },
+            {
+              "name": "exclusion",
+              "description": "某些节点不可访问（互斥/禁止约束）",
+              "formal": "若 cell(i, j) 为陷阱，则不可访问"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在从起点到终点的路径"
+        }
+      }
+    ],
+    "description": "判断是否存在从起点到终点的路径"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个安全单元格到另一个安全单元格的移动满足特定的状态转移规则，且不会进入陷阱单元格。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在网格中，从起点到终点的路径可以视为一个有向无环图（DAG），其中每个单元格的可达性依赖于其前驱单元格的状态。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个安全单元格到另一个安全单元格的移动满足特定的状态转移规则，且不会进入陷阱单元格。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在网格中，从起点到终点的路径可以视为一个有向无环图（DAG），其中每个单元格的可达性依赖于其前驱单元格的状态。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100
@@ -26,9 +26,9 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_modulo_values",
-            "description": "选取元素的数字频率约束（每个数字在所有选取元素中出现次数不超过2次）",
-            "formal": "对于所有选取的元素，每个数字 d 的出现次数 freq(d) <= 2"
+            "name": "frequency_bound",
+            "description": "选取元素的数字频率约束，每个数字在所有选取元素中出现的次数不超过2次",
+            "formal": "∀d ∈ {0, 1, ..., 9}, count(d in selected_weights) ≤ 2"
           }
         ]
       }
@@ -40,7 +40,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "最大化满足条件的子集元素和"
+        "description": "求满足条件的子集元素和的最大值"
       }
     }
   ],
@@ -49,12 +49,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即最大可提升重量由满足条件的子集权重和决定",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinability": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最大可抬举重量可通过考虑每个子集的最优解来确定",
+            "properties": {}
+          },
+          {
+            "name": "digit_frequency_invariance",
+            "description": "数字频率约束：在选择子集时，确保每个数字的出现次数不超过2次，以满足题目中的条件",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

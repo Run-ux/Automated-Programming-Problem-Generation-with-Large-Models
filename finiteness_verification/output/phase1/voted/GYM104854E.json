@@ -2,14 +2,14 @@
   "problem_id": "GYM104854E",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 4000000
@@ -39,13 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "substring_balance_constraint",
-        "description": "字符串的最长合法括号子序列长度（即正确匹配的括号对数）需要最小化",
+        "name": "subsequence_constraint",
+        "description": "子序列必须是合法的括号序列（即每个左括号都有对应的右括号且顺序正确）",
         "confidence": "1/1"
       },
       {
-        "name": "character_transformation_rule",
-        "description": "将每个 '?' 替换为 '(' 或 ')'，以满足上述条件",
+        "name": "minimum_index_constraint",
+        "description": "目标是最小化最长合法括号子序列的长度",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "字符串中的 '?' 可以被替换为 '(' 或 ')' 以达到最小化目标",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "substring_balance_constraint",
-              "description": "字符串的最长合法括号子序列长度（即正确匹配的括号对数）需要最小化"
+              "name": "subsequence_constraint",
+              "description": "子序列必须是合法的括号序列（即每个左括号都有对应的右括号且顺序正确）"
             },
             {
-              "name": "character_transformation_rule",
-              "description": "将每个 '?' 替换为 '(' 或 ')'，以满足上述条件"
+              "name": "minimum_index_constraint",
+              "description": "目标是最小化最长合法括号子序列的长度"
+            },
+            {
+              "name": "operation_limit",
+              "description": "字符串中的 '?' 可以被替换为 '(' 或 ')' 以达到最小化目标"
             }
           ]
         }
@@ -77,28 +86,46 @@
         "status": "success",
         "result": {
           "type": "minimize_value",
-          "description": "最小化满足条件的最长子序列长度"
+          "description": "最小化字符串的最长正确括号子序列长度"
         }
       }
     ],
-    "description": "最小化满足条件的最长子序列长度"
+    "description": "最小化字符串的最长正确括号子序列长度"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过动态规划的方式求解整个字符串的最小括号匹配长度。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步决策中，选择当前局部最优解（即如何替换'?'以使得当前子序列的括号匹配长度最小），最终可以得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，且子问题之间相互独立",
-          "properties": {
-            "subproblem_independence": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过动态规划的方式求解整个字符串的最小括号匹配长度。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步决策中，选择当前局部最优解（即如何替换'?'以使得当前子序列的括号匹配长度最小），最终可以得到全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，且子问题之间相互独立"
+    ]
   }
 }

@@ -1,0 +1,91 @@
+{
+  "problem_id": "GYM104869L",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 3,
+          "max": 500
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "query_limit",
+            "description": "查询次数限制，最多进行 ⌈log₂(n)⌉ + 2 次查询"
+          },
+          {
+            "name": "bipartiteness",
+            "description": "每次查询需要将棋盘分成两个部分（上层和下层），每个部分内的车可以移动但不能跨越到另一部分"
+          },
+          {
+            "name": "coverage",
+            "description": "所有方格必须被至少一个车控制，初始时所有方格都被控制"
+          },
+          {
+            "name": "degree_bound",
+            "description": "棋盘上至少有 n 个车"
+          },
+          {
+            "name": "operation_type",
+            "description": "每次操作只能是查询（'?'）或回答（'!'），且格式必须正确"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一个满足条件的棋盘布局，使得至少有n个隐藏的车的位置被正确识别"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解由子问题解合成，通过递归地将棋盘分成两个部分来逐步缩小搜索范围",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "二分搜索不变量：每次查询后，根据反馈信息调整搜索区间，逐步逼近目标位置",
+            "properties": {
+              "search_space_reduction": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次查询后的棋盘状态变化是确定的，且新的状态可以基于旧的状态推导出来",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

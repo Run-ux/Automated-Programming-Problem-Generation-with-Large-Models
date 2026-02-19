@@ -1,0 +1,89 @@
+{
+  "problem_id": "P9530",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacency_difference",
+            "description": "相邻节点取值不同（图着色约束）",
+            "formal": "对于任意 i, j (1 ≤ i < j ≤ N)，若 A[i] 和 A[j] 相邻，则 A[i] ≠ A[j]"
+          },
+          {
+            "name": "pairwise_exclusion",
+            "description": "选择的元素不能重复（互斥约束）",
+            "formal": "在每次实验中，每条鱼只能被吃掉一次"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制（操作次数约束）",
+            "formal": "总共进行 Q 次操作，其中 T_j ∈ {1, 2}"
+          },
+          {
+            "name": "range_bound",
+            "description": "区间内元素数量约束（子序列约束）",
+            "formal": "对于每个满足 T_j = 2 的 j (1 ≤ j ≤ Q)，L_j ≤ R_j 且 L_j, R_j 在 [1, N] 范围内"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求在给定区间内可能成为最后存活者的鱼的条数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：在给定的区间内，最后存活的鱼可以由其左右子区间的最优解合并得到。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：任意两个相邻子区间的最优解可以通过某种方式合并成一个更大的区间的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理每个操作时，通过更新特定位置的状态（如鱼的大小），可以保持整个系统的状态一致性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

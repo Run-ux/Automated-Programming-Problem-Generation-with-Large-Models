@@ -1,0 +1,90 @@
+{
+  "problem_id": "CF1632E1",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 3000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（树的定义）"
+          },
+          {
+            "name": "acyclicity",
+            "description": "图必须无环（树的定义）"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过 n-1（树的性质）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径长度是边权重的和，每条边权重为 1"
+          },
+          {
+            "name": "distance_minimization",
+            "description": "在添加一条权重为 x 的边后，最小化从根节点到所有节点的最大距离"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "min_max",
+        "description": "对于每个给定的x，找到在添加一条权重为x的边后，从顶点1到所有其他顶点的最大距离的最小值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即在添加一条边后，新的最远距离可以通过原树中某些路径的最远距离和新边的位置来确定。",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解可以通过解决较小的子问题并合并其结果来获得。在这个问题中，通过递归地处理子树，并将结果合并以找到全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在动态规划或类似方法中，从一个状态到另一个状态的转移规则保持一致。例如，在考虑添加不同长度的新边时，状态转移的一致性保证了算法的正确性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

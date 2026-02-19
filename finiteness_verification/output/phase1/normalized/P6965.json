@@ -1,0 +1,89 @@
+{
+  "problem_id": "P6965",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 500000
+        },
+        "properties": {
+          "ordered": false,
+          "elements": {
+            "type": "string",
+            "length": {
+              "min": 1,
+              "max": 500000
+            },
+            "value_range": {
+              "min": 0,
+              "max": 1
+            },
+            "special_characters": [
+              "?"
+            ],
+            "inferred": true
+          }
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "prefix_exclusion",
+            "description": "任意两个代码字之间不能存在前缀关系，即对于任意 i ≠ j，s_i 不能是 s_j 的前缀，反之亦然",
+            "formal": "∀ i, j (i ≠ j) : s_i 不是 s_j 的前缀"
+          },
+          {
+            "name": "single_wildcard",
+            "description": "每个代码字中最多包含一个通配符字符（?），且该通配符可以被替换为 0 或 1",
+            "formal": "∀ s_i: count(s_i, '?') ≤ 1"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种替换方案使得给定的字符串集合满足前缀码的条件"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "prefix_decomposability",
+            "description": "前缀可分解性：每个代码字的前缀结构可以通过替换未知字符来维护，确保没有一个代码字是另一个代码字的前缀。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理每个代码字时，通过替换未知字符，可以保持当前状态（即已处理的代码字集合）满足前缀码的性质。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

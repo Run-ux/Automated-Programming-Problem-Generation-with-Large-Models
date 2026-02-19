@@ -1,0 +1,74 @@
+{
+  "problem_id": "P4489",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 10
+        },
+        "value_range": {
+          "min": 0,
+          "max": 14
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "每个计划序列中的事件必须按照给定的顺序发生（即对于同一个计划序列中的两个事件，前一个事件必须在后一个事件之前发生）",
+            "formal": "对于每个人 i 的计划序列 Q_i = (Q_{i,1}, Q_{i,2}, ..., Q_{i,C_i})，有 Q_{i,j} 在 P 中的位置 < Q_{i,j+1} 在 P 中的位置，对于所有 1 ≤ j < C_i"
+          },
+          {
+            "name": "exclusion",
+            "description": "两条轨迹被认为是本质不同的，当且仅当存在两个相关的事件，在这两条轨迹中发生的先后顺序不同",
+            "formal": "对于两条轨迹 P1 和 P2，如果存在相关事件 Q_{i,j} 和 Q_{u,v}，使得在 P1 中 Q_{i,j} 发生在 Q_{u,v} 之前而在 P2 中 Q_{i,j} 发生在 Q_{u,v} 之后，或反之，则 P1 和 P2 本质不同"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足条件的本质不同的排列数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "事件之间的相关关系构成了一个有向无环图（DAG），事件的发生顺序满足拓扑序不变量，即对于任意两个相关的事件x和y，如果x在y之前发生，则在所有合法的轨迹中x都必须在y之前出现。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "每个个体的计划序列可以独立处理，不同个体之间的事件发生顺序仅受相关关系约束，子问题之间相互独立。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

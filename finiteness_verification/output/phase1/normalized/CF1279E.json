@@ -1,0 +1,97 @@
+{
+  "problem_id": "CF1279E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 50
+        },
+        "value_range": {
+          "min": 1,
+          "max": 50
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "permutation_constraint",
+            "description": "数组是一个排列，即包含从1到n的所有整数且每个整数恰好出现一次"
+          },
+          {
+            "name": "connectivity",
+            "description": "元素y在排列p中可以通过一系列的索引跳转从元素x到达，即x = y, 或 p_x = y, 或 p_{p_x} = y, 以此类推"
+          },
+          {
+            "name": "partition",
+            "description": "排列的分解过程是：找到未标记的最左元素，列出所有可从其到达的元素并标记它们，然后将这些元素循环移位使最大值位于首位，并将其作为一个列表添加到结果列表l中"
+          },
+          {
+            "name": "ordering",
+            "description": "分解后的列表按其第一个元素的升序排序"
+          },
+          {
+            "name": "inclusion",
+            "description": "排序后的列表被连接成一个新的排列"
+          },
+          {
+            "name": "permutation_constraint",
+            "description": "一个排列被认为是好的，如果它的变换结果与原排列相同"
+          },
+          {
+            "name": "ordering",
+            "description": "输出第k个（字典序）好的排列"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "lexicographic_optimize",
+        "description": "在满足特定条件的排列中，输出第k个字典序最小的排列"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：在分解过程中，每个置换环内的元素顺序保持不变，仅进行循环移位以使最大值位于首位。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：好的排列可以通过其子排列的性质来定义。即，一个排列是好的当且仅当它的所有子排列（通过分解得到）也是好的。",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：将排列分解为多个子排列，并对每个子排列独立处理，最终合并结果。每个子排列的处理不影响其他子排列。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

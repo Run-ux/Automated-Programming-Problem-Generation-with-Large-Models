@@ -1,0 +1,82 @@
+{
+  "problem_id": "P5644",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "probability_distribution",
+            "description": "每个节点的激活概率与其权重成正比，且总和为1（概率分布约束）",
+            "formal": "P(i_k) = \\frac{w_{i_k}}{\\sum_{j=1}^{m} w_{i_j}}"
+          },
+          {
+            "name": "operation_order",
+            "description": "节点按顺序激活，每次激活一个节点后，该节点会触发其他节点的激活（状态转移约束）",
+            "formal": "激活 i 后，以 P(i_k) 的概率激活 i_k"
+          },
+          {
+            "name": "terminal_vertex_count_constraint",
+            "description": "计算特定节点最后被激活的概率（目标状态约束）",
+            "formal": "P(最后一个激活的是 1 号节点)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_probability",
+        "description": "最大化特定事件发生的概率"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在计算某个猎人最后死亡的概率时，可以基于剩余猎人的状态进行递归求解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个猎人死亡后，系统状态（剩余猎人及其仇恨度）会根据当前状态和概率规则进行更新，且这种更新是确定性的。",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "概率守恒：在每一步操作中，所有可能事件的概率之和始终为1，即每次开枪后，剩余猎人被射中的概率总和保持不变。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

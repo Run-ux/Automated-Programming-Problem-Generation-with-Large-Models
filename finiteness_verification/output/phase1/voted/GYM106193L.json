@@ -1,0 +1,134 @@
+{
+  "problem_id": "GYM106193L",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 2000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 2000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 2000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制，'Roll' 操作最多进行 n 次，'Withdraw' 操作最多进行 k 次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "每次 'Roll' 操作增加的随机数在 (0, d) 之间",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ceil_value_constraint",
+        "description": "取票时，机器将当前计数器 S 向上取整后发放票数，并重置 S 为 0",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制，'Roll' 操作最多进行 n 次，'Withdraw' 操作最多进行 k 次",
+              "formal": "n_rolls <= n, k_withdraws <= k"
+            },
+            {
+              "name": "range_bound",
+              "description": "每次 'Roll' 操作增加的随机数在 (0, d) 之间",
+              "formal": "0 < Δ < d"
+            },
+            {
+              "name": "ceil_value_constraint",
+              "description": "取票时，机器将当前计数器 S 向上取整后发放票数，并重置 S 为 0",
+              "formal": "tickets = ⌈S⌉, S = 0"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_probability",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_probability",
+          "description": "最大化期望收益"
+        }
+      }
+    ],
+    "description": "最大化期望收益"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过前 i 次操作的最大期望值可以推导出前 i+1 次操作的最大期望值。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步决策中，选择当前最优的操作（即决定是否进行“Roll”或“Withdraw”），这种局部最优的选择能够导致全局最优的结果。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过前 i 次操作的最大期望值可以推导出前 i+1 次操作的最大期望值。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步决策中，选择当前最优的操作（即决定是否进行“Roll”或“Withdraw”），这种局部最优的选择能够导致全局最优的结果。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

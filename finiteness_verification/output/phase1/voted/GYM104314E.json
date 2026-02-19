@@ -2,14 +2,14 @@
   "problem_id": "GYM104314E",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 1000000
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "所有连通分量必须通过改变最少数量的 '0' 为 '1' 来连接成一个单一的连通分量（图的连通性约束）",
+        "name": "connectivity",
+        "description": "图必须连通（所有岛屿通过改变最少的水单元为陆地单元连接起来）",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "相邻单元格中的 '1' 属于同一个连通分量（图的邻接约束）",
+        "name": "bipartiteness",
+        "description": "图是二分图（岛屿和水域分别属于两个不同的集合，且只在不同集合之间有边）",
         "confidence": "1/1"
       },
       {
-        "name": "minimum_operation_count_constraint",
-        "description": "需要改变的 '0' 的数量最小化（最小化操作数约束）",
+        "name": "degree_bound",
+        "description": "每个节点的度数有限制（每个陆地单元最多与四个相邻单元相连）",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +61,17 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "所有连通分量必须通过改变最少数量的 '0' 为 '1' 来连接成一个单一的连通分量（图的连通性约束）"
+              "name": "connectivity",
+              "description": "图必须连通（所有岛屿通过改变最少的水单元为陆地单元连接起来）"
             },
             {
-              "name": "adjacent_difference",
-              "description": "相邻单元格中的 '1' 属于同一个连通分量（图的邻接约束）"
+              "name": "bipartiteness",
+              "description": "图是二分图（岛屿和水域分别属于两个不同的集合，且只在不同集合之间有边）"
             },
             {
-              "name": "minimum_operation_count_constraint",
-              "description": "需要改变的 '0' 的数量最小化（最小化操作数约束）"
+              "name": "degree_bound",
+              "description": "每个节点的度数有限制（每个陆地单元最多与四个相邻单元相连）",
+              "formal": "∀v ∈ V, degree(v) ≤ 4"
             }
           ]
         }
@@ -78,34 +79,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求最小代价使得所有连通块通过改变最少的单元格连接起来"
+          "type": "minimize_value",
+          "description": "求最小化连接所有连通块所需的边数"
         }
       }
     ],
-    "description": "求最小代价使得所有连通块通过改变最少的单元格连接起来"
+    "description": "求最小化连接所有连通块所需的边数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，连接两个岛屿的最小桥长度可以通过解决更小规模的子问题（即连接两个较小区域）来得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：通过遍历矩阵中的每个单元格，可以将当前状态（未访问、已访问但未处理、已处理）进行一致性的转换。这种状态转移确保了所有岛屿都被正确识别和处理。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在寻找最短路径连接两个岛屿时，每次选择最近的可连接点作为下一步，最终能够找到全局最优解。这是因为局部最优的选择（即每次选择最近的点）能够累积成全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即连接两个岛屿的最短路径可以通过找到每个岛屿到其他岛屿的最短路径来确定。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，连接两个岛屿的最小桥长度可以通过解决更小规模的子问题（即连接两个较小区域）来得到。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过遍历矩阵中的每个单元格，可以将当前状态（未访问、已访问但未处理、已处理）进行一致性的转换。这种状态转移确保了所有岛屿都被正确识别和处理。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在寻找最短路径连接两个岛屿时，每次选择最近的可连接点作为下一步，最终能够找到全局最优解。这是因为局部最优的选择（即每次选择最近的点）能够累积成全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即连接两个岛屿的最短路径可以通过找到每个岛屿到其他岛屿的最短路径来确定。"
+    ]
   }
 }

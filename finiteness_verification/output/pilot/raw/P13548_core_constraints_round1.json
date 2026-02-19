@@ -6,34 +6,27 @@
   "result": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "Berlaflot 航班可以连接任意两个城市（可能需要中转），即图是连通的。",
-        "formal": "对于任意两个城市 u 和 v，存在一条路径使得 u 可以到达 v。"
+        "name": "connectivity",
+        "description": "图必须连通（通过Berlaflot航班可以到达任何城市）"
       },
       {
-        "name": "cost_of_route",
-        "description": "任何由多个连续航班组成的路线的成本等于这些航班中最昂贵的一个的成本。",
-        "formal": "对于从城市 t1 到城市 tk 的路线，成本为 max(c(t1, t2), c(t2, t3), ..., c(tk-1, tk))。"
+        "name": "max_cost_route",
+        "description": "路径成本等于路径中最大边的成本（从城市t1到tk的路径成本等于该路径中所有边的最大成本）",
+        "formal": "cost(t1, tk) = max(cost(ti, ti+1)) for all i in [1, k-1]"
       },
       {
-        "name": "s8_airlines_coverage",
-        "description": "S8 航空公司提供双向航班，连接所有未被 Berlaflot 连接的城市对。",
-        "formal": "对于任意两个城市 x 和 y，如果它们之间没有 Berlaflot 航班，则 S8 提供一个航班。"
+        "name": "complementary_connectivity",
+        "description": "S8 Airlines连接所有未被Berlaflot连接的城市对，且通过S8 Airlines也可以到达任何城市"
       },
       {
-        "name": "s8_cost_calculation",
-        "description": "S8 航空公司的航班成本等于在 Berlaflot 中从城市 x 到城市 y 的最便宜路线的成本。",
-        "formal": "S8(x, y) = min(max(c(t1, t2), c(t2, t3), ..., c(tk-1, tk)))，其中 t1, t2, ..., tk 是从 x 到 y 的路径。"
+        "name": "min_cost_route",
+        "description": "S8 Airlines的航班成本等于Berlaflot航线中的最小路径成本（对于每一对城市x和y，S8 Airlines的航班成本等于Berlaflot航线中的最小路径成本）",
+        "formal": "cost_S8(x, y) = min(max(cost_Berlaflot(ti, ti+1))) for all paths from x to y"
       },
       {
-        "name": "s8_connectivity",
-        "description": "通过 S8 航空公司的航班可以从任何城市到达任何其他城市（可能需要中转），并且路线成本同样是最昂贵的单个航班的成本。",
-        "formal": "对于任意两个城市 u 和 v，存在一条路径使得 u 可以到达 v，并且成本为 max(c(u, v1), c(v1, v2), ..., c(vk, v))。"
-      },
-      {
-        "name": "berlaflot_new_cost",
-        "description": "Berlaflot 想要将其第 i 个航班的成本设置为 S8 航空公司从城市 ai 到城市 bi 的最便宜路线的成本。",
-        "formal": "新的 Berlaflot 成本 c'(ai, bi) = S8(ai, bi)。"
+        "name": "reassignment_cost",
+        "description": "Berlaflot航班的新成本等于S8 Airlines航线中的最小路径成本（对于每一条Berlaflot航班，其新成本等于S8 Airlines航线中的最小路径成本）",
+        "formal": "new_cost_Berlaflot(ai, bi) = cost_S8(ai, bi)"
       }
     ]
   },

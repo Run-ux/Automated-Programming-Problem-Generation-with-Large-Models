@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 2
@@ -26,12 +26,12 @@
       "result": {
         "constraints": [
           {
-            "name": "path_length_constraint",
-            "description": "移动路径必须平行于正方形的边（二维平面上的网格约束）"
+            "name": "distance_bound",
+            "description": "中心点移动的最小距离必须覆盖整个区域（路径约束）"
           },
           {
-            "name": "region_size_constraint",
-            "description": "刷子必须完全覆盖整个正方形区域（区域覆盖约束）"
+            "name": "distance_bound",
+            "description": "只能沿平行于边的方向移动（方向/朝向约束）"
           }
         ]
       }
@@ -42,7 +42,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_distance",
+        "type": "minimize_value",
         "description": "求两点间最短路径长度"
       }
     }
@@ -52,12 +52,27 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "双指针左右端点单调前进，区间合法性可单调维护",
-        "properties": {
-          "left_monotonic": true,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "移动过程中，刷子中心的路径长度单调递增，直到覆盖整个正方形区域。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": false,
+              "window_shrinkable": false
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解可以通过子问题的最优解组合得到。具体来说，将大正方形划分为多个小区域，每个小区域的最优覆盖路径可以组合成整个正方形的最优路径。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "每次选择最短的路径来扩展已覆盖的区域，最终能够得到全局最优解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

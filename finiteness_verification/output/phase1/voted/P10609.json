@@ -1,0 +1,165 @@
+{
+  "problem_id": "P10609",
+  "source": "luogu",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": -100000000,
+            "max": 100000000
+          },
+          "properties": {
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": -100000000,
+      "max": 100000000
+    },
+    "properties": {
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "fixed_position_constraint",
+        "description": "初始时，每个玩家拥有每类牌至少一张",
+        "confidence": "1/1"
+      },
+      {
+        "name": "turn_based",
+        "description": "游戏是回合制的，小 R 先手，双方轮流弃牌",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每回合必须丢弃恰好一张牌",
+        "confidence": "1/1"
+      },
+      {
+        "name": "maximum_value_constraint",
+        "description": "当双方均只剩一张牌时，根据剩余牌的编号计算得分",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimal_play",
+        "description": "玩家需要以最优策略进行游戏，最终得分需达到最优",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "fixed_position_constraint",
+              "description": "初始时，每个玩家拥有每类牌至少一张",
+              "formal": "∀i, R_i ≥ 1 ∧ M_i ≥ 1"
+            },
+            {
+              "name": "turn_based",
+              "description": "游戏是回合制的，小 R 先手，双方轮流弃牌",
+              "formal": "R starts first, then alternates turns with M"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每回合必须丢弃恰好一张牌",
+              "formal": "Each turn, exactly one card is discarded"
+            },
+            {
+              "name": "maximum_value_constraint",
+              "description": "当双方均只剩一张牌时，根据剩余牌的编号计算得分",
+              "formal": "Score = a_{u,v} where u and v are the last cards of R and M respectively"
+            },
+            {
+              "name": "optimal_play",
+              "description": "玩家需要以最优策略进行游戏，最终得分需达到最优",
+              "formal": "Both players play optimally to maximize their score"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "game_outcome",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "game_outcome",
+          "description": "在博弈中，根据给定的规则和初始条件，找到最优策略以最大化自己的得分"
+        }
+      }
+    ],
+    "description": "在博弈中，根据给定的规则和初始条件，找到最优策略以最大化自己的得分"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每一步决策都基于当前状态的最优解，最终结果是所有子问题最优解的组合",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：游戏过程中，每一步的状态转移都是确定的，并且满足博弈论中的状态转移规则",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每一步的决策只依赖于当前状态，而不受之前决策的具体影响",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每一步决策都基于当前状态的最优解，最终结果是所有子问题最优解的组合",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：游戏过程中，每一步的状态转移都是确定的，并且满足博弈论中的状态转移规则",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每一步的决策只依赖于当前状态，而不受之前决策的具体影响",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

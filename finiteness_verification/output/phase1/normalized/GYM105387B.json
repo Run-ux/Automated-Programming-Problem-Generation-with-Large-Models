@@ -1,0 +1,83 @@
+{
+  "problem_id": "GYM105387B",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "maximum_destruction_count",
+            "description": "从一个未标记的单元格出发，可以摧毁的最大标记单元格数量（图中节点的度数约束）",
+            "formal": "max(destroyable_cells(x, y)) for all (x, y) in unmarked_cells"
+          },
+          {
+            "name": "unmarked_cell_presence",
+            "description": "存在至少一个未标记的单元格（图中存在未访问的节点）",
+            "formal": "exists (x, y) such that (x, y) is not in marked_cells"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化一次操作中可以消除的单元格数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "在处理每个方向上的连续标记单元时，可以维护一个单调递增或递减的序列来计算最大可摧毁单元数。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": false,
+              "window_shrinkable": false
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解组合得到。具体来说，对于每个未标记的单元格，其能摧毁的最大单元格数是基于其四个方向上已标记单元格的分布情况。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "在计算某个方向上连续标记单元格的数量时，可以通过前缀和的方式快速计算区间内的标记单元格数量。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

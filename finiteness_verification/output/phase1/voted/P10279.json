@@ -1,0 +1,134 @@
+{
+  "problem_id": "P10279",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 3000
+          },
+          "value_range": {
+            "min": 65,
+            "max": 90
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 3000
+    },
+    "value_range": {
+      "min": 65,
+      "max": 90
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subsequence_constraint",
+        "description": "从字符串中提取所有长度为 K 的子串，并从中提取所有长度为 L 的子串，其中 1 ≤ L ≤ K ≤ N。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "lexicographical_minimization",
+        "description": "在每个长度为 K 的子串中，找到所有长度为 L 的子串的字典序最小值，并记录其起始位置。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "记录每个长度为 L 的字典序最小子串的起始位置，并确保这些位置是唯一的。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subsequence_constraint",
+              "description": "从字符串中提取所有长度为 K 的子串，并从中提取所有长度为 L 的子串，其中 1 ≤ L ≤ K ≤ N。",
+              "formal": "For each k-mer in S, extract all length L substrings where 1 ≤ L ≤ K ≤ N."
+            },
+            {
+              "name": "lexicographical_minimization",
+              "description": "在每个长度为 K 的子串中，找到所有长度为 L 的子串的字典序最小值，并记录其起始位置。",
+              "formal": "For each k-mer, find the lexicographically minimal substring of length L and record its starting position p_i."
+            },
+            {
+              "name": "distinctness",
+              "description": "记录每个长度为 L 的字典序最小子串的起始位置，并确保这些位置是唯一的。",
+              "formal": "Record the starting positions p_i of the lexicographically minimal substrings of length L, ensuring that these positions are distinct."
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "对于每个可能的集合大小v，计算满足条件的(K, L)对的数量"
+        }
+      }
+    ],
+    "description": "对于每个可能的集合大小v，计算满足条件的(K, L)对的数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解组合得到，即对于每个长度为K的子串，其内部的最小L长度子串可以由更小的子串的最小值递推得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和等技术，可以在常数时间内计算任意区间的性质（如最小值），从而高效地处理多个子问题。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的最优解组合得到，即对于每个长度为K的子串，其内部的最小L长度子串可以由更小的子串的最小值递推得到。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和等技术，可以在常数时间内计算任意区间的性质（如最小值），从而高效地处理多个子问题。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

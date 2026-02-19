@@ -1,0 +1,155 @@
+{
+  "problem_id": "CF1139E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 5000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 4999
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 5000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 4999
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "每个学生属于且仅属于一个俱乐部（子集约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "每天选择的学生必须来自不同的俱乐部（唯一性/去重）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "mex_function",
+        "description": "团队的强度是所选学生潜力值的最小未出现非负整数（MEX 约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每天恰好有一个学生离开其所属俱乐部，且该学生不会再次加入任何俱乐部（操作次数限制）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "每个学生属于且仅属于一个俱乐部（子集约束）"
+            },
+            {
+              "name": "distinctness",
+              "description": "每天选择的学生必须来自不同的俱乐部（唯一性/去重）"
+            },
+            {
+              "name": "mex_function",
+              "description": "团队的强度是所选学生潜力值的最小未出现非负整数（MEX 约束）"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每天恰好有一个学生离开其所属俱乐部，且该学生不会再次加入任何俱乐部（操作次数限制）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化每天团队的mex值"
+        }
+      }
+    ],
+    "description": "最大化每天团队的mex值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每一天的最大团队强度可以通过前一天的状态和当前学生离开后的状态推导出来",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着学生逐天离开，每个俱乐部的成员数量单调递减",
+        "confidence": "1/1",
+        "properties": {
+          "window_shrinkable": true
+        }
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：不同俱乐部的学生潜力集合可以合并以计算整体的 mex 值",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每一天的最大团队强度可以通过前一天的状态和当前学生离开后的状态推导出来",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着学生逐天离开，每个俱乐部的成员数量单调递减",
+              "properties": {
+                "window_shrinkable": true
+              }
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：不同俱乐部的学生潜力集合可以合并以计算整体的 mex 值",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

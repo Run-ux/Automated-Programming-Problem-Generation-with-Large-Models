@@ -1,0 +1,134 @@
+{
+  "problem_id": "P5167",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1073741824
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1073741824
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "segment_count_upper_bound",
+        "description": "每段连续绘制的长度至少为 K",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "得分计算公式：(OR(a_i, a_{i+1}, ..., a_j)) + (AND(a_i, a_{i+1}, ..., a_j)) + gcd(a_i, a_{i+1}, ..., a_j)",
+        "confidence": "1/1"
+      },
+      {
+        "name": "fixed_start_node",
+        "description": "起始位置在 1 到 K 之间",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "segment_count_upper_bound",
+              "description": "每段连续绘制的长度至少为 K",
+              "formal": "∀i, j (j - i + 1) ≥ k"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "得分计算公式：(OR(a_i, a_{i+1}, ..., a_j)) + (AND(a_i, a_{i+1}, ..., a_j)) + gcd(a_i, a_{i+1}, ..., a_j)",
+              "formal": "score(i, j) = (a_i ∨ a_{i+1} ∨ ... ∨ a_j) + (a_i ∧ a_{i+1} ∧ ... ∧ a_j) + gcd(a_i, a_{i+1}, ..., a_j)"
+            },
+            {
+              "name": "fixed_start_node",
+              "description": "起始位置在 1 到 K 之间",
+              "formal": "1 ≤ start ≤ k"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化路径上的权值和"
+        }
+      }
+    ],
+    "description": "最大化路径上的权值和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，每个子问题的解都是独立且最优的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：通过将多个区间的解合并，可以得到更大区间的解。这种性质适用于线段树等数据结构。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，每个子问题的解都是独立且最优的。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：通过将多个区间的解合并，可以得到更大区间的解。这种性质适用于线段树等数据结构。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

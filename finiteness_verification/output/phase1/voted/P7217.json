@@ -1,0 +1,161 @@
+{
+  "problem_id": "P7217",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "每个位置最多有一个苹果树或员工，且苹果树和员工的位置互不相同",
+        "confidence": "1/1"
+      },
+      {
+        "name": "repetition",
+        "description": "每棵苹果树上的苹果被摘掉后，会在 C 个时间单位后重新长出一个苹果",
+        "confidence": "1/1"
+      },
+      {
+        "name": "cyclic_shift_constraint",
+        "description": "员工在湖的周长 L 上顺时针移动，到达边界后会回到起点继续移动",
+        "confidence": "1/1"
+      },
+      {
+        "name": "resource_bound",
+        "description": "员工在遇到有成熟苹果的苹果树时会摘下苹果，并且只能摘取成熟的苹果",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "每个位置最多有一个苹果树或员工，且苹果树和员工的位置互不相同"
+            },
+            {
+              "name": "repetition",
+              "description": "每棵苹果树上的苹果被摘掉后，会在 C 个时间单位后重新长出一个苹果"
+            },
+            {
+              "name": "cyclic_shift_constraint",
+              "description": "员工在湖的周长 L 上顺时针移动，到达边界后会回到起点继续移动"
+            },
+            {
+              "name": "resource_bound",
+              "description": "员工在遇到有成熟苹果的苹果树时会摘下苹果，并且只能摘取成熟的苹果"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "最大化路径上满足条件的节点数"
+        }
+      }
+    ],
+    "description": "最大化路径上满足条件的节点数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "员工和苹果树的位置在时间推进过程中单调递增，且每个员工的移动路径是固定的。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "通过计算员工与苹果树之间的相对位置差值，可以确定员工在特定时刻是否能够摘到苹果。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "苹果树的状态（有无苹果）在固定的时间间隔后会周期性地变化，这种状态转移具有周期性和一致性。",
+        "confidence": "1/1",
+        "properties": {
+          "periodic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "员工和苹果树的位置在时间推进过程中单调递增，且每个员工的移动路径是固定的。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "通过计算员工与苹果树之间的相对位置差值，可以确定员工在特定时刻是否能够摘到苹果。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "苹果树的状态（有无苹果）在固定的时间间隔后会周期性地变化，这种状态转移具有周期性和一致性。",
+              "properties": {
+                "periodic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "problem_id": "CF1028D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 363304
+          },
+          "value_range": {
+            "min": 1,
+            "max": 308983066
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 363304
+    },
+    "value_range": {
+      "min": 1,
+      "max": 308983066
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "ordering",
+        "description": "所有 SELL 订单的价格必须高于所有 BUY 订单的价格（有序性约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "所有订单的价格必须唯一（唯一性/去重约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "新添加的 BUY 订单价格必须低于当前最佳 SELL 订单价格（值域约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每个 ACCEPT 操作对应一个已添加但未被接受的订单（操作次数限制）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "ordering",
+              "description": "所有 SELL 订单的价格必须高于所有 BUY 订单的价格（有序性约束）",
+              "formal": "∀i, j: (SELL[i].price > BUY[j].price)"
+            },
+            {
+              "name": "distinctness",
+              "description": "所有订单的价格必须唯一（唯一性/去重约束）",
+              "formal": "∀i, j: (i ≠ j) → (ORDER[i].price ≠ ORDER[j].price)"
+            },
+            {
+              "name": "range_bound",
+              "description": "新添加的 BUY 订单价格必须低于当前最佳 SELL 订单价格（值域约束）",
+              "formal": "∀i: (NEW_BUY[i].price < BEST_SELL.price)"
+            },
+            {
+              "name": "range_bound",
+              "description": "新添加的 SELL 订单价格必须高于当前最佳 BUY 订单价格（值域约束）",
+              "formal": "∀i: (NEW_SELL[i].price > BEST_BUY.price)"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每个 ACCEPT 操作对应一个已添加但未被接受的订单（操作次数限制）",
+              "formal": "∀i: (ACCEPT[i].price ∈ ADD_prices) ∧ (ACCEPT[i].price ∉ ACCEPTED_prices)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足条件的方案数（常取模）"
+        }
+      }
+    ],
+    "description": "求满足条件的方案数（常取模）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "价格序列的单调性：SELL订单的价格始终高于BUY订单的价格，且新添加的BUY订单价格低于当前最低的SELL订单价格，新添加的SELL订单价格高于当前最高的BUY订单价格。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个操作（ADD或ACCEPT）都会导致订单簿的状态发生变化，但这些变化必须满足上述价格约束条件。即每次操作后，订单簿中的所有订单仍然保持正确的顺序。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：在处理订单时，可以将连续的价格区间合并为一个更大的区间来简化问题。例如，如果多个连续的BUY订单被添加，它们可以被视为一个整体区间进行处理。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "价格序列的单调性：SELL订单的价格始终高于BUY订单的价格，且新添加的BUY订单价格低于当前最低的SELL订单价格，新添加的SELL订单价格高于当前最高的BUY订单价格。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个操作（ADD或ACCEPT）都会导致订单簿的状态发生变化，但这些变化必须满足上述价格约束条件。即每次操作后，订单簿中的所有订单仍然保持正确的顺序。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：在处理订单时，可以将连续的价格区间合并为一个更大的区间来简化问题。例如，如果多个连续的BUY订单被添加，它们可以被视为一个整体区间进行处理。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

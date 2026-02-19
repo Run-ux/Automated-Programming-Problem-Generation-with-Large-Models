@@ -1,0 +1,79 @@
+{
+  "problem_id": "P9100",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacency_relation",
+            "description": "相邻节点的引爆关系（如果地雷 a 在地雷 b 的爆炸半径内，则地雷 b 爆炸时会引爆地雷 a）",
+            "formal": "对于所有 i, j (1 ≤ i, j ≤ n)，如果 |a_i - a_j| ≤ r_j，则地雷 j 爆炸时会引爆地雷 i"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "选择的地雷子集可以为空或包含任意数量的地雷",
+            "formal": "S ⊆ {1, 2, ..., n}，其中 S 可以是空集"
+          },
+          {
+            "name": "transitive_closure",
+            "description": "引爆关系具有传递性（如果地雷 a 引爆地雷 b，地雷 b 引爆地雷 c，则地雷 a 也会引爆地雷 c）",
+            "formal": "如果存在 i, j, k 使得 |a_i - a_j| ≤ r_j 且 |a_j - a_k| ≤ r_k，则 |a_i - a_k| ≤ r_k"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求所有可能的子集状态数，其中每个状态表示一个地雷爆炸后能引起的连锁反应结果"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即通过考虑每个地雷是否被引爆以及其影响范围内的其他地雷的状态来确定最终的实验结果数量。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过计算每个地雷的影响范围，并利用前缀和等技术来高效地合并这些区间的信息，从而得到总的可能实验结果数。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

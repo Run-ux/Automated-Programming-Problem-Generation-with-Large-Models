@@ -1,0 +1,84 @@
+{
+  "problem_id": "P6858",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 2
+        },
+        "value_range": {
+          "min": 0,
+          "max": 100000000000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "probability_distribution",
+            "description": "每次等概率对一条存活的胖头鱼造成剧毒伤害"
+          },
+          {
+            "name": "state_transition",
+            "description": "当拥有圣盾的胖头鱼受到伤害时，免疫本次伤害并破坏圣盾"
+          },
+          {
+            "name": "state_transition",
+            "description": "在一条胖头鱼的圣盾被破坏后，给予其他所有没有死亡且没有圣盾的胖头鱼圣盾"
+          },
+          {
+            "name": "immediate_consequence_constraint",
+            "description": "剧毒立即杀死没有圣盾的胖头鱼"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "答案对 998244353 取模"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_probability",
+        "description": "最小化期望操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "期望伤害次数的计算可以通过子问题的最优解组合得到，即通过动态规划方法求解时，每个状态的值依赖于其子状态的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "在动态规划过程中，状态转移的一致性保证了从一个状态到另一个状态的变化是基于确定的规则进行的。具体来说，当前状态的期望伤害次数可以通过前一状态的期望伤害次数加上一定的增量来计算。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

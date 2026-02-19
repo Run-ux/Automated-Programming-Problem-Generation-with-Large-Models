@@ -1,0 +1,180 @@
+{
+  "problem_id": "P11831",
+  "source": "luogu",
+  "input_structure": {
+    "type": "directed_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "directed_graph",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {
+            "connected": false,
+            "weighted": false,
+            "directed": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000
+    },
+    "properties": {
+      "connected": false,
+      "weighted": false,
+      "directed": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "存在从节点 x 到节点 y 的有向路径",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "节点 y 的 a 权值在给定区间 [l, r] 内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "permutation_constraint",
+        "description": "a 和 b 权值序列均为 1 到 n 的排列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制为 q 次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_type",
+        "description": "操作类型限制为交换 a 或 b 权值，或查询满足条件的 b 权值最大值",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "存在从节点 x 到节点 y 的有向路径",
+              "formal": "∃ path(x, y) in G"
+            },
+            {
+              "name": "range_bound",
+              "description": "节点 y 的 a 权值在给定区间 [l, r] 内",
+              "formal": "l ≤ a_y ≤ r"
+            },
+            {
+              "name": "permutation_constraint",
+              "description": "a 和 b 权值序列均为 1 到 n 的排列",
+              "formal": "[a_1, ..., a_n] and [b_1, ..., b_n] are permutations of [1, ..., n]"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制为 q 次",
+              "formal": "q operations"
+            },
+            {
+              "name": "operation_type",
+              "description": "操作类型限制为交换 a 或 b 权值，或查询满足条件的 b 权值最大值",
+              "formal": "o_i ∈ {1, 2, 3}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求满足条件的节点中最大权值"
+        }
+      }
+    ],
+    "description": "求满足条件的节点中最大权值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "topological_order",
+        "description": "DAG 上的顺序依赖：图 G 是有向无环图，节点之间的可达性满足拓扑序关系",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：从起点 x 到终点 y 的路径上的最大 b 值可以通过子路径的最大 b 值来计算",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：a 权值在给定区间 [l, r] 内的节点集合可以通过前缀和差值快速计算",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：通过交换 a 或 b 权值，节点的状态可以动态更新，但不影响整体的可达性和最优解",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "topological_order",
+              "description": "DAG 上的顺序依赖：图 G 是有向无环图，节点之间的可达性满足拓扑序关系",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：从起点 x 到终点 y 的路径上的最大 b 值可以通过子路径的最大 b 值来计算",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：a 权值在给定区间 [l, r] 内的节点集合可以通过前缀和差值快速计算",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过交换 a 或 b 权值，节点的状态可以动态更新，但不影响整体的可达性和最优解",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

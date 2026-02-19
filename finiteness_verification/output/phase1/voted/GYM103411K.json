@@ -2,14 +2,14 @@
   "problem_id": "GYM103411K",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -39,23 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "parallel_operation",
-        "description": "每个时间单位最多只能有一个元素移动",
+        "name": "operation_limit",
+        "description": "每秒只能对一个元素进行操作（移动）",
         "confidence": "1/1"
       },
       {
-        "name": "minimum_distance_constraint",
-        "description": "如果两个特定元素在同一位置，则发生冲突（一个元素被移除）",
+        "name": "exclusion",
+        "description": "两个特定元素不能同时处于同一位置（互斥）",
         "confidence": "1/1"
       },
       {
-        "name": "endpoint_node_constraint",
-        "description": "元素到达安全区域后不再受其他元素影响",
-        "confidence": "1/1"
-      },
-      {
-        "name": "source_node_fixed",
-        "description": "初始时，所有元素不在目标位置或冲突位置",
+        "name": "connectivity",
+        "description": "目标节点必须在没有被特定元素占据的情况下才能被访问（可达性约束）",
         "confidence": "1/1"
       }
     ],
@@ -66,20 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "parallel_operation",
-              "description": "每个时间单位最多只能有一个元素移动"
+              "name": "operation_limit",
+              "description": "每秒只能对一个元素进行操作（移动）",
+              "formal": "每个时间单位最多执行一次操作"
             },
             {
-              "name": "minimum_distance_constraint",
-              "description": "如果两个特定元素在同一位置，则发生冲突（一个元素被移除）"
+              "name": "exclusion",
+              "description": "两个特定元素不能同时处于同一位置（互斥）",
+              "formal": "对于任意时刻 t，如果 shark_position(t) == squid_position(t)，则该 squid 被捕获"
             },
             {
-              "name": "endpoint_node_constraint",
-              "description": "元素到达安全区域后不再受其他元素影响"
-            },
-            {
-              "name": "source_node_fixed",
-              "description": "初始时，所有元素不在目标位置或冲突位置"
+              "name": "connectivity",
+              "description": "目标节点必须在没有被特定元素占据的情况下才能被访问（可达性约束）",
+              "formal": "squid 只有在 shelter 未被 shark 占据时才能到达并存活"
             }
           ]
         }
@@ -95,29 +89,63 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "最大化在给定条件下能够成功到达目标位置的实体数量"
+          "description": "最大化在给定条件下能够成功到达安全位置的个体数量"
         }
       }
     ],
-    "description": "最大化在给定条件下能够成功到达目标位置的实体数量"
+    "description": "最大化在给定条件下能够成功到达安全位置的个体数量"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "双指针左右端点单调前进，确保在每一步操作中，被考虑的子问题范围是逐步缩小或扩大的。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，即通过解决较小规模的问题来构建更大规模问题的解决方案。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "局部最优选择导致全局最优，每次选择当前最优（距离避难所最近且未被鲨鱼捕获）的鱿鱼移动，以最大化生存数量。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "双指针左右端点单调前进，通过维护一个有序的区间来确保最优解的计算",
-          "properties": {
-            "left_monotonic": true,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针左右端点单调前进，确保在每一步操作中，被考虑的子问题范围是逐步缩小或扩大的。",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，即通过解决较小规模的问题来构建更大规模问题的解决方案。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "局部最优选择导致全局最优，每次选择当前最优（距离避难所最近且未被鲨鱼捕获）的鱿鱼移动，以最大化生存数量。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "双指针左右端点单调前进，通过维护一个有序的区间来确保最优解的计算"
+    ]
   }
 }

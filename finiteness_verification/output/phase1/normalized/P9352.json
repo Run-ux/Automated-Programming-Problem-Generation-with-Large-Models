@@ -1,0 +1,93 @@
+{
+  "problem_id": "P9352",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通，即从任意一个节点出发可以到达其他所有节点"
+          },
+          {
+            "name": "distinctness",
+            "description": "塔的高度是唯一的，即每个高度值在1到N之间且不重复"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "每对相邻的塔之间存在一条边，且这些边构成一个连通图"
+          },
+          {
+            "name": "operation_limit",
+            "description": "不能在同一个塔上放置多个障碍物"
+          },
+          {
+            "name": "state_transition",
+            "description": "猫只能移动到没有障碍物的相邻塔中，并且总是选择最高的塔"
+          },
+          {
+            "name": "terminal_vertex_count_constraint",
+            "description": "当猫所在的塔的所有相邻塔都有障碍物时，操作结束"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化路径上的移动次数总和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每一步选择中，猫移动到最高可达塔的过程可以分解为一系列子问题，每个子问题的最优解组合成全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，猫总是选择当前可达的最高塔进行移动。这种局部最优选择最终导致全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：猫在塔之间的移动遵循一定的状态转移规则，即从一个塔移动到另一个塔时，始终选择路径最短且高度最高的塔。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

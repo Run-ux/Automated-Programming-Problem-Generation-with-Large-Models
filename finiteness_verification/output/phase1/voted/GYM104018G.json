@@ -2,14 +2,14 @@
   "problem_id": "GYM104018G",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 2,
             "max": 100
@@ -41,18 +41,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图必须连通（所有节点可以通过边互相到达）",
+        "name": "connectivity",
+        "description": "图必须连通（所有节点之间存在路径）",
         "confidence": "1/1"
       },
       {
-        "name": "maximum_distance_constraint",
+        "name": "path_constraint",
         "description": "从任意节点到最近的选定节点的距离不超过2条边",
         "confidence": "1/1"
       },
       {
-        "name": "minimum_operation_count_constraint",
-        "description": "选择的节点数量最小化",
+        "name": "optimization_objective",
+        "description": "最小化选定节点的数量",
         "confidence": "1/1"
       }
     ],
@@ -63,17 +63,17 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "图必须连通（所有节点可以通过边互相到达）"
+              "name": "connectivity",
+              "description": "图必须连通（所有节点之间存在路径）"
             },
             {
-              "name": "maximum_distance_constraint",
+              "name": "path_constraint",
               "description": "从任意节点到最近的选定节点的距离不超过2条边",
-              "formal": "∀v ∈ V, ∃u ∈ S, dist(v, u) ≤ 2"
+              "formal": "对于任意节点 u，存在一个选定节点 v 使得 dist(u, v) <= 2"
             },
             {
-              "name": "minimum_operation_count_constraint",
-              "description": "选择的节点数量最小化"
+              "name": "optimization_objective",
+              "description": "最小化选定节点的数量"
             }
           ]
         }
@@ -89,26 +89,57 @@
         "status": "success",
         "result": {
           "type": "minimize_count",
-          "description": "求满足条件的最小选择数量"
+          "description": "最小化满足覆盖条件的节点数"
         }
       }
     ],
-    "description": "求满足条件的最小选择数量"
+    "description": "最小化满足覆盖条件的节点数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最小化放置平台数量的问题可以分解为在每个子树中最小化放置平台数量的问题。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，优先考虑当前节点及其相邻节点是否已经满足条件，如果未满足则在此处放置一个平台。这种局部最优的选择最终能够导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从根节点到叶子节点的过程中，每个节点的状态（是否需要放置平台）仅依赖于其直接子节点的状态，且这种状态转移是确定性的。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，即最小化放置点的数量可以由其子树中的最优解推导得出。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最小化放置平台数量的问题可以分解为在每个子树中最小化放置平台数量的问题。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，优先考虑当前节点及其相邻节点是否已经满足条件，如果未满足则在此处放置一个平台。这种局部最优的选择最终能够导致全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从根节点到叶子节点的过程中，每个节点的状态（是否需要放置平台）仅依赖于其直接子节点的状态，且这种状态转移是确定性的。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，即最小化放置点的数量可以由其子树中的最优解推导得出。"
+    ]
   }
 }

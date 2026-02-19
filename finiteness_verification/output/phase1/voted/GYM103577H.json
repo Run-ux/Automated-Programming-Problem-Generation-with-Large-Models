@@ -2,14 +2,14 @@
   "problem_id": "GYM103577H",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 5,
             "max": 5
@@ -39,23 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "non_decreasing_sequence",
-        "description": "所有角色的位置随时间单调递增，直到达到目标位置后停止",
+        "name": "ordering",
+        "description": "三个对象的移动速度满足 v0 < v1 < v2，且它们的初始位置和最终位置是有序的（Eli 从 0 到 d，Rafa 从 1 到 d，Tomi 在 Eli 和 Rafa 之间往返）",
         "confidence": "1/1"
       },
       {
-        "name": "uniform_movement",
-        "description": "每个角色的速度是固定的，并且速度之间有严格的大小关系（v0 < v1 < v2）",
+        "name": "range_bound",
+        "description": "每个对象的位置在 [0, d] 范围内，且在达到 d 后停止移动",
         "confidence": "1/1"
       },
       {
-        "name": "coordinate_fixed_point",
-        "description": "所有角色的位置不会超过目标位置 d",
-        "confidence": "1/1"
-      },
-      {
-        "name": "alternating_sequence_constraint",
-        "description": "Tomi 在 Rafa 和 Eli 之间来回移动，直到两者都到达目标位置 d",
+        "name": "state_transition",
+        "description": "Tomi 的位置根据 Eli 和 Rafa 的位置动态变化，当 Tomi 到达 Rafa 或 Eli 的位置时会改变方向",
         "confidence": "1/1"
       }
     ],
@@ -66,20 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "non_decreasing_sequence",
-              "description": "所有角色的位置随时间单调递增，直到达到目标位置后停止"
+              "name": "ordering",
+              "description": "三个对象的移动速度满足 v0 < v1 < v2，且它们的初始位置和最终位置是有序的（Eli 从 0 到 d，Rafa 从 1 到 d，Tomi 在 Eli 和 Rafa 之间往返）"
             },
             {
-              "name": "uniform_movement",
-              "description": "每个角色的速度是固定的，并且速度之间有严格的大小关系（v0 < v1 < v2）"
+              "name": "range_bound",
+              "description": "每个对象的位置在 [0, d] 范围内，且在达到 d 后停止移动"
             },
             {
-              "name": "coordinate_fixed_point",
-              "description": "所有角色的位置不会超过目标位置 d"
-            },
-            {
-              "name": "alternating_sequence_constraint",
-              "description": "Tomi 在 Rafa 和 Eli 之间来回移动，直到两者都到达目标位置 d"
+              "name": "state_transition",
+              "description": "Tomi 的位置根据 Eli 和 Rafa 的位置动态变化，当 Tomi 到达 Rafa 或 Eli 的位置时会改变方向"
             }
           ]
         }
@@ -87,37 +78,71 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个在给定时间点的位置值"
+          "type": "construction",
+          "description": "构造在给定时间点的位置"
         }
       }
     ],
-    "description": "构造一个在给定时间点的位置值"
+    "description": "构造在给定时间点的位置"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "时间推进过程中，各角色的位置单调递增，直到达到目标位置d后停止移动",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "Tomi在Eli和Rafa之间往返的状态转移保持一致，即每次从一个位置出发到达另一个位置的时间和距离计算方法不变",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "任意时刻Tomi的位置可以通过其与Eli或Rafa之间的相对位移累加得到，满足区间可加性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "时间推进过程中，各角色的位置单调递增，直到达到目标位置后停止移动。",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "时间推进过程中，各角色的位置单调递增，直到达到目标位置d后停止移动",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "Tomi在Eli和Rafa之间往返的状态转移保持一致，即每次从一个位置出发到达另一个位置的时间和距离计算方法不变",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "任意时刻Tomi的位置可以通过其与Eli或Rafa之间的相对位移累加得到，满足区间可加性",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "时间推进过程中，各角色的位置单调递增，直到达到目标位置后停止移动。"
+    ]
   }
 }

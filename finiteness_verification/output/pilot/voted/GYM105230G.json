@@ -18,9 +18,7 @@
             "min": 1,
             "max": 10000
           },
-          "properties": {
-            "ordered": false
-          }
+          "properties": {}
         }
       },
       {
@@ -52,7 +50,9 @@
             "min": 1,
             "max": 10000
           },
-          "properties": {}
+          "properties": {
+            "ordered": false
+          }
         }
       }
     ],
@@ -64,20 +64,28 @@
       "min": 1,
       "max": 10000
     },
-    "properties": {
-      "ordered": false
-    }
+    "properties": {}
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "operation_sequence",
-        "description": "操作序列按顺序执行。",
+        "name": "sum_constraint",
+        "description": "区间内质因数和的最小值计算",
+        "confidence": "2/3"
+      },
+      {
+        "name": "subsequence_constraint",
+        "description": "区间子序列约束（l ≤ r）",
+        "confidence": "2/3"
+      },
+      {
+        "name": "range_bound",
+        "description": "数组元素的值域约束（1 ≤ a_i ≤ 10^4）",
         "confidence": "3/3"
       },
       {
-        "name": "prime_factors_sum",
-        "description": "对于每个类型 2 的操作，输出区间 [l, r] 内所有数的最小质因数和。",
+        "name": "operation_limit",
+        "description": "操作次数限制（1 ≤ q ≤ 10^5）",
         "confidence": "3/3"
       }
     ],
@@ -88,19 +96,24 @@
         "result": {
           "constraints": [
             {
-              "name": "prime_factors_sum",
-              "description": "对于每个类型 2 的操作，输出区间 [l, r] 内所有数的最小质因数和。",
-              "formal": "For each type 2 operation, output the minimum possible sum of the prime factors of the numbers a_l, a_{l+1}, ..., a_r."
+              "name": "range_bound",
+              "description": "数组元素的值域约束（1 ≤ a_i ≤ 10^4）"
             },
             {
-              "name": "operation_sequence",
-              "description": "操作序列按顺序执行。",
-              "formal": "Operations are performed in the given order."
+              "name": "operation_limit",
+              "description": "操作次数限制（1 ≤ q ≤ 10^5）"
             },
             {
-              "name": "valid_operation_values",
-              "description": "每种操作的参数必须在给定范围内。对于 t=1，i 必须在 [1, n] 范围内；对于 t=2，l 和 r 必须在 [1, n] 范围内且 l ≤ r；对于 t=3，l、r 和 x 必须在 [1, n] 和 [1, 10^4] 范围内且 l ≤ r。",
-              "formal": "For t=1, 1 ≤ i ≤ n; for t=2, 1 ≤ l ≤ r ≤ n; for t=3, 1 ≤ l ≤ r ≤ n and 1 ≤ x ≤ 10^4."
+              "name": "range_bound",
+              "description": "操作中索引范围的约束（1 ≤ i, l, r ≤ n）"
+            },
+            {
+              "name": "subsequence_constraint",
+              "description": "区间子序列约束（l ≤ r）"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "区间内质因数和的最小值计算"
             }
           ]
         }
@@ -111,24 +124,19 @@
         "result": {
           "constraints": [
             {
-              "name": "prime_factors_sum",
-              "description": "对于每个类型 2 的操作，输出区间 [l, r] 内所有数的最小质因数和"
+              "name": "sum_constraint",
+              "description": "区间内所有元素的质因数和的最小值",
+              "formal": "min(∑ prime_factors(a[i])) for i in [l, r]"
             },
             {
-              "name": "operation_sequence",
-              "description": "操作序列按顺序执行"
+              "name": "range_bound",
+              "description": "操作涉及的区间必须在数组范围内",
+              "formal": "1 ≤ l ≤ r ≤ n"
             },
             {
-              "name": "valid_operation_types",
-              "description": "操作类型 t 必须是 1、2 或 3"
-            },
-            {
-              "name": "valid_indices",
-              "description": "对于类型 1 的操作，i 必须在 [1, n] 范围内；对于类型 2 和 3 的操作，l 和 r 必须在 [1, n] 范围内且 l ≤ r"
-            },
-            {
-              "name": "valid_values",
-              "description": "对于类型 3 的操作，x 必须在 [1, 10^4] 范围内"
+              "name": "operation_limit",
+              "description": "每种操作的参数范围限制",
+              "formal": "1 ≤ t ≤ 3, 1 ≤ i ≤ n, 1 ≤ x ≤ 10^4"
             }
           ]
         }
@@ -139,29 +147,24 @@
         "result": {
           "constraints": [
             {
-              "name": "prime_factors_sum",
-              "description": "对于每个类型 2 的操作，输出区间 [l, r] 内所有数的最小质因数和。",
-              "formal": "For each type 2 operation, output the minimum possible sum of the prime factors of the numbers a_l, a_{l+1}, ..., a_r."
+              "name": "range_bound",
+              "description": "数组元素的值域约束（1 ≤ a_i ≤ 10^4）"
             },
             {
-              "name": "operation_sequence",
-              "description": "操作序列按顺序执行。",
-              "formal": "Operations are performed in the order they are given."
+              "name": "subsequence_constraint",
+              "description": "操作2要求计算子序列的最小质因数和（a_l, a_{l+1}, ..., a_r）"
             },
             {
-              "name": "valid_operation_types",
-              "description": "操作类型 t 必须是 1、2 或 3。",
-              "formal": "t ∈ {1, 2, 3}"
+              "name": "operation_limit",
+              "description": "操作次数限制（1 ≤ q ≤ 10^5）"
             },
             {
-              "name": "valid_indices",
-              "description": "对于类型 1 的操作，i 必须在 [1, n] 范围内；对于类型 2 和类型 3 的操作，l 和 r 必须在 [1, n] 范围内且 l ≤ r。",
-              "formal": "For t=1: 1 ≤ i ≤ n; For t=2 and t=3: 1 ≤ l ≤ r ≤ n"
+              "name": "range_bound",
+              "description": "操作1、2、3中的索引范围约束（1 ≤ i, l, r ≤ n）"
             },
             {
-              "name": "valid_x_value",
-              "description": "对于类型 3 的操作，x 必须在 [1, 10^4] 范围内。",
-              "formal": "For t=3: 1 ≤ x ≤ 10^4"
+              "name": "range_bound",
+              "description": "操作2和3中的区间有效性约束（1 ≤ l ≤ r ≤ n）"
             }
           ]
         }
@@ -169,72 +172,106 @@
     ]
   },
   "objective": {
-    "type": "min_sum",
+    "type": "minimize_value",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "min_sum",
-          "description": "求区间内所有数的质因数之和的最小值"
+          "type": "minimize_value",
+          "description": "求区间内所有数的质因数和的最小值"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "min_sum",
-          "description": "对于每个类型2操作，输出给定区间内所有数的质因数之和的最小值"
+          "type": "minimize_value",
+          "description": "求区间内所有数的质因数和的最小值"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "min_sum",
-          "description": "对于每个类型2操作，输出给定区间内所有数的质因数之和的最小值"
+          "type": "minimize_value",
+          "description": "求区间内元素的质因数和的最小值"
         }
       }
     ],
-    "description": "求区间内所有数的质因数之和的最小值"
+    "description": "求区间内所有数的质因数和的最小值"
   },
   "invariant": {
-    "name": "interval_mergeable",
-    "confidence": "3/3",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，适用于动态规划算法",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间信息可通过子区间合并，适用于线段树等数据结构",
+        "confidence": "3/3",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间信息可通过子区间合并，适用于前缀和或线段树等数据结构来高效处理区间查询与更新。",
-          "properties": {
-            "prefix_sum": true
-          }
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间信息可通过子区间合并，适用于线段树等数据结构",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，适用于动态规划算法",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间信息可通过子区间合并，适用于前缀和或线段树等数据结构来处理区间查询与更新。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间信息可通过子区间合并，适用于线段树等数据结构处理区间查询和更新问题",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，适用于动态规划求解区间最小质因数和的问题",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间信息可通过子区间合并，适用于前缀和或线段树等数据结构来维护区间的最小质因数和",
-          "properties": {
-            "prefix_sum": true
-          }
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间信息可通过子区间合并，适用于线段树等数据结构",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，适用于动态规划算法",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "区间信息可通过子区间合并，适用于前缀和或线段树等数据结构来高效处理区间查询与更新。"
+    ]
   }
 }

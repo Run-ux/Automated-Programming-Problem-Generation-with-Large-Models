@@ -1,0 +1,161 @@
+{
+  "problem_id": "GYM102006L",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "cyclic_shift_constraint",
+        "description": "元素按循环顺序排列（从1到x再回到1）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_decreasing_sequence",
+        "description": "已知元素必须保持非递减顺序",
+        "confidence": "1/1"
+      },
+      {
+        "name": "fixed_start_node",
+        "description": "序列的第一个元素固定为1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "所有非零元素的值必须在1到k之间",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "cyclic_shift_constraint",
+              "description": "元素按循环顺序排列（从1到x再回到1）",
+              "formal": "For each i, v[i] = (i-1) % k + 1"
+            },
+            {
+              "name": "non_decreasing_sequence",
+              "description": "已知元素必须保持非递减顺序",
+              "formal": "For all i < j, if v[i] > 0 and v[j] > 0, then v[i] <= v[j]"
+            },
+            {
+              "name": "fixed_start_node",
+              "description": "序列的第一个元素固定为1",
+              "formal": "v[1] = 1"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "所有非零元素的值必须在1到k之间",
+              "formal": "For all i, if v[i] > 0, then 1 <= v[i] <= k"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "最小化满足条件的序列中不同元素的数量"
+        }
+      }
+    ],
+    "description": "最小化满足条件的序列中不同元素的数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "已学会的餐数随时间单调递增，且在未学习新餐的情况下，每日所选餐数循环递增。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：当前天数对应的餐数由前一日餐数和是否学到新餐决定。若当天学会新餐，则该日餐数为新学餐数；否则，按循环顺序选择已有餐数。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：在给定前i天的餐数序列基础上，第i+1天的餐数选择依赖于前i天的最优解（即最小化已学会餐数）。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "已学会的餐数随时间单调递增，且在未学习新餐的情况下，每日所选餐数循环递增。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：当前天数对应的餐数由前一日餐数和是否学到新餐决定。若当天学会新餐，则该日餐数为新学餐数；否则，按循环顺序选择已有餐数。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：在给定前i天的餐数序列基础上，第i+1天的餐数选择依赖于前i天的最优解（即最小化已学会餐数）。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

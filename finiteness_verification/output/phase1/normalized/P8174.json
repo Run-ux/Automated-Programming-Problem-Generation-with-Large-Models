@@ -1,0 +1,83 @@
+{
+  "problem_id": "P8174",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "turn_based",
+            "description": "游戏按回合进行，奇数回合和偶数回合有不同的操作规则"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每回合只能从指定的非空石子堆中移除至少一个至多所有石子"
+          },
+          {
+            "name": "state_transition",
+            "description": "游戏状态在每个回合后更新，直到所有石子堆为空时游戏结束"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "取到最后一个石子的玩家获胜"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "game_outcome",
+        "description": "确定先手玩家是否有必胜策略"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：游戏状态在每一步操作后，根据当前玩家的选择和对手的响应，转移到新的合法状态。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：Ankica 的必胜策略可以通过分解为一系列子问题（即每一步的最佳选择）来实现，每个子问题的最优解组合成全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步中，Ankica 可以通过选择当前最优的石子堆和移除数量来确保最终获胜，这种局部最优选择导致全局最优。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

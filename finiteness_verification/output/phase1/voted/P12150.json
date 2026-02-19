@@ -1,0 +1,165 @@
+{
+  "problem_id": "P12150",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "集合 A 和 B 的初始值域为 [1, n]，且都为整数。操作过程中可以超出 [1, n]。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation",
+        "description": "每次可以选择 A 中一个数 x，将 x 从 A 中删除，再把 x-1 和 x+1 加到 A 中，若有相同只保留一个。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "通过有限次操作将 A 变成 B。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "求一个符合要求的 A，使得 Σ[i ∈ A] * p_i 最小。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "A 是一个不可重集。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "集合 A 和 B 的初始值域为 [1, n]，且都为整数。操作过程中可以超出 [1, n]。",
+              "formal": "A, B ⊆ [1, n], 操作过程中 A 可以包含不在 [1, n] 范围内的元素"
+            },
+            {
+              "name": "transformation",
+              "description": "每次可以选择 A 中一个数 x，将 x 从 A 中删除，再把 x-1 和 x+1 加到 A 中，若有相同只保留一个。",
+              "formal": "A' = (A - {x}) ∪ {x-1, x+1}，去重后得到 A'"
+            },
+            {
+              "name": "connectivity",
+              "description": "通过有限次操作将 A 变成 B。",
+              "formal": "存在有限的操作序列使得 A 变成 B"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "求一个符合要求的 A，使得 Σ[i ∈ A] * p_i 最小。",
+              "formal": "minimize Σ[i ∈ A] * p_i"
+            },
+            {
+              "name": "distinctness",
+              "description": "A 是一个不可重集。",
+              "formal": "A 中所有元素互不相同"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足条件的集合A，使得给定函数值最小"
+        }
+      }
+    ],
+    "description": "求满足条件的集合A，使得给定函数值最小"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过将集合A中的元素逐步转换为集合B中的元素来最小化总代价。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步操作中，选择当前局部最优的操作（即选择使得当前代价最小的元素进行操作），最终能够达到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态到另一个状态的转换是确定且一致的，即每次操作后，集合A的状态变化是可预测的，并且满足特定的转换规则。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过将集合A中的元素逐步转换为集合B中的元素来最小化总代价。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步操作中，选择当前局部最优的操作（即选择使得当前代价最小的元素进行操作），最终能够达到全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态到另一个状态的转换是确定且一致的，即每次操作后，集合A的状态变化是可预测的，并且满足特定的转换规则。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

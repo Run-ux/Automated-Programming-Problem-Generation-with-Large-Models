@@ -1,0 +1,90 @@
+{
+  "problem_id": "P10053",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 4000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 4000
+        },
+        "properties": {
+          "rooted": true,
+          "binary": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "指定投放节点的数量不超过 K 个，且每个节点最多被一个球占据",
+            "formal": "|distinct(placement_nodes)| <= K"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过 2（二叉树结构）",
+            "formal": "deg(node) <= 2 for all nodes"
+          },
+          {
+            "name": "path_constraint",
+            "description": "球在树中的移动路径必须遵循特定规则：停留在满子节点的节点、移动到唯一空子节点或沿先前方向移动",
+            "formal": "ball movement follows specific rules based on node occupancy and previous direction"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "所有球的投放节点集合是节点编号集合的子集",
+            "formal": "placement_nodes ⊆ {1, 2, ..., N}"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足条件的方案数（对给定模数取模）"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个球的移动和停留位置遵循确定的状态转移规则，确保了状态机的一致性。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：球的投放顺序决定了节点的占用情况，形成了一种隐式的拓扑排序。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个节点的占用情况仅依赖于其直接父节点和兄弟节点的状态，形成了独立的子问题。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "problem_id": "P10006",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 2
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "sequence_pattern_constraint",
+            "description": "字符串必须符合特定的结构规则，包括空串、拼接和嵌套规则",
+            "formal": "s 为 k-超现实数串当且仅当 s 满足以下条件之一：1. s 为空串；2. s = t + u，其中 t 和 u 都是 k-超现实数串；3. s = { + t1 + | + t2 + ... + | + tk+1 + }，其中 t1, t2, ..., tk+1 都是 k-超现实数串"
+          },
+          {
+            "name": "path_constraint",
+            "description": "树上从点 x 到点 y 的唯一简单路径上的字符依次拼接所得字符串必须是 k-超现实数串",
+            "formal": "对于任意有序对 (x, y)，路径上的字符拼接成的字符串 s 必须是 k-超现实数串"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足条件的路径对数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：树上路径的 $k$-超现实数串性质可以通过子路径的性质递归定义和合并",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从根节点到任意节点的路径上的字符序列可以唯一确定该路径是否为 $k$-超现实数串，且这种状态可以在遍历过程中通过子节点的状态转移得到",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：树上任意两个路径的 $k$-超现实数串性质可以通过它们的交集和并集路径的性质来推导",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

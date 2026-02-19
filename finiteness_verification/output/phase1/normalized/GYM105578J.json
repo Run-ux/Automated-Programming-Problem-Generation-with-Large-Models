@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 8,
           "max": 8
@@ -16,7 +16,7 @@
           "max": 100
         },
         "properties": {
-          "ordered": true
+          "ordered": false
         }
       }
     }
@@ -28,16 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "pairwise_exclusion",
-            "description": "所有元素（团队名称和强度值）必须两两不同"
+            "name": "distinctness",
+            "description": "所有团队名称和强度值都是唯一的（无重复）"
           },
           {
-            "name": "tournament_structure",
-            "description": "采用单淘汰赛制，每场比赛的胜者晋级，败者立即淘汰"
+            "name": "ordering",
+            "description": "在每一对比赛中，强度值较高的团队获胜并晋级下一轮"
           },
           {
-            "name": "priority_based_selection",
-            "description": "在每场比赛中，强度值较高的团队获胜"
+            "name": "tournament_structure_constraint",
+            "description": "单淘汰赛制，输掉一场比赛的团队立即被淘汰"
           }
         ]
       }
@@ -48,8 +48,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个单淘汰赛的胜者和亚军"
+        "type": "construction",
+        "description": "构造并输出单淘汰赛中最终获胜者和亚军"
       }
     }
   ],
@@ -58,9 +58,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：每一轮比赛的结果由当前轮次中两支队伍的强度值决定，最终冠军和亚军的确定依赖于每一轮比赛结果的组合。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每一轮比赛的胜者由当前轮次中两支队伍的强度值决定，最终冠军和亚军由各轮次胜者递归决定。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每场比赛结束后，获胜队伍进入下一轮比赛，失败队伍被淘汰，状态转移具有确定性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

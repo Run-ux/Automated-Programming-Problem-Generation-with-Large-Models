@@ -1,0 +1,155 @@
+{
+  "problem_id": "CF1558D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 200000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 200000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "ordering",
+        "description": "序列在插入排序过程中逐步变为非递减顺序",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_order",
+        "description": "必须按照给定的插入操作序列进行插入，每次插入从位置 x_i 到 y_i",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "序列中的元素值在 1 到 n 之间（包含）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "插入操作的总次数必须等于 m",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "ordering",
+              "description": "序列在插入排序过程中逐步变为非递减顺序"
+            },
+            {
+              "name": "operation_order",
+              "description": "必须按照给定的插入操作序列进行插入，每次插入从位置 x_i 到 y_i"
+            },
+            {
+              "name": "range_bound",
+              "description": "序列中的元素值在 1 到 n 之间（包含）"
+            },
+            {
+              "name": "operation_limit",
+              "description": "插入操作的总次数必须等于 m"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足给定插入操作序列的数组方案数"
+        }
+      }
+    ],
+    "description": "求满足给定插入操作序列的数组方案数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：在插入排序过程中，每一步的局部最优解（即每次插入操作后前缀序列有序）保证了最终整个序列的全局最优解（即整个序列有序）。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在插入排序过程中，已处理的前缀序列始终是有序的，并且随着算法的进行，有序部分逐渐扩展到整个序列。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每次插入操作后，序列的状态从一个有序前缀和一个未处理的后缀转移到一个新的更长的有序前缀和一个更短的未处理后缀。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：在插入排序过程中，每一步的局部最优解（即每次插入操作后前缀序列有序）保证了最终整个序列的全局最优解（即整个序列有序）。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在插入排序过程中，已处理的前缀序列始终是有序的，并且随着算法的进行，有序部分逐渐扩展到整个序列。",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次插入操作后，序列的状态从一个有序前缀和一个未处理的后缀转移到一个新的更长的有序前缀和一个更短的未处理后缀。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

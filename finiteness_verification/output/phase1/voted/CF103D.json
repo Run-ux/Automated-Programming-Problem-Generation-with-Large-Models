@@ -1,0 +1,120 @@
+{
+  "problem_id": "CF103D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "arithmetic_progression_constraint",
+        "description": "选择的元素按照等差数列的方式进行选取，即从第 a 个元素开始，每隔 b 个元素选取一次，直到超过数组长度 n。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "计算所选元素的总和，即在每个 (a, b) -raid 场景中，计算按等差数列方式选取的元素的总质量。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "arithmetic_progression_constraint",
+              "description": "选择的元素按照等差数列的方式进行选取，即从第 a 个元素开始，每隔 b 个元素选取一次，直到超过数组长度 n。",
+              "formal": "A[a], A[a + b], A[a + 2b], ..., A[a + kb] where a + kb <= n"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "计算所选元素的总和，即在每个 (a, b) -raid 场景中，计算按等差数列方式选取的元素的总质量。",
+              "formal": "sum(A[a + kb]) for all k such that a + kb <= n"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求给定规则下选取元素的总权值和"
+        }
+      }
+    ],
+    "description": "求给定规则下选取元素的总权值和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过计算特定步长的等差序列索引对应的元素和，可以利用前缀和快速求解区间和",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个 (a, b) -raid 场景下的总质量计算是独立的，不依赖于其他场景的结果",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过计算特定步长的等差序列索引对应的元素和，可以利用前缀和快速求解区间和",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个 (a, b) -raid 场景下的总质量计算是独立的，不依赖于其他场景的结果",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

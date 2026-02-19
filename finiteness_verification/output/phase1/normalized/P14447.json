@@ -1,0 +1,79 @@
+{
+  "problem_id": "P14447",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 400000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "exclusion",
+            "description": "两个节点之间存在一种互斥关系，如果一个节点的攻击值大于等于另一个节点的防御值，则可以消除该节点（图着色约束）",
+            "formal": "对于任意 i, j (1 ≤ i, j ≤ n, i ≠ j)，如果 a_i ≥ b_j，则节点 j 可以被节点 i 消除"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每个节点在一次战争中只能被使用一次，即每个节点在一个战争中最多参与一次战斗（操作次数限制）",
+            "formal": "每个节点在一个战争中最多参与一次战斗"
+          },
+          {
+            "name": "state_transition",
+            "description": "每次突变后，节点的属性会发生变化，且这些变化是累积的（状态转移约束）",
+            "formal": "对于第 i 次突变，节点 v_i 的攻击值更新为 x_i，防御值更新为 y_i，并且前 i-1 次突变的影响会累积"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "求在一系列操作后，满足特定条件的最小剩余元素数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，每个状态下的最小剩余生物数量可以通过之前的状态推导出来。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，总是选择当前可以击败最多生物的策略。通过局部最优选择（每次选择攻击防御比最高的生物进行战斗），最终达到全局最优（最少剩余生物）。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

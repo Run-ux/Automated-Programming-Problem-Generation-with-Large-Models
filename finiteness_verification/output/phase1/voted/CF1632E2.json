@@ -1,0 +1,148 @@
+{
+  "problem_id": "CF1632E2",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "图必须连通（树的定义）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "acyclicity",
+        "description": "图必须无环（树的定义）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distance_bound",
+        "description": "通过添加一条权重为 x 的边，最小化从根节点到所有节点的最大距离",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "图必须连通（树的定义）"
+            },
+            {
+              "name": "acyclicity",
+              "description": "图必须无环（树的定义）"
+            },
+            {
+              "name": "distance_bound",
+              "description": "通过添加一条权重为 x 的边，最小化从根节点到所有节点的最大距离"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "min_max",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "min_max",
+          "description": "对于每个给定的x，找到在添加一条权重为x的边后，从顶点1到所有其他顶点的最大距离的最小值"
+        }
+      }
+    ],
+    "description": "对于每个给定的x，找到在添加一条权重为x的边后，从顶点1到所有其他顶点的最大距离的最小值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过在树中添加一条边来最小化最大距离的问题可以分解为多个子问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态到另一个状态的转移是确定且一致的，例如在计算每个节点到根节点的距离时，使用BFS或DFS遍历树的过程中的状态转移规则保持不变。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着x的增加，f(x)的值是非递增的。这是因为添加更长的边（更大的x）不会使最远点的距离变得更远。",
+        "confidence": "1/1",
+        "properties": {
+          "non_increasing": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过在树中添加一条边来最小化最大距离的问题可以分解为多个子问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态到另一个状态的转移是确定且一致的，例如在计算每个节点到根节点的距离时，使用BFS或DFS遍历树的过程中的状态转移规则保持不变。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着x的增加，f(x)的值是非递增的。这是因为添加更长的边（更大的x）不会使最远点的距离变得更远。",
+              "properties": {
+                "non_increasing": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

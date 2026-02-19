@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -28,16 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "maximum_element_count_constraint",
-            "description": "目标节点的最终排名不超过给定值 X"
+            "name": "ordering_constraint",
+            "description": "最终排名不超过 X",
+            "formal": "rank(RUN) <= X"
           },
           {
-            "name": "maximum_preference_requirement",
-            "description": "调整后的怀疑因子增量小于 K"
+            "name": "uncertainty_threshold_constraint",
+            "description": "怀疑因子增加量小于 K",
+            "formal": "skepticism_factor_increase < K"
           },
           {
-            "name": "non_negative_values",
-            "description": "所有节点的分数必须是非负整数"
+            "name": "non_negative_value_constraint",
+            "description": "分数必须是非负整数",
+            "formal": "score >= 0 and score is an integer"
           }
         ]
       }
@@ -48,8 +51,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求满足条件的最小值"
+        "type": "minimize_value",
+        "description": "求满足条件的最小初始值"
       }
     }
   ],
@@ -58,9 +61,26 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在确定RUN俱乐部的最低分数时，可以基于其他俱乐部的分数分布情况来决定。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即通过调整其他俱乐部的分数以达到RUN俱乐部的最低得分和最高排名要求。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着RUN俱乐部分数的增加，其排名将非严格递减。同时，在满足条件的情况下，怀疑因子的增长是非严格递增的。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，优先考虑对当前状态影响最大的操作（如提高或降低某些俱乐部的分数），以最小化RUN俱乐部的初始分数并确保怀疑因子不超过K。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,84 @@
+{
+  "problem_id": "P4314",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": -2147483648,
+          "max": 2147483647
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "window_constraint",
+            "description": "区间查询，求区间内的最大值",
+            "formal": "max(A[X:Y])"
+          },
+          {
+            "name": "submatrix_transformation",
+            "description": "区间更新，将区间内每个元素增加一个固定值",
+            "formal": "A[i] += Z for all i in [X, Y]"
+          },
+          {
+            "name": "submatrix_transformation",
+            "description": "区间更新，将区间内每个元素设置为一个固定值",
+            "formal": "A[i] = Z for all i in [X, Y]"
+          },
+          {
+            "name": "query_history_constraint",
+            "description": "历史区间查询，求区间内曾经达到过的最大值",
+            "formal": "max(max(A[X:Y])) over all previous updates"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求区间内的最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：CPU 使用率的变化可以通过区间的端点差值进行计算，支持区间增量更新和查询。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：CPU 使用率的区间信息可以通过子区间的合并来获得，支持区间最大值查询。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

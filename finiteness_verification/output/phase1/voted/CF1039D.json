@@ -2,14 +2,14 @@
   "problem_id": "CF1039D",
   "source": "codeforces",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 2,
             "max": 100000
@@ -41,13 +41,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "vertex_disjoint_paths",
+        "name": "degree_bound",
         "description": "每个顶点最多属于一条简单路径（包括端点）",
         "confidence": "1/1"
       },
       {
-        "name": "path_length_constraint",
-        "description": "每条简单路径的长度固定为 k 个顶点",
+        "name": "path_constraint",
+        "description": "每条简单路径包含恰好 k 个顶点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "最大化 k-有效路径集合的大小",
         "confidence": "1/1"
       }
     ],
@@ -58,12 +63,19 @@
         "result": {
           "constraints": [
             {
-              "name": "vertex_disjoint_paths",
-              "description": "每个顶点最多属于一条简单路径（包括端点）"
+              "name": "degree_bound",
+              "description": "每个顶点最多属于一条简单路径（包括端点）",
+              "formal": "对于每个顶点 v，v 属于的路径数 ≤ 1"
             },
             {
-              "name": "path_length_constraint",
-              "description": "每条简单路径的长度固定为 k 个顶点"
+              "name": "path_constraint",
+              "description": "每条简单路径包含恰好 k 个顶点",
+              "formal": "对于每条路径 P，|P| = k"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "最大化 k-有效路径集合的大小",
+              "formal": "最大化 |S|，其中 S 是 k-有效路径集合"
             }
           ]
         }
@@ -79,26 +91,57 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "求满足条件的路径数量的最大值"
+          "description": "对于每个给定的路径长度，求解满足条件的最大路径数量"
         }
       }
     ],
-    "description": "求满足条件的路径数量的最大值"
+    "description": "对于每个给定的路径长度，求解满足条件的最大路径数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即树的每个子树的最优解可以合并成整个树的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在求解过程中，不同子树的子问题是相互独立的，一个子树的解不会影响另一个子树的解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "divide_conquer",
+        "description": "分治不变量：大问题的解可以通过递归地解决其子问题并合并子问题的解来获得。对于树结构，可以通过递归处理每个子树并合并结果来解决问题。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个子树的最优解可以合并成整个树的最优解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即树的每个子树的最优解可以合并成整个树的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在求解过程中，不同子树的子问题是相互独立的，一个子树的解不会影响另一个子树的解。",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：大问题的解可以通过递归地解决其子问题并合并子问题的解来获得。对于树结构，可以通过递归处理每个子树并合并结果来解决问题。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个子树的最优解可以合并成整个树的最优解"
+    ]
   }
 }

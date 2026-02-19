@@ -1,0 +1,74 @@
+{
+  "problem_id": "GYM104772C",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_constraint",
+            "description": "选取的子集必须包含每个颜色恰好一个元素（每个颜色的两个元素中选择一个）",
+            "formal": "∀i ∈ [1, n], |{j | c_j = i, j ∈ S}| = 1"
+          },
+          {
+            "name": "connectivity",
+            "description": "选取的子集必须是连通的（在子集中任意两个节点之间存在路径，且路径上的所有节点都在子集中）",
+            "formal": "∀u, v ∈ S, ∃ path(u, v) such that all nodes in path(u, v) ∈ S"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一个满足条件的连通子集"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "connected_components",
+            "description": "子图连通性：选择的节点集合构成的子图是连通的，即任意两个节点之间存在路径且路径上的所有节点都在集合中",
+            "properties": {}
+          },
+          {
+            "name": "color_count_invariance",
+            "description": "唯一颜色选择：每个颜色恰好选择一个节点，确保最终选择的节点集合包含每种颜色的一个节点",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

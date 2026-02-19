@@ -2,14 +2,14 @@
   "problem_id": "P14427",
   "source": "luogu",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 2,
             "max": 100000
@@ -41,13 +41,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "bipartite_matching",
+        "name": "bipartiteness",
         "description": "图必须是二分图（节点可以被分为两个集合，使得每个边的两个端点分别属于不同的集合）",
         "confidence": "1/1"
       },
       {
-        "name": "graph_connectivity",
-        "description": "图必须连通（任意两个节点之间可以通过若干条相连的边到达）",
+        "name": "connectivity",
+        "description": "图必须连通（任意两个节点之间可以通过若干条相连的电阻到达）",
         "confidence": "1/1"
       }
     ],
@@ -58,12 +58,12 @@
         "result": {
           "constraints": [
             {
-              "name": "bipartite_matching",
+              "name": "bipartiteness",
               "description": "图必须是二分图（节点可以被分为两个集合，使得每个边的两个端点分别属于不同的集合）"
             },
             {
-              "name": "graph_connectivity",
-              "description": "图必须连通（任意两个节点之间可以通过若干条相连的边到达）"
+              "name": "connectivity",
+              "description": "图必须连通（任意两个节点之间可以通过若干条相连的电阻到达）"
             }
           ]
         }
@@ -79,26 +79,46 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "统计满足条件的边的数量"
+          "description": "求满足条件的边的数量"
         }
       }
     ],
-    "description": "统计满足条件的边的数量"
+    "description": "求满足条件的边的数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "flow_conservation",
+        "description": "图的连通性：在移除一条边后，剩余的图仍然保持连通性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "bipartite_graph_property",
+        "description": "二分图划分：节点可以被划分为两个集合，使得每个电阻连接的两个节点分别属于不同的集合",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，即电路中任意一条电阻不导电时，其余电阻均导电的状态可以由更小规模的子电路状态推导得出。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "flow_conservation",
+              "description": "图的连通性：在移除一条边后，剩余的图仍然保持连通性",
+              "properties": {}
+            },
+            {
+              "name": "bipartite_graph_property",
+              "description": "二分图划分：节点可以被划分为两个集合，使得每个电阻连接的两个节点分别属于不同的集合",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，即电路中任意一条电阻不导电时，其余电阻均导电的状态可以由更小规模的子电路状态推导得出。"
+    ]
   }
 }

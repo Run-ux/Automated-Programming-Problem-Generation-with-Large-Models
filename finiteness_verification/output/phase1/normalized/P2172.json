@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 1,
           "max": 50
@@ -28,20 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "directed_path",
-            "description": "路径必须从上到下，不能回头（有向图约束）"
+            "name": "path_constraint",
+            "description": "路径必须从上到下，不能回头（有向图路径约束）",
+            "formal": "对于每个城镇 (i, j)，只能从上方的城镇 (i-1, k) 到达，且不能返回"
           },
           {
-            "name": "vertex_exclusion_constraint",
-            "description": "每个节点只能被一条路径访问（互斥访问约束）"
+            "name": "adjacency_relation",
+            "description": "相邻节点之间的移动方式类似于国际象棋中的马，但步长为 R×C（特定跳跃关系）",
+            "formal": "从 (i, j) 可以跳到 (i+R, j+C) 或 (i-R, j-C) 等位置"
           },
           {
-            "name": "path_movement_pattern",
-            "description": "路径的移动方式受限于特定的步长（R×C）（步长约束）"
+            "name": "distinctness",
+            "description": "每个城镇只能被一支军队访问一次（唯一性约束）",
+            "formal": "对于每个城镇 (i, j)，至多有一个军队经过"
           },
           {
-            "name": "valid_node_only_constraint",
-            "description": "路径只能经过特定类型的节点（城镇），不能经过其他类型节点（高山深涧）（节点类型约束）"
+            "name": "coverage",
+            "description": "所有城镇都必须被至少一支军队访问（覆盖约束）",
+            "formal": "所有城镇 (i, j) 都必须被至少一支军队访问"
           }
         ]
       }
@@ -53,7 +57,7 @@
       "status": "success",
       "result": {
         "type": "minimize_count",
-        "description": "求覆盖所有节点所需的最少路径数量"
+        "description": "求覆盖所有点所需的最少路径数"
       }
     }
   ],
@@ -62,9 +66,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个城镇的占领状态依赖于其上方可达城镇的状态",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，每个城镇的占领情况可以由其上方可达城镇的占领情况推导出来。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：军队从一个城镇到另一个城镇的状态转移是确定的，并且只考虑向下的路径。状态转移过程中，当前状态仅依赖于上一行的状态。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：由于军队只能从上往下移动，因此整个地图可以看作是一个有向无环图（DAG），存在一个拓扑排序使得所有军队的移动顺序满足该拓扑序。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

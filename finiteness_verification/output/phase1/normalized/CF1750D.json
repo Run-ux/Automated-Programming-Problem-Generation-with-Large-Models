@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -15,7 +15,9 @@
           "min": 1,
           "max": 1000000000
         },
-        "properties": {}
+        "properties": {
+          "ordered": false
+        }
       }
     }
   ],
@@ -27,13 +29,13 @@
         "constraints": [
           {
             "name": "gcd_constraint",
-            "description": "对于每个位置 i，数组 b 的前缀 GCD 必须等于数组 a 的前缀 GCD",
-            "formal": "∀ 1 ≤ i ≤ n, gcd(b_1, b_2, ..., b_i) = gcd(a_1, a_2, ..., a_i)"
+            "description": "数组 b 的前缀 GCD 必须与数组 a 的前缀 GCD 相同",
+            "formal": "∀i, gcd(b_1, b_2, ..., b_i) = gcd(a_1, a_2, ..., a_i)"
           },
           {
-            "name": "node_value_constraint",
-            "description": "数组 b 中的每个元素必须在 [1, m] 范围内",
-            "formal": "∀ 1 ≤ i ≤ n, 1 ≤ b_i ≤ m"
+            "name": "range_bound",
+            "description": "数组 b 的每个元素必须在 1 到 m 之间",
+            "formal": "∀i, 1 ≤ b_i ≤ m"
           }
         ]
       }
@@ -44,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足条件的不同数组的数量"
+        "type": "enumeration",
+        "description": "求满足条件的不同数组的数量（结果需取模）"
       }
     }
   ],
@@ -54,11 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，当前状态的GCD值依赖于前序状态的GCD值",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即数组 b 的前 i 个元素的 GCD 可以通过前 i-1 个元素的 GCD 来推导。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前状态的 GCD 值依赖于前一个状态的 GCD 值和当前元素的选择，确保了状态转移的一致性和正确性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

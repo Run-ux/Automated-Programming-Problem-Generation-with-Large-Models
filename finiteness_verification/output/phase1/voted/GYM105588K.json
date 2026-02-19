@@ -1,0 +1,165 @@
+{
+  "problem_id": "GYM105588K",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 8,
+            "max": 8
+          },
+          "value_range": {
+            "min": 0,
+            "max": 15
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 8,
+      "max": 8
+    },
+    "value_range": {
+      "min": 0,
+      "max": 15
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制（最多进行 4096 次查询）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "输入格式约束（每次查询的输入必须是 8 个十六进制数）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "report_generation_constraint",
+        "description": "输出格式约束（每次查询的输出必须是 8 个十六进制数）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "reconstruction_constraint",
+        "description": "密钥恢复约束（最终需要输出一个 32 位整数作为密钥）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "out_of_bounds_constraint",
+        "description": "无效输入处理约束（如果输入超过 4096 次或包含无效字符，应立即退出程序）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制（最多进行 4096 次查询）",
+              "formal": "query_count <= 4096"
+            },
+            {
+              "name": "range_bound",
+              "description": "输入格式约束（每次查询的输入必须是 8 个十六进制数）",
+              "formal": "in_i ∈ {0-9, a-f} for i in [0, 7]"
+            },
+            {
+              "name": "report_generation_constraint",
+              "description": "输出格式约束（每次查询的输出必须是 8 个十六进制数）",
+              "formal": "out_i ∈ {0-9, a-f} for i in [0, 7]"
+            },
+            {
+              "name": "reconstruction_constraint",
+              "description": "密钥恢复约束（最终需要输出一个 32 位整数作为密钥）",
+              "formal": "k ∈ [0, 2^32)"
+            },
+            {
+              "name": "out_of_bounds_constraint",
+              "description": "无效输入处理约束（如果输入超过 4096 次或包含无效字符，应立即退出程序）",
+              "formal": "if (query_count > 4096 or invalid_characters) then exit_program()"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造一组输入以确定一个32位密钥的值"
+        }
+      }
+    ],
+    "description": "构造一组输入以确定一个32位密钥的值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个结构（xor, perm, mix）的输出作为下一个结构的输入，形成一个确定的状态转移序列。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：在mix结构中，通过循环右移和异或操作，保持了输入与输出之间的某种对称关系，使得可以通过特定输入推断出key的部分信息。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "idempotency",
+        "description": "幂等性：对于相同的输入，无论经过多少次相同的操作（如多次xor同一key），结果保持一致。这有助于通过重复实验来验证和推断key。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个结构（xor, perm, mix）的输出作为下一个结构的输入，形成一个确定的状态转移序列。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：在mix结构中，通过循环右移和异或操作，保持了输入与输出之间的某种对称关系，使得可以通过特定输入推断出key的部分信息。",
+              "properties": {}
+            },
+            {
+              "name": "idempotency",
+              "description": "幂等性：对于相同的输入，无论经过多少次相同的操作（如多次xor同一key），结果保持一致。这有助于通过重复实验来验证和推断key。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

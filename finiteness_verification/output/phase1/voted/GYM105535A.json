@@ -1,0 +1,130 @@
+{
+  "problem_id": "GYM105535A",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 200000
+          },
+          "value_range": {
+            "min": -1000000,
+            "max": 1000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 200000
+    },
+    "value_range": {
+      "min": -1000000,
+      "max": 1000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "linear_relation",
+        "description": "序列必须能够通过移除最多 k 个元素变成等差数列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "移除的元素数量必须最小化",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "移除的元素索引必须是唯一的",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "linear_relation",
+              "description": "序列必须能够通过移除最多 k 个元素变成等差数列",
+              "formal": "∃ subset S ⊆ {1, 2, ..., n} with |S| ≤ k such that a[remaining elements] forms an arithmetic progression"
+            },
+            {
+              "name": "operation_limit",
+              "description": "移除的元素数量必须最小化",
+              "formal": "minimize |S| where S is the set of removed indices"
+            },
+            {
+              "name": "distinctness",
+              "description": "移除的元素索引必须是唯一的",
+              "formal": "b_i ≠ b_j for all i ≠ j"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "最小化需要移除的元素数量以使数组成为等差数列"
+        }
+      }
+    ],
+    "description": "最小化需要移除的元素数量以使数组成为等差数列"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，将数组划分为多个子序列，每个子序列都是一个等差数列，通过删除最少的元素使得整个数组成为等差数列。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，总是选择当前局部最优的决策，即尽可能少地删除元素以保持等差数列的性质。这种局部最优的选择最终能够导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，将数组划分为多个子序列，每个子序列都是一个等差数列，通过删除最少的元素使得整个数组成为等差数列。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，总是选择当前局部最优的决策，即尽可能少地删除元素以保持等差数列的性质。这种局部最优的选择最终能够导致全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

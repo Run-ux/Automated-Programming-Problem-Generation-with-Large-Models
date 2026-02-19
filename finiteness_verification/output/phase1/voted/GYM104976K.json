@@ -2,14 +2,14 @@
   "problem_id": "GYM104976K",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 300000
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_exclusion",
-        "description": "当序列中出现两个相同的元素时，这两个元素及其之间的所有元素将被移除",
+        "name": "distinctness",
+        "description": "在操作过程中，如果新加入的元素与序列中的某个元素相同，则移除该元素及其之后的所有元素，直到序列中没有重复元素为止。",
         "confidence": "1/1"
       },
       {
-        "name": "query_range_validity",
-        "description": "查询区间必须是有效的，即左端点不大于右端点且都在数组范围内",
+        "name": "query_limit",
+        "description": "查询是在线进行的，每个查询的结果用于解码下一个查询。",
         "confidence": "1/1"
       }
     ],
@@ -56,13 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_exclusion",
-              "description": "当序列中出现两个相同的元素时，这两个元素及其之间的所有元素将被移除"
+              "name": "distinctness",
+              "description": "在操作过程中，如果新加入的元素与序列中的某个元素相同，则移除该元素及其之后的所有元素，直到序列中没有重复元素为止。",
+              "formal": "For each operation i, if a[i] is in the sequence s, remove all elements from s starting from the first occurrence of a[i] to the end of s."
             },
             {
-              "name": "query_range_validity",
-              "description": "查询区间必须是有效的，即左端点不大于右端点且都在数组范围内",
-              "formal": "1 ≤ l ≤ r ≤ n"
+              "name": "query_limit",
+              "description": "查询是在线进行的，每个查询的结果用于解码下一个查询。",
+              "formal": "Each query (l_i, r_i) is decoded using the answer of the previous query (lastans): l_i = l'_i ⊕ lastans, r_i = r'_i ⊕ lastans. If no queries have been answered, lastans = 0."
             }
           ]
         }
@@ -85,21 +86,39 @@
     "description": "求满足条件的子数组中剩余元素的数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每一步操作后，卡片序列的状态可以通过前一步的状态和当前操作确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：对于任意子区间，其最终剩余卡片数量可以通过该区间的初始状态和操作序列计算得出。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "当前状态只依赖有限的前序状态，具体表现为卡片序列的状态变化仅由最近一次操作决定",
-          "properties": {
-            "finite_dependency": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每一步操作后，卡片序列的状态可以通过前一步的状态和当前操作确定。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：对于任意子区间，其最终剩余卡片数量可以通过该区间的初始状态和操作序列计算得出。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "当前状态只依赖有限的前序状态，具体表现为卡片序列的状态变化仅由最近一次操作决定"
+    ]
   }
 }

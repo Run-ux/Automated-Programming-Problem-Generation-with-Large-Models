@@ -6,19 +6,24 @@
   "result": {
     "constraints": [
       {
-        "name": "subtree_independence",
-        "description": "对于每个被选择的顶点，其子树中的所有叶子节点可以独立地进行操作（即加一个整数 x）以达到目标值（这里是 0）。",
-        "formal": "对于每个被选择的顶点 v，存在一个整数 x 使得 ∀ 叶子节点 a ∈ 子树(v)，a 的值可以通过加 x 达到 0。"
+        "name": "subtree_operation",
+        "description": "在某个节点的子树中，可以对所有叶子节点进行相同的加法操作",
+        "formal": "对于任意节点 v 和整数 x，可以执行 operation(v, x) 使得所有叶子节点 u (u 在 v 的子树中) 的值加上 x"
       },
       {
-        "name": "leaf_coverage",
-        "description": "所有叶子节点必须在至少一个被选择的顶点的子树中，以确保所有叶子节点的值可以被调整为 0。",
-        "formal": "∀ 叶子节点 a, ∃ 一个被选择的顶点 v 使得 a 在子树(v) 中。"
+        "name": "leaf_value_zeroing",
+        "description": "目标是通过一系列操作使所有叶子节点的值变为零",
+        "formal": "最终所有叶子节点 u 的值应满足 value(u) = 0"
       },
       {
         "name": "cost_minimization",
-        "description": "选择的顶点集合的总代价最小化，以保证在满足其他约束条件的情况下，总代价最小。",
-        "formal": "minimize Σ c_i for all selected vertices i."
+        "description": "选择的节点集合的总代价最小化，以保证能够完成任务",
+        "formal": "minimize Σ cost(v) for all v in selected set S, such that the task can be completed"
+      },
+      {
+        "name": "subset_optimality",
+        "description": "找到所有属于最优解集的节点",
+        "formal": "找出所有节点 v，使得存在一个最优解集 S 包含 v 且满足 cost(S) = s"
       }
     ]
   },

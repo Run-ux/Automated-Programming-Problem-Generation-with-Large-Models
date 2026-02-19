@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "weighted_undirected_graph",
         "length": {
           "min": 1,
           "max": 400000
@@ -29,16 +29,14 @@
       "result": {
         "constraints": [
           {
-            "name": "manhattan_distance_constraint",
-            "description": "计算从每个起点到最近目标点的曼哈顿距离之和（图中节点间的最短路径）"
+            "name": "distance_bound",
+            "description": "计算每个松动节点到最近的固定节点的曼哈顿距离，并求这些距离的总和",
+            "formal": "对于每个松动节点 (x1, y1)，找到最近的固定节点 (x2, y2)，计算 |x1 - x2| + |y1 - y2|，并求所有这些距离的总和"
           },
           {
-            "name": "continuous_path_constraint",
-            "description": "只能在四个方向上移动（上下左右），不能斜向移动"
-          },
-          {
-            "name": "distinct_positions",
-            "description": "每个坐标位置只能是固定、松动或未知状态之一，不能同时属于多个列表"
+            "name": "distance_bound",
+            "description": "只能在四个方向（上、下、左、右）移动",
+            "formal": "移动方向 ∈ {(-1, 0), (1, 0), (0, -1), (0, 1)}"
           }
         ]
       }
@@ -49,8 +47,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求所有点到其最近目标点的最短路径长度之和"
+        "type": "minimize_value",
+        "description": "求每个起点到最近目标点的最短路径长度之和"
       }
     }
   ],
@@ -59,9 +57,25 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：每个松动瓷砖到最近固定瓷砖的最短距离可以通过其相邻瓷砖的最短距离来计算，大问题的解由子问题的解组合而成。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个松动瓷砖到最近固定瓷砖的最短距离可以通过子问题的解来计算，即局部最短路径可以组合成全局最短路径。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：从任意一个松动瓷砖出发，到达最近固定瓷砖的距离是单调递增的。随着搜索范围的扩大，找到的最近固定瓷砖的距离不会减小。",
+            "properties": {
+              "distance_monotonic": true
+            }
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题（所有松动瓷砖到最近固定瓷砖的距离之和）可以通过分解为子问题（部分松动瓷砖到最近固定瓷砖的距离之和）来解决，并且子问题的解可以合并成大问题的解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

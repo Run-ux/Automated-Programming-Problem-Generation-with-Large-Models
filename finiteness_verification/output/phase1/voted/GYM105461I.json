@@ -2,14 +2,14 @@
   "problem_id": "GYM105461I",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100
@@ -19,7 +19,7 @@
             "max": 1000000000
           },
           "properties": {
-            "ordered": false
+            "ordered": true
           }
         }
       }
@@ -33,19 +33,19 @@
       "max": 1000000000
     },
     "properties": {
-      "ordered": false
+      "ordered": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "recursive_sequence_constraint",
-        "description": "序列由递推公式定义，即对于 i ≥ 2，有 a_i = (A * a_{i-1} + B * a_{i-2}) mod M。",
+        "name": "recurrence_relation",
+        "description": "序列由递推公式定义，即 a_i = (A * a_{i-1} + B * a_{i-2}) % M",
         "confidence": "1/1"
       },
       {
-        "name": "cyclic_path_length_constraint",
-        "description": "序列存在一个正整数周期 T，使得从某个 i_0 开始，对于任何 i ≥ i_0，都有 a_i = a_{i+T}。",
+        "name": "repetition",
+        "description": "序列存在周期 T，使得对于某个 i_0 及之后的所有 i，有 a_i = a_{i+T}",
         "confidence": "1/1"
       }
     ],
@@ -56,13 +56,13 @@
         "result": {
           "constraints": [
             {
-              "name": "recursive_sequence_constraint",
-              "description": "序列由递推公式定义，即对于 i ≥ 2，有 a_i = (A * a_{i-1} + B * a_{i-2}) mod M。",
+              "name": "recurrence_relation",
+              "description": "序列由递推公式定义，即 a_i = (A * a_{i-1} + B * a_{i-2}) % M",
               "formal": "a_i = (A * a_{i-1} + B * a_{i-2}) % M, for i >= 2"
             },
             {
-              "name": "cyclic_path_length_constraint",
-              "description": "序列存在一个正整数周期 T，使得从某个 i_0 开始，对于任何 i ≥ i_0，都有 a_i = a_{i+T}。",
+              "name": "repetition",
+              "description": "序列存在周期 T，使得对于某个 i_0 及之后的所有 i，有 a_i = a_{i+T}",
               "formal": "∃T > 0, ∃i_0, ∀i ≥ i_0, a_i = a_{i+T}"
             }
           ]
@@ -71,36 +71,58 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求满足条件的最小正整数周期"
+          "type": "minimize_value",
+          "description": "求序列的最小周期长度"
         }
       }
     ],
-    "description": "求满足条件的最小正整数周期"
+    "description": "求序列的最小周期长度"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "pattern_preservation",
+        "description": "序列的周期性：存在一个正整数T，使得对于某个i0，对于所有i >= i0，有a_i = a_{i+T}。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：序列中的每个元素由前两个元素通过给定的递推公式确定。",
+        "confidence": "1/1",
+        "properties": {
+          "transition_formula": "a_i = (A * a_{i-1} + B * a_{i-2}) % M"
+        }
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "状态依赖：当前状态只依赖于有限的前序状态，具体为前两个状态。",
-          "properties": {
-            "dependency_count": 2
-          }
+          "invariants": [
+            {
+              "name": "pattern_preservation",
+              "description": "序列的周期性：存在一个正整数T，使得对于某个i0，对于所有i >= i0，有a_i = a_{i+T}。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：序列中的每个元素由前两个元素通过给定的递推公式确定。",
+              "properties": {
+                "transition_formula": "a_i = (A * a_{i-1} + B * a_{i-2}) % M"
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "状态依赖：当前状态只依赖于有限的前序状态，具体为前两个状态。"
+    ]
   }
 }

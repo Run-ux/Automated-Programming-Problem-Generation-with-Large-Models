@@ -1,0 +1,82 @@
+{
+  "problem_id": "CF1525E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 20
+        },
+        "value_range": {
+          "min": 1,
+          "max": 21
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "range_bound",
+            "description": "每个点到城市的距离不超过 n+1",
+            "formal": "1 ≤ d_{i, j} ≤ n + 1"
+          },
+          {
+            "name": "coverage",
+            "description": "每个点在某个城市建造纪念碑后的若干回合内被控制，控制范围随回合数增加",
+            "formal": "d_{i, j} ≤ t 时，第 j 个点在第 t 回合被第 i 个城市控制"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每回合只能在一个城市建造一个纪念碑",
+            "formal": "每回合选择一个未建造纪念碑的城市进行建造"
+          },
+          {
+            "name": "probability_distribution",
+            "description": "计算所有可能的建造顺序下的期望值",
+            "formal": "E[conquered_points] = Σ (probability * conquered_points)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_probability",
+        "description": "最大化期望值，即计算在随机策略下，最终被控制的点数的期望值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即每个点被控制的概率可以由其在每一步被某个城市控制的概率累加得到。",
+            "properties": {}
+          },
+          {
+            "name": "expectation_linearity",
+            "description": "期望值可加性：各个点被控制的期望概率可以独立计算并累加，从而得到总的期望值。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

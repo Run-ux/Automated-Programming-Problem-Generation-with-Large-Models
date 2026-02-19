@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 3,
           "max": 50
@@ -28,20 +28,20 @@
       "result": {
         "constraints": [
           {
-            "name": "minimum_element_count_constraint",
-            "description": "每个团队必须由三个学生组成"
+            "name": "subset_constraint",
+            "description": "每个团队必须由三个学生组成（子集大小固定为3）"
           },
           {
-            "name": "bottleneck_path",
+            "name": "flow_constraint",
             "description": "每个学生解决的问题数量不能超过其生产力上限"
           },
           {
-            "name": "subset_inclusion",
-            "description": "团队能解决的问题集是团队成员能解决问题的并集"
+            "name": "coverage",
+            "description": "团队能解决的问题集合是所有成员能解决问题的并集"
           },
           {
-            "name": "global_optimization_objective",
-            "description": "团队应能解决尽可能多的问题，即最大化问题解决数量"
+            "name": "optimization_objective",
+            "description": "目标是最大化团队能解决的问题数量"
           }
         ]
       }
@@ -62,9 +62,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过组合子问题的最优解来获得，即团队的最大解题数由三个成员各自的解题能力决定",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过选择三个学生组成的团队来最大化解决问题的数量。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个学生的生产力和能解决的问题集是独立的，可以分别考虑每个学生对团队贡献的最大化。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

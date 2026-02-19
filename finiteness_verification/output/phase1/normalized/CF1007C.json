@@ -1,0 +1,81 @@
+{
+  "problem_id": "CF1007C",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 3
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000000000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "query_limit",
+            "description": "查询次数限制（不超过 600 次）",
+            "formal": "number_of_queries <= 600"
+          },
+          {
+            "name": "exclusion",
+            "description": "每次查询的两个数必须不同，且不能同时等于目标数 a 和 b",
+            "formal": "x != y && (x != a || y != b)"
+          },
+          {
+            "name": "transformation",
+            "description": "每次查询后必须根据 Vasya 的回答进行下一步操作",
+            "formal": "if ans > 0, then process_response(ans)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的两个整数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：通过将问题分解为更小的子问题，逐步缩小搜索范围，最终找到目标解",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "二分搜索不变量：每次查询后根据反馈信息缩小搜索区间，确保目标值在当前搜索区间内",
+            "properties": {
+              "search_interval_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

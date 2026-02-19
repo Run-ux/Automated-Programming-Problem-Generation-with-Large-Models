@@ -1,0 +1,82 @@
+{
+  "problem_id": "GYM102900L",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacency_relation",
+            "description": "相邻两次行走的方向不能相同（即两次行走的向量叉积不为零）",
+            "formal": "(x0 - x1) * (y1 - y2) != (x1 - x2) * (y0 - y1)"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径上不能有其他网格点（即两点之间的线段不能经过其他网格点）",
+            "formal": "gcd(|x - x'|, |y - y'|) == 1"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求从起点到终点的最短路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从起点到终点的最短路径可以通过子问题的最优解组合得到，即从(0, 0)到(n, m)的最短路径可以分解为若干段子路径的最短路径之和。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：在每一步行走过程中，行或列的坐标值严格递增或递减，且不允许连续两次行走方向相同，确保了路径的单调性和方向变化。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：由于网格世界的对称性质，从点(x, y)到点(x', y')的路径长度与从点(x', y')到点(x, y)的路径长度相同，这种对称性简化了路径选择。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "problem_id": "P5599",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 61
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "frequency_bound",
+            "description": "对于给定的子串，计算其在指定区间内的出现次数之和",
+            "formal": "sum(occur(s_i, a[l:r])) for i in 1 to m"
+          },
+          {
+            "name": "transformation",
+            "description": "将指定区间的子串替换为另一个字符串不断重复的结果",
+            "formal": "a[l:r] = t * (len(a[l:r]) // len(t)) + t[:len(a[l:r]) % len(t)]"
+          },
+          {
+            "name": "string_length_constraint",
+            "description": "子串操作的区间必须是合法的，即 l ≤ r 且都在字符串长度范围内",
+            "formal": "1 ≤ l ≤ r ≤ n"
+          },
+          {
+            "name": "subset_size_minimum_constraint",
+            "description": "字典中的单词数量有限制",
+            "formal": "1 ≤ m ≤ 10^5"
+          },
+          {
+            "name": "query_limit",
+            "description": "查询操作的数量有限制",
+            "formal": "1 ≤ q ≤ 10^5"
+          },
+          {
+            "name": "alphabet_constraint",
+            "description": "所有字符串中的字符都属于一个固定的字符集",
+            "formal": "s ∈ Σ, where Σ = [a-z] ∪ [A-Z] ∪ [0-9]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求子串中多个模式串的出现次数之和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和计算任意子区间的出现次数之和",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：通过子区间的统计信息合并得到整个区间的统计信息",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

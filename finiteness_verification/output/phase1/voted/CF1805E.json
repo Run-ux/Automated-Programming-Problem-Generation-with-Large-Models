@@ -1,0 +1,144 @@
+{
+  "problem_id": "CF1805E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "connected": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "connected": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "图必须连通（题目中描述为树，即无环的连通图）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个节点的度数至少为1（树的定义隐含了这一点）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "frequency_bound",
+        "description": "每个整数在节点中的出现次数不超过2次时，MAD参数才有效",
+        "confidence": "1/1"
+      },
+      {
+        "name": "edge_deletion_effect",
+        "description": "删除一条边后，树分裂成两个子树，需要计算这两个子树的MAD参数并取最大值",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "图必须连通（题目中描述为树，即无环的连通图）"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个节点的度数至少为1（树的定义隐含了这一点）"
+            },
+            {
+              "name": "frequency_bound",
+              "description": "每个整数在节点中的出现次数不超过2次时，MAD参数才有效"
+            },
+            {
+              "name": "frequency_bound",
+              "description": "MAD参数定义为出现至少两次的最大整数值"
+            },
+            {
+              "name": "edge_deletion_effect",
+              "description": "删除一条边后，树分裂成两个子树，需要计算这两个子树的MAD参数并取最大值"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "对于每条边，求删除该边后形成的两棵树中最大重复整数的最大值"
+        }
+      }
+    ],
+    "description": "对于每条边，求删除该边后形成的两棵树中最大重复整数的最大值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个子树的 MAD 参数可以通过其子树的 MAD 参数计算得出，从而保证了整个问题的解可以通过子问题的解来构造。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在计算某个边删除后的两棵子树的 MAD 参数时，这两棵子树的计算是相互独立的，互不影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个子树的 MAD 参数可以通过其子树的 MAD 参数计算得出，从而保证了整个问题的解可以通过子问题的解来构造。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在计算某个边删除后的两棵子树的 MAD 参数时，这两棵子树的计算是相互独立的，互不影响。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

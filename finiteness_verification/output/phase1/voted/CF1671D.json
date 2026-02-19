@@ -2,14 +2,14 @@
   "problem_id": "CF1671D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -35,13 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "最小化相邻元素绝对差值之和（即最小化 ∑|a'_i - a'_{i+1}|）",
+        "name": "sum_constraint",
+        "description": "目标是使相邻元素的绝对差值之和最小化",
         "confidence": "1/1"
       },
       {
-        "name": "position_constraint",
-        "description": "每个额外整数可以插入到序列的任意位置，包括开头和结尾",
+        "name": "insertion_operation",
+        "description": "可以在序列的任意位置插入额外的整数，包括开头和结尾",
         "confidence": "1/1"
       }
     ],
@@ -52,12 +52,12 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "最小化相邻元素绝对差值之和（即最小化 ∑|a'_i - a'_{i+1}|）"
+              "name": "sum_constraint",
+              "description": "目标是使相邻元素的绝对差值之和最小化"
             },
             {
-              "name": "position_constraint",
-              "description": "每个额外整数可以插入到序列的任意位置，包括开头和结尾"
+              "name": "insertion_operation",
+              "description": "可以在序列的任意位置插入额外的整数，包括开头和结尾"
             }
           ]
         }
@@ -65,34 +65,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "最小化序列中相邻元素绝对差值的总和"
+          "type": "minimize_value",
+          "description": "最小化序列中相邻元素绝对差值之和"
         }
       }
     ],
-    "description": "最小化序列中相邻元素绝对差值的总和"
+    "description": "最小化序列中相邻元素绝对差值之和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即插入每个额外整数后的序列最小得分可以通过已知的子序列最小得分推导出来。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次插入一个额外整数时，选择使得当前序列得分增加最少的位置进行插入，最终可以得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即插入每个额外整数后的序列最小得分可以通过之前插入的最优结果递推得到",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即插入每个额外整数后的序列最小得分可以通过已知的子序列最小得分推导出来。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次插入一个额外整数时，选择使得当前序列得分增加最少的位置进行插入，最终可以得到全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即插入每个额外整数后的序列最小得分可以通过之前插入的最优结果递推得到"
+    ]
   }
 }

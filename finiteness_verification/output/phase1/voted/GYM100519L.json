@@ -1,0 +1,146 @@
+{
+  "problem_id": "GYM100519L",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 4000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 4000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "linear_relation",
+        "description": "系统由线性方程组构成，每个方程的系数和常数项在模 P 下定义",
+        "confidence": "1/1"
+      },
+      {
+        "name": "eigenvalue_spectrum_constraint",
+        "description": "解空间的维度 k 必须明确给出，且解的数量为 P^k",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "如果有多个解，输出字典序最小的解",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "linear_relation",
+              "description": "系统由线性方程组构成，每个方程的系数和常数项在模 P 下定义"
+            },
+            {
+              "name": "linear_relation",
+              "description": "某些方程的系数可以引用之前某个方程的部分系数，引用长度为 L"
+            },
+            {
+              "name": "eigenvalue_spectrum_constraint",
+              "description": "解空间的维度 k 必须明确给出，且解的数量为 P^k"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "如果有多个解，输出字典序最小的解"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断线性方程组是否有解，并在有解的情况下输出解空间的维度及一个特定条件下的解"
+        }
+      }
+    ],
+    "description": "判断线性方程组是否有解，并在有解的情况下输出解空间的维度及一个特定条件下的解"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：解的正确性依赖于子问题的最优解，通过高斯消元法逐步求解线性方程组，每一步都基于前一步的结果进行优化。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在处理每个方程时，当前方程的状态（系数和常数项）由前一个方程的状态决定。如果引用了之前的方程，则当前方程的部分系数直接从被引用方程中复制。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：方程组中的系数和常数项可以通过模P下的加法操作进行更新和合并，保持方程组的一致性和完整性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：解的正确性依赖于子问题的最优解，通过高斯消元法逐步求解线性方程组，每一步都基于前一步的结果进行优化。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在处理每个方程时，当前方程的状态（系数和常数项）由前一个方程的状态决定。如果引用了之前的方程，则当前方程的部分系数直接从被引用方程中复制。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：方程组中的系数和常数项可以通过模P下的加法操作进行更新和合并，保持方程组的一致性和完整性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -16,8 +16,7 @@
           "max": 100000
         },
         "properties": {
-          "connected": true,
-          "weighted": false
+          "connected": true
         }
       }
     },
@@ -35,8 +34,7 @@
           "max": 100000
         },
         "properties": {
-          "connected": true,
-          "weighted": false
+          "connected": true
         }
       }
     },
@@ -67,12 +65,12 @@
       "result": {
         "constraints": [
           {
-            "name": "tree_must_be_complete_mirror",
-            "description": "树必须存在一个根节点，使得以该根节点为根的树是完全镜像的。"
+            "name": "tree_symmetry",
+            "description": "树必须存在一个根节点，使得以该根节点为根的树是完全对称的（镜像对称）"
           },
           {
-            "name": "graph_is_tree",
-            "description": "给定的图必须是一棵树。"
+            "name": "connectivity",
+            "description": "图必须连通且无环（形成一棵树）"
           }
         ]
       }
@@ -83,12 +81,12 @@
       "result": {
         "constraints": [
           {
-            "name": "tree_must_be_complete_mirror",
-            "description": "树必须存在一个根节点，使得以该根节点为根的树是完全镜像的。"
+            "name": "spanning_constraint",
+            "description": "选择一个根节点，使得以该节点为根的树满足某种条件（题目中未明确具体条件，但隐含存在）"
           },
           {
-            "name": "root_vertex_existence",
-            "description": "如果存在满足条件的根节点，则输出任意一个；否则输出 -1。"
+            "name": "connectivity",
+            "description": "图必须连通（题目描述中提到给定的是一个树结构）"
           }
         ]
       }
@@ -99,12 +97,12 @@
       "result": {
         "constraints": [
           {
-            "name": "tree_must_be_complete_mirror",
-            "description": "树必须存在一个根节点，使得以该根节点为根的树是完全镜像对称的。"
+            "name": "spanning_constraint",
+            "description": "选择一个根节点，使得以该节点为根的树满足某种条件（题目中未明确具体条件，但可以理解为某种结构或属性约束）"
           },
           {
-            "name": "output_any_valid_root_or_minus_one",
-            "description": "如果存在满足条件的根节点，则输出任意一个；否则输出-1。"
+            "name": "connectivity",
+            "description": "图必须连通（题目描述中提到给定的是一个树，因此隐含了连通性约束）"
           }
         ]
       }
@@ -115,24 +113,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "decision",
-        "description": "判断是否存在满足条件的根节点，如果存在输出任意一个，否则输出-1"
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的根节点"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "decision",
-        "description": "判断是否存在满足条件的根节点，如果存在输出任意一个，否则输出-1"
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的根节点"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "decision",
-        "description": "判断是否存在一个顶点作为根节点，使得树满足特定条件。如果存在，输出任意一个这样的顶点；否则，输出-1。"
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的根节点"
       }
     }
   ],
@@ -141,27 +139,54 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "树的每个子树的最优解可以组合成整个树的最优解，即如果一个节点作为根节点满足条件，则其所有子树也必须满足条件。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "symmetry",
+            "description": "对称性：树的镜像性质，选择根节点后，子树结构关于根节点对称",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在树中，从根节点到叶子节点的路径满足拓扑序，且每个节点的子树相对独立",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "树的根节点选择问题可以通过子树的最优解来决定，即如果一个节点作为根节点满足条件，那么它的所有子树也必须满足同样的条件。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "symmetry",
+            "description": "对称性：树的镜像性质，根节点的选择使得子树在某种变换下保持结构一致",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：根节点的选择依赖于其子树的最优解，即子树的镜像性质满足时，整棵树也满足",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "树的根节点选择问题可以通过子树的最优解来决定，即如果一个节点作为根可以满足条件，那么它的子树也必须满足相同的条件。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "symmetry",
+            "description": "对称性：树的镜像性质，根节点的选择使得子树结构在某种变换下保持不变",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：根节点的选择依赖于其子树的最优解，即子树是否满足镜像性质",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

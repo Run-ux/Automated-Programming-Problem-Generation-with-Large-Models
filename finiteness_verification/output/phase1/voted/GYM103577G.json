@@ -1,0 +1,139 @@
+{
+  "problem_id": "GYM103577G",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 1,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 500000
+          },
+          "properties": {
+            "connected": true,
+            "rooted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 500000
+    },
+    "properties": {
+      "connected": true,
+      "rooted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "acyclicity",
+        "description": "图是一个无向树，根节点为1，每对节点之间有唯一路径",
+        "confidence": "1/1"
+      },
+      {
+        "name": "query_type_1",
+        "description": "查询类型0：计算从节点u到节点v路径上所有节点值的和",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "acyclicity",
+              "description": "图是一个无向树，根节点为1，每对节点之间有唯一路径"
+            },
+            {
+              "name": "query_type_1",
+              "description": "查询类型0：计算从节点u到节点v路径上所有节点值的和"
+            },
+            {
+              "name": "query_type_1",
+              "description": "查询类型1：在节点u的子树中，每个节点的值增加v + k * d，其中d是该节点到u的距离"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求树上路径节点值的和"
+        }
+      }
+    ],
+    "description": "求树上路径节点值的和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：树上节点值的更新和查询操作基于节点间的父子关系，满足从根节点到叶子节点的单向依赖性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：路径上的节点值求和可以通过端点差值计算，即路径和可以分解为子路径和的累加。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在处理每个节点的子树时，各子树之间的更新操作互不影响，保证了并行或分治处理的可行性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：树上节点值的更新和查询操作基于节点间的父子关系，满足从根节点到叶子节点的单向依赖性。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：路径上的节点值求和可以通过端点差值计算，即路径和可以分解为子路径和的累加。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在处理每个节点的子树时，各子树之间的更新操作互不影响，保证了并行或分治处理的可行性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

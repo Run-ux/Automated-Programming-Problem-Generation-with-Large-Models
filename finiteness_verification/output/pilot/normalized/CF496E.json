@@ -16,7 +16,7 @@
           "max": 1000000000
         },
         "properties": {
-          "inferred": true
+          "ordered": false
         }
       }
     },
@@ -34,7 +34,7 @@
           "max": 1000000000
         },
         "properties": {
-          "inferred": true
+          "ordered": false
         }
       }
     },
@@ -52,7 +52,7 @@
           "max": 1000000000
         },
         "properties": {
-          "inferred": true
+          "ordered": false
         }
       }
     }
@@ -64,19 +64,19 @@
       "result": {
         "constraints": [
           {
-            "name": "voice_range_compatibility",
-            "description": "每个演员只能表演其音域范围内的部分，即对于第 i 个演员和第 j 个部分，必须满足 c_i ≤ a_j ≤ b_j ≤ d_i。",
-            "formal": "c_i ≤ a_j ≤ b_j ≤ d_i"
+            "name": "range_bound",
+            "description": "每个元素的区间必须完全包含在另一个元素的区间内（区间包含约束）",
+            "formal": "∀i, j: c_i ≤ a_j ≤ b_j ≤ d_i"
           },
           {
-            "name": "max_parts_per_actor",
-            "description": "每个演员最多可以表演 k_i 个部分。",
-            "formal": "actor i can perform at most k_i parts"
+            "name": "degree_bound",
+            "description": "每个节点的度数（分配的任务数量）不超过给定的上限（度数约束）",
+            "formal": "∀i: |{j | part_j assigned to actor_i}| ≤ k_i"
           },
           {
-            "name": "optional_part_assignment",
-            "description": "某些演员可以不被分配任何部分，这些演员将参与群众场景。",
-            "formal": "some actors may not be assigned any part"
+            "name": "coverage",
+            "description": "所有元素必须被分配到某个节点（任务分配完整性约束）",
+            "formal": "∀j: ∃i: part_j assigned to actor_i"
           }
         ]
       }
@@ -87,19 +87,19 @@
       "result": {
         "constraints": [
           {
-            "name": "actor_part_compatibility",
-            "description": "每个演员只能表演其音域范围内的部分，即对于第 i 个演员和第 j 个部分，必须满足 c_i ≤ a_j ≤ b_j ≤ d_i。",
-            "formal": "c_i ≤ a_j ≤ b_j ≤ d_i"
+            "name": "range_bound",
+            "description": "每个元素的区间必须完全包含在另一个元素的区间内（部分分配约束）",
+            "formal": "∀i, j: c_i ≤ a_j ≤ b_j ≤ d_i"
           },
           {
-            "name": "max_parts_per_actor",
-            "description": "每个演员最多可以表演 k_i 个部分。",
-            "formal": "每个演员 i 分配的部分数量 ≤ k_i"
+            "name": "flow_constraint",
+            "description": "每个节点的出度不超过给定的上限（演员最多表演的剧目数量限制）",
+            "formal": "∀i: |{j | actor i can perform part j}| ≤ k_i"
           },
           {
-            "name": "part_assignment",
-            "description": "每个部分必须分配给一个演员，且每个部分只能分配一次。",
-            "formal": "每个部分 j 必须分配给一个演员 i"
+            "name": "coverage",
+            "description": "所有元素必须被分配到某个节点（所有剧目必须被分配给某个演员）",
+            "formal": "∀j: ∃i: actor i performs part j"
           }
         ]
       }
@@ -110,19 +110,19 @@
       "result": {
         "constraints": [
           {
-            "name": "actor_part_compatibility",
-            "description": "每个演员只能表演其音域范围内的部分，即对于第 i 个演员和第 j 个部分，必须满足 c_i ≤ a_j ≤ b_j ≤ d_i。",
-            "formal": "c_i ≤ a_j ≤ b_j ≤ d_i"
+            "name": "range_bound",
+            "description": "每个元素的区间必须完全包含在另一个元素的区间内（区间包含约束）",
+            "formal": "∀i, j: c_i ≤ a_j ≤ b_j ≤ d_i"
           },
           {
-            "name": "max_parts_per_actor",
-            "description": "每个演员最多可以表演 k_i 个部分。",
-            "formal": "每个演员 i 分配的部分数量 ≤ k_i"
+            "name": "degree_bound",
+            "description": "每个节点的出度不超过给定的上限（度数约束）",
+            "formal": "∀i: |{j | part_j assigned to actor_i}| ≤ k_i"
           },
           {
-            "name": "part_assignment",
-            "description": "每个部分必须分配给一个演员，且每个部分只能分配给一个演员。",
-            "formal": "每个部分 j 必须分配给一个演员 i"
+            "name": "coverage",
+            "description": "所有元素必须被分配到某个节点（分配完整性约束）",
+            "formal": "∀j: ∃i: part_j assigned to actor_i"
           }
         ]
       }
@@ -133,24 +133,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "decision",
-        "description": "判断是否存在一种分配方案，使得每个演员表演的音乐部分在其音域范围内且不超过其可表演的最大部分数量"
+        "type": "feasibility",
+        "description": "判断是否存在一种分配方案，使得每个部分都被分配给一个满足条件的演员"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "decision",
-        "description": "判断是否存在一种分配方案，使得每个演员表演的音乐部分在其音域范围内且不超过其可表演的最大部分数量"
+        "type": "feasibility",
+        "description": "判断是否存在一种分配方案，使得每个部分都被分配给一个满足条件的演员"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "decision",
-        "description": "判断是否存在一种分配方案，使得每个演员表演的音乐部分在其音域范围内且不超过其可表演的最大部分数量"
+        "type": "feasibility",
+        "description": "判断是否存在一种分配方案，使得每个部分都被分配给一个满足条件的演员"
       }
     }
   ],
@@ -159,27 +159,69 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的最优解组合而成，即每个部分分配给演员的问题可以分解为更小规模的相同问题，并且这些子问题的最优解可以合并成原问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个部分的分配依赖于之前部分的最优分配方案，且当前部分的最优分配不会影响之前的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在满足条件的情况下，优先选择当前可用的演员进行分配，以确保局部最优解。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：演员和部分的音域范围可以被合并处理，通过合并操作来简化问题规模。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的最优解组合而成，即每个部分分配给演员的问题可以分解为更小规模的相同问题，并且这些子问题的最优解能够组合成原问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个部分的分配可以基于已解决的子问题的最优解来构建，即如果一个演员可以演唱某个部分，则该部分的分配可以基于该演员已经分配的部分数量来决定。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在满足条件的情况下，优先为当前可选的演员分配尽可能多的部分，以确保局部最优解能够导致全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：通过将演员和部分的音域表示为区间，并利用区间合并的方法来高效地找到可行的分配方案。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的最优解可以通过子问题的最优解组合而成，即每个部分分配给演员的问题可以分解为更小规模的子问题，并且这些子问题的最优解能够组合成原问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个部分的分配依赖于其可行演员集合中的最优选择，且全局最优解由这些局部最优解组成。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：对于每个部分，优先选择当前可行演员中能承担最多剩余部分的演员进行分配，以确保尽可能多的部分被分配。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：通过维护一个数据结构（如线段树或平衡树），可以高效地查询和更新演员的可行区间，并在分配过程中动态维护这些区间。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

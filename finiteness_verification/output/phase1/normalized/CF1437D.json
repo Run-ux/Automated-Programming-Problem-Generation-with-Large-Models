@@ -1,0 +1,88 @@
+{
+  "problem_id": "CF1437D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "节点访问顺序必须符合广度优先搜索的顺序，且每个节点的子节点按升序访问"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "根节点固定为第一个访问的节点"
+          },
+          {
+            "name": "distinctness",
+            "description": "所有节点在访问序列中唯一出现一次"
+          },
+          {
+            "name": "range_bound",
+            "description": "构建的树的高度必须最小化"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足给定访问顺序的树的最小高度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：树的最小高度可以通过其子树的最小高度来确定，每个节点的高度取决于其子节点的最大高度加一。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：BFS访问顺序保证了对于任意节点，其所有子节点在访问序列中的位置是连续且递增的。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从根节点开始，通过BFS访问顺序可以逐步构建出满足条件的树结构，每一步的状态转移都保持了当前已构建部分的最优性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

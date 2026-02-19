@@ -1,0 +1,81 @@
+{
+  "problem_id": "GYM106017E",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 3,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subsequence_constraint",
+            "description": "选择的子序列中，每个元素必须满足：其右侧第一个深度较小的元素的能量成本也必须小于该元素。",
+            "formal": "对于子序列中的每个 i，设 j 为最小的索引使得 j > i 且 d_j < d_i，则 e_i > e_j。如果没有这样的 j，则 i 可以自由选择。"
+          },
+          {
+            "name": "distinctness",
+            "description": "所有深度值都是唯一的。",
+            "formal": "d_i ≠ d_j 对于所有 i ≠ j"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足条件的最长子序列长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针或滑动窗口的右端点单调递增，确保在遍历过程中维护一个符合条件的子序列",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解来构建，即最长子序列的构建基于其子序列的最优解",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移的一致性，当前状态的选择依赖于之前的状态，并且满足题目给定的条件",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

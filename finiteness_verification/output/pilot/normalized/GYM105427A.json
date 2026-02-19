@@ -6,17 +6,17 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "string",
         "length": {
-          "min": 2,
-          "max": 2
-        },
-        "value_range": {
           "min": 1,
           "max": 1000000000
         },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
         "properties": {
-          "ordered": false
+          "ordered": true
         }
       }
     },
@@ -26,11 +26,11 @@
       "result": {
         "type": "array",
         "length": {
-          "min": 2,
-          "max": 2
+          "min": 1,
+          "max": 1000000000
         },
         "value_range": {
-          "min": 1,
+          "min": 2,
           "max": 1000000000
         },
         "properties": {
@@ -42,17 +42,17 @@
       "round": 3,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "string",
         "length": {
-          "min": 2,
-          "max": 2
-        },
-        "value_range": {
           "min": 1,
           "max": 1000000000
         },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
         "properties": {
-          "ordered": false
+          "ordered": true
         }
       }
     }
@@ -64,14 +64,14 @@
       "result": {
         "constraints": [
           {
-            "name": "consecutive_ones_trigger_payment",
-            "description": "如果 Nick 连续 K 次做同一件事，他必须支付医生费用。这表示在生成字符串 s 时，如果连续出现 K 个 1，则会触发支付。",
-            "formal": "If there are K consecutive 1s in the string s, a payment is triggered."
+            "name": "repetition",
+            "description": "序列中连续相同元素的最大长度不超过 K-1",
+            "formal": "对于所有 i, j (1 ≤ i < j ≤ N)，如果 s[i] = s[j] 且 j - i + 1 ≥ K，则 s[j] 必须为 0"
           },
           {
-            "name": "string_generation_rule",
-            "description": "字符串 s 是通过逐字符生成的，每个字符根据前 K-1 个字符的状态决定。如果前 K-1 个字符中有 K-1 个 1，则当前字符为 0；否则，当前字符为 1。",
-            "formal": "s[i] = 0 if s[i-K+1:i] contains K-1 ones, otherwise s[i] = 1."
+            "name": "frequency_bound",
+            "description": "序列中每个位置的值取决于前 K-1 个位置的值",
+            "formal": "s[i] 的值由 s[i-K+1:i-1] 决定，其中 1 ≤ i ≤ N"
           }
         ]
       }
@@ -82,14 +82,9 @@
       "result": {
         "constraints": [
           {
-            "name": "consecutive_ones_trigger_payment",
-            "description": "如果 Nick 连续 K 次做同一件事，他必须支付医生费用。这表示在生成字符串 s 时，连续 K 个 '1' 或 '0' 会导致支付。",
-            "formal": "If s[i] == s[i+1] == ... == s[i+K-1], then s[i+K] = 1"
-          },
-          {
-            "name": "alternating_pattern_avoids_payment",
-            "description": "为了避免支付，Nick 必须避免连续 K 次做同一件事。这意味着生成的字符串 s 应该尽量避免出现连续 K 个相同的字符。",
-            "formal": "s should avoid having a substring of length K with all the same characters."
+            "name": "repetition",
+            "description": "序列中连续相同元素的最大长度不超过 K",
+            "formal": "max_length_of_consecutive_equal_elements <= K"
           }
         ]
       }
@@ -100,9 +95,14 @@
       "result": {
         "constraints": [
           {
-            "name": "consecutive_ones_trigger_payment",
-            "description": "如果 Nick 连续 K 次做同一件事，他必须支付医生费用。这表示在生成字符串 s 时，如果连续出现 K 个相同的字符（0 或 1），则下一个字符必须是 1。",
-            "formal": "If s[i] == s[i+1] == ... == s[i+K-1], then s[i+K] = 1"
+            "name": "repetition",
+            "description": "序列中连续重复的子序列长度不超过 K-1",
+            "formal": "对于所有 i, j (1 ≤ i < j ≤ N)，如果 s[i] == s[j]，则 j - i < K"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "序列中每个字符的出现次数受 K 的限制",
+            "formal": "对于所有 i (1 ≤ i ≤ N)，s[i] 的连续重复次数不超过 K-1"
           }
         ]
       }
@@ -113,24 +113,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算字符串s中1的数量"
+        "type": "maximize_count",
+        "description": "求满足条件的子序列中特定元素的数量"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算字符串s中1的数量"
+        "type": "maximize_count",
+        "description": "计算字符串中满足特定条件的字符数量"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算字符串s中1的数量"
+        "type": "maximize_count",
+        "description": "计算字符串中特定字符的出现次数"
       }
     }
   ],
@@ -139,29 +139,54 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于较小规模问题的解。",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前状态仅依赖于前 K 个状态，满足有限状态自动机的性质",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即字符串 s 的长度为 N 的解可以通过长度小于 N 的子问题的解来推导",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于较小规模问题的解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前状态仅依赖于前K个状态，满足有限状态自动机的转移一致性",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解递推得到，每个子问题的解是独立且最优的",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的解来构建，即大问题的解依赖于较小规模问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前状态仅依赖于前K个状态，且状态转移规则固定。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即字符串s的长度为N时的解可以通过长度为N-1, N-2, ..., N-K+1时的解来推导。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

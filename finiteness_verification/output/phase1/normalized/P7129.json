@@ -1,0 +1,92 @@
+{
+  "problem_id": "P7129",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200
+        },
+        "value_range": {
+          "min": 1,
+          "max": 500
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operator_precedence_constraint",
+            "description": "每个关卡必须在前一个关卡至少完成一次后才能开始"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每个关卡最多可以玩 m_i 次"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "总体力消耗不超过 t"
+          },
+          {
+            "name": "minimum_index_constraint",
+            "description": "第一次必须选择指定的第 c_i 个冰淇淋"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "每次只能吃已经吃完的段的两边的冰淇淋"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "在给定的体力限制下，最大化总得分"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每关游戏的最优解可以通过子问题的最优解组合得到，即在体力限制下选择每一关的最大得分组合成全局最大得分。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从当前状态到下一个状态的转移规则一致，即每次只能吃已经吃完的段的两边的冰淇淋，并且第一次必须吃指定的冰淇淋。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着游戏关卡的进行，体力消耗和得分是单调递增的，即玩更多关卡或多次同一关卡会导致更多的体力消耗和更高的得分。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

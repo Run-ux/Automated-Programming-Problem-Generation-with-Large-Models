@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 1,
           "max": 1000
@@ -28,16 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "路径中的相邻节点必须是字母表中的连续字母（如 A 和 B，B 和 C 等）"
+            "name": "adjacency_relation",
+            "description": "路径中的相邻节点必须在网格中是直接相邻的（水平、垂直或对角线方向）"
           },
           {
-            "name": "maximum_path_length_constraint",
-            "description": "寻找最长的满足条件的路径"
-          },
-          {
-            "name": "continuous_path_constraint",
-            "description": "路径可以在网格中水平、垂直或对角线方向上移动"
+            "name": "ordering",
+            "description": "路径中的字母必须是连续的，即每个字母与其前一个字母在字母表中相差1"
           }
         ]
       }
@@ -49,7 +45,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "求网格中满足条件的最长路径长度"
+        "description": "求网格中连续字母构成的最长路径长度"
       }
     }
   ],
@@ -58,9 +54,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：最长路径问题的解可以通过组合子路径的最优解来获得，即当前节点的最长路径长度由其相邻节点的最长路径长度决定。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最长路径的解可以通过子路径的最优解组合得到",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个字母到相邻字母的状态转移是确定且一致的",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在网格中，每个字母的访问顺序满足拓扑序，即每个字母只能在其所有前驱字母被访问后才能被访问",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

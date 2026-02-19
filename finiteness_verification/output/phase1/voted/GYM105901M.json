@@ -2,14 +2,14 @@
   "problem_id": "GYM105901M",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 10000
@@ -39,12 +39,12 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "shortest_path",
-        "description": "计算两点之间的最短路径距离必须在球面上进行，而不是欧几里得空间中的直线距离",
+        "name": "distance_bound",
+        "description": "接收信号的最大距离 d 必须使得在飞行路径上的某一点与接收点之间的最短路径（球面距离）不超过 d",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_positions",
+        "name": "distinctness",
         "description": "出发点和目的地不能重合，也不能是地球上的对跖点",
         "confidence": "1/1"
       }
@@ -56,12 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "shortest_path",
-              "description": "计算两点之间的最短路径距离必须在球面上进行，而不是欧几里得空间中的直线距离"
+              "name": "distance_bound",
+              "description": "接收信号的最大距离 d 必须使得在飞行路径上的某一点与接收点之间的最短路径（球面距离）不超过 d",
+              "formal": "d >= min_distance_on_path(receiver, flight_path)"
             },
             {
-              "name": "distinct_positions",
-              "description": "出发点和目的地不能重合，也不能是地球上的对跖点"
+              "name": "distinctness",
+              "description": "出发点和目的地不能重合，也不能是地球上的对跖点",
+              "formal": "departure != destination AND departure != -destination"
             }
           ]
         }
@@ -69,37 +71,71 @@
     ]
   },
   "objective": {
-    "type": "minimize_distance",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_distance",
-          "description": "求两点间最短路径长度"
+          "type": "minimize_value",
+          "description": "求两点间最短路径上的最小覆盖半径"
         }
       }
     ],
-    "description": "求两点间最短路径长度"
+    "description": "求两点间最短路径上的最小覆盖半径"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "最短路径上的点到接收器的距离单调变化，即随着飞行路径的推进，距离先减小后增大或反之。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的最优解可以通过子问题的最优解来构造，即最小接收距离可以通过考虑飞行路径上每个点到接收器的距离来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "shortest_path_in_weighted_graph",
+        "description": "地球表面上两点之间的最短路径（测地线）是唯一且连续的，确保了飞行路径的唯一性和连续性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "最短路径上的点到接收器的距离具有单调性，随着飞行路径的推进，距离先减小后增大，存在一个最小值。",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": false
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "最短路径上的点到接收器的距离单调变化，即随着飞行路径的推进，距离先减小后增大或反之。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "问题的最优解可以通过子问题的最优解来构造，即最小接收距离可以通过考虑飞行路径上每个点到接收器的距离来确定。",
+              "properties": {}
+            },
+            {
+              "name": "shortest_path_in_weighted_graph",
+              "description": "地球表面上两点之间的最短路径（测地线）是唯一且连续的，确保了飞行路径的唯一性和连续性。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最短路径上的点到接收器的距离具有单调性，随着飞行路径的推进，距离先减小后增大，存在一个最小值。"
+    ]
   }
 }

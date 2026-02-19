@@ -1,0 +1,143 @@
+{
+  "problem_id": "GYM104670H",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 0,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 0,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "选取元素权重和不超过容量上限（总工作时间不超过给定的预算时间）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "选取元素的加权和满足条件（总代码行数和总修复的 bug 数量不低于给定值）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "在给定集合中选择子集（从现有员工中选择合适的员工组合）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制（每个事件只能处理一次，且按顺序处理）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "选取元素权重和不超过容量上限（总工作时间不超过给定的预算时间）",
+              "formal": "Σ(t_i) ≤ t"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "选取元素的加权和满足条件（总代码行数和总修复的 bug 数量不低于给定值）",
+              "formal": "Σ(t_i * l_i) ≥ ℓ 且 Σ(t_i * b_i) ≥ b"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "在给定集合中选择子集（从现有员工中选择合适的员工组合）",
+              "formal": "t_i ∈ {0, 1, ..., t} 且 i ∈ {1, 2, ..., n}"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制（每个事件只能处理一次，且按顺序处理）",
+              "formal": "每个事件只处理一次"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一种分配方案，使得在给定的时间内完成至少指定数量的工作"
+        }
+      }
+    ],
+    "description": "判断是否存在一种分配方案，使得在给定的时间内完成至少指定数量的工作"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "convexity",
+        "description": "凸性不变量：在二维平面上，程序员的生产力（代码行数和修复的bug数）构成的点集形成一个凸包。对于每个咨询请求，如果该点不在当前程序员生产力形成的凸包内，则可以批准该请求。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "convexity",
+              "description": "凸性不变量：在二维平面上，程序员的生产力（代码行数和修复的bug数）构成的点集形成一个凸包。对于每个咨询请求，如果该点不在当前程序员生产力形成的凸包内，则可以批准该请求。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

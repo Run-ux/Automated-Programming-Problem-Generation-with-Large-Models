@@ -28,18 +28,28 @@ def build_system_prompt() -> str:
 
 你的任务是识别题目要求求解的目标类型。
 
-常见目标类型：
-1. 最大化（max_*）：如 max_length（最大长度）、max_sum（最大和）、max_value（最大值）
-2. 最小化（min_*）：如 min_cost（最小代价）、min_distance（最短距离）、min_operations（最少操作）
-3. 计数（count）：如统计满足条件的区间数量、方案数量
-4. 判定（decision）：如判断是否存在满足条件的解（输出 Yes/No 或 0/1）
-5. 构造（construction）：如输出一个满足条件的方案或序列
+常见目标类型（优先从中选择，但允许必要时新增）：
+1. maximize_value（最大化值）：最大和、最大积、最大距离、最大面积
+2. minimize_value（最小化值）：最小代价、最短路径、最小距离
+3. maximize_count（最大化计数）：最大匹配数、最大方案数
+4. minimize_count（最小化计数）：最少操作次数、最少删除数
+5. maximize_probability（最大化概率/期望）：最大期望收益
+6. minimize_probability（最小化概率/期望）：最小期望代价
+7. min_max（极小化极大）：瓶颈路径、最小化最大值
+8. max_min（极大化极小）：最大化最小值
+9. lexicographic_optimize（字典序优化）：最小/最大字典序
+10. feasibility（可行性判定）：是否存在解
+11. construction（构造）：输出任意/最优方案
+12. enumeration（计数/枚举）：求方案数（常取模）
+13. multi_objective（多目标优化）：同时优化多个指标
+14. game_outcome（博弈结果）：先手胜/后手胜/平局
 
 输出要求：
 - 必须输出严格的 JSON 对象，不要输出任何解释文字
 - JSON 必须包含 type 和 description 字段
 - type 必须是简洁的英文标识（如 max_length, count, decision）
 - description 必须清晰描述目标函数的含义
+- 如果推荐清单中没有合适类型，必须自由新增更准确的目标类型，不要为了套用而强行归类
 
 识别原则：
 1. 优先从题目标题和输出要求中识别
@@ -96,21 +106,22 @@ def build_user_prompt(problem: Dict[str, Any]) -> str:
 请输出该题的目标函数 JSON，格式如下：
 
 {{
-    "type": "目标类型（max_length, min_cost, count, decision, construction 等）",
+    "type": "目标类型（maximize_value, minimize_value, maximize_count, feasibility, construction 等）",
     "description": "目标函数的中文描述（如：求满足条件的最长子数组长度）"
 }}
 
 注意：
-1. type 必须简洁且符合常见分类（max_*, min_*, count, decision, construction）
+1. type 必须简洁且符合常见分类（maximize_*, minimize_*, count, feasibility, construction 等）
 2. description 必须完整描述题目要求输出什么
 3. 如果题目要求输出多个值，选择主要目标（通常是第一个或最重要的）
 4. 常见模式：
-   - 求"最长"、"最大" → max_length 或 max_value
-   - 求"最短"、"最小" → min_cost 或 min_distance
-   - 求"有多少个" → count
-   - 判断"是否存在" → decision
+   - 求"最长"、"最大" → maximize_value
+   - 求"最短"、"最小" → minimize_value
+   - 求"有多少个" → enumeration 或 maximize_count
+   - 判断"是否存在" → feasibility
    - 要求"输出方案" → construction
 5. 所有输出必须是算法领域的抽象概括，不得包含题目中的具体情境词汇（如角色名、物品名等），需翻译为通用的算法术语
+6. 如果推荐清单中没有合适类型，必须自由新增更准确的目标类型，不要为了套用而强行归类
 """
 
 
@@ -120,7 +131,7 @@ OBJECTIVE_SCHEMA = {
     "properties": {
         "type": {
             "type": "string",
-            "description": "目标类型，如 max_length, min_cost, count, decision, construction"
+        "description": "目标类型，如 maximize_value, minimize_value, maximize_count, feasibility, construction"
         },
         "description": {
             "type": "string",

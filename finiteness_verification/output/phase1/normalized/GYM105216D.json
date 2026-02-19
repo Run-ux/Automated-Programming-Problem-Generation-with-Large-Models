@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 800
@@ -27,15 +27,15 @@
         "constraints": [
           {
             "name": "pairwise_exclusion",
-            "description": "每对数字必须满足某种互斥条件（具体条件未在题目中明确给出，但可以理解为某种形式的不相容性约束）"
+            "description": "每对数字必须满足某种互斥条件（具体条件未明确，但题目暗示存在某种互斥关系）"
           },
           {
-            "name": "path_length_constraint",
+            "name": "distance_bound",
             "description": "每个数字的长度固定为 N"
           },
           {
-            "name": "modulo_output_constraint",
-            "description": "结果需要对 10^9 + 7 取模"
+            "name": "modular_arithmetic",
+            "description": "结果需要取模 10^9 + 7"
           }
         ]
       }
@@ -46,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足条件的数对数量"
+        "type": "enumeration",
+        "description": "求满足条件的数对数量，并对结果取模"
       }
     }
   ],
@@ -56,11 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，满足动态规划的状态转移方程",
-        "properties": {
-          "state_dependency": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，满足动态规划的基本性质",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前状态可以由前一个或多个状态通过明确的规则转换而来，确保状态机的一致性",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

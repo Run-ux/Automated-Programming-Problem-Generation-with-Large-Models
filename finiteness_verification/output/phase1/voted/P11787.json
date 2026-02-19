@@ -1,0 +1,188 @@
+{
+  "problem_id": "P11787",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "每个学生填报的志愿集合是所有学校集合的子集。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "capacity_constraint",
+        "description": "每所学校的录取人数不能超过其招生名额。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "学生按照分数从高到低依次进行录取。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "matching_constraint",
+        "description": "每个学生最多被一所学校录取，且每所学校录取的学生数量不超过其招生名额。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "每次操作后，学校的招生名额减少，但不会变为负数。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "每个学生填报的志愿集合是所有学校集合的子集。",
+              "formal": "∀i, {a_{i,1}, a_{i,2}, ..., a_{i,l_i}} ⊆ {1, 2, ..., m}"
+            },
+            {
+              "name": "capacity_constraint",
+              "description": "每所学校的录取人数不能超过其招生名额。",
+              "formal": "∀i, b_i ≤ t_i"
+            },
+            {
+              "name": "ordering",
+              "description": "学生按照分数从高到低依次进行录取。",
+              "formal": "学生按 o_i 降序排列"
+            },
+            {
+              "name": "matching_constraint",
+              "description": "每个学生最多被一所学校录取，且每所学校录取的学生数量不超过其招生名额。",
+              "formal": "每个学生 x 最多有一个 b_x = 1，且 ∀i, b_i ≤ t_i"
+            },
+            {
+              "name": "state_transition",
+              "description": "每次操作后，学校的招生名额减少，但不会变为负数。",
+              "formal": "t_x' = t_x - v, t_x' ≥ 0"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求每次操作后录取结果改变的学生数量"
+        }
+      }
+    ],
+    "description": "求每次操作后录取结果改变的学生数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "处理学生的顺序是按照分数从高到低单调递减的，确保每次处理的学生都是当前未确定录取结果中分数最高的。",
+        "confidence": "1/1",
+        "properties": {
+          "score_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "每个学生被录取的结果依赖于其志愿列表和学校的剩余名额，且最优解包含子问题（即每个学校剩余名额的分配）的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "在处理每个学生时，学校的招生状态（已招生人数）会根据录取情况更新，并且这种状态转移是一致的。",
+        "confidence": "1/1",
+        "properties": {
+          "admission_state_consistency": true
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "每个学校提供的名额可以看作是一个区间，当某个学校减少名额时，可以通过差值计算出受影响的学生数量。",
+        "confidence": "1/1",
+        "properties": {
+          "quota_diff_calculable": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "处理学生的顺序是按照分数从高到低单调递减的，确保每次处理的学生都是当前未确定录取结果中分数最高的。",
+              "properties": {
+                "score_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "每个学生被录取的结果依赖于其志愿列表和学校的剩余名额，且最优解包含子问题（即每个学校剩余名额的分配）的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "在处理每个学生时，学校的招生状态（已招生人数）会根据录取情况更新，并且这种状态转移是一致的。",
+              "properties": {
+                "admission_state_consistency": true
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "每个学校提供的名额可以看作是一个区间，当某个学校减少名额时，可以通过差值计算出受影响的学生数量。",
+              "properties": {
+                "quota_diff_calculable": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

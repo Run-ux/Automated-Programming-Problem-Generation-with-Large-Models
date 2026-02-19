@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100
@@ -28,12 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "circular_sequence_constraint",
-            "description": "子序列可以是循环的，即可以从字符串的任意位置开始，并在到达字符串末尾后继续从开头读取"
+            "name": "distinctness",
+            "description": "区间内不同元素数量不超过 K",
+            "formal": "|distinct(A[l:r])| <= K"
           },
           {
-            "name": "subset_inclusion",
-            "description": "目标子串必须完全包含在给定的字符串中，且可以跨越字符串的边界（循环）"
+            "name": "ordering",
+            "description": "数组必须非递减",
+            "formal": "A[i] <= A[i+1] for all i in [0, n-2]"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "每个元素出现次数不超过 M",
+            "formal": "count(A, x) <= M for all x in A"
           }
         ]
       }
@@ -44,8 +51,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足条件的字符串"
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的解"
       }
     }
   ],
@@ -54,9 +61,21 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间可合并性：通过端点差值计算区间信息，适用于前缀和或线段树等数据结构",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，区间合法性可单调维护",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间和可通过端点差值计算，满足前缀和的性质",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -2,14 +2,14 @@
   "problem_id": "GYM104011D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -39,13 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "相邻元素差值不超过 m-1（时间戳按天数分组）",
+        "name": "distinctness",
+        "description": "所有问题的解决时间是唯一的（即没有两个问题在相同的时间被解决）",
         "confidence": "1/1"
       },
       {
-        "name": "non_decreasing_sequence",
-        "description": "存在一个最长的连续子序列，使得每个子序列中的元素在不同的天数内",
+        "name": "ordering",
+        "description": "问题的解决时间是按时间顺序排列的（即 a_1 < a_2 < ... < a_n）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subsequence_constraint",
+        "description": "需要找到一个最长的连续子序列，使得该子序列中的每个元素都属于不同的天数",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "相邻元素差值不超过 m-1（时间戳按天数分组）",
-              "formal": "∀i ∈ [1, n-1], a[i+1] - a[i] ≤ m-1"
+              "name": "distinctness",
+              "description": "所有问题的解决时间是唯一的（即没有两个问题在相同的时间被解决）",
+              "formal": "a_i ≠ a_j for all i ≠ j"
             },
             {
-              "name": "non_decreasing_sequence",
-              "description": "存在一个最长的连续子序列，使得每个子序列中的元素在不同的天数内",
-              "formal": "∃l, r, ∀d ∈ [l, r], ∃i, j, a[i] ≤ d*m < a[j] 且 a[i] 和 a[j] 在不同天数内"
+              "name": "ordering",
+              "description": "问题的解决时间是按时间顺序排列的（即 a_1 < a_2 < ... < a_n）",
+              "formal": "a_1 < a_2 < ... < a_n"
+            },
+            {
+              "name": "subsequence_constraint",
+              "description": "需要找到一个最长的连续子序列，使得该子序列中的每个元素都属于不同的天数",
+              "formal": "Find the longest subsequence such that each element belongs to a different day, where day(x) = ⌊x / m⌋"
             }
           ]
         }
@@ -86,22 +96,56 @@
     "description": "求满足条件的最长连续子序列长度"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "时间戳偏移后的天数变化具有单调性，即随着时区的增加，问题解决的天数会单调递增或保持不变。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "通过合并不同时间区间的信息来计算最大连续天数，这些区间信息可以通过子区间合并得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最大连续天数的问题可以分解为多个子问题，每个子问题的最优解组合成全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "通过调整时间偏移量，可以找到一个最优的时间偏移值使得连续天数的最大值达到最大。在这个过程中，随着偏移量的增加，连续天数的变化具有单调性。",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "时间戳偏移后的天数变化具有单调性，即随着时区的增加，问题解决的天数会单调递增或保持不变。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "通过合并不同时间区间的信息来计算最大连续天数，这些区间信息可以通过子区间合并得到。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最大连续天数的问题可以分解为多个子问题，每个子问题的最优解组合成全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "通过调整时间偏移量，可以找到一个最优的时间偏移值使得连续天数的最大值达到最大。在这个过程中，随着偏移量的增加，连续天数的变化具有单调性。"
+    ]
   }
 }

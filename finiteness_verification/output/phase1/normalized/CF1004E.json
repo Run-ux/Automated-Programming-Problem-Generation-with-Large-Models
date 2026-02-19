@@ -1,0 +1,89 @@
+{
+  "problem_id": "CF1004E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 10000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "选取的节点必须形成一条简单路径"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点最多只能有一个入度和一个出度（即路径上的节点）"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "选取的节点数量不超过 k 个"
+          },
+          {
+            "name": "distance_bound",
+            "description": "最小化所有节点到最近选中节点的最大距离"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "min_max",
+        "description": "最小化所有节点到最近目标节点的最大距离"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即在树上选择一条路径使得最大距离最小化的问题可以分解为更小规模的子问题。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着路径长度的增加，最大距离的变化具有单调性。具体来说，当路径长度增加时，最大距离不会突然减小。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在动态规划或递归过程中，状态的转移保持一致性。例如，从一个节点到另一个节点的距离计算是基于已知的子问题解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

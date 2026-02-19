@@ -2,14 +2,14 @@
   "problem_id": "GYM101915H",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1000
@@ -19,7 +19,7 @@
             "max": 1000000
           },
           "properties": {
-            "ordered": false
+            "inferred": true
           }
         }
       }
@@ -33,19 +33,24 @@
       "max": 1000000
     },
     "properties": {
-      "ordered": false
+      "inferred": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "node_degree_constraint",
-        "description": "每个节点的度数不超过 2（从每个商店最多购买 2 个产品）",
+        "name": "degree_bound",
+        "description": "每个节点的度数不超过2（每个商店最多购买2个产品）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_subset_selection",
-        "description": "选取的元素数量必须恰好为 K（购买的产品数量必须恰好为 K）",
+        "name": "subset_size_exact_constraint",
+        "description": "选取的元素数量必须恰好为K（购买的产品数量必须恰好为K）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "选取元素的权重和最小化（购买产品的总价格最小化）",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "node_degree_constraint",
-              "description": "每个节点的度数不超过 2（从每个商店最多购买 2 个产品）",
-              "formal": "∀i, 0 ≤ degree(i) ≤ 2"
+              "name": "degree_bound",
+              "description": "每个节点的度数不超过2（每个商店最多购买2个产品）"
             },
             {
-              "name": "distinct_subset_selection",
-              "description": "选取的元素数量必须恰好为 K（购买的产品数量必须恰好为 K）",
-              "formal": "|selected| = K"
+              "name": "subset_size_exact_constraint",
+              "description": "选取的元素数量必须恰好为K（购买的产品数量必须恰好为K）"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "选取元素的权重和最小化（购买产品的总价格最小化）"
             }
           ]
         }
@@ -71,34 +78,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求在满足条件下的最小花费"
+          "type": "minimize_value",
+          "description": "求满足条件的最小总代价"
         }
       }
     ],
-    "description": "求在满足条件下的最小花费"
+    "description": "求满足条件的最小总代价"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在购买K个产品时，当前状态的最优解依赖于之前状态的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个子问题的求解过程是独立的，即在计算某个状态下的最小花费时，不会受到其他状态的影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在选择购买每个商店的产品时，当前状态的最优解依赖于之前状态的最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在购买K个产品时，当前状态的最优解依赖于之前状态的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个子问题的求解过程是独立的，即在计算某个状态下的最小花费时，不会受到其他状态的影响。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在选择购买每个商店的产品时，当前状态的最优解依赖于之前状态的最优解。"
+    ]
   }
 }

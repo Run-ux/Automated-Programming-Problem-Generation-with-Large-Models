@@ -1,0 +1,162 @@
+{
+  "problem_id": "P13596",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 3,
+            "max": 200
+          },
+          "value_range": {
+            "min": 0,
+            "max": 99
+          },
+          "properties": {
+            "ordered": false,
+            "connected": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 200
+    },
+    "value_range": {
+      "min": 0,
+      "max": 99
+    },
+    "properties": {
+      "ordered": false,
+      "connected": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制，最多只能建造 10^4 次探测仪",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "探测仪的边长必须在 [0.01, 200] 米之间",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "探测仪至少要有一个顶点在矿区内部",
+        "confidence": "1/1"
+      },
+      {
+        "name": "rectangle_shape",
+        "description": "探测仪的四个顶点必须构成一个矩形",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制，最多只能建造 10^4 次探测仪",
+              "formal": "num_operations <= 10^4"
+            },
+            {
+              "name": "range_bound",
+              "description": "探测仪的边长必须在 [0.01, 200] 米之间",
+              "formal": "0.01 <= side_length <= 200"
+            },
+            {
+              "name": "range_bound",
+              "description": "探测仪摆放位置的精度必须精确到 10^-5 米",
+              "formal": "position_precision == 10^-5"
+            },
+            {
+              "name": "coverage",
+              "description": "探测仪至少要有一个顶点在矿区内部",
+              "formal": "exists vertex in rectangle such that 0 <= x_vertex <= 99 and 0 <= y_vertex <= 99"
+            },
+            {
+              "name": "rectangle_shape",
+              "description": "探测仪的四个顶点必须构成一个矩形",
+              "formal": "vertices A, B, C, D form a rectangle"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "最小化探测仪的总材料耗费，同时满足估算矿脉面积的精度要求"
+        }
+      }
+    ],
+    "description": "最小化探测仪的总材料耗费，同时满足估算矿脉面积的精度要求"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "convexity",
+        "description": "凸性不变量：矿脉的多边形顶点坐标为整数，且多边形是简单的，保证了矿脉的边界具有凸性结构。在查询过程中，可以通过凸包性质来优化探测区域的选择。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过多次探测仪的测量结果，可以将不同区域的矿脉面积进行累加，从而逐步逼近整个矿脉的真实面积。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "divide_conquer",
+        "description": "分治不变量：通过将矿区划分为多个子区域，并分别对这些子区域进行探测，最终将各个子区域的结果合并得到整个矿区的矿脉面积。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "convexity",
+              "description": "凸性不变量：矿脉的多边形顶点坐标为整数，且多边形是简单的，保证了矿脉的边界具有凸性结构。在查询过程中，可以通过凸包性质来优化探测区域的选择。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过多次探测仪的测量结果，可以将不同区域的矿脉面积进行累加，从而逐步逼近整个矿脉的真实面积。",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：通过将矿区划分为多个子区域，并分别对这些子区域进行探测，最终将各个子区域的结果合并得到整个矿区的矿脉面积。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

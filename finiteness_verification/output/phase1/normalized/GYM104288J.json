@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "directed_acyclic_graph",
+        "type": "directed_graph",
         "length": {
           "min": 1,
           "max": 10000
@@ -30,20 +30,24 @@
       "result": {
         "constraints": [
           {
-            "name": "directed_acyclic_graph",
-            "description": "网络必须是无环的（有向无环图）"
+            "name": "acyclicity",
+            "description": "网络必须是无环的（无环性）"
           },
           {
-            "name": "distinct_bomb_locations",
-            "description": "每个输入标识符（除了1）恰好对应一个输出标识符，每个输出标识符最多作为另一个节点的一个输入"
+            "name": "distinctness",
+            "description": "每个输入/输出标识符必须唯一（唯一性/去重）"
           },
           {
-            "name": "adjacent_difference",
-            "description": "输入/输出标识符形成从2开始的连续序列"
+            "name": "degree_bound",
+            "description": "每个输入标识符最多作为一次输出（度数约束）"
           },
           {
-            "name": "query_range_validity",
-            "description": "查询的输出标识符和索引必须在有效范围内"
+            "name": "ordering",
+            "description": "输入序列是有序的正整数序列（有序性）"
+          },
+          {
+            "name": "query_limit",
+            "description": "查询次数有限制（询问次数限制）"
           }
         ]
       }
@@ -54,8 +58,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断给定输出序列中是否存在指定索引的元素"
+        "type": "feasibility",
+        "description": "判断给定输出序列中是否存在指定位置的元素"
       }
     }
   ],
@@ -64,9 +68,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成。在本题中，每个节点的输出序列可以由其输入序列通过特定规则（分裂或合并）计算得出，从而整个网络的输出可以通过递归地解决子问题来获得。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：节点处理顺序遵循有向无环图的拓扑排序，确保每个节点在处理前其所有前置节点已处理完毕",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个节点的状态（输出序列）由其输入序列通过确定性规则（split 或 merge 操作）唯一决定",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

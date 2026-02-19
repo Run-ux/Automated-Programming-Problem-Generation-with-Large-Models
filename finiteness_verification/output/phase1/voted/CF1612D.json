@@ -2,14 +2,14 @@
   "problem_id": "CF1612D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 10000
@@ -35,8 +35,8 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "transformation_exclusion",
-        "description": "通过一系列操作，可以将初始值对 (a, b) 转换为目标值 x。操作包括：将 a 替换为 a + b 或将 b 替换为 a + b。",
+        "name": "transformation",
+        "description": "可以通过一系列操作将初始值 (a, b) 转换为目标值 x，操作包括：1. 交换 a 和 b；2. 将 a 替换为 a + b 或 b - a。",
         "confidence": "1/1"
       }
     ],
@@ -47,9 +47,9 @@
         "result": {
           "constraints": [
             {
-              "name": "transformation_exclusion",
-              "description": "通过一系列操作，可以将初始值对 (a, b) 转换为目标值 x。操作包括：将 a 替换为 a + b 或将 b 替换为 a + b。",
-              "formal": "存在非负整数 k 和 l 使得 (a + kb = x) 或 (b + la = x)"
+              "name": "transformation",
+              "description": "可以通过一系列操作将初始值 (a, b) 转换为目标值 x，操作包括：1. 交换 a 和 b；2. 将 a 替换为 a + b 或 b - a。",
+              "formal": "通过操作序列 O = {swap(a, b), a := a + b, a := b - a}，使得 a = x 或 b = x"
             }
           ]
         }
@@ -57,36 +57,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否存在一种操作序列使得给定的两个整数之一能够变为目标值"
+          "type": "feasibility",
+          "description": "判断是否存在一种操作序列使得给定的整数对通过一系列变换后能够达到目标值"
         }
       }
     ],
-    "description": "判断是否存在一种操作序列使得给定的两个整数之一能够变为目标值"
+    "description": "判断是否存在一种操作序列使得给定的整数对通过一系列变换后能够达到目标值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "gcd_invariant",
+        "description": "最大公约数不变性：在操作过程中，a 和 b 的最大公约数保持不变",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "可达性：通过一系列操作可以将 a 或 b 转换为 x 当且仅当 x 是 a 和 b 的最大公约数的倍数",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "状态依赖：当前状态只依赖于有限的前序状态，通过操作逐步逼近目标状态",
-          "properties": {
-            "dependency_on_previous_states": true
-          }
+          "invariants": [
+            {
+              "name": "gcd_invariant",
+              "description": "最大公约数不变性：在操作过程中，a 和 b 的最大公约数保持不变",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "可达性：通过一系列操作可以将 a 或 b 转换为 x 当且仅当 x 是 a 和 b 的最大公约数的倍数",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "状态依赖：当前状态只依赖于有限的前序状态，通过操作逐步逼近目标状态"
+    ]
   }
 }

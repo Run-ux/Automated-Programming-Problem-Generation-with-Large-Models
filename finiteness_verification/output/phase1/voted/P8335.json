@@ -1,0 +1,144 @@
+{
+  "problem_id": "P8335",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "range_bound",
+        "description": "修改操作影响的点范围由给定的中心点 (x, y) 和距离 d 确定，满足 |X - x| < d 且 |Y - y| < d 的整点 (X, Y) 的点权会增加。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "submatrix_transformation",
+        "description": "修改操作中，每个受影响的点 (X, Y) 的点权增加量为 w * (d - max(|X - x|, |Y - y|))。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_query_max",
+        "description": "查询操作要求计算满足 x1 ≤ X ≤ x2 且 y1 ≤ Y ≤ y2 的所有整点 (X, Y) 的点权之和。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "查询操作的结果需要对 2^30 取模。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "range_bound",
+              "description": "修改操作影响的点范围由给定的中心点 (x, y) 和距离 d 确定，满足 |X - x| < d 且 |Y - y| < d 的整点 (X, Y) 的点权会增加。",
+              "formal": "|X - x| < d 且 |Y - y| < d"
+            },
+            {
+              "name": "submatrix_transformation",
+              "description": "修改操作中，每个受影响的点 (X, Y) 的点权增加量为 w * (d - max(|X - x|, |Y - y|))。",
+              "formal": "w * (d - max(|X - x|, |Y - y|))"
+            },
+            {
+              "name": "range_query_max",
+              "description": "查询操作要求计算满足 x1 ≤ X ≤ x2 且 y1 ≤ Y ≤ y2 的所有整点 (X, Y) 的点权之和。",
+              "formal": "x1 ≤ X ≤ x2 且 y1 ≤ Y ≤ y2"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "查询操作的结果需要对 2^30 取模。",
+              "formal": "result % 2^30"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求指定区域内的点权和"
+        }
+      }
+    ],
+    "description": "求指定区域内的点权和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和的方式，可以高效计算任意子区间的点权之和。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：在处理修改操作时，可以通过将多个小范围的更新合并为大范围的更新，从而减少操作次数。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和的方式，可以高效计算任意子区间的点权之和。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：在处理修改操作时，可以通过将多个小范围的更新合并为大范围的更新，从而减少操作次数。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

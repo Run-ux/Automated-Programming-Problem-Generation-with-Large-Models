@@ -1,0 +1,147 @@
+{
+  "problem_id": "P9600",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "sum_constraint",
+        "description": "所有封锁时刻的总和不超过给定的上限 K",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "路径上每一段子路径的长度必须小于等于对应城市的封锁时刻",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "图是连通的，任意两个城市之间存在唯一路径",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "sum_constraint",
+              "description": "所有封锁时刻的总和不超过给定的上限 K",
+              "formal": "Σ c[i] ≤ K, 0 ≤ i < N"
+            },
+            {
+              "name": "path_constraint",
+              "description": "路径上每一段子路径的长度必须小于等于对应城市的封锁时刻",
+              "formal": "对于路径 p_0, p_1, ..., p_t，对每个 i (0 ≤ i < t)，路径 p_0, p_1, ..., p_i 的长度 ≤ c[p_i]"
+            },
+            {
+              "name": "connectivity",
+              "description": "图是连通的，任意两个城市之间存在唯一路径",
+              "formal": "对于任意两个不同城市 a 和 b，存在唯一的路径 p_0, p_1, ..., p_t 使得 p_0 = a 且 p_t = b"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求在给定约束条件下，最大化可达城市数量之和"
+        }
+      }
+    ],
+    "description": "求在给定约束条件下，最大化可达城市数量之和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，从城市X和Y可达的城市个数的最大值可以通过计算每个子树中的可达城市个数来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在分配封锁时刻时，优先考虑能够最大化可达城市数量的方案。通过局部最优选择（即为当前节点分配尽可能多的封锁时刻），可以逐步构建全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在计算每个节点的可达城市数量时，状态转移的一致性保证了算法的正确性。具体来说，一个节点的可达城市数量可以通过其子节点的可达城市数量来递归计算。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，从城市X和Y可达的城市个数的最大值可以通过计算每个子树中的可达城市个数来确定。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在分配封锁时刻时，优先考虑能够最大化可达城市数量的方案。通过局部最优选择（即为当前节点分配尽可能多的封锁时刻），可以逐步构建全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在计算每个节点的可达城市数量时，状态转移的一致性保证了算法的正确性。具体来说，一个节点的可达城市数量可以通过其子节点的可达城市数量来递归计算。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

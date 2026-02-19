@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "tree",
         "length": {
           "min": 1,
           "max": 100000
@@ -29,19 +29,19 @@
       "result": {
         "constraints": [
           {
-            "name": "path_length_constraint",
-            "description": "每条路径的顶点数量不超过 L",
-            "formal": "∀ path, |path| ≤ L"
+            "name": "path_constraint",
+            "description": "路径长度不超过 L 个节点",
+            "formal": "len(path) <= L"
           },
           {
             "name": "sum_constraint",
-            "description": "每条路径上顶点权重和不超过 S",
-            "formal": "∀ path, Σ w_i (i ∈ path) ≤ S"
+            "description": "路径上节点权重和不超过 S",
+            "formal": "sum(w_i for i in path) <= S"
           },
           {
-            "name": "vertex_partition",
-            "description": "每个顶点必须且仅属于一条路径",
-            "formal": "∀ vertex v, ∃! path p, v ∈ p"
+            "name": "partition",
+            "description": "每个节点必须且仅属于一条路径",
+            "formal": "forall v in V: exists! path s.t. v in path"
           }
         ]
       }
@@ -53,7 +53,7 @@
       "status": "success",
       "result": {
         "type": "minimize_count",
-        "description": "求满足条件的最少路径数量"
+        "description": "求满足条件的最少路径数"
       }
     }
   ],
@@ -62,9 +62,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个节点的路径划分依赖于其子树的最优路径划分",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个节点的最优路径划分依赖于其子树的最优路径划分。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从根节点到叶子节点的路径上，每个节点的状态（是否满足路径长度和权重限制）可以由其父节点的状态推导得出。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在处理当前节点时，其子树的最优解已经确定且相互独立，不会受到其他兄弟节点的影响。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -2,14 +2,14 @@
   "problem_id": "GYM103274H",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -39,12 +39,12 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "substring_replacement_rule",
-        "description": "可以将序列中的某些子串替换为一个新字符，且替换后的序列能够通过反向操作恢复原序列",
+        "name": "transformation",
+        "description": "可以将序列中的某些子串替换为一个新的字符（'2'），并且能够通过该新字符还原原始序列",
         "confidence": "1/1"
       },
       {
-        "name": "substring_length_constraint",
+        "name": "range_bound",
         "description": "用于替换的子串长度不超过给定的最大值 b",
         "confidence": "1/1"
       }
@@ -56,12 +56,12 @@
         "result": {
           "constraints": [
             {
-              "name": "substring_replacement_rule",
-              "description": "可以将序列中的某些子串替换为一个新字符，且替换后的序列能够通过反向操作恢复原序列",
-              "formal": "存在子串 w 使得 T' = T.replace(w, '2') 且 T = T'.replace('2', w)"
+              "name": "transformation",
+              "description": "可以将序列中的某些子串替换为一个新的字符（'2'），并且能够通过该新字符还原原始序列",
+              "formal": "T' = T.replace(w, '2') 且 T = T'.replace('2', w)"
             },
             {
-              "name": "substring_length_constraint",
+              "name": "range_bound",
               "description": "用于替换的子串长度不超过给定的最大值 b",
               "formal": "|w| <= b"
             }
@@ -79,26 +79,46 @@
         "status": "success",
         "result": {
           "type": "minimize_value",
-          "description": "求字符串经过指定压缩操作后的最短长度"
+          "description": "求字符串经过指定替换操作后的最小长度"
         }
       }
     ],
-    "description": "求字符串经过指定压缩操作后的最短长度"
+    "description": "求字符串经过指定替换操作后的最小长度"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：压缩后的文件大小由子问题的最优解决定，即通过选择合适的子串w来替换以达到最小化压缩后文件大小的目的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在选择子串w时，局部最优的选择（如选择出现频率最高的子串）能够导致全局最优解，即最终压缩后的文件大小最小。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：压缩后的文件大小由子问题的最优解组合而成，即通过选择合适的子串w进行替换可以得到全局最优解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：压缩后的文件大小由子问题的最优解决定，即通过选择合适的子串w来替换以达到最小化压缩后文件大小的目的。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在选择子串w时，局部最优的选择（如选择出现频率最高的子串）能够导致全局最优解，即最终压缩后的文件大小最小。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：压缩后的文件大小由子问题的最优解组合而成，即通过选择合适的子串w进行替换可以得到全局最优解"
+    ]
   }
 }

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,19 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "bottleneck_path",
-            "description": "选取元素权重和不超过容量上限（总交集长度需达到或超过 k）",
-            "formal": "I >= k"
+            "name": "sum_constraint",
+            "description": "总交集长度需要达到或超过给定的阈值 k",
+            "formal": "∑ intersection_length([al_i, ar_i], [bl_i, br_i]) >= k"
           },
           {
-            "name": "adjacent_sum_constraint",
-            "description": "区间可以向左或向右扩展一个单位长度",
-            "formal": "transform [x, y] to [x-1, y] or [x, y+1]"
+            "name": "range_bound",
+            "description": "每个区间的端点在扩展过程中必须保持有序性，即左端点小于等于右端点",
+            "formal": "∀ i, al_i ≤ ar_i ∧ bl_i ≤ br_i"
           },
           {
-            "name": "constant_submatrix",
-            "description": "初始时，所有区间的值相同",
-            "formal": "∀i, [al_i, ar_i] = [l_1, r_1] and [bl_i, br_i] = [l_2, r_2]"
+            "name": "operation_limit",
+            "description": "每次操作只能选择一个区间并将其扩展 1 个单位长度",
+            "formal": "∀ i, (al_i' = al_i - 1 ∧ ar_i' = ar_i) ∨ (al_i' = al_i ∧ ar_i' = ar_i + 1) ∨ (bl_i' = bl_i - 1 ∧ br_i' = br_i) ∨ (bl_i' = bl_i ∧ br_i' = br_i + 1)"
           }
         ]
       }
@@ -51,8 +51,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_cost",
-        "description": "求使总交集长度达到给定阈值所需的最少操作次数"
+        "type": "minimize_count",
+        "description": "最小化操作次数以达到给定的总交集长度"
       }
     }
   ],
@@ -61,12 +61,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence",
-        "description": "区间扩展操作的单调性：每次操作只能增加区间的长度，不会减少。因此，总交集长度随操作次数非递减。",
-        "properties": {
-          "left_monotonic": false,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "扩展操作单调增加总交集长度，每次操作至少使总交集长度非减",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择（每次选择能最大化当前交集增量的段进行扩展）导致全局最优解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

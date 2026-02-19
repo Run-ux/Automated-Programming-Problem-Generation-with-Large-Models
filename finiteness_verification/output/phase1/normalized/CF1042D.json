@@ -1,0 +1,70 @@
+{
+  "problem_id": "CF1042D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": -1000000000,
+          "max": 1000000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "sum_constraint",
+            "description": "区间和小于给定阈值（子数组元素和小于 t）",
+            "formal": "对于所有 l, r (1 ≤ l ≤ r ≤ n)，满足 a_l + a_{l+1} + ... + a_r < t"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足条件的子数组数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和可以高效计算任意子区间的和，从而判断其是否满足条件",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：在遍历数组时，右端点单调递增，左端点根据当前子区间的和与目标值t的关系进行调整，确保子区间的和小于t",
+            "properties": {
+              "right_monotonic": true,
+              "left_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

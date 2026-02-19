@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 300
@@ -28,28 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "binary_edge_weight",
-            "description": "节点分为两类（如盟友和敌人）"
+            "name": "probability_distribution",
+            "description": "每个玩家的命中概率是一个在 [0, 1] 范围内的实数，且有 9 位小数"
           },
           {
-            "name": "uniform_probability_distribution",
-            "description": "每个节点有一个在 [0, 1] 范围内的概率值"
+            "name": "binary_classification",
+            "description": "玩家分为两个互斥的类别：盟友和敌人"
           },
           {
-            "name": "non_empty_subset",
-            "description": "每类节点至少有一个成员"
+            "name": "optimal_play",
+            "description": "必须选择最优的目标以最大化盟友存活的概率"
           },
           {
-            "name": "continuous_path_constraint",
-            "description": "节点按顺序依次执行动作"
+            "name": "turn_based",
+            "description": "游戏按固定顺序进行 n 个回合，每个回合由一个特定的玩家行动"
           },
           {
-            "name": "priority_based_selection",
-            "description": "每个节点可以选择另一类中的任意一个节点作为目标"
-          },
-          {
-            "name": "weight_proportional_probability",
-            "description": "计算一类节点全部存活的概率，假设另一类节点随机选择目标"
+            "name": "exclusion",
+            "description": "不能攻击自己队伍的玩家"
           }
         ]
       }
@@ -60,8 +56,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_value",
-        "description": "最大化特定条件下路径上的权值乘积"
+        "type": "maximize_probability",
+        "description": "最大化特定条件下所有指定元素存活的概率"
       }
     }
   ],
@@ -70,12 +66,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优解包含子问题的最优解，通过递归或迭代方式解决大问题，每个阶段的选择基于当前状态下的最优策略",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每一步选择攻击目标时，当前状态的最优解依赖于之前状态的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态到另一个状态的转移是确定且一致的。在本题中，每个玩家按照顺序行动，并且每次行动后游戏的状态（存活情况）会发生变化，但这种变化是基于前一状态和当前玩家的选择。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

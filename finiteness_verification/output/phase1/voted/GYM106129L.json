@@ -1,0 +1,126 @@
+{
+  "problem_id": "GYM106129L",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1440
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1440
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "range_bound",
+        "description": "工作时间在合法范围内（0到1440分钟）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimum_rest_interval",
+        "description": "计算最小的合法休息时间，使得总工作时间合法",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "range_bound",
+              "description": "工作时间在合法范围内（0到1440分钟）",
+              "formal": "0 ≤ t ≤ 1440"
+            },
+            {
+              "name": "minimum_rest_interval",
+              "description": "计算最小的合法休息时间，使得总工作时间合法",
+              "formal": "min_break_time = f(t)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足条件的最小值"
+        }
+      }
+    ],
+    "description": "求满足条件的最小值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "随着工作时间的增加，所需的最小休息时间单调递增",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解来构建，即在给定的工作时间内，最小休息时间可以通过更短的工作时间内的最优解来推导",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "随着工作时间的增加，所需的最小休息时间单调递增",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解可以通过子问题的最优解来构建，即在给定的工作时间内，最小休息时间可以通过更短的工作时间内的最优解来推导",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

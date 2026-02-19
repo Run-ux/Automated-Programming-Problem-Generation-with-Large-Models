@@ -1,0 +1,81 @@
+{
+  "problem_id": "CF1766D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 10000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "gcd_constraint",
+            "description": "两个整数的最大公约数必须为1（互质约束）",
+            "formal": "gcd(x, y) = 1"
+          },
+          {
+            "name": "sequence_pattern_constraint",
+            "description": "序列中的每个元素对 $(x + i, y + i)$ 必须满足互质约束",
+            "formal": "forall i in [0, k]: gcd(x + i, y + i) = 1"
+          },
+          {
+            "name": "path_length_constraint",
+            "description": "链的长度由满足互质约束的连续元素对数量决定",
+            "formal": "length = k + 1 where (x + k, y + k) is the last pair satisfying gcd(x + k, y + k) = 1"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足条件的最长子序列长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "gcd_invariant",
+            "description": "在链中，每对相邻元素的差值保持不变，且整个链的 gcd 性质保持一致",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "链的长度随 k 的增加单调递增，直到遇到不满足 gcd 条件的点为止",
+            "properties": {
+              "right_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 4,
           "max": 4
@@ -26,24 +26,19 @@
       "result": {
         "constraints": [
           {
-            "name": "range_selection_constraint",
-            "description": "选择的等待时间必须在给定区间内",
+            "name": "range_bound",
+            "description": "等待时间必须在给定的区间内（冷却时间约束）",
             "formal": "a ∈ [ℓ, r]"
           },
           {
-            "name": "cooldown_period_constraint",
-            "description": "每次操作后需要等待一段时间才能进行下一次操作",
-            "formal": "t_{i+1} >= t_i + a"
+            "name": "operation_limit",
+            "description": "操作次数限制，即需要完成的操作数量（杀鹅次数）",
+            "formal": "k"
           },
           {
-            "name": "periodic_encounter_constraint",
-            "description": "每隔固定时间会遇到一个元素",
-            "formal": "t_{encounter} = i * b, i ∈ N"
-          },
-          {
-            "name": "operation_count_constraint",
-            "description": "需要完成的操作次数是固定的",
-            "formal": "k 次操作"
+            "name": "repetition",
+            "description": "事件以固定周期发生（遇到鹅的时间间隔）",
+            "formal": "b"
           }
         ]
       }
@@ -54,8 +49,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求完成指定操作次数所需的最短时间"
+        "type": "minimize_value",
+        "description": "求完成指定数量操作所需的最短时间"
       }
     }
   ],
@@ -64,9 +59,20 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在给定冷却时间范围内的最小等待时间可以由前一个状态的最优解推导得出。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "时间单调递增，每次遇到鹅的时间间隔固定为 b 秒，等待时间在 [l, r] 范围内单调选择。",
+            "properties": {
+              "time_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优：每次选择最小的等待时间 a 以尽快完成 k 次击杀。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

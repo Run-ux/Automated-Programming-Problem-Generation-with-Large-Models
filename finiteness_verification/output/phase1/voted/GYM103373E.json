@@ -2,14 +2,14 @@
   "problem_id": "GYM103373E",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 2
@@ -35,18 +35,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "non_negative_balance",
-        "description": "在任意时刻，余额必须非负（即不能出现负数）",
+        "name": "non_negative_pairwise_product",
+        "description": "在任意时刻，余额必须非负（即不能出现负数余额）",
         "confidence": "1/1"
       },
       {
-        "name": "state_transition_constraint",
-        "description": "生产数量依赖于当前天数的五次方（即生产函数为 q * d^5）",
+        "name": "linear_relation",
+        "description": "第 d 天的生产函数为 q * d^5，其中 q 是正常数",
         "confidence": "1/1"
       },
       {
-        "name": "non_negative_balance",
-        "description": "每天消耗的数量是常数 p（即消耗函数为 p）",
+        "name": "accumulated_sum_constraint",
+        "description": "每天消耗 p 个 Eatcoins，p 是正常数",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "目标是达到至少 10^99 个 Eatcoins",
         "confidence": "1/1"
       }
     ],
@@ -57,19 +62,24 @@
         "result": {
           "constraints": [
             {
-              "name": "non_negative_balance",
-              "description": "在任意时刻，余额必须非负（即不能出现负数）",
-              "formal": "∀d, balance(d) ≥ 0"
+              "name": "non_negative_pairwise_product",
+              "description": "在任意时刻，余额必须非负（即不能出现负数余额）",
+              "formal": "balance >= 0"
             },
             {
-              "name": "state_transition_constraint",
-              "description": "生产数量依赖于当前天数的五次方（即生产函数为 q * d^5）",
+              "name": "linear_relation",
+              "description": "第 d 天的生产函数为 q * d^5，其中 q 是正常数",
               "formal": "production(d) = q * d^5"
             },
             {
-              "name": "non_negative_balance",
-              "description": "每天消耗的数量是常数 p（即消耗函数为 p）",
-              "formal": "consumption(d) = p"
+              "name": "accumulated_sum_constraint",
+              "description": "每天消耗 p 个 Eatcoins，p 是正常数",
+              "formal": "consumption = p"
+            },
+            {
+              "name": "connectivity",
+              "description": "目标是达到至少 10^99 个 Eatcoins",
+              "formal": "final_balance >= 10^99"
             }
           ]
         }
@@ -77,36 +87,69 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造满足条件的两个整数x和y"
+          "type": "feasibility",
+          "description": "判断是否存在一个天数，使得在该天结束时Eatcoin的数量达到或超过给定阈值"
         }
       }
     ],
-    "description": "构造满足条件的两个整数x和y"
+    "description": "判断是否存在一个天数，使得在该天结束时Eatcoin的数量达到或超过给定阈值"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "算法执行过程中，Eatcoin 的总数量单调递增",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "每一天的 Eatcoin 数量依赖于前一天的状态，满足最优子结构",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每一天的 Eatcoin 数量通过固定的公式从上一天的状态转移而来",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "累积收益随时间单调递增，算法执行过程中每日净收益非负保证了总Eatcoin数量的单调增长",
-          "properties": {
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "算法执行过程中，Eatcoin 的总数量单调递增",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "每一天的 Eatcoin 数量依赖于前一天的状态，满足最优子结构",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每一天的 Eatcoin 数量通过固定的公式从上一天的状态转移而来",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "累积收益随时间单调递增，算法执行过程中每日净收益非负保证了总Eatcoin数量的单调增长"
+    ]
   }
 }

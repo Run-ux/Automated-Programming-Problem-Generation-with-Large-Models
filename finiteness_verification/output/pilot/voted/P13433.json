@@ -2,24 +2,24 @@
   "problem_id": "P13433",
   "source": "luogu",
   "input_structure": {
-    "type": "array",
+    "type": "matrix",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "array",
+          "type": "matrix",
           "length": {
             "min": 1,
             "max": 100
           },
           "value_range": {
             "min": 1,
-            "max": 10000
+            "max": 100
           },
           "properties": {
-            "inferred": true
+            "ordered": false
           }
         }
       },
@@ -27,7 +27,7 @@
         "round": 2,
         "status": "success",
         "result": {
-          "type": "array",
+          "type": "matrix",
           "length": {
             "min": 1,
             "max": 100
@@ -37,7 +37,7 @@
             "max": 100
           },
           "properties": {
-            "inferred": true
+            "ordered": false
           }
         }
       },
@@ -45,14 +45,14 @@
         "round": 3,
         "status": "success",
         "result": {
-          "type": "array",
+          "type": "matrix",
           "length": {
             "min": 1,
             "max": 100
           },
           "value_range": {
             "min": 1,
-            "max": 10000
+            "max": 100
           },
           "properties": {
             "inferred": true
@@ -66,27 +66,27 @@
     },
     "value_range": {
       "min": 1,
-      "max": 10000
+      "max": 100
     },
     "properties": {
-      "inferred": true
+      "ordered": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "collect_all_cards",
-        "description": "你需要购买足够多的 booster pack，直到你收集到所有 C 种卡片。",
-        "confidence": "3/3"
+        "name": "subset_constraint",
+        "description": "每个包中的卡片是所有卡片种类的一个子集",
+        "confidence": "2/3"
       },
       {
-        "name": "equal_probability_of_packs",
-        "description": "购买一个 booster pack 时，所有可能的组合出现的概率相等。",
-        "confidence": "3/3"
+        "name": "probability_distribution",
+        "description": "每个可能的包组合出现的概率相等",
+        "confidence": "2/3"
       },
       {
-        "name": "distinct_cards_in_pack",
-        "description": "每个 booster pack 中的卡片种类各不相同，即每个包中没有重复的卡片。",
+        "name": "distinctness",
+        "description": "每个包中的卡片种类各不相同（无重复）",
         "confidence": "3/3"
       }
     ],
@@ -97,19 +97,19 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_cards_in_pack",
-              "description": "每个 booster pack 中的卡片种类各不相同，即每个包中没有重复的卡片。",
-              "formal": "对于任意一个 booster pack P，|distinct(P)| = N"
+              "name": "distinctness",
+              "description": "每个包中的卡片种类各不相同（无重复）",
+              "formal": "∀i, j ∈ [1, N], i ≠ j → card[i] ≠ card[j]"
             },
             {
-              "name": "equal_probability_of_packs",
-              "description": "购买一个 booster pack 时，所有可能的组合出现的概率相等。",
+              "name": "subset_constraint",
+              "description": "每个包中的卡片是所有卡片种类的一个子集",
+              "formal": "pack ⊆ {1, 2, ..., C}"
+            },
+            {
+              "name": "probability_distribution",
+              "description": "每个可能的包组合出现的概率相等",
               "formal": "P(pack) = 1 / (C choose N)"
-            },
-            {
-              "name": "collect_all_cards",
-              "description": "你需要购买足够多的 booster pack，直到你收集到所有 C 种卡片。",
-              "formal": "停止条件：拥有所有 C 种卡片"
             }
           ]
         }
@@ -120,19 +120,12 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_cards_in_pack",
-              "description": "每个 booster pack 中的卡片种类各不相同，即每个包中没有重复的卡片。",
-              "formal": "对于任意一个 booster pack P，|distinct(P)| = N"
+              "name": "distinctness",
+              "description": "每个包中的卡片种类各不相同（无重复）"
             },
             {
-              "name": "equal_probability_of_packs",
-              "description": "购买一个 booster pack 时，所有可能的组合出现的概率是相等的。",
-              "formal": "P(pack) = 1 / (C choose N)"
-            },
-            {
-              "name": "collect_all_cards",
-              "description": "你需要购买足够多的 booster pack，直到收集到所有 C 种卡片。",
-              "formal": "停止条件：拥有所有 C 种卡片"
+              "name": "coverage",
+              "description": "需要收集所有 C 种卡片，直到每种卡片至少出现一次"
             }
           ]
         }
@@ -143,19 +136,19 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_cards_in_pack",
-              "description": "每个 booster pack 中的卡片种类各不相同，即每个包中没有重复的卡片。",
-              "formal": "对于任意一个 booster pack P, |distinct(P)| = N"
+              "name": "distinctness",
+              "description": "每个包内的卡片种类互不相同（无重复）",
+              "formal": "∀i, j ∈ [1, N], i ≠ j → card[i] ≠ card[j]"
             },
             {
-              "name": "equal_probability_of_packs",
-              "description": "购买一个 booster pack 时，所有可能的组合出现的概率相等。",
+              "name": "subset_constraint",
+              "description": "每个包内的卡片是所有卡片种类的一个子集",
+              "formal": "pack ⊆ {1, 2, ..., C}"
+            },
+            {
+              "name": "probability_distribution",
+              "description": "每个可能的包组合出现的概率相等",
               "formal": "P(pack) = 1 / (C choose N)"
-            },
-            {
-              "name": "collect_all_cards",
-              "description": "你需要购买足够多的 booster packs，直到收集到所有 C 种卡片。",
-              "formal": "停止条件: collected_cards = C"
             }
           ]
         }
@@ -163,68 +156,106 @@
     ]
   },
   "objective": {
-    "type": "min_operations",
-    "confidence": "2/3",
-    "all_rounds": [
-      {
-        "round": 1,
-        "status": "success",
-        "result": {
-          "type": "min_operations",
-          "description": "求购买到所有种类卡片所需的平均（期望）的最少购买次数"
-        }
-      },
-      {
-        "round": 2,
-        "status": "success",
-        "result": {
-          "type": "min_cost",
-          "description": "求购买所有种类卡片所需的平均（期望）的最少购买次数"
-        }
-      },
-      {
-        "round": 3,
-        "status": "success",
-        "result": {
-          "type": "min_operations",
-          "description": "求购买到所有种类卡片所需的期望（平均）的最少购买次数"
-        }
-      }
-    ],
-    "description": "求购买到所有种类卡片所需的平均（期望）的最少购买次数"
-  },
-  "invariant": {
-    "name": "optimal_substructure",
+    "type": "minimize_probability",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的最优解可以通过子问题的最优解组合而成，即收集所有卡片的期望次数可以由已经收集到部分卡片的情况下的期望次数递推得到。",
-          "properties": {}
+          "type": "minimize_probability",
+          "description": "求达到目标状态的期望操作次数"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的解可以通过子问题的解组合而成，即收集所有卡片的期望次数可以由已经收集到部分卡片的情况下的期望次数递推得到。",
-          "properties": {}
+          "type": "minimize_probability",
+          "description": "最小化达到目标所需的期望操作次数"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的解可以通过子问题的解来构造，即收集所有卡片的期望次数可以由已经收集到部分卡片的情况下的期望次数递推得到。",
-          "properties": {}
+          "type": "minimize_probability",
+          "description": "最小化达到目标所需的期望操作次数"
         }
       }
     ],
-    "description": "问题的最优解可以通过子问题的最优解组合而成，即收集所有卡片的期望次数可以由已经收集到部分卡片的情况下的期望次数递推得到。"
+    "description": "求达到目标状态的期望操作次数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即收集到前k种卡片的期望次数可以用来计算收集到第k+1种卡片的期望次数。",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从拥有k种卡片的状态转移到拥有k+1种卡片的状态的概率是固定的，且仅依赖于当前状态和总卡片种类数。",
+        "confidence": "2/3",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即收集到前k种卡片的期望次数可以用来计算收集到第k+1种卡片的期望次数。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从拥有k种卡片的状态转移到拥有k+1种卡片的状态的概率是固定的，且仅依赖于当前状态和总卡片种类数。",
+              "properties": {}
+            }
+          ]
+        }
+      },
+      {
+        "round": 2,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，收集所有卡片的期望次数可以通过已经收集到的卡片种类数来递推计算。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从当前已收集的卡片种类数转移到下一个状态（即再收集一种新卡片）的概率是固定的，并且这种转移方式在整个过程中保持一致。",
+              "properties": {}
+            }
+          ]
+        }
+      },
+      {
+        "round": 3,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，每个子问题的解是独立且最优的",
+              "properties": {}
+            },
+            {
+              "name": "expectation_linearity",
+              "description": "期望值可加性：总期望值可以通过各个阶段的期望值累加得到",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
   }
 }

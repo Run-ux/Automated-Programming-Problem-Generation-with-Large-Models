@@ -1,0 +1,142 @@
+{
+  "problem_id": "P4678",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 500
+          },
+          "value_range": {
+            "min": 1,
+            "max": 500
+          },
+          "properties": {
+            "ordered": false,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500
+    },
+    "value_range": {
+      "min": 1,
+      "max": 500
+    },
+    "properties": {
+      "ordered": false,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "similarity_constraint",
+        "description": "两个排列在相同位置的前缀小于当前元素的数量相等（相似性约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "inversion_count_constraint",
+        "description": "子序列中的逆序对数量不超过 E（逆序对数量约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "similarity_constraint",
+              "description": "两个排列在相同位置的前缀小于当前元素的数量相等（相似性约束）",
+              "formal": "∀i, C(A, A_i) = C(B, B_i)"
+            },
+            {
+              "name": "inversion_count_constraint",
+              "description": "子序列中的逆序对数量不超过 E（逆序对数量约束）",
+              "formal": "inv(P_1[l...r]) <= E"
+            },
+            {
+              "name": "similarity_constraint",
+              "description": "子序列 P_1[l...r] 与 P_2[l...r] 相似（子序列相似性约束）",
+              "formal": "C(P_1, P_1_j) = C(P_2, P_2_j) for all j in [l, r]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足特定条件的子数组数对的总数"
+        }
+      }
+    ],
+    "description": "求满足特定条件的子数组数对的总数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，满足动态规划的基本性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：区间的逆序对数量可以通过端点差值计算，适用于前缀和等技术",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：不同子问题的解互不影响，可以并行处理或分治解决",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，满足动态规划的基本性质",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：区间的逆序对数量可以通过端点差值计算，适用于前缀和等技术",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：不同子问题的解互不影响，可以并行处理或分治解决",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

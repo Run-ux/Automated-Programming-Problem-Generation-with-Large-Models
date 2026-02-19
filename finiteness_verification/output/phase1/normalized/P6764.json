@@ -1,0 +1,89 @@
+{
+  "problem_id": "P6764",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 99999
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_constraint",
+            "description": "每个承包商只能粉刷其喜欢的颜色集合中的颜色",
+            "formal": "∀ j, C[y + l] ∈ B[j] for l = 0 to M-1"
+          },
+          {
+            "name": "cyclic_shift_constraint",
+            "description": "承包商的分配是循环的，即第 ((x + l) % M) 个承包商粉刷第 (y + l) 段墙壁",
+            "formal": "∀ l, contractor = (x + l) % M, wall_segment = y + l"
+          },
+          {
+            "name": "syntax_validity",
+            "description": "如果存在一个 l 使得第 ((x + l) % M) 个承包商不喜欢第 C[y + l] 种颜色，则该要求无效",
+            "formal": "∃ l, C[y + l] ∉ B[(x + l) % M] → requirement is invalid"
+          },
+          {
+            "name": "minimum_value_constraint",
+            "description": "需要找到最小的要求次数，使得每段墙壁都能用预期的颜色粉刷",
+            "formal": "minimize |{requirements}| such that ∀ i, C[i] is painted by a valid contractor"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "求满足条件的最小请求数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，对于每个墙壁段，选择一个承包商来粉刷该段墙壁，使得总的要求数最少。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个墙壁段的粉刷方案可以独立于其他段进行考虑，即每个段的最优解不影响其他段的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，选择当前最优的承包商来粉刷墙壁段，以期望达到全局最优解。具体来说，选择能够满足当前墙壁段颜色要求且未被使用的承包商。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

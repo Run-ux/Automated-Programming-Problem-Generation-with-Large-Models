@@ -1,0 +1,154 @@
+{
+  "problem_id": "P14068",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 2000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 10000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 10000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "任意两座塔的 x 位置不同，任意两根桅杆的 x 位置也不同",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "无人机飞行时总是尽量贴近地面飞行，但绝不会低于任何桅杆的高度飞行",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "无人机每向前移动一格，可以向上或向下移动一格，并且总是尽量贴近地面飞行",
+        "confidence": "1/1"
+      },
+      {
+        "name": "cumulative_effect",
+        "description": "当无人机撞上某座塔时，这座塔的高度会降低，但精致度不变",
+        "confidence": "1/1"
+      },
+      {
+        "name": "value_accumulation",
+        "description": "每座塔的得分是其精致度与高度的乘积",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "任意两座塔的 x 位置不同，任意两根桅杆的 x 位置也不同",
+              "formal": "∀i, j (i ≠ j), tower[i].x ≠ tower[j].x ∧ mast[i].x ≠ mast[j].x"
+            },
+            {
+              "name": "ordering",
+              "description": "无人机飞行时总是尽量贴近地面飞行，但绝不会低于任何桅杆的高度飞行",
+              "formal": "drone_height >= min(mast_heights)"
+            },
+            {
+              "name": "path_constraint",
+              "description": "无人机每向前移动一格，可以向上或向下移动一格，并且总是尽量贴近地面飞行",
+              "formal": "drone_height = min(max(drone_height - 1, min(mast_heights)), drone_height + 1)"
+            },
+            {
+              "name": "cumulative_effect",
+              "description": "当无人机撞上某座塔时，这座塔的高度会降低，但精致度不变",
+              "formal": "tower_height -= collision_impact"
+            },
+            {
+              "name": "value_accumulation",
+              "description": "每座塔的得分是其精致度与高度的乘积",
+              "formal": "score = f * h"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化两个得分函数之差，其中得分函数为每个塔的精致度与高度乘积之和"
+        }
+      }
+    ],
+    "description": "最大化两个得分函数之差，其中得分函数为每个塔的精致度与高度乘积之和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，即在移除某些桅杆后，剩余部分的最优解可以由更小子区间上的最优解组合而成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间的最优解可以通过合并子区间的最优解来获得，适用于动态规划或线段树等数据结构。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，即在移除某些桅杆后，剩余部分的最优解可以由更小子区间上的最优解组合而成。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间的最优解可以通过合并子区间的最优解来获得，适用于动态规划或线段树等数据结构。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

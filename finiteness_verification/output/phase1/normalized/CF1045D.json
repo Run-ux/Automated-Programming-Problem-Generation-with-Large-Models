@@ -1,0 +1,80 @@
+{
+  "problem_id": "CF1045D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（树结构）"
+          },
+          {
+            "name": "probability_distribution",
+            "description": "每个节点有一个在 [0, 1] 区间内的概率值，表示该节点被攻击后失效的概率"
+          },
+          {
+            "name": "probability_distribution",
+            "description": "计算攻击后图的连通分量的期望数量"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每次操作只能改变一个节点的概率值"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_probability",
+        "description": "求图在随机删除节点后的期望连通分量数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个子树的期望连通分量数可以由其子节点的期望连通分量数计算得出，满足动态规划的最优子结构性质。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在每次攻击后，通过更新单个节点的概率，整个树的期望连通分量数可以通过递归或迭代的方式重新计算，保持状态转移的一致性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

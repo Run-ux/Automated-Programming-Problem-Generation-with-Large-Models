@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 4,
           "max": 3000
@@ -26,9 +26,9 @@
       "result": {
         "constraints": [
           {
-            "name": "subset_size_constraint",
-            "description": "计算满足特定条件的四元组 (i, j, k, l) 的数量",
-            "formal": "count((i, j, k, l) | 1 <= i < j < k < l <= n)"
+            "name": "structure_constraint",
+            "description": "需要计算满足特定条件的四元组 (i, j, k, l) 的数量",
+            "formal": "count tuples (i, j, k, l) such that 1 ≤ i < j < k < l ≤ n and a[i] < a[j] > a[k] < a[l]"
           }
         ]
       }
@@ -40,7 +40,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计满足条件的四元组数量"
+        "description": "求满足条件的四元组数量"
       }
     }
   ],
@@ -49,12 +49,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解都是独立且最优的",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinability": true
-        }
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和计算任意子区间的和，从而高效地统计满足条件的四元组数量",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题可以通过分解为更小规模的子问题来解决，每个子问题的解可以合并成原问题的解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

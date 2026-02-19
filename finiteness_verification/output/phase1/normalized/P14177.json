@@ -1,0 +1,89 @@
+{
+  "problem_id": "P14177",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 80
+        },
+        "value_range": {
+          "min": 1,
+          "max": 80
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "range_bound",
+            "description": "序列 b 的每个元素在操作后不超过 n",
+            "formal": "∀i, 1 ≤ b_i ≤ n"
+          },
+          {
+            "name": "maximum_value_constraint",
+            "description": "每次操作将区间 [l_p, r_p] 内的 b_i 更新为 max(b_i, c_p)",
+            "formal": "b_i ← max(b_i, c_p) for l_p ≤ i ≤ r_p"
+          },
+          {
+            "name": "logical_inference_constraint",
+            "description": "目标是使 b_i ≥ a_i 对所有 i 成立",
+            "formal": "∀i, b_i ≥ a_i"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "答案需要对 10^9 + 7 取模",
+            "formal": "x ≡ p * q^(-1) (mod 10^9 + 7)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_probability",
+        "description": "求满足条件的最小期望操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "序列 b 的每个元素在操作过程中单调非减",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间 [l_p, r_p] 内的更新操作可以通过子区间的合并来实现",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "期望次数的计算基于子问题的最优解，即每个位置 b_i 达到 a_i 的最小期望次数",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

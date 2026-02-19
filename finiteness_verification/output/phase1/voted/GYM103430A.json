@@ -2,50 +2,54 @@
   "problem_id": "GYM103430A",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 2,
-            "max": 200000
+            "max": 400000
           },
           "value_range": {
             "min": 1,
             "max": 200000
           },
           "properties": {
-            "inferred": true
+            "directed": false,
+            "weighted": true,
+            "connected": false
           }
         }
       }
     ],
     "length": {
       "min": 2,
-      "max": 200000
+      "max": 400000
     },
     "value_range": {
       "min": 1,
       "max": 200000
     },
     "properties": {
-      "inferred": true
+      "directed": false,
+      "weighted": true,
+      "connected": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "state_transition_constraint",
+        "name": "acyclicity",
         "description": "获取第 k 个元素需要先拥有一个组合，其总权重达到或超过 k（依赖关系约束）",
         "confidence": "1/1"
       },
       {
-        "name": "pairwise_interaction_constraint",
-        "description": "特定的元素对可以提供额外的权重加成（协同效应约束）",
+        "name": "matching_constraint",
+        "description": "某些特定的元素对具有协同效应，使得它们的总权重增加 1（成对协同约束）",
         "confidence": "1/1"
       }
     ],
@@ -56,13 +60,12 @@
         "result": {
           "constraints": [
             {
-              "name": "state_transition_constraint",
+              "name": "acyclicity",
               "description": "获取第 k 个元素需要先拥有一个组合，其总权重达到或超过 k（依赖关系约束）"
             },
             {
-              "name": "pairwise_interaction_constraint",
-              "description": "特定的元素对可以提供额外的权重加成（协同效应约束）",
-              "formal": "若 (i, j) 在协同列表中，则 power(i, j) = i + j + 1"
+              "name": "matching_constraint",
+              "description": "某些特定的元素对具有协同效应，使得它们的总权重增加 1（成对协同约束）"
             }
           ]
         }
@@ -70,34 +73,71 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求从初始状态到达目标状态所需的最少操作次数"
+          "type": "minimize_value",
+          "description": "求从初始状态到达目标状态所需的最小操作次数"
         }
       }
     ],
-    "description": "求从初始状态到达目标状态所需的最少操作次数"
+    "description": "求从初始状态到达目标状态所需的最小操作次数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即获得第k个装备或武器的最短时间取决于之前获得的装备和武器的最短时间。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着获取更高编号的装备或武器，所需的时间不会减少。即，获取编号更大的装备或武器需要的时间至少与获取编号较小的相同或更多。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个子问题（获取特定编号的装备或武器）的解决方法不影响其他子问题的解决方法，但它们共同决定了最终问题的解决方案。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即获得第k个装备或武器所需的最短时间依赖于之前已获得的装备和武器的最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即获得第k个装备或武器的最短时间取决于之前获得的装备和武器的最短时间。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着获取更高编号的装备或武器，所需的时间不会减少。即，获取编号更大的装备或武器需要的时间至少与获取编号较小的相同或更多。",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个子问题（获取特定编号的装备或武器）的解决方法不影响其他子问题的解决方法，但它们共同决定了最终问题的解决方案。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即获得第k个装备或武器所需的最短时间依赖于之前已获得的装备和武器的最优解。"
+    ]
   }
 }

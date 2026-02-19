@@ -1,0 +1,85 @@
+{
+  "problem_id": "P6918",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 5000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 10000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "partition",
+            "description": "将节点划分为 s 个不相交的子集，每个子集对应一个子项目",
+            "formal": "nodes = P1 ∪ P2 ∪ ... ∪ Ps, Pi ∩ Pj = ∅ (i ≠ j)"
+          },
+          {
+            "name": "connectivity",
+            "description": "从任意节点可以到达其他所有节点",
+            "formal": "∀ u, v ∈ nodes, ∃ path from u to v"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的出度和入度至少为 1（因为存在双向通信）",
+            "formal": "∀ u ∈ nodes, out_degree(u) ≥ 1 and in_degree(u) ≥ 1"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "每个节点发送的消息数量等于其所在子集内其他节点的数量",
+            "formal": "∀ u ∈ Pi, number_of_messages_sent_by_u = |Pi| - 1"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求所有点对间最短路径长度之和的最小值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个子项目的分支分配方案可以独立优化，并且这些子问题的最优解可以合并为整个问题的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子项目之间的分支分配是独立的，一个子项目的最优分配不会影响其他子项目的最优分配。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -28,19 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "prefix_sum_constraint",
-            "description": "前缀最大值约束，对于每个位置 i，计算从 1 到 i 的最大值 f_i",
+            "name": "sum_constraint",
+            "description": "计算每个位置的水位高度差之和，即对于每个位置 i，计算 min(f_i, g_i) - a_i 的和，其中 f_i 是前缀最大值，g_i 是后缀最大值。",
+            "formal": "∑(i=1 to n) (min(f_i, g_i) - a_i)"
+          },
+          {
+            "name": "prefix_sum",
+            "description": "前缀最大值约束，f_i 表示从 1 到 i 的最大值。",
             "formal": "f_i = max(a_1, a_2, ..., a_i)"
           },
           {
-            "name": "suffix_sum_constraint",
-            "description": "后缀最大值约束，对于每个位置 i，计算从 i 到 n 的最大值 g_i",
+            "name": "suffix_length_constraint",
+            "description": "后缀最大值约束，g_i 表示从 i 到 n 的最大值。",
             "formal": "g_i = max(a_i, a_{i+1}, ..., a_n)"
           },
           {
-            "name": "trapping_rain_water",
-            "description": "水坑容量计算公式，对于每个位置 i，计算 min(f_i, g_i) - a_i 的和",
-            "formal": "sum(min(f_i, g_i) - a_i) for i in [1, n]"
+            "name": "value_increment",
+            "description": "每次操作增加指定位置的高度，即 a_{x_i} 增加 v_i。",
+            "formal": "a_{x_i} += v_i"
           }
         ]
       }
@@ -61,12 +66,31 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间信息可通过子区间合并，前缀和与后缀和的计算满足区间可合并性",
-        "properties": {
-          "prefix_sum_mergeable": true,
-          "suffix_sum_mergeable": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，用于维护当前的最大高度和最小高度",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解来构建，即每个位置的水位由其左侧和右侧的最大高度决定",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性，通过前缀和计算区间内的水量",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量，每次修改后的状态可以从前一个状态通过增量更新得到",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

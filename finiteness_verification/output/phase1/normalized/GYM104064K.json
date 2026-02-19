@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1000
@@ -16,7 +16,7 @@
           "max": 1000
         },
         "properties": {
-          "inferred": true
+          "ordered": false
         }
       }
     }
@@ -29,11 +29,11 @@
         "constraints": [
           {
             "name": "pairwise_exclusion",
-            "description": "选取的元素不能重复（每种类型的袜子只能选择一个）"
+            "description": "选取的元素不能重复（即每种类型的袜子只能选择一个）"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "必须找到一对匹配的元素（左右脚袜子或任意脚袜子）"
+            "name": "matching_constraint",
+            "description": "必须找到一对匹配的袜子（即类型和适合脚相同的一对袜子）"
           }
         ]
       }
@@ -44,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求在最坏情况下，为了确保找到一个匹配对所需的最少操作次数"
+        "type": "minimize_value",
+        "description": "求在最坏情况下，为了确保找到一个匹配对所需抽取的最小元素数量"
       }
     }
   ],
@@ -54,9 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，即在考虑所有可能的袜子类型和适配情况后，找到最小数量的抽取次数以确保至少有一对匹配的袜子。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "counting_invariance",
+            "description": "抽屉原理：当抽取的袜子数量超过所有不同类型的袜子总数时，必然存在至少一对匹配的袜子",
+            "properties": {}
+          },
+          {
+            "name": "query_limit",
+            "description": "最坏情况分析：在最坏情况下，Kattis 需要抽取的袜子数量是所有不同类型袜子的最大数量之和加一，以确保找到一对匹配的袜子",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

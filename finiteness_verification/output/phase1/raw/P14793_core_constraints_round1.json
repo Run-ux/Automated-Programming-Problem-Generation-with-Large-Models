@@ -1,0 +1,36 @@
+{
+  "problem_id": "P14793",
+  "source": "luogu",
+  "dimension": "core_constraints",
+  "round": 1,
+  "result": {
+    "constraints": [
+      {
+        "name": "probability_distribution",
+        "description": "概率分布约束：对于每个上下文 w，所有可能的下一个 token 的概率之和为 1。",
+        "formal": "∀w ∈ T^*, 0 ≤ |w| ≤ k, ∑_{next ∈ T} P_k(next | w) = 1"
+      },
+      {
+        "name": "range_bound",
+        "description": "值域约束：每个上下文 w 对应的下一个 token 的概率在 [0, 1] 之间。",
+        "formal": "∀w ∈ T^*, 0 ≤ |w| ≤ k, ∀next ∈ T, 0 ≤ P_k(next | w) ≤ 1"
+      },
+      {
+        "name": "context_size",
+        "description": "上下文大小约束：上下文 w 的长度在 0 到 k 之间。",
+        "formal": "∀w ∈ T^*, 0 ≤ |w| ≤ k"
+      },
+      {
+        "name": "loss_function",
+        "description": "损失函数约束：损失函数定义为对每个生成的 token，计算其负对数概率的和。",
+        "formal": "L_k(P_k) = ∑_{i=1}^n ∑_{j∈L_i} -log_2 P_k(t_i[j] | t_i[max(1, j-k)..j-1])"
+      },
+      {
+        "name": "last_token_generated",
+        "description": "最后一个 token 必须由 LLM 生成。",
+        "formal": "∀i, ℓ_i[m_i] = L"
+      }
+    ]
+  },
+  "status": "success"
+}

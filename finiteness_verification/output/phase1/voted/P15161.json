@@ -1,0 +1,134 @@
+{
+  "problem_id": "P15161",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 10
+          },
+          "value_range": {
+            "min": 1,
+            "max": 99
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 10
+    },
+    "value_range": {
+      "min": 1,
+      "max": 99
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "probability_distribution",
+        "description": "每个研究员每年进行一次融合实验，生成的元素在当前元素加一到 n 之间均匀随机选择",
+        "confidence": "1/1"
+      },
+      {
+        "name": "independence",
+        "description": "不同研究员或不同年份发现的元素是完全独立的",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "第一个发现元素 n 的研究员将获得奖品。如果多个研究员在同一时间发现元素 n，则他们都将获得奖品",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "probability_distribution",
+              "description": "每个研究员每年进行一次融合实验，生成的元素在当前元素加一到 n 之间均匀随机选择",
+              "formal": "P(b = j | a) = 1 / (n - a) for all j in [a+1, n]"
+            },
+            {
+              "name": "independence",
+              "description": "不同研究员或不同年份发现的元素是完全独立的",
+              "formal": "P(A ∩ B) = P(A) * P(B) for any two independent events A and B"
+            },
+            {
+              "name": "operation_limit",
+              "description": "第一个发现元素 n 的研究员将获得奖品。如果多个研究员在同一时间发现元素 n，则他们都将获得奖品",
+              "formal": "If researcher i discovers element n at time t, then researcher i wins. If multiple researchers discover element n at the same time t, all of them win."
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_probability",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_probability",
+          "description": "计算每个研究者获得奖品的最大概率"
+        }
+      }
+    ],
+    "description": "计算每个研究者获得奖品的最大概率"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个研究员发现元素 n 的概率可以由其当前持有元素的概率递推得到，满足动态规划的最优子结构性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个研究员的状态（当前持有的元素）在每一年的实验后会转移到下一个更高的元素，且转移概率是均匀分布的",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个研究员发现元素 n 的概率可以由其当前持有元素的概率递推得到，满足动态规划的最优子结构性质",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个研究员的状态（当前持有的元素）在每一年的实验后会转移到下一个更高的元素，且转移概率是均匀分布的",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

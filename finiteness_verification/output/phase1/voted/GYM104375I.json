@@ -1,0 +1,154 @@
+{
+  "problem_id": "GYM104375I",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 97,
+            "max": 122
+          },
+          "properties": {
+            "circular": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 97,
+      "max": 122
+    },
+    "properties": {
+      "circular": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "frequency_bound",
+        "description": "区间内相同元素数量不超过 K",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "选择一个元素后必须选择所有相邻的相同元素",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "frequency_bound",
+              "description": "区间内相同元素数量不超过 K",
+              "formal": "∀i, j: 0 ≤ i < j < n, count(s[i:j], c) ≤ k, ∀c ∈ s"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "选择一个元素后必须选择所有相邻的相同元素",
+              "formal": "若选择 s[i]，则必须选择所有与 s[i] 相邻且相同的元素"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求满足条件的最长子数组长度"
+        }
+      }
+    ],
+    "description": "求满足条件的最长子数组长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "双指针左右端点单调前进，区间合法性可单调维护",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true,
+          "window_shrinkable": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最长非 cloying 子串问题的最优解包含子问题的最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间和可通过端点差值计算，适用于连续相同字符的计数",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "cycle_invariant",
+        "description": "环结构中，通过线性化处理保持环不变量，确保所有可能的起始位置都被考虑",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针左右端点单调前进，区间合法性可单调维护",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true,
+                "window_shrinkable": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最长非 cloying 子串问题的最优解包含子问题的最优解",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间和可通过端点差值计算，适用于连续相同字符的计数",
+              "properties": {}
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "环结构中，通过线性化处理保持环不变量，确保所有可能的起始位置都被考虑",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

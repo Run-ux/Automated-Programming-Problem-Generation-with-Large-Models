@@ -1,0 +1,79 @@
+{
+  "problem_id": "P2794",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": -1000000000,
+          "max": 1000000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "similarity_constraint",
+            "description": "定义两个元素的相似度为 |a_i - a_j + b_j - b_i| + |a_i - a_j|，其中 a_i 和 b_i 分别表示第 i 个元素的两个属性值",
+            "formal": "similarity(i, j) = |a_i - a_j + b_j - b_i| + |a_i - a_j|"
+          },
+          {
+            "name": "minimum_similarity_constraint",
+            "description": "对于每个查询操作，需要找到一个不在集合中的元素与集合中所有元素的最小相似度",
+            "formal": "min(similarity(query, element) for element in set)"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制为 M 次，每次操作可以是添加一个新元素或查询一个不在集合中的元素的最小相似度",
+            "formal": "M operations, each is either 'add' or 'query'"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求给定点与集合中所有点的最小相似度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。对于每个新加入的人，通过已有的数据结构（如平衡树）维护的相似度信息可以快速找到最相似的人。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：通过使用支持区间操作的数据结构（如平衡树、线段树），可以在对数时间内合并和查询区间的相似度信息。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

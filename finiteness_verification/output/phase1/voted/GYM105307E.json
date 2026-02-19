@@ -1,0 +1,140 @@
+{
+  "problem_id": "GYM105307E",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 10000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 10000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "non_intersecting_segments",
+        "description": "区间互斥（任意两个项目的时间区间不能重叠）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "fixed_position_constraint",
+        "description": "区间内收入替代（在项目进行的天数内，正常收入被项目收入替代）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "non_intersecting_segments",
+              "description": "区间互斥（任意两个项目的时间区间不能重叠）",
+              "formal": "对于任意两个项目 [l1, r1] 和 [l2, r2]，必须满足 r1 < l2 或 r2 < l1"
+            },
+            {
+              "name": "non_intersecting_segments",
+              "description": "区间起点和终点不重合（一个项目的结束日不能是另一个项目的开始日）",
+              "formal": "对于任意两个项目 [l1, r1] 和 [l2, r2]，必须满足 r1 != l2 且 r2 != l1"
+            },
+            {
+              "name": "fixed_position_constraint",
+              "description": "区间内收入替代（在项目进行的天数内，正常收入被项目收入替代）",
+              "formal": "对于项目 [l, r] 内的每一天 i (l ≤ i ≤ r)，收入为 i - l + 1 而不是 a"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化在给定天数内的总收入"
+        }
+      }
+    ],
+    "description": "最大化在给定天数内的总收入"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每一天选择是否开始或结束一个项目，使得总收益最大。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：任意区间的收益可以通过该区间的端点差值计算得出，具体来说，从第l天到第r天的项目收益为(r-l+1)(r-l+2)/2。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：对于每个可能的项目区间，选择当前能带来最大收益的项目进行操作，可以保证最终结果的最优性。这种局部最优的选择能够导致全局最优。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每一天选择是否开始或结束一个项目，使得总收益最大。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：任意区间的收益可以通过该区间的端点差值计算得出，具体来说，从第l天到第r天的项目收益为(r-l+1)(r-l+2)/2。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：对于每个可能的项目区间，选择当前能带来最大收益的项目进行操作，可以保证最终结果的最优性。这种局部最优的选择能够导致全局最优。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

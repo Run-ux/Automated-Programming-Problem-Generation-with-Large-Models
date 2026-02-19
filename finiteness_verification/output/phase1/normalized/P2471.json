@@ -1,0 +1,77 @@
+{
+  "problem_id": "P2471",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "maximum_to_minimum_ratio_constraint",
+            "description": "对于给定的区间 [Y, X]，X 年的降雨量不超过 Y 年，且对于任意 Y < Z < X，Z 年的降雨量严格小于 X 年。",
+            "formal": "∀ Y < Z < X, r_Z < r_X 且 r_Y ≥ r_X"
+          },
+          {
+            "name": "ordering",
+            "description": "输入数据按照年份从小到大排列。",
+            "formal": "y_i < y_{i+1}"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断给定区间内是否存在满足特定条件的极大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "年份和降雨量的输入是按年份单调递增排列的，且在处理询问时，查询区间内的年份也是单调递增的。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "通过前缀最大值的方式，可以高效地计算出任意区间内的最大降雨量，从而判断某个年份是否为该区间内降雨量最多的年份。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

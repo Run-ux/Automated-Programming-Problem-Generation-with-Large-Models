@@ -1,0 +1,149 @@
+{
+  "problem_id": "P2423",
+  "source": "luogu",
+  "input_structure": {
+    "type": "bipartite_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "bipartite_graph",
+          "length": {
+            "min": 2,
+            "max": 5000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 2147483647
+          },
+          "properties": {
+            "connected": false,
+            "weighted": false,
+            "directed": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 5000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 2147483647
+    },
+    "properties": {
+      "connected": false,
+      "weighted": false,
+      "directed": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "A 国内两个节点之间的边存在条件是它们的友善值异或后模2为1。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "clique_cycle_constraint",
+        "description": "朋友圈定义为一个完全子图，即集合 S 中的任意两个节点都是朋友。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "A 国内两个节点之间的边存在条件是它们的友善值异或后模2为1。",
+              "formal": "对于 A 国内的任意两个节点 i, j，如果 (a_i ^ a_j) % 2 == 1，则 i 和 j 之间存在一条边。"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "B 国内两个节点之间的边存在条件是它们的友善值异或后模2为0，或者它们的友善值按位或后的二进制表示中有奇数个1。",
+              "formal": "对于 B 国内的任意两个节点 i, j，如果 (b_i ^ b_j) % 2 == 0 或者 (b_i | b_j) 的二进制表示中有奇数个1，则 i 和 j 之间存在一条边。"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "A 国和 B 国之间的边由输入数据直接给出。",
+              "formal": "对于每对 (x, y)，A 国的第 x 个人和 B 国的第 y 个人之间存在一条边。"
+            },
+            {
+              "name": "clique_cycle_constraint",
+              "description": "朋友圈定义为一个完全子图，即集合 S 中的任意两个节点都是朋友。",
+              "formal": "对于集合 S ⊆ A ∪ B，对于所有的 i, j ∈ S，i 和 j 之间存在一条边。"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求最大连通分量的数量"
+        }
+      }
+    ],
+    "description": "求最大连通分量的数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最大朋友圈的解可以通过合并更小规模的朋友圈得到，满足动态规划的最优子结构性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在处理每个个体时，其所属朋友圈的状态转移是确定且一致的，符合状态机DP的转移一致性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：不同子集的最大朋友圈计算相互独立，不互相影响，符合分治或DP中子问题独立性的要求",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最大朋友圈的解可以通过合并更小规模的朋友圈得到，满足动态规划的最优子结构性质",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在处理每个个体时，其所属朋友圈的状态转移是确定且一致的，符合状态机DP的转移一致性",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：不同子集的最大朋友圈计算相互独立，不互相影响，符合分治或DP中子问题独立性的要求",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

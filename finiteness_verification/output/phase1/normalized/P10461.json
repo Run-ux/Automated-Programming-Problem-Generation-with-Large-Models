@@ -1,0 +1,79 @@
+{
+  "problem_id": "P10461",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1048576
+        },
+        "value_range": {
+          "min": 0,
+          "max": 998244353
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_sum_modulo_constraint",
+            "description": "乘法定义为子集卷积，即两个集合的乘积在它们不相交时为并集，否则为0",
+            "formal": "x^S * x^T = 0 if S ∩ T ≠ ∅, otherwise x^(S ∪ T)"
+          },
+          {
+            "name": "fixed_position_constraint",
+            "description": "集合幂级数 F(x) 的空集系数为0，即 [x^∅]F(x) = 0",
+            "formal": "[x^∅]F(x) = 0"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "所有计算结果对 998244353 取模",
+            "formal": "result % 998244353"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求多项式复合后的系数值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：复合集合幂级数的计算可以通过子问题的解来构建，每个子集的贡献可以独立计算并合并。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：子集卷积操作允许将不同子集的结果进行合并，从而得到最终结果。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

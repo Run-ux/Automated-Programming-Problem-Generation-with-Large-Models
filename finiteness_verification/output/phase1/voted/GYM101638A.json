@@ -1,0 +1,120 @@
+{
+  "problem_id": "GYM101638A",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 2,
+            "max": 20
+          },
+          "value_range": {
+            "min": 1,
+            "max": 10
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 20
+    },
+    "value_range": {
+      "min": 1,
+      "max": 10
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "最多只能执行一次操作（宣布一个标准无效或反转一个标准的评分）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "选择的操作必须使得目标元素的总分不低于其他所有元素的总分",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "最多只能执行一次操作（宣布一个标准无效或反转一个标准的评分）",
+              "formal": "op_count <= 1"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "选择的操作必须使得目标元素的总分不低于其他所有元素的总分",
+              "formal": "sum(target_scores) >= max(sum(other_scores))"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一种操作（反转某个准则的评分或忽略某个准则）使得指定方案的总评分最大"
+        }
+      }
+    ],
+    "description": "判断是否存在一种操作（反转某个准则的评分或忽略某个准则）使得指定方案的总评分最大"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：通过调整单个维度（删除或反转）来优化整体评分，使得特定方案成为最优解的问题可以分解为在每个维度上独立考虑的子问题",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：对于每一个可能的操作（删除一个维度或反转一个维度），如果该操作能够使目标方案的得分不低于其他任何方案，则此操作是局部最优且有助于达到全局最优",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：通过调整单个维度（删除或反转）来优化整体评分，使得特定方案成为最优解的问题可以分解为在每个维度上独立考虑的子问题",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：对于每一个可能的操作（删除一个维度或反转一个维度），如果该操作能够使目标方案的得分不低于其他任何方案，则此操作是局部最优且有助于达到全局最优",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

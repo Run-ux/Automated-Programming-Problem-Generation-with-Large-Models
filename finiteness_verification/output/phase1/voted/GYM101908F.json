@@ -2,14 +2,14 @@
   "problem_id": "GYM101908F",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 10
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_exclusion",
-        "description": "选择的区间（演出时间）不能有重叠，即任意两个区间的交集为空",
+        "name": "intersection",
+        "description": "选择的区间不能有重叠（时间范围不相交）",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_segment_inspection",
-        "description": "如果一个区间的结束时间等于另一个区间的开始时间，则这两个区间可以同时被选择",
+        "name": "optimization_objective",
+        "description": "最大化所选区间的权重和（即最大化歌曲数量总和）",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_exclusion",
-              "description": "选择的区间（演出时间）不能有重叠，即任意两个区间的交集为空"
+              "name": "intersection",
+              "description": "选择的区间不能有重叠（时间范围不相交）",
+              "formal": "对于任意两个选定的区间 [i1, f1] 和 [i2, f2]，必须满足 f1 <= i2 或 f2 <= i1"
             },
             {
-              "name": "adjacent_segment_inspection",
-              "description": "如果一个区间的结束时间等于另一个区间的开始时间，则这两个区间可以同时被选择"
+              "name": "optimization_objective",
+              "description": "最大化所选区间的权重和（即最大化歌曲数量总和）",
+              "formal": "最大化 ∑ o_j，其中 o_j 是选定区间的权重"
             }
           ]
         }
@@ -77,26 +79,46 @@
         "status": "success",
         "result": {
           "type": "maximize_value",
-          "description": "最大化不重叠区间的选择，使得所选区间的权值和最大"
+          "description": "最大化不重叠区间的选择权值和"
         }
       }
     ],
-    "description": "最大化不重叠区间的选择，使得所选区间的权值和最大"
+    "description": "最大化不重叠区间的选择权值和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即选择观看的演出集合的最优解可以由每个阶段的最优解组合而成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过计算不相交区间的歌曲数量总和来确定最优解，即在不冲突的时间段内，不同演出的歌曲数量可以累加。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即选择不重叠的时间段以最大化总歌曲数。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即选择观看的演出集合的最优解可以由每个阶段的最优解组合而成。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过计算不相交区间的歌曲数量总和来确定最优解，即在不冲突的时间段内，不同演出的歌曲数量可以累加。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即选择不重叠的时间段以最大化总歌曲数。"
+    ]
   }
 }

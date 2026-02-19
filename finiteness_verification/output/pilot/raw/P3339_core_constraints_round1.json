@@ -6,14 +6,19 @@
   "result": {
     "constraints": [
       {
-        "name": "operation_rule",
-        "description": "每次操作时，选择一个数x划掉，并任选一个正整数a，在划掉之后需要再写上x-a, x-2a, ..., x-K*a共K个数，且a需满足x-K*a >= 0。若这样的a不存在，则不能划掉这个数。",
-        "formal": "For each operation, choose an integer x and a positive integer a such that x - K * a >= 0. Replace x with x-a, x-2a, ..., x-K*a. If no such a exists, the player cannot perform this operation."
+        "name": "operation_limit",
+        "description": "每次操作只能选择一个数划掉，并生成 K 个新数，且这些新数必须满足 x - K * a >= 0",
+        "formal": "对于每个 x，选择 a 使得 x - K * a >= 0 并生成 {x - a, x - 2a, ..., x - K * a}"
       },
       {
-        "name": "game_termination",
-        "description": "当某个人无法操作时则失败，另一方获得胜利。",
-        "formal": "The game ends when a player cannot make a valid move, and the other player wins."
+        "name": "state_transition",
+        "description": "游戏状态由当前的数列决定，每次操作后状态会更新为新的数列",
+        "formal": "状态 S = {s1, s2, ..., sn}，操作后变为 S' = {s1', s2', ..., sn'}"
+      },
+      {
+        "name": "termination_condition",
+        "description": "当某一方无法进行有效操作时，该方失败，另一方获胜",
+        "formal": "如果不存在合法的 a 使得 x - K * a >= 0，则当前玩家失败"
       }
     ]
   },

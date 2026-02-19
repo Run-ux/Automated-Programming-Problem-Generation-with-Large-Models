@@ -1,0 +1,31 @@
+{
+  "problem_id": "P6764",
+  "source": "luogu",
+  "dimension": "core_constraints",
+  "round": 1,
+  "result": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "每个承包商只能粉刷其喜欢的颜色集合中的颜色",
+        "formal": "∀ j, C[y + l] ∈ B[j] for l = 0 to M-1"
+      },
+      {
+        "name": "cyclic_assignment",
+        "description": "承包商的分配是循环的，即第 ((x + l) % M) 个承包商粉刷第 (y + l) 段墙壁",
+        "formal": "∀ l, contractor = (x + l) % M, wall_segment = y + l"
+      },
+      {
+        "name": "validity_check",
+        "description": "如果存在一个 l 使得第 ((x + l) % M) 个承包商不喜欢第 C[y + l] 种颜色，则该要求无效",
+        "formal": "∃ l, C[y + l] ∉ B[(x + l) % M] → requirement is invalid"
+      },
+      {
+        "name": "min_requirements",
+        "description": "需要找到最小的要求次数，使得每段墙壁都能用预期的颜色粉刷",
+        "formal": "minimize |{requirements}| such that ∀ i, C[i] is painted by a valid contractor"
+      }
+    ]
+  },
+  "status": "success"
+}

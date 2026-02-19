@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "integer",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1
@@ -26,20 +26,24 @@
       "result": {
         "constraints": [
           {
-            "name": "periodic_generation_constraint",
-            "description": "每个元素生成新元素的时间间隔固定（每10年生成一次）"
+            "name": "window_constraint",
+            "description": "每 10 年生成一次新的元素（苹果树）",
+            "formal": "每隔 10 年生成一个新的元素"
           },
           {
-            "name": "maximum_lifetime_constraint",
-            "description": "每个元素的生命周期有限（45年后死亡）"
+            "name": "operation_limit",
+            "description": "每个元素的生命周期为 45 年，之后死亡",
+            "formal": "每个元素在 45 年后死亡"
           },
           {
-            "name": "initial_state_connectivity",
-            "description": "初始状态下的元素不满足生成条件（第10年才开始生成新元素）"
+            "name": "fixed_start_node",
+            "description": "初始状态时没有成熟的元素（苹果树），第一个元素在 10 年后成熟",
+            "formal": "初始状态时没有成熟的元素，第一个元素在 10 年后成熟"
           },
           {
-            "name": "modulo_expected_value_constraint",
-            "description": "输出结果需要对一个大数取模（10^9 + 7）"
+            "name": "modular_arithmetic",
+            "description": "输出结果需要对 10^9 + 7 取模",
+            "formal": "result % (10^9 + 7)"
           }
         ]
       }
@@ -50,8 +54,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "求在给定时间后存活的节点数量"
+        "type": "enumeration",
+        "description": "求在给定时间后存活的个体数量，结果对一个大数取模"
       }
     }
   ],
@@ -60,11 +64,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，当前年份的苹果树数量依赖于前十年、二十年、三十年和四十年前的苹果树数量",
-        "properties": {
-          "subproblem_combination": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即在第n年的苹果树数量可以通过前10年、20年等的苹果树数量来计算。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个时间点的状态（苹果树的数量）可以由前一个或多个时间点的状态通过固定的规则进行转移。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

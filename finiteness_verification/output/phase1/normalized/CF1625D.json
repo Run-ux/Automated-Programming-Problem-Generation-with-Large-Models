@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 300000
@@ -26,19 +26,19 @@
       "result": {
         "constraints": [
           {
-            "name": "pairwise_xor_constraint",
-            "description": "任意两个选定元素的异或结果不低于给定阈值",
-            "formal": "∀ i, j ∈ S, a_i ⊕ a_j ≥ k"
+            "name": "modular_arithmetic",
+            "description": "任意两个选择的元素的异或结果必须大于等于给定值 k",
+            "formal": "∀ i, j ∈ selected, a_i ⊕ a_j ≥ k"
           },
           {
-            "name": "non_empty_subset",
-            "description": "选定集合的大小至少为2",
-            "formal": "|S| ≥ 2"
+            "name": "subset_constraint",
+            "description": "选择的元素数量必须至少为 2",
+            "formal": "|selected| ≥ 2"
           },
           {
-            "name": "subset_size_upper_bound",
-            "description": "选定集合的大小尽可能大",
-            "formal": "maximize |S|"
+            "name": "subset_constraint",
+            "description": "选择的元素数量必须尽可能多",
+            "formal": "maximize |selected|"
           }
         ]
       }
@@ -59,9 +59,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即选择最大数量的蜘蛛作为防御者的问题可以分解为多个子问题，并且这些子问题的最优解可以合并成原问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优：选择具有最大异或值的蜘蛛对作为防御者，以确保满足最小耐久度要求的同时最大化防御者数量",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解：在选择每一对防御者时，当前选择的最优性依赖于之前选择的最优性，从而保证整体选择的最优性",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

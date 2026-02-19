@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "tree",
         "length": {
           "min": 1,
           "max": 3000
@@ -16,8 +16,7 @@
           "max": 1000000000
         },
         "properties": {
-          "connected": true,
-          "weighted": false
+          "connected": true
         }
       }
     }
@@ -29,20 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "tree_structure",
-            "description": "输入的图是一个树结构，即无环连通图"
+            "name": "acyclicity",
+            "description": "图必须是树结构（无环且连通）"
           },
           {
-            "name": "subset_sum_imbalance",
-            "description": "将树划分为恰好 m 个互不相交的子集（村庄），每个节点属于且仅属于一个子集"
+            "name": "partition",
+            "description": "将节点划分为 m 个互不相交的子集，每个子集构成一个连通块"
           },
           {
-            "name": "graph_connectivity",
-            "description": "每个村庄内部的节点之间存在一条简单路径，且路径上的所有中间节点都属于该村庄"
-          },
-          {
-            "name": "weight_proportional_probability",
-            "description": "在每个村庄内，根据蜜蜂和黄蜂的数量进行投票，数量多的一方获胜；如果黄蜂数量严格大于蜜蜂数量，则黄蜂获胜"
+            "name": "matching_constraint",
+            "description": "每个子集中，如果某一类元素的数量严格大于另一类，则该类获胜"
           }
         ]
       }
@@ -54,7 +49,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "最大化满足条件的子集数量"
+        "description": "最大化满足特定条件的子集数量"
       }
     }
   ],
@@ -63,9 +58,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个村庄的划分可以独立考虑其内部的投票结果，最终通过合并这些子问题的结果得到全局最优解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过其子问题的最优解来构造。在本题中，通过将树划分为多个村庄，每个村庄的划分结果可以独立地影响最终的全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在划分树为多个村庄时，每个村庄的划分和投票结果是独立的，不会受到其他村庄划分的影响。",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解由子问题解合成。在本题中，可以通过递归地将树划分为更小的部分，并在合并这些部分时计算出全局最优解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

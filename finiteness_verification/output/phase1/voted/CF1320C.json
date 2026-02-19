@@ -1,0 +1,131 @@
+{
+  "problem_id": "CF1320C",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "exclusion",
+        "description": "每对武器和防具组合只能击败每个怪物一次（互斥约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "matching_constraint",
+        "description": "武器的攻击值必须大于怪物的防御值，且防具的防御值必须大于怪物的攻击值才能击败怪物（匹配约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "flow_constraint",
+        "description": "总利润定义为从所有击败的怪物中获得的金币总数减去购买武器和防具的成本（容量约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "exclusion",
+              "description": "每对武器和防具组合只能击败每个怪物一次（互斥约束）"
+            },
+            {
+              "name": "matching_constraint",
+              "description": "武器的攻击值必须大于怪物的防御值，且防具的防御值必须大于怪物的攻击值才能击败怪物（匹配约束）"
+            },
+            {
+              "name": "flow_constraint",
+              "description": "总利润定义为从所有击败的怪物中获得的金币总数减去购买武器和防具的成本（容量约束）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化收益，即击败怪物获得的总金币数减去装备成本"
+        }
+      }
+    ],
+    "description": "最大化收益，即击败怪物获得的总金币数减去装备成本"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。选择武器和护甲的过程可以分解为多个子问题，每个子问题的最优解可以组合成全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，总是选择当前看起来最优的选择（即攻击和防御值最大的武器和护甲），最终能够得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。选择武器和护甲的过程可以分解为多个子问题，每个子问题的最优解可以组合成全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，总是选择当前看起来最优的选择（即攻击和防御值最大的武器和护甲），最终能够得到全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

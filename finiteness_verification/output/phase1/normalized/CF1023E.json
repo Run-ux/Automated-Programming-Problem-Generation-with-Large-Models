@@ -1,0 +1,92 @@
+{
+  "problem_id": "CF1023E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 2,
+          "max": 500
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "路径必须从起点 (1, 1) 到终点 (n, n)，且只能通过允许的单元格，每次移动只能向下或向右。",
+            "formal": "Path from (1, 1) to (n, n) with moves in {down, right} and only through allowed cells."
+          },
+          {
+            "name": "query_limit",
+            "description": "最多可以进行 4 * n 次查询。",
+            "formal": "Number of queries ≤ 4 * n"
+          },
+          {
+            "name": "distance_bound",
+            "description": "每次查询的两个单元格之间的曼哈顿距离至少为 n - 1。",
+            "formal": "(r2 - r1) + (c2 - c1) ≥ n - 1"
+          },
+          {
+            "name": "path_constraint",
+            "description": "输出的路径必须是有效的，即从 (1, 1) 到 (n, n) 的路径，且路径长度为 2 * n - 2，由 'D' 和 'R' 组成。",
+            "formal": "Output path S of length 2 * n - 2 with characters 'D' and 'R', representing valid moves from (1, 1) to (n, n)."
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一条从起点到终点的可行路径"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "状态转移方向受限（仅向右/向下），满足 DAG 上的最优子结构",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "从起点到终点的路径可以通过子路径的最优解组合而成",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "在网格中，从左上角到右下角的路径遵循拓扑序，即每个节点只能在其前驱节点访问后才能访问",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

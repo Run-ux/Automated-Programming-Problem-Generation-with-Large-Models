@@ -1,0 +1,77 @@
+{
+  "problem_id": "CF16E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 18
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "symmetric": false,
+          "diagonal_zero": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "exclusion",
+            "description": "每对元素之间存在互斥关系，即一个元素会排除另一个元素（概率性互斥）"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "每对元素之间的概率和为1，即 a_ij + a_ji = 1"
+          },
+          {
+            "name": "zero_diagonal_constraint",
+            "description": "主对角线上的元素值为0"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_probability",
+        "description": "求每个个体在多轮随机事件后成为唯一幸存者的概率"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个鱼存活到最后的概率可以通过其在每一轮中存活的概率递归计算得出，且这些概率依赖于更小子问题的解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：系统从一个状态转移到另一个状态时，状态转移的一致性保证了概率计算的正确性。具体来说，每次两条鱼相遇后的结果（一条鱼吃掉另一条鱼）会改变系统的状态，但这种状态转移是确定性的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

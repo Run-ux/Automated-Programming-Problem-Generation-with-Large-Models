@@ -64,24 +64,24 @@
       "result": {
         "constraints": [
           {
-            "name": "blocked_zone",
-            "description": "玩家在遇到标记为 X 的单元格时必须停止移动，该单元格称为阻塞区。"
+            "name": "state_transition",
+            "description": "每个节点根据其上的字符进行状态转移，直到到达终止状态（X）或无限循环。",
+            "formal": "对于每个节点 (r, c)，根据字符 U, D, L, R 或 X 进行状态转移。"
           },
           {
-            "name": "movement_instructions",
-            "description": "每个单元格上有一个字符 U, D, L, R 或 X，指示玩家的移动方向或表示阻塞区。U 表示向上移动，D 表示向下移动，L 表示向左移动，R 表示向右移动，X 表示阻塞区。"
+            "name": "operation_limit",
+            "description": "玩家在遇到 X 字符时停止移动，否则继续移动直到进入无限循环。",
+            "formal": "如果当前节点的字符是 X，则停止；否则，根据字符指示的方向移动到下一个节点。"
           },
           {
-            "name": "within_board_boundaries",
-            "description": "玩家根据当前单元格上的字符移动时，永远不会被要求走出棋盘边界。"
+            "name": "range_bound",
+            "description": "玩家不能移出网格边界。",
+            "formal": "所有移动必须保持在 1 ≤ r, c ≤ n 的范围内。"
           },
           {
-            "name": "infinite_movement",
-            "description": "玩家可能会无限地移动，直到进入一个阻塞区。"
-          },
-          {
-            "name": "unique_end_position",
-            "description": "对于每个起始单元格，Alice 记录了玩家最终停下的单元格或玩家永远不会停下。"
+            "name": "independence",
+            "description": "给定的终止位置信息必须与生成的网格一致。",
+            "formal": "对于每个起始节点 (i, j)，最终停止的位置 (x_j, y_j) 必须与网格中的路径一致。"
           }
         ]
       }
@@ -92,24 +92,20 @@
       "result": {
         "constraints": [
           {
-            "name": "blocked_zone",
-            "description": "玩家在遇到字符 X 时，会停留在当前单元格，不再移动。",
-            "formal": "If the character in the cell (r, c) is 'X', the player remains in this cell."
+            "name": "state_transition",
+            "description": "每个节点的转移规则必须是 U, D, L, R 或 X 之一，且根据规则移动到相邻节点或停留在当前节点"
           },
           {
-            "name": "movement_within_bounds",
-            "description": "玩家根据当前单元格的字符移动时，永远不会走出棋盘边界。",
-            "formal": "For any move from (r, c) to (r', c'), it holds that 1 ≤ r' ≤ n and 1 ≤ c' ≤ n."
+            "name": "acyclicity",
+            "description": "从任意节点出发，最终必须到达一个终止节点（X）或进入无限循环"
           },
           {
-            "name": "infinite_movement_or_stop",
-            "description": "玩家从任意一个单元格开始，要么最终停在一个被阻挡的单元格（X），要么无限地移动下去。",
-            "formal": "Starting from any cell (r, c), the player either stops at a blocked zone or moves infinitely."
+            "name": "range_bound",
+            "description": "玩家在移动过程中不能移出边界"
           },
           {
-            "name": "consistent_with_alice_info",
-            "description": "生成的棋盘必须与 Alice 提供的信息一致。对于每个单元格 (r, c)，Alice 给出的停止位置或无限移动的状态必须与实际游戏结果相符。",
-            "formal": "For each cell (r, c), the final position or infinite movement state must match the information provided by Alice."
+            "name": "operation_limit",
+            "description": "玩家在遇到 X 时停止移动"
           }
         ]
       }
@@ -120,20 +116,24 @@
       "result": {
         "constraints": [
           {
-            "name": "blocked_zone_stops_movement",
-            "description": "当玩家移动到标记为 X 的单元格时，玩家将停止移动。"
+            "name": "state_transition",
+            "description": "每个节点根据其上的字符进行状态转移，直到到达终止状态（X）或无限循环。",
+            "formal": "对于每个节点 (r, c)，根据字符 U, D, L, R 或 X 进行移动，直到遇到 X 或进入循环。"
           },
           {
-            "name": "movement_within_bounds",
-            "description": "玩家根据当前单元格的字符移动时，永远不会移出棋盘边界。"
+            "name": "operation_limit",
+            "description": "玩家在遇到 X 时停止移动，否则会一直移动直到进入无限循环。",
+            "formal": "如果当前节点为 X，则停止；否则继续移动直到进入循环。"
           },
           {
-            "name": "infinite_or_terminating_path",
-            "description": "从任意一个单元格开始，玩家要么最终停在一个被阻挡的单元格上，要么会无限地移动下去。"
+            "name": "range_bound",
+            "description": "玩家的移动不会超出网格边界。",
+            "formal": "所有移动操作保证 (r, c) 在 [1, n] × [1, n] 范围内。"
           },
           {
-            "name": "consistent_with_alice_info",
-            "description": "生成的棋盘必须与 Alice 提供的信息一致，即对于每个起始单元格 (r, c)，玩家最终停留的位置或是否无限移动应符合 Alice 给出的结果。"
+            "name": "independence",
+            "description": "给定的终止位置信息必须与生成的网格一致，即从每个起点出发，最终停在指定的位置或进入无限循环。",
+            "formal": "对于每个起点 (i, j)，根据网格字符移动后，最终停在 (x_j, y_j) 或进入无限循环。"
           }
         ]
       }
@@ -144,24 +144,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "decision",
-        "description": "判断是否存在一个满足Alice给出的所有约束条件的n×n棋盘"
+        "type": "feasibility",
+        "description": "判断是否存在一个满足给定条件的矩阵"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "decision",
-        "description": "判断是否存在一个满足Alice给出的所有约束条件的棋盘"
+        "type": "feasibility",
+        "description": "判断是否存在一个满足给定条件的矩阵"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "decision",
-        "description": "判断是否存在一个满足Alice给出的所有约束条件的n×n棋盘"
+        "type": "feasibility",
+        "description": "判断是否存在一个满足给定条件的矩阵"
       }
     }
   ],
@@ -170,33 +170,69 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "state_dependency",
-        "description": "当前格子的状态（即玩家最终会停在哪个格子）只依赖于其相邻格子的状态，符合马尔可夫性质。",
-        "properties": {
-          "markov_property": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个单元格的指令决定了下一个单元格的状态，且这种状态转移是确定性的。",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：如果存在一个循环路径，则该路径上的所有单元格将形成一个封闭的环，且玩家会在该环上无限循环。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：对于非循环路径，可以构建一个有向无环图（DAG），其中每个节点表示一个单元格，边表示从一个单元格到另一个单元格的移动。在这样的图中，存在一个拓扑排序。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "state_dependency",
-        "description": "当前单元格的状态（即最终停在哪个单元格）只依赖于其相邻单元格的状态，符合马尔可夫性质。",
-        "properties": {
-          "markov_property": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个单元格的指令决定了下一个单元格的状态，且这种状态转移是确定性的。",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：如果存在一个环，则该环内的所有单元格将无限循环，不会进入阻塞区。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：从任意起点出发，按照指令移动，最终要么到达一个阻塞区，要么进入一个环。这种顺序依赖关系可以看作是一种拓扑序。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "state_dependency",
-        "description": "当前格子的状态（即最终停在哪一个格子）只依赖于其相邻格子的状态，符合马尔可夫性质。",
-        "properties": {
-          "markov_property": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个单元格的状态（U, D, L, R, X）决定了下一个单元格的位置，且这种转移关系在整个游戏过程中保持一致。",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：如果从某个单元格出发，最终会回到该单元格或进入一个循环路径，则该路径上的所有单元格都必须满足相同的转移规则，形成一个封闭的环。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在没有环的情况下，可以将所有单元格按照其转移方向进行拓扑排序，确保每个单元格的转移目标在其之后。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

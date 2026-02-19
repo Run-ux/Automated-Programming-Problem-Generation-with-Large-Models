@@ -1,0 +1,84 @@
+{
+  "problem_id": "GYM104555F",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 20000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "flow_constraint",
+            "description": "选取元素权重和不超过容量上限（初始 disposition 为 D，每次选择 tiring 活动会消耗 disposition，invigorating 活动会增加 disposition）"
+          },
+          {
+            "name": "ordering",
+            "description": "活动必须按照给定的顺序进行（tiring 活动和 invigorating 活动分别按顺序排列，且不能跳过任何一个活动）"
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移约束（在当前 disposition 不足时，只能选择 invigorating 活动来恢复 disposition；否则选择 tiring 活动）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化可以执行的活动数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，分别指向下一个待处理的消耗型活动和恢复型活动",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，即在每一步选择当前可进行的消耗最少的活动或恢复最多的活动",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量，每次活动后剩余的体力值更新为新的状态，并根据新状态决定下一步的选择",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -2,14 +2,14 @@
   "problem_id": "CF1492D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 3,
             "max": 3
@@ -19,7 +19,7 @@
             "max": 200000
           },
           "properties": {
-            "ordered": false
+            "inferred": true
           }
         }
       }
@@ -33,29 +33,24 @@
       "max": 200000
     },
     "properties": {
-      "ordered": false
+      "inferred": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "二进制整数 x 和 y 满足 x ≥ y",
+        "name": "sum_constraint",
+        "description": "选取的两个二进制数中1的总数等于给定的k值",
         "confidence": "1/1"
       },
       {
-        "name": "weight_sum_constraint",
-        "description": "二进制整数 x 和 y 中 0 的总数为 a",
+        "name": "ordering",
+        "description": "第一个二进制数必须大于或等于第二个二进制数",
         "confidence": "1/1"
       },
       {
-        "name": "weight_sum_constraint",
-        "description": "二进制整数 x 和 y 中 1 的总数为 b",
-        "confidence": "1/1"
-      },
-      {
-        "name": "weight_sum_constraint",
-        "description": "二进制整数 x 和 y 的按位与结果中 1 的数量为 k",
+        "name": "alphabet_constraint",
+        "description": "结果必须是两个有效的二进制数",
         "confidence": "1/1"
       }
     ],
@@ -66,20 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "二进制整数 x 和 y 满足 x ≥ y"
+              "name": "sum_constraint",
+              "description": "选取的两个二进制数中1的总数等于给定的k值",
+              "formal": "count_ones(x) + count_ones(y) = k"
             },
             {
-              "name": "weight_sum_constraint",
-              "description": "二进制整数 x 和 y 中 0 的总数为 a"
+              "name": "ordering",
+              "description": "第一个二进制数必须大于或等于第二个二进制数",
+              "formal": "x >= y"
             },
             {
-              "name": "weight_sum_constraint",
-              "description": "二进制整数 x 和 y 中 1 的总数为 b"
-            },
-            {
-              "name": "weight_sum_constraint",
-              "description": "二进制整数 x 和 y 的按位与结果中 1 的数量为 k"
+              "name": "alphabet_constraint",
+              "description": "结果必须是两个有效的二进制数",
+              "formal": "x, y ∈ {0, 1}^*"
             }
           ]
         }
@@ -87,14 +81,14 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
+          "type": "feasibility",
           "description": "判断是否存在满足条件的两个二进制数"
         }
       }
@@ -102,21 +96,39 @@
     "description": "判断是否存在满足条件的两个二进制数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合得到，即通过选择合适的二进制数x和y来满足给定的条件",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，优先选择当前最优的选择（如尽可能多地使用1或0），以期望达到全局最优解",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，且子问题的解是独立的",
-          "properties": {
-            "subproblem_independence": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解组合得到，即通过选择合适的二进制数x和y来满足给定的条件",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，优先选择当前最优的选择（如尽可能多地使用1或0），以期望达到全局最优解",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，且子问题的解是独立的"
+    ]
   }
 }

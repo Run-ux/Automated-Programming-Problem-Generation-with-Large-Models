@@ -1,0 +1,86 @@
+{
+  "problem_id": "GYM104120C",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "decrease_only_constraint",
+            "description": "序列中的元素必须单调递减（即后一个元素的值不大于前一个元素的值）",
+            "formal": "∀ i ∈ [1, M-1], Q[i] ≥ Q[i+1]"
+          },
+          {
+            "name": "operation_limit",
+            "description": "只有大于当前阈值的元素可以被调整为该阈值",
+            "formal": "∀ j, if S[j] > Q[i], then S[j] = Q[i]"
+          },
+          {
+            "name": "accumulated_sum_constraint",
+            "description": "调整后的序列和必须保持不变，即调整操作不影响总和",
+            "formal": "sum(S) = sum(S') where S' is the adjusted sequence"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求每轮调整后的员工分数总和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "阈值序列单调递减，员工分数调整后的总和计算基于此单调性",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "员工分数的区间和可以通过端点差值计算，适用于每次调整后的总分计算",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择（将大于当前阈值的分数调整为阈值）导致全局最优（最小化总分）",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -2,14 +2,14 @@
   "problem_id": "GYM102861D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 3,
             "max": 1000000
@@ -40,17 +40,12 @@
     "constraints": [
       {
         "name": "pairwise_exclusion",
-        "description": "每一步中，每个人的新伴侣必须与之前的伴侣不同",
+        "description": "每一步操作后，每个节点的邻居必须不同（即每个人的新伴侣必须与之前的伴侣不同）",
         "confidence": "1/1"
       },
       {
-        "name": "persistent_preference_constraint",
-        "description": "在整个舞蹈过程中，任何一对人不能在两个不同的时刻面对彼此",
-        "confidence": "1/1"
-      },
-      {
-        "name": "modulo_sum_constraint",
-        "description": "最终配对的每个人的年龄和在模 M 下的余数必须相同",
+        "name": "modular_arithmetic",
+        "description": "最终形成的每对节点的权值和模 M 后的结果必须相同",
         "confidence": "1/1"
       }
     ],
@@ -62,15 +57,15 @@
           "constraints": [
             {
               "name": "pairwise_exclusion",
-              "description": "每一步中，每个人的新伴侣必须与之前的伴侣不同"
+              "description": "每一步操作后，每个节点的邻居必须不同（即每个人的新伴侣必须与之前的伴侣不同）"
             },
             {
-              "name": "persistent_preference_constraint",
-              "description": "在整个舞蹈过程中，任何一对人不能在两个不同的时刻面对彼此"
+              "name": "pairwise_exclusion",
+              "description": "在整个过程中，任意一对节点不能在不同的时刻再次面对彼此"
             },
             {
-              "name": "modulo_sum_constraint",
-              "description": "最终配对的每个人的年龄和在模 M 下的余数必须相同"
+              "name": "modular_arithmetic",
+              "description": "最终形成的每对节点的权值和模 M 后的结果必须相同"
             }
           ]
         }
@@ -78,34 +73,90 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "计算满足条件的排列数量"
+          "type": "enumeration",
+          "description": "求满足条件的方案数（模10^9+7）"
         }
       }
     ],
-    "description": "计算满足条件的排列数量"
+    "description": "求满足条件的方案数（模10^9+7）"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "modular_invariance",
+        "description": "模数不变性：在整个舞蹈过程中，每对舞者的年龄和在模M下的余数保持一致。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "置换不变性：每个步骤中，舞者的位置通过一个固定的置换进行变换，且该置换是可逆的。",
+        "confidence": "1/1",
+        "properties": {
+          "reversible": true
+        }
+      },
+      {
+        "name": "cycle_invariant",
+        "description": "循环不变性：舞者在圆圈上的位置变化是周期性的，且每次旋转的步数P_i决定了新的位置。",
+        "confidence": "1/1",
+        "properties": {
+          "cyclic_rotation": true
+        }
+      },
+      {
+        "name": "matching_constraint",
+        "description": "配对不变性：每一步后，所有舞者的配对关系必须满足唯一性和不重复性。",
+        "confidence": "1/1",
+        "properties": {
+          "unique_pairing": true,
+          "no_repeated_pairs": true
+        }
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个步骤的选择依赖于前一步骤的结果，并且每一步骤的选择都保证了最终结果的合法性。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "modular_invariance",
+              "description": "模数不变性：在整个舞蹈过程中，每对舞者的年龄和在模M下的余数保持一致。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "置换不变性：每个步骤中，舞者的位置通过一个固定的置换进行变换，且该置换是可逆的。",
+              "properties": {
+                "reversible": true
+              }
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "循环不变性：舞者在圆圈上的位置变化是周期性的，且每次旋转的步数P_i决定了新的位置。",
+              "properties": {
+                "cyclic_rotation": true
+              }
+            },
+            {
+              "name": "matching_constraint",
+              "description": "配对不变性：每一步后，所有舞者的配对关系必须满足唯一性和不重复性。",
+              "properties": {
+                "unique_pairing": true,
+                "no_repeated_pairs": true
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个步骤的选择依赖于前一步骤的结果，并且每一步骤的选择都保证了最终结果的合法性。"
+    ]
   }
 }

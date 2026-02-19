@@ -1,0 +1,79 @@
+{
+  "problem_id": "CF107D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 0,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 123
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "frequency_bound",
+            "description": "对于每种犯罪类型，其重复次数必须是给定倍数的整数倍才能不被惩罚（模约束）",
+            "formal": "对于每种犯罪类型 t_i 和其倍数 m_i，若 Zeyad 犯罪 t_i 的次数为 k，则 k % m_i == 0"
+          },
+          {
+            "name": "subsequence_constraint",
+            "description": "犯罪序列的顺序对结果有影响，即两个序列只有在每个位置上的犯罪类型都相同才被认为是相同的序列",
+            "formal": "对于两个序列 w1 和 w2，若 w1[i] = w2[i] 对所有 1 ≤ i ≤ n 成立，则 w1 和 w2 相同"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足条件的方案数（常取模）"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即在确定了前i个犯罪行为的情况下，第i+1个犯罪行为的选择依赖于前i个犯罪行为的状态。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态到另一个状态的转移是基于当前状态和下一个犯罪行为的选择，并且这种转移方式在整个过程中保持一致。",
+            "properties": {}
+          },
+          {
+            "name": "modular_invariant",
+            "description": "模运算不变量：由于最终结果需要对12345取模，因此在计算过程中可以一直保持中间结果在模意义下的正确性，避免数值过大导致溢出。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

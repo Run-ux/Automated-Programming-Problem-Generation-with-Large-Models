@@ -2,14 +2,14 @@
   "problem_id": "GYM104128D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -39,22 +39,22 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "single_edge_operation",
-        "description": "最多只能执行一次操作",
+        "name": "operation_limit",
+        "description": "最多进行一次操作（选择一个连续子数组并添加等差数列）",
         "confidence": "1/1"
       },
       {
-        "name": "path_length_constraint",
-        "description": "选择的子数组长度固定为 m",
+        "name": "subsequence_constraint",
+        "description": "选择的子数组长度必须为 m",
         "confidence": "1/1"
       },
       {
-        "name": "non_decreasing_sequence",
-        "description": "在选定的子数组上加上一个等差数列，初始项为 c，公差为 d",
+        "name": "linear_relation",
+        "description": "在选定的子数组上添加一个等差数列，初始项为 c，公差为 d",
         "confidence": "1/1"
       },
       {
-        "name": "order_statistics_constraint",
+        "name": "kth_smallest_constraint",
         "description": "目标是最大化序列中第 k 大的元素",
         "confidence": "1/1"
       }
@@ -66,19 +66,19 @@
         "result": {
           "constraints": [
             {
-              "name": "single_edge_operation",
-              "description": "最多只能执行一次操作"
+              "name": "operation_limit",
+              "description": "最多进行一次操作（选择一个连续子数组并添加等差数列）"
             },
             {
-              "name": "path_length_constraint",
-              "description": "选择的子数组长度固定为 m"
+              "name": "subsequence_constraint",
+              "description": "选择的子数组长度必须为 m"
             },
             {
-              "name": "non_decreasing_sequence",
-              "description": "在选定的子数组上加上一个等差数列，初始项为 c，公差为 d"
+              "name": "linear_relation",
+              "description": "在选定的子数组上添加一个等差数列，初始项为 c，公差为 d"
             },
             {
-              "name": "order_statistics_constraint",
+              "name": "kth_smallest_constraint",
               "description": "目标是最大化序列中第 k 大的元素"
             }
           ]
@@ -102,19 +102,39 @@
     "description": "最大化序列中第k大元素的值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，通过选择一个连续子数组并对其进行操作，可以将原问题分解为多个子问题，并且这些子问题的最优解可以组合成原问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：对选定的连续子数组进行操作后，该子数组内的元素值变化是线性的，可以通过端点差值计算出整个区间的增量。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过选择一个连续子数组并对其进行操作后，可以得到整个序列的第k大元素的最大值。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，通过选择一个连续子数组并对其进行操作，可以将原问题分解为多个子问题，并且这些子问题的最优解可以组合成原问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：对选定的连续子数组进行操作后，该子数组内的元素值变化是线性的，可以通过端点差值计算出整个区间的增量。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过选择一个连续子数组并对其进行操作后，可以得到整个序列的第k大元素的最大值。"
+    ]
   }
 }

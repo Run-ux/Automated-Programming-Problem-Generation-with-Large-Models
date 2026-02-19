@@ -1,0 +1,89 @@
+{
+  "problem_id": "P3622",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 50000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 10000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacency_relation",
+            "description": "每个小朋友可以看到连续的5个围栏，且这些围栏是环形排列的",
+            "formal": "E, (E+1) % N, (E+2) % N, (E+3) % N, (E+4) % N"
+          },
+          {
+            "name": "exclusion",
+            "description": "每个小朋友害怕和喜欢的动物不能同时存在在他们能看到的围栏中",
+            "formal": "∀i ∈ [1, C], X_i ∩ Y_i = ∅"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "每个小朋友害怕和喜欢的动物必须是他们能看到的围栏中的子集",
+            "formal": "X_i, Y_i ⊆ {E, (E+1) % N, (E+2) % N, (E+3) % N, (E+4) % N}"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "每个小朋友看到的围栏中，害怕的动物数量和喜欢的动物数量有限制",
+            "formal": "0 ≤ |X_i|, |Y_i| ≤ 5"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化满足条件的元素数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个小朋友是否高兴的状态可以由其可见围栏中动物的移除状态决定。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：每个小朋友的可见围栏范围可以看作一个区间，这些区间的满足条件（小朋友高兴）信息可以通过子区间的信息合并得到。",
+            "properties": {}
+          },
+          {
+            "name": "cyclic_permutation_invariance",
+            "description": "循环不变量：由于动物园是圆形的，围栏编号具有循环性质，因此在处理时需要考虑这种循环不变性，确保所有可能的连续5个围栏都被正确处理。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

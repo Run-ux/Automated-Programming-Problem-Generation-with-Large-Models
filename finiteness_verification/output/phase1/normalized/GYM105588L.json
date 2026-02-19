@@ -1,0 +1,85 @@
+{
+  "problem_id": "GYM105588L",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacency_relation",
+            "description": "相邻节点攻击时，双方节点的值同时减少1（图着色约束）"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点最多攻击一次（度数约束）"
+          },
+          {
+            "name": "accumulated_sum_constraint",
+            "description": "节点死亡时触发连锁反应，所有节点的值减少1，直到没有新的节点死亡（级联效应约束）"
+          },
+          {
+            "name": "pairwise_exclusion",
+            "description": "必须通过攻击和连锁反应消除所有敌方节点（消除约束）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种攻击顺序，使得一方的所有单位能够被另一方全部消灭"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过逐步减少敌方和己方单位的生命值来达到最终目标。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步中，选择当前最优的操作（如攻击或使用法术）可以导致全局最优解。具体来说，在每一步中优先选择能够最大化减少敌方单位生命值的操作。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在每一步操作后，系统从一个状态转移到另一个状态，并且这些状态之间的转移是确定的。例如，每次攻击或法术后，所有单位的生命值都会根据规则进行更新。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

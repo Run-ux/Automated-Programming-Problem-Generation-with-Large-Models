@@ -1,0 +1,90 @@
+{
+  "problem_id": "GYM105792C",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 3,
+          "max": 3
+        },
+        "value_range": {
+          "min": {
+            "d": 7,
+            "k": 1,
+            "r": 1
+          },
+          "max": {
+            "d": 1000000000,
+            "k": 100000,
+            "r": 100000
+          }
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制（最多可以有 k 次假期）",
+            "formal": "k"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "总发布章节数量必须不少于 r",
+            "formal": "total_chapters >= r"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "每次假期的天数必须相同",
+            "formal": "all_holiday_days_equal"
+          },
+          {
+            "name": "range_bound",
+            "description": "最后一天 d 必须是 7 的倍数，表示每周发布一次",
+            "formal": "d % 7 == 0"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的方案，即在给定天数内发布指定数量的章节，并且有固定数量的假期，每个假期长度相同"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过确定每个假期的长度和数量来最大化发布的章节数。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，优先考虑能够使得剩余天数内发布更多章节的假期长度和数量，以达到全局最优。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "problem_id": "P9993",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": -1000000000,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "submatrix_transformation",
+            "description": "区间内所有元素的值增加一个固定值（区间更新操作）"
+          },
+          {
+            "name": "query_history_constraint",
+            "description": "查询区间内满足条件的元素的历史最大值（即初值和每次修改操作后的值中最大的一个）",
+            "formal": "max(a_i) for all i in [l, r] such that a_i < x, considering all historical values of a_i"
+          },
+          {
+            "name": "range_bound",
+            "description": "操作涉及的区间必须在序列的有效范围内（1 ≤ l ≤ r ≤ n）",
+            "formal": "1 ≤ l ≤ r ≤ n"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足条件的区间内元素历史最大值的最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_mergeable",
+            "description": "区间信息可通过子区间合并，支持区间修改和查询操作",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，历史最大值可以通过维护区间最大值来实现",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -2,14 +2,14 @@
   "problem_id": "CF390D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 50
@@ -39,23 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "edge_exclusion_constraint",
-        "description": "路径上不能包含已经放置糖果的单元格",
+        "name": "path_constraint",
+        "description": "路径必须从(1, 1)开始，到(i, j)结束，并且路径上不能包含任何已放置的糖果",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_operation_types_constraint",
+        "name": "distinctness",
         "description": "每个单元格最多只能放置一个糖果",
         "confidence": "1/1"
       },
       {
-        "name": "source_node_fixed",
-        "description": "每条路径必须从 (1, 1) 开始，到指定的目标单元格结束",
-        "confidence": "1/1"
-      },
-      {
-        "name": "continuous_path_constraint",
-        "description": "路径上的相邻单元格必须是四连通的（即曼哈顿距离为 1）",
+        "name": "adjacency_relation",
+        "description": "两个单元格(i, j)和(p, q)相邻当且仅当|i - p| + |j - q| = 1",
         "confidence": "1/1"
       }
     ],
@@ -66,20 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "edge_exclusion_constraint",
-              "description": "路径上不能包含已经放置糖果的单元格"
+              "name": "path_constraint",
+              "description": "路径必须从(1, 1)开始，到(i, j)结束，并且路径上不能包含任何已放置的糖果"
             },
             {
-              "name": "distinct_operation_types_constraint",
+              "name": "distinctness",
               "description": "每个单元格最多只能放置一个糖果"
             },
             {
-              "name": "source_node_fixed",
-              "description": "每条路径必须从 (1, 1) 开始，到指定的目标单元格结束"
-            },
-            {
-              "name": "continuous_path_constraint",
-              "description": "路径上的相邻单元格必须是四连通的（即曼哈顿距离为 1）"
+              "name": "adjacency_relation",
+              "description": "两个单元格(i, j)和(p, q)相邻当且仅当|i - p| + |j - q| = 1"
             }
           ]
         }
@@ -87,34 +78,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "最小化路径长度总和"
+          "type": "minimize_value",
+          "description": "最小化所有路径长度之和"
         }
       }
     ],
-    "description": "最小化路径长度总和"
+    "description": "最小化所有路径长度之和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，放置每个糖果的路径选择依赖于之前已放置糖果的位置和路径，且每一步的选择都是基于当前状态下的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择当前状态下最优的路径来放置糖果，即选择最短路径或使得后续路径选择尽可能多的路径。这种局部最优选择最终导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态到另一个状态的转移是确定且一致的。在本题中，每次放置糖果后，矩阵的状态会发生变化，但状态转移的方式保持一致，即从起点 (1, 1) 到目标位置 (i, j) 的路径选择方式不变。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个糖果放置路径的选择依赖于之前已放置糖果的位置和路径选择",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，放置每个糖果的路径选择依赖于之前已放置糖果的位置和路径，且每一步的选择都是基于当前状态下的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择当前状态下最优的路径来放置糖果，即选择最短路径或使得后续路径选择尽可能多的路径。这种局部最优选择最终导致全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态到另一个状态的转移是确定且一致的。在本题中，每次放置糖果后，矩阵的状态会发生变化，但状态转移的方式保持一致，即从起点 (1, 1) 到目标位置 (i, j) 的路径选择方式不变。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个糖果放置路径的选择依赖于之前已放置糖果的位置和路径选择"
+    ]
   }
 }

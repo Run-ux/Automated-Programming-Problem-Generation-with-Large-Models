@@ -1,0 +1,168 @@
+{
+  "problem_id": "P3136",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "alternating_pattern_constraint",
+        "description": "移动方向交替变化（水平和垂直交替）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "orthogonal_connectivity",
+        "description": "仅计算垂直交叉点（水平线段与垂直线段的交点且不是端点）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "cyclic_shift_constraint",
+        "description": "草在 T 天后重新生长（T 天前割过的草会重新生长）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "alternating_pattern_constraint",
+              "description": "移动方向交替变化（水平和垂直交替）",
+              "formal": "对于所有 d > 1，如果 x_d = x_{d-1} 则 y_{d+1} ≠ y_d，反之亦然"
+            },
+            {
+              "name": "orthogonal_connectivity",
+              "description": "仅计算垂直交叉点（水平线段与垂直线段的交点且不是端点）",
+              "formal": "对于所有 i < j，如果 (x_i, y_i) 和 (x_j, y_j) 是垂直交叉点且不是端点，则计数"
+            },
+            {
+              "name": "cyclic_shift_constraint",
+              "description": "草在 T 天后重新生长（T 天前割过的草会重新生长）",
+              "formal": "对于所有 d > T，如果 FJ 在第 d 天经过一个在第 d - T 天或更早割过的点，则该点重新生长"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "最大化路径交叉点的数量，其中每个交叉点是在不同方向上且不在端点的路径交点"
+        }
+      }
+    ],
+    "description": "最大化路径交叉点的数量，其中每个交叉点是在不同方向上且不在端点的路径交点"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "路径的移动方向交替变化，水平和垂直移动交替进行，且每次移动的方向是固定的。",
+        "confidence": "1/1",
+        "properties": {
+          "direction_alternation": true
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "通过前缀和计算每个点被访问的次数，从而判断是否在T天后重新切割。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移过程中，每天的位置由前一天的位置和移动方向决定，满足状态机的一致性。",
+        "confidence": "1/1",
+        "properties": {
+          "horizontal_or_vertical": true
+        }
+      },
+      {
+        "name": "cycle_invariant",
+        "description": "路径中存在周期性的重复切割点，即在T天后重新切割同一位置。",
+        "confidence": "1/1",
+        "properties": {
+          "periodic_recut": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "路径的移动方向交替变化，水平和垂直移动交替进行，且每次移动的方向是固定的。",
+              "properties": {
+                "direction_alternation": true
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "通过前缀和计算每个点被访问的次数，从而判断是否在T天后重新切割。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移过程中，每天的位置由前一天的位置和移动方向决定，满足状态机的一致性。",
+              "properties": {
+                "horizontal_or_vertical": true
+              }
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "路径中存在周期性的重复切割点，即在T天后重新切割同一位置。",
+              "properties": {
+                "periodic_recut": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

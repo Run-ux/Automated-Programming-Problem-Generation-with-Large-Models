@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "integer",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1
@@ -26,14 +26,14 @@
       "result": {
         "constraints": [
           {
-            "name": "linear_combination_constraint",
-            "description": "选取元素的线性组合必须等于给定的目标值（即三种类型的公寓窗户总数等于 n）",
+            "name": "linear_relation",
+            "description": "选取元素的权重和等于给定值（三室公寓、五室公寓和七室公寓的窗户总数等于 n）",
             "formal": "3 * x + 5 * y + 7 * z = n"
           },
           {
-            "name": "non_negative_values",
-            "description": "解必须是非负整数（即每种类型的公寓数量不能为负数）",
-            "formal": "x >= 0, y >= 0, z >= 0"
+            "name": "non_negative_constraint",
+            "description": "解必须是非负整数（三室公寓、五室公寓和七室公寓的数量必须是非负整数）",
+            "formal": "x, y, z >= 0"
           }
         ]
       }
@@ -44,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足给定总和的非负整数解"
+        "type": "feasibility",
+        "description": "判断是否存在非负整数解满足给定的线性方程"
       }
     }
   ],
@@ -54,9 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，即通过较小规模的问题的解来构建当前问题的解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解组合得到，即通过找到满足条件的三个非负整数解来解决原问题。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，优先选择能够最大化当前局部解的选择，最终可以得到全局最优解。例如，尽可能多地选择七室公寓，然后是五室公寓，最后是三室公寓。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

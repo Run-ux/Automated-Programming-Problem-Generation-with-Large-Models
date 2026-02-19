@@ -1,0 +1,81 @@
+{
+  "problem_id": "P14438",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "所有元素的值互不相同（唯一性约束）"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "只能选择至少有一侧相邻元素已被选择的元素（相邻关系约束）"
+          },
+          {
+            "name": "maximum_value_constraint",
+            "description": "在可选元素中，必须选择最大值（最大值选择约束）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "对于每个初始选择，最大化路径上的权值和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，JOI 君和 IOI 酱轮流取蛋糕块的过程可以分解为多个子问题，每个子问题的最优解可以组合成原问题的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择时，总是选择当前可选的最大蛋糕块。这种局部最优选择最终会导致全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在每次取走一块蛋糕后，剩余蛋糕的状态满足一定的转移规则。具体来说，只能取那些至少有一侧相邻蛋糕块已被取走的蛋糕块。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

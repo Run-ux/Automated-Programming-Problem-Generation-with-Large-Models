@@ -2,14 +2,14 @@
   "problem_id": "GYM102219E",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 50
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "bottleneck_path",
-        "description": "选取元素权重和不超过容量上限（总时间不超过分配的时间）",
+        "name": "sum_constraint",
+        "description": "选取元素的权重和应尽可能接近给定的目标值（分配时间）",
         "confidence": "1/1"
       },
       {
-        "name": "minimum_weight_above_threshold",
-        "description": "选取元素后，剩余未使用的容量尽可能小（未使用的时间尽可能短）",
+        "name": "ordering",
+        "description": "选取的元素顺序必须与输入序列中的顺序一致",
         "confidence": "1/1"
       },
       {
-        "name": "turn_based_operation",
-        "description": "在多个解中，优先选择出现顺序靠前的解（事件按输入顺序优先选择）",
+        "name": "minimize_idle_time",
+        "description": "未使用的总时间应尽可能短",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "bottleneck_path",
-              "description": "选取元素权重和不超过容量上限（总时间不超过分配的时间）"
+              "name": "sum_constraint",
+              "description": "选取元素的权重和应尽可能接近给定的目标值（分配时间）",
+              "formal": "sum(selected_events) ≈ T"
             },
             {
-              "name": "minimum_weight_above_threshold",
-              "description": "选取元素后，剩余未使用的容量尽可能小（未使用的时间尽可能短）"
+              "name": "ordering",
+              "description": "选取的元素顺序必须与输入序列中的顺序一致",
+              "formal": "selected_events[i] appears before selected_events[j] in the input if i < j"
             },
             {
-              "name": "turn_based_operation",
-              "description": "在多个解中，优先选择出现顺序靠前的解（事件按输入顺序优先选择）"
+              "name": "minimize_idle_time",
+              "description": "未使用的总时间应尽可能短",
+              "formal": "minimize(T - sum(selected_events))"
             }
           ]
         }
@@ -78,37 +81,54 @@
     ]
   },
   "objective": {
-    "type": "min_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "min_cost",
-          "description": "最小化未使用的总时间"
+          "type": "minimize_value",
+          "description": "最小化未被选择时间段的总长度"
         }
       }
     ],
-    "description": "最小化未使用的总时间"
+    "description": "最小化未被选择时间段的总长度"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即选择事件的最优方案可以由更小时间范围内的最优方案递推得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，优先选择当前情况下最优（最早出现且最接近剩余时间）的事件，最终能够得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题的解都是独立且最优的",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinability": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即选择事件的最优方案可以由更小时间范围内的最优方案递推得出。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，优先选择当前情况下最优（最早出现且最接近剩余时间）的事件，最终能够得到全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题的解都是独立且最优的"
+    ]
   }
 }

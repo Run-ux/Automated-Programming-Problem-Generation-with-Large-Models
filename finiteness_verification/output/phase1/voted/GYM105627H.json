@@ -1,0 +1,139 @@
+{
+  "problem_id": "GYM105627H",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 50
+          },
+          "value_range": {
+            "min": 0,
+            "max": 2
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 50
+    },
+    "value_range": {
+      "min": 0,
+      "max": 2
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "inclusion",
+        "description": "只能选择一个元素作为起点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distance_bound",
+        "description": "从当前节点出发，只能向上、左上或右上移动到相邻节点，且目标节点不能是同类型的元素",
+        "confidence": "1/1"
+      },
+      {
+        "name": "tournament_structure_constraint",
+        "description": "如果移动到的目标节点包含另一种类型的元素，则该元素被移除",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "inclusion",
+              "description": "只能选择一个元素作为起点"
+            },
+            {
+              "name": "distance_bound",
+              "description": "从当前节点出发，只能向上、左上或右上移动到相邻节点，且目标节点不能是同类型的元素",
+              "formal": "对于当前位置 (i, j)，下一步只能移动到 (i-1, j-1), (i-1, j) 或 (i-1, j+1)，且目标位置不能是同类型的元素"
+            },
+            {
+              "name": "tournament_structure_constraint",
+              "description": "如果移动到的目标节点包含另一种类型的元素，则该元素被移除",
+              "formal": "如果 (i-1, j-1), (i-1, j) 或 (i-1, j+1) 位置包含不同类型的元素，则该元素被移除"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "最大化路径上的目标点计数"
+        }
+      }
+    ],
+    "description": "最大化路径上的目标点计数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：从任意一个白棋子出发，到达每个位置的最大击倒黑棋数可以由其上一步的最优解推导得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：对于选定的白棋子，其移动方向始终向上（行索引递减），且在每一行中只能向左、中间或右移动一格。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：从任意一个白棋子出发，到达每个位置的最大击倒黑棋数可以由其上一步的最优解推导得出。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：对于选定的白棋子，其移动方向始终向上（行索引递减），且在每一行中只能向左、中间或右移动一格。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

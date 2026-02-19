@@ -1,0 +1,124 @@
+{
+  "problem_id": "P12908",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "error_resilience_constraint",
+        "description": "预测错误次数不超过最优参与者错误次数的1.3倍加100",
+        "confidence": "1/1"
+      },
+      {
+        "name": "binary_classification",
+        "description": "每次预测只能是0或1",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "error_resilience_constraint",
+              "description": "预测错误次数不超过最优参与者错误次数的1.3倍加100",
+              "formal": "Izzy's mistakes ≤ 1.3 * b + 100, where b is the minimum number of mistakes made by any other participant"
+            },
+            {
+              "name": "binary_classification",
+              "description": "每次预测只能是0或1",
+              "formal": "Prediction ∈ {0, 1}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "最小化错误预测次数，使其不超过1.3倍的其他参与者中最小错误次数加上100"
+        }
+      }
+    ],
+    "description": "最小化错误预测次数，使其不超过1.3倍的其他参与者中最小错误次数加上100"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：Izzy的预测策略基于其他参与者的预测，使得她的错误次数不超过1.3倍的最佳参与者错误次数加上一个常数。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个赌注的预测结果不影响其他赌注的预测结果，即每个赌注可以独立处理。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：Izzy的预测策略基于其他参与者的预测，使得她的错误次数不超过1.3倍的最佳参与者错误次数加上一个常数。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个赌注的预测结果不影响其他赌注的预测结果，即每个赌注可以独立处理。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

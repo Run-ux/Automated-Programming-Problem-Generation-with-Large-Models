@@ -2,14 +2,14 @@
   "problem_id": "GYM105143G",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 50
@@ -18,9 +18,7 @@
             "min": 1,
             "max": 1000000000
           },
-          "properties": {
-            "ordered": false
-          }
+          "properties": {}
         }
       }
     ],
@@ -32,20 +30,18 @@
       "min": 1,
       "max": 1000000000
     },
-    "properties": {
-      "ordered": false
-    }
+    "properties": {}
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "sum_of_values_constraint",
-        "description": "选取的元素值之和必须等于给定的目标值 k",
+        "name": "sum_constraint",
+        "description": "选取的元素总和必须等于给定的目标值 k",
         "confidence": "1/1"
       },
       {
-        "name": "maximize_volume_utilization",
-        "description": "在满足总价值为 k 的前提下，尽可能多地打包物品，直到剩余的 A 和 B 无法再组成一个完整的包装",
+        "name": "flow_constraint",
+        "description": "选取的元素数量不能超过各自的总量 n 和 m",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +52,14 @@
         "result": {
           "constraints": [
             {
-              "name": "sum_of_values_constraint",
-              "description": "选取的元素值之和必须等于给定的目标值 k",
-              "formal": "sum(x * a + y * b) = k, x ∈ [0, n], y ∈ [0, m]"
+              "name": "sum_constraint",
+              "description": "选取的元素总和必须等于给定的目标值 k",
+              "formal": "x * a + y * b = k, 其中 x 和 y 分别是 A 和 B 的数量"
             },
             {
-              "name": "maximize_volume_utilization",
-              "description": "在满足总价值为 k 的前提下，尽可能多地打包物品，直到剩余的 A 和 B 无法再组成一个完整的包装",
-              "formal": "maximize (x + y) such that x * a + y * b = k, x ∈ [0, n], y ∈ [0, m]"
+              "name": "flow_constraint",
+              "description": "选取的元素数量不能超过各自的总量 n 和 m",
+              "formal": "0 <= x <= n 且 0 <= y <= m"
             }
           ]
         }
@@ -71,34 +67,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求在满足特定总价值约束下，无法被包装的最少物品数量"
+          "type": "minimize_count",
+          "description": "最小化无法满足给定总价值要求的剩余物品数量"
         }
       }
     ],
-    "description": "求在满足特定总价值约束下，无法被包装的最少物品数量"
+    "description": "最小化无法满足给定总价值要求的剩余物品数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在确定了当前包装方案后，剩余物品的最优解可以独立求解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择当前情况下价值最大的包装方案，能够保证最终剩余未包装物品数量最少。这种局部最优选择导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在确定了某种包装方案后，剩余物品的最优解可以独立求解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在确定了当前包装方案后，剩余物品的最优解可以独立求解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择当前情况下价值最大的包装方案，能够保证最终剩余未包装物品数量最少。这种局部最优选择导致全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在确定了某种包装方案后，剩余物品的最优解可以独立求解。"
+    ]
   }
 }

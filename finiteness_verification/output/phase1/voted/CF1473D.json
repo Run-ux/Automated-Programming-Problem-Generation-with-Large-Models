@@ -1,0 +1,124 @@
+{
+  "problem_id": "CF1473D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": "-",
+            "max": "+"
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": "-",
+      "max": "+"
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "区间内不同元素数量的计算（在给定区间内忽略某些操作后，计算变量 x 的不同取值个数）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_type",
+        "description": "操作类型限制（指令只能是加法或减法）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "区间内不同元素数量的计算（在给定区间内忽略某些操作后，计算变量 x 的不同取值个数）",
+              "formal": "|distinct(x_values[l:r])|"
+            },
+            {
+              "name": "operation_type",
+              "description": "操作类型限制（指令只能是加法或减法）",
+              "formal": "instruction ∈ {'+', '-'}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求在给定区间内忽略某些操作后，变量所能取到的不同值的数量"
+        }
+      }
+    ],
+    "description": "求在给定区间内忽略某些操作后，变量所能取到的不同值的数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过计算区间的增量和减量，可以确定变量 x 的最终值。忽略的指令区间对结果的影响可以通过前缀和差值来计算。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个查询的结果依赖于其子区间的结果。通过计算子区间的不同值数量，可以合并得到整个区间的不同值数量。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过计算区间的增量和减量，可以确定变量 x 的最终值。忽略的指令区间对结果的影响可以通过前缀和差值来计算。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个查询的结果依赖于其子区间的结果。通过计算子区间的不同值数量，可以合并得到整个区间的不同值数量。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -4,12 +4,26 @@
   "dimension": "invariant",
   "round": 1,
   "result": {
-    "name": "monotonicity",
-    "description": "状态转移方向受限（仅向上），满足单调性：每天的净爬升高度是固定的，直到达到或超过目标高度",
-    "properties": {
-      "left_monotonic": false,
-      "right_monotonic": true
-    }
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "高度随时间单调递增，直到达到或超过树的高度。在每个白天，高度增加a米；在每个夜晚，高度减少b米。",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的最优解可以通过子问题的最优解来构建。具体来说，第n天的高度可以由前n-1天的高度加上当天的净爬升高度得到。",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "每天选择爬升a米并在夜间滑落b米是局部最优选择，这种选择最终会导致全局最优解，即最短时间到达树顶。",
+        "properties": {}
+      }
+    ]
   },
   "status": "success"
 }

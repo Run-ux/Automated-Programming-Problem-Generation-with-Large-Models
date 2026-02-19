@@ -1,0 +1,155 @@
+{
+  "problem_id": "CF1257D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "每个英雄每天击败的怪物数量不超过其耐力值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "英雄必须按顺序击败怪物，不能跳过未击败的怪物",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每天只能选择一个英雄进入地牢",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "所有英雄的总耐力值必须足够击败所有怪物",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "每个英雄每天击败的怪物数量不超过其耐力值"
+            },
+            {
+              "name": "ordering",
+              "description": "英雄必须按顺序击败怪物，不能跳过未击败的怪物"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每天只能选择一个英雄进入地牢"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "所有英雄的总耐力值必须足够击败所有怪物"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求完成所有任务所需的最小时间"
+        }
+      }
+    ],
+    "description": "求完成所有任务所需的最小时间"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每一天选择英雄的决策基于当前剩余怪物和英雄状态的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着天数的增加，已击败的怪物数量单调递增，且每天选择的英雄在满足条件的情况下尽可能多地击败怪物。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每一步选择当天能够击败最多怪物的英雄，以最小化总天数。这种局部最优的选择最终导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每一天选择英雄的决策基于当前剩余怪物和英雄状态的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着天数的增加，已击败的怪物数量单调递增，且每天选择的英雄在满足条件的情况下尽可能多地击败怪物。",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每一步选择当天能够击败最多怪物的英雄，以最小化总天数。这种局部最优的选择最终导致全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

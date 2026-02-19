@@ -1,0 +1,87 @@
+{
+  "problem_id": "GYM102279E",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "序列 A 是严格单调递增的（A1 < A2 < ... < An）",
+            "formal": "∀ i ∈ [1, N-1], A_i < A_{i+1}"
+          },
+          {
+            "name": "ordering",
+            "description": "序列 B 是严格单调递减的（B1 > B2 > ... > Bn）",
+            "formal": "∀ i ∈ [1, N-1], B_i > B_{i+1}"
+          },
+          {
+            "name": "existence_requirement",
+            "description": "初始条件 A1 = 1 和 Bn = 0",
+            "formal": "A_1 = 1, B_N = 0"
+          },
+          {
+            "name": "range_bound",
+            "description": "每次完成攻击集后，攻击速度取当前值和 Bi 的最小值",
+            "formal": "attack_speed = min(current_attack_speed, B_i)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求完成所有任务所需的最短时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "攻击次数和攻击速度的序列分别单调递增和单调递减，确保了每次处理时的状态变化是有序且可预测的。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "完成所有N组攻击所需的最短时间可以分解为解决子问题（即完成前i组攻击）的最优解之和。每个子问题的解依赖于其前一个子问题的解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

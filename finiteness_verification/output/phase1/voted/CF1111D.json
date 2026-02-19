@@ -1,0 +1,134 @@
+{
+  "problem_id": "CF1111D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 65,
+            "max": 122
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 65,
+      "max": 122
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "partition",
+        "description": "字符串可以被划分为两个部分，每个部分包含相同类型的字符",
+        "confidence": "1/1"
+      },
+      {
+        "name": "permutation_constraint",
+        "description": "通过交换字符位置，生成的排列必须满足划分约束",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "不同的排列由至少一个位置上的字符不同来区分",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "partition",
+              "description": "字符串可以被划分为两个部分，每个部分包含相同类型的字符",
+              "formal": "∃k, ∀i, s[i] ∈ first_half ⇔ i ≤ k 且 s[i] ∈ second_half ⇔ i > k"
+            },
+            {
+              "name": "permutation_constraint",
+              "description": "通过交换字符位置，生成的排列必须满足划分约束",
+              "formal": "∀x, y, ∃P, P(s) 满足 partition 约束"
+            },
+            {
+              "name": "distinctness",
+              "description": "不同的排列由至少一个位置上的字符不同来区分",
+              "formal": "P1 ≠ P2 ⇔ ∃i, P1[i] ≠ P2[i]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足特定条件的排列数（模10^9+7）"
+        }
+      }
+    ],
+    "description": "求满足特定条件的排列数（模10^9+7）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "exchange_argument",
+        "description": "通过邻项交换可以逐步将特定类型的元素移动到同一半区，且每次交换不破坏已满足条件的其他类型元素的分布",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "每个子问题（即每种类型的元素分布）在处理时相互独立，不影响其他类型元素的最终分布",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "exchange_argument",
+              "description": "通过邻项交换可以逐步将特定类型的元素移动到同一半区，且每次交换不破坏已满足条件的其他类型元素的分布",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "每个子问题（即每种类型的元素分布）在处理时相互独立，不影响其他类型元素的最终分布",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

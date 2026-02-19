@@ -1,0 +1,84 @@
+{
+  "problem_id": "CF1709D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "机器人只能在网格内移动，不能进入被阻挡的单元格或超出网格边界。",
+            "formal": "对于每个命令 (dx, dy)，机器人从 (x, y) 移动到 (x + k * dx, y + k * dy)，且必须满足 1 ≤ x + k * dx ≤ n 和 1 ≤ y + k * dy ≤ m 且 (x + k * dx, y + k * dy) 不是被阻挡的单元格。"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "每个命令会被执行 k 次，即每次移动会跨越 k 个单元格。",
+            "formal": "对于每个命令 (dx, dy)，机器人从 (x, y) 移动到 (x + k * dx, y + k * dy)。"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "机器人必须从起点出发，最终停在终点，中途经过终点不算。",
+            "formal": "机器人从 (x_s, y_s) 出发，最终停在 (x_f, y_f)。"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在从起点到终点的可行路径"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：机器人在执行命令时，其位置变化满足特定的转移规则，且这些规则在整个过程中保持一致。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个查询可以独立处理，查询之间互不影响，每个查询的结果仅依赖于当前查询的起始和终止位置以及步长k。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：机器人在网格中的移动可以通过计算行和列的变化来确定，这些变化可以累加并用于判断是否能够到达目标位置。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

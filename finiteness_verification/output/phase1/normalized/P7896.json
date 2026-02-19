@@ -1,0 +1,91 @@
+{
+  "problem_id": "P7896",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 5000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000007
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "negative_value_constraint",
+            "description": "血量永远是非负整数，如果在某个时刻血量将要变为负数，那么游戏会崩溃。",
+            "formal": "∀t, health(t) ≥ 0"
+          },
+          {
+            "name": "terminal_vertex_count_constraint",
+            "description": "结束时血量必须为 0。",
+            "formal": "health(n) = 0"
+          },
+          {
+            "name": "count_zero_elements",
+            "description": "在整个过程中，恰好有 m 次血量为 0（包括初始时刻）。",
+            "formal": "|{t | 0 ≤ t ≤ n ∧ health(t) = 0}| = m"
+          },
+          {
+            "name": "distinctness",
+            "description": "所有道具总共只造成恰好 k 种不同的血量变化量。",
+            "formal": "|{p | p ∈ Z+ ∧ a_p > 0}| = k"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足条件的方案数（取模后）"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，且子问题的解是独立的",
+            "properties": {
+              "subproblem_independence": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移的一致性和合法性保持不变",
+            "properties": {}
+          },
+          {
+            "name": "prefix_decomposability",
+            "description": "前缀可分解性：问题可以分解为多个前缀子问题，并且这些子问题的解可以组合成原问题的解",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

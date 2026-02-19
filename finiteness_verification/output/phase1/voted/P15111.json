@@ -1,0 +1,169 @@
+{
+  "problem_id": "P15111",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 50
+          },
+          "value_range": {
+            "min": 0,
+            "max": 10000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 50
+    },
+    "value_range": {
+      "min": 0,
+      "max": 10000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "每个世纪初只能进行一次文明选择操作，且一旦选择不能更改",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "文明的初始国力排名为递增序列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "permutation_constraint",
+        "description": "每场战争会交换两个文明的排名，形成一个新的排列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "每个世纪开始时，根据当前排名状态进行文明选择",
+        "confidence": "1/1"
+      },
+      {
+        "name": "inclusion",
+        "description": "每次选择文明时，只能从未被选择的文明中选择",
+        "confidence": "1/1"
+      },
+      {
+        "name": "maximum_min_difference_constraint",
+        "description": "每个世纪初选择文明时，可以选择排名第一的文明（即最大值）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "每个世纪初只能进行一次文明选择操作，且一旦选择不能更改"
+            },
+            {
+              "name": "ordering",
+              "description": "文明的初始国力排名为递增序列"
+            },
+            {
+              "name": "permutation_constraint",
+              "description": "每场战争会交换两个文明的排名，形成一个新的排列"
+            },
+            {
+              "name": "state_transition",
+              "description": "每个世纪开始时，根据当前排名状态进行文明选择"
+            },
+            {
+              "name": "inclusion",
+              "description": "每次选择文明时，只能从未被选择的文明中选择"
+            },
+            {
+              "name": "maximum_min_difference_constraint",
+              "description": "每个世纪初选择文明时，可以选择排名第一的文明（即最大值）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求在每个世纪初选择文明时，最终期望的最小排名"
+        }
+      }
+    ],
+    "description": "求在每个世纪初选择文明时，最终期望的最小排名"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个世纪的最优选择依赖于之前世纪的选择结果，且可以通过子问题的最优解来构建当前问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在每个世纪初，文明的排名状态会根据上一个世纪末的状态和本世纪发生的战争次数进行更新。这种状态转移是确定性的，并且保持一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "expectation_linearity",
+        "description": "期望值一致性：在每个世纪初，选择文明的期望排名最小值可以通过之前的期望值和当前世纪的战争次数计算得出，且这种计算方式在整个过程中保持一致。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个世纪的最优选择依赖于之前世纪的选择结果，且可以通过子问题的最优解来构建当前问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在每个世纪初，文明的排名状态会根据上一个世纪末的状态和本世纪发生的战争次数进行更新。这种状态转移是确定性的，并且保持一致性。",
+              "properties": {}
+            },
+            {
+              "name": "expectation_linearity",
+              "description": "期望值一致性：在每个世纪初，选择文明的期望排名最小值可以通过之前的期望值和当前世纪的战争次数计算得出，且这种计算方式在整个过程中保持一致。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

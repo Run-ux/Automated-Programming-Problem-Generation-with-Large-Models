@@ -1,0 +1,126 @@
+{
+  "problem_id": "GYM102001K",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {
+            "connected": false,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000
+    },
+    "properties": {
+      "connected": false,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_disjointness_constraint",
+        "description": "每个边在所有选定的回旋镖中最多出现一次（即每个边只能属于一个回旋镖）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "cyclic_shift_constraint",
+        "description": "每个回旋镖由两条共享一个公共顶点的边组成，并且这两个端点不相同",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_disjointness_constraint",
+              "description": "每个边在所有选定的回旋镖中最多出现一次（即每个边只能属于一个回旋镖）",
+              "formal": "对于任意两个回旋镖 ⟨u1, v1, w1⟩ 和 ⟨u2, v2, w2⟩，有 {(u1, v1), (v1, w1)} ∩ {(u2, v2), (v2, w2)} = ∅"
+            },
+            {
+              "name": "cyclic_shift_constraint",
+              "description": "每个回旋镖由两条共享一个公共顶点的边组成，并且这两个端点不相同",
+              "formal": "对于每个回旋镖 ⟨u, v, w⟩，有 (u, v) ∈ E 且 (v, w) ∈ E 且 u ≠ w"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "最大化不相交的三元组数量，每个三元组由两个共享一个公共顶点的边组成"
+        }
+      }
+    ],
+    "description": "最大化不相交的三元组数量，每个三元组由两个共享一个公共顶点的边组成"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，即在寻找最大数量不相交的回旋镖时，每个局部最优的选择（选择一个回旋镖）都基于当前图结构的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "分治或动态规划中子问题相互独立，即选择一个回旋镖后，剩余部分的图可以独立地继续寻找最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，即在寻找最大数量不相交的回旋镖时，每个局部最优的选择（选择一个回旋镖）都基于当前图结构的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "分治或动态规划中子问题相互独立，即选择一个回旋镖后，剩余部分的图可以独立地继续寻找最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "problem_id": "P14591",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 3000000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": true,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subsequence_constraint",
+            "description": "字符串被划分为多个非空子段，每个子段视为一个二进制数。",
+            "formal": "s[1:p_1], s[p_1+1:p_2], ..., s[p_{k-1}+1:n] 其中 1 ≤ p_1 < p_2 < ... < p_{k-1} < n"
+          },
+          {
+            "name": "xor_subarray_sum_constraint",
+            "description": "划分方案的权值定义为这些二进制数的按位异或和。",
+            "formal": "权值 = ⊕(s[l:r]) 对于所有子段 s[l:r]"
+          },
+          {
+            "name": "maximum_value_constraint",
+            "description": "需要找到所有划分方案中权值最大的值。",
+            "formal": "max(⊕(s[l:r])) 对于所有可能的划分方案"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "需要计算权值恰好为最大值的划分方案数量。",
+            "formal": "count(划分方案) 使得 权值 = max(⊕(s[l:r]))"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "输出结果需要对 998244353 取模。",
+            "formal": "A, B, C, D 对 998244353 取模"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求所有可能划分方案中，子段二进制数按位异或和的最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。对于每个划分方案，其权值的最大值可以通过子段的最优解来计算。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀异或和可以快速计算任意子段的按位异或和。具体来说，子段 s[l:r] 的按位异或和可以通过 pre[r] ^ pre[l-1] 快速计算，其中 pre[i] 表示前 i 个字符的按位异或和。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

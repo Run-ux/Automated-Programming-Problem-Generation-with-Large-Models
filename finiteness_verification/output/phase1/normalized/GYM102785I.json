@@ -6,9 +6,9 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
-          "min": 4,
+          "min": 3,
           "max": 20
         },
         "value_range": {
@@ -28,14 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "path_length_constraint",
-            "description": "任意行、列或对角线上的相同元素连续序列长度不超过 3",
-            "formal": "对于任意行 i, 列 j, 对角线 d: max(连续相同元素的长度) <= 3"
+            "name": "subsequence_constraint",
+            "description": "任意行、列或对角线上的连续相同符号长度不超过3"
           },
           {
-            "name": "pattern_filling_constraint",
-            "description": "所有空位必须被填充，且填充后满足上述序列长度约束",
-            "formal": "对于所有空位 (i, j): board[i][j] 必须被填充为 '+' 或 '0'，且填充后的 board 满足 max_sequence_length 约束"
+            "name": "coverage",
+            "description": "所有空位必须被填充，且填充后满足上述子序列约束"
           }
         ]
       }
@@ -46,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足给定约束条件的矩阵"
+        "type": "construction",
+        "description": "构造一个满足给定约束条件的方案"
       }
     }
   ],
@@ -56,12 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解都是局部最优的，并且这些局部最优解可以组合成全局最优解。",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "constraint_satisfaction",
+            "description": "约束满足不变量：在填充过程中，始终保证每行、每列和对角线上的相同符号不超过三个连续出现",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次填充一个空格后，新的棋盘状态仍然是合法的，并且可以继续进行填充",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

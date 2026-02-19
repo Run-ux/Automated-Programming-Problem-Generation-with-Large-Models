@@ -2,14 +2,14 @@
   "problem_id": "GYM105498A",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 10000
@@ -35,8 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "minimum_maximum_constraint",
+        "name": "minimize_max_min_difference",
         "description": "找到一个点，使得该点到所有给定点的最大距离最小化",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "所有给定的点是唯一的",
         "confidence": "1/1"
       }
     ],
@@ -47,9 +52,13 @@
         "result": {
           "constraints": [
             {
-              "name": "minimum_maximum_constraint",
+              "name": "minimize_max_min_difference",
               "description": "找到一个点，使得该点到所有给定点的最大距离最小化",
-              "formal": "minimize(max_{1 ≤ i ≤ n} sqrt((o_x - x_i)^2 + (o_y - y_i)^2 + (o_z - z_i)^2 + (o_w - w_i)^2))"
+              "formal": "minimize(max_{1 ≤ i ≤ n} √((o_x - x_i)² + (o_y - y_i)² + (o_z - z_i)² + (o_w - w_i)²))"
+            },
+            {
+              "name": "distinctness",
+              "description": "所有给定的点是唯一的"
             }
           ]
         }
@@ -57,34 +66,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_distance",
+    "type": "min_max",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_distance",
-          "description": "求一点到给定点集的最大距离的最小值"
+          "type": "min_max",
+          "description": "最小化从给定点到任意一个输入点的最大欧几里得距离"
         }
       }
     ],
-    "description": "求一点到给定点集的最大距离的最小值"
+    "description": "最小化从给定点到任意一个输入点的最大欧几里得距离"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最小化最大距离的问题可以分解为在每个维度上独立求解最优位置。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "convexity",
+        "description": "凸性不变量：在四维空间中，目标函数（最大距离）关于每个维度上的坐标是凸的，因此可以通过优化方法找到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即四维空间中每个维度上的最优位置可以独立求解并组合成全局最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最小化最大距离的问题可以分解为在每个维度上独立求解最优位置。",
+              "properties": {}
+            },
+            {
+              "name": "convexity",
+              "description": "凸性不变量：在四维空间中，目标函数（最大距离）关于每个维度上的坐标是凸的，因此可以通过优化方法找到全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即四维空间中每个维度上的最优位置可以独立求解并组合成全局最优解。"
+    ]
   }
 }

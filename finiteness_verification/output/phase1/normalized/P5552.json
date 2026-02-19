@@ -1,0 +1,80 @@
+{
+  "problem_id": "P5552",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "试卷的初始顺序序列必须按照给定的顺序处理，不能改变顺序"
+          },
+          {
+            "name": "state_transition",
+            "description": "老师在每一步决策后的位置更新必须根据当前手上的试卷和下一个要发的试卷的位置来决定"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每次只能从左手顶部拿一张试卷，并且右手只能持有一张试卷"
+          },
+          {
+            "name": "distance_bound",
+            "description": "老师在当前位置与目标位置之间的路程为两者位置编号的绝对差值"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求完成任务所需的最小总路程"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，每次选择当前最优的决策（即发左手或右手试卷中路程较短的那个）来最小化总路程。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：老师的位置和手中的试卷状态在每一步操作后保持一致且可预测。具体来说，每一步操作后，老师的左右手持有的试卷以及位置状态都是确定的，并且这些状态可以唯一地决定下一步的操作。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

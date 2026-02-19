@@ -1,0 +1,124 @@
+{
+  "problem_id": "GYM105901A",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "range_bound",
+        "description": "每个属性的值必须在给定的区间内（包含边界）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "修改每个属性值的操作次数最小化，每次操作可以增加或减少1",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "range_bound",
+              "description": "每个属性的值必须在给定的区间内（包含边界）",
+              "formal": "l_i <= a_{p_i} <= r_i"
+            },
+            {
+              "name": "operation_limit",
+              "description": "修改每个属性值的操作次数最小化，每次操作可以增加或减少1",
+              "formal": "minimize(sum(|a_{p_i} - x|) for all i, where l_i <= x <= r_i)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足所有区间约束条件所需的最小调整代价"
+        }
+      }
+    ],
+    "description": "求满足所有区间约束条件所需的最小调整代价"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个属性值调整到满足所有建议所需的最小时间可以独立计算并累加。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：对于每个属性，其调整所需的时间可以通过计算与建议区间的差值来确定，并且这些差值可以累加以得到总时间。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个属性值调整到满足所有建议所需的最小时间可以独立计算并累加。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：对于每个属性，其调整所需的时间可以通过计算与建议区间的差值来确定，并且这些差值可以累加以得到总时间。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

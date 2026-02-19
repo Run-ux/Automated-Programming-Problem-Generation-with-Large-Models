@@ -1,0 +1,145 @@
+{
+  "problem_id": "P13774",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": -10000,
+            "max": 10000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": -10000,
+      "max": 10000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "partition",
+        "description": "将所有节点分成两个子集，每个子集再递归地分成两个子集，直到每个子集中只有一个节点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "在每个子集中，节点必须按照某种顺序（如坐标）进行访问",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "所有节点的X坐标和Y坐标都是唯一的",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "partition",
+              "description": "将所有节点分成两个子集，每个子集再递归地分成两个子集，直到每个子集中只有一个节点",
+              "formal": "P = partition(P, axis); P1, P2 = split(P, axis); recursively apply on P1 and P2"
+            },
+            {
+              "name": "ordering",
+              "description": "在每个子集中，节点必须按照某种顺序（如坐标）进行访问",
+              "formal": "for each subset S: visit nodes in S in a specific order (e.g., by X or Y coordinate)"
+            },
+            {
+              "name": "distinctness",
+              "description": "所有节点的X坐标和Y坐标都是唯一的",
+              "formal": "∀i, j (i ≠ j) : X_i ≠ X_j ∧ Y_i ≠ Y_j"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足给定规则的最短路径长度"
+        }
+      }
+    ],
+    "description": "求满足给定规则的最短路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "divide_conquer",
+        "description": "大问题的解由子问题解合成，通过递归地将城市集合分割成更小的子集来求解最短路径",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，每个子集的最短路径是整体最短路径的一部分",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "分治或 DP 中子问题相互独立，每个子集的最短路径可以在不考虑其他子集的情况下计算",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "divide_conquer",
+              "description": "大问题的解由子问题解合成，通过递归地将城市集合分割成更小的子集来求解最短路径",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，每个子集的最短路径是整体最短路径的一部分",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "分治或 DP 中子问题相互独立，每个子集的最短路径可以在不考虑其他子集的情况下计算",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "problem_id": "P4381",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000000
+          },
+          "properties": {
+            "connected": false,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000000
+    },
+    "properties": {
+      "connected": false,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "每个节点最多访问一次（图中每个顶点只能被遍历一次）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "路径上不能包含已经使用过的边（即不能重复经过同一条边）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "从当前节点到下一个未访问的节点，必须保证存在一条路径（可以是桥或渡船），且该路径不包含已使用的边和渡船",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "每个节点最多访问一次（图中每个顶点只能被遍历一次）"
+            },
+            {
+              "name": "path_constraint",
+              "description": "路径上不能包含已经使用过的边（即不能重复经过同一条边）"
+            },
+            {
+              "name": "connectivity",
+              "description": "从当前节点到下一个未访问的节点，必须保证存在一条路径（可以是桥或渡船），且该路径不包含已使用的边和渡船"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化路径上的权值和"
+        }
+      }
+    ],
+    "description": "最大化路径上的权值和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过选择是否走过某座桥来决定当前路径的最大步行距离",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个岛屿的选择和路径计算可以独立于其他岛屿进行，即在考虑一个岛屿时，不需要重复考虑已经处理过的岛屿",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在构建图的过程中，岛屿之间的可达关系形成有向无环图（DAG），遍历顺序遵循拓扑排序，确保不会出现环路",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过选择是否走过某座桥来决定当前路径的最大步行距离",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个岛屿的选择和路径计算可以独立于其他岛屿进行，即在考虑一个岛屿时，不需要重复考虑已经处理过的岛屿",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在构建图的过程中，岛屿之间的可达关系形成有向无环图（DAG），遍历顺序遵循拓扑排序，确保不会出现环路",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "problem_id": "P7356",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distance_bound",
+        "description": "所有棋子的坐标必须在 100 以内（包括 x 和 y 坐标）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "每个坐标只能放置一个棋子，重复放置视为放弃该次下棋机会",
+        "confidence": "1/1"
+      },
+      {
+        "name": "winning_condition",
+        "description": "白棋胜利条件是出现横竖斜任意一个方向有连续的黑白白白",
+        "confidence": "1/1"
+      },
+      {
+        "name": "turn_based",
+        "description": "游戏是回合制的，黑棋先手，交互库第一步下 (0, 0)",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每局游戏最多进行 14 步，超过 14 步则判负",
+        "confidence": "1/1"
+      },
+      {
+        "name": "score_constraint",
+        "description": "如果在第 x 步获胜且 x ≤ 13，则得分为 min(14 - x, 10) / 10，否则得分为 0",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distance_bound",
+              "description": "所有棋子的坐标必须在 100 以内（包括 x 和 y 坐标）",
+              "formal": "0 ≤ x, y ≤ 100"
+            },
+            {
+              "name": "distinctness",
+              "description": "每个坐标只能放置一个棋子，重复放置视为放弃该次下棋机会",
+              "formal": "对于所有 (x, y)，(x, y) 只能被放置一次"
+            },
+            {
+              "name": "winning_condition",
+              "description": "白棋胜利条件是出现横竖斜任意一个方向有连续的黑白白白",
+              "formal": "存在 (i, j) 使得 (i, j), (i+1, j), (i+2, j), (i+3, j) 或 (i, j), (i, j+1), (i, j+2), (i, j+3) 或 (i, j), (i+1, j+1), (i+2, j+2), (i+3, j+3) 或 (i, j), (i+1, j-1), (i+2, j-2), (i+3, j-3) 中的四个点依次为黑、白、白、白"
+            },
+            {
+              "name": "turn_based",
+              "description": "游戏是回合制的，黑棋先手，交互库第一步下 (0, 0)",
+              "formal": "黑棋先手，交互库第一步下 (0, 0)"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每局游戏最多进行 14 步，超过 14 步则判负",
+              "formal": "每局游戏最多进行 14 步"
+            },
+            {
+              "name": "score_constraint",
+              "description": "如果在第 x 步获胜且 x ≤ 13，则得分为 min(14 - x, 10) / 10，否则得分为 0",
+              "formal": "得分 = min(14 - x, 10) / 10 if x ≤ 13 else 0"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "game_outcome",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "game_outcome",
+          "description": "求在给定规则下的最优策略以最大化获胜概率"
+        }
+      }
+    ],
+    "description": "求在给定规则下的最优策略以最大化获胜概率"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前局面的最优解可以通过子问题的最优解来构建，即每一步棋的选择都基于当前局面下的最优策略。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：游戏的状态（棋盘布局）在每一步操作后都会发生确定性的变化，且这种变化是可预测和一致的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每一步棋的选择都是局部最优的，即在当前状态下选择最有利于获胜的位置下棋。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：当前局面的最优解可以通过子问题的最优解来构建，即每一步棋的选择都基于当前局面下的最优策略。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：游戏的状态（棋盘布局）在每一步操作后都会发生确定性的变化，且这种变化是可预测和一致的。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每一步棋的选择都是局部最优的，即在当前状态下选择最有利于获胜的位置下棋。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

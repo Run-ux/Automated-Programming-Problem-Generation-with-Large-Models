@@ -1,0 +1,143 @@
+{
+  "problem_id": "P5581",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "当某个玩家的钱数降为0时，游戏结束",
+        "confidence": "1/1"
+      },
+      {
+        "name": "cyclic_shift_constraint",
+        "description": "序列以循环方式访问，即第m项之后是第1项",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "当某个玩家的钱数降为0时，游戏结束"
+            },
+            {
+              "name": "cyclic_shift_constraint",
+              "description": "序列以循环方式访问，即第m项之后是第1项"
+            },
+            {
+              "name": "cyclic_shift_constraint",
+              "description": "玩家轮流进行游戏，第n个玩家之后轮到第1个玩家"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一个轮次使得某个玩家的钱数变为0，如果存在则输出该轮次，否则输出-1"
+        }
+      }
+    ],
+    "description": "判断是否存在一个轮次使得某个玩家的钱数变为0，如果存在则输出该轮次，否则输出-1"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "玩家的钱数在每轮操作后单调减少，直到某玩家钱数为0时游戏结束",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "cycle_invariant",
+        "description": "序列和玩家的轮次形成一个循环结构，每次操作后状态按固定顺序转移",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "flow_conservation",
+        "description": "总钱数守恒，即所有玩家的钱数之和在整个过程中保持不变",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "玩家的钱数在每轮操作后单调减少，直到某玩家钱数为0时游戏结束",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false
+              }
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "序列和玩家的轮次形成一个循环结构，每次操作后状态按固定顺序转移",
+              "properties": {}
+            },
+            {
+              "name": "flow_conservation",
+              "description": "总钱数守恒，即所有玩家的钱数之和在整个过程中保持不变",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

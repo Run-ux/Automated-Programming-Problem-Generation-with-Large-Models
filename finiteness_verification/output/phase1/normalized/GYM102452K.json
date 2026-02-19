@@ -1,0 +1,80 @@
+{
+  "problem_id": "GYM102452K",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 800
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "pairwise_exclusion",
+            "description": "每个工程师只能被分配到一个配对中，不能重复使用"
+          },
+          {
+            "name": "matching_constraint",
+            "description": "每对工程师必须由一个算法工程师和一个软件工程师组成"
+          },
+          {
+            "name": "distance_constraint",
+            "description": "每对工程师的运输成本等于他们所在建筑物之间的距离"
+          },
+          {
+            "name": "cost_function",
+            "description": "每个工程师的分配成本是固定的，需要最小化总分配成本和运输成本之和"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求最小化总成本，包括工程师分配成本和每对工程师之间的运输成本"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，即对于每个k值，其最优解可以通过前k-1个工程师对的最优解加上第k对工程师的最优选择来构造。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前状态的最优解依赖于之前状态的最优解。具体来说，从k-1对工程师到k对工程师的最优解是通过在已有最优解基础上增加一对工程师并更新总成本来实现的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "problem_id": "P5044",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 750000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 750000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "range_bound",
+        "description": "每个会议的参会者范围在给定区间内（L_j ≤ x ≤ R_j）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "会议的成本等于其所有参会者的成本之和",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "每个会议的参会者范围是唯一的，即没有两个会议有相同的 (L_j, R_j) 对",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "range_bound",
+              "description": "每个会议的参会者范围在给定区间内（L_j ≤ x ≤ R_j）",
+              "formal": "∀ j, L_j ≤ x ≤ R_j"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "会议的成本等于其所有参会者的成本之和",
+              "formal": "C_j = Σ (max(H_x, H_{x+1}, ..., H_y)) for all y in [L_j, R_j]"
+            },
+            {
+              "name": "distinctness",
+              "description": "每个会议的参会者范围是唯一的，即没有两个会议有相同的 (L_j, R_j) 对",
+              "formal": "(L_j, R_j) ≠ (L_k, R_k) for all 0 ≤ j < k ≤ Q-1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求每个子区间内，选择一个点作为中心点时，所有点到该中心点的最大高度之和的最小值"
+        }
+      }
+    ],
+    "description": "求每个子区间内，选择一个点作为中心点时，所有点到该中心点的最大高度之和的最小值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个会议的最低成本可以通过子区间（从L到R）的最优解来计算",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：会议的成本可以通过子区间的最大高度和进行计算",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：可以将多个子区间的最大高度信息合并，以计算整个区间的最大高度",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个会议的最低成本可以通过子区间（从L到R）的最优解来计算",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：会议的成本可以通过子区间的最大高度和进行计算",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：可以将多个子区间的最大高度信息合并，以计算整个区间的最大高度",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

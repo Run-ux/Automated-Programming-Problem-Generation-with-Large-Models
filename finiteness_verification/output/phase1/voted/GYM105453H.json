@@ -1,0 +1,133 @@
+{
+  "problem_id": "GYM105453H",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "图必须连通，即所有魔法树（源节点）必须通过路径与其他树相连",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "存在一个子集 S 作为魔法的源头，该子集中的元素不能断开与其它树的连接",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每次操作（树枯萎）会导致部分树失去魔法属性，需要计算受影响的树的数量",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "图必须连通，即所有魔法树（源节点）必须通过路径与其他树相连"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "存在一个子集 S 作为魔法的源头，该子集中的元素不能断开与其它树的连接"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每次操作（树枯萎）会导致部分树失去魔法属性，需要计算受影响的树的数量"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求每次操作后失去连通性的节点数量"
+        }
+      }
+    ],
+    "description": "求每次操作后失去连通性的节点数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "flow_conservation",
+        "description": "连通性：森林中的魔法树通过根系保持连通，当某个树断开时，其所在连通块的大小发生变化",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每次处理一个树的枯萎事件时，可以独立计算该事件对连通块的影响，不影响其他未处理的事件",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "flow_conservation",
+              "description": "连通性：森林中的魔法树通过根系保持连通，当某个树断开时，其所在连通块的大小发生变化",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每次处理一个树的枯萎事件时，可以独立计算该事件对连通块的影响，不影响其他未处理的事件",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

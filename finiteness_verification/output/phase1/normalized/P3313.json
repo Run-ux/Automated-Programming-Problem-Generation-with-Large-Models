@@ -1,0 +1,91 @@
+{
+  "problem_id": "P3313",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 10000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（所有节点可以通过边互相到达）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径上节点的属性值必须相同（旅行者只在信仰相同的城市留宿）"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "路径上特定属性节点的权重和（旅行者记下途中留宿过的城市的评级总和）"
+          },
+          {
+            "name": "maximum_value_constraint",
+            "description": "路径上特定属性节点的最大权重（旅行者记下途中留宿过的城市的评级最大值）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "multi_objective",
+        "description": "在给定图上，对于每一对具有相同属性的点，求解最短路径上的权值总和与最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从一个城市到另一个城市的最短路径可以通过其子路径的最优解来构造。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理事件时，每个城市的状态（评级和信仰）的变化是基于前一状态的确定性转移。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：旅行者记下的途中留宿过的城市的评级总和可以通过端点差值计算。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：旅行者记下的途中留宿过的城市的评级最大值可以通过子区间的最大值合并得到。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

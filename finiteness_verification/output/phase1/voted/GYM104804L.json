@@ -1,0 +1,146 @@
+{
+  "problem_id": "GYM104804L",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200
+          },
+          "value_range": {
+            "min": 0,
+            "max": 10079
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200
+    },
+    "value_range": {
+      "min": 0,
+      "max": 10079
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "window_constraint",
+        "description": "选择的出发和到达时间必须在给定的时间窗口内（即不早于集合时间和不晚于离开时间）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "每个列车的出发时间必须早于或等于其到达时间",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "所有列车的出发时间和到达时间是唯一的，不会有两个列车在同一时间出发或到达",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "需要最小化总的旅行时间（包括在莫斯科等待的时间）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "window_constraint",
+              "description": "选择的出发和到达时间必须在给定的时间窗口内（即不早于集合时间和不晚于离开时间）"
+            },
+            {
+              "name": "ordering",
+              "description": "每个列车的出发时间必须早于或等于其到达时间"
+            },
+            {
+              "name": "distinctness",
+              "description": "所有列车的出发时间和到达时间是唯一的，不会有两个列车在同一时间出发或到达"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "需要最小化总的旅行时间（包括在莫斯科等待的时间）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求两点间往返路径的最小总时间"
+        }
+      }
+    ],
+    "description": "求两点间往返路径的最小总时间"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从所有可能的出发和返回时间中选择使得总在外时间最小的方案。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：对于每个给定的出发或返回时间点，存在一个最优的选择使得总的在外时间不增加。具体来说，在考虑所有可能的火车班次时，随着出发时间的推移，最优到达时间也是非递减的。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从所有可能的出发和返回时间中选择使得总在外时间最小的方案。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：对于每个给定的出发或返回时间点，存在一个最优的选择使得总的在外时间不增加。具体来说，在考虑所有可能的火车班次时，随着出发时间的推移，最优到达时间也是非递减的。",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

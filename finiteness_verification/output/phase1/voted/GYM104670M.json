@@ -1,0 +1,165 @@
+{
+  "problem_id": "GYM104670M",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 200
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "路径必须形成一个从起点到终点的连通路径，且路径中的每个单元格只能访问一次。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "orientation",
+        "description": "在网格的上行只能向右或向下移动，在下行只能向左或向上移动。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "suffix_length_constraint",
+        "description": "路径的长度必须恰好为 x 个单元格。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_intersecting_segments",
+        "description": "每个单元格最多被一个段覆盖，不允许重叠段。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "revisiting_allowed",
+        "description": "路径中允许最多两次 U 型转弯。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "路径必须形成一个从起点到终点的连通路径，且路径中的每个单元格只能访问一次。",
+              "formal": "Path P in grid G such that each cell in P is visited exactly once and P is connected."
+            },
+            {
+              "name": "orientation",
+              "description": "在网格的上行只能向右或向下移动，在下行只能向左或向上移动。",
+              "formal": "For top row: move right or down. For bottom row: move left or up."
+            },
+            {
+              "name": "suffix_length_constraint",
+              "description": "路径的长度必须恰好为 x 个单元格。",
+              "formal": "|P| = x"
+            },
+            {
+              "name": "non_intersecting_segments",
+              "description": "每个单元格最多被一个段覆盖，不允许重叠段。",
+              "formal": "Each cell in the grid is covered by at most one segment."
+            },
+            {
+              "name": "revisiting_allowed",
+              "description": "路径中允许最多两次 U 型转弯。",
+              "formal": "Number of U-turns in path P ≤ 2"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化路径上的权值和"
+        }
+      }
+    ],
+    "description": "最大化路径上的权值和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即路径的最大美丽值可以通过子路径的最大美丽值得到",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在动态规划过程中，当前状态的值依赖于前一个或多个状态的值，并且这种依赖关系在整个计算过程中保持一致",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：区间的美丽值可以通过其子区间的美丽值相加得到，这使得可以使用前缀和等技术来优化计算",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即路径的最大美丽值可以通过子路径的最大美丽值得到",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在动态规划过程中，当前状态的值依赖于前一个或多个状态的值，并且这种依赖关系在整个计算过程中保持一致",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：区间的美丽值可以通过其子区间的美丽值相加得到，这使得可以使用前缀和等技术来优化计算",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

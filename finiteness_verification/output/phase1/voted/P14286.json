@@ -1,0 +1,165 @@
+{
+  "problem_id": "P14286",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 4,
+            "max": 50000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false,
+            "directed": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 4,
+      "max": 50000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": false,
+      "directed": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "路径必须连接地图的西边界和东边界，且路径上的所有点具有相同的高度",
+        "confidence": "1/1"
+      },
+      {
+        "name": "interpolation_constraint",
+        "description": "地图上任意点的高度通过三角形顶点的高度线性插值得到",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "所有顶点的高度是唯一的",
+        "confidence": "1/1"
+      },
+      {
+        "name": "planarity",
+        "description": "地图是一个完全三角剖分的矩形，所有三角形面积为正，且没有顶点在其他三角形的边上",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "路径必须连接地图的西边界和东边界，且路径上的所有点具有相同的高度",
+              "formal": "存在一条从 (0, y1) 到 (w, y2) 的路径 P，使得 ∀(x, y) ∈ P, z(x, y) = c"
+            },
+            {
+              "name": "interpolation_constraint",
+              "description": "地图上任意点的高度通过三角形顶点的高度线性插值得到",
+              "formal": "对于任意点 (x, y) 在三角形 (a, b, c) 内，z(x, y) = α * z_a + β * z_b + γ * z_c, 其中 α + β + γ = 1"
+            },
+            {
+              "name": "distinctness",
+              "description": "所有顶点的高度是唯一的",
+              "formal": "∀i ≠ j, z_i ≠ z_j"
+            },
+            {
+              "name": "planarity",
+              "description": "地图是一个完全三角剖分的矩形，所有三角形面积为正，且没有顶点在其他三角形的边上",
+              "formal": "地图由 n 个顶点和 m 个三角形组成，每个三角形的面积 > 0，且没有顶点在其他三角形的边上"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求两点间最短路径长度"
+        }
+      }
+    ],
+    "description": "求两点间最短路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "在寻找最短路径的过程中，路径的长度随高度单调变化。对于每个给定的高度，路径长度是固定的，且随着高度的变化，路径长度呈现单调性。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的最优解可以通过子问题的最优解来构建。具体来说，最短路径可以由一系列局部最短路径组合而成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "在处理不同高度的路径时，可以通过合并相邻区间的路径信息来得到整个区间的最短路径。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "在寻找最短路径的过程中，路径的长度随高度单调变化。对于每个给定的高度，路径长度是固定的，且随着高度的变化，路径长度呈现单调性。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "问题的最优解可以通过子问题的最优解来构建。具体来说，最短路径可以由一系列局部最短路径组合而成。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "在处理不同高度的路径时，可以通过合并相邻区间的路径信息来得到整个区间的最短路径。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

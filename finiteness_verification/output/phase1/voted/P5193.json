@@ -1,0 +1,135 @@
+{
+  "problem_id": "P5193",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": -10000,
+            "max": 10000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": -10000,
+      "max": 10000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "coverage",
+        "description": "每个炸弹的爆炸范围覆盖一个曼哈顿距离为 R 的区域，引燃一个炸弹可以触发其范围内所有炸弹的连锁反应",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimum_set_cover_constraint",
+        "description": "需要找到最少数量的炸弹，使得这些炸弹的爆炸范围能够覆盖所有的炸弹",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "coverage",
+              "description": "每个炸弹的爆炸范围覆盖一个曼哈顿距离为 R 的区域，引燃一个炸弹可以触发其范围内所有炸弹的连锁反应",
+              "formal": "对于每个炸弹 i，如果 |x - x_i| + |y - y_i| ≤ R，则炸弹 (x, y) 会被引燃"
+            },
+            {
+              "name": "minimum_set_cover_constraint",
+              "description": "需要找到最少数量的炸弹，使得这些炸弹的爆炸范围能够覆盖所有的炸弹",
+              "formal": "求最小集合 S ⊆ {1, 2, ..., n}，使得 ∀i ∈ {1, 2, ..., n}，存在 j ∈ S 使得 |x_i - x_j| + |y_i - y_j| ≤ R"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求最小的初始引爆点数量，使得所有节点都被激活"
+        }
+      }
+    ],
+    "description": "求最小的初始引爆点数量，使得所有节点都被激活"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的全局最优解可以通过子问题的最优解组合得到，即引燃最少炸弹的问题可以分解为多个子区域的最小引燃数问题，并通过这些子问题的解来构造全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，选择当前能够覆盖最多未爆炸炸弹的炸弹进行引燃，这种局部最优的选择最终能导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态（某些炸弹已爆炸）转移到另一个状态（更多炸弹被引燃）的过程中，状态转移的一致性保证了算法的正确性。每个状态都基于前一个状态通过引燃新的炸弹来更新。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的全局最优解可以通过子问题的最优解组合得到，即引燃最少炸弹的问题可以分解为多个子区域的最小引燃数问题，并通过这些子问题的解来构造全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，选择当前能够覆盖最多未爆炸炸弹的炸弹进行引燃，这种局部最优的选择最终能导致全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态（某些炸弹已爆炸）转移到另一个状态（更多炸弹被引燃）的过程中，状态转移的一致性保证了算法的正确性。每个状态都基于前一个状态通过引燃新的炸弹来更新。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

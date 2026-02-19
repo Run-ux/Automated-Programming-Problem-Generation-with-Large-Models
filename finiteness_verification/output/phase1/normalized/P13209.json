@@ -1,0 +1,92 @@
+{
+  "problem_id": "P13209",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 50
+        },
+        "value_range": {
+          "min": 1,
+          "max": 50
+        },
+        "properties": {
+          "connected": true,
+          "boundary_walls": true,
+          "structural_integrity": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图中所有空节点（包括起点和终点）之间必须存在路径"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "不可通行的墙必须在边缘相接，不能只在角落相接。对于每个2x2区域，如果该区域包含恰好两个墙，则这两个墙必须在同一行或同一列"
+          },
+          {
+            "name": "circular_boundary_constraint",
+            "description": "边界必须由不可通行的墙组成。边界定义为最上/最下一行或最左/最右一列"
+          },
+          {
+            "name": "path_length_constraint",
+            "description": "从起点到终点的最短路径长度必须等于给定的D步数"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种方法，通过移除一些障碍物使得从起点到终点的最短路径长度恰好为给定值，并且地图仍然满足所有约束条件"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，通过移除某些墙使得从起点到终点的最短路径长度为D的问题可以分解为更小规模的子问题。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在搜索或动态规划过程中，状态之间的转移保持一致性。在本题中，从一个状态转移到另一个状态的过程中，路径长度和地图的有效性保持一致。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在有向无环图（DAG）上，节点的处理顺序满足拓扑序。在本题中，地图中的路径可以看作是一个DAG，路径上的节点按照拓扑序进行处理。",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "连通性不变量：在移除某些墙后，地图仍然保持连通性。即任意两个空格之间存在路径。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

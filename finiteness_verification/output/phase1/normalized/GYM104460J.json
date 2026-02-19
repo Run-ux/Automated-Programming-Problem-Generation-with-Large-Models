@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -28,8 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "maximize_bitwise_and_sum",
-            "description": "从每个区间中选择一个整数，使得这些整数的按位与结果最大"
+            "name": "bitwise_and_operation",
+            "description": "选取的整数进行按位与操作的结果最大化"
+          },
+          {
+            "name": "range_selection",
+            "description": "从每个区间中选择一个整数"
           }
         ]
       }
@@ -41,7 +45,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "求多个区间中各选一个整数进行按位与操作后得到的最大值"
+        "description": "最大化从每个区间选择一个整数后，这些整数的按位与结果"
       }
     }
   ],
@@ -50,9 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个位上的最大值可通过独立考虑所有区间的对应位得到",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "bitwise_independence",
+            "description": "位与操作的不变性：在每个区间内选择的数，其二进制表示中每一位的1或0状态决定了最终结果的该位值。若某一位在所有区间的可选范围内都为1，则最终结果的该位也为1。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：通过检查每个二进制位是否可以在所有给定区间内找到一个共同的1，可以将多个区间的贡献合并来计算最大可能的位与值。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

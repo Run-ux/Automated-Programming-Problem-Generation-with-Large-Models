@@ -1,0 +1,81 @@
+{
+  "problem_id": "GYM102215D",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（所有城市可以通过道路互相到达）"
+          },
+          {
+            "name": "bipartiteness",
+            "description": "图可以被划分为两个不相交的子集，使得每个子集内部的所有节点互相可达，但两个子集之间没有路径连接"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "红色城市和蓝色城市是整个城市集合的两个互斥子集"
+          },
+          {
+            "name": "distinctness",
+            "description": "每个预测中的红色城市和蓝色城市的编号都是唯一的"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种方案，使得给定的两组点在图中被完全分割"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "flow_conservation",
+            "description": "图的连通性：在处理每个预测时，红色城市和蓝色城市各自形成连通块，并且这两个连通块之间没有直接连接。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个预测可以独立处理，不受其他预测的影响。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

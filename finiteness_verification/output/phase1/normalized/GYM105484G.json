@@ -1,0 +1,87 @@
+{
+  "problem_id": "GYM105484G",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 100000
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "query_limit",
+            "description": "查询次数限制，最多进行 p 次查询，其中 p = ⌊log₂ n⌋"
+          },
+          {
+            "name": "distinctness",
+            "description": "每次查询的两个顶点 u 和 v 必须不同"
+          },
+          {
+            "name": "operation_type",
+            "description": "查询操作必须以 ? 开头，猜测操作必须以 ! 开头"
+          },
+          {
+            "name": "state_transition",
+            "description": "交互器的回答 t 与之前的查询和回答不冲突"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一个满足条件的特殊顶点"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：通过递归地将问题分解为子问题，并在子问题的解上合成大问题的解",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "二分搜索不变量：通过每次查询将搜索空间缩小一半，逐步逼近目标顶点",
+            "properties": {
+              "search_space_shrinkable": true
+            }
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：树结构上的查询和推理保持了从根到叶的层次顺序",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

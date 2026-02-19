@@ -2,14 +2,14 @@
   "problem_id": "GYM104022J",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 1,
             "max": 1000000
@@ -19,7 +19,8 @@
             "max": 1000000
           },
           "properties": {
-            "connected": true
+            "connected": true,
+            "directed": false
           }
         }
       }
@@ -33,24 +34,30 @@
       "max": 1000000
     },
     "properties": {
-      "connected": true
+      "connected": true,
+      "directed": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "每个节点的相邻节点数量不超过4个，且相邻节点编号在-1到m^2之间（图的边约束）",
+        "name": "distinctness",
+        "description": "所有拼图块的编号唯一，范围从 1 到 m^2。",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_solution_constraint",
-        "description": "每个节点具有唯一的标识编号，范围从1到m^2（图节点唯一性约束）",
+        "name": "adjacency_relation",
+        "description": "每个拼图块有四个相邻关系（北、南、西、东），如果某个方向没有相邻块，则该方向的值为 -1。",
         "confidence": "1/1"
       },
       {
-        "name": "undirected_graph",
-        "description": "最终布局必须是一个m行m列的网格，每个位置恰好放置一个节点（二维网格布局约束）",
+        "name": "connectivity",
+        "description": "拼图块构成一个连通的方形网格，即每个块都能通过相邻关系连接到其他块。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "rectangular_layout",
+        "description": "最终拼图结果是一个 m 行 m 列的方形网格。",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +68,24 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "每个节点的相邻节点数量不超过4个，且相邻节点编号在-1到m^2之间（图的边约束）",
-              "formal": "∀i ∈ [1, m^2], n_i, s_i, w_i, e_i ∈ {-1} ∪ [1, m^2]"
+              "name": "distinctness",
+              "description": "所有拼图块的编号唯一，范围从 1 到 m^2。",
+              "formal": "∀i, j ∈ [1, m^2], i ≠ j → piece_id(i) ≠ piece_id(j)"
             },
             {
-              "name": "distinct_solution_constraint",
-              "description": "每个节点具有唯一的标识编号，范围从1到m^2（图节点唯一性约束）",
-              "formal": "∀i ∈ [1, m^2], id_i ∈ [1, m^2] 且 id_i 唯一"
+              "name": "adjacency_relation",
+              "description": "每个拼图块有四个相邻关系（北、南、西、东），如果某个方向没有相邻块，则该方向的值为 -1。",
+              "formal": "∀i ∈ [1, m^2], (n_i, s_i, w_i, e_i) ∈ {-1} ∪ [1, m^2]"
             },
             {
-              "name": "undirected_graph",
-              "description": "最终布局必须是一个m行m列的网格，每个位置恰好放置一个节点（二维网格布局约束）",
-              "formal": "输出为 m × m 的矩阵，每个元素在 [1, m^2] 中且唯一"
+              "name": "connectivity",
+              "description": "拼图块构成一个连通的方形网格，即每个块都能通过相邻关系连接到其他块。",
+              "formal": "存在一条路径使得任意两个拼图块可以通过相邻关系互相到达"
+            },
+            {
+              "name": "rectangular_layout",
+              "description": "最终拼图结果是一个 m 行 m 列的方形网格。",
+              "formal": "结果是一个 m × m 的矩阵"
             }
           ]
         }
@@ -81,34 +93,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足给定相邻关系的二维数组"
+          "type": "construction",
+          "description": "构造一个满足给定相邻关系的矩阵"
         }
       }
     ],
-    "description": "构造一个满足给定相邻关系的二维数组"
+    "description": "构造一个满足给定相邻关系的矩阵"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：通过构建有向无环图（DAG）表示拼图块之间的相邻关系，可以找到一个合法的拼图顺序，使得每一块在放置时其所有已知相邻块已经就位。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在拼图过程中，每个拼图块的状态（位置和方向）根据其相邻块的状态进行更新，确保最终拼图的正确性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个拼图块的位置确定依赖于其相邻块的位置",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：通过构建有向无环图（DAG）表示拼图块之间的相邻关系，可以找到一个合法的拼图顺序，使得每一块在放置时其所有已知相邻块已经就位。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在拼图过程中，每个拼图块的状态（位置和方向）根据其相邻块的状态进行更新，确保最终拼图的正确性。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个拼图块的位置确定依赖于其相邻块的位置"
+    ]
   }
 }

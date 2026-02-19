@@ -1,0 +1,96 @@
+{
+  "problem_id": "P11343",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_tree",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "A": {
+            "min": 0,
+            "max": 1000000000000
+          },
+          "B": {
+            "min": 0,
+            "max": 1000000
+          },
+          "W": {
+            "min": 1,
+            "max": 1000000
+          }
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "图必须是树结构（连通且无环）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "从根节点到其他所有节点的路径费用最小化"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每个节点最多访问一次"
+          },
+          {
+            "name": "linear_relation",
+            "description": "费用计算公式为基本费用加上每公里费用乘以距离"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求从起点到其他所有点的最短路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从根节点到任意节点的最小费用可以通过其父节点的最小费用递推得到",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前节点的最小费用由其父节点的最小费用和当前节点的出租车费用决定",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "树遍历不变量：通过深度优先搜索（DFS）或广度优先搜索（BFS）遍历树结构，确保每个节点都被访问且仅被访问一次",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

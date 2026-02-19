@@ -4,12 +4,25 @@
   "dimension": "invariant",
   "round": 1,
   "result": {
-    "name": "optimal_substructure",
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题的解是独立且最优的",
-    "properties": {
-      "subproblem_independence": true,
-      "solution_combinability": true
-    }
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解组合得到，即对于每个提案i，从i开始的最大有效提案集可以由其后续提案的有效性递推得出。",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着提案范围的扩展，如果当前范围内的提案集合是有效的，则在添加新的提案后，有效性不会变差。即，如果[i, j]是一个有效的提案范围，那么任何包含它的范围[i, k] (k >= j)也必须是有效的，直到遇到第一个使集合无效的提案。",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：基于当前提案的状态（是否为赞助或业务提案）以及已知的前一个最大有效提案集，可以确定下一个提案加入后的集合是否仍然有效。这种状态转移保持了整个算法的一致性和正确性。",
+        "properties": {}
+      }
+    ]
   },
   "status": "success"
 }

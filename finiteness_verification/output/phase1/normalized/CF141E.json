@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "weighted_undirected_graph",
         "length": {
           "min": 1,
           "max": 1000
@@ -17,8 +17,7 @@
         },
         "properties": {
           "connected": false,
-          "weighted": false,
-          "directed": false
+          "weighted": false
         }
       }
     }
@@ -30,14 +29,12 @@
       "result": {
         "constraints": [
           {
-            "name": "bipartite_matching",
-            "description": "图可以被划分为两个独立的集合，每个集合内的节点之间没有边（二分图约束）",
-            "formal": "G = (V, E) 可以被划分为 V1 和 V2，使得 V1 ∩ V2 = ∅ 且 ∀(u, v) ∈ E, u ∈ V1, v ∈ V2 或 u ∈ V2, v ∈ V1"
+            "name": "bipartiteness",
+            "description": "图必须是二分图（即可以将节点分为两个集合，使得每条边的两个端点分别属于不同的集合）"
           },
           {
-            "name": "edge_exclusion_constraint",
-            "description": "每条边必须分配给一个特定的集合（边分配约束）",
-            "formal": "对于每条边 e ∈ E，存在一个函数 f(e) ∈ {S, M}，使得每条边都被分配给 S 或 M"
+            "name": "degree_bound",
+            "description": "每个节点的度数没有显式限制，但需要满足二分图的性质"
           }
         ]
       }
@@ -48,8 +45,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在满足条件的解"
+        "type": "feasibility",
+        "description": "判断是否存在一种分配方式使得所有道路都能被清理"
       }
     }
   ],
@@ -58,9 +55,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的解都是局部最优的，从而保证全局最优",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个道路的清理决策可以独立进行，不受其他道路清理决策的影响",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：对于每条道路，根据给定的条件选择清理者，局部最优选择导致全局最优解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

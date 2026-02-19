@@ -2,14 +2,14 @@
   "problem_id": "GYM106063D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -18,9 +18,7 @@
             "min": 1,
             "max": 1000000
           },
-          "properties": {
-            "ordered": false
-          }
+          "properties": {}
         }
       }
     ],
@@ -32,20 +30,18 @@
       "min": 1,
       "max": 1000000
     },
-    "properties": {
-      "ordered": false
-    }
+    "properties": {}
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "path_length_constraint",
-        "description": "序列长度必须为 2n",
+        "name": "permutation_constraint",
+        "description": "序列必须是长度为 2n 的排列，且每个元素在 [1, 2n] 范围内出现恰好一次",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_solution_constraint",
-        "description": "存在一个满足条件的序列，否则输出 -1",
+        "name": "exclusion",
+        "description": "序列中的每对相邻元素不能相同",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +52,12 @@
         "result": {
           "constraints": [
             {
-              "name": "path_length_constraint",
-              "description": "序列长度必须为 2n"
+              "name": "permutation_constraint",
+              "description": "序列必须是长度为 2n 的排列，且每个元素在 [1, 2n] 范围内出现恰好一次"
             },
             {
-              "name": "distinct_solution_constraint",
-              "description": "存在一个满足条件的序列，否则输出 -1"
+              "name": "exclusion",
+              "description": "序列中的每对相邻元素不能相同"
             }
           ]
         }
@@ -69,34 +65,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的序列"
+          "type": "construction",
+          "description": "构造一个满足给定条件的序列，或判断不存在这样的序列"
         }
       }
     ],
-    "description": "构造一个满足条件的序列"
+    "description": "构造一个满足给定条件的序列，或判断不存在这样的序列"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：序列的构造可以通过子序列的最优解进行扩展，满足动态规划的性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：序列的构造可以通过对称变换保持不变，即前半部分和后半部分是对称的",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，满足动态规划的基本性质",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：序列的构造可以通过子序列的最优解进行扩展，满足动态规划的性质",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：序列的构造可以通过对称变换保持不变，即前半部分和后半部分是对称的",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，满足动态规划的基本性质"
+    ]
   }
 }

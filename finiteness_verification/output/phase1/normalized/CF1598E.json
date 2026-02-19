@@ -1,0 +1,74 @@
+{
+  "problem_id": "CF1598E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "路径必须满足特定的形状约束（即从左上到右下，且每次只能向右或向下移动）",
+            "formal": "对于路径上的每个点 (i, j)，下一个点只能是 (i+1, j) 或 (i, j+1)"
+          },
+          {
+            "name": "distinctness",
+            "description": "不同的路径必须包含至少一个不同的单元格",
+            "formal": "对于两个路径 P1 和 P2，存在一个单元格 (i, j) 使得 (i, j) 在 P1 中但不在 P2 中，或者在 P2 中但不在 P1 中"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足条件的不同路径数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次查询后，矩阵的状态（自由或锁定）发生改变，但整体的楼梯路径数量可以通过前一状态推导得出。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：楼梯路径的数量可以通过子区间的贡献累加得到。对于每个单元格的变化，其对总路径数的影响可以独立计算并累加到全局结果中。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "problem_id": "P4456",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 4,
+            "max": 4
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 4,
+      "max": 4
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "相邻元素不能同时为 1（图着色约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "序列中 0 和 1 的出现次数分别为 x 和 y，且 x + y = n",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "特征值的和需要对给定的质数 m 取模",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "相邻元素不能同时为 1（图着色约束）",
+              "formal": "对于所有 i (0 ≤ i < n-1)，若 A[i] = 1，则 A[i+1] ≠ 1"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "序列中 0 和 1 的出现次数分别为 x 和 y，且 x + y = n",
+              "formal": "x + y = n"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "特征值的和需要对给定的质数 m 取模",
+              "formal": "(∑(x^a * y^b)) % m"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求所有满足条件的序列的特征值之和，并对给定模数取余"
+        }
+      }
+    ],
+    "description": "求所有满足条件的序列的特征值之和，并对给定模数取余"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：长度为n的交错序列的特征值和可以通过长度为n-1和n-2的交错序列的特征值和递推得到",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：当前状态（长度为n的交错序列）的解可以由前一个或前两个状态（长度为n-1和n-2的交错序列）的解通过固定的规则转换而来",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：长度为n的交错序列的特征值和可以通过长度为n-1和n-2的交错序列的特征值和递推得到",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：当前状态（长度为n的交错序列）的解可以由前一个或前两个状态（长度为n-1和n-2的交错序列）的解通过固定的规则转换而来",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

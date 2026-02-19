@@ -6,20 +6,24 @@
   "result": {
     "constraints": [
       {
-        "name": "operation_application",
-        "description": "每个操作必须且只能应用一次"
+        "name": "operation_limit",
+        "description": "每个时间步必须应用一次且仅一次操作",
+        "formal": "对于每个 i (1 ≤ i ≤ n)，恰好执行一次第 i 个操作"
       },
       {
-        "name": "value_update_limit",
-        "description": "每次操作中，更新次数 a_i 必须满足 0 ≤ a_i ≤ y_i"
+        "name": "range_bound",
+        "description": "每次操作中选择的 a_i 必须在 [0, y_i] 范围内",
+        "formal": "0 ≤ a_i ≤ y_i"
       },
       {
-        "name": "ceiling_function",
-        "description": "每次更新后的值 k 必须取为最小的不小于 (k + x_i) 或 (k * x_i) 的整数"
+        "name": "state_transition",
+        "description": "状态 k 的更新规则依赖于操作类型和参数 x_i, a_i",
+        "formal": "k := ceil(k + a_i * x_i) 或 k := ceil(k * x_i^a_i)"
       },
       {
-        "name": "target_achievement",
-        "description": "对于每个目标 j (1 ≤ j ≤ m)，需要找到最早的时间步使得 k 等于 j，如果无法达到则输出 -1"
+        "name": "target_reachability",
+        "description": "需要找到最早的时间步，使得 k 等于特定的目标值 j",
+        "formal": "找到最小的 t 使得 k = j，否则输出 -1"
       }
     ]
   },

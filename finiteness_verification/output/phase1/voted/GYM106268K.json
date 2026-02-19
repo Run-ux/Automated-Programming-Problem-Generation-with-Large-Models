@@ -1,0 +1,147 @@
+{
+  "problem_id": "GYM106268K",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 3000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 9000
+          },
+          "properties": {
+            "directed": true,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 3000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 9000
+    },
+    "properties": {
+      "directed": true,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "每个推荐者集合只能推荐一个新成员（集合唯一性约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "independence",
+        "description": "不同的推荐者子集可以推荐不同的新成员（子集独立性约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "consistency_constraint",
+        "description": "所有推荐关系必须一致，不能有矛盾的推荐信息（一致性约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "每个推荐者集合只能推荐一个新成员（集合唯一性约束）",
+              "formal": "∀ S ⊆ M, ∃! m ∈ M, s.t. S recommends m"
+            },
+            {
+              "name": "independence",
+              "description": "不同的推荐者子集可以推荐不同的新成员（子集独立性约束）",
+              "formal": "∀ S1, S2 ⊆ M, S1 ≠ S2, ∃ m1, m2 ∈ M, s.t. S1 recommends m1 and S2 recommends m2"
+            },
+            {
+              "name": "consistency_constraint",
+              "description": "所有推荐关系必须一致，不能有矛盾的推荐信息（一致性约束）",
+              "formal": "∀ a, b, c ∈ M, if (a, b) and (b, c) are recommended, then (a, c) is not recommended by the same set"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断给定的约束条件是否存在可行解"
+        }
+      }
+    ],
+    "description": "判断给定的约束条件是否存在可行解"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "set_difference_invariance",
+        "description": "集合独立性：每个推荐者集合只能推荐一个新成员，且不同推荐者集合之间互不影响",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：成员之间的推荐关系形成有向无环图（DAG），可以进行拓扑排序",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个成员的推荐关系可以独立处理，不受其他成员推荐关系的影响",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "set_difference_invariance",
+              "description": "集合独立性：每个推荐者集合只能推荐一个新成员，且不同推荐者集合之间互不影响",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：成员之间的推荐关系形成有向无环图（DAG），可以进行拓扑排序",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个成员的推荐关系可以独立处理，不受其他成员推荐关系的影响",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

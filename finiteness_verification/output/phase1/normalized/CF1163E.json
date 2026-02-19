@@ -1,0 +1,79 @@
+{
+  "problem_id": "CF1163E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "distinct": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "集合 S 中的元素必须是互不相同的（唯一性约束）",
+            "formal": "∀i, j (1 ≤ i < j ≤ n), S_i ≠ S_j"
+          },
+          {
+            "name": "permutation_constraint",
+            "description": "生成的序列必须是从 0 到 2^x - 1 的一个排列（排列约束）",
+            "formal": "P 是 [0, 2^x - 1] 的一个排列"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "生成的排列中的每个元素必须能够通过集合 S 中的元素进行二进制表示（子集约束）",
+            "formal": "∀k (0 ≤ k < 2^x), k 可以用 S 中的元素表示为二进制数"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足条件的最大整数x，使得存在从0到2^x-1的排列"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过找到最大的x使得0到2^x-1的整数可以构成一个魔法排列。",
+            "properties": {}
+          },
+          {
+            "name": "matroid_exchange",
+            "description": "拟阵交换性：在选择元素构建魔法排列时，满足拟阵的独立集性质，即如果一个集合是独立的，那么从这个集合中移除一个元素后仍然是独立的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

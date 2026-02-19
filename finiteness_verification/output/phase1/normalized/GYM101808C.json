@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -28,16 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "substring_reversal",
-            "description": "每次操作可以选择一个奇数长度的子串进行反转，且该子串必须以字符串的中心字符为中心"
+            "name": "operation_type",
+            "description": "操作类型限制为反转指定长度的子串，且子串长度必须为奇数且以字符串中心对称"
           },
           {
-            "name": "equal_segment_length",
-            "description": "两个字符串 A 和 B 的长度相等且为奇数"
+            "name": "range_bound",
+            "description": "输入字符串长度必须为奇数"
           },
           {
-            "name": "transformation_exclusion",
-            "description": "如果无法通过上述操作将字符串 A 转换为字符串 B，则输出 -1"
+            "name": "alphabet_constraint",
+            "description": "输入字符串仅包含小写英文字母"
           }
         ]
       }
@@ -48,8 +48,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_cost",
-        "description": "求将一个字符串转换为另一个字符串所需的最少操作次数"
+        "type": "minimize_value",
+        "description": "求将一个字符串转换为另一个字符串所需的最小操作次数，若无法转换则输出-1"
       }
     }
   ],
@@ -58,11 +58,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，且子问题之间相互独立",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "symmetry",
+            "description": "对称性：字符串反转操作具有对称性质，可以通过多次反转达到目标字符串",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：将问题分解为更小的子问题，每个子问题的最优解可以组合成原问题的最优解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

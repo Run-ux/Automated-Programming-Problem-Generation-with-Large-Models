@@ -1,0 +1,94 @@
+{
+  "problem_id": "P3972",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 5
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "initial_value_constraint",
+            "description": "新元素的初始值依赖于与其有共同属性的最近一个元素的值（图中的边关系）",
+            "formal": "score(new_movie) = score(most_recent_movie_with_common_actors)"
+          },
+          {
+            "name": "average_value_constraint",
+            "description": "元素的值更新为当前值与新值的平均数（数值更新规则）",
+            "formal": "new_score(movie) = (old_score(movie) + new_rating) / 2"
+          },
+          {
+            "name": "ordering_constraint",
+            "description": "根据元素的值进行排名，值相同的情况下按出现顺序排名（排序约束）",
+            "formal": "rank(movie) = sort_by(score, release_order)"
+          },
+          {
+            "name": "degree_bound",
+            "description": "元素的值在指定范围内（值域约束）",
+            "formal": "0 <= score(movie) <= 5"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过某个常数（图中每个节点的邻居数量限制）",
+            "formal": "degree(movie) <= 5"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "根据操作序列构造并维护一个动态评分系统，输出查询排名对应的电影ID"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：电影评分和排名的状态转移一致性，评分更新时根据规则重新计算评分并更新排名",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：查询操作的排名结果依赖于当前所有电影评分的排序，评分最高的电影为第一名",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：发布新电影时，如果主演之前出现过，则新电影的评分基于最近一部有共同主演的电影评分，这种信息可以通过维护一个区间或集合来实现合并",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

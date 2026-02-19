@@ -2,14 +2,14 @@
   "problem_id": "GYM101955C",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 50
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "longest_increasing_subsequence",
-        "description": "序列的最长递增子序列长度至少为 (n - 1)",
+        "name": "longest_increasing_subsequence_constraint",
+        "description": "最长递增子序列的长度至少为 (n - 1)",
         "confidence": "1/1"
       },
       {
-        "name": "permutation_count_modulo_constraint",
-        "description": "满足条件的排列数量对给定质数 q 取模后的结果",
+        "name": "permutation_constraint",
+        "description": "排列是 1 到 n 的一个全排列",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "longest_increasing_subsequence",
-              "description": "序列的最长递增子序列长度至少为 (n - 1)",
+              "name": "longest_increasing_subsequence_constraint",
+              "description": "最长递增子序列的长度至少为 (n - 1)",
               "formal": "LIS(A) >= n - 1"
             },
             {
-              "name": "permutation_count_modulo_constraint",
-              "description": "满足条件的排列数量对给定质数 q 取模后的结果",
-              "formal": "count % q"
+              "name": "permutation_constraint",
+              "description": "排列是 1 到 n 的一个全排列",
+              "formal": "A 是 [1, 2, ..., n] 的一个排列"
             }
           ]
         }
@@ -71,34 +71,69 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的排列数量"
+          "type": "enumeration",
+          "description": "求满足条件的排列数并取模"
         }
       }
     ],
-    "description": "统计满足条件的排列数量"
+    "description": "求满足条件的排列数并取模"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即在每一步插入操作后，前k个元素形成的子序列是已排序的，并且满足最长递增子序列长度至少为n-1的条件。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着插入排序的进行，已排序部分的长度逐渐增加，每次插入操作都保证了已排序部分的有序性。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个插入操作只依赖于当前已排序的部分，而与未排序部分的具体顺序无关。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，即在每一步插入操作后，前k个元素始终是有序的，并且这种有序性可以递归地保持下去。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即在每一步插入操作后，前k个元素形成的子序列是已排序的，并且满足最长递增子序列长度至少为n-1的条件。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着插入排序的进行，已排序部分的长度逐渐增加，每次插入操作都保证了已排序部分的有序性。",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个插入操作只依赖于当前已排序的部分，而与未排序部分的具体顺序无关。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，即在每一步插入操作后，前k个元素始终是有序的，并且这种有序性可以递归地保持下去。"
+    ]
   }
 }

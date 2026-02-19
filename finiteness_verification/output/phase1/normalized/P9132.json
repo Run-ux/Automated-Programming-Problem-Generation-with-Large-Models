@@ -1,0 +1,89 @@
+{
+  "problem_id": "P9132",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "coverage",
+            "description": "选择的连通子图必须覆盖所有指定节点（Bessie观看Cowflix的节点）",
+            "formal": "对于每个 s_i = 1 的节点 i，存在一个连通子图 c_j 使得 i ∈ c_j"
+          },
+          {
+            "name": "non_intersecting_segments",
+            "description": "选择的连通子图必须是不相交的",
+            "formal": "对于任意两个连通子图 c_i 和 c_j (i ≠ j)，c_i ∩ c_j = ∅"
+          },
+          {
+            "name": "cost_constraint",
+            "description": "每个连通子图的成本是其节点数加上常数 k",
+            "formal": "cost(c_i) = |c_i| + k"
+          },
+          {
+            "name": "minimize_total_cost",
+            "description": "总成本是所有选择的连通子图成本之和，并且需要最小化",
+            "formal": "minimize Σ cost(c_i) = Σ (|c_i| + k)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化覆盖所有指定节点的不相交连通子图的总代价"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子树的最优解组合得到，满足动态规划中的最优子结构性质",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：不同子树之间的最优解计算是相互独立的，可以并行处理或递归求解",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解可以通过分解为多个子树问题的解来合成，每个子树问题的解在合并时保持一致性",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

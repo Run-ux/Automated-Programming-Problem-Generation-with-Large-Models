@@ -1,0 +1,79 @@
+{
+  "problem_id": "P6817",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "modular_arithmetic",
+            "description": "选取的 k 个数模 m 相等（模运算约束）",
+            "formal": "∀i, j ∈ selected indices, a[i] ≡ a[j] (mod m)"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "在满足模 m 相等的前提下，最大化 k 的值（最大频次约束）",
+            "formal": "maximize |{i: a[i] ≡ x (mod m)}| for some x"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "在 k 最大的前提下，最大化 m 的值（次级优化约束）",
+            "formal": "maximize m subject to maximize k"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "multi_objective",
+        "description": "在满足条件的子集大小最大化的同时，最大化该子集元素模m相等的m值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在求解最大数量 k 的同时，通过子问题的最优解来确定最大的 m。",
+            "properties": {}
+          },
+          {
+            "name": "modular_invariance",
+            "description": "模数分组不变量：将数列中的元素按照模 m 的结果进行分组，每组内的元素具有相同的模 m 值。在每组内选择最多的元素以满足题目要求。",
+            "properties": {
+              "group_by_modulo": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

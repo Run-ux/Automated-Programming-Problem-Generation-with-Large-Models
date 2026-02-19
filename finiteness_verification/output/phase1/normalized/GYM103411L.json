@@ -1,0 +1,84 @@
+{
+  "problem_id": "GYM103411L",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": "A",
+          "max": "T"
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacency_relation",
+            "description": "两个字符串通过插入空格字符对齐，使得它们的长度相等，并且每个位置上的字符可以进行比较。",
+            "formal": "s' 和 t' 通过插入 '-' 字符对齐，使得 |s'| = |t'|"
+          },
+          {
+            "name": "degree_bound",
+            "description": "对齐后的矩阵中，每一列的权重根据字符是否相同来计算。如果两字符相同且不为 '-'，则权重为 +1；否则权重为 -1。",
+            "formal": "weight(column) = (s'[i] == t'[i] && s'[i] != '-') ? +1 : -1"
+          },
+          {
+            "name": "distinctness",
+            "description": "对齐后的矩阵中，不允许同一列出现两个 '-' 字符。",
+            "formal": "对于所有 i, s'[i] != '-' 或 t'[i] != '-'"
+          },
+          {
+            "name": "similarity_constraint",
+            "description": "需要找到两个字符串 s 和 t 的子串 s' 和 t'，使得它们的对齐矩阵的总权重最大。",
+            "formal": "maximize(sum(weight(column))) for all possible substrings s' of s and t' of t"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求两个字符串的子串之间的最大相似度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最大相似度可以通过子串的最大相似度计算得出。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过动态规划的状态转移方程，当前状态的值由前一个或多个状态的值决定，确保了状态转移的一致性和正确性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "problem_id": "GYM101341F",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 5000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 5000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "majority_constraint",
+            "description": "超过一半的元素是好的（即非缺陷）",
+            "formal": "count(good) > n / 2"
+          },
+          {
+            "name": "query_limit",
+            "description": "查询次数限制为 4n 次",
+            "formal": "query_count <= 4 * n"
+          },
+          {
+            "name": "pairwise_exclusion",
+            "description": "两个元素之间的关系是互斥的，即一个元素认为另一个元素是好的或坏的",
+            "formal": "a -> b = + or - and b -> a = + or -"
+          },
+          {
+            "name": "truth_value_constraint",
+            "description": "好的元素总是给出正确的答案，而坏的元素可以给出任意答案",
+            "formal": "if a is good, then a -> b = (b is good ? + : -)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断每个节点的状态并输出所有正常节点的编号"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "symmetry",
+            "description": "多数投票性质：在每次检查中，通过多数电路的判断来确定某个电路的状态，确保最终结果的正确性",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个电路的状态（正常或缺陷）在检查过程中逐步确定，并且一旦确定则不再改变",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个电路的状态确定过程可以视为独立的子问题，不受其他电路状态的影响",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

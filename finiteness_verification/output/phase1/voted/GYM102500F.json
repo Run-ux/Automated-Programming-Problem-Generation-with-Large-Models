@@ -2,14 +2,14 @@
   "problem_id": "GYM102500F",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 2,
             "max": 200000
@@ -41,18 +41,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图必须连通，即所有节点之间存在路径（直接或间接）",
+        "name": "connectivity",
+        "description": "所有个体必须通过共享的数字直接或间接连接，形成一个连通图",
         "confidence": "1/1"
       },
       {
-        "name": "pairwise_exclusion",
-        "description": "每对节点之间必须通过共享的数值建立连接",
-        "confidence": "1/1"
-      },
-      {
-        "name": "distinct_vertex_colorings",
-        "description": "每个节点的描述数值集合中的元素必须是唯一的",
+        "name": "distinctness",
+        "description": "每个个体的描述数字集合中的元素必须是唯一的",
         "confidence": "1/1"
       }
     ],
@@ -63,16 +58,12 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "图必须连通，即所有节点之间存在路径（直接或间接）"
+              "name": "connectivity",
+              "description": "所有个体必须通过共享的数字直接或间接连接，形成一个连通图"
             },
             {
-              "name": "pairwise_exclusion",
-              "description": "每对节点之间必须通过共享的数值建立连接"
-            },
-            {
-              "name": "distinct_vertex_colorings",
-              "description": "每个节点的描述数值集合中的元素必须是唯一的"
+              "name": "distinctness",
+              "description": "每个个体的描述数字集合中的元素必须是唯一的"
             }
           ]
         }
@@ -80,34 +71,58 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个连通图，使得每个节点通过共享的数字与其它节点直接或间接相连"
+          "type": "feasibility",
+          "description": "判断是否存在一种连接方式使得所有个体通过共享的数字直接或间接地相互连接"
         }
       }
     ],
-    "description": "构造一个连通图，使得每个节点通过共享的数字与其它节点直接或间接相连"
+    "description": "判断是否存在一种连接方式使得所有个体通过共享的数字直接或间接地相互连接"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "flow_conservation",
+        "description": "连通性：通过共享的数字，所有个体可以形成一个连通图",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "partition_balance",
+        "description": "并查集性质：每个个体属于某个集合，且可以通过合并操作将两个集合合并为一个",
+        "confidence": "1/1",
+        "properties": {
+          "union_find": true
+        }
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优解可以通过子问题的最优解组合而成，即如果两个个体通过某个数连接，则整个群体的连通性可以由这些局部连接关系推导出来。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "flow_conservation",
+              "description": "连通性：通过共享的数字，所有个体可以形成一个连通图",
+              "properties": {}
+            },
+            {
+              "name": "partition_balance",
+              "description": "并查集性质：每个个体属于某个集合，且可以通过合并操作将两个集合合并为一个",
+              "properties": {
+                "union_find": true
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "最优解可以通过子问题的最优解组合而成，即如果两个个体通过某个数连接，则整个群体的连通性可以由这些局部连接关系推导出来。"
+    ]
   }
 }

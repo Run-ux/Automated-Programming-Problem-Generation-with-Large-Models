@@ -2,14 +2,14 @@
   "problem_id": "P4214",
   "source": "luogu",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 2,
             "max": 3000
@@ -43,13 +43,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "node_degree_constraint",
-        "description": "每个节点的度数不超过 3（图中每个顶点的边数上限）",
+        "name": "degree_bound",
+        "description": "每个节点的度数不超过 3（即每个节点最多连接 3 条边）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_edge_characters",
-        "description": "每对节点之间最多只有一条边（无重边约束）",
+        "name": "exclusion",
+        "description": "每对节点之间最多只有一条边",
         "confidence": "1/1"
       }
     ],
@@ -60,12 +60,14 @@
         "result": {
           "constraints": [
             {
-              "name": "node_degree_constraint",
-              "description": "每个节点的度数不超过 3（图中每个顶点的边数上限）"
+              "name": "degree_bound",
+              "description": "每个节点的度数不超过 3（即每个节点最多连接 3 条边）",
+              "formal": "∀v ∈ V, deg(v) ≤ 3"
             },
             {
-              "name": "distinct_edge_characters",
-              "description": "每对节点之间最多只有一条边（无重边约束）"
+              "name": "exclusion",
+              "description": "每对节点之间最多只有一条边",
+              "formal": "∀u, v ∈ V, |{e ∈ E | e = (u, v) 或 e = (v, u)}| ≤ 1"
             }
           ]
         }
@@ -88,19 +90,39 @@
     "description": "求所有节点对之间的最大流之和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "flow_conservation",
+        "description": "在网络流中，每个节点的流入量等于流出量，满足流量守恒性质。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最大流问题可以通过子问题的最优解来构建全局最优解，即每条路径的最大流可以分解为更小路径的最大流之和。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过求解所有节点对之间的最大流来计算总流量和",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "flow_conservation",
+              "description": "在网络流中，每个节点的流入量等于流出量，满足流量守恒性质。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最大流问题可以通过子问题的最优解来构建全局最优解，即每条路径的最大流可以分解为更小路径的最大流之和。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过求解所有节点对之间的最大流来计算总流量和"
+    ]
   }
 }

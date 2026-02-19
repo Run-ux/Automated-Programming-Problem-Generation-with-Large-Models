@@ -1,0 +1,87 @@
+{
+  "problem_id": "GYM105657L",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "经验值需求序列是非递减的（即 b_i ≤ b_{i+1}）",
+            "formal": "b_i ≤ b_{i+1} for all 1 ≤ i < m"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "每个角色只能在连续的天数内被选择，一旦停止选择某个角色，则不能再选择该角色",
+            "formal": "If character is played on days l to r, it cannot be played on any other day outside this range"
+          },
+          {
+            "name": "cost_constraint",
+            "description": "总冒险等级之和需要减去一个惩罚因子 c 乘以不同角色的数量 d",
+            "formal": "Objective: maximize (sum of adventure ranks) - c * d, where d is the number of distinct characters played"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化总和减去惩罚因子乘以不同元素数量后的值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每一天选择一个角色进行游戏时，当前天数的最大收益可以由前一天的最大收益和当天的决策推导出来。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着角色等级的提升，所需的经验值非递减。这意味着对于任意两个等级i和j（i < j），从i升级到j所需的总经验值是单调递增的。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：连续几天内累积的经验值等于这些天每天获得经验值之和。这允许我们通过前缀和等技术快速计算任意区间的总经验值。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

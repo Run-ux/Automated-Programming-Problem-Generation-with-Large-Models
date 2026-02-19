@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -28,20 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_permutation",
-            "description": "数字的排列必须是所有可能排列中的一种，且每个数字的每个位置都是随机的"
+            "name": "permutation_constraint",
+            "description": "数字的每一位在重新排列后形成的新数字必须是原数字的一个排列",
+            "formal": "new_number is a permutation of n"
           },
           {
-            "name": "pairwise_comparison",
-            "description": "新形成的数字必须大于之前的数字才能继续游戏"
+            "name": "ordering",
+            "description": "新形成的数字必须大于原数字，且如果新数字等于最大可能的排列，则游戏胜利",
+            "formal": "new_number > n and (new_number == max_permutation(n) -> win)"
           },
           {
-            "name": "global_optimization_objective",
-            "description": "只有当新形成的数字是所有可能排列中的最大值时，玩家才获胜"
-          },
-          {
-            "name": "distinct_modulo_values",
-            "description": "输入数字的所有位数都是唯一的（即没有重复的数字）"
+            "name": "distinctness",
+            "description": "输入数字的每一位都是唯一的，即没有重复的数字",
+            "formal": "all digits in n are unique"
           }
         ]
       }
@@ -52,8 +51,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断给定数字的所有排列中，是否存在一个排列使得该排列大于原数且为所有可能排列中的最大值，并计算其概率"
+        "type": "maximize_probability",
+        "description": "最大化在给定条件下达到最优解的概率"
       }
     }
   ],
@@ -62,9 +61,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即当前数字的最大排列概率取决于其子序列的最大排列概率",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在这个问题中，计算一个数的所有排列中大于原数的概率可以分解为计算每个位置上数字的选择概率。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "排列不变性：对于给定的数字 n，其所有排列的概率分布是均匀的。这种均匀性保证了我们可以基于排列的性质进行概率计算。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

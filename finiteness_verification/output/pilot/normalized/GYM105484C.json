@@ -17,8 +17,7 @@
         },
         "properties": {
           "connected": true,
-          "rooted": true,
-          "ordered": true
+          "rooted": true
         }
       }
     },
@@ -37,8 +36,7 @@
         },
         "properties": {
           "connected": true,
-          "rooted": true,
-          "ordered": true
+          "rooted": true
         }
       }
     },
@@ -56,8 +54,8 @@
           "max": 4999
         },
         "properties": {
-          "rooted": true,
-          "ordered": true
+          "connected": true,
+          "rooted": true
         }
       }
     }
@@ -69,19 +67,12 @@
       "result": {
         "constraints": [
           {
-            "name": "topological_order_constraint",
-            "description": "对于所有 1 ≤ i < j ≤ n，顶点 p_j 不是顶点 p_i 的父节点。",
-            "formal": "∀ 1 ≤ i < j ≤ n, parent(p_j) ≠ p_i"
+            "name": "topological_sort",
+            "description": "树的拓扑排序，对于所有 1 ≤ i < j ≤ n，顶点 p_j 不是顶点 p_i 的父节点"
           },
           {
-            "name": "graph_is_tree",
-            "description": "给定的树以顶点 1 为根，并且每个顶点的索引都小于其所有子节点的索引。",
-            "formal": "root = 1, ∀ vertex v, index(v) < index(child(v))"
-          },
-          {
-            "name": "topological_order_constraint",
-            "description": "计算满足 p_i = i 的拓扑序的数量，结果对 998244353 取模。",
-            "formal": "count topological orders where p_i = i, result % 998244353"
+            "name": "rooted_tree",
+            "description": "树结构以顶点 1 为根，并且每个顶点的索引小于其所有子节点的索引"
           }
         ]
       }
@@ -92,19 +83,14 @@
       "result": {
         "constraints": [
           {
-            "name": "topological_order_constraint",
-            "description": "对于所有 1 ≤ i < j ≤ n，顶点 p_j 不是顶点 p_i 的父节点。",
+            "name": "topological_sort",
+            "description": "顶点的排列必须满足拓扑排序约束，即对于所有 1 ≤ i < j ≤ n，顶点 p_j 不是顶点 p_i 的父节点",
             "formal": "∀ 1 ≤ i < j ≤ n, p_j 不是 p_i 的父节点"
           },
           {
-            "name": "graph_is_tree",
-            "description": "给定的树以顶点 1 为根，并且每个顶点的索引都小于其所有子节点的索引。",
-            "formal": "树以 1 为根，且 ∀ i > 1, f_i < i"
-          },
-          {
-            "name": "topological_order_constraint",
-            "description": "对于每个 1 ≤ i ≤ n，计算满足 p_i = i 的拓扑序的数量，结果对 998244353 取模。",
-            "formal": "计算满足 p_i = i 的拓扑序数量，结果对 998244353 取模"
+            "name": "position_constraint",
+            "description": "每个顶点 i 在排列中的位置固定为 i，计算满足此条件的拓扑排序数量",
+            "formal": "p_i = i"
           }
         ]
       }
@@ -115,14 +101,16 @@
       "result": {
         "constraints": [
           {
-            "name": "topological_order_constraint",
-            "description": "对于所有 1 ≤ i < j ≤ n，顶点 p_j 不是顶点 p_i 的父节点。",
-            "formal": "∀ 1 ≤ i < j ≤ n, p_j is not the parent of p_i"
+            "name": "topological_sort",
+            "description": "顶点的排列必须满足拓扑排序约束，即对于所有 1 ≤ i < j ≤ n，顶点 p_j 不是顶点 p_i 的父节点"
           },
           {
-            "name": "graph_is_tree",
-            "description": "给定的树以顶点 1 为根，并且每个顶点的索引都小于其所有子节点的索引。",
-            "formal": "The tree is rooted at vertex 1 and for all vertices i, f_i < i where f_i is the parent of i"
+            "name": "rooted_tree",
+            "description": "给定的树是有根树，根节点为 1，并且每个节点的索引小于其所有子节点的索引"
+          },
+          {
+            "name": "position_constraint",
+            "description": "计算满足 p_i = i 的拓扑排序数量，即顶点 i 在排列中的位置固定"
           }
         ]
       }
@@ -133,24 +121,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算给定树中满足条件的拓扑序数量，其中每个顶点i作为第i个位置的排列数，结果对998244353取模"
+        "type": "enumeration",
+        "description": "求满足特定条件的排列数，对每个顶点计算其作为固定位置时的有效排列数量"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "对于每个顶点i，计算满足条件p_i=i的拓扑序的数量，结果对998244353取模"
+        "type": "enumeration",
+        "description": "求满足特定条件的排列数，对每个顶点计算其作为固定位置时的有效排列数量"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算给定树中满足条件的拓扑序数量，其中每个顶点i作为第i个位置的拓扑序的数量"
+        "type": "enumeration",
+        "description": "对于每个顶点，计算满足特定条件的拓扑序数量"
       }
     }
   ],
@@ -159,27 +147,54 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的解组合而成，即每个节点的拓扑排序数量可以由其子树的拓扑排序数量计算得出。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：树的每个子树的拓扑排序数量可以独立计算，并且整个树的拓扑排序数量可以通过子树的结果组合得到。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：对于任意节点，其在拓扑序中的位置必须在其所有祖先节点之后，且在其所有子节点之前。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子树的解组合而成，即每个节点的解依赖于其子节点的解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：树的每个子树的拓扑序数量可以独立计算，并且整个树的拓扑序数量可以通过子树的拓扑序数量组合得到。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在给定的树中，每个节点的拓扑序位置受到其父节点和子节点的约束，满足DAG上的顺序依赖关系。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的解组合而成，即每个节点的拓扑排序数量可以由其子树的拓扑排序数量计算得出。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在树的拓扑排序中，每个节点的子树节点必须出现在该节点之后",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个节点的拓扑序数量可以通过其子节点的拓扑序数量计算得出",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

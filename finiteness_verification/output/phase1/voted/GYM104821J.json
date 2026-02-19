@@ -2,14 +2,14 @@
   "problem_id": "GYM104821J",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 1,
             "max": 200000
@@ -21,7 +21,7 @@
           "properties": {
             "connected": true,
             "weighted": false,
-            "rooted": true
+            "directed": false
           }
         }
       }
@@ -37,29 +37,34 @@
     "properties": {
       "connected": true,
       "weighted": false,
-      "rooted": true
+      "directed": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "tree_structure",
-        "description": "图必须是树结构，根节点为0，每个节点有唯一父节点",
+        "name": "acyclicity",
+        "description": "给定的结构是一个树，根节点为0，每个节点有唯一的父节点",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_edge_characters",
-        "description": "从同一父节点出发的边所关联的字符必须不同",
+        "name": "labeling_constraint",
+        "description": "每条边关联一个字符，且不同边的字符或父节点不同",
         "confidence": "1/1"
       },
       {
-        "name": "substring_matching_constraint",
-        "description": "计算函数f(i, j)时，需要找到s_i与pre(t, j)拼接后的最长后缀匹配长度",
+        "name": "merge_order_constraint",
+        "description": "从根节点到任意节点i的最短路径上的字符拼接成字符串s_i",
         "confidence": "1/1"
       },
       {
-        "name": "sum_of_minimum_weights",
-        "description": "对于每个j，计算g_j为所有f(i, j)的和",
+        "name": "suffix_length_constraint",
+        "description": "计算字符串s_i与t的前缀pre(t, j)的拼接后，s_x作为其后缀的最大深度d(x)",
+        "confidence": "1/1"
+      },
+      {
+        "name": "accumulated_sum_constraint",
+        "description": "对于每个j，计算所有f(i, j)的和g_j",
         "confidence": "1/1"
       }
     ],
@@ -70,20 +75,24 @@
         "result": {
           "constraints": [
             {
-              "name": "tree_structure",
-              "description": "图必须是树结构，根节点为0，每个节点有唯一父节点"
+              "name": "acyclicity",
+              "description": "给定的结构是一个树，根节点为0，每个节点有唯一的父节点"
             },
             {
-              "name": "distinct_edge_characters",
-              "description": "从同一父节点出发的边所关联的字符必须不同"
+              "name": "labeling_constraint",
+              "description": "每条边关联一个字符，且不同边的字符或父节点不同"
             },
             {
-              "name": "substring_matching_constraint",
-              "description": "计算函数f(i, j)时，需要找到s_i与pre(t, j)拼接后的最长后缀匹配长度"
+              "name": "merge_order_constraint",
+              "description": "从根节点到任意节点i的最短路径上的字符拼接成字符串s_i"
             },
             {
-              "name": "sum_of_minimum_weights",
-              "description": "对于每个j，计算g_j为所有f(i, j)的和"
+              "name": "suffix_length_constraint",
+              "description": "计算字符串s_i与t的前缀pre(t, j)的拼接后，s_x作为其后缀的最大深度d(x)"
+            },
+            {
+              "name": "accumulated_sum_constraint",
+              "description": "对于每个j，计算所有f(i, j)的和g_j"
             }
           ]
         }
@@ -99,29 +108,57 @@
         "status": "success",
         "result": {
           "type": "maximize_value",
-          "description": "计算每个前缀下所有满足条件的路径长度之和的最大值"
+          "description": "对于每个给定的前缀长度，计算所有顶点到根路径与该前缀构成的字符串的最大后缀匹配深度之和"
         }
       }
     ],
-    "description": "计算每个前缀下所有满足条件的路径长度之和的最大值"
+    "description": "对于每个给定的前缀长度，计算所有顶点到根路径与该前缀构成的字符串的最大后缀匹配深度之和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解来构造，具体表现为函数 f(i, j) 的值依赖于其子路径的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "prefix_decomposability",
+        "description": "前缀可分解性：字符串 t 的前缀可以被分解为更小的部分，并且这些部分的性质可以用于计算整体的性质。在本题中，通过处理 t 的前缀 pre(t, j)，可以逐步构建出最终结果 g_j。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从根节点到任意节点 i 的路径上的字符序列 s_i 可以通过其父节点的状态和当前边的字符进行状态转移。这种状态转移的一致性保证了算法的正确性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过递归或迭代方式求解",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinability": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的最优解来构造，具体表现为函数 f(i, j) 的值依赖于其子路径的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "prefix_decomposability",
+              "description": "前缀可分解性：字符串 t 的前缀可以被分解为更小的部分，并且这些部分的性质可以用于计算整体的性质。在本题中，通过处理 t 的前缀 pre(t, j)，可以逐步构建出最终结果 g_j。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从根节点到任意节点 i 的路径上的字符序列 s_i 可以通过其父节点的状态和当前边的字符进行状态转移。这种状态转移的一致性保证了算法的正确性。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过递归或迭代方式求解"
+    ]
   }
 }

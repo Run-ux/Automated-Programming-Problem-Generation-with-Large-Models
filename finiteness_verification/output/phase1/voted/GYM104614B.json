@@ -1,0 +1,130 @@
+{
+  "problem_id": "GYM104614B",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "选取元素权重和不超过容量上限（每个CD的音乐总时长不能超过其容量）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "最大化选取元素的总权重和（最大化两个CD上音乐的总时长）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimize_max_min_difference",
+        "description": "在总和最大化的前提下，最小化两个集合的权重差值（在总时长最大的情况下，尽量使两个CD上的音乐时长差异最小）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "选取元素权重和不超过容量上限（每个CD的音乐总时长不能超过其容量）",
+              "formal": "sum(lengths_of_songs_on_CD1) <= c, sum(lengths_of_songs_on_CD2) <= c"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "最大化选取元素的总权重和（最大化两个CD上音乐的总时长）",
+              "formal": "maximize(sum(lengths_of_songs_on_CD1) + sum(lengths_of_songs_on_CD2))"
+            },
+            {
+              "name": "minimize_max_min_difference",
+              "description": "在总和最大化的前提下，最小化两个集合的权重差值（在总时长最大的情况下，尽量使两个CD上的音乐时长差异最小）",
+              "formal": "minimize(|sum(lengths_of_songs_on_CD1) - sum(lengths_of_songs_on_CD2)|)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化两个容器中可容纳的总权值，同时输出两个容器中的权值分配，优先输出较大值"
+        }
+      }
+    ],
+    "description": "最大化两个容器中可容纳的总权值，同时输出两个容器中的权值分配，优先输出较大值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在给定容量下选择歌曲的最大总时长可以由更小子集的最优解组合而成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，总是选择当前情况下最优的选择（例如，尽可能填满一个CD），最终能够得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在给定容量下选择歌曲的最大总时长可以由更小子集的最优解组合而成。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，总是选择当前情况下最优的选择（例如，尽可能填满一个CD），最终能够得到全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

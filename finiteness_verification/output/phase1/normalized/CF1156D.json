@@ -29,9 +29,9 @@
       "result": {
         "constraints": [
           {
-            "name": "graph_connectivity",
-            "description": "路径上不能出现0-边在1-边之后的情况（路径约束）",
-            "formal": "对于任意路径 (x, y)，如果存在 1-边，则该路径上所有后续边必须也是1-边"
+            "name": "path_constraint",
+            "description": "路径上不能先经过1-边再经过0-边（路径约束）",
+            "formal": "对于任意路径 (x, y)，如果存在 1-边，则之后不能再有 0-边"
           }
         ]
       }
@@ -43,7 +43,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计满足特定路径条件的顶点对数量"
+        "description": "计算满足特定条件的顶点对数量"
       }
     }
   ],
@@ -52,12 +52,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子树的解组合而成，每个子树的解是独立且可合并的",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：树的每个子树中的有效对数可以独立计算，并且这些子问题的解可以合并以得到整个树的有效对数。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在计算某个节点为根的子树的有效对数时，该子树内部的有效对数与外部的其他子树无关。",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解可以通过递归地解决其子树的问题并合并结果来获得。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,163 @@
+{
+  "problem_id": "P11223",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 10
+          },
+          "value_range": {
+            "min": 1,
+            "max": 12
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 10
+    },
+    "value_range": {
+      "min": 1,
+      "max": 12
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "permutation_constraint",
+        "description": "每个排列 p1, p2, ..., pN 取遍 1 到 N 的所有排列。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation_composition",
+        "description": "构造 N 个函数 f1, f2, ..., fN，使得对于每个排列 p1, p2, ..., pN，复合函数 f_pN(f_p(N-1)(...f_p1(1)...)) 的结果形成多重集 S。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "frequency_bound",
+        "description": "存在一个值 X 在多重集 S 中恰好出现 K 次。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "每个函数 fi 的定义域和值域均为 [1, M]。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "permutation_constraint",
+              "description": "每个排列 p1, p2, ..., pN 取遍 1 到 N 的所有排列。",
+              "formal": "p1, p2, ..., pN ∈ permutations(1, 2, ..., N)"
+            },
+            {
+              "name": "transformation_composition",
+              "description": "构造 N 个函数 f1, f2, ..., fN，使得对于每个排列 p1, p2, ..., pN，复合函数 f_pN(f_p(N-1)(...f_p1(1)...)) 的结果形成多重集 S。",
+              "formal": "S = { f_pN(f_p(N-1)(...f_p1(1)...)) | p1, p2, ..., pN ∈ permutations(1, 2, ..., N) }"
+            },
+            {
+              "name": "frequency_bound",
+              "description": "存在一个值 X 在多重集 S 中恰好出现 K 次。",
+              "formal": "∃X ∈ S, count(X, S) = K"
+            },
+            {
+              "name": "range_bound",
+              "description": "每个函数 fi 的定义域和值域均为 [1, M]。",
+              "formal": "∀i, 1 ≤ i ≤ N, ∀x, 1 ≤ x ≤ M, 1 ≤ fi(x) ≤ M"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "最小化构造的函数映射范围大小"
+        }
+      }
+    ],
+    "description": "最小化构造的函数映射范围大小"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个小朋友的传话行为可以看作一个状态转移函数，这些函数的组合决定了最终结果。",
+        "confidence": "1/1",
+        "properties": {
+          "function_composition": true
+        }
+      },
+      {
+        "name": "cyclic_permutation_invariance",
+        "description": "排列不变量：无论小朋友的排列顺序如何，对于特定的输入和状态转移函数，最终输出的多重集中的元素出现次数是固定的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "counting_invariance",
+        "description": "计数不变量：在所有可能的排列中，特定单词被大声说出的次数是一个固定的值，可以通过构造合适的函数来实现。",
+        "confidence": "1/1",
+        "properties": {
+          "fixed_count": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个小朋友的传话行为可以看作一个状态转移函数，这些函数的组合决定了最终结果。",
+              "properties": {
+                "function_composition": true
+              }
+            },
+            {
+              "name": "cyclic_permutation_invariance",
+              "description": "排列不变量：无论小朋友的排列顺序如何，对于特定的输入和状态转移函数，最终输出的多重集中的元素出现次数是固定的。",
+              "properties": {}
+            },
+            {
+              "name": "counting_invariance",
+              "description": "计数不变量：在所有可能的排列中，特定单词被大声说出的次数是一个固定的值，可以通过构造合适的函数来实现。",
+              "properties": {
+                "fixed_count": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

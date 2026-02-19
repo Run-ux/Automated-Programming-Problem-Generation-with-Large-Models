@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 100
@@ -28,29 +28,29 @@
       "result": {
         "constraints": [
           {
-            "name": "maximum_edge_weight_constraint",
-            "description": "选取元素的总厚度不超过容量上限（书架宽度）",
-            "formal": "sum(t_i for i in upright_books) + sum(t_j for j in stacked_books) <= W"
+            "name": "ordering",
+            "description": "堆叠的书必须按脊高非递增顺序排列（图着色约束）",
+            "formal": "对于堆叠的书，h[i] >= h[j] 对于所有 i < j"
           },
           {
-            "name": "maximum_tree_depth_constraint",
-            "description": "每个元素的高度不超过高度限制（书架高度）",
-            "formal": "h_i <= H for all i in upright_books"
+            "name": "sum_constraint",
+            "description": "堆叠书的总厚度不能超过书架的高度",
+            "formal": "Σt[stacked_books] <= H"
           },
           {
-            "name": "non_decreasing_sequence",
-            "description": "堆叠元素按非递增顺序排列（书脊高度）",
-            "formal": "h_i >= h_{i+1} for all i in stacked_books"
+            "name": "sum_constraint",
+            "description": "竖立书的总厚度加上堆叠书的总宽度不能超过书架的宽度",
+            "formal": "Σt[upright_books] + Σw[stacked_books] <= W"
           },
           {
-            "name": "stack_size_constraint",
-            "description": "堆叠元素的总厚度不超过高度限制（书架高度）",
-            "formal": "sum(h_i for i in stacked_books) <= H"
+            "name": "inclusion",
+            "description": "至少有一本书竖立放置",
+            "formal": "|upright_books| >= 1"
           },
           {
-            "name": "minimum_element_count_constraint",
-            "description": "至少有一个元素在竖直放置集合中，且至少有一个元素在堆叠集合中",
-            "formal": "len(upright_books) >= 1 and len(stacked_books) >= 1"
+            "name": "inclusion",
+            "description": "至少有一本书堆叠放置",
+            "formal": "|stacked_books| >= 1"
           }
         ]
       }
@@ -61,8 +61,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足条件的书籍排列方案，使得至少有一本书竖直放置且至少有一本书水平堆叠"
+        "type": "construction",
+        "description": "构造一个满足条件的书籍排列方案，其中至少有一本书直立放置且至少有一本书水平堆叠"
       }
     }
   ],
@@ -71,9 +71,30 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即通过选择部分书籍竖直放置和部分书籍水平堆叠来满足书架的高度和宽度限制。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "堆叠书籍的脊高按非递增顺序排列，确保堆叠部分的高度合法性可单调维护",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，即在选择某些书竖立和某些书堆叠时，每个子集的选择都是局部最优的",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "通过贪心选择性质，每次选择当前最优的书进行竖立或堆叠，以逐步构建全局最优解",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "竖立书籍的总厚度和堆叠书籍的总厚度可以通过端点差值计算，满足区间可加性",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,161 @@
+{
+  "problem_id": "GYM105792A",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 2
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 2
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "turn_based",
+        "description": "游戏是回合制的，玩家轮流进行操作",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每个玩家的操作次数受限于其初始拥有的资源数量",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "每次操作后，玩家的状态（剩余资源）会发生变化",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "胜利者是最后一个成功执行操作的玩家",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "turn_based",
+              "description": "游戏是回合制的，玩家轮流进行操作"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每个玩家的操作次数受限于其初始拥有的资源数量"
+            },
+            {
+              "name": "state_transition",
+              "description": "每次操作后，玩家的状态（剩余资源）会发生变化"
+            },
+            {
+              "name": "operation_limit",
+              "description": "游戏在所有玩家的资源耗尽时终止"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "胜利者是最后一个成功执行操作的玩家"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "game_outcome",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "game_outcome",
+          "description": "确定在给定初始条件下，博弈的最终胜者"
+        }
+      }
+    ],
+    "description": "确定在给定初始条件下，博弈的最终胜者"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "双指针左右端点单调前进，表示两个玩家的剩余硬币数量随游戏进行而单调减少",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每一轮游戏中，当前玩家的状态（是否有硬币）决定了其是否可以进行操作，且操作后状态一致地转移到下一个玩家",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个玩家的操作仅依赖于自己的硬币数量和当前轮次，与对方的具体操作无关",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针左右端点单调前进，表示两个玩家的剩余硬币数量随游戏进行而单调减少",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每一轮游戏中，当前玩家的状态（是否有硬币）决定了其是否可以进行操作，且操作后状态一致地转移到下一个玩家",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个玩家的操作仅依赖于自己的硬币数量和当前轮次，与对方的具体操作无关",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "problem_id": "P14793",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 300000
+          },
+          "properties": {
+            "ordered": true,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 300000
+    },
+    "properties": {
+      "ordered": true,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "probability_distribution",
+        "description": "概率分布约束：对于每个上下文 w，所有可能的下一个 token 的概率之和为 1。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "值域约束：每个上下文 w 对应的下一个 token 的概率在 [0, 1] 之间。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "window_constraint",
+        "description": "上下文大小约束：上下文 w 的长度在 0 到 k 之间。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "cost_constraint",
+        "description": "损失函数约束：损失函数定义为对每个生成的 token，计算其负对数概率的和。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "prefix_suffix_elimination",
+        "description": "最后一个 token 必须由 LLM 生成。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "probability_distribution",
+              "description": "概率分布约束：对于每个上下文 w，所有可能的下一个 token 的概率之和为 1。",
+              "formal": "∀w ∈ T^*, 0 ≤ |w| ≤ k, ∑_{next ∈ T} P_k(next | w) = 1"
+            },
+            {
+              "name": "range_bound",
+              "description": "值域约束：每个上下文 w 对应的下一个 token 的概率在 [0, 1] 之间。",
+              "formal": "∀w ∈ T^*, 0 ≤ |w| ≤ k, ∀next ∈ T, 0 ≤ P_k(next | w) ≤ 1"
+            },
+            {
+              "name": "window_constraint",
+              "description": "上下文大小约束：上下文 w 的长度在 0 到 k 之间。",
+              "formal": "∀w ∈ T^*, 0 ≤ |w| ≤ k"
+            },
+            {
+              "name": "cost_constraint",
+              "description": "损失函数约束：损失函数定义为对每个生成的 token，计算其负对数概率的和。",
+              "formal": "L_k(P_k) = ∑_{i=1}^n ∑_{j∈L_i} -log_2 P_k(t_i[j] | t_i[max(1, j-k)..j-1])"
+            },
+            {
+              "name": "prefix_suffix_elimination",
+              "description": "最后一个 token 必须由 LLM 生成。",
+              "formal": "∀i, ℓ_i[m_i] = L"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求最小化损失函数值"
+        }
+      }
+    ],
+    "description": "求最小化损失函数值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最小化损失函数的解可以通过子问题的最优解组合得到",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：当前状态的概率分布依赖于前 k 个状态，满足马尔可夫性质",
+        "confidence": "1/1",
+        "properties": {
+          "context_size": "k"
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：损失函数可以分解为多个子区间的损失之和",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最小化损失函数的解可以通过子问题的最优解组合得到",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：当前状态的概率分布依赖于前 k 个状态，满足马尔可夫性质",
+              "properties": {
+                "context_size": "k"
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：损失函数可以分解为多个子区间的损失之和",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

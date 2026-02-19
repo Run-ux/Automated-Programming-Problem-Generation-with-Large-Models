@@ -6,14 +6,14 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100
         },
         "value_range": {
           "min": 1,
-          "max": 100
+          "max": 26
         },
         "properties": {
           "ordered": false
@@ -28,9 +28,9 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "相邻元素的字典序必须非递减（即后一个元素的字典序不能小于前一个元素）",
-            "formal": "∀ i ∈ [1, n-1], A[i] ≤ A[i+1]"
+            "name": "adjacency_relation",
+            "description": "相邻元素的值必须满足一定的顺序关系（前一个元素的值不大于后一个元素的值）",
+            "formal": "对于所有 i (1 ≤ i < n)，有 A[i] ≤ A[i+1]"
           }
         ]
       }
@@ -42,7 +42,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计序列中逆序对的数量"
+        "description": "求满足条件的计数，即序列中逆序对的数量"
       }
     }
   ],
@@ -51,12 +51,13 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "序列遍历过程中，当前元素与前一个元素的比较结果决定了计数器的单调递增性质",
-        "properties": {
-          "left_monotonic": false,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "遍历过程中，当前元素与前一个元素的比较结果决定了计数器的变化，满足单调性条件。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

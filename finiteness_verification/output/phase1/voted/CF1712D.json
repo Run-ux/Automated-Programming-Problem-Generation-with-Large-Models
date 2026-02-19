@@ -1,0 +1,140 @@
+{
+  "problem_id": "CF1712D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制（最多进行 k 次操作）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "边的权重为区间内最小值（边 (l, r) 的权重为 min(a_l, a_{l+1}, ..., a_r)）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制（最多进行 k 次操作）",
+              "formal": "0 <= operations <= k"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "边的权重为区间内最小值（边 (l, r) 的权重为 min(a_l, a_{l+1}, ..., a_r)）",
+              "formal": "weight(l, r) = min(a_l, a_{l+1}, ..., a_r)"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "最大化图的直径（在最多 k 次操作后，找到最大可能的图直径）",
+              "formal": "maximize(max(d(u, v)) for 1 <= u < v <= n)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化图的直径"
+        }
+      }
+    ],
+    "description": "最大化图的直径"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过局部最优解来构建全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：区间的最短路径权重可以通过子区间的最短路径权重合并得到，从而支持高效的区间查询和更新。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着操作次数的增加，图的直径不会减小，即每次操作都是在尝试增大图的直径。",
+        "confidence": "1/1",
+        "properties": {
+          "non_decreasing": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过局部最优解来构建全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：区间的最短路径权重可以通过子区间的最短路径权重合并得到，从而支持高效的区间查询和更新。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着操作次数的增加，图的直径不会减小，即每次操作都是在尝试增大图的直径。",
+              "properties": {
+                "non_decreasing": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -16,7 +16,8 @@
           "max": 100000
         },
         "properties": {
-          "ordered": false
+          "ordered": false,
+          "permutation": true
         }
       }
     }
@@ -28,19 +29,20 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_solution_constraint",
-            "description": "每个颜色必须分配一个从 1 到 n 的唯一整数值",
-            "formal": "∀i ∈ [1, n], ∃!x ∈ [1, n] such that color i is assigned value x"
+            "name": "permutation_constraint",
+            "description": "输入的两个序列 ca 和 cb 都是 1 到 n 的排列"
           },
           {
-            "name": "constant_submatrix",
-            "description": "相同颜色在两个带子上必须分配相同的值",
-            "formal": "∀i ∈ [1, n], numa[ca_i] = numb[cb_i]"
+            "name": "distinctness",
+            "description": "每个颜色必须分配一个唯一的整数值，且该值在 1 到 n 之间"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "输入的每条带子的颜色序列是一个排列，即每个颜色恰好出现一次",
-            "formal": "ca 和 cb 都是 [1, n] 的排列"
+            "name": "exclusion",
+            "description": "相同颜色在两个序列中的位置必须分配相同的整数值"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "目标是最小化所有位置上两个序列对应位置数值差的绝对值之和"
           }
         ]
       }
@@ -61,9 +63,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解可以通过子问题的解组合而成，每个颜色的选择独立且最优解包含所有子问题的最优解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，对于每个颜色分配值的问题，可以分解为多个子问题，每个子问题的最优解组合起来即为全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：通过局部最优选择（即每次选择当前差值最大的颜色进行分配），最终能够达到全局最优解。具体来说，在每一步中，选择当前差值最大的颜色进行分配，可以最大化总和。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

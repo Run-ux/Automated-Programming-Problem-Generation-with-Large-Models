@@ -1,0 +1,92 @@
+{
+  "problem_id": "P2864",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 50
+        },
+        "value_range": {
+          "min": 1,
+          "max": 50
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（森林形成一个联通块）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "存在最短路径绕树林走一圈并回到起点"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "节点可以有八个方向的相邻关系（上下左右及对角线）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求闭合路径的最短长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最短路径问题的解可以通过子路径的最优解组合得到",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态到另一个状态的转移是基于当前状态和可行的移动方向，且满足DAG上的顺序依赖",
+            "properties": {
+              "directions": [
+                "up",
+                "down",
+                "left",
+                "right",
+                "up-left",
+                "up-right",
+                "down-left",
+                "down-right"
+              ]
+            }
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在搜索过程中，节点的访问顺序满足拓扑排序，即只有当所有前驱节点都被访问过后，当前节点才会被访问",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

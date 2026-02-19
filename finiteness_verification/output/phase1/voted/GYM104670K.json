@@ -2,14 +2,14 @@
   "problem_id": "GYM104670K",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 50
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "complementary_edge_set",
-        "description": "给定两个集合，求其中一个集合中存在但另一个集合中不存在的唯一元素（集合差集约束）",
+        "name": "subset_constraint",
+        "description": "给定的已学习结集合是需要学习结集合的子集",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_positions",
-        "description": "输入的两个集合中的元素都是互不相同的（无重复元素约束）",
+        "name": "distinctness",
+        "description": "需要学习的结集合中的元素互不相同",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +56,19 @@
         "result": {
           "constraints": [
             {
-              "name": "complementary_edge_set",
-              "description": "给定两个集合，求其中一个集合中存在但另一个集合中不存在的唯一元素（集合差集约束）",
-              "formal": "A - B = {x}"
+              "name": "subset_constraint",
+              "description": "给定的已学习结集合是需要学习结集合的子集",
+              "formal": "Y ⊆ X"
             },
             {
-              "name": "distinct_positions",
-              "description": "输入的两个集合中的元素都是互不相同的（无重复元素约束）",
-              "formal": "∀i, j (1 ≤ i < j ≤ n), x_i ≠ x_j 且 ∀i, j (1 ≤ i < j ≤ n-1), y_i ≠ y_j"
+              "name": "distinctness",
+              "description": "需要学习的结集合中的元素互不相同",
+              "formal": "∀ i, j ∈ [1, n], x_i ≠ x_j"
+            },
+            {
+              "name": "distinctness",
+              "description": "已学习的结集合中的元素互不相同",
+              "formal": "∀ i, j ∈ [1, n-1], y_i ≠ y_j"
             }
           ]
         }
@@ -71,36 +76,43 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的缺失元素"
+          "type": "feasibility",
+          "description": "判断并输出集合中缺失的唯一元素"
         }
       }
     ],
-    "description": "构造一个满足条件的缺失元素"
+    "description": "判断并输出集合中缺失的唯一元素"
   },
   "invariant": {
-    "name": "interval_mergeable",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "set_difference_invariance",
+        "description": "集合差不变量：所需学习的结集与已学习结集的差集始终包含唯一未学习的结",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间可合并性：通过集合差值计算缺失元素，满足区间信息可通过端点差值计算的性质",
-          "properties": {
-            "set_difference": true
-          }
+          "invariants": [
+            {
+              "name": "set_difference_invariance",
+              "description": "集合差不变量：所需学习的结集与已学习结集的差集始终包含唯一未学习的结",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "区间可合并性：通过集合差值计算缺失元素，满足区间信息可通过端点差值计算的性质"
+    ]
   }
 }

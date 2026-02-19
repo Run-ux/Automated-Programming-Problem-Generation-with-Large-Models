@@ -1,0 +1,167 @@
+{
+  "problem_id": "GYM101992H",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "路径长度固定为 L 边（路径长度约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "fixed_start_node",
+        "description": "路径必须从指定节点 u 开始（起始节点约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "revisiting_allowed",
+        "description": "路径中允许重复边（路径可重复边约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "kth_smallest_constraint",
+        "description": "路径上边的权重排序后取第 K 个位置的权重（排序后取第 K 个权重约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "报告所有路径中第 K 个位置权重的最大值（最大值报告约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "路径长度固定为 L 边（路径长度约束）",
+              "formal": "length(path) = L"
+            },
+            {
+              "name": "fixed_start_node",
+              "description": "路径必须从指定节点 u 开始（起始节点约束）",
+              "formal": "path[0] = u"
+            },
+            {
+              "name": "revisiting_allowed",
+              "description": "路径中允许重复边（路径可重复边约束）",
+              "formal": "edges in path can be repeated"
+            },
+            {
+              "name": "kth_smallest_constraint",
+              "description": "路径上边的权重排序后取第 K 个位置的权重（排序后取第 K 个权重约束）",
+              "formal": "sorted(weights(path))[K-1]"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "报告所有路径中第 K 个位置权重的最大值（最大值报告约束）",
+              "formal": "max(sorted(weights(path))[K-1]) for all paths"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求从指定节点出发，长度为L的路径中，排序后第K大边权的最大值"
+        }
+      }
+    ],
+    "description": "求从指定节点出发，长度为L的路径中，排序后第K大边权的最大值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：路径的最优解可以通过其子路径的最优解来构建",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从当前节点到下一个节点的状态转移满足一致性，即通过边权重更新路径权重",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：不同路径的计算可以独立进行，互不影响",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：路径的最优解可以通过其子路径的最优解来构建",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从当前节点到下一个节点的状态转移满足一致性，即通过边权重更新路径权重",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：不同路径的计算可以独立进行，互不影响",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

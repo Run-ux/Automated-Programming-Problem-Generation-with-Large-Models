@@ -1,0 +1,91 @@
+{
+  "problem_id": "GYM106110E",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 300
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "提交记录按时间顺序排列，即 M_j ≤ M_{j+1} 对所有 1 ≤ j < q 成立。如果 M_j = M_{j+1}，则第 j 个提交在第 (j+1) 个提交之前。",
+            "formal": "∀ 1 ≤ j < q, M_j ≤ M_{j+1}"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "每个团队的提交次数没有限制，但每次提交的结果要么成功（V_j = 1），要么失败（V_j = 0）。",
+            "formal": "∀ 1 ≤ j ≤ q, V_j ∈ {0, 1}"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "每个团队解决的问题数量 S_i 和总罚时 X_i 必须根据提交记录计算得出。",
+            "formal": "S_i = ∑_{j: ID_j = i, V_j = 1} 1, X_i = ∑_{j: ID_j = i, V_j = 1} (M_j + 20 * (失败次数))"
+          },
+          {
+            "name": "ordering",
+            "description": "最终排名 R_i 根据解决问题的数量 S_i 和总罚时 X_i 确定，且排名必须是唯一的。",
+            "formal": "R_i = rank(S_i, X_i), 其中 rank 是一个排序函数"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造并输出所有团队的最终排名、标识符、解决的问题数量和总罚时"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "提交记录按时间单调递增，处理时保持时间顺序不变",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最终排名由每个团队的解题数和罚时决定，且这些值通过逐步处理每个提交记录来更新",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "每个提交记录会更新对应团队的状态（解题数和罚时），状态转移规则一致",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

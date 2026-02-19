@@ -1,0 +1,116 @@
+{
+  "problem_id": "GYM104412D",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "similarity_constraint",
+        "description": "子数组可以通过对每个元素加或减一个常数来与另一个数组相等（子数组相似性约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "similarity_constraint",
+              "description": "子数组可以通过对每个元素加或减一个常数来与另一个数组相等（子数组相似性约束）",
+              "formal": "存在常数 c 使得 ∀i ∈ [l, r], N[i] + c = M[i - l]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求满足条件的子数组数量"
+        }
+      }
+    ],
+    "description": "求满足条件的子数组数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过计算子数组的差分，可以将问题转化为前缀和的形式，从而利用端点差值计算区间和",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在滑动窗口中，窗口的右端点单调递增，左端点根据条件进行调整，确保窗口内的子数组满足相似性条件",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true,
+          "window_shrinkable": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过计算子数组的差分，可以将问题转化为前缀和的形式，从而利用端点差值计算区间和",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在滑动窗口中，窗口的右端点单调递增，左端点根据条件进行调整，确保窗口内的子数组满足相似性条件",
+              "properties": {
+                "right_monotonic": true,
+                "window_shrinkable": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

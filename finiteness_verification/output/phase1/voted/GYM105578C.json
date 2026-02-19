@@ -1,0 +1,152 @@
+{
+  "problem_id": "GYM105578C",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distance_bound",
+        "description": "每个节点只能移动到相邻节点（图的相邻节点约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "flow_constraint",
+        "description": "选取元素权重和不超过容量上限（清除陨石所需点数不能超过可用点数）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_negative_prefix_sum",
+        "description": "所有节点必须在每一轮结束后存活（所有角色必须避免被陨石击中）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "节点不能进入有障碍物的节点，除非移除障碍物（角色不能进入有陨石的网格，除非清除陨石）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distance_bound",
+              "description": "每个节点只能移动到相邻节点（图的相邻节点约束）"
+            },
+            {
+              "name": "flow_constraint",
+              "description": "选取元素权重和不超过容量上限（清除陨石所需点数不能超过可用点数）",
+              "formal": "∑(meteorites on grid) * 1 <= available_points"
+            },
+            {
+              "name": "non_negative_prefix_sum",
+              "description": "所有节点必须在每一轮结束后存活（所有角色必须避免被陨石击中）"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "节点不能进入有障碍物的节点，除非移除障碍物（角色不能进入有陨石的网格，除非清除陨石）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求最小化清除障碍所需的代价"
+        }
+      }
+    ],
+    "description": "求最小化清除障碍所需的代价"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个子问题的最优解可以组合成整个问题的最优解。在本题中，每一轮的最优解（即最小花费）可以通过前一轮的状态和当前轮的陨石分布来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态到另一个状态的转移是基于明确规则的。在本题中，每个角色的位置和陨石数量的变化都是基于上一轮的状态和当前轮的陨石分布。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：不同区间的陨石数量信息可以通过子区间的合并来计算。在本题中，陨石数量可以在不同的网格之间进行合并，从而计算出总的清除成本。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个子问题的最优解可以组合成整个问题的最优解。在本题中，每一轮的最优解（即最小花费）可以通过前一轮的状态和当前轮的陨石分布来确定。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态到另一个状态的转移是基于明确规则的。在本题中，每个角色的位置和陨石数量的变化都是基于上一轮的状态和当前轮的陨石分布。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：不同区间的陨石数量信息可以通过子区间的合并来计算。在本题中，陨石数量可以在不同的网格之间进行合并，从而计算出总的清除成本。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

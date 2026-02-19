@@ -1,0 +1,86 @@
+{
+  "problem_id": "P9210",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 500000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false,
+          "rooted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "monotonic_width_constraint",
+            "description": "导出子树的每一层宽度必须单调不减，即 w1 ≤ w2 ≤ ... ≤ wk，其中 wi 表示第 i 层的节点数。",
+            "formal": "∀i ∈ [1, k-1], w_i ≤ w_{i+1}"
+          },
+          {
+            "name": "connectivity",
+            "description": "导出子树必须是原树的一个连通块，其点集 V0 ⊆ V，边集 E0 是 E 中所有端点均在 V0 内的边。",
+            "formal": "V0 ⊆ V 且 E0 = { (u, v) ∈ E | u, v ∈ V0 }"
+          },
+          {
+            "name": "minimum_tree_depth_constraint",
+            "description": "导出子树的根节点是在该子树中深度最浅的节点。",
+            "formal": "root(T0) = argmin_{v ∈ V0} depth(v)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足宽度单调不减条件的最大导出子树的节点数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "导出子树的宽度单调不减，即从根到叶子节点的每一层节点数非严格递增",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最大符合条件的导出子树可以通过其子树的最优解组合得到，满足最优子结构性质",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "在求解过程中，不同子树的最优解可以独立计算，互不影响",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

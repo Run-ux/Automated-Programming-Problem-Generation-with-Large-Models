@@ -1,0 +1,91 @@
+{
+  "problem_id": "P13925",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 30
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacency_relation",
+            "description": "相邻节点可以合并（图中的边约束）",
+            "formal": "对于任意两个节点 a 和 b，如果 a 和 b 相邻，则可以进行合并操作"
+          },
+          {
+            "name": "constant_value_constraint",
+            "description": "相邻节点的值必须相等才能合并（数值相等约束）",
+            "formal": "对于任意两个相邻节点 a 和 b，只有当 k_a = k_b 时，a 和 b 才能合并"
+          },
+          {
+            "name": "operation_limit",
+            "description": "合并操作的结果是新的节点值为原节点值的两倍（操作结果约束）",
+            "formal": "对于任意两个相邻节点 a 和 b，如果 k_a = k_b，则合并后的节点值为 2 * k_a"
+          },
+          {
+            "name": "minimum_index_constraint",
+            "description": "目标是最小化最终的节点数量（最小化约束）",
+            "formal": "通过最优的合并顺序，使得最终的节点数量最少"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "求通过合并相邻且猫数量相同的相邻城市后，最终可以剩下的最少城市数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，合并后的城市数量最少的问题可以通过解决相邻城市的合并问题来逐步构建。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，总是选择当前可以合并的城市进行合并，这种局部最优的选择最终会导出全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：在合并过程中，城市数量的变化是单调递减的，每次合并都会减少一个城市。",
+            "properties": {
+              "right_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

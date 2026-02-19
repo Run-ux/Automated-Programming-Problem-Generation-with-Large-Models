@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "weighted_undirected_graph",
         "length": {
           "min": 3,
           "max": 200000
@@ -29,24 +29,29 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "相邻节点取值不同（图着色约束）",
-            "formal": "对于任意两个相邻的桥，它们的距离 d 必须不同"
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过2（每个节点最多有两个桥连接）",
+            "formal": "∀v ∈ V, deg(v) ≤ 2"
           },
           {
-            "name": "node_degree_constraint",
-            "description": "每个节点的最大度数不超过 2（每个点最多连接两条边）",
-            "formal": "对于每个节点 i，其度数 deg(i) <= 2"
+            "name": "path_constraint",
+            "description": "路径必须经过所有遇到的桥（路径上不能跳过任何桥）",
+            "formal": "∀e ∈ E, e 必须在路径上"
           },
           {
-            "name": "path_length_constraint",
-            "description": "路径必须从起点到终点且经过所有遇到的桥",
-            "formal": "路径 P 从起点 s 开始，经过所有遇到的桥，直到到达终点 t"
+            "name": "adjacency_relation",
+            "description": "桥只能连接相邻的边（桥的两个端点必须在同一距离圆周上的相邻边）",
+            "formal": "∀e = (u, v) ∈ E, u 和 v 是相邻的边"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "添加的桥不能与已有的桥重叠",
-            "formal": "对于任意两个桥 (d1, t1) 和 (d2, t2)，如果 d1 = d2 且 t1 = t2，则不能同时存在"
+            "name": "distance_bound",
+            "description": "桥的两个端点到中心的距离相同（桥的两个端点必须在同一个距离圆周上）",
+            "formal": "∀e = (u, v) ∈ E, dist(u, center) = dist(v, center)"
+          },
+          {
+            "name": "operation_limit",
+            "description": "添加的桥数量最小化（需要添加的桥的数量最少）",
+            "formal": "minimize |E' - E|, 其中 E' 是添加桥后的边集"
           }
         ]
       }
@@ -57,8 +62,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求从每个起点到指定终点所需的最少操作数"
+        "type": "minimize_count",
+        "description": "求从每个起点到指定终点所需的最少添加边数"
       }
     }
   ],
@@ -67,9 +72,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：从任意起点到目标点的最小桥数可以通过子问题的解组合而成，即路径上的每一步选择都依赖于前一步的最优解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。对于每个起点，到达目标点的最小桥数可以通过已知的子路径的最小桥数来确定。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态到另一个状态的转移是基于固定的规则，并且这种转移在整个过程中保持一致。在这个问题中，Charlotte 从一个桥移动到下一个桥或终点的过程遵循固定的规则。",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：在循环结构中，某些性质在每次循环后保持不变。在这个问题中，Charlotte 在网中的行走可以被视为在一个循环结构上的移动，而需要添加的桥的数量在每次循环后保持不变。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

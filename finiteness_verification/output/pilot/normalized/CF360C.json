@@ -16,7 +16,7 @@
           "max": 122
         },
         "properties": {
-          "charset": "a-z"
+          "ordered": false
         }
       }
     },
@@ -34,7 +34,7 @@
           "max": 122
         },
         "properties": {
-          "charset": "a-z"
+          "ordered": false
         }
       }
     },
@@ -52,7 +52,7 @@
           "max": 122
         },
         "properties": {
-          "charset": "a-z"
+          "ordered": false
         }
       }
     }
@@ -64,12 +64,20 @@
       "result": {
         "constraints": [
           {
-            "name": "substring_lexicographically_larger",
-            "description": "字符串 t 的子串 t[i..j] 必须在字典序上大于 s[i..j] 才能计入美丽值"
+            "name": "subsequence_constraint",
+            "description": "子串的字典序比较（t[i..j] 必须大于 s[i..j]）"
           },
           {
-            "name": "beauty_value_equals_k",
-            "description": "字符串 t 相对于 s 的美丽值必须恰好等于 k"
+            "name": "ordering",
+            "description": "字符串按字典序比较（字符按 ASCII 码值比较）"
+          },
+          {
+            "name": "ordering",
+            "description": "字符串 t 的美丽度相对于 s 恰好为 k（满足条件的子串对数等于 k）"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "结果取模 1000000007（10^9 + 7）"
           }
         ]
       }
@@ -80,16 +88,16 @@
       "result": {
         "constraints": [
           {
-            "name": "substring_lexicographically_larger",
-            "description": "字符串 t 的子串 t[i..j] 必须在字典序上大于 s[i..j]，才能计入美丽值 k"
+            "name": "subsequence_constraint",
+            "description": "子串的字典序比较（t[i..j] 必须大于 s[i..j]）"
           },
           {
-            "name": "beauty_value_equals_k",
-            "description": "字符串 t 相对于 s 的美丽值必须恰好等于 k"
+            "name": "exclusion",
+            "description": "字符串 t 的美度必须恰好等于 k（即满足条件的子串对数为 k）"
           },
           {
-            "name": "substring_length",
-            "description": "考虑的子串长度范围是从 1 到 n"
+            "name": "modular_arithmetic",
+            "description": "结果需要取模 1000000007"
           }
         ]
       }
@@ -100,12 +108,14 @@
       "result": {
         "constraints": [
           {
-            "name": "substring_lexicographically_larger",
-            "description": "字符串 t 的子串 t[i..j] 必须在字典序上大于 s[i..j] 才能计入美丽值"
+            "name": "ordering",
+            "description": "字符串 t 的子串 [i..j] 必须在字典序上大于 s 的对应子串 [i..j]",
+            "formal": "∀ i, j (1 ≤ i ≤ j ≤ n), t[i..j] > s[i..j]"
           },
           {
-            "name": "beauty_value_equals_k",
-            "description": "字符串 t 相对于 s 的美丽值必须恰好等于 k"
+            "name": "ordering",
+            "description": "字符串 t 的美丽值（相对于 s）必须等于 k，即满足字典序大于条件的子串对数为 k",
+            "formal": "count(i, j | 1 ≤ i ≤ j ≤ n ∧ t[i..j] > s[i..j]) = k"
           }
         ]
       }
@@ -116,24 +126,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算字符串t的数量，使得t相对于给定字符串s的美丽值恰好为k，并输出该数量对1000000007取模的结果"
+        "type": "enumeration",
+        "description": "求满足特定条件的字符串数量（模10^9+7）"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算美丽度恰好为k的字符串t的数量，结果对1000000007取模"
+        "type": "enumeration",
+        "description": "求满足特定条件的字符串数量（模10^9+7）"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算有多少个字符串t，使得它们相对于给定字符串s的美丽值恰好等于k，并输出该数量对1000000007取模的结果"
+        "type": "enumeration",
+        "description": "求满足特定条件的字符串数量（取模）"
       }
     }
   ],
@@ -142,27 +152,54 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于其子问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即字符串 t 的美丽值 k 可以通过其子串的美丽值来计算。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在动态规划过程中，当前状态的美丽值可以通过前一个状态的美丽值和当前字符的比较结果来确定。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于其子问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即字符串 t 的美丽值 k 可以通过其子串的美丽值来计算。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在动态规划过程中，当前状态的美丽值依赖于前一个状态的美丽值和当前字符的选择。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的解组合而成，即最优解包含子问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即字符串 t 的美丽值 k 可以通过其子串的美丽值来计算。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：动态规划中的状态转移方程保持一致性，当前状态的值依赖于前一个或多个状态的值。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

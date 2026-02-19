@@ -1,0 +1,88 @@
+{
+  "problem_id": "CF1626D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "partition",
+            "description": "每个分组的元素数量必须是2的幂次"
+          },
+          {
+            "name": "partition",
+            "description": "每个分组必须包含至少一个元素"
+          },
+          {
+            "name": "range_bound",
+            "description": "存在两个整数边界 x 和 y (x < y)，将元素分为三个区间：小于 x 的为轻量级，大于等于 y 的为重量级，其余为中量级"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "需要添加的额外元素数量最小化"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "最小化需要额外添加的元素数量以满足每个分组大小为2的幂次"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，用于确定最优的分界点x和y",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解来构建，即在每个可能的分界点处计算所需的额外参与者数量，并选择最小值",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，通过贪心地选择当前最优的分界点x和y来最小化额外参与者的数量",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

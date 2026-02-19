@@ -1,0 +1,102 @@
+{
+  "problem_id": "P5901",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 25000
+        },
+        "properties": {
+          "ordered": true,
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "图是有向无环图（DAG），表示委员之间的直接导师关系"
+          },
+          {
+            "name": "acyclicity",
+            "description": "图是一棵有根树，根节点是主席（编号为1的委员）"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的出度不超过1，即每个委员最多有一个直接导师"
+          },
+          {
+            "name": "reachability_constraint",
+            "description": "存在传递闭包关系，即如果A是B的直接导师或间接导师，则A是B的导师"
+          },
+          {
+            "name": "exclusion",
+            "description": "任意两个委员不能互为导师"
+          },
+          {
+            "name": "query_limit",
+            "description": "查询次数限制为Q次"
+          },
+          {
+            "name": "partition",
+            "description": "委员被划分为R个不同的区域"
+          },
+          {
+            "name": "operation_order",
+            "description": "必须在线处理查询，每次读取一个查询并立即回答"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足条件的二元组数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：委员之间的直接导师关系形成一个有向无环图（DAG），可以进行拓扑排序，确保在处理每个委员时，其所有直接或间接的导师已经处理完毕。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：对于每个委员，其作为导师的二元组数量可以通过其直接导师的二元组数量递归计算得出。即，当前节点的解依赖于其父节点的解。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个委员的导师关系和所属地区是独立的，可以分别处理每个委员的查询，且不同委员的查询结果互不影响。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

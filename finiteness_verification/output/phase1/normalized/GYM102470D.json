@@ -6,10 +6,10 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
-          "max": 502
+          "max": 501
         },
         "value_range": {
           "min": 1,
@@ -26,16 +26,19 @@
       "result": {
         "constraints": [
           {
-            "name": "non_negative_values",
-            "description": "分数不能为负，如果减去的值会使分数变为负数，则分数保持不变"
+            "name": "sum_constraint",
+            "description": "选取元素权重和不超过容量上限（玩家的得分不能低于0）",
+            "formal": "score - value_of_hit_section >= 0"
           },
           {
-            "name": "target_sequence",
-            "description": "目标是将分数减少到0，第一个达到0分的玩家获胜"
+            "name": "target_reachability",
+            "description": "达到目标值时停止（玩家的得分达到0时游戏结束）",
+            "formal": "if score == 0 then game_ends"
           },
           {
-            "name": "turn_based_operation",
-            "description": "玩家轮流进行操作（投掷飞镖），每次操作只能由一个玩家执行"
+            "name": "turn_based",
+            "description": "回合制操作（玩家轮流投掷飞镖）",
+            "formal": "players_take_turns_throwing_darts"
           }
         ]
       }
@@ -46,8 +49,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "计算两个玩家在给定初始分数下，各自先手获胜的概率"
+        "type": "maximize_probability",
+        "description": "求先手和后手获胜的最大概率"
       }
     }
   ],
@@ -56,11 +59,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：当前状态的解依赖于前序状态的最优解，通过递归或动态规划的方式求解整个问题",
-        "properties": {
-          "state_dependency": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：当前状态的最优解可以通过子问题的最优解来构建，即玩家在每一步选择最优策略时，可以基于剩余分数和对手可能的得分情况来决定自己的最佳行动。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：游戏状态（当前分数）通过每次投掷飞镖后的得分变化进行转移，且这种转移是确定性的，即给定当前分数和投掷结果，下一个状态唯一确定。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,89 @@
+{
+  "problem_id": "CF285D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 16
+        },
+        "value_range": {
+          "min": 1,
+          "max": 16
+        },
+        "properties": {
+          "ordered": true,
+          "distinct": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "permutation_constraint",
+            "description": "输入的序列是长度为 n 的排列，即包含 n 个不同的正整数，每个整数在 [1, n] 范围内。",
+            "formal": "a 和 b 是长度为 n 的排列，即 a[i], b[i] ∈ [1, n] 且 a[i] ≠ a[j], b[i] ≠ b[j] 对于所有 i ≠ j"
+          },
+          {
+            "name": "accumulated_sum_constraint",
+            "description": "定义了两个排列 a 和 b 的和操作 c，其中 c[i] = ((a[i] - 1 + b[i] - 1) mod n) + 1。",
+            "formal": "c[i] = ((a[i] - 1 + b[i] - 1) % n) + 1"
+          },
+          {
+            "name": "permutation_constraint",
+            "description": "结果 c 必须也是一个长度为 n 的排列，即 c 也必须包含 n 个不同的正整数，每个整数在 [1, n] 范围内。",
+            "formal": "c 是长度为 n 的排列，即 c[i] ∈ [1, n] 且 c[i] ≠ c[j] 对于所有 i ≠ j"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足条件的排列对数，结果取模"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，且子问题之间相互独立",
+            "properties": {
+              "subproblem_independence": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过定义合适的状态表示，可以确保状态之间的转移满足特定的规则，从而保证算法的正确性",
+            "properties": {}
+          },
+          {
+            "name": "modular_invariance",
+            "description": "模运算不变量：在进行加法和取模操作时，结果始终满足模数条件，保持在合法范围内",
+            "properties": {
+              "modulus": 1000000007
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

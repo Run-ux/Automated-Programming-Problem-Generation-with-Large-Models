@@ -1,0 +1,146 @@
+{
+  "problem_id": "P13840",
+  "source": "luogu",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 1,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "connected": true,
+            "rooted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "connected": true,
+      "rooted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "degree_bound",
+        "description": "每个节点的儿子个数有限制，插入操作时新节点的位置必须在当前儿子个数的范围内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每次操作后树的形态不变，查询操作不会实际改变树的结构",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation",
+        "description": "左儿子右兄弟变换规则：将第一个儿子作为左儿子，下一个兄弟作为右儿子",
+        "confidence": "1/1"
+      },
+      {
+        "name": "query_limit",
+        "description": "查询操作中指定的变换次数 k_i 可能非常大，但实际影响是有限的",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "degree_bound",
+              "description": "每个节点的儿子个数有限制，插入操作时新节点的位置必须在当前儿子个数的范围内",
+              "formal": "0 ≤ x_i ≤ s_{u_i}"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每次操作后树的形态不变，查询操作不会实际改变树的结构",
+              "formal": "T' = T after operation 2"
+            },
+            {
+              "name": "transformation",
+              "description": "左儿子右兄弟变换规则：将第一个儿子作为左儿子，下一个兄弟作为右儿子",
+              "formal": "left_child(u) = first_child(u), right_sibling(u) = next_sibling(u)"
+            },
+            {
+              "name": "query_limit",
+              "description": "查询操作中指定的变换次数 k_i 可能非常大，但实际影响是有限的",
+              "formal": "1 ≤ k_i ≤ 10^9"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "对于每个查询操作，输出经过指定次数变换后指定节点的父节点"
+        }
+      }
+    ],
+    "description": "对于每个查询操作，输出经过指定次数变换后指定节点的父节点"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：树的结构在插入操作后保持一致，查询操作基于当前树结构进行变换后的父节点查询。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：左儿子右兄弟变换具有对称性质，多次变换后的树结构可以通过对称变换得到。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：树的结构在插入操作后保持一致，查询操作基于当前树结构进行变换后的父节点查询。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：左儿子右兄弟变换具有对称性质，多次变换后的树结构可以通过对称变换得到。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

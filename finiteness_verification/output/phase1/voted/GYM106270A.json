@@ -1,0 +1,169 @@
+{
+  "problem_id": "GYM106270A",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": {
+              "n": 2,
+              "k": 1
+            },
+            "max": {
+              "n": 1000000,
+              "k": 3000000000
+            }
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": {
+        "n": 2,
+        "k": 1
+      },
+      "max": {
+        "n": 1000000,
+        "k": 3000000000
+      }
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "visibility_constraint",
+        "description": "从中心点出发的射线必须精确穿过目标节点的中心，否则目标节点不受影响（几何约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "shortest_path",
+        "description": "路径必须是最短路径，即包含最少的节点数（图论约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_disjointness_constraint",
+        "description": "计算从起点到终点的不同最短路径数量（图论约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "结果需要对 (10^9 + 7) 取模（数值/代数约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "visibility_constraint",
+              "description": "从中心点出发的射线必须精确穿过目标节点的中心，否则目标节点不受影响（几何约束）"
+            },
+            {
+              "name": "shortest_path",
+              "description": "路径必须是最短路径，即包含最少的节点数（图论约束）"
+            },
+            {
+              "name": "path_disjointness_constraint",
+              "description": "计算从起点到终点的不同最短路径数量（图论约束）"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "结果需要对 (10^9 + 7) 取模（数值/代数约束）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求满足条件的最小操作次数"
+        }
+      }
+    ],
+    "description": "求满足条件的最小操作次数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，具体表现为从中心到目标点的最短路径可以由经过的每个层的局部最优路径组合而成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：由于蜂巢的六边形网格结构和编号规则（奇数层顺时针，偶数层逆时针），在计算路径时，可以利用对称性简化计算，例如，对于某些特定的k值，其路径选择与另一些k值是对称的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着层数的增加，每层的细胞数量逐渐增加。这种递增关系保证了在确定激光射击次数时，可以按照层的顺序依次处理，而不需要回溯。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，具体表现为从中心到目标点的最短路径可以由经过的每个层的局部最优路径组合而成。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：由于蜂巢的六边形网格结构和编号规则（奇数层顺时针，偶数层逆时针），在计算路径时，可以利用对称性简化计算，例如，对于某些特定的k值，其路径选择与另一些k值是对称的。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着层数的增加，每层的细胞数量逐渐增加。这种递增关系保证了在确定激光射击次数时，可以按照层的顺序依次处理，而不需要回溯。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

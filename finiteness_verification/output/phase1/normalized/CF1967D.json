@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1000000
@@ -28,17 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "non_decreasing_sequence",
+            "name": "ordering",
             "description": "数组必须非递减（即 a1 ≤ a2 ≤ ... ≤ an）"
           },
           {
-            "name": "node_value_constraint",
-            "description": "数组元素的取值范围在 [1, m] 之间"
-          },
-          {
-            "name": "state_transition_constraint",
-            "description": "每次操作将 ai 替换为 bi，其中 i 是当前元素的值",
-            "formal": "a[i] = b[a[i]]"
+            "name": "operation_limit",
+            "description": "操作次数限制，需要求出最少的操作次数使数组非递减"
           }
         ]
       }
@@ -49,7 +44,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_cost",
+        "type": "minimize_count",
         "description": "求将数组变为非递减所需的最少操作次数"
       }
     }
@@ -59,9 +54,26 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过局部非递减序列的调整次数来确定整个数组达到非递减所需的最小操作数。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "数组的非递减性质在每次操作后保持或增强，即每次操作后的数组部分有序性不减弱",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解来构建，即最小化操作次数的问题可以分解为更小规模的子问题",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择（即每次选择当前最优的操作）能够逐步逼近全局最优解，即每次选择对最终结果有正向贡献",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

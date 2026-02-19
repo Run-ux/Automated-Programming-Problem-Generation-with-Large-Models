@@ -2,14 +2,14 @@
   "problem_id": "GYM104777J",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -41,18 +41,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "alternating_sequence_constraint",
-        "description": "奇数位置和偶数位置的元素必须交替出现，且奇数位置的元素为奇数，偶数位置的元素为偶数",
+        "name": "permutation_constraint",
+        "description": "给定的数组是一个排列，包含从1到2n-1的所有整数且每个整数恰好出现一次",
         "confidence": "1/1"
       },
       {
-        "name": "no_local_extremum",
-        "description": "偶数位置上的元素不能是局部极值点（即不能大于或小于其相邻的两个奇数位置上的元素）",
+        "name": "distinctness",
+        "description": "奇数位置上的元素是唯一的奇数，偶数位置上的元素是唯一的偶数",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_elements",
-        "description": "所有元素在排列中必须唯一",
+        "name": "adjacency_difference",
+        "description": "偶数位置上的元素不能是局部极值（即不能大于或小于其相邻的两个元素）",
         "confidence": "1/1"
       }
     ],
@@ -63,16 +63,16 @@
         "result": {
           "constraints": [
             {
-              "name": "alternating_sequence_constraint",
-              "description": "奇数位置和偶数位置的元素必须交替出现，且奇数位置的元素为奇数，偶数位置的元素为偶数"
+              "name": "permutation_constraint",
+              "description": "给定的数组是一个排列，包含从1到2n-1的所有整数且每个整数恰好出现一次"
             },
             {
-              "name": "no_local_extremum",
-              "description": "偶数位置上的元素不能是局部极值点（即不能大于或小于其相邻的两个奇数位置上的元素）"
+              "name": "distinctness",
+              "description": "奇数位置上的元素是唯一的奇数，偶数位置上的元素是唯一的偶数"
             },
             {
-              "name": "distinct_elements",
-              "description": "所有元素在排列中必须唯一"
+              "name": "adjacency_difference",
+              "description": "偶数位置上的元素不能是局部极值（即不能大于或小于其相邻的两个元素）"
             }
           ]
         }
@@ -80,14 +80,14 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
+          "type": "construction",
           "description": "构造一个满足条件的排列"
         }
       }
@@ -95,19 +95,56 @@
     "description": "构造一个满足条件的排列"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "在填充偶数位置时，确保相邻元素之间的相对顺序保持单调性，以避免产生局部极值。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "每次选择一个合适的偶数填入当前空位，使得该位置不成为局部极值，并且不影响后续位置的选择。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "每个偶数位置的填充决策独立于其他位置，可以分别处理。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "局部最优选择导致全局最优：通过确保每个偶数位置的值不成为局部极值，可以构造出满足条件的完整排列。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "在填充偶数位置时，确保相邻元素之间的相对顺序保持单调性，以避免产生局部极值。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false
+              }
+            },
+            {
+              "name": "greedy_choice",
+              "description": "每次选择一个合适的偶数填入当前空位，使得该位置不成为局部极值，并且不影响后续位置的选择。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "每个偶数位置的填充决策独立于其他位置，可以分别处理。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "局部最优选择导致全局最优：通过确保每个偶数位置的值不成为局部极值，可以构造出满足条件的完整排列。"
+    ]
   }
 }

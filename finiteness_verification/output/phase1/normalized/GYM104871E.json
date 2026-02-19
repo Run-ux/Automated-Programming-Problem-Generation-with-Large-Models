@@ -1,0 +1,79 @@
+{
+  "problem_id": "GYM104871E",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "sum_constraint",
+            "description": "每个元素的总和在两个集合中必须相等（即每个人的总值班时间在两个排班表中必须相同）",
+            "formal": "∀ t_i, Σ_{(s_j, e_j, t_i) ∈ S1} (e_j - s_j) = Σ_{(s_k, e_k, t_i) ∈ S2} (e_k - s_k)"
+          },
+          {
+            "name": "ordering",
+            "description": "区间按顺序排列且不重叠（即每个区间的结束时间是下一个区间的开始时间）",
+            "formal": "∀ i, e_i = s_{i+1}"
+          },
+          {
+            "name": "distinctness",
+            "description": "每个时间段内只有一个元素（即每个时间段只有一个值班人员）",
+            "formal": "∀ i, j, (s_i, e_i, t_i) ≠ (s_j, e_j, t_j) 且 s_i < e_i, s_j < e_j"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断两组区间分配方案中每个个体的区间总长度是否相同，输出不同个体及其差异"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过端点差值计算区间的总时间，适用于统计每个队友的值班时长",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个时间段到下一个时间段的状态转移是连续且无重叠的，确保了时间线的完整性和唯一性",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

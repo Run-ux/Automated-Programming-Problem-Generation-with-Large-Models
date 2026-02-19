@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,16 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "palindromic_substring_exclusion",
-            "description": "字符串中不能包含长度至少为2的回文子串"
+            "name": "exclusion",
+            "description": "字符串中不允许存在长度至少为2的回文子串"
           },
           {
-            "name": "alphabet_size_constraint",
-            "description": "字符串中的每个字符只能是前3个小写拉丁字母之一"
+            "name": "alphabet_constraint",
+            "description": "字符串中的字符仅限于拉丁字母表的前3个小写字母"
           },
           {
-            "name": "substring_weight_constraint",
-            "description": "计算将子字符串变为美丽字符串所需的最小操作数，每次操作可以将任意字符改为前3个小写拉丁字母之一"
+            "name": "sum_constraint",
+            "description": "计算将子串变为美丽字符串所需的最小操作次数，每次操作可以将任意字符变更为拉丁字母表的前3个小写字母之一"
           }
         ]
       }
@@ -48,8 +48,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求将子串转换为不包含长度至少为2的回文子串所需的最小操作数"
+        "type": "minimize_value",
+        "description": "求将子串变为无回文子串的最小操作次数"
       }
     }
   ],
@@ -58,12 +58,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinability": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即字符串的最小修改代价可以通过其子串的最小修改代价计算得出。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：通过将子区间的解决方案合并来解决整个区间的问题，适用于线段树或类似的区间数据结构。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

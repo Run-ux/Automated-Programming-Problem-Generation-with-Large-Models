@@ -1,0 +1,86 @@
+{
+  "problem_id": "P1710",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通"
+          },
+          {
+            "name": "path_constraint",
+            "description": "从起点到任意节点的最短路径长度不变或增加"
+          },
+          {
+            "name": "edge_weight_modification",
+            "description": "每次操作只能将一条边的权重从1更新为2，且每条边最多更新一次"
+          },
+          {
+            "name": "operation_limit",
+            "description": "总的操作次数（提价次数）不超过Q"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求每次操作后，无法通过选择路径使得总费用与初始费用相等的节点数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从任意站点到目标站点的最短路径可以通过其子路径的最短路径组合而成",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在每次提价后，从每个站点到目标站点的最小费用路径的总费用保持不变或增加",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次提价后，通过更新受影响的边的权重，可以重新计算并维护从每个站点到目标站点的最短路径",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "problem_id": "P14528",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "range_bound",
+            "description": "水面高度 j 必须在 (h_i, H] 之间，且存在 L 和 R 使得 min(h_L, h_R) >= j",
+            "formal": "j ∈ (h_i, H] 且 ∃L, R (1 ≤ L < i < R ≤ n 且 min(h_L, h_R) ≥ j)"
+          },
+          {
+            "name": "subsequence_constraint",
+            "description": "仅考虑下标在 [l, r] 内的所有长方形构成的屋顶",
+            "formal": "考虑子序列 h[l:r]"
+          },
+          {
+            "name": "xor_subarray_sum_constraint",
+            "description": "所有答案的异或和",
+            "formal": "result = ⊕(answers)"
+          },
+          {
+            "name": "query_limit",
+            "description": "部分子任务强制在线，询问参数需要通过异或操作解密",
+            "formal": "l = l' ⊕ (t * lastans), r = r' ⊕ (t * lastans), H = H' ⊕ (t * lastans)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足条件的位置数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过端点差值计算区间和，适用于前缀和等区间操作",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：区间信息可通过子区间合并，适用于线段树等数据结构",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：双指针或滑动窗口的左右端点单调前进，维护区间合法性",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

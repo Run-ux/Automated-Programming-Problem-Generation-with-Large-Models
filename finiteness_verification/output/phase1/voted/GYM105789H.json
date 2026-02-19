@@ -1,0 +1,138 @@
+{
+  "problem_id": "GYM105789H",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "sum_constraint",
+        "description": "选取元素的权重和不超过给定的目标值 k（总星数）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "每个餐厅的评分成本是严格递增的，即 C1 < C2 < C3",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "每个餐厅的评分范围是 [0, 3] 星",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "sum_constraint",
+              "description": "选取元素的权重和不超过给定的目标值 k（总星数）",
+              "formal": "Σ (selected ratings) = k, 1 ≤ k ≤ 3N"
+            },
+            {
+              "name": "ordering",
+              "description": "每个餐厅的评分成本是严格递增的，即 C1 < C2 < C3",
+              "formal": "C1 < C2 < C3 for each restaurant"
+            },
+            {
+              "name": "range_bound",
+              "description": "每个餐厅的评分范围是 [0, 3] 星",
+              "formal": "rating ∈ {0, 1, 2, 3}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求在给定总星数约束下，最小化总代价"
+        }
+      }
+    ],
+    "description": "求在给定总星数约束下，最小化总代价"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即对于任意的k星总数，其最小成本可以由更少星级的子问题的最优解推导得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着所需总星级k的增加，达到该星级所需的最小成本非严格递增。这是因为更多的星级意味着至少需要支付与之前相同或更高的成本。",
+        "confidence": "1/1",
+        "properties": {
+          "cost_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即对于任意的k星总数，其最小成本可以由更少星级的子问题的最优解推导得出。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着所需总星级k的增加，达到该星级所需的最小成本非严格递增。这是因为更多的星级意味着至少需要支付与之前相同或更高的成本。",
+              "properties": {
+                "cost_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

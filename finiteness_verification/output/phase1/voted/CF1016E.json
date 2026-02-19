@@ -1,0 +1,152 @@
+{
+  "problem_id": "CF1016E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "intersection",
+        "description": "光线与围栏段的交点约束（光线与围栏段相交或接触时，点处于阴影中）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "光源沿直线路径移动（从 (a, s_y) 到 (b, s_y)，速度为 1 单位/秒）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "围栏段按 x 坐标升序排列（l_i < r_i 且 r_{i-1} < l_i）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "intersection",
+              "description": "光线与围栏段的交点约束（光线与围栏段相交或接触时，点处于阴影中）"
+            },
+            {
+              "name": "path_constraint",
+              "description": "光源沿直线路径移动（从 (a, s_y) 到 (b, s_y)，速度为 1 单位/秒）"
+            },
+            {
+              "name": "intersection",
+              "description": "围栏段不相交且不接触（相邻段之间没有重叠）"
+            },
+            {
+              "name": "ordering",
+              "description": "围栏段按 x 坐标升序排列（l_i < r_i 且 r_{i-1} < l_i）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "计算每个点在光源移动过程中处于阴影中的总时间"
+        }
+      }
+    ],
+    "description": "计算每个点在光源移动过程中处于阴影中的总时间"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "光源沿直线从左向右移动，其位置随时间单调递增。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "阴影区域的时间段可以通过合并各个遮挡物产生的阴影时间段来计算。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "每个点的总阴影时间可以分解为多个子问题（每个遮挡物对点的影响）的最优解之和。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "光源沿直线从左向右移动，其位置随时间单调递增。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "阴影区域的时间段可以通过合并各个遮挡物产生的阴影时间段来计算。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "每个点的总阴影时间可以分解为多个子问题（每个遮挡物对点的影响）的最优解之和。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

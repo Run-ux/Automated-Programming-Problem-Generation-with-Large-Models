@@ -6,14 +6,14 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 10,
           "max": 13
         },
         "value_range": {
           "min": 0,
-          "max": 10
+          "max": 12
         },
         "properties": {
           "inferred": true
@@ -28,24 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "xor_sum_constraint",
+            "name": "modular_arithmetic",
             "description": "校验位必须满足特定的计算规则（ISBN-10 和 ISBN-13 有不同的校验规则）"
           },
           {
-            "name": "delimiter_inclusion_constraint",
-            "description": "连字符的位置必须符合特定规则（最多三个连字符，不能在开头或结尾，不能连续出现，且如果存在三个连字符，其中一个必须分隔校验位和前一个数字）"
+            "name": "syntax_validity",
+            "description": "ISBN-10 必须是 10 个字符长，ISBN-13 必须是 13 个字符长"
           },
           {
-            "name": "alphabet_size_constraint",
-            "description": "字符串中的字符只能是数字、连字符或大写字母 X"
+            "name": "sequence_pattern_constraint",
+            "description": "ISBN-10 中的连字符位置必须符合特定规则（最多三个连字符，不能在开头或结尾，不能连续出现，如果存在三个连字符，则最后一个必须在倒数第二个字符和校验位之间）"
           },
           {
-            "name": "path_length_constraint",
-            "description": "ISBN-10 的长度必须为 10 或 13（包括可能的连字符）"
+            "name": "alphabet_constraint",
+            "description": "ISBN-10 中的字符只能是数字（0-9）、连字符（-）或大写字母 X"
           },
           {
-            "name": "character_transformation_rule",
-            "description": "ISBN-10 转换为 ISBN-13 时，必须在前面添加 '978-' 并重新计算校验位"
+            "name": "transformation",
+            "description": "ISBN-10 转换为 ISBN-13 的规则：在前面添加 978 并移除旧的校验位，然后根据 ISBN-13 的规则计算新的校验位"
           }
         ]
       }
@@ -56,8 +56,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足条件的ISBN-13，或判断给定的ISBN-10是否有效"
+        "type": "construction",
+        "description": "构造一个满足给定规则的转换后的字符串"
       }
     }
   ],
@@ -66,12 +66,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "状态依赖：ISBN-10到ISBN-13的转换过程中，新生成的校验位仅依赖于前12位数字（包括固定的978和原ISBN-10的前9位）。",
-        "properties": {
-          "dependency_on_fixed_prefix": true,
-          "checksum_dependent_on_all_prior_digits": true
-        }
+        "invariants": [
+          {
+            "name": "modular_invariance",
+            "description": "校验和不变性：ISBN-10 和 ISBN-13 的校验和计算规则确保了转换后的 ISBN-13 仍然有效",
+            "properties": {}
+          },
+          {
+            "name": "prefix_decomposability",
+            "description": "前缀不变性：ISBN-10 转换为 ISBN-13 时，前缀 978 的添加保持了 ISBN 的唯一性和有效性",
+            "properties": {}
+          },
+          {
+            "name": "position_freedom_invariance",
+            "description": "连字符位置不变性：ISBN-10 中的连字符位置在转换为 ISBN-13 时保持不变，确保格式一致性",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

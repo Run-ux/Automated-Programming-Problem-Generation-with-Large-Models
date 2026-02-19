@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 150000
@@ -28,24 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "edge_exclusion_constraint",
-            "description": "可以选择一个区间 [C, D] 不售票，其中 C <= D"
+            "name": "exclusion",
+            "description": "可以选择一个区间 [C, D] 不售票，即不计算该区间的票价"
           },
           {
-            "name": "adjacent_difference",
-            "description": "相邻节点之间的边有被检查的概率 p_i，若被检查则罚款 c"
+            "name": "optimization_objective",
+            "description": "在每个区间 [i, i+1] 上，如果进行检查且有乘客未购票，则对售票员罚款 c 单位货币"
           },
           {
-            "name": "coordinate_fixed_point",
-            "description": "节点坐标非递减（即 x1 < x2 < ... < xn）"
+            "name": "probability_distribution",
+            "description": "每个区间 [i, i+1] 有 p_i 的概率进行检查，p_i 是百分比形式的概率"
           },
           {
-            "name": "path_weight_constraint",
-            "description": "从 a 到 b 的票的价格为 x_b - x_a"
+            "name": "ordering",
+            "description": "站点坐标 x_i 是严格递增的"
           },
           {
-            "name": "weight_sum_constraint",
-            "description": "省下的钱由乘客和售票员平分"
+            "name": "coverage",
+            "description": "对于未售票的区间 [C, D]，节省的票价由售票员和乘客平分"
           }
         ]
       }
@@ -56,7 +56,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_value",
+        "type": "maximize_probability",
         "description": "最大化期望收益"
       }
     }
@@ -66,9 +66,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个乘客的最优方案可以独立计算并合并得到全局最优解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，适用于动态规划求解",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：区间的成本或收益可以通过端点差值计算，适用于前缀和优化区间查询",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：区间的最优解可以通过子区间的最优解合并得到，适用于线段树等数据结构进行区间操作",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

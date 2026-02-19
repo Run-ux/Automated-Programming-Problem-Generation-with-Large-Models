@@ -2,14 +2,14 @@
   "problem_id": "CF1623D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 10
@@ -39,23 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "edge_exclusion_constraint",
-        "description": "当机器人遇到边界时，其移动方向会反射（即改变符号）",
+        "name": "reflection_constraint",
+        "description": "机器人在遇到边界时，移动方向会反射（即改变符号）",
         "confidence": "1/1"
       },
       {
-        "name": "weight_proportional_probability",
-        "description": "每秒机器人清洁当前位置所在行和列的概率为 p/100，不清洁的概率为 1 - p/100",
+        "name": "probability_distribution",
+        "description": "每秒清洁操作以概率 p/100 执行，不执行的概率为 1 - p/100，且每次操作独立",
         "confidence": "1/1"
       },
       {
-        "name": "parallel_operation",
-        "description": "每秒的清洁操作是独立事件，互不影响",
-        "confidence": "1/1"
-      },
-      {
-        "name": "modulo_expected_value_constraint",
-        "description": "期望时间的结果需要表示为一个不可约分数 x/y，并输出 x * y^(-1) mod (10^9 + 7)",
+        "name": "modular_arithmetic",
+        "description": "期望时间必须表示为模 10^9 + 7 的结果",
         "confidence": "1/1"
       }
     ],
@@ -66,20 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "edge_exclusion_constraint",
-              "description": "当机器人遇到边界时，其移动方向会反射（即改变符号）"
+              "name": "reflection_constraint",
+              "description": "机器人在遇到边界时，移动方向会反射（即改变符号）",
+              "formal": "if (r + dr < 1 or r + dr > n) then dr = -dr; if (c + dc < 1 or c + dc > m) then dc = -dc"
             },
             {
-              "name": "weight_proportional_probability",
-              "description": "每秒机器人清洁当前位置所在行和列的概率为 p/100，不清洁的概率为 1 - p/100"
+              "name": "probability_distribution",
+              "description": "每秒清洁操作以概率 p/100 执行，不执行的概率为 1 - p/100，且每次操作独立",
+              "formal": "P(clean) = p/100, P(not clean) = 1 - p/100, independent each second"
             },
             {
-              "name": "parallel_operation",
-              "description": "每秒的清洁操作是独立事件，互不影响"
-            },
-            {
-              "name": "modulo_expected_value_constraint",
-              "description": "期望时间的结果需要表示为一个不可约分数 x/y，并输出 x * y^(-1) mod (10^9 + 7)"
+              "name": "modular_arithmetic",
+              "description": "期望时间必须表示为模 10^9 + 7 的结果",
+              "formal": "result ≡ x * y^(-1) (mod 10^9 + 7)"
             }
           ]
         }
@@ -87,36 +81,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_expected_value",
+    "type": "minimize_probability",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_expected_value",
-          "description": "求在给定概率下，完成任务的期望时间"
+          "type": "minimize_probability",
+          "description": "最小化完成任务的期望时间"
         }
       }
     ],
-    "description": "求在给定概率下，完成任务的期望时间"
+    "description": "最小化完成任务的期望时间"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：机器人在房间内的位置和移动方向的状态转移具有确定性，且每次移动后的新状态仅依赖于当前状态。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：当机器人遇到墙壁时，其移动方向会反射，这种反射操作保持了机器人运动的对称性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "expectation_linearity",
+        "description": "期望值不变量：在每一步中，机器人清洁脏单元格的概率是固定的，因此整个过程中的期望时间可以通过概率和期望值的线性性质进行计算。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "状态依赖：当前状态只依赖于有限的前序状态，具体表现为机器人在每一时刻的位置和方向仅由上一时刻的位置和方向决定",
-          "properties": {
-            "finite_dependency": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：机器人在房间内的位置和移动方向的状态转移具有确定性，且每次移动后的新状态仅依赖于当前状态。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：当机器人遇到墙壁时，其移动方向会反射，这种反射操作保持了机器人运动的对称性。",
+              "properties": {}
+            },
+            {
+              "name": "expectation_linearity",
+              "description": "期望值不变量：在每一步中，机器人清洁脏单元格的概率是固定的，因此整个过程中的期望时间可以通过概率和期望值的线性性质进行计算。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "状态依赖：当前状态只依赖于有限的前序状态，具体表现为机器人在每一时刻的位置和方向仅由上一时刻的位置和方向决定"
+    ]
   }
 }

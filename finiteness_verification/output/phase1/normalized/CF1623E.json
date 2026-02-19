@@ -1,0 +1,85 @@
+{
+  "problem_id": "CF1623E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 97,
+          "max": 122
+        },
+        "properties": {
+          "connected": true,
+          "rooted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "最多可以对 k 个节点进行标签复制操作",
+            "formal": "sum(operations) <= k"
+          },
+          {
+            "name": "acyclicity",
+            "description": "只有当父节点的标签被复制时，子节点的标签才能被复制",
+            "formal": "if (parent_duplicated) then child_can_be_duplicated"
+          },
+          {
+            "name": "ordering",
+            "description": "生成的字符串表示必须是字典序最小的",
+            "formal": "result = min_lexicographical(f(1))"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "lexicographic_optimize",
+        "description": "求字典序最小的字符串表示"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：树的最小字典序字符串表示可以通过其子树的最小字典序字符串表示来构造。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每个节点上，优先选择复制字符以获得局部最优解，从而达到全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个节点的状态（是否复制字符）依赖于其父节点的状态，并且这种状态转移是确定性的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

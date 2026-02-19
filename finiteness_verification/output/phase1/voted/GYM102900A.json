@@ -1,0 +1,151 @@
+{
+  "problem_id": "GYM102900A",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 200
+          },
+          "value_range": {
+            "min": -1000,
+            "max": 1000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 200
+    },
+    "value_range": {
+      "min": -1000,
+      "max": 1000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "路径由一系列线段组成，且这些线段不相交（除了相邻线段在端点处相交）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "相邻线段的方向不同",
+        "confidence": "1/1"
+      },
+      {
+        "name": "intersection",
+        "description": "选择的两点 a 和 b 之间的线段不能与原路径上的任何线段相交或接触（除了 a 和 b 本身）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "路径由一系列线段组成，且这些线段不相交（除了相邻线段在端点处相交）",
+              "formal": "对于任意 i, j (1 ≤ i < j < n)，(p_i, p_{i+1}) ∩ (p_j, p_{j+1}) = {p_{i+1}} 当 i = j-1 时，否则为空集"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "相邻线段的方向不同",
+              "formal": "对于任意 i (1 ≤ i < n-1)，向量 p_i - p_{i+1} 和 p_{i+1} - p_{i+2} 不共线"
+            },
+            {
+              "name": "intersection",
+              "description": "选择的两点 a 和 b 之间的线段不能与原路径上的任何线段相交或接触（除了 a 和 b 本身）",
+              "formal": "线段 (a, b) 与 (p_i, p_{i+1}) (1 ≤ i < n) 只能在 a 或 b 处相交"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求两点间最短路径长度"
+        }
+      }
+    ],
+    "description": "求两点间最短路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即从起点到终点的最短路径可以通过找到一个最优的直接连线段 (a, b) 和两段分别从起点到 a 以及从 b 到终点的最短路径来组合而成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在选择最优的直接连线段 (a, b) 时，随着 a 或 b 的移动，整个路径长度的变化趋势是单调的。具体来说，当 a 或 b 沿着折线移动时，路径总长度会呈现单调递增或递减的趋势。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：对于任意两个不相交且满足条件的直接连线段 (a, b) 和 (c, d)，它们可以被合并为一个新的更优解，或者通过比较它们的路径长度来确定最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即从起点到终点的最短路径可以通过找到一个最优的直接连线段 (a, b) 和两段分别从起点到 a 以及从 b 到终点的最短路径来组合而成。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在选择最优的直接连线段 (a, b) 时，随着 a 或 b 的移动，整个路径长度的变化趋势是单调的。具体来说，当 a 或 b 沿着折线移动时，路径总长度会呈现单调递增或递减的趋势。",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：对于任意两个不相交且满足条件的直接连线段 (a, b) 和 (c, d)，它们可以被合并为一个新的更优解，或者通过比较它们的路径长度来确定最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "problem_id": "CF1299D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 31
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 31
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "acyclicity",
+        "description": "图中不存在长度大于3的简单环路，且这些环路必须经过顶点1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "路径的成本定义为路径上所有边权重的异或和，不允许存在成本为0的非平凡环路通过顶点1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "可以选择删除顶点1的所有相邻边的一个子集，使得在删除后图中没有成本为0的非平凡环路通过顶点1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "cycle_count_constraint",
+        "description": "非平凡环路是指通过某些边奇数次的环路",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "acyclicity",
+              "description": "图中不存在长度大于3的简单环路，且这些环路必须经过顶点1"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "路径的成本定义为路径上所有边权重的异或和，不允许存在成本为0的非平凡环路通过顶点1"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "可以选择删除顶点1的所有相邻边的一个子集，使得在删除后图中没有成本为0的非平凡环路通过顶点1"
+            },
+            {
+              "name": "cycle_count_constraint",
+              "description": "非平凡环路是指通过某些边奇数次的环路"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足条件的子集数量（模10^9+7）"
+        }
+      }
+    ],
+    "description": "求满足条件的子集数量（模10^9+7）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，特别是在处理与顶点1相关的边的子集时。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在考虑从顶点1出发的不同路径时，每个子问题（即每条路径）的解决方案是独立的，不会相互影响。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "cycle_invariant",
+        "description": "环不变量：在移除某些边后，确保没有非平凡的零成本环通过顶点1。这保证了图中特定结构的不变性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，特别是在处理与顶点1相关的边的子集时。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在考虑从顶点1出发的不同路径时，每个子问题（即每条路径）的解决方案是独立的，不会相互影响。",
+              "properties": {}
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "环不变量：在移除某些边后，确保没有非平凡的零成本环通过顶点1。这保证了图中特定结构的不变性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

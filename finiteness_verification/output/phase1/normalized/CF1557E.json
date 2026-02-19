@@ -1,0 +1,95 @@
+{
+  "problem_id": "CF1557E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 8,
+          "max": 8
+        },
+        "value_range": {
+          "min": 1,
+          "max": 8
+        },
+        "properties": {
+          "ordered": false,
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制，最多进行130次移动",
+            "formal": "num_moves <= 130"
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移约束，每次移动后棋盘状态必须合法（国王不能移动到与皇后同一行、列或对角线）",
+            "formal": "forall (x, y) in king_moves: (x, y) not in queen_attack_set"
+          },
+          {
+            "name": "turn_based",
+            "description": "回合制约束，国王先移动，然后皇后移动，交替进行",
+            "formal": "king_turn -> queen_turn -> king_turn -> ... (up to 130 moves)"
+          },
+          {
+            "name": "operation_type",
+            "description": "有效移动约束，皇后和国王的移动必须在棋盘范围内且符合规则",
+            "formal": "queen_move in valid_queen_moves and king_move in valid_king_moves"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "胜利条件约束，如果国王没有有效的移动，则游戏结束，皇后获胜",
+            "formal": "if no_valid_king_moves: win = true"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种策略使得在限定步数内使对手无路可走"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每一步棋子的移动都基于上一步的状态，并且新的状态是根据规则唯一确定的",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在游戏过程中，每一步的决策依赖于前一步的结果，形成了一种隐式的拓扑顺序",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每一局游戏可以视为一个独立的子问题，当前局的游戏结果不影响其他局的游戏策略",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

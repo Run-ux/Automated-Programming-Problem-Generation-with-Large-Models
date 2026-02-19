@@ -1,0 +1,84 @@
+{
+  "problem_id": "P3218",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": -1000,
+          "max": 1000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "capacity_constraint",
+            "description": "选取元素权重和不超过容量上限（初始油量限制）",
+            "formal": "∑(max(0, av + bs) * d) ≤ f"
+          },
+          {
+            "name": "range_bound",
+            "description": "速度不能超过给定的最大值（v ≤ vmax）",
+            "formal": "v ≤ vmax"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "总耗油量不能超过初始油量（每段路程的耗油量之和不超过初始油量）",
+            "formal": "∑(max(0, av + bs) * d) ≤ f"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求在给定资源限制下的最小路径时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每一段路程上选择最优速度行驶以达到整体耗时最少的目标。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态（当前油量和位置）到另一个状态（新的油量和位置）的转移是基于确定的速度选择规则进行的，且这种转移满足一致性。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每段路程上选择使得当前段耗时最少的速度，同时保证总耗油量不超过初始油量，从而逐步构建全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

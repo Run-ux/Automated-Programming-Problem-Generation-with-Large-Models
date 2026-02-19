@@ -2,14 +2,14 @@
   "problem_id": "CF1012D",
   "source": "codeforces",
   "input_structure": {
-    "type": "string_sequence",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string_sequence",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -39,18 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "prefix_transformation",
-        "description": "可以多次选择两个字符串的前缀进行交换，前缀可以为空或整个字符串",
+        "name": "transformation",
+        "description": "通过交换两个字符串的前缀，使得一个字符串仅包含字符 'a'，另一个字符串仅包含字符 'b'。",
         "confidence": "1/1"
       },
       {
-        "name": "state_convergence",
-        "description": "最终一个字符串应仅包含字符 'a'，另一个字符串应仅包含字符 'b'",
-        "confidence": "1/1"
-      },
-      {
-        "name": "operation_minimization",
-        "description": "操作次数应最小化",
+        "name": "operation_limit",
+        "description": "操作次数应最小化。",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "prefix_transformation",
-              "description": "可以多次选择两个字符串的前缀进行交换，前缀可以为空或整个字符串"
+              "name": "transformation",
+              "description": "通过交换两个字符串的前缀，使得一个字符串仅包含字符 'a'，另一个字符串仅包含字符 'b'。",
+              "formal": "通过多次操作 (swap(prefix(s), prefix(t)))，使得 s 仅包含 'a' 且 t 仅包含 'b' 或反之。"
             },
             {
-              "name": "state_convergence",
-              "description": "最终一个字符串应仅包含字符 'a'，另一个字符串应仅包含字符 'b'"
-            },
-            {
-              "name": "operation_minimization",
-              "description": "操作次数应最小化"
+              "name": "operation_limit",
+              "description": "操作次数应最小化。",
+              "formal": "minimize(n)"
             }
           ]
         }
@@ -78,34 +71,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求将两个字符串通过最少的前缀交换操作转换为一个全由a组成另一个全由b组成的最小操作次数"
+          "type": "minimize_count",
+          "description": "最小化操作次数以使两个字符串分别只包含一种字符"
         }
       }
     ],
-    "description": "求将两个字符串通过最少的前缀交换操作转换为一个全由a组成另一个全由b组成的最小操作次数"
+    "description": "最小化操作次数以使两个字符串分别只包含一种字符"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "exchange_argument",
+        "description": "交换论证：通过交换操作逐步优化字符串，最终达到目标状态。每次交换操作都是局部最优选择，能够逐步减少字符串中混杂的字符数量。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择交换的前缀长度时，总是选择能够最大化当前步骤优化效果的前缀长度，从而逐步逼近全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过交换前缀操作使得最终字符串满足条件的最少操作次数可以由更小规模问题的最优解推导得出。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "exchange_argument",
+              "description": "交换论证：通过交换操作逐步优化字符串，最终达到目标状态。每次交换操作都是局部最优选择，能够逐步减少字符串中混杂的字符数量。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择交换的前缀长度时，总是选择能够最大化当前步骤优化效果的前缀长度，从而逐步逼近全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过交换前缀操作使得最终字符串满足条件的最少操作次数可以由更小规模问题的最优解推导得出。"
+    ]
   }
 }

@@ -1,0 +1,131 @@
+{
+  "problem_id": "GYM100796B",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "每个节点（盒子）最多有两个子节点，且子节点的位置固定为 (x, y-1) 和 (x+1, y-1)",
+        "confidence": "1/1"
+      },
+      {
+        "name": "flow_constraint",
+        "description": "当一个节点（盒子）变湿时，其所有直接子节点也必须变湿",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "节点（盒子）的状态只能从干变湿，不能从湿变干",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "每个节点（盒子）最多有两个子节点，且子节点的位置固定为 (x, y-1) 和 (x+1, y-1)"
+            },
+            {
+              "name": "flow_constraint",
+              "description": "当一个节点（盒子）变湿时，其所有直接子节点也必须变湿"
+            },
+            {
+              "name": "state_transition",
+              "description": "节点（盒子）的状态只能从干变湿，不能从湿变干"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "每次操作后新增的受影响元素数量"
+        }
+      }
+    ],
+    "description": "每次操作后新增的受影响元素数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个盒子的状态（干/湿）仅由其下方两个盒子的状态决定，且一旦变湿则不可逆。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个盒子的泄漏事件可以独立处理，不会影响其他未处理的泄漏事件。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个盒子的状态（干/湿）仅由其下方两个盒子的状态决定，且一旦变湿则不可逆。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个盒子的泄漏事件可以独立处理，不会影响其他未处理的泄漏事件。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,148 @@
+{
+  "problem_id": "P5328",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "exclusion",
+        "description": "所有元素的属性值两两不同，即对于任意两个不同的元素，它们的属性值不完全相同",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "每个元素的排名由其表现值决定，表现值为 a_i * x + b_i，其中 x 是非负整数。排名为表现严格大于该值的元素数量加一",
+        "confidence": "1/1"
+      },
+      {
+        "name": "flow_constraint",
+        "description": "只有排名小于等于 m 的元素才能进入目标集合，m 为目标集合的最大容量",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "exclusion",
+              "description": "所有元素的属性值两两不同，即对于任意两个不同的元素，它们的属性值不完全相同"
+            },
+            {
+              "name": "ordering",
+              "description": "每个元素的排名由其表现值决定，表现值为 a_i * x + b_i，其中 x 是非负整数。排名为表现严格大于该值的元素数量加一"
+            },
+            {
+              "name": "flow_constraint",
+              "description": "只有排名小于等于 m 的元素才能进入目标集合，m 为目标集合的最大容量"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断每个选手是否有可能进入前m名，并输出可能的最好排名，如果不可能则输出-1"
+        }
+      }
+    ],
+    "description": "判断每个选手是否有可能进入前m名，并输出可能的最好排名，如果不可能则输出-1"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个选手的排名取决于其他选手的表现，可以通过子问题的最优解来确定当前问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着反向选拔指数 x 的增加，每个选手的表现 a_i * x + b_i 会单调变化，从而影响其排名。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：选手的表现和排名随 x 的变化而变化，但这种变化是连续且可预测的，满足状态转移的一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个选手的排名取决于其他选手的表现，可以通过子问题的最优解来确定当前问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着反向选拔指数 x 的增加，每个选手的表现 a_i * x + b_i 会单调变化，从而影响其排名。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：选手的表现和排名随 x 的变化而变化，但这种变化是连续且可预测的，满足状态转移的一致性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

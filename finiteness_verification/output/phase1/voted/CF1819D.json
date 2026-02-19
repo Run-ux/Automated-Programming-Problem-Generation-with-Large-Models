@@ -2,14 +2,14 @@
   "problem_id": "CF1819D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -41,13 +41,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_exclusion",
-        "description": "选取的元素不能重复（背包中同种苹果消失约束）",
+        "name": "distinctness",
+        "description": "背包中每种苹果最多只能有一个，否则所有苹果消失",
         "confidence": "1/1"
       },
       {
-        "name": "subset_inclusion",
-        "description": "每个集合中的元素必须是总集合的子集（每个摊位售卖的苹果种类是所有苹果种类的子集）",
+        "name": "subset_constraint",
+        "description": "每个摊位的苹果种类是总种类的一个子集",
+        "confidence": "1/1"
+      },
+      {
+        "name": "undefined_value_constraint",
+        "description": "某些摊位的苹果种类未知，可以是任意子集（包括空集）",
         "confidence": "1/1"
       }
     ],
@@ -58,12 +63,19 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_exclusion",
-              "description": "选取的元素不能重复（背包中同种苹果消失约束）"
+              "name": "distinctness",
+              "description": "背包中每种苹果最多只能有一个，否则所有苹果消失",
+              "formal": "∀i, count(a[i]) ≤ 1"
             },
             {
-              "name": "subset_inclusion",
-              "description": "每个集合中的元素必须是总集合的子集（每个摊位售卖的苹果种类是所有苹果种类的子集）"
+              "name": "subset_constraint",
+              "description": "每个摊位的苹果种类是总种类的一个子集",
+              "formal": "∀i, A_i ⊆ {1, 2, ..., m}"
+            },
+            {
+              "name": "undefined_value_constraint",
+              "description": "某些摊位的苹果种类未知，可以是任意子集（包括空集）",
+              "formal": "∃i, A_i ∈ 2^M ∪ {}"
             }
           ]
         }
@@ -79,26 +91,57 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "最大化在给定条件下不重复元素的数量"
+          "description": "最大化在给定条件下，不重复元素的总数量"
         }
       }
     ],
-    "description": "最大化在给定条件下不重复元素的数量"
+    "description": "最大化在给定条件下，不重复元素的总数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：背包中苹果的最大数量可以通过子问题的最优解组合得到，即每个摊位的购买决策基于之前摊位的最佳状态。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在访问每个摊位时，背包中的苹果种类和数量的状态会根据当前摊位的苹果种类进行更新。如果当前摊位有重复的苹果种类，则背包中的所有苹果消失。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：对于已知摊位的苹果种类，可以将这些信息合并以计算背包中苹果的最大数量。未知摊位的信息可以在最后通过贪心策略来优化。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题的最优解对整体最优解有贡献",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：背包中苹果的最大数量可以通过子问题的最优解组合得到，即每个摊位的购买决策基于之前摊位的最佳状态。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在访问每个摊位时，背包中的苹果种类和数量的状态会根据当前摊位的苹果种类进行更新。如果当前摊位有重复的苹果种类，则背包中的所有苹果消失。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：对于已知摊位的苹果种类，可以将这些信息合并以计算背包中苹果的最大数量。未知摊位的信息可以在最后通过贪心策略来优化。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题的最优解对整体最优解有贡献"
+    ]
   }
 }

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 3000
@@ -28,8 +28,8 @@
       "result": {
         "constraints": [
           {
-            "name": "substring_frequency_optimization",
-            "description": "每个元素的出现次数不超过 K",
+            "name": "frequency_bound",
+            "description": "每个元素的频次不超过 20",
             "formal": "∀i, count(a_i) ≤ 20"
           }
         ]
@@ -41,8 +41,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_cost",
-        "description": "求将所有元素变为同一值所需的最少操作次数"
+        "type": "minimize_value",
+        "description": "求将所有元素变为同一值所需的最小操作次数"
       }
     }
   ],
@@ -51,9 +51,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题的解都是独立且最优的",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即对于任意颜色c，将所有像素变为颜色c的最小操作数可以由其他颜色的子问题解推导得出。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，选择当前最优的颜色进行填充，最终能够达到全局最优解。具体来说，每次选择一个颜色作为目标颜色，并计算将其余颜色全部变为该颜色所需的最少操作数，选择操作数最少的颜色作为最终目标颜色。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

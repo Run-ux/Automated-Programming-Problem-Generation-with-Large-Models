@@ -2,14 +2,14 @@
   "problem_id": "CF1198D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 50
@@ -18,9 +18,7 @@
             "min": 0,
             "max": 1
           },
-          "properties": {
-            "ordered": true
-          }
+          "properties": {}
         }
       }
     ],
@@ -32,20 +30,18 @@
       "min": 0,
       "max": 1
     },
-    "properties": {
-      "ordered": true
-    }
+    "properties": {}
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "global_optimization_objective",
-        "description": "操作成本为所选矩形的最大边长，即选取的矩形的高度和宽度中的较大值",
+        "name": "optimization_objective",
+        "description": "操作成本由矩形的最大边长决定（即 max(h, w)）",
         "confidence": "1/1"
       },
       {
-        "name": "global_optimization_objective",
-        "description": "目标是最小化总成本，使得所有单元格变为白色",
+        "name": "coverage",
+        "description": "所有黑色单元格必须被覆盖并变为白色",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +52,14 @@
         "result": {
           "constraints": [
             {
-              "name": "global_optimization_objective",
-              "description": "操作成本为所选矩形的最大边长，即选取的矩形的高度和宽度中的较大值"
+              "name": "optimization_objective",
+              "description": "操作成本由矩形的最大边长决定（即 max(h, w)）",
+              "formal": "cost(h, w) = max(h, w)"
             },
             {
-              "name": "global_optimization_objective",
-              "description": "目标是最小化总成本，使得所有单元格变为白色"
+              "name": "coverage",
+              "description": "所有黑色单元格必须被覆盖并变为白色",
+              "formal": "∀ (i, j) ∈ black_cells, ∃ rectangle R s.t. (i, j) ∈ R and all cells in R are white"
             }
           ]
         }
@@ -69,34 +67,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求将所有指定点变为同一状态的最小代价"
+          "type": "minimize_value",
+          "description": "最小化覆盖所有特定点的矩形总代价"
         }
       }
     ],
-    "description": "求将所有指定点变为同一状态的最小代价"
+    "description": "最小化覆盖所有特定点的矩形总代价"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最小化总成本可以分解为多个子矩形的最小化成本之和。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择当前最优（即覆盖当前最大黑块的最小代价矩形）的操作能够逐步逼近全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的最优解可以用来构建全局最优解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最小化总成本可以分解为多个子矩形的最小化成本之和。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择当前最优（即覆盖当前最大黑块的最小代价矩形）的操作能够逐步逼近全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的最优解可以用来构建全局最优解"
+    ]
   }
 }

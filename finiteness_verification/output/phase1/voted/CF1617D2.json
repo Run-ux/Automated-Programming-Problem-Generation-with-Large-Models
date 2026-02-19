@@ -1,0 +1,167 @@
+{
+  "problem_id": "CF1617D2",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 6,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 10000
+          },
+          "properties": {
+            "multiple_of_3": true,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 6,
+      "max": 10000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 10000
+    },
+    "properties": {
+      "multiple_of_3": true,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制（最多进行 n+6 次询问）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "子集约束（n 个元素中选择 k 个作为特定子集，且 k 的范围为 n/3 < k < 2n/3）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "唯一性/去重（每次询问的三个元素必须是不同的）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "voting_rule",
+        "description": "多数投票（每次询问返回的是三个元素中多数派的类型）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adaptive_interactor",
+        "description": "自适应对手（对手可以根据你的询问动态调整答案）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制（最多进行 n+6 次询问）",
+              "formal": "number_of_queries <= n + 6"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "子集约束（n 个元素中选择 k 个作为特定子集，且 k 的范围为 n/3 < k < 2n/3）",
+              "formal": "n/3 < k < 2n/3"
+            },
+            {
+              "name": "distinctness",
+              "description": "唯一性/去重（每次询问的三个元素必须是不同的）",
+              "formal": "a != b, b != c, a != c"
+            },
+            {
+              "name": "voting_rule",
+              "description": "多数投票（每次询问返回的是三个元素中多数派的类型）",
+              "formal": "r = 0 if count(impostors) > count(crewmates), otherwise r = 1"
+            },
+            {
+              "name": "adaptive_interactor",
+              "description": "自适应对手（对手可以根据你的询问动态调整答案）",
+              "formal": "impostor_indices can change based on queries"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造出满足条件的解，即找出所有特定角色的索引"
+        }
+      }
+    ],
+    "description": "构造出满足条件的解，即找出所有特定角色的索引"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：通过询问三元组的相对关系，可以逐步推导出全局的最优解（即所有 impostors 的身份）",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "divide_conquer",
+        "description": "分治不变量：问题可以通过分解为更小的子问题来解决，并且大问题的解由子问题的解合成",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "exchange_argument",
+        "description": "交换论证：通过局部调整和交换，可以逐步逼近最优解，确保最终找到所有 impostors",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：通过询问三元组的相对关系，可以逐步推导出全局的最优解（即所有 impostors 的身份）",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：问题可以通过分解为更小的子问题来解决，并且大问题的解由子问题的解合成",
+              "properties": {}
+            },
+            {
+              "name": "exchange_argument",
+              "description": "交换论证：通过局部调整和交换，可以逐步逼近最优解，确保最终找到所有 impostors",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

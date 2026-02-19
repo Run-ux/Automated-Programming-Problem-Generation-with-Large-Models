@@ -2,14 +2,14 @@
   "problem_id": "GYM104090D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 100000
@@ -35,8 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "floating_point_accuracy_constraint",
-        "description": "输出结果的绝对或相对误差不超过 10^-6",
+        "name": "sum_constraint",
+        "description": "所有玩家的初始存款总和在游戏过程中保持不变（即总和守恒）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "游戏进行固定轮数，每轮操作次数相同",
         "confidence": "1/1"
       }
     ],
@@ -47,9 +52,14 @@
         "result": {
           "constraints": [
             {
-              "name": "floating_point_accuracy_constraint",
-              "description": "输出结果的绝对或相对误差不超过 10^-6",
-              "formal": "abs(a - b) / max(1, abs(b)) <= 10^-6"
+              "name": "sum_constraint",
+              "description": "所有玩家的初始存款总和在游戏过程中保持不变（即总和守恒）",
+              "formal": "Σ(a_i) = constant"
+            },
+            {
+              "name": "operation_limit",
+              "description": "游戏进行固定轮数，每轮操作次数相同",
+              "formal": "rounds = 2022^1204"
             }
           ]
         }
@@ -57,36 +67,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造每个玩家在游戏结束后的存款值"
+          "type": "construction",
+          "description": "构造并输出每个玩家在游戏结束后的存款值"
         }
       }
     ],
-    "description": "构造每个玩家在游戏结束后的存款值"
+    "description": "构造并输出每个玩家在游戏结束后的存款值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "flow_conservation",
+        "description": "流守恒：在整个游戏过程中，所有玩家的总存款保持不变。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：每个玩家在每轮游戏中与其他玩家的交互是等价的，因此最终每个玩家的存款将趋于相同。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "状态依赖：每个玩家的最终存款仅依赖于初始存款和游戏轮数，满足马尔可夫性质",
-          "properties": {
-            "markov_property": true
-          }
+          "invariants": [
+            {
+              "name": "flow_conservation",
+              "description": "流守恒：在整个游戏过程中，所有玩家的总存款保持不变。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：每个玩家在每轮游戏中与其他玩家的交互是等价的，因此最终每个玩家的存款将趋于相同。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "状态依赖：每个玩家的最终存款仅依赖于初始存款和游戏轮数，满足马尔可夫性质"
+    ]
   }
 }

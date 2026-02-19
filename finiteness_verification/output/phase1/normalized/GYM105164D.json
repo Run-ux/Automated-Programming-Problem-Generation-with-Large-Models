@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "integer",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1
@@ -26,20 +26,20 @@
       "result": {
         "constraints": [
           {
-            "name": "polygon_convexity_constraint",
-            "description": "三角形必须具有正面积（即满足三角不等式）"
+            "name": "distinctness",
+            "description": "三角形的边长组合必须唯一，旋转或翻转后的相同三角形视为一个"
           },
           {
-            "name": "distinct_subsets",
-            "description": "不同旋转或反射的三角形视为相同（即考虑对称性）"
+            "name": "geometric_area_constraint",
+            "description": "构成的三角形必须具有正面积（即满足三角不等式）"
           },
           {
-            "name": "integer_dimension_constraint",
-            "description": "三角形的每条边必须由整数个单位长度组成"
+            "name": "geometric_shape_constraint",
+            "description": "三角形的每条边必须由整数个火柴棒组成"
           },
           {
-            "name": "modulo_output_constraint",
-            "description": "结果需要取模 10^9 + 7"
+            "name": "distance_bound",
+            "description": "构成三角形的所有边的总长度不超过 N 个火柴棒"
           }
         ]
       }
@@ -50,8 +50,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足条件的三角形数量"
+        "type": "enumeration",
+        "description": "求在给定约束条件下满足条件的方案数（常取模）"
       }
     }
   ],
@@ -60,9 +60,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过枚举三角形的边长来计算满足条件的三角形数量",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即通过枚举三角形的边长组合，可以递归地计算出使用不超过N根火柴棒能构成的不同三角形数量。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：由于旋转或翻转后的三角形被视为相同的，因此在计数时需要考虑这种对称性，避免重复计数。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

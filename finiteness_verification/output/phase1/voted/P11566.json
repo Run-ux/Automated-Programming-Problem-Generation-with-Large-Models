@@ -1,0 +1,145 @@
+{
+  "problem_id": "P11566",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "xor_subarray_sum_constraint",
+        "description": "在二维数组中，选择一个矩形区域内的所有元素进行异或操作（如果超出边界则不能选择此区域）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "通过多次使用两种不同大小的矩形区域异或操作，生成不同的二维数组配置",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "结果需要对 10^9 + 7 取模",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "xor_subarray_sum_constraint",
+              "description": "在二维数组中，选择一个矩形区域内的所有元素进行异或操作（如果超出边界则不能选择此区域）",
+              "formal": "对于任意 (i, j)，选择以 (i, j) 为左上角的 a×b 或 c×d 矩形区域内的所有元素进行异或操作"
+            },
+            {
+              "name": "distinctness",
+              "description": "通过多次使用两种不同大小的矩形区域异或操作，生成不同的二维数组配置",
+              "formal": "通过多次使用 a×b 和 c×d 的矩形区域异或操作，生成不同的 n×m 二维数组配置"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "结果需要对 10^9 + 7 取模",
+              "formal": "result % (10^9 + 7)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求通过给定操作可以生成的不同棋盘状态数（对特定值取模）"
+        }
+      }
+    ],
+    "description": "求通过给定操作可以生成的不同棋盘状态数（对特定值取模）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：通过矩形操作（异或1）可以将一个状态转移到另一个状态，且这种转移是可逆的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：矩形操作可以看作是对棋盘上特定区间的操作，这些操作可以通过合并来简化。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即通过较小的矩形操作组合成较大的矩形操作。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过矩形操作（异或1）可以将一个状态转移到另一个状态，且这种转移是可逆的。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：矩形操作可以看作是对棋盘上特定区间的操作，这些操作可以通过合并来简化。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即通过较小的矩形操作组合成较大的矩形操作。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

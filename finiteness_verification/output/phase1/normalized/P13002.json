@@ -1,0 +1,90 @@
+{
+  "problem_id": "P13002",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": false,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distance_bound",
+            "description": "每个参会者在时间 t 从点 (x, y) 可以到达的点 (x + Δx, y + Δy) 满足 Δx^2 + Δy^2 ≤ Δt^2，其中 Δt 是时间差",
+            "formal": "Δx^2 + Δy^2 ≤ Δt^2"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "假设 H 将所有参会者划分为鸭子和鹅，H-鸭子集合不能为空（即至少有一个鸭子）",
+            "formal": "H-duck ≠ ∅"
+          },
+          {
+            "name": "consistency_constraint",
+            "description": "假设 H 下，所有鹅的陈述必须一致且真实，即对于每个鹅的陈述 s ∈ S，H 必须满足 s 的条件",
+            "formal": "∀s ∈ S (s made by H-geese) → H is consistent with s"
+          },
+          {
+            "name": "consistency_constraint",
+            "description": "假设 H 下，每个鸭子的陈述 s 不得与之前所有鹅的陈述 P 矛盾，即存在一个假设 H' 使得 {s} ∪ P 与 H' 一致",
+            "formal": "∀s ∈ S (s made by H-duck), ∃H' such that {s} ∪ P is consistent with H'"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "求满足所有约束条件的最小元素数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最小化鸭子数量的问题可以通过解决每个子问题（每个参会者是否为鸭子）来实现。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理每个陈述时，当前假设的状态（哪些参会者是鸭子，哪些是鹅）可以基于之前的所有陈述进行更新，并且这种更新是一致的。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个参会者的身份（鸭子或鹅）可以在不考虑其他参会者身份的情况下单独确定，然后通过组合这些子问题的解来找到全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

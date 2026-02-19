@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "graph",
+        "type": "weighted_undirected_graph",
         "length": {
           "min": 1,
           "max": 200000
@@ -25,7 +25,7 @@
       "round": 2,
       "status": "success",
       "result": {
-        "type": "graph",
+        "type": "weighted_undirected_graph",
         "length": {
           "min": 1,
           "max": 200000
@@ -44,7 +44,7 @@
       "round": 3,
       "status": "success",
       "result": {
-        "type": "graph",
+        "type": "weighted_undirected_graph",
         "length": {
           "min": 1,
           "max": 200000
@@ -67,16 +67,16 @@
       "result": {
         "constraints": [
           {
-            "name": "graph_is_tree",
-            "description": "图必须连通，即从任何一个城市都可以到达另一个城市（可能需要经过其他城市）"
+            "name": "connectivity",
+            "description": "图必须连通，即从任何一个节点都可以到达另一个节点（可能需要经过其他节点）"
           },
           {
-            "name": "maximize_final_attitude",
-            "description": "哥萨克耳朵在第 i 天庆祝后，可以在同一天出发，并在第二天到达另一个城市（如果存在一条 l_i = 1 的道路），并参加庆祝（如果该城市有节日）"
+            "name": "path_constraint",
+            "description": "路径长度约束，通过第 i 条边需要 l_i 天时间，哥萨克耳朵在同一天出发并在第二天到达另一个节点（如果存在一条 l_i = 1 的边）"
           },
           {
-            "name": "initial_positions",
-            "description": "哥萨克耳朵抵达王国的日期在日历上的编号是 0，并且他一开始可以选择到达王国的任何一个城市"
+            "name": "range_bound",
+            "description": "时间窗口约束，哥萨克耳朵只能在节日的举办日期当天参加该节日"
           }
         ]
       }
@@ -87,16 +87,20 @@
       "result": {
         "constraints": [
           {
-            "name": "graph_is_tree",
-            "description": "图必须连通，即从任何一个城市都可以到达另一个城市（可能需要经过其他城市）"
+            "name": "connectivity",
+            "description": "图必须连通（所有节点之间存在路径）"
           },
           {
-            "name": "maximize_final_attitude",
-            "description": "哥萨克耳朵在第 i 天庆祝后，可以在同一天出发，并在第二天到达另一个城市（如果存在一条 l_i = 1 的道路），并参加庆祝（如果该城市有节日）"
+            "name": "path_constraint",
+            "description": "从一个节点到另一个节点的路径长度不超过 l_i 天（即通过某条道路所需的时间）"
           },
           {
-            "name": "initial_positions",
-            "description": "哥萨克耳朵抵达王国的日期在日历上的编号是 0，并且他一开始可以选择到达王国的任何一个城市"
+            "name": "range_bound",
+            "description": "每个节日有一个固定的举办日期 d_i，哥萨克耳朵必须在该日期到达举办城市 c_i 才能参加"
+          },
+          {
+            "name": "state_transition",
+            "description": "哥萨克耳朵可以在第 0 天选择任意一个城市作为起点"
           }
         ]
       }
@@ -107,16 +111,12 @@
       "result": {
         "constraints": [
           {
-            "name": "graph_is_tree",
-            "description": "图必须连通，即从任何一个城市都可以到达另一个城市（可能需要经过其他城市）"
+            "name": "connectivity",
+            "description": "图必须连通，即从任何一个节点都可以到达另一个节点（可能需要经过其他节点）"
           },
           {
-            "name": "maximize_final_attitude",
-            "description": "哥萨克耳朵在第 i 天庆祝后，可以在同一天出发，并在第二天到达另一个城市（如果存在一条 l_i = 1 的道路），并参加庆祝（如果该城市有节日）"
-          },
-          {
-            "name": "initial_positions",
-            "description": "哥萨克耳朵抵达王国的日期在日历上的编号是 0，并且他一开始可以选择到达王国的任何一个城市"
+            "name": "path_constraint",
+            "description": "路径长度不超过 1 天，即如果在第 i 天庆祝，则可以在同一天出发，并在第二天到达另一个节点（如果存在一条 l_i = 1 的边），并参加庆祝（如果该节点有节日）"
           }
         ]
       }
@@ -127,24 +127,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "max_value",
-        "description": "哥萨克耳朵最多能够参加的节日数量"
+        "type": "maximize_count",
+        "description": "最大化在给定时间窗口内可访问的节点数量"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "max_value",
-        "description": "哥萨克耳朵最多能够参加的节日数量"
+        "type": "maximize_count",
+        "description": "最大化在给定时间窗口内可访问的节点数量"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "max_value",
-        "description": "哥萨克耳朵最多能够参加的节日数量"
+        "type": "maximize_count",
+        "description": "最大化在给定时间窗口内可访问的节点数"
       }
     }
   ],
@@ -153,27 +153,64 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的最优解组合而成，即哥萨克耳朵在每个城市参加节日的最大数量可以由其相邻城市的最优解推导出来。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每个城市和日期上的最大节日参加数量可以由其相邻城市和日期的状态推导得出。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个城市转移到另一个城市的过程中，状态（当前日期和已参加的节日数量）的变化是确定且一致的。通过路径长度和日期差值来更新状态。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在树形结构中，从根节点到叶子节点的遍历顺序保证了依赖关系的正确处理，即先处理父节点再处理子节点。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的最优解组合而成，即哥萨克耳朵在每个城市参加节日的最大数量可以由其相邻城市的最大数量推导得出。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从任意一个城市出发，在给定时间内能够参加的最大节日数量可以由到达该城市的路径上的最大节日数量决定。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在树形结构上，每个节点的状态（能够参加的最大节日数量）可以通过其子节点的状态进行更新。具体来说，当前节点的状态取决于其所有子节点的状态和从子节点到当前节点的时间。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的最优解组合而成，即哥萨克耳朵在每个城市参加节日的最大数量可以由其相邻城市的最大数量推导出来。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从任意一个城市出发能够参加的最大节日数量可以由其相邻城市的最大节日数量推导得出。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在动态规划或图遍历过程中，当前节点的状态（如最多能参加的节日数量）仅依赖于其直接前驱节点的状态，并且这种状态转移是确定性的。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在处理树形结构时，通过深度优先搜索或其他方法对节点进行拓扑排序，确保每个节点在其所有子节点被处理之后再被处理，从而保证了状态转移的一致性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

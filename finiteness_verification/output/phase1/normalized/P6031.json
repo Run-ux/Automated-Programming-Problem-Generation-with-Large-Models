@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 3,
           "max": 3
@@ -28,13 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "uniform_probability_distribution",
-            "description": "随机变量的期望值计算（求解随机变量 x^k 的期望值）"
+            "name": "probability_distribution",
+            "description": "事件的概率分布约束（每张牌成为第一张牌的概率均匀随机）"
           },
           {
-            "name": "modulo_accumulation",
-            "description": "结果对特定模数取模（答案对 998244353 取模）",
-            "formal": "result ≡ E[x^k] (mod 998244353)"
+            "name": "modular_arithmetic",
+            "description": "结果对 998244353 取模"
           }
         ]
       }
@@ -45,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_expected_value",
-        "description": "求随机变量的期望值"
+        "type": "maximize_probability",
+        "description": "求随机事件发生次数的k次方的期望值"
       }
     }
   ],
@@ -55,12 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，满足动态规划的核心性质",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即当前轮次的期望值可以通过前一轮的期望值递推得到。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每一轮洗牌后王牌位置的概率分布可以由上一轮的状态通过固定的概率转移矩阵计算得出。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

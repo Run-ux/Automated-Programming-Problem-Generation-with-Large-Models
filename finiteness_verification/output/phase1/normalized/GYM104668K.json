@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 0,
           "max": 8
@@ -28,20 +28,20 @@
       "result": {
         "constraints": [
           {
-            "name": "cyclic_path_length_constraint",
+            "name": "operation_limit",
             "description": "每个反射镜只能反射一次，之后粒子将穿过该反射镜"
           },
           {
-            "name": "vertex_repetition_permissible",
-            "description": "如果粒子到达两个反射镜的交点且这两个反射镜都能反射粒子，则粒子会解体"
+            "name": "intersection_constraint",
+            "description": "粒子在到达两个反射镜的交叉点时会解体，如果这两个反射镜都还能反射粒子"
           },
           {
-            "name": "minimum_distance_constraint",
-            "description": "起始位置和终止位置与任何反射镜的距离都不为零"
+            "name": "distance_bound",
+            "description": "起始位置和最终位置与任何反射镜的距离都不为零"
           },
           {
-            "name": "minimum_distance_constraint",
-            "description": "粒子在反射过程中不会接近任何反射镜与其他反射镜的交点到10^-4以内"
+            "name": "distance_bound",
+            "description": "粒子不会在距离任何反射镜交叉点小于10^-4的地方反射"
           }
         ]
       }
@@ -53,7 +53,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计满足条件的路径数量"
+        "description": "求满足条件的不同方向数"
       }
     }
   ],
@@ -62,9 +62,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解都是独立且最优的",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "symmetry",
+            "description": "对称性：粒子在镜面反射时，入射角等于反射角，且反射后的路径与原路径关于镜面对称。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：粒子从一个位置到另一个位置的过程中，每一步的状态转移都遵循固定的物理规则（即反射定律）。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：粒子的路径可以视为在一个有向无环图（DAG）上的路径，其中每个节点表示一个反射点或终点，边表示粒子的可能路径。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,94 @@
+{
+  "problem_id": "CF1628D1",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "n": {
+            "min": 1,
+            "max": 2000
+          },
+          "m": {
+            "min": 1,
+            "max": 2000
+          },
+          "k": {
+            "min": 0,
+            "max": 1000000006
+          }
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制：Bob 必须在 n 次操作中至少选择 m 次进行加法操作",
+            "formal": "m ≤ |{i: Bob 选择加法, i ∈ [1, n]}|"
+          },
+          {
+            "name": "range_bound",
+            "description": "值域约束：Alice 选择的数必须在 [0, k] 范围内",
+            "formal": "0 ≤ Alice's choice ≤ k"
+          },
+          {
+            "name": "optimal_play",
+            "description": "最优策略：Alice 和 Bob 都会采取最优策略，Alice 尽可能最大化得分，Bob 尽可能最小化得分",
+            "formal": "Alice: maximize score, Bob: minimize score"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "min_max",
+        "description": "在博弈过程中，一方最大化最终得分而另一方最小化最终得分的情况下，求最终得分的极小化极大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：游戏的最终得分可以通过子问题的最优解来确定，即每一步的选择都基于当前状态下的最优策略。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步中，Alice 和 Bob 都会根据当前情况做出局部最优的选择。Alice 会选择最大化得分的数，而 Bob 会在满足至少 m 次加法的条件下，选择最小化得分的操作。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：游戏的状态（得分和剩余回合数）在每一步操作后都会发生确定性的变化，且这种变化是基于当前状态和选择的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

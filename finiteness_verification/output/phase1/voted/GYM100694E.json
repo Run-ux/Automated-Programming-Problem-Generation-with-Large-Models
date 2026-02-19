@@ -1,0 +1,134 @@
+{
+  "problem_id": "GYM100694E",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "optimization_objective",
+        "description": "每个顾客选择使 xi = ci * p 最小的队列，其中 ci 是队列中的人数，p 是队列中最后两个人的平均购买数量（如果队列中有两个人或更多）。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "如果多个队列的 xi 值相同，顾客选择编号最小的队列。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_order",
+        "description": "每个顾客在下一个顾客开始选择之前完成自己的选择。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "optimization_objective",
+              "description": "每个顾客选择使 xi = ci * p 最小的队列，其中 ci 是队列中的人数，p 是队列中最后两个人的平均购买数量（如果队列中有两个人或更多）。",
+              "formal": "xi = ci * p, where p = (p1 + p2) / 2 if ci >= 2, p = p1 if ci = 1, and p = 0 if ci = 0"
+            },
+            {
+              "name": "ordering",
+              "description": "如果多个队列的 xi 值相同，顾客选择编号最小的队列。",
+              "formal": "If multiple queues have the same xi, choose the one with the smallest index i."
+            },
+            {
+              "name": "operation_order",
+              "description": "每个顾客在下一个顾客开始选择之前完成自己的选择。",
+              "formal": "Customer i makes their choice before customer i+1 starts."
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造一个满足给定条件的分配方案"
+        }
+      }
+    ],
+    "description": "构造一个满足给定条件的分配方案"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每个顾客根据当前队列状态选择最优的现金柜台，使得局部最优解导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个顾客的选择基于当前所有现金柜台的状态，并且每次选择后更新状态，确保状态转移的一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每个顾客根据当前队列状态选择最优的现金柜台，使得局部最优解导致全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个顾客的选择基于当前所有现金柜台的状态，并且每次选择后更新状态，确保状态转移的一致性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

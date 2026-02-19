@@ -1,0 +1,149 @@
+{
+  "problem_id": "CF1166D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "linear_relation",
+        "description": "序列中的每个元素是其之前所有元素的和加上一个正整数 r_i，其中 1 ≤ r_i ≤ m",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "序列的第一个元素必须是 a，最后一个元素必须是 b",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distance_bound",
+        "description": "如果存在满足条件的序列，则该序列的长度最多为 50",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "linear_relation",
+              "description": "序列中的每个元素是其之前所有元素的和加上一个正整数 r_i，其中 1 ≤ r_i ≤ m",
+              "formal": "x_i = x_{i-1} + x_{i-2} + ... + x_1 + r_i, 1 ≤ r_i ≤ m"
+            },
+            {
+              "name": "range_bound",
+              "description": "序列的第一个元素必须是 a，最后一个元素必须是 b",
+              "formal": "x_1 = a, x_k = b"
+            },
+            {
+              "name": "distance_bound",
+              "description": "如果存在满足条件的序列，则该序列的长度最多为 50",
+              "formal": "k ≤ 50"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在满足给定条件的序列，并在存在时构造一个这样的序列"
+        }
+      }
+    ],
+    "description": "判断是否存在满足给定条件的序列，并在存在时构造一个这样的序列"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：序列的构造依赖于其前缀子序列的最优解，即每个元素是基于前面所有元素的和加上一个满足条件的增量来构建的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：序列中的每个元素都严格大于等于其前一个元素，因为每个新元素都是前面所有元素的和加上一个正整数增量。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态到下一个状态的转换规则是确定的，即每个新元素由前一个元素和之前的累积和加上一个正整数增量构成。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：序列的构造依赖于其前缀子序列的最优解，即每个元素是基于前面所有元素的和加上一个满足条件的增量来构建的。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：序列中的每个元素都严格大于等于其前一个元素，因为每个新元素都是前面所有元素的和加上一个正整数增量。",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态到下一个状态的转换规则是确定的，即每个新元素由前一个元素和之前的累积和加上一个正整数增量构成。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 10000
@@ -28,12 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "subset_inclusion",
-            "description": "后一个单词必须包含前一个单词的所有字母，且每个字母的出现次数不少于前一个单词中的出现次数"
+            "name": "subset_constraint",
+            "description": "后一个单词必须包含前一个单词的所有字母，且每个字母的出现次数不少于前一单词"
           },
           {
-            "name": "adjacent_difference",
-            "description": "后一个单词的长度比前一个单词的长度恰好多1"
+            "name": "pairwise_difference_constraint",
+            "description": "后一个单词的长度比前一个单词的长度恰好多 1"
           }
         ]
       }
@@ -54,9 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个单词作为结尾的最长接龙序列可以由其前驱单词的最长接龙序列推导得到",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解构造得到，即接龙序列的最长长度可以通过前一个单词的最长接龙长度推导得出。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个单词到下一个单词的状态转移满足特定条件（字母出现次数不少于前一单词且长度恰好增加1），这种转移规则在整个过程中保持一致。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

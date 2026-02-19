@@ -1,0 +1,155 @@
+{
+  "problem_id": "CF1348D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 2,
+            "max": 1000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 2,
+      "max": 1000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "sum_constraint",
+        "description": "选取元素权重和等于目标值（总质量必须恰好为 n）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制（最小化夜晚数量以达到目标总质量）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation",
+        "description": "变换规则（细菌分裂时，一个质量为 m 的细菌分裂成两个质量为 m/2 的细菌）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "increase_only_constraint",
+        "description": "每晚所有细菌的质量增加 1",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "sum_constraint",
+              "description": "选取元素权重和等于目标值（总质量必须恰好为 n）",
+              "formal": "sum(masses) == n"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制（最小化夜晚数量以达到目标总质量）",
+              "formal": "minimize(d)"
+            },
+            {
+              "name": "transformation",
+              "description": "变换规则（细菌分裂时，一个质量为 m 的细菌分裂成两个质量为 m/2 的细菌）",
+              "formal": "m -> (m/2, m/2)"
+            },
+            {
+              "name": "increase_only_constraint",
+              "description": "每晚所有细菌的质量增加 1",
+              "formal": "masses[i] += 1 for all i"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足总质量恰好为目标值的最小天数"
+        }
+      }
+    ],
+    "description": "求满足总质量恰好为目标值的最小天数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "细菌总质量随时间单调递增，每晚所有细菌的质量增加1，分裂操作不会减少总质量。",
+        "confidence": "1/1",
+        "properties": {
+          "mass_increase": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的最优解可以通过子问题的最优解来构建。具体来说，达到某一总质量的最小天数可以通过考虑前一天的最优解来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "在每一天选择分裂的细菌数量时，局部最优的选择（即尽可能少的分裂次数）可以导致全局最优解（即最少的夜晚数）。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "细菌总质量随时间单调递增，每晚所有细菌的质量增加1，分裂操作不会减少总质量。",
+              "properties": {
+                "mass_increase": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "问题的最优解可以通过子问题的最优解来构建。具体来说，达到某一总质量的最小天数可以通过考虑前一天的最优解来确定。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "在每一天选择分裂的细菌数量时，局部最优的选择（即尽可能少的分裂次数）可以导致全局最优解（即最少的夜晚数）。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

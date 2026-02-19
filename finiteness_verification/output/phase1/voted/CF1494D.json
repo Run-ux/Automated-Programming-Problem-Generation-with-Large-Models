@@ -1,0 +1,146 @@
+{
+  "problem_id": "CF1494D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 2,
+            "max": 500
+          },
+          "value_range": {
+            "min": 1,
+            "max": 5000
+          },
+          "properties": {
+            "symmetric": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 500
+    },
+    "value_range": {
+      "min": 1,
+      "max": 5000
+    },
+    "properties": {
+      "symmetric": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "tree_structure",
+        "description": "公司结构是一个树形结构，每个员工（除了最低级别的员工）至少有两个直接下属，最低级别的员工没有下属。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "root_vertex_existence",
+        "description": "公司有一个唯一的根节点（即公司的负责人），他是所有员工的直接或间接上级。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "value_range",
+        "description": "对于每对最低级别的员工，他们的共同上级的薪水是已知的（如果有多个共同上级，则取薪水最小的那个）。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "tree_structure",
+              "description": "公司结构是一个树形结构，每个员工（除了最低级别的员工）至少有两个直接下属，最低级别的员工没有下属。"
+            },
+            {
+              "name": "root_vertex_existence",
+              "description": "公司有一个唯一的根节点（即公司的负责人），他是所有员工的直接或间接上级。"
+            },
+            {
+              "name": "tree_structure",
+              "description": "每个上级的薪水严格大于其所有下属的薪水。"
+            },
+            {
+              "name": "value_range",
+              "description": "对于每对最低级别的员工，他们的共同上级的薪水是已知的（如果有多个共同上级，则取薪水最小的那个）。"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造一个满足给定条件的公司员工层级结构"
+        }
+      }
+    ],
+    "description": "构造一个满足给定条件的公司员工层级结构"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：公司结构的构建基于最小化共同上级的薪水，从而确保每个子问题的解是最优的，并且这些子问题的解可以合并成全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在构建公司结构时，员工和其直接上级的关系形成一个有向无环图（DAG），并且该图的拓扑排序是唯一的，确保了从低级员工到高级员工的层次关系。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "tree_structure",
+        "description": "层次结构不变量：公司结构是一个树形结构，每个员工（除了最高级别的员工）都有一个唯一的直接上级，且每个非叶子节点至少有两个子节点。这种层次结构保证了公司组织的有效性和唯一性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：公司结构的构建基于最小化共同上级的薪水，从而确保每个子问题的解是最优的，并且这些子问题的解可以合并成全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在构建公司结构时，员工和其直接上级的关系形成一个有向无环图（DAG），并且该图的拓扑排序是唯一的，确保了从低级员工到高级员工的层次关系。",
+              "properties": {}
+            },
+            {
+              "name": "tree_structure",
+              "description": "层次结构不变量：公司结构是一个树形结构，每个员工（除了最高级别的员工）都有一个唯一的直接上级，且每个非叶子节点至少有两个子节点。这种层次结构保证了公司组织的有效性和唯一性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

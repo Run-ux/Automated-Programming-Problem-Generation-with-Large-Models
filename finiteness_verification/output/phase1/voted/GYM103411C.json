@@ -2,14 +2,14 @@
   "problem_id": "GYM103411C",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 3,
             "max": 200000
@@ -39,23 +39,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "tree_structure",
-        "description": "图是一个树结构，即无环连通图",
+        "name": "connectivity",
+        "description": "图必须连通（所有节点之间存在唯一路径）",
         "confidence": "1/1"
       },
       {
-        "name": "simple_path_constraint",
-        "description": "任意两个节点之间存在唯一路径",
+        "name": "acyclicity",
+        "description": "图必须无环（树结构）",
         "confidence": "1/1"
       },
       {
-        "name": "single_edge_operation",
-        "description": "可以添加一条边连接两个原本不直接相连的节点",
+        "name": "degree_bound",
+        "description": "每个节点的度数不超过其当前度数加一",
         "confidence": "1/1"
       },
       {
-        "name": "maximum_branching_factor",
-        "description": "目标是最大化网络中的分叉点数量",
+        "name": "edge_addition_limit",
+        "description": "只能添加一条新的边，且这条边连接的两个节点之前不能有直接边",
         "confidence": "1/1"
       }
     ],
@@ -66,20 +66,20 @@
         "result": {
           "constraints": [
             {
-              "name": "tree_structure",
-              "description": "图是一个树结构，即无环连通图"
+              "name": "connectivity",
+              "description": "图必须连通（所有节点之间存在唯一路径）"
             },
             {
-              "name": "simple_path_constraint",
-              "description": "任意两个节点之间存在唯一路径"
+              "name": "acyclicity",
+              "description": "图必须无环（树结构）"
             },
             {
-              "name": "single_edge_operation",
-              "description": "可以添加一条边连接两个原本不直接相连的节点"
+              "name": "degree_bound",
+              "description": "每个节点的度数不超过其当前度数加一"
             },
             {
-              "name": "maximum_branching_factor",
-              "description": "目标是最大化网络中的分叉点数量"
+              "name": "edge_addition_limit",
+              "description": "只能添加一条新的边，且这条边连接的两个节点之前不能有直接边"
             }
           ]
         }
@@ -87,34 +87,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_value",
+    "type": "maximize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_value",
-          "description": "最大化网络中节点的度数和"
+          "type": "maximize_count",
+          "description": "最大化图中添加一条边后形成的特定结构数量"
         }
       }
     ],
-    "description": "最大化网络中节点的度数和"
+    "description": "最大化图中添加一条边后形成的特定结构数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "acyclic_connected_graph",
+        "description": "输入数据构成一棵树，满足树的性质：无环且连通，任意两点间有唯一路径",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解组合得到，即在添加一条边后，新的最大分叉数由两个子树的最大分叉数决定",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "不同子树之间的分叉数计算是独立的，互不影响",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，具体表现为树形结构中任意两点间路径唯一性及新增边对整个网络的影响可由局部变化推导",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "acyclic_connected_graph",
+              "description": "输入数据构成一棵树，满足树的性质：无环且连通，任意两点间有唯一路径",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解可以通过子问题的最优解组合得到，即在添加一条边后，新的最大分叉数由两个子树的最大分叉数决定",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "不同子树之间的分叉数计算是独立的，互不影响",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，具体表现为树形结构中任意两点间路径唯一性及新增边对整个网络的影响可由局部变化推导"
+    ]
   }
 }

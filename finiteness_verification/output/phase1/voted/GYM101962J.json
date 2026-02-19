@@ -2,14 +2,14 @@
   "problem_id": "GYM101962J",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "directed_tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "directed_tree",
           "length": {
             "min": 2,
             "max": 100000
@@ -19,8 +19,7 @@
             "max": 100000
           },
           "properties": {
-            "connected": true,
-            "rooted": true
+            "connected": true
           }
         }
       }
@@ -34,30 +33,29 @@
       "max": 100000
     },
     "properties": {
-      "connected": true,
-      "rooted": true
+      "connected": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "tree_structure",
-        "description": "节点构成一棵有根树，根节点为1，每个节点有且仅有一个直接父节点",
+        "name": "acyclicity",
+        "description": "成员关系构成一棵有根树，根节点为1，每个节点有且仅有一个直接父节点",
         "confidence": "1/1"
       },
       {
-        "name": "subtree_string_distinctness",
-        "description": "选择某个节点后，可以访问该节点及其所有子节点负责的街道",
+        "name": "coverage",
+        "description": "选择某个节点时，可以访问该节点及其所有子节点负责的街道",
         "confidence": "1/1"
       },
       {
-        "name": "graph_connectivity",
-        "description": "连通区域是Polo可以自由穿越的所有街道组成的最大连通子图",
+        "name": "connectivity",
+        "description": "计算选择某个节点时，能够遍历的连通区域数量",
         "confidence": "1/1"
       },
       {
-        "name": "vertex_coloring_constraint",
-        "description": "每个节点最多负责一条街道，且两个不同的节点可能负责同一条街道",
+        "name": "adjacency_relation",
+        "description": "每个节点最多负责一条街道，且不同节点可以负责同一条街道",
         "confidence": "1/1"
       }
     ],
@@ -68,20 +66,20 @@
         "result": {
           "constraints": [
             {
-              "name": "tree_structure",
-              "description": "节点构成一棵有根树，根节点为1，每个节点有且仅有一个直接父节点"
+              "name": "acyclicity",
+              "description": "成员关系构成一棵有根树，根节点为1，每个节点有且仅有一个直接父节点"
             },
             {
-              "name": "subtree_string_distinctness",
-              "description": "选择某个节点后，可以访问该节点及其所有子节点负责的街道"
+              "name": "coverage",
+              "description": "选择某个节点时，可以访问该节点及其所有子节点负责的街道"
             },
             {
-              "name": "graph_connectivity",
-              "description": "连通区域是Polo可以自由穿越的所有街道组成的最大连通子图"
+              "name": "connectivity",
+              "description": "计算选择某个节点时，能够遍历的连通区域数量"
             },
             {
-              "name": "vertex_coloring_constraint",
-              "description": "每个节点最多负责一条街道，且两个不同的节点可能负责同一条街道"
+              "name": "adjacency_relation",
+              "description": "每个节点最多负责一条街道，且不同节点可以负责同一条街道"
             }
           ]
         }
@@ -97,26 +95,57 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "计算每个节点为根的子树中连通块的数量"
+          "description": "对于每个成员，计算其下属（直接或间接）负责的街道所形成的连通区域数量"
         }
       }
     ],
-    "description": "计算每个节点为根的子树中连通块的数量"
+    "description": "对于每个成员，计算其下属（直接或间接）负责的街道所形成的连通区域数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，每个成员负责的街道集合可以由其下属成员负责的街道集合合并得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个成员到其直接下属成员之间的状态转移满足一致性，即每个成员的状态（负责的街道集合）可以通过其直接下属成员的状态计算得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：不同成员负责的街道集合可以合并为更大的街道集合，从而形成连通区域。这种合并操作满足结合律和交换律。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个成员负责的连通区域数量可以通过其直接下属成员负责的连通区域数量计算得出",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，每个成员负责的街道集合可以由其下属成员负责的街道集合合并得到。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个成员到其直接下属成员之间的状态转移满足一致性，即每个成员的状态（负责的街道集合）可以通过其直接下属成员的状态计算得出。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：不同成员负责的街道集合可以合并为更大的街道集合，从而形成连通区域。这种合并操作满足结合律和交换律。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个成员负责的连通区域数量可以通过其直接下属成员负责的连通区域数量计算得出"
+    ]
   }
 }

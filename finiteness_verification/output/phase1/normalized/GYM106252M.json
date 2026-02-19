@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 8,
           "max": 8
@@ -26,19 +26,24 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_solution_constraint",
-            "description": "每个团队必须分配一个唯一的种子编号（从1到8）",
-            "formal": "∀i, j ∈ [1, 8], i ≠ j → seed(i) ≠ seed(j)"
+            "name": "permutation_constraint",
+            "description": "所有队伍必须分配到不同的种子编号（1到8）",
+            "formal": "存在一个排列 P，使得 P[i] ∈ {1, 2, ..., 8} 且 P[i] ≠ P[j] 对于所有 i ≠ j"
           },
           {
-            "name": "priority_based_selection",
-            "description": "在比赛中，较小种子编号的团队使用其a值作为实力，较大种子编号的团队使用其b值作为实力",
-            "formal": "if seed(i) < seed(j), then strength(i) = a_i and strength(j) = b_j"
+            "name": "attribute_constraint",
+            "description": "种子编号较小的队伍使用 a 值作为实力，种子编号较大的队伍使用 b 值作为实力",
+            "formal": "对于任意两支队伍 i 和 j，如果 P[i] < P[j]，则队伍 i 的实力为 a_i，队伍 j 的实力为 b_j"
           },
           {
-            "name": "maximize_global_optimization_objective",
-            "description": "两个团队比赛时，第一个团队获胜的概率是其实力值除以两个团队的实力值之和",
-            "formal": "P(team i wins against team j) = strength(i) / (strength(i) + strength(j))"
+            "name": "probability_distribution",
+            "description": "比赛胜率由两队的实力值决定，具体为 x / (x + y)，其中 x 和 y 分别是两队的实力值",
+            "formal": "P(i 胜 j) = a_i / (a_i + b_j) 如果 P[i] < P[j]"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "需要找到一种种子编号分配方案，使得队伍 1 赢得整个锦标赛的概率最大",
+            "formal": "最大化 P(队伍 1 赢得整个锦标赛)"
           }
         ]
       }
@@ -49,8 +54,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_value",
-        "description": "最大化特定团队在单淘汰赛中获胜的概率"
+        "type": "maximize_probability",
+        "description": "最大化给定条件下特定节点获胜的概率"
       }
     }
   ],
@@ -59,9 +64,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题的解是独立且可合并的",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即团队1赢得整个锦标赛的最大概率可以通过其在每一轮比赛中获胜的概率递归计算得出。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在单淘汰赛中，每个队伍的状态（是否被淘汰）根据当前轮次的比赛结果进行更新，且这种状态转移是确定性的。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

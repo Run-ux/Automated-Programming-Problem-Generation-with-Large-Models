@@ -1,0 +1,146 @@
+{
+  "problem_id": "CF1594D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 200000
+          },
+          "properties": {
+            "directed": true,
+            "weighted": false,
+            "bipartite": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 200000
+    },
+    "properties": {
+      "directed": true,
+      "weighted": false,
+      "bipartite": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "bipartiteness",
+        "description": "图的节点可以分为两个集合，每个集合内的节点之间没有边（即玩家角色只能是 imposter 或 crewmate）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "parity",
+        "description": "一个节点（玩家）如果是 crewmate，则其所有边（评论）指向的节点的角色必须与评论一致；如果是一个 imposter，则其所有边（评论）指向的节点的角色必须与评论相反",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "所有边（评论）必须不矛盾，即不存在一条路径使得某个节点的角色既是 imposter 又是 crewmate",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "bipartiteness",
+              "description": "图的节点可以分为两个集合，每个集合内的节点之间没有边（即玩家角色只能是 imposter 或 crewmate）"
+            },
+            {
+              "name": "parity",
+              "description": "一个节点（玩家）如果是 crewmate，则其所有边（评论）指向的节点的角色必须与评论一致；如果是一个 imposter，则其所有边（评论）指向的节点的角色必须与评论相反"
+            },
+            {
+              "name": "state_transition",
+              "description": "所有边（评论）必须不矛盾，即不存在一条路径使得某个节点的角色既是 imposter 又是 crewmate"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "最大化满足给定约束条件的节点数"
+        }
+      }
+    ],
+    "description": "最大化满足给定约束条件的节点数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，每个玩家的角色（imposter 或 crewmate）可以看作一个子问题，整体的最大 imposter 数量可以通过这些子问题的最优解组合得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：根据评论信息，可以构建出一个图，其中节点表示玩家，边表示评论关系。通过遍历图中的边，可以逐步确定每个玩家的角色，并且这种角色确定的过程是状态转移的一致性体现。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个玩家的角色确定过程是独立的，即一个玩家的角色确定不会直接影响另一个玩家的角色确定过程。这种独立性保证了算法的正确性和高效性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，每个玩家的角色（imposter 或 crewmate）可以看作一个子问题，整体的最大 imposter 数量可以通过这些子问题的最优解组合得出。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：根据评论信息，可以构建出一个图，其中节点表示玩家，边表示评论关系。通过遍历图中的边，可以逐步确定每个玩家的角色，并且这种角色确定的过程是状态转移的一致性体现。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个玩家的角色确定过程是独立的，即一个玩家的角色确定不会直接影响另一个玩家的角色确定过程。这种独立性保证了算法的正确性和高效性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

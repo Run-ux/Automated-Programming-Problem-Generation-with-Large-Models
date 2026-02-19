@@ -1,0 +1,134 @@
+{
+  "problem_id": "GYM106129M",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 99999
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 99999
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "k_mex_constraint",
+        "description": "最终的疼痛值是所有未被盾牌阻挡的魔法潜力集合的最小排除值（mex）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "time_interval_constraint",
+        "description": "盾牌每次激活后可以阻挡接下来的 d 个魔法，之后需要等待 d 个魔法才能再次激活",
+        "confidence": "1/1"
+      },
+      {
+        "name": "fixed_start_time",
+        "description": "盾牌最早可以在第一个魔法之前激活",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "k_mex_constraint",
+              "description": "最终的疼痛值是所有未被盾牌阻挡的魔法潜力集合的最小排除值（mex）",
+              "formal": "pain = mex({p_i | spell i is not blocked})"
+            },
+            {
+              "name": "time_interval_constraint",
+              "description": "盾牌每次激活后可以阻挡接下来的 d 个魔法，之后需要等待 d 个魔法才能再次激活",
+              "formal": "For each activation, the next d spells are blocked, and the shield cannot be activated for the following d spells"
+            },
+            {
+              "name": "fixed_start_time",
+              "description": "盾牌最早可以在第一个魔法之前激活",
+              "formal": "The shield can be activated before the first spell"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "最小化给定序列在特定操作下的mex值"
+        }
+      }
+    ],
+    "description": "最小化给定序列在特定操作下的mex值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在给定前i个元素的情况下，通过选择是否使用盾牌来最小化mex值的问题可以分解为更小规模的相同问题。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着处理的元素数量增加，已处理部分的mex值不会减少。具体来说，在考虑是否激活盾牌时，当前已处理部分的mex值是随时间非严格递增的。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在给定前i个元素的情况下，通过选择是否使用盾牌来最小化mex值的问题可以分解为更小规模的相同问题。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着处理的元素数量增加，已处理部分的mex值不会减少。具体来说，在考虑是否激活盾牌时，当前已处理部分的mex值是随时间非严格递增的。",
+              "properties": {
+                "right_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

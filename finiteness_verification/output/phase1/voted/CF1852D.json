@@ -2,21 +2,21 @@
   "problem_id": "CF1852D",
   "source": "codeforces",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
           },
           "value_range": {
-            "min": 65,
-            "max": 66
+            "min": "A",
+            "max": "B"
           },
           "properties": {
             "ordered": true
@@ -29,8 +29,8 @@
       "max": 200000
     },
     "value_range": {
-      "min": 65,
-      "max": 66
+      "min": "A",
+      "max": "B"
     },
     "properties": {
       "ordered": true
@@ -39,8 +39,8 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "相邻节点不同字符对的数量必须等于给定值 k",
+        "name": "adjacency_relation",
+        "description": "相邻节点取值不同（图着色约束）",
         "confidence": "1/1"
       }
     ],
@@ -51,9 +51,14 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "相邻节点不同字符对的数量必须等于给定值 k",
-              "formal": "count((r1, c1), (r2, c2) | |r1 - r2| + |c1 - c2| = 1 and s[r1][c1] != s[r2][c2]) == k"
+              "name": "adjacency_relation",
+              "description": "相邻节点取值不同（图着色约束）",
+              "formal": "对于每个 (r1, c1) 和 (r2, c2)，如果 |r1 - r2| + |c1 - c2| = 1，则 s[r1][c1] ≠ s[r2][c2]"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "相邻不同字符对的数量等于 k",
+              "formal": "sum(|s[i] ≠ t[i]| for i in range(n)) + sum(|t[i] ≠ t[i+1]| for i in range(n-1)) == k"
             }
           ]
         }
@@ -61,34 +66,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否存在满足条件的解，并在存在时构造一个满足条件的方案"
+          "type": "feasibility",
+          "description": "判断是否存在一种填充方式使得相邻不同字符对的数量等于给定值"
         }
       }
     ],
-    "description": "判断是否存在满足条件的解，并在存在时构造一个满足条件的方案"
+    "description": "判断是否存在一种填充方式使得相邻不同字符对的数量等于给定值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前列的字符选择依赖于前一列的选择，且整个问题的解由各子问题的最优解组成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择当前列的字符时，局部最优选择（使得相邻不同字符对数尽可能接近目标值）将导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，即当前列的字符选择依赖于前一列的选择以满足不同字符对的数量要求",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：当前列的字符选择依赖于前一列的选择，且整个问题的解由各子问题的最优解组成。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择当前列的字符时，局部最优选择（使得相邻不同字符对数尽可能接近目标值）将导致全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，即当前列的字符选择依赖于前一列的选择以满足不同字符对的数量要求"
+    ]
   }
 }

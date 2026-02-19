@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,13 +28,13 @@
       "result": {
         "constraints": [
           {
-            "name": "orientation_constraint",
+            "name": "geometric_angle_constraint",
             "description": "雷达在任意角度下必须覆盖至少 k 个点（岛屿）",
             "formal": "∀θ, |{i | θ - α/2 ≤ atan2(y_i, x_i) ≤ θ + α/2}| ≥ k"
           },
           {
-            "name": "distinct_positions",
-            "description": "所有点的坐标必须不同且不位于原点",
+            "name": "distinctness",
+            "description": "所有点（岛屿）的坐标必须不同，且不能位于原点",
             "formal": "∀i ≠ j, (x_i, y_i) ≠ (x_j, y_j) ∧ (x_i, y_i) ≠ (0, 0)"
           }
         ]
@@ -46,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_angle",
-        "description": "求覆盖至少k个点的最小角度"
+        "type": "minimize_value",
+        "description": "求满足条件的最小角度值"
       }
     }
   ],
@@ -56,12 +56,26 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "双指针或滑动窗口的左右端点单调前进，区间合法性可单调维护",
-        "properties": {
-          "left_monotonic": true,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，通过旋转角度的增加来逐步覆盖更多的岛屿",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，即在某个角度范围内的最小扫描角度可以由更小范围内的最优解组合而成",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性，通过计算角度区间的覆盖情况，可以通过端点差值计算出覆盖的岛屿数量",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

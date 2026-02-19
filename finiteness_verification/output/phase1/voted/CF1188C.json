@@ -2,14 +2,14 @@
   "problem_id": "CF1188C",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 1000
@@ -35,18 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "子序列中任意两个不同元素的差值绝对值的最小值（定义为数组的美丽度）",
+        "name": "distance_bound",
+        "description": "子序列中任意两个不同元素的差值的最小值（即 beauty）",
         "confidence": "1/1"
       },
       {
-        "name": "path_length_constraint",
-        "description": "子序列的长度必须固定为 k",
-        "confidence": "1/1"
-      },
-      {
-        "name": "modulo_expected_value_constraint",
-        "description": "所有满足条件的子序列美丽度之和需要对 998244353 取模",
+        "name": "subset_constraint",
+        "description": "子序列的长度必须恰好为 k",
         "confidence": "1/1"
       }
     ],
@@ -57,19 +52,14 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "子序列中任意两个不同元素的差值绝对值的最小值（定义为数组的美丽度）",
+              "name": "distance_bound",
+              "description": "子序列中任意两个不同元素的差值的最小值（即 beauty）",
               "formal": "beauty(b) = min(|b_i - b_j|) for 1 ≤ i < j ≤ k"
             },
             {
-              "name": "path_length_constraint",
-              "description": "子序列的长度必须固定为 k",
+              "name": "subset_constraint",
+              "description": "子序列的长度必须恰好为 k",
               "formal": "length(subsequence) = k"
-            },
-            {
-              "name": "modulo_expected_value_constraint",
-              "description": "所有满足条件的子序列美丽度之和需要对 998244353 取模",
-              "formal": "result = (sum(beauty(subsequence)) % 998244353)"
             }
           ]
         }
@@ -92,19 +82,39 @@
     "description": "求所有长度为k的子序列的最小差值之和，并对结果取模"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即长度为k的子序列的美度可以通过其子序列的美度计算得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和等方法可以将区间的贡献值进行分解与合并，从而高效地计算出整个区间的性质。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，即长度为k的子序列的美可以通过其子序列的美来计算",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即长度为k的子序列的美度可以通过其子序列的美度计算得出。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和等方法可以将区间的贡献值进行分解与合并，从而高效地计算出整个区间的性质。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，即长度为k的子序列的美可以通过其子序列的美来计算"
+    ]
   }
 }

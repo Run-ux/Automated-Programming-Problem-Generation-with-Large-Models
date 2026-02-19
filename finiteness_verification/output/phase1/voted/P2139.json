@@ -1,0 +1,154 @@
+{
+  "problem_id": "P2139",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": 1,
+            "max": 6
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": 1,
+      "max": 6
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "orientation_constraint",
+        "description": "骰子只能向特定方向翻滚（4, 5, 6 面的方向）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "priority_comparison",
+        "description": "当有多个方向可以翻滚时，优先选择数字最大的面的方向翻滚",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "骰子只有在翻滚后会导致其下落时才会翻滚",
+        "confidence": "1/1"
+      },
+      {
+        "name": "angle_constraint",
+        "description": "骰子每次翻滚恰好 90 度",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_sequence",
+        "description": "每个骰子依次抛下并完成翻滚和下落过程",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "orientation_constraint",
+              "description": "骰子只能向特定方向翻滚（4, 5, 6 面的方向）",
+              "formal": "roll_directions = {4, 5, 6}"
+            },
+            {
+              "name": "priority_comparison",
+              "description": "当有多个方向可以翻滚时，优先选择数字最大的面的方向翻滚",
+              "formal": "if multiple_roll_directions: roll_direction = max(multiple_roll_directions)"
+            },
+            {
+              "name": "state_transition",
+              "description": "骰子只有在翻滚后会导致其下落时才会翻滚",
+              "formal": "if will_fall_after_rolling: roll_dice()"
+            },
+            {
+              "name": "angle_constraint",
+              "description": "骰子每次翻滚恰好 90 度",
+              "formal": "roll_angle = 90"
+            },
+            {
+              "name": "operation_sequence",
+              "description": "每个骰子依次抛下并完成翻滚和下落过程",
+              "formal": "for each dice in sequence: drop_dice() and process_rolling()"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "统计每个可能值出现的次数"
+        }
+      }
+    ],
+    "description": "统计每个可能值出现的次数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：骰子的翻滚和下落过程可以被建模为一个状态机，每个状态到下一个状态的转移是确定性的，并且满足特定规则（如只能往4,5,6面的方向翻滚，选择数字最大的面）。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在多个可选方向中，总是选择数字最大的面进行翻滚。这种局部最优选择最终导致全局最优解，即最终形成的骰子堆叠结构。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：骰子的翻滚和下落过程可以被建模为一个状态机，每个状态到下一个状态的转移是确定性的，并且满足特定规则（如只能往4,5,6面的方向翻滚，选择数字最大的面）。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在多个可选方向中，总是选择数字最大的面进行翻滚。这种局部最优选择最终导致全局最优解，即最终形成的骰子堆叠结构。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

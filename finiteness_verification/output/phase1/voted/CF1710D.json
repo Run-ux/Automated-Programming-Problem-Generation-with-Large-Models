@@ -2,14 +2,14 @@
   "problem_id": "CF1710D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 2000
@@ -19,7 +19,8 @@
             "max": 1
           },
           "properties": {
-            "ordered": true
+            "ordered": false,
+            "inferred": true
           }
         }
       }
@@ -33,19 +34,15 @@
       "max": 1
     },
     "properties": {
-      "ordered": true
+      "ordered": false,
+      "inferred": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "给定的区间 [l, r] 内的所有节点必须形成一个连通子图（树中的连通分量）",
-        "confidence": "1/1"
-      },
-      {
-        "name": "tree_structure",
-        "description": "恢复的树结构必须满足所有给定的 good 和 bad 区间条件",
+        "name": "connectivity",
+        "description": "图必须连通（所有顶点形成一个连通分量）",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +53,12 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "给定的区间 [l, r] 内的所有节点必须形成一个连通子图（树中的连通分量）",
-              "formal": "对于每个区间 [l, r]，如果 good[l][r-l+1] == 1，则节点 l, l+1, ..., r 必须在同一个连通分量中"
+              "name": "connectivity",
+              "description": "图必须连通（所有顶点形成一个连通分量）"
             },
             {
-              "name": "tree_structure",
-              "description": "恢复的树结构必须满足所有给定的 good 和 bad 区间条件",
-              "formal": "对于每个区间 [l, r]，如果 good[l][r-l+1] == 1，则节点 l, l+1, ..., r 必须在同一个连通分量中；否则，它们不在同一个连通分量中"
+              "name": "connectivity",
+              "description": "对于每个区间 [l, r]，如果区间内的顶点形成一个连通分量，则该区间是好的；否则是坏的"
             }
           ]
         }
@@ -71,14 +66,14 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
+          "type": "construction",
           "description": "构造一个满足给定条件的树"
         }
       }
@@ -86,19 +81,50 @@
     "description": "构造一个满足给定条件的树"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在构建树的过程中，节点的连接顺序满足拓扑排序的性质，即每个节点在其所有子节点之前被处理。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在恢复树的过程中，每个子树的构造是独立的，不会受到其他子树的影响。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：整个树的结构可以通过其子树的最优解来构建，即局部最优解可以组合成全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：树的恢复可以通过递归地解决子问题来实现，每个子问题的解可以组合成大问题的解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在构建树的过程中，节点的连接顺序满足拓扑排序的性质，即每个节点在其所有子节点之前被处理。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在恢复树的过程中，每个子树的构造是独立的，不会受到其他子树的影响。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：整个树的结构可以通过其子树的最优解来构建，即局部最优解可以组合成全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：树的恢复可以通过递归地解决子问题来实现，每个子问题的解可以组合成大问题的解"
+    ]
   }
 }

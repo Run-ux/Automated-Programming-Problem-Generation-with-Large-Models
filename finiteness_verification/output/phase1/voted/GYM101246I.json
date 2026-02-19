@@ -1,0 +1,148 @@
+{
+  "problem_id": "GYM101246I",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 400
+          },
+          "value_range": {
+            "min": -400,
+            "max": 400
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 400
+    },
+    "value_range": {
+      "min": -400,
+      "max": 400
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "路径必须是封闭的非退化折线，且不自交或自触",
+        "confidence": "1/1"
+      },
+      {
+        "name": "orientation",
+        "description": "路径的方向分为两组，每组包含两个垂直方向，机器在一组内移动后切换到另一组",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "路径必须覆盖所有给定的点（油井），这些点可以位于路径内部或边界上",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "路径必须是封闭的非退化折线，且不自交或自触"
+            },
+            {
+              "name": "orientation",
+              "description": "路径的方向分为两组，每组包含两个垂直方向，机器在一组内移动后切换到另一组"
+            },
+            {
+              "name": "coverage",
+              "description": "路径必须覆盖所有给定的点（油井），这些点可以位于路径内部或边界上"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求包含所有给定点的最小面积多边形"
+        }
+      }
+    ],
+    "description": "求包含所有给定点的最小面积多边形"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "convexity",
+        "description": "凸性不变量：所有油井点构成的最小凸包，确保机器可以沿着凸包边界移动以围住所有油井。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在构建凸包的过程中，对于每个方向组（如北-东和南-西），机器的移动路径是单调的，即在切换方向组之前，机器只能沿一个方向组内的方向移动。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：机器在两个方向组之间的切换不会改变最终围成的区域形状，即无论先走哪个方向组，最终形成的封闭多边形面积相同。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "convexity",
+              "description": "凸性不变量：所有油井点构成的最小凸包，确保机器可以沿着凸包边界移动以围住所有油井。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在构建凸包的过程中，对于每个方向组（如北-东和南-西），机器的移动路径是单调的，即在切换方向组之前，机器只能沿一个方向组内的方向移动。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false
+              }
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：机器在两个方向组之间的切换不会改变最终围成的区域形状，即无论先走哪个方向组，最终形成的封闭多边形面积相同。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

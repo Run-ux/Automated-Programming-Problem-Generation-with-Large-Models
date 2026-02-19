@@ -1,0 +1,75 @@
+{
+  "problem_id": "P3077",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "bipartite_graph",
+        "length": {
+          "min": 2,
+          "max": 80000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 40000
+        },
+        "properties": {
+          "weighted": true,
+          "undirected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "non_intersecting_segments",
+            "description": "路径之间不能交叉（即两条路径 (a <-> x) 和 (b <-> y) 不能满足 (a < b and y < x) 或 (b < a and x < y) 或 (a = b and x = y)）",
+            "formal": "对于任意两条路径 (a, x) 和 (b, y)，不满足 (a < b and y < x) or (b < a and x < y) or (a = b and x = y)"
+          },
+          {
+            "name": "bipartiteness",
+            "description": "图是二分图，节点分为两个集合，每个集合内的节点没有边相连",
+            "formal": "G = (L, R, E)，其中 L 和 R 是两个不相交的节点集合，E 中的每条边连接一个 L 中的节点和一个 R 中的节点"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化路径上的权值和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即路径的最大点权和可以由更短路径的最大点权和递推得到。",
+            "properties": {}
+          },
+          {
+            "name": "non_crossing_property",
+            "description": "非交叉约束：在构建路径时，确保路径不交叉。具体来说，如果存在两条路径 (a <-> x) 和 (b <-> y)，则必须满足 (a < b 且 y < x) 或 (b < a 且 x < y) 或 (a = b 且 x = y) 的情况不成立。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

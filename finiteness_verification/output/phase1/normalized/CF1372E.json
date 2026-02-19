@@ -1,0 +1,79 @@
+{
+  "problem_id": "CF1372E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "frequency_bound",
+            "description": "每个区间内只能改变一个 0 为 1",
+            "formal": "∀ interval, ∃! x ∈ interval, A[x] = 1"
+          },
+          {
+            "name": "coverage",
+            "description": "每行的每个 0 必须且仅属于一个区间",
+            "formal": "∀ row, ∀ 0 in row, ∃! interval, 0 ∈ interval"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "除了第一个区间外，每个区间的左边界是前一个区间的右边界加一",
+            "formal": "l_{i,1} = 1, l_{i,j} ≤ r_{i,j}, r_{i,j-1} + 1 = l_{i,j} for all 2 ≤ j ≤ k_i, r_{i,k_i} = m"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化给定约束下的矩阵列和平方和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构建，每个子问题对应于一个特定的行和列区间。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：每列的值可以通过行的操作进行累加，并且最终的质量计算基于这些列的值的平方和。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

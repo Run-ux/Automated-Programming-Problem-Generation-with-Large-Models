@@ -4,9 +4,35 @@
   "dimension": "invariant",
   "round": 2,
   "result": {
-    "name": "optimal_substructure",
-    "description": "问题的最优解可以通过子问题的最优解组合而成，即在合并书籍的过程中，每次合并操作的成本和结果都依赖于当前状态下的最优解。",
-    "properties": {}
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "在合并过程中，书的等级单调递增，且每次合并后的书等级严格大于合并前的书等级。",
+        "properties": {
+          "level_increase": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解来构造。具体来说，在每一步操作中，当前状态的最优解依赖于之前状态的最优解。",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "局部最优选择（即每次尽可能多地合并相同等级的书）能够导致全局最优解（即最大化合并次数和最小化总成本）。",
+        "properties": {
+          "max_merge_times": true,
+          "min_total_cost": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移的一致性：从一个状态到另一个状态的转换是确定的，并且每个状态的转换都遵循相同的规则。",
+        "properties": {
+          "merge_rule_consistency": true
+        }
+      }
+    ]
   },
   "status": "success"
 }

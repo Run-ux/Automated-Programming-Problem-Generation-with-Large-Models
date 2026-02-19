@@ -1,0 +1,80 @@
+{
+  "problem_id": "P14424",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 3000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "从起点到终点必须经过所有中间节点各一次（哈密顿路径约束）"
+          },
+          {
+            "name": "degree_bound",
+            "description": "起点和终点的度数为1，中间节点的度数至少为2（图的度数约束）"
+          },
+          {
+            "name": "ordering",
+            "description": "访问顺序必须是严格递增的（有序性约束）"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每个中间节点可以多次访问，但每次访问都必须完成打卡操作（操作次数限制）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求从起点到终点经过所有中间点的最短路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，从车站 0 到车站 N+1 的最短时间可以通过从车站 0 到每个中间车站 i 的最短时间和从车站 i 到车站 N+1 的最短时间来计算。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在动态规划过程中，状态转移的一致性保证了算法的正确性。具体来说，从一个车站到下一个车站的时间可以通过前一个车站的状态和当前车站的移动时间来确定。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

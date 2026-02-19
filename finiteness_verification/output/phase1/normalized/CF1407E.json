@@ -1,0 +1,82 @@
+{
+  "problem_id": "CF1407E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "directed_graph",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "weighted": false,
+          "directed": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "路径必须由安全道路组成，且路径长度最小化"
+          },
+          {
+            "name": "coloring_constraint",
+            "description": "每个节点（城市）的颜色（黑白）决定了离开该节点的时间（夜晚或早晨），路径上的所有边必须符合当前时间的安全性要求"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "需要找到一种颜色分配方案，使得从起点到终点的最短路径长度最大化，或者不存在这样的路径"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化从起点到终点的最短路径长度，或判断是否存在路径"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，从起点到终点的最短路径可以通过从起点到中间点以及从中间点到终点的最短路径来构造。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在状态机或动态规划中，状态之间的转移具有一致性。在本题中，每个城市的颜色决定了从该城市出发的可行路径，这种状态转移是确定且一致的。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在有向无环图（DAG）上，节点的顺序依赖于其前驱和后继关系。在本题中，通过合理安排城市的颜色，可以确保从起点到终点的路径满足某种拓扑序。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

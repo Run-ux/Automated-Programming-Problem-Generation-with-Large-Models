@@ -1,0 +1,82 @@
+{
+  "problem_id": "P7924",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 3,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径可以重复经过点但不能重复经过边（非严格简单路径）"
+          },
+          {
+            "name": "distinctness",
+            "description": "每个景点的美观度在统计时只计算一次，即使多次经过该景点"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化所有路径上不重复顶点的权值和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即从起点到终点的所有路径的美观度之和可以通过分解为更小的子路径来计算。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和的方式，可以高效地计算任意两个景点之间的所有路径的美观度之和，避免重复计算。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在遍历图的过程中，每个节点的状态（是否被访问过）以及其贡献的美观度是确定且一致的，确保了路径统计的正确性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "problem_id": "P3640",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 300
+          },
+          "value_range": {
+            "min": -1000000,
+            "max": 999999
+          },
+          "properties": {
+            "connected": false,
+            "weighted": true,
+            "directed": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300
+    },
+    "value_range": {
+      "min": -1000000,
+      "max": 999999
+    },
+    "properties": {
+      "connected": false,
+      "weighted": true,
+      "directed": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "输入数据必须使得源程序 A 不超时，而源程序 B 超时",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "输入数据的整数个数不超过目标大小 T",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "图中任意两个节点之间可能存在路径（即图可能不连通）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "acyclicity",
+        "description": "图中没有负权圈",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coloring_constraint",
+        "description": "所有直接相连的节点必须有不同的编号",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "输入数据必须使得源程序 A 不超时，而源程序 B 超时",
+              "formal": "TLE(A, X) = false ∧ TLE(B, X) = true"
+            },
+            {
+              "name": "range_bound",
+              "description": "输入数据的整数个数不超过目标大小 T",
+              "formal": "|X| ≤ T"
+            },
+            {
+              "name": "connectivity",
+              "description": "图中任意两个节点之间可能存在路径（即图可能不连通）",
+              "formal": "∀s, t ∈ V, p(s, t) = 10^9 if s 和 t 不连通"
+            },
+            {
+              "name": "acyclicity",
+              "description": "图中没有负权圈",
+              "formal": "不存在负权圈"
+            },
+            {
+              "name": "coloring_constraint",
+              "description": "所有直接相连的节点必须有不同的编号",
+              "formal": "∀(u, v) ∈ E, color(u) ≠ color(v)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "最小化测试数据中整数的数量，使得源程序A不超时而源程序B超时"
+        }
+      }
+    ],
+    "description": "最小化测试数据中整数的数量，使得源程序A不超时而源程序B超时"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在单源最短路问题中，通过松弛操作更新节点的最短路径估计值，确保每次更新后路径长度不增加。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：单源最短路问题中的最短路径可以通过其子路径的最短路径来构建，即从起点到终点的最短路径是由起点到中间点和中间点到终点的最短路径组成的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在生成测试数据时，通过构造特定的图结构（如稠密图或特殊边权）使得某个算法的时间复杂度达到上限，从而导致超时。这种选择是局部最优的，能够区分不同算法的性能。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：在处理多个查询时，可以利用前缀和等技术将路径长度进行累加计算，从而高效地回答多个查询。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在单源最短路问题中，通过松弛操作更新节点的最短路径估计值，确保每次更新后路径长度不增加。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：单源最短路问题中的最短路径可以通过其子路径的最短路径来构建，即从起点到终点的最短路径是由起点到中间点和中间点到终点的最短路径组成的。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在生成测试数据时，通过构造特定的图结构（如稠密图或特殊边权）使得某个算法的时间复杂度达到上限，从而导致超时。这种选择是局部最优的，能够区分不同算法的性能。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：在处理多个查询时，可以利用前缀和等技术将路径长度进行累加计算，从而高效地回答多个查询。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

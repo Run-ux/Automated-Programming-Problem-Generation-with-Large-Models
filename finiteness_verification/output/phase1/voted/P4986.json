@@ -1,0 +1,148 @@
+{
+  "problem_id": "P4986",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100001
+          },
+          "value_range": {
+            "min": 0,
+            "max": 9
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100001
+    },
+    "value_range": {
+      "min": 0,
+      "max": 9
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "路径约束：一个实体只能沿水平或竖直方向移动，另一个实体只能沿直线移动且不能拐弯",
+        "confidence": "1/1"
+      },
+      {
+        "name": "concurrency",
+        "description": "同步离开约束：两个实体必须同时离开二维空间，否则空间会崩塌",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "参数 x 的取值范围约束：x 必须在 [L, R] 范围内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "existence_requirement",
+        "description": "解的存在性约束：如果存在满足条件的 x，则输出该 x；否则输出 'Inconsistent!'",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "路径约束：一个实体只能沿水平或竖直方向移动，另一个实体只能沿直线移动且不能拐弯",
+              "formal": "A(x) 和 B(x) 表示一个实体的水平和竖直速度，C(x) 表示另一个实体的直线速度"
+            },
+            {
+              "name": "concurrency",
+              "description": "同步离开约束：两个实体必须同时离开二维空间，否则空间会崩塌",
+              "formal": "A(x) * t = R 且 B(x) * t = R 且 C(x) * t = R 同时成立，其中 t 为时间"
+            },
+            {
+              "name": "range_bound",
+              "description": "参数 x 的取值范围约束：x 必须在 [L, R] 范围内",
+              "formal": "L ≤ x ≤ R"
+            },
+            {
+              "name": "existence_requirement",
+              "description": "解的存在性约束：如果存在满足条件的 x，则输出该 x；否则输出 'Inconsistent!'",
+              "formal": "若存在 x ∈ [L, R] 使得 A(x) * t = R 且 B(x) * t = R 且 C(x) * t = R 同时成立，则输出 x；否则输出 'Inconsistent!'"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在满足条件的参数值"
+        }
+      }
+    ],
+    "description": "判断是否存在满足条件的参数值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，即存在一个参数 x 使得 A(x), B(x) 和 C(x) 的组合满足条件",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在给定的区间 [L, R] 内，A(x), B(x) 和 C(x) 的值随 x 的变化是单调的，可以利用二分搜索来找到满足条件的 x",
+        "confidence": "1/1",
+        "properties": {
+          "search_interval_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，即存在一个参数 x 使得 A(x), B(x) 和 C(x) 的组合满足条件",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在给定的区间 [L, R] 内，A(x), B(x) 和 C(x) 的值随 x 的变化是单调的，可以利用二分搜索来找到满足条件的 x",
+              "properties": {
+                "search_interval_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

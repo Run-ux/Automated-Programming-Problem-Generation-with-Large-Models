@@ -1,0 +1,149 @@
+{
+  "problem_id": "P11563",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "permutation_constraint",
+        "description": "排列约束：求满足条件的排列 a_1, ..., a_n 的个数",
+        "confidence": "1/1"
+      },
+      {
+        "name": "bipartiteness",
+        "description": "二部性约束：序列 p 中 1 的个数 ≥ n/5",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "互斥约束：对于所有 i, j 满足 i ≠ j ∧ p_i = j ∧ p_j = i，都存在至少一个 k ≠ i ∧ k ≠ j 满足 p_k = i ∨ p_k = j",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "permutation_constraint",
+              "description": "排列约束：求满足条件的排列 a_1, ..., a_n 的个数",
+              "formal": "对于每个 1 ≤ i ≤ n，都有 a_i = p_i 或者 a_{p_i} = i 成立"
+            },
+            {
+              "name": "bipartiteness",
+              "description": "二部性约束：序列 p 中 1 的个数 ≥ n/5",
+              "formal": "|{i | p_i = 1}| ≥ n/5"
+            },
+            {
+              "name": "exclusion",
+              "description": "互斥约束：对于所有 i, j 满足 i ≠ j ∧ p_i = j ∧ p_j = i，都存在至少一个 k ≠ i ∧ k ≠ j 满足 p_k = i ∨ p_k = j",
+              "formal": "∀ i, j (i ≠ j ∧ p_i = j ∧ p_j = i) → ∃ k (k ≠ i ∧ k ≠ j ∧ (p_k = i ∨ p_k = j))"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足条件的排列方案数（对给定模数取模）"
+        }
+      }
+    ],
+    "description": "求满足条件的排列方案数（对给定模数取模）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，且子问题之间相互独立。",
+        "confidence": "1/1",
+        "properties": {
+          "subproblem_independence": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个状态的转移规则保持一致，且满足题目给定的约束条件。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：在某些情况下，事件的影响可以互换，即如果事件 i 影响事件 j，则事件 j 也可以影响事件 i。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，且子问题之间相互独立。",
+              "properties": {
+                "subproblem_independence": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个状态的转移规则保持一致，且满足题目给定的约束条件。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：在某些情况下，事件的影响可以互换，即如果事件 i 影响事件 j，则事件 j 也可以影响事件 i。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

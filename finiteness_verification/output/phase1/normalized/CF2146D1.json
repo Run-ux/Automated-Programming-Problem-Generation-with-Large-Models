@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,16 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "permutation_invariance",
-            "description": "数组 a 可以任意重排以最大化给定的表达式"
+            "name": "permutation_constraint",
+            "description": "数组 a 必须是 [l, l+1, ..., r] 的一个排列",
+            "formal": "a is a permutation of [l, l+1, ..., r]"
           },
           {
-            "name": "maximize_bitwise_or_sum",
-            "description": "需要最大化数组 a 和 b 的逐元素按位或操作的结果之和"
-          },
-          {
-            "name": "distinct_elements_constraint",
-            "description": "数组 a 重排后必须包含 n 个不同的整数，且这些整数在 [l, r] 范围内"
+            "name": "sum_constraint",
+            "description": "最大化数组 a 和 b 的逐元素按位或操作的和",
+            "formal": "maximize Σ(a_i | b_i) for i = 1 to n"
           }
         ]
       }
@@ -58,9 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过重新排列数组a以最大化每个位置上的位或操作结果总和。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "greedy_choice",
+            "description": "通过局部最优选择（即最大化当前位的 OR 结果）来达到全局最优解，使得最终的总和最大。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解组合得到。具体来说，对于每个位置 i，选择 a[i] 使得 (a[i] | b[i]) 最大化，可以保证整个数组的 OR 和最大。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

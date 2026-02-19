@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1000000
@@ -26,14 +26,19 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_sum_constraint",
-            "description": "计算二维区间内的函数值和（对于每个查询，需要计算给定的二维区间内所有点的函数值之和）",
-            "formal": "sum(g(i, j) for i in [l, r] for j in [x, y])"
+            "name": "range_bound",
+            "description": "数组元素的值域约束，所有元素在 1 到 n 之间",
+            "formal": "1 ≤ a_i ≤ n"
           },
           {
-            "name": "range_coverage",
-            "description": "查询区间必须合法（查询的区间范围必须在数组范围内，且左端点不大于右端点）",
-            "formal": "1 <= l <= r <= n and 1 <= x <= y <= n"
+            "name": "subsequence_constraint",
+            "description": "查询区间内的子序列和约束，需要计算给定区间内所有 g(i, j) 的和",
+            "formal": "∑_{i=l}^{r} ∑_{j=x}^{y} g(i, j)"
+          },
+          {
+            "name": "ordering",
+            "description": "查询区间的有序性约束，查询区间 [l, r] 和 [x, y] 必须满足 l ≤ r 和 x ≤ y",
+            "formal": "1 ≤ l ≤ r ≤ n, 1 ≤ x ≤ y ≤ n"
           }
         ]
       }
@@ -45,7 +50,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "计算给定区间内所有子区间的函数值之和"
+        "description": "求给定区间内函数值的总和"
       }
     }
   ],
@@ -54,11 +59,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间可合并性：区间和可通过端点差值计算，满足前缀和的性质",
-        "properties": {
-          "prefix_sum": true
-        }
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：区间和可以通过端点差值计算，适用于前缀和等技术",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：区间信息可以通过子区间合并，适用于线段树等数据结构",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

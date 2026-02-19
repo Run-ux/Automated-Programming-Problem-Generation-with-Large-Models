@@ -2,14 +2,14 @@
   "problem_id": "GYM105657B",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 1000000
@@ -18,9 +18,7 @@
             "min": 0,
             "max": 9223372036854775807
           },
-          "properties": {
-            "ordered": false
-          }
+          "properties": {}
         }
       }
     ],
@@ -32,25 +30,28 @@
       "min": 0,
       "max": 9223372036854775807
     },
-    "properties": {
-      "ordered": false
-    }
+    "properties": {}
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "maximum_average_constraint",
-        "description": "在给定区间内，通过移除一个元素，使得剩余元素的按位与结果最大化",
+        "name": "range_bound",
+        "description": "区间内选择的元素必须在给定范围内",
         "confidence": "1/1"
       },
       {
-        "name": "range_selection_constraint",
-        "description": "每个事件中指定的区间必须是有效的，即左端点不大于右端点",
+        "name": "exclusion",
+        "description": "区间内必须排除一个元素",
         "confidence": "1/1"
       },
       {
-        "name": "single_edge_operation",
-        "description": "在每个区间内，必须且只能移除一个元素",
+        "name": "bitwise_closure",
+        "description": "团队评分是区间内所有选定元素的按位与结果",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "需要最大化团队评分",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +62,24 @@
         "result": {
           "constraints": [
             {
-              "name": "maximum_average_constraint",
-              "description": "在给定区间内，通过移除一个元素，使得剩余元素的按位与结果最大化"
+              "name": "range_bound",
+              "description": "区间内选择的元素必须在给定范围内",
+              "formal": "l_i <= p_j <= r_i"
             },
             {
-              "name": "range_selection_constraint",
-              "description": "每个事件中指定的区间必须是有效的，即左端点不大于右端点"
+              "name": "exclusion",
+              "description": "区间内必须排除一个元素",
+              "formal": "∃p_j, l_i <= p_j <= r_i 且 p_j 不参与计算"
             },
             {
-              "name": "single_edge_operation",
-              "description": "在每个区间内，必须且只能移除一个元素"
+              "name": "bitwise_closure",
+              "description": "团队评分是区间内所有选定元素的按位与结果",
+              "formal": "rating = a_{p_1} & a_{p_2} & ... & a_{p_k}"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "需要最大化团队评分",
+              "formal": "maximize(rating)"
             }
           ]
         }
@@ -86,26 +95,57 @@
         "status": "success",
         "result": {
           "type": "maximize_value",
-          "description": "最大化区间内去除一个元素后的按位与结果"
+          "description": "最大化区间内去除一个元素后的剩余元素按位与结果"
         }
       }
     ],
-    "description": "最大化区间内去除一个元素后的按位与结果"
+    "description": "最大化区间内去除一个元素后的剩余元素按位与结果"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "interval_mergeable",
+        "description": "区间信息可通过子区间合并，适用于线段树等数据结构中维护区间信息",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，通过解决子区间的问题来求解整个区间的最大值",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "局部最优选择导致全局最优，通过移除一个元素来最大化区间内的位与结果",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：在给定区间内移除一个元素后，剩余元素的最优解可以通过子区间的最优解组合而成",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间信息可通过子区间合并，适用于线段树等数据结构中维护区间信息",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，通过解决子区间的问题来求解整个区间的最大值",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "局部最优选择导致全局最优，通过移除一个元素来最大化区间内的位与结果",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：在给定区间内移除一个元素后，剩余元素的最优解可以通过子区间的最优解组合而成"
+    ]
   }
 }

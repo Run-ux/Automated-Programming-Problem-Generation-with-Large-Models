@@ -30,7 +30,7 @@
           "max": 8
         },
         "value_range": {
-          "min": 1,
+          "min": 0,
           "max": 30
         },
         "properties": {
@@ -48,7 +48,7 @@
           "max": 8
         },
         "value_range": {
-          "min": 1,
+          "min": 0,
           "max": 30
         },
         "properties": {
@@ -64,29 +64,19 @@
       "result": {
         "constraints": [
           {
-            "name": "towers_within_radius",
-            "description": "所有塔必须在以玫瑰为中心，半径为 r 的圆内或圆上。",
-            "formal": "对于每个塔 (x_i, y_i)，满足 x_i^2 + y_i^2 <= r^2"
+            "name": "distance_bound",
+            "description": "所有塔楼必须位于以原点为中心、半径为 r 的圆内或圆上",
+            "formal": "∀i, x_i^2 + y_i^2 ≤ r^2"
           },
           {
-            "name": "integer_coordinates",
-            "description": "所有塔的坐标必须是整数。",
-            "formal": "对于每个塔 (x_i, y_i)，x_i 和 y_i 都是整数"
+            "name": "sum_of_squares_maximization",
+            "description": "所有塔楼之间的欧几里得距离平方和必须最大化",
+            "formal": "maximize Σ_{1≤i<j≤n} (x_i - x_j)^2 + (y_i - y_j)^2"
           },
           {
-            "name": "maximize_sum_of_squared_distances",
-            "description": "所有塔之间的距离平方和必须尽可能大。",
-            "formal": "最大化 Σ_{i < j} (x_i - x_j)^2 + (y_i - y_j)^2"
-          },
-          {
-            "name": "multiple_towers_at_same_point",
-            "description": "允许在同一个点上建造多个塔。",
-            "formal": "可能存在多个 (x_i, y_i) 相同的塔"
-          },
-          {
-            "name": "towers_at_origin",
-            "description": "允许在原点 (0, 0) 建造塔。",
-            "formal": "可能存在 (x_i, y_i) = (0, 0) 的塔"
+            "name": "range_bound",
+            "description": "所有塔楼的坐标必须是整数",
+            "formal": "∀i, x_i, y_i ∈ ℤ"
           }
         ]
       }
@@ -97,24 +87,19 @@
       "result": {
         "constraints": [
           {
-            "name": "towers_within_radius",
-            "description": "所有塔必须位于以玫瑰为中心，半径为 r 的圆内或圆上。",
-            "formal": "对于每个塔 (x_i, y_i)，满足 x_i^2 + y_i^2 <= r^2"
+            "name": "distance_bound",
+            "description": "所有塔楼与原点的距离不超过 r（欧几里得距离）",
+            "formal": "∀i, √(x_i^2 + y_i^2) ≤ r"
           },
           {
-            "name": "integer_coordinates",
-            "description": "所有塔的坐标必须是整数。",
-            "formal": "对于每个塔 (x_i, y_i)，x_i 和 y_i 都是整数"
+            "name": "range_bound",
+            "description": "塔楼的坐标必须是整数",
+            "formal": "∀i, x_i, y_i ∈ ℤ"
           },
           {
-            "name": "maximize_sum_of_squared_distances",
-            "description": "塔之间的欧几里得距离平方和必须尽可能大。",
-            "formal": "最大化 Σ_{1 ≤ i < j ≤ n} (x_i - x_j)^2 + (y_i - y_j)^2"
-          },
-          {
-            "name": "multiple_towers_at_same_point",
-            "description": "允许在同一个点上建造多个塔。",
-            "formal": "可能存在多个 (x_i, y_i) 相同的塔"
+            "name": "sum_of_squares_maximization",
+            "description": "最大化所有塔楼之间两两距离平方和",
+            "formal": "maximize Σ_{1≤i<j≤n} (x_i - x_j)^2 + (y_i - y_j)^2"
           }
         ]
       }
@@ -125,19 +110,19 @@
       "result": {
         "constraints": [
           {
-            "name": "towers_within_radius",
-            "description": "所有塔必须在以玫瑰为中心，半径为 r 的圆内或圆上。",
-            "formal": "对于每个塔 (x_i, y_i)，满足 x_i^2 + y_i^2 <= r^2"
+            "name": "distance_bound",
+            "description": "所有塔楼必须位于以原点为中心、半径为 r 的圆内或圆上（欧几里得距离约束）",
+            "formal": "∀i, √(x_i^2 + y_i^2) ≤ r"
           },
           {
-            "name": "integer_coordinates",
-            "description": "塔的坐标必须是整数。",
-            "formal": "对于每个塔 (x_i, y_i)，x_i 和 y_i 都是整数"
+            "name": "range_bound",
+            "description": "塔楼的坐标必须是整数",
+            "formal": "∀i, x_i, y_i ∈ ℤ"
           },
           {
-            "name": "maximize_sum_of_squared_distances",
-            "description": "塔之间的欧几里得距离平方和必须尽可能大。",
-            "formal": "最大化 Σ_{i < j} (x_i - x_j)^2 + (y_i - y_j)^2"
+            "name": "sum_of_squares_maximization",
+            "description": "最大化所有塔楼之间两两距离平方和",
+            "formal": "maximize Σ_{1≤i<j≤n} (x_i - x_j)^2 + (y_i - y_j)^2"
           }
         ]
       }
@@ -148,24 +133,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "max_value",
-        "description": "求所有塔之间距离平方和的最大值"
+        "type": "maximize_value",
+        "description": "最大化所有点对之间的欧几里得距离平方和"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "max_value",
-        "description": "求所有塔之间欧几里得距离平方和的最大值"
+        "type": "maximize_value",
+        "description": "最大化所有点对之间的欧几里得距离平方和"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "max_value",
-        "description": "求所有塔之间距离平方和的最大值"
+        "type": "maximize_value",
+        "description": "最大化所有点对之间的欧几里得距离平方和"
       }
     }
   ],
@@ -174,27 +159,59 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的最优解可以通过子问题的最优解组合而成，即通过选择每个塔的位置来最大化所有塔之间的距离平方和。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，通过递归或动态规划的方式构建全局最优解",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：在选择塔的位置时，可以利用坐标系的对称性来简化问题，例如 (x, y) 和 (-x, -y) 的距离性质相同",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优解可以通过子问题的最优解组合而成，即通过选择每个塔的位置来最大化所有塔之间的距离平方和。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，通过递归或迭代求解子问题来构建全局最优解",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：在选择点时，可以利用对称性减少搜索空间，确保每个点的选择是等价的",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优解可以通过子问题的最优解组合而成，即通过选择每个塔的位置来最大化所有塔之间的距离平方和。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，通过选择每个塔的位置来最大化总的距离平方和",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，每次选择使得当前距离平方和最大的位置放置塔",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：在圆周上对称分布的点可以简化计算并保证最大距离平方和",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

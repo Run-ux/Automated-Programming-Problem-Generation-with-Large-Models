@@ -1,0 +1,140 @@
+{
+  "problem_id": "GYM103430G",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 10000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "sum_constraint",
+        "description": "连续消息中的表情总数不超过 x",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "序列长度为 2k-1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "symmetric_structure_constraint",
+        "description": "序列是对称的，前 k 个元素递增，后 k-1 个元素递减",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "sum_constraint",
+              "description": "连续消息中的表情总数不超过 x",
+              "formal": "sum(emotes[i] for i in range(j+1)) <= x"
+            },
+            {
+              "name": "range_bound",
+              "description": "序列长度为 2k-1",
+              "formal": "length(sequence) = 2k - 1"
+            },
+            {
+              "name": "symmetric_structure_constraint",
+              "description": "序列是对称的，前 k 个元素递增，后 k-1 个元素递减",
+              "formal": "sequence[i] = i + 1 for i in [0, k-1], sequence[i] = 2k - i - 1 for i in [k, 2k-2]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求在满足特定累积条件下的最小操作次数"
+        }
+      }
+    ],
+    "description": "求在满足特定累积条件下的最小操作次数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "消息数量和累计的 emote 数量随时间单调递增，直到达到或超过给定的 x 值",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的解可以通过子问题的解来构建，即在每个阶段计算当前累计的 emote 数量，并决定是否继续发送下一条消息",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "消息数量和累计的 emote 数量随时间单调递增，直到达到或超过给定的 x 值",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "问题的解可以通过子问题的解来构建，即在每个阶段计算当前累计的 emote 数量，并决定是否继续发送下一条消息",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

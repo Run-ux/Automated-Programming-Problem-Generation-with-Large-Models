@@ -2,14 +2,14 @@
   "problem_id": "CF1804C",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 10000
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "circular_sequence_constraint",
-        "description": "轮盘以循环方式前进，从当前索引开始，每秒前进的步数依次递减，直到停止",
+        "name": "cyclic_shift_constraint",
+        "description": "轮盘按固定的步长模式循环前进，每秒前进的步数依次递减（f, f-1, f-2, ...）直到停止",
         "confidence": "1/1"
       },
       {
-        "name": "graph_connectivity",
-        "description": "通过一次操作（即一次拉动手柄）必须能够使轮盘停在目标位置 0",
+        "name": "reachability_constraint",
+        "description": "通过一次操作（选择一个整数力 f）能否使轮盘从初始位置 x 到达目标位置 0",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "circular_sequence_constraint",
-              "description": "轮盘以循环方式前进，从当前索引开始，每秒前进的步数依次递减，直到停止",
-              "formal": "设初始力为 f，则第 i 秒前进的步数为 f - i + 1，直到 f - i + 1 <= 0 时停止"
+              "name": "cyclic_shift_constraint",
+              "description": "轮盘按固定的步长模式循环前进，每秒前进的步数依次递减（f, f-1, f-2, ...）直到停止",
+              "formal": "advance = (f + (f-1) + (f-2) + ... + 1) % n"
             },
             {
-              "name": "graph_connectivity",
-              "description": "通过一次操作（即一次拉动手柄）必须能够使轮盘停在目标位置 0",
-              "formal": "存在一个整数 f (1 ≤ f ≤ p)，使得从 x 出发，经过 f 秒后轮盘停在 0 位置"
+              "name": "reachability_constraint",
+              "description": "通过一次操作（选择一个整数力 f）能否使轮盘从初始位置 x 到达目标位置 0",
+              "formal": "exists f in [1, p] such that (x + advance(f)) % n == 0"
             }
           ]
         }
@@ -71,37 +71,71 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否存在一个整数力值，使得轮盘停止时指针指向指定的起始位置"
+          "type": "feasibility",
+          "description": "判断是否存在一个整数力使得轮盘停止时指向特定位置"
         }
       }
     ],
-    "description": "判断是否存在一个整数力值，使得轮盘停止时指针指向指定的起始位置"
+    "description": "判断是否存在一个整数力使得轮盘停止时指向特定位置"
   },
   "invariant": {
-    "name": "monotonic_sequence",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "轮盘旋转的总步数随初始力的增加而单调递增，且每一步的步长随时间递减。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "轮盘旋转的总步数可以通过求和公式计算得出，满足区间可加性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "modular_invariance",
+        "description": "轮盘旋转后的最终位置可以通过模运算确定，即 (x + 总步数) % n。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence",
-          "description": "随着施加力的增加，轮盘停止位置单调变化。对于给定的初始位置和施加力范围，存在一个确定的映射关系使得最终位置随施加力增大而递增。",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "轮盘旋转的总步数随初始力的增加而单调递增，且每一步的步长随时间递减。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "轮盘旋转的总步数可以通过求和公式计算得出，满足区间可加性。",
+              "properties": {}
+            },
+            {
+              "name": "modular_invariance",
+              "description": "轮盘旋转后的最终位置可以通过模运算确定，即 (x + 总步数) % n。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "随着施加力的增加，轮盘停止位置单调变化。对于给定的初始位置和施加力范围，存在一个确定的映射关系使得最终位置随施加力增大而递增。"
+    ]
   }
 }

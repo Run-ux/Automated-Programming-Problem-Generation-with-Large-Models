@@ -1,0 +1,147 @@
+{
+  "problem_id": "P7815",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_tree",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "triangle_inequality_constraint",
+        "description": "三个边长能构成一个三角形（即任意两边之和大于第三边）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "lowest_common_ancestor_constraint",
+        "description": "u 和 v 的最近公共祖先 w 不等于 u 或 v",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "两个树三角不同，当且仅当无序二元组 (u, v) 不同或树三角的大小不同",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "triangle_inequality_constraint",
+              "description": "三个边长能构成一个三角形（即任意两边之和大于第三边）",
+              "formal": "d(u, w) + d(v, w) > x 且 d(u, w) + x > d(v, w) 且 d(v, w) + x > d(u, w)"
+            },
+            {
+              "name": "lowest_common_ancestor_constraint",
+              "description": "u 和 v 的最近公共祖先 w 不等于 u 或 v",
+              "formal": "LCA(u, v) = w 且 w ≠ u 且 w ≠ v"
+            },
+            {
+              "name": "distinctness",
+              "description": "两个树三角不同，当且仅当无序二元组 (u, v) 不同或树三角的大小不同",
+              "formal": "(u1, v1) ≠ (u2, v2) 或 d(u1, w1) + d(v1, w1) + x1 ≠ d(u2, w2) + d(v2, w2) + x2"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求所有满足条件的树三角大小之和与不同树三角总数量的比值，并对结果取模"
+        }
+      }
+    ],
+    "description": "求所有满足条件的树三角大小之和与不同树三角总数量的比值，并对结果取模"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：树三角的大小和数量可以通过子树的信息进行计算，满足最优子结构性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从根节点到叶子节点的过程中，每个节点的状态（如路径长度、树三角的数量和大小）可以由其子节点的状态递归计算得出",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：树上任意两点间的路径长度可以通过路径上的边权和来计算，满足区间可加性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：树三角的大小和数量可以通过子树的信息进行计算，满足最优子结构性质",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从根节点到叶子节点的过程中，每个节点的状态（如路径长度、树三角的数量和大小）可以由其子节点的状态递归计算得出",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：树上任意两点间的路径长度可以通过路径上的边权和来计算，满足区间可加性",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

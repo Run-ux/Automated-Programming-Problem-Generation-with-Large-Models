@@ -1,0 +1,74 @@
+{
+  "problem_id": "CF1601C",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 2000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "插入元素后，数组的逆序对数量应尽可能少",
+            "formal": "minimize |{(i, j) | i < j and c_i > c_j}|"
+          },
+          {
+            "name": "permutation_constraint",
+            "description": "数组 b 的元素可以以任意顺序插入到数组 a 中，但不能改变 a 的原有顺序",
+            "formal": "c = a[0:i_1] + b[j_1] + a[i_1+1:i_2] + b[j_2] + ... + a[i_k+1:n]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化数组中的逆序对数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最小化数组c中的逆序对数量可以通过解决较小规模的子问题来实现，即插入b中的元素到a中时，每次插入一个元素并计算其对当前逆序对数量的影响。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步插入b中的元素时，选择使得当前逆序对数量增加最少的位置进行插入，最终能够得到全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

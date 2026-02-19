@@ -1,0 +1,149 @@
+{
+  "problem_id": "P5204",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "window_constraint",
+        "description": "每个滑动窗口内的最小值必须等于给定的最小值序列中的对应值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "labeling_constraint",
+        "description": "每节车厢的编号必须是正整数且不超过 10^9",
+        "confidence": "1/1"
+      },
+      {
+        "name": "consistency_constraint",
+        "description": "存在至少一种符合所有滑动窗口最小值要求的编号方式",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "window_constraint",
+              "description": "每个滑动窗口内的最小值必须等于给定的最小值序列中的对应值",
+              "formal": "对于所有 1 ≤ i ≤ N - K + 1，min(A[i:i+K]) = c_i"
+            },
+            {
+              "name": "labeling_constraint",
+              "description": "每节车厢的编号必须是正整数且不超过 10^9",
+              "formal": "1 ≤ A[i] ≤ 10^9, 对于所有 1 ≤ i ≤ N"
+            },
+            {
+              "name": "consistency_constraint",
+              "description": "存在至少一种符合所有滑动窗口最小值要求的编号方式",
+              "formal": "存在 A 满足所有滑动窗口最小值条件"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足给定滑动窗口最小值条件的序列方案数（对给定模数取余）"
+        }
+      }
+    ],
+    "description": "求满足给定滑动窗口最小值条件的序列方案数（对给定模数取余）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过端点差值计算区间和，适用于前缀和等区间操作",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：滑动窗口右端点单调递增，确保每个窗口的最小值可以被正确维护",
+        "confidence": "1/1",
+        "properties": {
+          "window_shrinkable": false
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，适用于动态规划方法",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过端点差值计算区间和，适用于前缀和等区间操作",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：滑动窗口右端点单调递增，确保每个窗口的最小值可以被正确维护",
+              "properties": {
+                "window_shrinkable": false
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，适用于动态规划方法",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

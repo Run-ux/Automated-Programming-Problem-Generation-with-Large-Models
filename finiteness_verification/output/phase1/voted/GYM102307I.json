@@ -2,14 +2,14 @@
   "problem_id": "GYM102307I",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -39,13 +39,8 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "prefix_sum_constraint",
-        "description": "前缀必须只包含数字字符",
-        "confidence": "1/1"
-      },
-      {
-        "name": "non_empty_subset",
-        "description": "前缀不能为空",
+        "name": "prefix_suffix_elimination",
+        "description": "前缀必须仅由数字组成",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +51,14 @@
         "result": {
           "constraints": [
             {
-              "name": "prefix_sum_constraint",
-              "description": "前缀必须只包含数字字符"
+              "name": "prefix_suffix_elimination",
+              "description": "前缀必须仅由数字组成",
+              "formal": "T[0:i] 为数字，其中 0 ≤ i < |T|"
             },
             {
-              "name": "non_empty_subset",
-              "description": "前缀不能为空"
+              "name": "prefix_suffix_elimination",
+              "description": "前缀不能为空",
+              "formal": "i > 0"
             }
           ]
         }
@@ -84,22 +81,45 @@
     "description": "求满足条件的最长前缀长度"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "双指针从左到右单调前进，寻找最长的数字前缀",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "prefix_decomposability",
+        "description": "前缀可分解性：通过检查每个字符是否为数字来确定前缀的有效性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "双指针左右端点单调前进，寻找最长的数字前缀",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针从左到右单调前进，寻找最长的数字前缀",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "prefix_decomposability",
+              "description": "前缀可分解性：通过检查每个字符是否为数字来确定前缀的有效性",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "双指针左右端点单调前进，寻找最长的数字前缀"
+    ]
   }
 }

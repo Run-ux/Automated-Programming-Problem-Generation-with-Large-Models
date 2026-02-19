@@ -1,0 +1,90 @@
+{
+  "problem_id": "P10238",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（初始状态为一棵树）"
+          },
+          {
+            "name": "acyclicity",
+            "description": "图无环（初始状态为一棵树）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "两点间的距离定义为从一个点到另一个点的简单路径边权和"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每次操作删除一条边，且每条边只会被删除一次"
+          },
+          {
+            "name": "distance_bound",
+            "description": "每次操作后，求每个连通块内距离最远的两个点的距离的最大值"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求每次操作后所有连通块内最大直径的最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个连通块内的最远距离可以通过其子树的最远距离计算得出",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：每次删除一条边后，原树被分成两个独立的子树，每个子树可以独立求解",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在处理删除操作时，可以按照某种顺序（如深度优先搜索）遍历树，保证每个子问题的依赖关系得到满足",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

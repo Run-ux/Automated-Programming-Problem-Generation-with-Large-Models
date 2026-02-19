@@ -1,0 +1,134 @@
+{
+  "problem_id": "P2438",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "state_transition",
+        "description": "状态转移约束：只有在前 k-1 个环都已拆开的情况下，才能对第 k 个环进行操作（连接或拆开）。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制：计算拆除拜特链上全部环的最少操作次数。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "fixed_initial_placement",
+        "description": "初始状态约束：第 1 号环总能进行连接或拆开。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "state_transition",
+              "description": "状态转移约束：只有在前 k-1 个环都已拆开的情况下，才能对第 k 个环进行操作（连接或拆开）。",
+              "formal": "若 ∀i < k, 环 i 已拆开，则可以对环 k 进行操作"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制：计算拆除拜特链上全部环的最少操作次数。",
+              "formal": "minimize(操作次数)"
+            },
+            {
+              "name": "fixed_initial_placement",
+              "description": "初始状态约束：第 1 号环总能进行连接或拆开。",
+              "formal": "环 1 总是可以操作"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求解完成特定操作序列所需的最少步骤数"
+        }
+      }
+    ],
+    "description": "求解完成特定操作序列所需的最少步骤数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，拆除第k个环的最少操作次数依赖于前k-1个环的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：当前环的状态（连接或未连接）决定了下一个环的操作方式。如果当前环已连接，则可以进行拆开或跳过；如果当前环未连接，则必须先连接再拆开。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，拆除第k个环的最少操作次数依赖于前k-1个环的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：当前环的状态（连接或未连接）决定了下一个环的操作方式。如果当前环已连接，则可以进行拆开或跳过；如果当前环未连接，则必须先连接再拆开。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

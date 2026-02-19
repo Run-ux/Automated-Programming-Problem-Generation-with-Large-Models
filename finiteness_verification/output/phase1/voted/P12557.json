@@ -1,0 +1,140 @@
+{
+  "problem_id": "P12557",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 300000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 300000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "cyclic_shift_constraint",
+        "description": "元素按环形排列，每个元素的下一个元素是其右侧的元素（最后一个元素的下一个元素是第一个元素）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "球在环形排列中传递，每次传递的距离由给定数组 k 决定，传递次数无限",
+        "confidence": "1/1"
+      },
+      {
+        "name": "attribute_constraint",
+        "description": "游戏组合的强度定义为所有曾经持有球的玩家中技能等级的最小值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "accumulated_sum_constraint",
+        "description": "对于每个 i 从 0 到 q-1，计算由数组 [a_0, a_1, ..., a_i] 定义的游戏组合的强度",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "cyclic_shift_constraint",
+              "description": "元素按环形排列，每个元素的下一个元素是其右侧的元素（最后一个元素的下一个元素是第一个元素）"
+            },
+            {
+              "name": "path_constraint",
+              "description": "球在环形排列中传递，每次传递的距离由给定数组 k 决定，传递次数无限"
+            },
+            {
+              "name": "attribute_constraint",
+              "description": "游戏组合的强度定义为所有曾经持有球的玩家中技能等级的最小值"
+            },
+            {
+              "name": "accumulated_sum_constraint",
+              "description": "对于每个 i 从 0 到 q-1，计算由数组 [a_0, a_1, ..., a_i] 定义的游戏组合的强度"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "max_min",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "max_min",
+          "description": "最大化在给定传递规则下，所有经过的节点中最小的权值"
+        }
+      }
+    ],
+    "description": "最大化在给定传递规则下，所有经过的节点中最小的权值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "cycle_invariant",
+        "description": "环不变量：在球传递过程中，所有参与传递的玩家形成一个或多个环，每个环内的玩家技能值决定了组合强度",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前游戏组合的最小技能值由已有的传递路径决定，新增的传递路径不会改变之前的最小技能值",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "cycle_invariant",
+              "description": "环不变量：在球传递过程中，所有参与传递的玩家形成一个或多个环，每个环内的玩家技能值决定了组合强度",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：当前游戏组合的最小技能值由已有的传递路径决定，新增的传递路径不会改变之前的最小技能值",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

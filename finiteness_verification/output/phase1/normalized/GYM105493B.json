@@ -1,0 +1,87 @@
+{
+  "problem_id": "GYM105493B",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 5000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "non_negative_prefix_sum",
+            "description": "序列中的所有值必须非负（教授的想象力水平不能为负）",
+            "formal": "∀i, f_i ≥ 0"
+          },
+          {
+            "name": "maximum_value_constraint",
+            "description": "找到一个使得反应序列成立的最小最大值（即最小化 max(p_i)）",
+            "formal": "minimize(max(p_i)) subject to the given reactions r_i"
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移约束：根据反应序列更新教授的想象力水平，相信时取最大值，不相信时减去失望度",
+            "formal": "f_i = \n  max(f_{i-1}, p_i) if r_i = T\n  f_{i-1} - max(d, p_i - f_{i-1} - c) if r_i = F"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "在满足给定条件的情况下，最小化构造序列中的最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前状态的更新依赖于前一个状态和当前输入，且满足非负约束",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：教授的想象力水平在相信假设时单调不减，在不相信假设时可能减少但受参数限制",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最终的解由每个假设的最小可能性指数构成，且这些指数满足给定的反应序列",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

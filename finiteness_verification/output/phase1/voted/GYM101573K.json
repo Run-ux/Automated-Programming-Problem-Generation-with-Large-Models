@@ -2,14 +2,14 @@
   "problem_id": "GYM101573K",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 250000
@@ -19,7 +19,7 @@
             "max": 1
           },
           "properties": {
-            "ordered": false
+            "ordered": true
           }
         }
       }
@@ -33,24 +33,29 @@
       "max": 1
     },
     "properties": {
-      "ordered": false
+      "ordered": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "binary_edge_weight",
+        "name": "binary_matrix_constraint",
         "description": "数组中的每个元素只能是 0 或 1",
         "confidence": "1/1"
       },
       {
-        "name": "weight_adjustment",
-        "description": "支持区间更新操作，将指定区间的元素值进行翻转（0 变 1，1 变 0）",
+        "name": "window_constraint",
+        "description": "查询操作必须在指定的区间 [l, r] 内进行",
         "confidence": "1/1"
       },
       {
-        "name": "query_range_validity",
-        "description": "支持区间查询操作，计算指定区间内所有元素的异或和",
+        "name": "transformation",
+        "description": "更新操作必须在指定的区间 [l, r] 内进行",
+        "confidence": "1/1"
+      },
+      {
+        "name": "query_limit",
+        "description": "查询类型 t 必须为 1（更新）或 2（求和）",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +66,20 @@
         "result": {
           "constraints": [
             {
-              "name": "binary_edge_weight",
+              "name": "binary_matrix_constraint",
               "description": "数组中的每个元素只能是 0 或 1"
             },
             {
-              "name": "weight_adjustment",
-              "description": "支持区间更新操作，将指定区间的元素值进行翻转（0 变 1，1 变 0）"
+              "name": "window_constraint",
+              "description": "查询操作必须在指定的区间 [l, r] 内进行"
             },
             {
-              "name": "query_range_validity",
-              "description": "支持区间查询操作，计算指定区间内所有元素的异或和"
+              "name": "transformation",
+              "description": "更新操作必须在指定的区间 [l, r] 内进行"
+            },
+            {
+              "name": "query_limit",
+              "description": "查询类型 t 必须为 1（更新）或 2（求和）"
             }
           ]
         }
@@ -93,21 +102,39 @@
     "description": "求区间内元素的异或和"
   },
   "invariant": {
-    "name": "interval_mergeable",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：区间的和可以通过端点的前缀和差值计算",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：区间信息可以通过子区间合并得到",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间信息可通过端点差值计算，支持区间更新和查询的高效合并",
-          "properties": {
-            "prefix_sum": true
-          }
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：区间的和可以通过端点的前缀和差值计算",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：区间信息可以通过子区间合并得到",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "区间信息可通过端点差值计算，支持区间更新和查询的高效合并"
+    ]
   }
 }

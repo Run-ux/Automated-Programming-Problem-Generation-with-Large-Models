@@ -1,0 +1,93 @@
+{
+  "problem_id": "P9387",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 50000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "partition",
+            "description": "将一个数组分成左中右三段，其中每段必须有整数块，中间一段不能为空，左右两段可以为空"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每次操作只能选择一条巧克力进行分割，并且分割后的中间段被移除"
+          },
+          {
+            "name": "state_transition",
+            "description": "游戏状态由当前剩余的巧克力块数决定，每次操作后状态发生变化"
+          },
+          {
+            "name": "turn_based",
+            "description": "游戏双方轮流操作，先手方为小 I，后手方为小 J"
+          },
+          {
+            "name": "optimal_play",
+            "description": "小 J 每次操作都是最优的，小 I 在第一次随机操作之后也是最优的"
+          },
+          {
+            "name": "query_limit",
+            "description": "对于每组测试数据，需要计算能使小 I 胜利的第一次操作数对 (10^9+7) 取模的结果"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求在第一次操作中，能够使先手玩家获胜的操作数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：游戏的胜负状态可以通过子问题的胜负状态来确定，即当前局面的最优解依赖于后续局面的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次操作后，巧克力的状态会转移到一个新的状态，并且这种转移是确定性的。每个状态的胜负情况只取决于该状态下所有可能的操作结果。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：对于某些巧克力条，将其分成左右对称的三段（例如 (a, b, a)）时，操作的结果是对称的，可以简化分析。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

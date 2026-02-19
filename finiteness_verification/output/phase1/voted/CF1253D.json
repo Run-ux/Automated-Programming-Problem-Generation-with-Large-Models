@@ -1,0 +1,116 @@
+{
+  "problem_id": "CF1253D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 3,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 200000
+          },
+          "properties": {
+            "connected": false,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 200000
+    },
+    "properties": {
+      "connected": false,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "如果从节点 l 可以通过边到达节点 r (l < r)，则必须能够到达区间 [l+1, r-1] 内的所有节点",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "如果从节点 l 可以通过边到达节点 r (l < r)，则必须能够到达区间 [l+1, r-1] 内的所有节点",
+              "formal": "∀ l, r (l < r), if path(l, r) exists, then ∀ k (l < k < r), path(l, k) and path(k, r) must exist"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "最小化需要添加的边数以满足特定连通性条件"
+        }
+      }
+    ],
+    "description": "最小化需要添加的边数以满足特定连通性条件"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在处理节点时，如果从节点 l 可以到达节点 r，则必须先处理所有中间节点 (l+1), (l+2), ..., (r-1)。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构建。具体来说，为了使图和谐，需要添加的最少边数可以通过解决子区间 [l, r] 的问题来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在处理节点时，如果从节点 l 可以到达节点 r，则必须先处理所有中间节点 (l+1), (l+2), ..., (r-1)。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构建。具体来说，为了使图和谐，需要添加的最少边数可以通过解决子区间 [l, r] 的问题来确定。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

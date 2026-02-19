@@ -1,0 +1,89 @@
+{
+  "problem_id": "GYM106252E",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 10000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "任务必须按顺序完成，即只有在前一个任务完成后，下一个任务才能激活。",
+            "formal": "For all i, quest a_i can only be completed after quest a_{i-1} is completed."
+          },
+          {
+            "name": "subset_constraint",
+            "description": "每次操作后手牌数量保持不变，即每次从手牌中选择一张卡牌放置到牌堆底部，并从牌堆顶部抽取一张卡牌。",
+            "formal": "After each turn, the hand size remains n."
+          },
+          {
+            "name": "operation_limit",
+            "description": "每个任务只能在其激活后通过播放指定的卡牌来完成。",
+            "formal": "Quest a_i can only be completed by playing card a_i after it becomes active."
+          },
+          {
+            "name": "state_transition",
+            "description": "策略的选择依赖于当前可观测的历史信息，相同的已知信息会确定性地导致相同的选择。",
+            "formal": "The card chosen at each turn depends only on the observable history and identical known information deterministically yields the same chosen card."
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_probability",
+        "description": "最小化完成所有任务所需的期望步数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即完成当前任务所需的最小期望步数依赖于之前任务的完成情况。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在每一步操作中，从一个状态转移到另一个状态的过程是确定性的，并且只依赖于当前的状态信息（手牌、已知的卡牌位置和已完成的任务）。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子问题的解决过程独立于其他子问题，即完成某个任务时，只需要考虑当前任务及其之前的任务，而不需要考虑之后的任务。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

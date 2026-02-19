@@ -1,0 +1,79 @@
+{
+  "problem_id": "P7244",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "partition",
+            "description": "序列必须被划分为恰好 k 个连续且非空的子序列（章节）",
+            "formal": "将序列 a 划分为 k 个子序列，每个子序列 [l_i, r_i] 满足 l_i <= r_i 且所有子序列覆盖整个序列"
+          },
+          {
+            "name": "maximum_value_constraint",
+            "description": "每个子序列的最大值作为该子序列的立意值",
+            "formal": "b_i = max(a[l_i : r_i])"
+          },
+          {
+            "name": "gcd_constraint",
+            "description": "最大化所有子序列立意值的最大公约数",
+            "formal": "最大化 gcd(b_1, b_2, ..., b_k)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化划分后的各段最大值的最大公约数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即每个章节的最大值的选择依赖于其子区间的最大值。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：在求解过程中，可以通过合并子区间的最大值来得到更大区间的最大值。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

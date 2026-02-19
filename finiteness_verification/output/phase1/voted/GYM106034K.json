@@ -2,14 +2,14 @@
   "problem_id": "GYM106034K",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "unknown_type",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "unknown_type",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1
@@ -35,18 +35,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "recursive_sequence_constraint",
-        "description": "序列中的每个元素由前三个元素的线性组合决定，具体为 a_i = (a_{i-1} + 2*a_{i-2} + 3*a_{i-3}) % mod",
+        "name": "recurrence_relation",
+        "description": "序列的每个元素由前三个元素通过特定公式递推生成（a_i = (a_{i-1} + 2*a_{i-2} + 3*a_{i-3}) % mod）",
         "confidence": "1/1"
       },
       {
-        "name": "initial_state_connectivity",
-        "description": "序列的初始条件为 a_1 = 1, a_2 = 1, a_3 = 2",
+        "name": "existence_requirement",
+        "description": "序列的初始条件为 a_1=1, a_2=1, a_3=2",
         "confidence": "1/1"
       },
       {
-        "name": "modulo_output_constraint",
-        "description": "所有计算结果需要对 mod 取模，其中 mod = 10^9 + 7",
+        "name": "modular_arithmetic",
+        "description": "所有计算结果取模，模数为 10^9+7",
         "confidence": "1/1"
       }
     ],
@@ -57,19 +57,19 @@
         "result": {
           "constraints": [
             {
-              "name": "recursive_sequence_constraint",
-              "description": "序列中的每个元素由前三个元素的线性组合决定，具体为 a_i = (a_{i-1} + 2*a_{i-2} + 3*a_{i-3}) % mod",
+              "name": "recurrence_relation",
+              "description": "序列的每个元素由前三个元素通过特定公式递推生成（a_i = (a_{i-1} + 2*a_{i-2} + 3*a_{i-3}) % mod）",
               "formal": "a_i = (a_{i-1} + 2*a_{i-2} + 3*a_{i-3}) % mod"
             },
             {
-              "name": "initial_state_connectivity",
-              "description": "序列的初始条件为 a_1 = 1, a_2 = 1, a_3 = 2",
+              "name": "existence_requirement",
+              "description": "序列的初始条件为 a_1=1, a_2=1, a_3=2",
               "formal": "a_1 = 1, a_2 = 1, a_3 = 2"
             },
             {
-              "name": "modulo_output_constraint",
-              "description": "所有计算结果需要对 mod 取模，其中 mod = 10^9 + 7",
-              "formal": "result = result % (10^9 + 7)"
+              "name": "modular_arithmetic",
+              "description": "所有计算结果取模，模数为 10^9+7",
+              "formal": "result = value % (10^9 + 7)"
             }
           ]
         }
@@ -77,36 +77,69 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造给定位置的序列值"
+          "type": "construction",
+          "description": "构造并输出给定位置的序列值"
         }
       }
     ],
-    "description": "构造给定位置的序列值"
+    "description": "构造并输出给定位置的序列值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前状态的值可以通过前几个状态的值计算得出，满足动态规划的递推关系",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个状态的计算依赖于固定的前几个状态，且状态转移方程在整个过程中保持一致",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "modular_invariance",
+        "description": "模运算不变量：所有计算结果均在模 $10^9+7$ 的意义下进行，保证了数值不会溢出且结果唯一",
+        "confidence": "1/1",
+        "properties": {
+          "mod_value": 1000000007
+        }
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "状态依赖：当前状态仅由有限个前序状态决定，满足线性递推关系",
-          "properties": {
-            "dependency_depth": 3
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：当前状态的值可以通过前几个状态的值计算得出，满足动态规划的递推关系",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个状态的计算依赖于固定的前几个状态，且状态转移方程在整个过程中保持一致",
+              "properties": {}
+            },
+            {
+              "name": "modular_invariance",
+              "description": "模运算不变量：所有计算结果均在模 $10^9+7$ 的意义下进行，保证了数值不会溢出且结果唯一",
+              "properties": {
+                "mod_value": 1000000007
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "状态依赖：当前状态仅由有限个前序状态决定，满足线性递推关系"
+    ]
   }
 }

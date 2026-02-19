@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200
@@ -28,9 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "non_decreasing_sequence",
-            "description": "序列中最大严格递增子数组的长度恰好为 K",
-            "formal": "max { len(A[i:j]) | A[i:j] is strictly increasing } = K"
+            "name": "subsequence_constraint",
+            "description": "序列中存在一个长度恰好为 K 的递增子序列",
+            "formal": "∃ subarray A[l:r] such that A[l:r] is strictly increasing and r - l + 1 = K"
+          },
+          {
+            "name": "longest_increasing_subsequence_constraint",
+            "description": "序列中所有递增子序列的最大长度不超过 K",
+            "formal": "∀ subarray A[l:r] such that A[l:r] is strictly increasing, r - l + 1 ≤ K"
           }
         ]
       }
@@ -41,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足条件的排列数量"
+        "type": "enumeration",
+        "description": "求满足条件的排列数量"
       }
     }
   ],
@@ -51,9 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解都是独立且最优的",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即长度为N且最大递增子数组长度为K的排列数可以通过长度小于N的子问题的解来计算。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在动态规划过程中，当前状态的值依赖于前一个或多个状态的值，且这种依赖关系在整个算法执行过程中保持一致。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

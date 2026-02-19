@@ -1,0 +1,85 @@
+{
+  "problem_id": "GYM104668E",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "planarity",
+            "description": "图必须是平面的，即边不能相交"
+          },
+          {
+            "name": "connectivity",
+            "description": "图必须连通，即每个节点都能通过边到达其他所有节点"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数为1或2，因为每个单位只能连接到一个或两个其他单位"
+          },
+          {
+            "name": "spanning_constraint",
+            "description": "生成的结构必须是一个生成树，即包含N-1条边且无环"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一个满足给定条件的树连接方案"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的全局最优解可以通过子问题的最优解组合得到，即树的最小生成树可以由其子树的最小生成树构成。",
+            "properties": {}
+          },
+          {
+            "name": "matroid_exchange",
+            "description": "拟阵交换性：在构建树的边集时，可以通过贪心选择来保证最终形成的图是连通且无环的，满足拟阵的独立性。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在构建树的过程中，每个节点的连接顺序满足DAG上的顺序依赖关系，确保了不会形成环。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

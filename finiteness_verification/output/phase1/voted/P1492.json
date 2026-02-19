@@ -1,0 +1,120 @@
+{
+  "problem_id": "P1492",
+  "source": "luogu",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 50000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 50000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 50000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 50000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "路径只能向上或向右移动（图的路径约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "report_generation_constraint",
+        "description": "输出结果为后 100 位数字，每行十个数字，不足 100 位时补 0（输出格式约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "路径只能向上或向右移动（图的路径约束）",
+              "formal": "path[i][j] -> path[i-1][j] or path[i][j+1]"
+            },
+            {
+              "name": "report_generation_constraint",
+              "description": "输出结果为后 100 位数字，每行十个数字，不足 100 位时补 0（输出格式约束）",
+              "formal": "output = last_100_digits(result), format: 10x10 digits, pad with 0 if less than 100 digits"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求从起点到终点的所有路径数（结果取模）"
+        }
+      }
+    ],
+    "description": "求从起点到终点的所有路径数（结果取模）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，即从起点到终点的路径数等于从起点到中间点的路径数与从中间点到终点的路径数之积。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：当前状态（位置）的路径数可以由其左侧和下侧的状态（位置）的路径数唯一确定，满足状态转移的一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，即从起点到终点的路径数等于从起点到中间点的路径数与从中间点到终点的路径数之积。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：当前状态（位置）的路径数可以由其左侧和下侧的状态（位置）的路径数唯一确定，满足状态转移的一致性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

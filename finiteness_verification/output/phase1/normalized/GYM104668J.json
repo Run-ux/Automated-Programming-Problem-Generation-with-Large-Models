@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 1,
           "max": 1000
@@ -26,16 +26,12 @@
       "result": {
         "constraints": [
           {
-            "name": "constant_submatrix",
-            "description": "每个三角形内的所有单元格必须包含相同的字符"
-          },
-          {
-            "name": "minimum_element_count_constraint",
-            "description": "每个三角形至少包含三个单元格"
-          },
-          {
             "name": "geometric_shape_constraint",
-            "description": "三角形必须是从一个正方形区域中移除一条对角线上的所有单元格后形成的形状，对角线可以是主对角线或反对角线"
+            "description": "形状约束：每个有效三角形必须是从一个正方形区域中移除一条对角线上的所有单元格后形成的，且至少包含三个单元格"
+          },
+          {
+            "name": "budget_uniformity_constraint",
+            "description": "均匀性约束：每个有效三角形中的所有单元格必须包含相同的字符"
           }
         ]
       }
@@ -47,7 +43,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计满足条件的子图形数量"
+        "description": "求满足条件的子图形数量"
       }
     }
   ],
@@ -56,9 +52,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的解是独立且最优的",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：大问题的解可以通过子问题的解来构建，即每个有效三角形可以由更小的有效三角形扩展而来",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：通过合并子区间的统计信息（如相同字符的连续段）来计算整个区间的有效三角形数量",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

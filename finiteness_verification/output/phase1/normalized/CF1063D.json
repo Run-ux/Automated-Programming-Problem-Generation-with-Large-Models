@@ -1,0 +1,86 @@
+{
+  "problem_id": "CF1063D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 4,
+          "max": 4
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "frequency_bound",
+            "description": "每个节点最多访问一次（糖果盒在传递过程中每个朋友最多只能拿一次糖果）",
+            "formal": "每个朋友最多访问一次"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "选取元素权重和不超过容量上限（糖果盒中的糖果总数不能超过初始糖果数 k）",
+            "formal": "∑(candies taken by each friend) ≤ k"
+          },
+          {
+            "name": "range_bound",
+            "description": "区间内不同元素数量不超过 K（从 l 到 r 的朋友中，甜食爱好者数量的最大值）",
+            "formal": "max(sweet_tooth_count[l:r]) ≤ K"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化满足条件的元素数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "糖果分配过程中，剩余糖果数量单调递减直至为零",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解来构建，即在确定了某个位置的朋友是否是甜食爱好者后，可以基于此信息求解剩余部分的最优解",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "糖果传递过程形成一个循环结构，且该循环中每个朋友的行为（取糖）具有周期性不变量",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

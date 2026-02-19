@@ -1,0 +1,136 @@
+{
+  "problem_id": "GYM104013L",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 3,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 10000
+          },
+          "properties": {
+            "ordered": false,
+            "distinct": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 10000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 10000
+    },
+    "properties": {
+      "ordered": false,
+      "distinct": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "query_limit",
+        "description": "查询次数限制（最多两次）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "permutation_constraint",
+        "description": "输入和输出必须是排列（即长度为 n 的序列，包含 1 到 n 的所有整数且每个整数恰好出现一次）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation",
+        "description": "设备返回的排列是输入排列与未知排列及其逆排列的复合结果",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "query_limit",
+              "description": "查询次数限制（最多两次）",
+              "formal": "queries <= 2"
+            },
+            {
+              "name": "permutation_constraint",
+              "description": "输入和输出必须是排列（即长度为 n 的序列，包含 1 到 n 的所有整数且每个整数恰好出现一次）",
+              "formal": "f: permutation of size n, π: permutation of size n"
+            },
+            {
+              "name": "transformation",
+              "description": "设备返回的排列是输入排列与未知排列及其逆排列的复合结果",
+              "formal": "output = π^(-1) ∘ f ∘ π"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造一个满足给定条件的排列"
+        }
+      }
+    ],
+    "description": "构造一个满足给定条件的排列"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "matroid_exchange",
+        "description": "拟阵交换性：通过两次查询，可以利用置换的性质恢复原始排列。第一次查询用于获取部分信息，第二次查询基于第一次的结果进行优化选择。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每次查询后，根据返回的置换结果更新当前对原始排列的估计。这种状态转移保持了一致性和正确性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "matroid_exchange",
+              "description": "拟阵交换性：通过两次查询，可以利用置换的性质恢复原始排列。第一次查询用于获取部分信息，第二次查询基于第一次的结果进行优化选择。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次查询后，根据返回的置换结果更新当前对原始排列的估计。这种状态转移保持了一致性和正确性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

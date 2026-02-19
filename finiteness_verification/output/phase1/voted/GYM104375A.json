@@ -2,14 +2,14 @@
   "problem_id": "GYM104375A",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 10000
@@ -39,13 +39,8 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_element_count_constraint",
-        "description": "计算所有输入字符串经过某种转换后的不同结果数量",
-        "confidence": "1/1"
-      },
-      {
-        "name": "state_transition_constraint",
-        "description": "每个字符串的转换规则是取每个单词的首字母并拼接成新字符串",
+        "name": "distinctness",
+        "description": "生成的别名必须唯一，即每个别名只能出现一次",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +51,8 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_element_count_constraint",
-              "description": "计算所有输入字符串经过某种转换后的不同结果数量",
-              "formal": "count(distinct(transform(S_i)))"
-            },
-            {
-              "name": "state_transition_constraint",
-              "description": "每个字符串的转换规则是取每个单词的首字母并拼接成新字符串",
-              "formal": "transform(S_i) = concat(first_letter(word) for word in S_i)"
+              "name": "distinctness",
+              "description": "生成的别名必须唯一，即每个别名只能出现一次"
             }
           ]
         }
@@ -79,29 +68,46 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "统计满足条件的不同字符串的数量"
+          "description": "求不同字符串的数量"
         }
       }
     ],
-    "description": "统计满足条件的不同字符串的数量"
+    "description": "求不同字符串的数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "modular_invariance",
+        "description": "哈希不变量：每个名字的首字母组合形成的哈希值在处理过程中保持唯一性，确保了NAME的唯一性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "row_distinctness",
+        "description": "集合唯一性：通过将每个NAME插入到一个集合中，集合自动保证了元素的唯一性，从而统计出唯一的NAME数量",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "状态依赖：每个名字的别名计算仅依赖于其自身的单词首字母，且最终统计结果依赖于所有已处理名字的别名集合",
-          "properties": {
-            "current_state_depend_on_input": true,
-            "final_result_depend_on_all_states": true
-          }
+          "invariants": [
+            {
+              "name": "modular_invariance",
+              "description": "哈希不变量：每个名字的首字母组合形成的哈希值在处理过程中保持唯一性，确保了NAME的唯一性",
+              "properties": {}
+            },
+            {
+              "name": "row_distinctness",
+              "description": "集合唯一性：通过将每个NAME插入到一个集合中，集合自动保证了元素的唯一性，从而统计出唯一的NAME数量",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "状态依赖：每个名字的别名计算仅依赖于其自身的单词首字母，且最终统计结果依赖于所有已处理名字的别名集合"
+    ]
   }
 }

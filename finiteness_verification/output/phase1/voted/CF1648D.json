@@ -1,0 +1,155 @@
+{
+  "problem_id": "CF1648D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 500000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500000
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "路径必须从起点 (1, 1) 到终点 (3, n)，且总共需要进行 n + 1 次移动，其中 n - 1 次水平移动和 2 次垂直移动。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "初始时，第一行和第三行的所有单元格是可用的，第二行的所有单元格是不可用的。通过使用特殊优惠，可以将第二行的某些单元格标记为可用。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "接受每个特殊优惠会减少 Dima 的分数，具体减少的分数由该优惠的成本决定。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distance_bound",
+        "description": "Dima 只能向下或向右移动，即只能增加当前行或列的索引。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "路径必须从起点 (1, 1) 到终点 (3, n)，且总共需要进行 n + 1 次移动，其中 n - 1 次水平移动和 2 次垂直移动。",
+              "formal": "Path from (1, 1) to (3, n) with exactly n-1 horizontal and 2 vertical moves."
+            },
+            {
+              "name": "coverage",
+              "description": "初始时，第一行和第三行的所有单元格是可用的，第二行的所有单元格是不可用的。通过使用特殊优惠，可以将第二行的某些单元格标记为可用。",
+              "formal": "Initially, cells in the first and third rows are available, and cells in the second row are unavailable. Special offers can make cells in the second row available."
+            },
+            {
+              "name": "optimization_objective",
+              "description": "接受每个特殊优惠会减少 Dima 的分数，具体减少的分数由该优惠的成本决定。",
+              "formal": "Accepting a special offer reduces Dima's score by the cost of the offer."
+            },
+            {
+              "name": "distance_bound",
+              "description": "Dima 只能向下或向右移动，即只能增加当前行或列的索引。",
+              "formal": "Dima can only move down or right, increasing the current row or column index by 1."
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化路径上的权值和"
+        }
+      }
+    ],
+    "description": "最大化路径上的权值和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即Dima从起点到终点的最大得分可以由到达每个中间位置的最大得分递推得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：Dima在每一步移动时，其当前位置的状态（包括当前得分和可用路径）可以根据前一步的状态和当前操作（接受特殊优惠或移动）确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：Dima在某个路径上获得的总分值等于该路径上所有单元格分数的累加。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即Dima从起点到终点的最大得分可以由到达每个中间位置的最大得分递推得出。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：Dima在每一步移动时，其当前位置的状态（包括当前得分和可用路径）可以根据前一步的状态和当前操作（接受特殊优惠或移动）确定。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：Dima在某个路径上获得的总分值等于该路径上所有单元格分数的累加。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

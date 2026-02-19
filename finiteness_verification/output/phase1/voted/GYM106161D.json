@@ -1,0 +1,176 @@
+{
+  "problem_id": "GYM106161D",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 2000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 200
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 200
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "sum_constraint",
+        "description": "选取元素的权重和不超过容量上限（总分不超过200）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "选取的元素必须是给定集合的子集（球的颜色和数量符合规则）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移约束（每次操作后，当前玩家的得分增加或切换到对手）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制（输出字符串长度不超过100）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "sum_constraint",
+              "description": "选取元素的权重和不超过容量上限（总分不超过200）",
+              "formal": "a + b <= 200"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "选取的元素必须是给定集合的子集（球的颜色和数量符合规则）",
+              "formal": "红球数量 + 彩色球数量 = n, 其中红球数量 ≤ 15, 每种彩色球数量 ≤ 1"
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移约束（每次操作后，当前玩家的得分增加或切换到对手）",
+              "formal": "如果当前玩家成功击球，则得分增加；否则，切换到对手"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制（输出字符串长度不超过100）",
+              "formal": "len(output_string) <= 100"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造一个满足给定条件的序列"
+        }
+      }
+    ],
+    "description": "构造一个满足给定条件的序列"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：当前玩家的得分和剩余球的数量决定了下一步的状态，且状态转移是确定性的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：整个游戏过程可以分解为多个子问题，每个子问题的解（即每一步的决策）都是基于当前状态的最优选择。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着游戏进行，剩余球的数量单调减少，玩家的得分单调增加。",
+        "confidence": "1/1",
+        "properties": {
+          "ball_count_monotonic": true,
+          "score_monotonic": true
+        }
+      },
+      {
+        "name": "game_state_symmetry",
+        "description": "回合制不变量：游戏按照回合进行，每个回合由一个玩家操作，且每个回合的操作结果影响下一个回合的状态。",
+        "confidence": "1/1",
+        "properties": {
+          "alternating_turns": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：当前玩家的得分和剩余球的数量决定了下一步的状态，且状态转移是确定性的。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：整个游戏过程可以分解为多个子问题，每个子问题的解（即每一步的决策）都是基于当前状态的最优选择。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着游戏进行，剩余球的数量单调减少，玩家的得分单调增加。",
+              "properties": {
+                "ball_count_monotonic": true,
+                "score_monotonic": true
+              }
+            },
+            {
+              "name": "game_state_symmetry",
+              "description": "回合制不变量：游戏按照回合进行，每个回合由一个玩家操作，且每个回合的操作结果影响下一个回合的状态。",
+              "properties": {
+                "alternating_turns": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

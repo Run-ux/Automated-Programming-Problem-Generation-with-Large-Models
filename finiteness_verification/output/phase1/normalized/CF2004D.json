@@ -1,0 +1,79 @@
+{
+  "problem_id": "CF2004D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "weighted": true,
+          "connected": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "bipartiteness",
+            "description": "图是二分图（每个节点有两种颜色的门户，且只能通过相同颜色的门户移动）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径约束（从城市 x 到城市 y 的最小代价路径）",
+            "formal": "min_cost(x, y) = min(|i - j|) for all valid paths from x to y"
+          },
+          {
+            "name": "degree_bound",
+            "description": "度数约束（每个节点有且仅有两个不同颜色的门户）",
+            "formal": "deg(v) = 2 for all v in V"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求两点间最短路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个城市到另一个城市的最小成本可以通过中间城市的最小成本来计算，满足最优子结构。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个子问题的最优解可以组合成原问题的最优解。具体来说，从城市x到城市y的最小成本可以通过找到所有颜色相同的中间城市z，并计算从x到z和从z到y的成本之和来确定。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

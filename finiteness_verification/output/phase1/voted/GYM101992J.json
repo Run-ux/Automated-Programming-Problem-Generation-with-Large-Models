@@ -2,14 +2,14 @@
   "problem_id": "GYM101992J",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 100000
@@ -35,18 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "binary_string_constraint",
-        "description": "生成的二进制字符串长度为 N",
+        "name": "binary_string",
+        "description": "生成的字符串必须是二进制字符串（只包含0和1）",
         "confidence": "1/1"
       },
       {
-        "name": "substring_distinctness_constraint",
-        "description": "二进制字符串中所有长度为 2 的子串互不相同",
-        "confidence": "1/1"
-      },
-      {
-        "name": "substring_balance_constraint",
-        "description": "二进制字符串中所有长度为 3 的子串中 0 和 1 的数量差不超过 1",
+        "name": "suffix_length_constraint",
+        "description": "生成的二进制字符串长度必须为N",
         "confidence": "1/1"
       }
     ],
@@ -57,16 +52,12 @@
         "result": {
           "constraints": [
             {
-              "name": "binary_string_constraint",
-              "description": "生成的二进制字符串长度为 N"
+              "name": "binary_string",
+              "description": "生成的字符串必须是二进制字符串（只包含0和1）"
             },
             {
-              "name": "substring_distinctness_constraint",
-              "description": "二进制字符串中所有长度为 2 的子串互不相同"
-            },
-            {
-              "name": "substring_balance_constraint",
-              "description": "二进制字符串中所有长度为 3 的子串中 0 和 1 的数量差不超过 1"
+              "name": "suffix_length_constraint",
+              "description": "生成的二进制字符串长度必须为N"
             }
           ]
         }
@@ -74,14 +65,14 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
+          "type": "construction",
           "description": "构造一个满足给定条件的二进制字符串"
         }
       }
@@ -89,19 +80,39 @@
     "description": "构造一个满足给定条件的二进制字符串"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：通过局部最优选择构造满足条件的二进制字符串，每一步的选择都是当前情况下最优的",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：二进制字符串的某些性质可以通过区间的和来计算，例如连续1或0的数量",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "局部最优选择导致全局最优，每步选择后不需要回溯",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：通过局部最优选择构造满足条件的二进制字符串，每一步的选择都是当前情况下最优的",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：二进制字符串的某些性质可以通过区间的和来计算，例如连续1或0的数量",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "局部最优选择导致全局最优，每步选择后不需要回溯"
+    ]
   }
 }

@@ -1,0 +1,76 @@
+{
+  "problem_id": "P4973",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "alphabet_constraint",
+            "description": "输入字符串中的字符必须是特定的ASCII可见字符集合中的一个，不包括ASCII代码小于等于48的字符"
+          },
+          {
+            "name": "constant_value_constraint",
+            "description": "进制基数X必须等于字符串长度减1"
+          },
+          {
+            "name": "transformation_rule",
+            "description": "数字的十进制表示通过特定公式计算得出：s = ∏(i=0 to n-1) (X^i * (f(s_i) - f('0'))), 其中f('x')表示字符x的ASCII代码值"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造并输出每个给定进制表示的数转换为十进制后的长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过位数和进制计算的数值可以分解为各个位数的贡献之和，每个位数的贡献是该位字符的ASCII值减去'0'的ASCII值再乘以进制的幂次。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个位数的贡献独立计算，最终结果是所有位数贡献的总和。这种分解方式保证了每个子问题（即每个位数的贡献）的解可以合并成原问题的解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "problem_id": "GYM106144L",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 300000
+        },
+        "properties": {
+          "weighted": false,
+          "directed": false,
+          "self_loops": true,
+          "multiple_edges": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数可以任意增加，但计算时需要考虑删除边后的最大数量"
+          },
+          {
+            "name": "connectivity",
+            "description": "图在处理查询过程中可能包含多个连通分量，但不强制要求整个图连通"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每次查询后都需要计算可删除的最大边数，但实际操作中并不删除这些边"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足条件的最大可删除边数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：在处理每个查询时，当前图的连通性状态决定了可以删除的最大边数，且该状态可以通过之前的查询结果递推得到。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次查询后，图的连通性状态（即连通块的数量和大小）会根据新增或删除的边进行更新，并且这种更新是确定性的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

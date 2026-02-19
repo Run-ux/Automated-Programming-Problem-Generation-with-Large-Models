@@ -2,14 +2,14 @@
   "problem_id": "GYM105535E",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 2,
             "max": 100000
@@ -39,23 +39,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "cyclic_path_length_constraint",
-        "description": "路径必须从指定的起始节点开始并返回该节点（回路约束）",
+        "name": "connectivity",
+        "description": "图必须连通，从起点可以到达所有其他节点",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_positions",
-        "description": "路径中每个节点的取值必须唯一（无重复元素约束）",
+        "name": "distinctness",
+        "description": "路径中不能重复访问同一个节点（即每个节点最多访问一次）",
         "confidence": "1/1"
       },
       {
-        "name": "graph_connectivity",
-        "description": "图必须连通，即从起始节点可以到达所有其他节点（连通性约束）",
+        "name": "path_constraint",
+        "description": "路径必须从起点开始并在起点结束",
         "confidence": "1/1"
       },
       {
-        "name": "continuous_path_constraint",
-        "description": "路径长度至少为2，即至少经过一个边（非空路径约束）",
+        "name": "operation_limit",
+        "description": "路径长度必须等于总节点数加一（即路径包含所有节点且返回起点）",
         "confidence": "1/1"
       }
     ],
@@ -66,20 +66,20 @@
         "result": {
           "constraints": [
             {
-              "name": "cyclic_path_length_constraint",
-              "description": "路径必须从指定的起始节点开始并返回该节点（回路约束）"
+              "name": "connectivity",
+              "description": "图必须连通，从起点可以到达所有其他节点"
             },
             {
-              "name": "distinct_positions",
-              "description": "路径中每个节点的取值必须唯一（无重复元素约束）"
+              "name": "distinctness",
+              "description": "路径中不能重复访问同一个节点（即每个节点最多访问一次）"
             },
             {
-              "name": "graph_connectivity",
-              "description": "图必须连通，即从起始节点可以到达所有其他节点（连通性约束）"
+              "name": "path_constraint",
+              "description": "路径必须从起点开始并在起点结束"
             },
             {
-              "name": "continuous_path_constraint",
-              "description": "路径长度至少为2，即至少经过一个边（非空路径约束）"
+              "name": "operation_limit",
+              "description": "路径长度必须等于总节点数加一（即路径包含所有节点且返回起点）"
             }
           ]
         }
@@ -87,34 +87,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的路径，使得从起点出发并返回起点的过程中每个节点恰好访问一次"
+          "type": "feasibility",
+          "description": "判断是否存在一条从起点出发并返回起点的路径，使得路径上每个节点恰好访问一次"
         }
       }
     ],
-    "description": "构造一个满足条件的路径，使得从起点出发并返回起点的过程中每个节点恰好访问一次"
+    "description": "判断是否存在一条从起点出发并返回起点的路径，使得路径上每个节点恰好访问一次"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在有向无环图（DAG）中，节点的访问顺序满足拓扑序，确保每个节点在其所有前驱节点被访问后才被访问。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在树形结构中，每个子树的遍历和处理是独立的，子树之间的结果不会相互影响。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从根节点出发，通过递归或迭代的方式遍历整个树，每个节点的状态转移依赖于其父节点的状态。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个子树的遍历路径可以独立求解并合并成全局解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在有向无环图（DAG）中，节点的访问顺序满足拓扑序，确保每个节点在其所有前驱节点被访问后才被访问。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在树形结构中，每个子树的遍历和处理是独立的，子树之间的结果不会相互影响。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从根节点出发，通过递归或迭代的方式遍历整个树，每个节点的状态转移依赖于其父节点的状态。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个子树的遍历路径可以独立求解并合并成全局解"
+    ]
   }
 }

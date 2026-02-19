@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "matrix",
         "length": {
           "min": 1,
           "max": 100
@@ -15,16 +15,14 @@
           "min": 1,
           "max": 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
         },
-        "properties": {
-          "inferred": true
-        }
+        "properties": {}
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "matrix",
         "length": {
           "min": 1,
           "max": 100
@@ -33,28 +31,13 @@
           "min": 1,
           "max": 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
         },
-        "properties": {
-          "inferred": true
-        }
+        "properties": {}
       }
     },
     {
       "round": 3,
-      "status": "success",
-      "result": {
-        "type": "array",
-        "length": {
-          "min": 1,
-          "max": 100
-        },
-        "value_range": {
-          "min": 1,
-          "max": 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-        },
-        "properties": {
-          "inferred": true
-        }
-      }
+      "status": "failed",
+      "result": {}
     }
   ],
   "core_constraints": [
@@ -64,14 +47,19 @@
       "result": {
         "constraints": [
           {
-            "name": "operation_sequence",
-            "description": "每次操作时，选择一个数x划掉，并任选一个正整数a，在划掉之后需要再写上x-a, x-2a, ..., x-K*a共K个数，且a需满足x-K*a >= 0。若这样的a不存在，则不能划掉这个数。",
-            "formal": "For each operation, choose an integer x and a positive integer a such that x - K * a >= 0. Replace x with x-a, x-2a, ..., x-K*a. If no such a exists, the player cannot perform this operation."
+            "name": "operation_limit",
+            "description": "每次操作只能选择一个数划掉，并生成 K 个新数，且这些新数必须满足 x - K * a >= 0",
+            "formal": "对于每个 x，选择 a 使得 x - K * a >= 0 并生成 {x - a, x - 2a, ..., x - K * a}"
           },
           {
-            "name": "game_termination",
-            "description": "当某个人无法操作时则失败，另一方获得胜利。",
-            "formal": "The game ends when a player cannot make a valid move, and the other player wins."
+            "name": "state_transition",
+            "description": "游戏状态由当前的数列决定，每次操作后状态会更新为新的数列",
+            "formal": "状态 S = {s1, s2, ..., sn}，操作后变为 S' = {s1', s2', ..., sn'}"
+          },
+          {
+            "name": "operation_limit",
+            "description": "当某一方无法进行有效操作时，该方失败，另一方获胜",
+            "formal": "如果不存在合法的 a 使得 x - K * a >= 0，则当前玩家失败"
           }
         ]
       }
@@ -82,14 +70,19 @@
       "result": {
         "constraints": [
           {
-            "name": "operation_sequence",
-            "description": "每次操作时，选择一个数x划掉，并任选一个正整数a，在划掉之后需要再写上x-a, x-2a, ..., x-K*a共K个数，且a需满足x-K*a >= 0。若这样的a不存在，则不能划掉这个数。",
-            "formal": "For each operation, choose an integer x and a positive integer a such that x - K * a >= 0. Replace x with x-a, x-2a, ..., x-K*a. If no such a exists, the number cannot be removed."
+            "name": "operation_limit",
+            "description": "每次操作只能选择一个数划掉，并生成 K 个新数，且这些新数必须满足 x - K * a >= 0",
+            "formal": "对于每个 x，选择 a 使得 x - K * a >= 0 并生成 {x - a, x - 2a, ..., x - K * a}"
           },
           {
-            "name": "game_termination",
-            "description": "当某个人无法进行操作时，该玩家失败，另一方获得胜利。",
-            "formal": "The game ends when a player cannot make a valid move, and that player loses."
+            "name": "state_transition",
+            "description": "游戏状态由当前的数列决定，每次操作后数列发生变化，直到某一方无法操作为止",
+            "formal": "状态 S = {x1, x2, ..., xn}，操作后变为 S' = {x1, x2, ..., x - a, x - 2a, ..., x - K * a, ...}"
+          },
+          {
+            "name": "operation_limit",
+            "description": "当某一方无法进行合法操作时，该方失败，另一方获胜",
+            "formal": "若不存在 a 使得 x - K * a >= 0，则当前玩家失败"
           }
         ]
       }
@@ -100,14 +93,19 @@
       "result": {
         "constraints": [
           {
-            "name": "operation_sequence",
-            "description": "每次操作时，选择一个数x划掉，并任选一个正整数a，在划掉之后需要再写上x-a, x-2a, ..., x-K*a共K个数，且a需满足x-K*a >= 0。若这样的a不存在，则不能划掉这个数。",
-            "formal": "For each operation, choose an integer x and a positive integer a such that x - K * a >= 0. Then, replace x with the sequence x-a, x-2a, ..., x-K*a. If no such a exists, the number cannot be removed."
+            "name": "operation_limit",
+            "description": "每次操作只能选择一个数划掉，并生成 K 个新数，且 a 需满足 x - K * a >= 0",
+            "formal": "对于每个 x，选择 a 使得 x - K * a >= 0，并生成 x - a, x - 2a, ..., x - K * a"
           },
           {
-            "name": "game_termination",
-            "description": "当某个人无法进行有效操作时（即找不到满足条件的a），则该人失败，另一方获胜。",
-            "formal": "The game ends when a player cannot make a valid move (i.e., no a satisfies the condition). The player who cannot move loses, and the other player wins."
+            "name": "state_transition",
+            "description": "游戏状态由当前的数列决定，每次操作后状态会更新为新的数列",
+            "formal": "状态 S = {x1, x2, ..., xn}，操作后变为 S' = {x1, x2, ..., x - a, x - 2a, ..., x - K * a, ...}"
+          },
+          {
+            "name": "operation_limit",
+            "description": "当某一方无法进行有效操作时，该方失败，另一方获胜",
+            "formal": "若不存在 a 使得 x - K * a >= 0，则当前玩家无法操作，游戏结束"
           }
         ]
       }
@@ -118,24 +116,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "decision",
-        "description": "判断先手是否必胜，输出结果为 Preempt.（先手必胜）、Leapfrog.（后手必胜）或 Je suis un imbecile.（两者皆非）"
+        "type": "game_outcome",
+        "description": "判定先手或后手在给定初始状态下的博弈结果"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "decision",
-        "description": "判断先手是否必胜，后手是否必胜，或两者皆非"
+        "type": "game_outcome",
+        "description": "判定先手或后手在给定初始状态下的博弈结果"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "decision",
-        "description": "判断先手是否必胜，后手是否必胜，或两者皆非"
+        "type": "game_outcome",
+        "description": "判定博弈的胜负结果，输出先手胜、后手胜或平局"
       }
     }
   ],
@@ -144,27 +142,69 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "游戏的胜负状态可以通过子问题（即较小的石子堆）的胜负状态来确定，体现了最优子结构的性质。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：游戏状态的转换遵循固定的规则，且每个状态的胜负情况可以通过子状态的胜负情况推导得出。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：游戏的最终胜负结果可以由各个子问题（即每堆石子的状态）的最优解组合而成。",
+            "properties": {}
+          },
+          {
+            "name": "grundy_number_invariance",
+            "description": "Nim 和不变量：在每一步操作后，所有堆的 Nim 和（异或和）保持某种不变性，决定了当前状态的胜负。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "游戏的胜负状态可以通过子问题（即较小规模的游戏）的胜负状态来确定，符合动态规划中的最优子结构特性。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：游戏状态的转移满足博弈论中的状态机模型，每个状态的胜负性可以通过子状态的胜负性确定。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：当前状态的最优解（先手或后手必胜）可以通过其子状态的最优解推导出来。",
+            "properties": {}
+          },
+          {
+            "name": "grundy_number_invariance",
+            "description": "Nim 和不变量：在每一步操作中，所有堆的石子数的 Nim 和（异或和）保持不变，直到某一方无法操作为止。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "游戏的胜负状态可以通过子问题（即较小规模的游戏状态）的胜负状态来确定，符合动态规划中的最优子结构性质。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：游戏的胜负状态可以通过子问题的胜负状态来确定，即每个石子堆的状态可以独立计算，并且整个游戏的状态是这些独立状态的组合。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次操作后，游戏的状态会根据当前选择的石子堆和操作数a进行确定性的转移，新的状态仍然是一个合法的游戏状态。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个石子堆的状态计算是独立的，不受其他石子堆的影响。最终游戏状态由所有石子堆的状态通过某种方式（如异或）组合而成。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

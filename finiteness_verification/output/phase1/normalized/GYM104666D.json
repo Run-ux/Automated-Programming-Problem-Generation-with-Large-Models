@@ -1,0 +1,85 @@
+{
+  "problem_id": "GYM104666D",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "exclusion",
+            "description": "选取的子集不能包含特定元素（即被污染的巧克力块）"
+          },
+          {
+            "name": "partition",
+            "description": "每次操作将当前集合划分为两个子集，并选择其中一个子集进行操作"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每个玩家轮流进行一次操作，直到某一方无法进行有效操作为止"
+          },
+          {
+            "name": "state_transition",
+            "description": "每次操作后，剩余的集合状态必须满足游戏规则，即不能包含被污染的巧克力块"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "game_outcome",
+        "description": "确定先手或后手的最优策略以赢得游戏"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：游戏状态的转移满足一致性和确定性，每次操作后的新状态由当前状态和操作唯一决定",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解可以通过子问题的解合成，即巧克力条的分割与合并操作保持了游戏胜负的性质",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在无环有向图（DAG）上，玩家的操作顺序依赖于当前巧克力条的状态，且每个状态的转移方向受限（仅能通过合法的分割操作进行）",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

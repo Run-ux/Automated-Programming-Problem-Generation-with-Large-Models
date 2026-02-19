@@ -2,14 +2,14 @@
   "problem_id": "CF1794E",
   "source": "codeforces",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 2,
             "max": 200000
@@ -41,18 +41,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_solution_constraint",
-        "description": "每个节点必须被唯一标记，且标记值来自给定列表",
+        "name": "distinctness",
+        "description": "每个顶点的标签必须唯一，不能重复",
         "confidence": "1/1"
       },
       {
-        "name": "path_weight_constraint",
-        "description": "对于每个节点 i，其标记值必须是某个选定节点 x 到 i 的最短路径长度",
+        "name": "connectivity",
+        "description": "图必须是连通的且无环（即为一棵树）",
         "confidence": "1/1"
       },
       {
-        "name": "source_node_fixed",
-        "description": "存在一个或多个节点 x，使得所有节点的标记值满足距离约束",
+        "name": "distance_bound",
+        "description": "对于每个顶点 i，其标签必须等于从某个选定的顶点 x 到 i 的最短路径长度",
         "confidence": "1/1"
       }
     ],
@@ -63,16 +63,16 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_solution_constraint",
-              "description": "每个节点必须被唯一标记，且标记值来自给定列表"
+              "name": "distinctness",
+              "description": "每个顶点的标签必须唯一，不能重复"
             },
             {
-              "name": "path_weight_constraint",
-              "description": "对于每个节点 i，其标记值必须是某个选定节点 x 到 i 的最短路径长度"
+              "name": "connectivity",
+              "description": "图必须是连通的且无环（即为一棵树）"
             },
             {
-              "name": "source_node_fixed",
-              "description": "存在一个或多个节点 x，使得所有节点的标记值满足距离约束"
+              "name": "distance_bound",
+              "description": "对于每个顶点 i，其标签必须等于从某个选定的顶点 x 到 i 的最短路径长度"
             }
           ]
         }
@@ -80,34 +80,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的顶点数量"
+          "type": "feasibility",
+          "description": "判断图中满足特定条件的顶点是否存在，并输出所有满足条件的顶点"
         }
       }
     ],
-    "description": "统计满足条件的顶点数量"
+    "description": "判断图中满足特定条件的顶点是否存在，并输出所有满足条件的顶点"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：树中每个顶点的标签分配问题可以分解为子树中的标签分配问题，且子问题的最优解可以合并为原问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在遍历树的过程中，从一个顶点到其子顶点的状态转移是确定的，且满足一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：树的遍历顺序（如深度优先搜索）保证了处理每个顶点时，其所有子顶点已经处理完毕，从而确保了依赖关系的正确性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个子树的标签分配方案可以独立考虑，并且这些子问题的解可以合并成整个树的解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：树中每个顶点的标签分配问题可以分解为子树中的标签分配问题，且子问题的最优解可以合并为原问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在遍历树的过程中，从一个顶点到其子顶点的状态转移是确定的，且满足一致性。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：树的遍历顺序（如深度优先搜索）保证了处理每个顶点时，其所有子顶点已经处理完毕，从而确保了依赖关系的正确性。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个子树的标签分配方案可以独立考虑，并且这些子问题的解可以合并成整个树的解。"
+    ]
   }
 }

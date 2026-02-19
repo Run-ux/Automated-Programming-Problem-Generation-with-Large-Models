@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 62
@@ -16,7 +16,7 @@
           "max": 122
         },
         "properties": {
-          "ordered": false
+          "inferred": true
         }
       }
     }
@@ -28,12 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "subset_inclusion",
-            "description": "新密码必须是旧密码字符集的子集（生成的新字符串只能包含旧字符串中的字符）"
+            "name": "subset_constraint",
+            "description": "新密码必须是旧密码字符集的子集"
           },
           {
-            "name": "path_length_constraint",
-            "description": "新密码的长度必须等于给定的长度 k（生成的新字符串长度固定为 k）"
+            "name": "suffix_length_constraint",
+            "description": "新密码的长度必须等于给定的 k"
           }
         ]
       }
@@ -44,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足给定长度和字符集约束的新字符串"
+        "type": "construction",
+        "description": "构造一个满足给定长度和字符集约束的新字符串，若无解则输出特定标识"
       }
     }
   ],
@@ -54,9 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "局部最优选择导致全局最优：在生成新密码时，优先使用旧密码中的字符以满足长度要求，并确保字符集的充分利用",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：新密码的生成可以通过选择旧密码中的字符来实现，且每个子问题的最优解可以组合成全局最优解",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，优先选择满足条件的字符，局部最优选择导致全局最优解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

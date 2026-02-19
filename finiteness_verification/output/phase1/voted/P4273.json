@@ -1,0 +1,151 @@
+{
+  "problem_id": "P4273",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": -1000,
+            "max": 1000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": -1000,
+      "max": 1000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "range_bound",
+        "description": "每把自动伞的初始位置和长度必须在马路宽度范围内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distance_bound",
+        "description": "每把自动伞只能在马路边界内往返移动，不能越过边界",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "计算从开始下雨到 T 秒钟后，未被自动伞覆盖的区域的降雨体积",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "range_bound",
+              "description": "每把自动伞的初始位置和长度必须在马路宽度范围内",
+              "formal": "0 <= x < W 且 0 <= l <= W"
+            },
+            {
+              "name": "distance_bound",
+              "description": "每把自动伞只能在马路边界内往返移动，不能越过边界",
+              "formal": "0 <= x + v * t < W 且 0 <= x + v * t + l < W 对于所有 0 <= t <= T"
+            },
+            {
+              "name": "coverage",
+              "description": "计算从开始下雨到 T 秒钟后，未被自动伞覆盖的区域的降雨体积",
+              "formal": "V * (W * T - 被伞覆盖的面积)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "计算给定时间内未被覆盖区域的累积值"
+        }
+      }
+    ],
+    "description": "计算给定时间内未被覆盖区域的累积值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "每个自动伞的移动方向和速度在时间上保持一致，且其覆盖范围随时间单调变化",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "任意时间段内降落在人行横道上的雨水体积可以通过计算每个时间点的降雨量差值累加得到",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "自动伞的状态（位置）随时间的变化遵循固定的规则，即匀速直线往返运动",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "每个自动伞的移动方向和速度在时间上保持一致，且其覆盖范围随时间单调变化",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "任意时间段内降落在人行横道上的雨水体积可以通过计算每个时间点的降雨量差值累加得到",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "自动伞的状态（位置）随时间的变化遵循固定的规则，即匀速直线往返运动",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

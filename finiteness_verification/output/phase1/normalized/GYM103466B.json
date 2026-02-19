@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 1,
           "max": 1000000
@@ -28,16 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "相邻节点取值不同（图着色约束）"
+            "name": "adjacency_relation",
+            "description": "相邻节点必须共享一条边（图着色约束）",
+            "formal": "对于任意两个已涂色的块 u 和 v，存在一条路径 (u, v) 使得路径上的所有块都是已涂色的且相邻块共享一条边"
           },
           {
-            "name": "distinct_simple_paths",
-            "description": "任意两个已涂色块之间的最短路径唯一且仅经过已涂色块"
+            "name": "path_constraint",
+            "description": "最短路径长度不变（路径约束）",
+            "formal": "对于任意两个已涂色的块 u 和 v，涂色前后的最短路径长度保持不变"
           },
           {
-            "name": "vertex_repetition_permissible",
-            "description": "不允许访问已涂色的块"
+            "name": "coverage",
+            "description": "覆盖整个棋盘（覆盖约束）",
+            "formal": "最终所有块都被涂色"
           }
         ]
       }
@@ -48,8 +51,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足条件的方案数量"
+        "type": "enumeration",
+        "description": "求满足条件的方案数（模10^9+7）"
       }
     }
   ],
@@ -58,9 +61,20 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，且子问题之间相互独立",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：整个棋盘的满意策略可以通过子棋盘的满意策略组合而成，且子问题的解不影响其他子问题的解。",
+            "properties": {
+              "subproblem_independence": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个已涂白的格子移动到相邻未涂白的格子时，保证了路径的连通性和最短路径的不变性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

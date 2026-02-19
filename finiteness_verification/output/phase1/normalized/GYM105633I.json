@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 100000
@@ -28,14 +28,9 @@
       "result": {
         "constraints": [
           {
-            "name": "maximum_gcd_product_constraint",
-            "description": "对于每个给定的区间，需要找到该区间内所有不同位置的整数对的最大公约数，并从中选取最大的一个。",
-            "formal": "max(GCD(a[i], a[j])) for all 1 <= i < j <= n and l <= i, j <= r"
-          },
-          {
-            "name": "pairwise_gcd_constraint",
-            "description": "在每个区间内，考虑所有不同的整数对 (i, j) 的最大公约数。",
-            "formal": "GCD(a[i], a[j]) for all 1 <= i < j <= n and l <= i, j <= r"
+            "name": "gcd_sum_maximization",
+            "description": "在给定区间内，找到所有不同位置的整数对的最大公约数，并求这些最大公约数中的最大值",
+            "formal": "max(GCD(a_i, a_j) for all 1 <= i < j <= n and l <= i, j <= r)"
           }
         ]
       }
@@ -47,7 +42,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "求每个区间内所有不同位置数对的最大公约数中的最大值"
+        "description": "求区间内所有不同位置数对的最大公约数中的最大值"
       }
     }
   ],
@@ -56,12 +51,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间信息可通过子区间合并，适用于前缀和、线段树等数据结构来处理区间查询问题",
-        "properties": {
-          "prefix_sum_computable": true,
-          "segment_tree_applicable": true
-        }
+        "invariants": [
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：区间的最大公约数可以通过子区间的最大公约数合并得到",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个区间的最大公约数可以通过其子区间的最大公约数计算得出",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

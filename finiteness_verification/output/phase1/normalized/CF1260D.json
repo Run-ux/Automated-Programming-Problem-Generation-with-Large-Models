@@ -1,0 +1,90 @@
+{
+  "problem_id": "CF1260D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数（即每个陷阱的影响范围）有限制，具体为陷阱的位置和解除位置之间的距离。",
+            "formal": "对于每个陷阱 i, 有 r_i - l_i 的值是固定的"
+          },
+          {
+            "name": "range_bound",
+            "description": "士兵的敏捷性必须大于或等于陷阱的危险等级才能通过该陷阱。",
+            "formal": "对于每个陷阱 i 和每个士兵 j, 如果 a_j < d_i 且士兵 j 在位置 l_i，则士兵 j 会被杀死"
+          },
+          {
+            "name": "operation_limit",
+            "description": "在给定的时间限制内完成任务，即在 t 秒内将所有选定的士兵从起点带到终点。",
+            "formal": "总操作时间 ≤ t"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "选择的士兵子集必须能够在 t 秒内全部到达终点。",
+            "formal": "存在一个士兵子集 S ⊆ {1, 2, ..., m} 使得所有士兵都能在 t 秒内到达 n+1"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化在给定时间限制内能够成功到达终点的元素数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即选择士兵的最大数量可以通过考虑每个陷阱的最优解来确定",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，优先选择能够通过当前陷阱且敏捷度最高的士兵，以确保在时间限制内通过所有陷阱时最大化士兵数量",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着陷阱位置的增加，能够通过陷阱的士兵集合不会减少，即对于任意两个陷阱 $i$ 和 $j$，如果 $l_i < l_j$，则能通过陷阱 $i$ 的士兵集合是能通过陷阱 $j$ 的士兵集合的子集",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": false
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

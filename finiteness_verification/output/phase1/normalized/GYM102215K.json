@@ -1,0 +1,79 @@
+{
+  "problem_id": "GYM102215K",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 66,
+          "max": 82
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "partition",
+            "description": "序列可以被分割成若干连续段，每段内的元素相同（颜色相同）",
+            "formal": "存在一个分段方案，使得每个分段 [l, r] 内的元素都相同"
+          },
+          {
+            "name": "subset_size_minimum_constraint",
+            "description": "操作过程中只能使用两个堆栈来存储和重新排列元素",
+            "formal": "使用两个堆栈 S1 和 S2 来完成排序"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "每次只能从原始序列或堆栈中取出顶部元素进行操作",
+            "formal": "每次操作只能取当前序列或堆栈的顶部元素"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种操作序列，使得最终可以将所有同色卡片连续排列"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在每一步操作中，当前状态的合法性可以通过前一步的状态推导出来，且最终状态满足题目要求的排序条件。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：将卡片分成两个堆的过程可以视为独立的子问题，每个子问题的解不影响另一个子问题的解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

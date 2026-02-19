@@ -1,0 +1,134 @@
+{
+  "problem_id": "P13335",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": -1000,
+            "max": 1000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": -1000,
+      "max": 1000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制（最多进行 M 次旋转或停留）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distance_bound",
+        "description": "最终位置与起点的距离最大化",
+        "confidence": "1/1"
+      },
+      {
+        "name": "orientation_constraint",
+        "description": "每次旋转必须是90度顺时针且围绕一个固定的点（星体）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制（最多进行 M 次旋转或停留）",
+              "formal": "0 <= k <= M, 其中 k 为旋转或停留的次数"
+            },
+            {
+              "name": "distance_bound",
+              "description": "最终位置与起点的距离最大化",
+              "formal": "maximize D = sqrt(x^2 + y^2), 其中 (x, y) 是最终位置坐标"
+            },
+            {
+              "name": "orientation_constraint",
+              "description": "每次旋转必须是90度顺时针且围绕一个固定的点（星体）",
+              "formal": "对于每个旋转操作，选择一个点 (X_i, Y_i)，将当前位置 (x, y) 旋转90度顺时针到新的位置 (x', y')"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求从起点出发，经过若干次操作后能达到的最远距离"
+        }
+      }
+    ],
+    "description": "求从起点出发，经过若干次操作后能达到的最远距离"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每一步选择旋转或不旋转时，当前状态的最优解依赖于前一步的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态到另一个状态的转换是确定的，通过旋转或不旋转操作，可以明确地从一个位置转移到另一个位置。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每一步选择旋转或不旋转时，当前状态的最优解依赖于前一步的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态到另一个状态的转换是确定的，通过旋转或不旋转操作，可以明确地从一个位置转移到另一个位置。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "problem_id": "GYM102056L",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通，即从任意一个节点出发可以到达其他所有节点"
+          },
+          {
+            "name": "bipartiteness",
+            "description": "图是二分图，节点分为两个互不相交的集合，每个集合内部没有边连接"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数至少为1，因为每个节点都属于JR West或JR East，并且有私有铁路连接"
+          },
+          {
+            "name": "path_constraint",
+            "description": "从一个节点到另一个节点的路径上，通过公共铁路和私有铁路的组合，计算最小票数"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求每个起点到所有其他点的最小代价和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。对于每个车站，到达其他所有车站的最小票数可以通过已知的子问题（即从其他车站到目标车站的最小票数）来计算。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过状态转移方程，可以将当前状态的最优解与前一状态的最优解联系起来。在本题中，通过考虑使用公共铁路和私有铁路的不同情况，可以构建出一个状态转移方程来表示从一个车站到另一个车站所需的最小票数。",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在网络流模型中，流入某个节点的流量等于流出该节点的流量。在本题中，每条路径上的票数流动是守恒的，即从一个车站出发到达另一个车站的过程中，总的票数消耗是固定的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

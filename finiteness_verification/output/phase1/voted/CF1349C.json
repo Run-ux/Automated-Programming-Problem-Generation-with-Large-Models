@@ -2,14 +2,14 @@
   "problem_id": "CF1349C",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 1000
@@ -18,7 +18,9 @@
             "min": 0,
             "max": 1
           },
-          "properties": {}
+          "properties": {
+            "ordered": false
+          }
         }
       }
     ],
@@ -30,18 +32,20 @@
       "min": 0,
       "max": 1
     },
-    "properties": {}
+    "properties": {
+      "ordered": false
+    }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_exclusion",
-        "description": "每个单元格的颜色在每次迭代中根据其相邻单元格的颜色变化。具体规则为：如果一个单元格有2个或3个相邻的黑色单元格，则该单元格变为黑色；否则，该单元格变为白色。",
+        "name": "adjacency_relation",
+        "description": "相邻节点的状态变化依赖于其邻接节点的状态（图着色约束）",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "两个单元格是相邻的，当且仅当它们共享一条边。",
+        "name": "state_transition",
+        "description": "每个节点的状态根据规则进行状态转移（状态转移约束）",
         "confidence": "1/1"
       }
     ],
@@ -52,14 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_exclusion",
-              "description": "每个单元格的颜色在每次迭代中根据其相邻单元格的颜色变化。具体规则为：如果一个单元格有2个或3个相邻的黑色单元格，则该单元格变为黑色；否则，该单元格变为白色。",
-              "formal": "对于每个单元格 (i, j)，设 N(i, j) 为 (i, j) 的相邻黑色单元格数量。则新的颜色 C'(i, j) = 1 当且仅当 2 ≤ N(i, j) ≤ 3，否则 C'(i, j) = 0。"
+              "name": "adjacency_relation",
+              "description": "相邻节点的状态变化依赖于其邻接节点的状态（图着色约束）",
+              "formal": "cell(i, j) 的颜色在迭代 p 时取决于其相邻的 4 个细胞的颜色"
             },
             {
-              "name": "adjacent_difference",
-              "description": "两个单元格是相邻的，当且仅当它们共享一条边。",
-              "formal": "单元格 (i, j) 和 (x, y) 相邻当且仅当 |i - x| + |j - y| = 1。"
+              "name": "state_transition",
+              "description": "每个节点的状态根据规则进行状态转移（状态转移约束）",
+              "formal": "cell(i, j) 在迭代 p+1 时的颜色由其在迭代 p 时的颜色及其相邻细胞的颜色决定"
             }
           ]
         }
@@ -67,36 +71,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断给定迭代次数后网格中指定位置的二值状态"
+          "type": "feasibility",
+          "description": "判断给定条件下，特定位置在指定迭代次数后的状态"
         }
       }
     ],
-    "description": "判断给定迭代次数后网格中指定位置的二值状态"
+    "description": "判断给定条件下，特定位置在指定迭代次数后的状态"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个细胞的颜色变化规则是固定的，且仅依赖于其当前状态及其相邻细胞的状态",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "cyclic_invariance",
+        "description": "周期性不变量：由于网格大小有限，系统最终会进入一个循环状态，即存在一个周期T使得对于所有t>T，状态s(t) = s(t+T)",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "当前状态仅依赖于前一状态，满足马尔可夫性质",
-          "properties": {
-            "markov_property": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个细胞的颜色变化规则是固定的，且仅依赖于其当前状态及其相邻细胞的状态",
+              "properties": {}
+            },
+            {
+              "name": "cyclic_invariance",
+              "description": "周期性不变量：由于网格大小有限，系统最终会进入一个循环状态，即存在一个周期T使得对于所有t>T，状态s(t) = s(t+T)",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "当前状态仅依赖于前一状态，满足马尔可夫性质"
+    ]
   }
 }

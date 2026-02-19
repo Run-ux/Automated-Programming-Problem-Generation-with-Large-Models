@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,11 +28,11 @@
       "result": {
         "constraints": [
           {
-            "name": "uniform_movement",
-            "description": "每个盖子只能向左移动一次或保持不动，不能向右移动"
+            "name": "operation_limit",
+            "description": "每个操作（移动盖子）只能进行一次，且只能向左移动或保持不动"
           },
           {
-            "name": "region_size_constraint",
+            "name": "coverage",
             "description": "只有被盖子覆盖的盒子中的杂志才能被保护"
           }
         ]
@@ -45,7 +45,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "最大化可保护元素的权值和"
+        "description": "最大化在给定约束条件下可保护的元素总和"
       }
     }
   ],
@@ -54,9 +54,21 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "局部最优选择导致全局最优：优先保护当前可覆盖的最多杂志数，从而最大化总保护数量",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，左指针指向当前未覆盖的盒子，右指针指向最近的有盖子的盒子",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，每次选择最左侧未覆盖的盒子，并将其右侧最近的盖子移动到该盒子上",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

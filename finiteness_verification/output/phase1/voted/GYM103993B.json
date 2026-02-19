@@ -2,14 +2,14 @@
   "problem_id": "GYM103993B",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 3,
             "max": 50
@@ -44,8 +44,13 @@
         "confidence": "1/1"
       },
       {
-        "name": "subsegment_permutation_count_minimization",
-        "description": "构造的排列中，作为排列的子段数量应尽可能少",
+        "name": "subsequence_constraint",
+        "description": "子序列必须也是排列（子段中的每个整数从1到子段长度恰好出现一次）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "构造的排列的值（满足条件的子段数量）应尽可能小",
         "confidence": "1/1"
       }
     ],
@@ -60,8 +65,12 @@
               "description": "数组必须是排列（每个整数从1到n恰好出现一次）"
             },
             {
-              "name": "subsegment_permutation_count_minimization",
-              "description": "构造的排列中，作为排列的子段数量应尽可能少"
+              "name": "subsequence_constraint",
+              "description": "子序列必须也是排列（子段中的每个整数从1到子段长度恰好出现一次）"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "构造的排列的值（满足条件的子段数量）应尽可能小"
             }
           ]
         }
@@ -69,34 +78,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的排列"
+          "type": "minimize_value",
+          "description": "构造一个长度为n的排列，使得该排列中是排列的子段数量最小"
         }
       }
     ],
-    "description": "构造一个满足条件的排列"
+    "description": "构造一个长度为n的排列，使得该排列中是排列的子段数量最小"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：通过局部最优选择构造全局最优解，即每次选择当前最小未使用的数字放置在最左侧或最右侧以最小化子段数量",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过其子问题的最优解组合而成，即最小值的排列可以通过逐步添加元素并保持局部最优来实现",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "局部最优选择导致全局最优：通过构造特定模式的排列，使得子段为排列的数量最小化",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：通过局部最优选择构造全局最优解，即每次选择当前最小未使用的数字放置在最左侧或最右侧以最小化子段数量",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过其子问题的最优解组合而成，即最小值的排列可以通过逐步添加元素并保持局部最优来实现",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "局部最优选择导致全局最优：通过构造特定模式的排列，使得子段为排列的数量最小化"
+    ]
   }
 }

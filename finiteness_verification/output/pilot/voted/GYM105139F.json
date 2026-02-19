@@ -18,9 +18,7 @@
             "min": 1,
             "max": 30
           },
-          "properties": {
-            "inferred": true
-          }
+          "properties": {}
         }
       },
       {
@@ -36,9 +34,7 @@
             "min": 1,
             "max": 30
           },
-          "properties": {
-            "inferred": true
-          }
+          "properties": {}
         }
       },
       {
@@ -54,9 +50,7 @@
             "min": 1,
             "max": 30
           },
-          "properties": {
-            "inferred": true
-          }
+          "properties": {}
         }
       }
     ],
@@ -68,25 +62,23 @@
       "min": 1,
       "max": 30
     },
-    "properties": {
-      "inferred": true
-    }
+    "properties": {}
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "merge_until_unique_levels",
-        "description": "在步骤1中，Steve将编号从l到r的所有书籍合并，直到不存在两本等级相同的书。",
-        "confidence": "2/3"
-      },
-      {
-        "name": "maximize_merge_operations",
-        "description": "在步骤3中，Steve需要最大化合并书籍的次数。",
+        "name": "sum_constraint",
+        "description": "选取元素权重和不超过容量上限（每次合并的代价是 2^(l+1)，总代价需要取模 10^9 + 7）",
         "confidence": "3/3"
       },
       {
-        "name": "add_new_book",
-        "description": "在步骤2中，Steve向步骤1得到的书籍中添加一本新书，其等级为k。",
+        "name": "operation_limit",
+        "description": "操作次数限制（Step 3 中最大化合并次数）",
+        "confidence": "3/3"
+      },
+      {
+        "name": "distinctness",
+        "description": "区间内不同元素数量在合并操作后不超过 K（K 为区间的长度）",
         "confidence": "3/3"
       }
     ],
@@ -97,24 +89,19 @@
         "result": {
           "constraints": [
             {
-              "name": "merge_until_unique_levels",
-              "description": "在步骤1中，Steve将编号从l到r的所有书籍合并，直到不存在两本等级相同的书。",
-              "formal": "while (exists i, j in [l, r] such that a[i] == a[j]): merge(a[i], a[j])"
+              "name": "distinctness",
+              "description": "区间内不同元素数量在合并操作后不超过 K（K 为区间的长度）",
+              "formal": "|distinct(A[l:r])| <= r - l + 1"
             },
             {
-              "name": "add_new_book",
-              "description": "在步骤2中，Steve向步骤1得到的书籍中添加一本新书，其等级为k。",
-              "formal": "a.append(k)"
+              "name": "sum_constraint",
+              "description": "选取元素权重和不超过容量上限（每次合并的代价是 2^(l+1)，总代价需要取模 10^9 + 7）",
+              "formal": "total_cost = (total_cost + 2^(l+1)) % (10^9 + 7)"
             },
             {
-              "name": "maximize_merge_operations",
-              "description": "在步骤3中，Steve需要最大化合并书籍的次数。",
-              "formal": "maximize(merge_count) where merge_count is the number of times books are merged"
-            },
-            {
-              "name": "total_cost_modulo",
-              "description": "计算并输出步骤3中的总成本，并对10^9+7取模。",
-              "formal": "total_cost % (10^9 + 7)"
+              "name": "operation_limit",
+              "description": "操作次数限制（Step 3 中最大化合并次数）",
+              "formal": "maximize(merge_operations)"
             }
           ]
         }
@@ -125,24 +112,20 @@
         "result": {
           "constraints": [
             {
-              "name": "merge_until_unique",
-              "description": "在Step 1中，Steve将编号从l到r的所有书籍合并，直到不存在两个级别相同的书籍。",
-              "formal": "while (exists i, j in [l, r] such that a[i] == a[j]): merge(a[i], a[j])"
+              "name": "distinctness",
+              "description": "区间内不同元素数量在合并操作后不超过初始数量，且最终所有元素的级别唯一"
             },
             {
-              "name": "add_new_book",
-              "description": "在Step 2中，Steve向Step 1得到的书籍中添加一个新书，其级别为k。",
-              "formal": "a.append(k)"
+              "name": "sum_constraint",
+              "description": "合并操作的总成本是所有合并操作的成本之和，并且需要对结果取模 10^9 + 7"
             },
             {
-              "name": "maximize_merge_operations",
-              "description": "在Step 3中，Steve需要尽可能多地合并书籍，并计算总成本模10^9+7。",
-              "formal": "maximize(merge_count) and total_cost % (10^9 + 7)"
+              "name": "operation_limit",
+              "description": "每个操作步骤（如合并、添加新书）的次数有限制，具体由输入参数决定"
             },
             {
-              "name": "sequence_restored",
-              "description": "在计算完成后，序列会被恢复，即这些操作不会实际改变序列。",
-              "formal": "after calculation, a is restored to its original state"
+              "name": "state_transition",
+              "description": "每次操作后的状态变化必须符合题目描述的规则，例如合并操作后生成的新书级别为 l+1"
             }
           ]
         }
@@ -153,24 +136,20 @@
         "result": {
           "constraints": [
             {
-              "name": "merge_until_unique_levels",
-              "description": "在Step 1中，Steve将编号从l到r的所有书籍合并，直到不存在两个级别相同的书籍。",
-              "formal": "while (exists i, j in [l, r] such that a[i] == a[j]): merge(a[i], a[j])"
+              "name": "distinctness",
+              "description": "区间内不同元素数量在合并操作后不超过初始数量，且最终结果中没有重复元素"
             },
             {
-              "name": "add_new_book",
-              "description": "在Step 2中，Steve向Step 1得到的书籍中添加一个新书，其级别为k。",
-              "formal": "a.append(k)"
+              "name": "sum_constraint",
+              "description": "合并操作的总成本是所有合并操作的成本之和，并且需要取模 10^9 + 7"
             },
             {
-              "name": "maximize_merge_operations",
-              "description": "在Step 3中，Steve需要尽可能多地合并书籍，并计算总成本模10^9+7。",
-              "formal": "maximize(merge_count) and output (total_cost % (10^9 + 7))"
+              "name": "operation_limit",
+              "description": "每个操作步骤必须按照给定的顺序执行，且每一步的结果会影响下一步的操作"
             },
             {
-              "name": "sequence_restored",
-              "description": "在计算完成后，序列恢复到初始状态，即操作不会实际改变序列。",
-              "formal": "a = initial_a after all operations"
+              "name": "frequency_bound",
+              "description": "每个级别的书的数量在合并过程中会减少，直到没有两个相同级别的书"
             }
           ]
         }
@@ -178,68 +157,157 @@
     ]
   },
   "objective": {
-    "type": "max_value",
+    "type": "maximize_count",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "max_value",
-          "description": "最大化合并书籍的次数，并计算总成本模10^9+7"
+          "type": "maximize_count",
+          "description": "最大化合并操作的次数"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "max_value",
-          "description": "最大化合并书籍的次数，并计算总成本模10^9+7"
+          "type": "maximize_count",
+          "description": "最大化合并操作的次数"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "max_value",
-          "description": "在给定的操作步骤中，最大化合并书籍的次数，并计算总成本模10^9+7"
+          "type": "maximize_count",
+          "description": "最大化合并操作的次数"
         }
       }
     ],
-    "description": "最大化合并书籍的次数，并计算总成本模10^9+7"
+    "description": "最大化合并操作的次数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "3/3",
+    "invariants": [
+      {
+        "name": "greedy_choice",
+        "description": "局部最优选择（优先合并相同等级的书）能够导致全局最优解（最大化合并次数和最小化总成本）。",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "在最大化合并次数的过程中，每个子问题的最优解可以组合成整个问题的最优解。",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "合并操作中，书的等级单调递增，且每次合并后新书的等级严格大于原书等级。",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间内的书可以通过合并操作进行合并，并且合并后的结果可以用于后续的合并操作。",
+        "confidence": "2/3",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "在合并书本的过程中，每一步的最优解依赖于子问题的最优解。具体来说，在每次合并操作中，当前级别的书本合并成本和结果级别是基于之前已经处理过的书本状态。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "合并操作中，书的等级单调递增，且每次合并后新书的等级严格大于原书等级。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "在最大化合并次数的过程中，每个子问题的最优解可以组合成整个问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "局部最优选择（优先合并相同等级的书）能够导致全局最优解（最大化合并次数和最小化总成本）。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间内的书可以通过合并操作进行合并，并且合并后的结果可以用于后续的合并操作。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的最优解可以通过子问题的最优解组合而成，即在合并书籍的过程中，每次合并操作的成本和结果都依赖于当前状态下的最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "在合并过程中，书的等级单调递增，且每次合并后的书等级严格大于合并前的书等级。",
+              "properties": {
+                "level_increase": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解可以通过子问题的最优解来构造。具体来说，在每一步操作中，当前状态的最优解依赖于之前状态的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "局部最优选择（即每次尽可能多地合并相同等级的书）能够导致全局最优解（即最大化合并次数和最小化总成本）。",
+              "properties": {
+                "max_merge_times": true,
+                "min_total_cost": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移的一致性：从一个状态到另一个状态的转换是确定的，并且每个状态的转换都遵循相同的规则。",
+              "properties": {
+                "merge_rule_consistency": true
+              }
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "在合并书本的过程中，每次合并操作的最优解依赖于子问题的最优解。即，为了最大化合并次数，每一步的决策都是基于当前状态下的最优选择。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "合并操作中，书的等级单调递增，每次合并后新书的等级比原书高一级",
+              "properties": {
+                "level_increase": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "在最大化合并次数的过程中，每一步的最优解依赖于子问题的最优解",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "在合并过程中，优先选择相同等级的书进行合并以达到局部最优，从而实现全局最优",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "在区间 [l, r] 内的书可以被合并成一个或多个更高等级的书，且这些书的信息可以通过子区间的合并得到",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "在合并书本的过程中，每一步的最优解依赖于子问题的最优解。具体来说，在每次合并操作中，当前级别的书本合并成本和结果级别是基于之前已经处理过的书本状态。"
+    ]
   }
 }

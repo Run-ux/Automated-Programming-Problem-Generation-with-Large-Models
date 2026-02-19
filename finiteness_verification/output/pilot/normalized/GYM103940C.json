@@ -16,7 +16,7 @@
           "max": 10000
         },
         "properties": {
-          "inferred": true
+          "ordered": false
         }
       }
     },
@@ -31,10 +31,10 @@
         },
         "value_range": {
           "min": 1,
-          "max": 10000000
+          "max": 10000
         },
         "properties": {
-          "inferred": true
+          "ordered": false
         }
       }
     },
@@ -52,7 +52,7 @@
           "max": 10000
         },
         "properties": {
-          "inferred": true
+          "ordered": false
         }
       }
     }
@@ -64,28 +64,28 @@
       "result": {
         "constraints": [
           {
-            "name": "students_courses_enrolled",
-            "description": "每个学生最多请求8门课程的注册"
+            "name": "subset_constraint",
+            "description": "每个学生实际注册的课程集合必须是其请求课程集合的子集"
           },
           {
-            "name": "students_courses_enrolled",
-            "description": "每个学生最多被注册了8门课程"
+            "name": "coverage",
+            "description": "每个学生实际注册的课程集合必须覆盖其请求的所有课程"
           },
           {
-            "name": "students_courses_enrolled",
-            "description": "最终每个学生必须只注册他们请求的课程，不多也不少"
+            "name": "frequency_bound",
+            "description": "每个学生请求的课程数量不超过 8 个"
           },
           {
-            "name": "students_ordering",
-            "description": "对于需要更改注册的学生，输出的更改列表应按课程ID的绝对值升序排列"
+            "name": "frequency_bound",
+            "description": "每个学生实际注册的课程数量不超过 8 个"
           },
           {
-            "name": "students_ordering",
-            "description": "需要更改注册的学生ID应按升序排列"
+            "name": "distinctness",
+            "description": "每个学生请求的课程列表中，每门课程唯一（不重复）"
           },
           {
-            "name": "students_courses_enrolled",
-            "description": "在所有更改后，需要输出错误摘要，包括有错误的学生数量、未请求但被注册的课程总数以及请求但未被注册的课程总数"
+            "name": "distinctness",
+            "description": "每个学生实际注册的课程列表中，每门课程唯一（不重复）"
           }
         ]
       }
@@ -96,28 +96,20 @@
       "result": {
         "constraints": [
           {
-            "name": "students_courses_enrolled",
-            "description": "每个学生最多请求8门课程的注册"
+            "name": "subset_constraint",
+            "description": "每个学生实际注册的课程集合必须是其请求课程集合的子集（即不能有未请求的课程）"
           },
           {
-            "name": "students_courses_enrolled",
-            "description": "每个学生最多被分配8门课程"
+            "name": "coverage",
+            "description": "每个学生实际注册的课程集合必须覆盖其请求的所有课程（即不能缺少请求的课程）"
           },
           {
-            "name": "students_courses_enrolled",
-            "description": "最终每个学生必须只注册他们请求的课程，不多也不少"
+            "name": "operation_limit",
+            "description": "对于每个学生，需要进行的操作（添加或删除课程）数量应尽可能少，以达到正确的注册状态"
           },
           {
-            "name": "students_ordering",
-            "description": "对于需要更改注册的学生，输出的更正列表应按课程ID的绝对值升序排列"
-          },
-          {
-            "name": "students_ordering",
-            "description": "需要更改注册的学生ID应按升序排列"
-          },
-          {
-            "name": "students_courses_enrolled",
-            "description": "在所有更正之后，需要输出错误摘要，包括有错误的学生数量、未请求但被注册的课程总数以及请求但未被注册的课程总数"
+            "name": "ordering",
+            "description": "输出的修改操作应按学生ID升序排列，且每个学生的操作按课程ID的绝对值升序排列"
           }
         ]
       }
@@ -128,20 +120,20 @@
       "result": {
         "constraints": [
           {
-            "name": "students_courses_enrolled",
-            "description": "每个学生最多请求8门课程的注册"
+            "name": "subset_constraint",
+            "description": "每个学生实际注册的课程集合必须是其请求课程集合的子集（即不能有未请求的课程）"
           },
           {
-            "name": "students_courses_enrolled",
-            "description": "每个学生最多被分配8门课程"
+            "name": "coverage",
+            "description": "每个学生实际注册的课程集合必须覆盖其请求的所有课程（即不能缺少请求的课程）"
           },
           {
-            "name": "students_courses_enrolled",
-            "description": "最终每个学生必须只注册他们请求的课程，不多也不少"
+            "name": "operation_limit",
+            "description": "对于每个学生，需要列出所有必要的添加和删除操作以修正其课程注册情况"
           },
           {
-            "name": "students_ordering",
-            "description": "对于需要更改注册的学生，输出的更改应按学生ID升序排列，并且每个学生的更改按课程ID的绝对值升序排列"
+            "name": "ordering",
+            "description": "输出的学生ID和每学生的修正操作应按升序排列"
           }
         ]
       }
@@ -153,7 +145,7 @@
       "status": "success",
       "result": {
         "type": "construction",
-        "description": "构造一个修正后的学生选课方案，使得每个学生最终选到的课程与他们请求的一致"
+        "description": "构造一个修正方案，使得每个学生最终的课程注册情况与他们的请求完全一致"
       }
     },
     {
@@ -161,7 +153,7 @@
       "status": "success",
       "result": {
         "type": "construction",
-        "description": "构造一个修正后的学生选课方案，使得每个学生最终选到的课程与他们请求的课程完全一致"
+        "description": "构造一个修正方案，使得每个学生最终的课程注册情况与他们的请求完全一致"
       }
     },
     {
@@ -169,7 +161,7 @@
       "status": "success",
       "result": {
         "type": "construction",
-        "description": "构造一个修正后的学生选课方案，使得每个学生最终选到的课程与他们请求的课程完全一致"
+        "description": "构造一个修正方案，使得每个学生最终只注册了他们请求的课程"
       }
     }
   ],
@@ -178,34 +170,69 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "state_dependency",
-        "description": "每个学生最终的课程列表只依赖于其请求的课程和实际分配的课程，通过对比两者差异来确定需要进行的修改。",
-        "properties": {
-          "dependency_on_requests_and_assignments": true
-        }
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "集合差不变量：每个学生请求的课程集合与实际分配的课程集合之间的差异在处理过程中保持一致，直到所有差异被消除",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个学生的课程调整问题可以分解为独立的子问题，每个子问题的最优解组合成全局最优解",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从初始状态（包含错误的课程分配）到目标状态（所有学生都得到正确的课程分配）的过程中，每一步的状态转换都是确定且可逆的",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "state_dependency",
-        "description": "每个学生最终的课程列表只依赖于其请求的课程列表和实际分配的课程列表，且这种依赖关系是独立于其他学生的。",
-        "properties": {
-          "independent_student_states": true
-        }
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "集合差不变量：每个学生请求的课程集合与实际分配的课程集合之间的差异在处理过程中保持一致，直到所有差异被消除",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个学生的课程调整问题可以分解为独立的子问题，且每个子问题的解是全局解的一部分",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个学生到另一个学生的状态转移过程中，每个学生的课程调整状态一致性得到保证",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "state_dependency",
-        "description": "每个学生最终的课程列表只依赖于其请求的课程列表和实际分配的课程列表，且通过比较这两者可以确定需要进行的修改。",
-        "properties": {
-          "current_state_depend_on_previous": false,
-          "finite_dependencies": true
-        }
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "集合差不变量：每个学生请求的课程集合与实际分配的课程集合之间的差异在处理过程中保持一致，直到所有差异被消除",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个学生的课程调整问题可以分解为独立的子问题，每个子问题的解是全局解的一部分",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择当前最优的课程调整（添加或删除），以逐步达到最终的正确状态",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

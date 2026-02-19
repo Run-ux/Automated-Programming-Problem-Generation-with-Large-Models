@@ -2,14 +2,14 @@
   "problem_id": "GYM100694I",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1000
@@ -19,7 +19,7 @@
             "max": 1000
           },
           "properties": {
-            "ordered": true
+            "ordered": false
           }
         }
       }
@@ -33,34 +33,34 @@
       "max": 1000
     },
     "properties": {
-      "ordered": true
+      "ordered": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "orientation_constraint",
+        "name": "orientation",
         "description": "移动方向固定，每次只能向一个方向移动一步",
         "confidence": "1/1"
       },
       {
-        "name": "maximum_movement_constraint",
-        "description": "每个牧羊人每回合可以移动一到两格或保持不动，但不能改变移动方向",
+        "name": "operation_limit",
+        "description": "每个牧羊人每回合可以移动1或2个单元格，或者保持不动，但不能改变方向",
         "confidence": "1/1"
       },
       {
-        "name": "pairwise_exclusion",
-        "description": "当某个牧羊人在其回合结束时与山羊位于同一单元格，则捕获成功",
+        "name": "turn_based",
+        "description": "轮流移动，先由山羊移动，然后按输入顺序依次由牧羊人移动",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_positions",
-        "description": "初始时，山羊和所有牧羊人的位置互不相同",
+        "name": "exclusion",
+        "description": "初始位置互斥，即山羊和牧羊人的初始位置不同",
         "confidence": "1/1"
       },
       {
-        "name": "turn_based_operation",
-        "description": "回合顺序固定，先由山羊移动，然后按输入顺序依次由牧羊人移动",
+        "name": "matching_constraint",
+        "description": "捕获条件为某个牧羊人在其回合结束时与山羊位于同一单元格",
         "confidence": "1/1"
       }
     ],
@@ -71,24 +71,24 @@
         "result": {
           "constraints": [
             {
-              "name": "orientation_constraint",
+              "name": "orientation",
               "description": "移动方向固定，每次只能向一个方向移动一步"
             },
             {
-              "name": "maximum_movement_constraint",
-              "description": "每个牧羊人每回合可以移动一到两格或保持不动，但不能改变移动方向"
+              "name": "operation_limit",
+              "description": "每个牧羊人每回合可以移动1或2个单元格，或者保持不动，但不能改变方向"
             },
             {
-              "name": "pairwise_exclusion",
-              "description": "当某个牧羊人在其回合结束时与山羊位于同一单元格，则捕获成功"
+              "name": "turn_based",
+              "description": "轮流移动，先由山羊移动，然后按输入顺序依次由牧羊人移动"
             },
             {
-              "name": "distinct_positions",
-              "description": "初始时，山羊和所有牧羊人的位置互不相同"
+              "name": "exclusion",
+              "description": "初始位置互斥，即山羊和牧羊人的初始位置不同"
             },
             {
-              "name": "turn_based_operation",
-              "description": "回合顺序固定，先由山羊移动，然后按输入顺序依次由牧羊人移动"
+              "name": "matching_constraint",
+              "description": "捕获条件为某个牧羊人在其回合结束时与山羊位于同一单元格"
             }
           ]
         }
@@ -96,37 +96,73 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否存在一个捕获者能够最先到达目标位置"
+          "type": "feasibility",
+          "description": "判定是否存在一个操作序列使得某个实体能够首先达到特定位置"
         }
       }
     ],
-    "description": "判断是否存在一个捕获者能够最先到达目标位置"
+    "description": "判定是否存在一个操作序列使得某个实体能够首先达到特定位置"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "移动方向的单调性：羊和牧羊人的移动方向在每一步中保持一致，不会改变。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false,
+          "direction_consistency": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：羊和牧羊人在每一步中的位置更新是基于前一步的位置和当前移动规则的一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：羊和牧羊人的移动顺序是固定的，羊先移动，然后按输入顺序依次移动牧羊人。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "双指针左右端点单调前进，区间合法性可单调维护",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "移动方向的单调性：羊和牧羊人的移动方向在每一步中保持一致，不会改变。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false,
+                "direction_consistency": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：羊和牧羊人在每一步中的位置更新是基于前一步的位置和当前移动规则的一致性。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：羊和牧羊人的移动顺序是固定的，羊先移动，然后按输入顺序依次移动牧羊人。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "双指针左右端点单调前进，区间合法性可单调维护"
+    ]
   }
 }

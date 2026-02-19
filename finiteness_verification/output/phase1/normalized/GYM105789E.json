@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "weighted_undirected_graph",
         "length": {
           "min": 2,
           "max": 100000
@@ -28,14 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "path_category_uniformity",
-            "description": "对于每个商业提案，其所在的车站必须是赞助车站或位于两个赞助车站之间的路径上",
-            "formal": "∀ business proposal X, ∃ sponsored stations S1, S2 such that X is on the path between S1 and S2 or X is a sponsored station"
+            "name": "path_constraint",
+            "description": "对于每个商业提案，其所在的车站必须是赞助车站或在两个赞助车站之间的路径上。",
+            "formal": "对于每个商业提案 X，存在赞助车站 S1 和 S2 使得 X 在 S1 到 S2 的路径上"
           },
           {
-            "name": "continuous_path_constraint",
-            "description": "选择的提案范围必须形成一个有效的提案集，即所有商业提案都满足上述路径约束",
-            "formal": "For proposals i to j, all business proposals in this range must satisfy the path_through_sponsored_stations constraint"
+            "name": "interval_coverage",
+            "description": "选择的提案必须是连续的一段区间。",
+            "formal": "选择的提案范围为 [i, j]，其中 1 ≤ i ≤ j ≤ P"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "所选提案集合必须满足所有商业提案的约束条件。",
+            "formal": "对于所有商业提案 B，存在赞助车站 S1 和 S2 使得 B 在 S1 到 S2 的路径上"
           }
         ]
       }
@@ -56,12 +61,25 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题的解是独立且最优的",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinability": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的最优解组合得到，即对于每个提案i，从i开始的最大有效提案集可以由其后续提案的有效性递推得出。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着提案范围的扩展，如果当前范围内的提案集合是有效的，则在添加新的提案后，有效性不会变差。即，如果[i, j]是一个有效的提案范围，那么任何包含它的范围[i, k] (k >= j)也必须是有效的，直到遇到第一个使集合无效的提案。",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：基于当前提案的状态（是否为赞助或业务提案）以及已知的前一个最大有效提案集，可以确定下一个提案加入后的集合是否仍然有效。这种状态转移保持了整个算法的一致性和正确性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

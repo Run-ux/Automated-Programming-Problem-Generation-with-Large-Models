@@ -6,13 +6,13 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
         },
         "value_range": {
-          "min": 32,
+          "min": 40,
           "max": 41
         },
         "properties": {
@@ -28,12 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "相邻字符必须是一对冒号和括号，且括号的内侧或外侧朝向冒号以形成表情符号"
+            "name": "adjacency_relation",
+            "description": "相邻字符必须是一个冒号和一个括号，且括号的内侧或外侧朝向冒号（形成表情符号）"
           },
           {
-            "name": "overlapping_interval_constraint",
-            "description": "一个字符可以同时属于两个不同的表情符号"
+            "name": "exclusion",
+            "description": "一个字符可以同时属于两个不同的表情符号（例如，一个字符可以同时是笑脸的一部分和哭脸的一部分）"
           }
         ]
       }
@@ -45,7 +45,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计字符串中满足条件的子串数量"
+        "description": "最大化字符串中特定模式的出现次数"
       }
     }
   ],
@@ -54,11 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间可合并性：通过遍历字符串，可以将相邻字符组合成表情符号，并且这些组合可以通过简单的规则进行计数和分类。",
-        "properties": {
-          "prefix_sum": true
-        }
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过遍历字符串，可以累加计算出所有符合条件的子串数量，这些子串的数量可以通过端点差值计算得出",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在遍历过程中，当前字符与前一个字符的状态组合决定了是否形成一个有效的表情符号，这种状态转移是确定且一致的",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

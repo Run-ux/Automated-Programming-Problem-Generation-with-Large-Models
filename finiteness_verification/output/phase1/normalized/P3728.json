@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1000000
@@ -28,16 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "non_empty_subsequence",
-            "description": "子序列必须是非空的"
+            "name": "subsequence_constraint",
+            "description": "子序列定义为从母序列中删除零或多个字符后剩下的非空序列"
           },
           {
-            "name": "lexicographic_order",
+            "name": "distinctness",
+            "description": "生成的子序列需要去重，即相同的子序列只保留一个"
+          },
+          {
+            "name": "ordering",
             "description": "子序列按照字典序排列"
-          },
-          {
-            "name": "distinct_subsequences",
-            "description": "去重后的子序列，如果几个子序列重复（按照字典序大小相等），只保留一个"
           }
         ]
       }
@@ -48,8 +48,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造第K个去重后的字典序子序列"
+        "type": "construction",
+        "description": "构造第K个按字典序排列且去重后的子序列"
       }
     }
   ],
@@ -58,11 +58,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，且子问题之间相互独立",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：生成器第K次生成的子序列可以通过其前缀和后缀的最优解组合得到",
+            "properties": {}
+          },
+          {
+            "name": "prefix_decomposability",
+            "description": "前缀可分解性：子序列的生成过程可以基于前缀进行分解，每个前缀对应一个子问题",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解可以通过递归地解决子问题并合并结果来获得",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

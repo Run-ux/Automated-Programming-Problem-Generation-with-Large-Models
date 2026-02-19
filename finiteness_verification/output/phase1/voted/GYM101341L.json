@@ -1,0 +1,128 @@
+{
+  "problem_id": "GYM101341L",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "optimization_objective",
+        "description": "选择一个元素，使得其满足某个条件的概率最大化（选择一个法术，使其对怪物造成致命伤害的概率最大）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "每个元素的值在一个给定的范围内均匀分布（每个法术造成的伤害在给定的区间内均匀分布）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "optimization_objective",
+              "description": "选择一个元素，使得其满足某个条件的概率最大化（选择一个法术，使其对怪物造成致命伤害的概率最大）"
+            },
+            {
+              "name": "range_bound",
+              "description": "每个元素的值在一个给定的范围内均匀分布（每个法术造成的伤害在给定的区间内均匀分布）",
+              "formal": "a_i ≤ damage ≤ b_i"
+            },
+            {
+              "name": "range_bound",
+              "description": "选择的元素必须满足一个阈值条件（选择的法术必须能够造成至少 x_j 的伤害以击败怪物）",
+              "formal": "damage ≥ x_j"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_probability",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_probability",
+          "description": "对于每个目标，选择一个操作使得该操作成功的概率最大"
+        }
+      }
+    ],
+    "description": "对于每个目标，选择一个操作使得该操作成功的概率最大"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个怪物的最优解可以通过比较各个法术的伤害范围和所需最小伤害来确定，且这些子问题的最优解可以组合成全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：对于每个怪物，选择能够最大化击杀概率的法术。这个局部最优选择将导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个怪物的最优解可以通过比较各个法术的伤害范围和所需最小伤害来确定，且这些子问题的最优解可以组合成全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：对于每个怪物，选择能够最大化击杀概率的法术。这个局部最优选择将导致全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

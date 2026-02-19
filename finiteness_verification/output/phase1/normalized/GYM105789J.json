@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 500
@@ -28,14 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "maximum_angle_constraint",
-            "description": "最大化圆锥的视角角度，使得圆锥内不包含任何给定点（星星）",
-            "formal": "maximize θ such that no point (X, Y, Z) is inside the cone with angle θ"
+            "name": "geometric_angle_constraint",
+            "description": "最大视角角度不超过90度，且必须避免包含任何给定点（星体）",
+            "formal": "0 ≤ θ ≤ 90°, 其中θ为视角角度，且视角内不包含任何星体"
           },
           {
-            "name": "non_halfspace_constraint",
-            "description": "如果存在一个方向使得半空间内没有点（星星），则视角角度可以为 90°",
-            "formal": "if ∃ direction d such that no point (X, Y, Z) is in the half-space defined by d, then θ = 90°"
+            "name": "exclusion",
+            "description": "视角内不能包含任何星体",
+            "formal": "对于所有星体 (X, Y, Z)，视角内的点 (x, y, z) 满足 (x, y, z) ≠ (X, Y, Z)"
           }
         ]
       }
@@ -46,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_difference",
-        "description": "求不包含任何点的最大锥角"
+        "type": "maximize_value",
+        "description": "求满足条件的最大角度"
       }
     }
   ],
@@ -56,11 +56,21 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "角度搜索区间单调缩小，通过二分查找确定最大合法角度",
-        "properties": {
-          "search_interval_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "convexity",
+            "description": "凸性不变量：所有星体构成的点集在三维空间中形成一个凸包，最大视角问题转化为求解该凸包上某点到原点的最大夹角",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着视角角度的增大，包含的星体数量非递减，因此可以通过二分查找确定最大合法视角",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          }
+        ]
       }
     }
   ]

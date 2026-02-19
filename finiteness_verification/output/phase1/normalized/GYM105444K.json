@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1000000
@@ -16,7 +16,7 @@
           "max": 9
         },
         "properties": {
-          "ordered": true
+          "ordered": false
         }
       }
     }
@@ -28,12 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference_constraint",
-            "description": "两个数在进行标准加法时不能产生进位"
+            "name": "no_carry_operation",
+            "description": "通过一系列操作，使得两个数在标准加法算法中不会产生进位"
           },
           {
-            "name": "balanced_flow_constraint",
-            "description": "每次操作必须对一个数加1，同时对另一个数减1"
+            "name": "operation_limit",
+            "description": "每次操作只能对一个数加1，另一个数减1，直到其中一个数变为0"
           }
         ]
       }
@@ -44,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求将两个数调整至无进位相加所需的最少操作次数"
+        "type": "minimize_count",
+        "description": "求最小操作次数，使得两个数相加时不会产生进位"
       }
     }
   ],
@@ -54,13 +54,26 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "双指针左右端点单调前进，区间合法性可单调维护",
-        "properties": {
-          "left_monotonic": false,
-          "right_monotonic": false,
-          "window_shrinkable": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "在每次操作中，两个数的总和保持不变，且其中一个数单调递增，另一个数单调递减。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": false
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "每次选择对一个数加1同时对另一个数减1的操作，使得最终两数相加时不会产生进位，这种局部最优选择能导致全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解来构造。具体来说，每一步操作后的状态可以看作是一个子问题，其最优解是整个问题最优解的一部分。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 1,
           "max": 400000
@@ -28,32 +28,44 @@
       "result": {
         "constraints": [
           {
-            "name": "range_modification",
-            "description": "区间更新操作，将指定行的某个区间内的元素修改为给定值"
+            "name": "range_bound",
+            "description": "矩阵 A 的初始值均为 0",
+            "formal": "A_{i,j} = 0, \\forall i, j"
           },
           {
-            "name": "maximum_product_constraint",
-            "description": "区间查询操作，查询指定子矩阵内元素与序列对应位置元素乘积的最大值"
+            "name": "transformation",
+            "description": "对于操作 1，将矩阵 A 中指定行的指定列范围内的元素修改为给定值",
+            "formal": "A_{x,i} = v, \\forall l \\le i \\le r"
           },
           {
-            "name": "operation_order_dependency",
-            "description": "所有修改操作必须在查询操作之前执行（特殊性质 A）"
-          },
-          {
-            "name": "single_operation_limit",
-            "description": "修改操作只能修改单列（特殊性质 B）"
-          },
-          {
-            "name": "uniform_random_distribution",
-            "description": "数据随机生成（特殊性质 C）"
-          },
-          {
-            "name": "constant_submatrix",
-            "description": "序列 b 中所有元素均为 1（特殊性质 D）"
+            "name": "query_limit",
+            "description": "对于操作 2，查询矩阵 A 中指定子矩阵的最大值，并乘以序列 b 对应位置的值",
+            "formal": "\\max_{i=l}^r \\max_{j=x}^y (A_{i,j} \\times b_j)"
           },
           {
             "name": "operation_limit",
-            "description": "修改操作出现次数不超过总操作次数的 1/4"
+            "description": "所有修改操作在查询之前",
+            "formal": "所有操作 1 在所有操作 2 之前"
+          },
+          {
+            "name": "submatrix_transformation",
+            "description": "对于修改操作，保证 l = r，即只修改单个列",
+            "formal": "l = r"
+          },
+          {
+            "name": "random_position_constraint",
+            "description": "数据随机生成，包括操作参数和序列 b",
+            "formal": "参数和 b 序列在其限制范围内等概率随机"
+          },
+          {
+            "name": "constant_value_constraint",
+            "description": "序列 b 中所有元素均为 1",
+            "formal": "b_i = 1, \\forall i"
+          },
+          {
+            "name": "operation_limit",
+            "description": "修改操作出现不超过 q/4 次",
+            "formal": "修改操作次数 ≤ q/4"
           }
         ]
       }
@@ -65,7 +77,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "求给定子矩阵中元素与对应序列值乘积的最大值"
+        "description": "求子矩阵中元素与给定序列对应位置元素乘积的最大值"
       }
     }
   ],
@@ -74,12 +86,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间可合并性：查询操作可以通过子区间的最大值和序列b的乘积来计算，满足区间信息可通过子区间合并",
-        "properties": {
-          "prefix_sum": false,
-          "segment_tree": true
-        }
+        "invariants": [
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：矩阵中的子区间信息可以通过子区间的合并来计算，适用于线段树等数据结构",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：查询操作的结果可以通过子问题的最优解组合得到，适用于动态规划或分治法",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

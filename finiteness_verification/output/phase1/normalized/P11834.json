@@ -1,0 +1,90 @@
+{
+  "problem_id": "P11834",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 15
+        },
+        "value_range": {
+          "min": 1,
+          "max": 105
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通"
+          },
+          {
+            "name": "acyclicity",
+            "description": "无向图的最小生成树是无环的"
+          },
+          {
+            "name": "spanning_constraint",
+            "description": "有向图的外向生成树包含 n-1 条边且存在一个根节点可以到达所有其他节点"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "有向图的最小外向生成树的边权和等于无向图的最小生成树的边权和"
+          },
+          {
+            "name": "probability_distribution",
+            "description": "每条边在有向图中出现的概率分布为：1/4 的概率双向，1/4 的概率单向 u->v，1/4 的概率单向 v->u，1/4 的概率消失"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_probability",
+        "description": "最大化满足条件的概率，即图G'的最小外向生成树存在且其边权和等于图G的最小生成树边权和的概率"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最小生成树和最小外向生成树的边权和可以通过子问题的最优解组合得到",
+            "properties": {}
+          },
+          {
+            "name": "matroid_exchange",
+            "description": "拟阵交换性：在最小生成树和最小外向生成树的选择过程中，局部最优选择可以保证全局最优",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在有向图中，每个节点的入度和出度必须满足守恒性质，以确保存在外向生成树",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

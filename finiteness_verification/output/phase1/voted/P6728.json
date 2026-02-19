@@ -2,14 +2,14 @@
   "problem_id": "P6728",
   "source": "luogu",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "subsequence_hash_constraint",
-        "description": "子序列的哈希值计算公式为 h(s) = (v_1 * B^(p-1) + v_2 * B^(p-2) + ... + v_p) % M，其中 s 是由 v_1, v_2, ..., v_p 组成的子序列。",
+        "name": "subsequence_constraint",
+        "description": "需要计算数组的所有非空子序列的哈希值，并按字典序排序",
         "confidence": "1/1"
       },
       {
-        "name": "maximize_lexicographical_order",
-        "description": "子序列按字典序排列。如果两个数组 A 和 B 的第一个不相同的位置为 i，且 A_i < B_i；或 A 是 B 的严格前缀，则 A 的字典序小于 B。",
+        "name": "modular_arithmetic",
+        "description": "哈希函数定义为 h(s) = (v_1 * B^(p-1) + v_2 * B^(p-2) + ... + v_p) % M",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_k_subsequences",
-        "description": "需要计算并输出前 K 个按字典序排列的子序列的哈希值。",
+        "name": "ordering",
+        "description": "子序列按字典序排列，字典序比较规则是：如果两个数组 A 和 B 的第一个不相同的位置为 i，且 A_i < B_i；或 A 是 B 的严格前缀，则 A 的字典序小于 B",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "subsequence_hash_constraint",
-              "description": "子序列的哈希值计算公式为 h(s) = (v_1 * B^(p-1) + v_2 * B^(p-2) + ... + v_p) % M，其中 s 是由 v_1, v_2, ..., v_p 组成的子序列。",
-              "formal": "h(s) = (v_1 * B^(p-1) + v_2 * B^(p-2) + ... + v_p) % M"
+              "name": "subsequence_constraint",
+              "description": "需要计算数组的所有非空子序列的哈希值，并按字典序排序",
+              "formal": "s_1, s_2, ..., s_q 为 a 的所有非空子序列，q = 2^N - 1"
             },
             {
-              "name": "maximize_lexicographical_order",
-              "description": "子序列按字典序排列。如果两个数组 A 和 B 的第一个不相同的位置为 i，且 A_i < B_i；或 A 是 B 的严格前缀，则 A 的字典序小于 B。",
-              "formal": "A < B if A_i < B_i for the first differing index i, or A is a strict prefix of B"
+              "name": "modular_arithmetic",
+              "description": "哈希函数定义为 h(s) = (v_1 * B^(p-1) + v_2 * B^(p-2) + ... + v_p) % M",
+              "formal": "h(s) = (sum(v_i * B^(p-i) for i in range(1, p+1))) % M"
             },
             {
-              "name": "distinct_k_subsequences",
-              "description": "需要计算并输出前 K 个按字典序排列的子序列的哈希值。",
-              "formal": "Compute and output h(s_1), h(s_2), ..., h(s_K) where s_1, s_2, ..., s_K are the first K subsequences in lexicographical order."
+              "name": "ordering",
+              "description": "子序列按字典序排列，字典序比较规则是：如果两个数组 A 和 B 的第一个不相同的位置为 i，且 A_i < B_i；或 A 是 B 的严格前缀，则 A 的字典序小于 B",
+              "formal": "A < B if A is a strict prefix of B or A_i < B_i at the first differing position i"
             }
           ]
         }
@@ -81,34 +81,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造前K个子序列的哈希值"
+          "type": "enumeration",
+          "description": "求前K个子序列的哈希值"
         }
       }
     ],
-    "description": "构造前K个子序列的哈希值"
+    "description": "求前K个子序列的哈希值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：子序列的哈希值可以通过其子序列的哈希值递推计算得到，满足动态规划的最优子结构性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：子序列的哈希值可以通过前缀和的方式进行计算，即通过端点差值计算区间和",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子序列的哈希值可以由其前缀和当前元素计算得出",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：子序列的哈希值可以通过其子序列的哈希值递推计算得到，满足动态规划的最优子结构性质",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：子序列的哈希值可以通过前缀和的方式进行计算，即通过端点差值计算区间和",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子序列的哈希值可以由其前缀和当前元素计算得出"
+    ]
   }
 }

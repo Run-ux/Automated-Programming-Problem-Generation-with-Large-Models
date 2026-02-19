@@ -1,0 +1,90 @@
+{
+  "problem_id": "GYM102056G",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 66,
+          "max": 67
+        },
+        "properties": {
+          "cyclic": true,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_size_minimum_constraint",
+            "description": "每个子序列的长度必须是给定整数 k 的倍数",
+            "formal": "|S_i| % k == 0, for all i in [1, m]"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "每个子序列中必须存在两个相邻的特定元素（B）",
+            "formal": "∃ x, y ∈ S_i, t[x] = 'B' and t[y] = 'B' and (y - x) % n == 1"
+          },
+          {
+            "name": "partition",
+            "description": "所有子序列的并集必须覆盖整个序列",
+            "formal": "∪_{i=1}^m S_i = {0, 1, ..., n-1}"
+          },
+          {
+            "name": "subsequence_constraint",
+            "description": "所有子序列必须互不相交",
+            "formal": "S_i ∩ S_j = ∅, for all i ≠ j"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的划分"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：在处理环状结构时，通过适当的断环成链操作，可以将问题转化为线性结构上的子问题，且这种转化不改变问题的本质性质。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：在处理子序列划分时，可以通过合并满足条件的子区间来构建更大的合法区间，从而逐步逼近最终解。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子区间的划分和验证过程是独立的，一个子区间的合法性不影响其他子区间的合法性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

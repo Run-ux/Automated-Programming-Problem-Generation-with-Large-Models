@@ -1,0 +1,85 @@
+{
+  "problem_id": "GYM104854K",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 15
+        },
+        "value_range": {
+          "min": -1000000,
+          "max": 1000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "flow_constraint",
+            "description": "选取元素数量不超过容量上限（Ken 每次最多携带 s 个游泳者）"
+          },
+          {
+            "name": "distance_bound",
+            "description": "不同区域的速度限制（在陆地和海洋上的速度不同，且 v_run >= v_swim）"
+          },
+          {
+            "name": "terminal_vertex_count_constraint",
+            "description": "所有选取的元素必须被送到指定位置（所有游泳者必须被带到冰淇淋摊）"
+          },
+          {
+            "name": "coverage",
+            "description": "某些元素只能在特定区域内选取（游泳者只能在海中选取）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求从起点出发，经过若干个点后到达终点的最短时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每一步选择中，当前状态的最优解依赖于之前状态的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：通过局部最优选择（如每次选择最近的溺水者）来达到全局最优解，即每次选择当前最优的选择可以保证最终结果是最优的。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移的一致性保证了算法的正确性，即每个状态的转移都是基于前一个状态的最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -2,14 +2,14 @@
   "problem_id": "P13597",
   "source": "luogu",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 1,
             "max": 500000
@@ -41,28 +41,28 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图必须连通（题目中的树结构）",
+        "name": "connectivity",
+        "description": "图必须连通（题目中的树是一个连通无环图）",
         "confidence": "1/1"
       },
       {
-        "name": "path_vertex_coloring",
-        "description": "路径上的节点颜色变化约束，从蓝色变为白色",
+        "name": "acyclicity",
+        "description": "图必须无环（题目中的树是一个无环图）",
         "confidence": "1/1"
       },
       {
-        "name": "weight_proportional_probability",
-        "description": "选择节点的概率与节点上的数字成正比",
+        "name": "path_constraint",
+        "description": "路径上的节点颜色变化规则（从蓝色节点到白色节点的简单路径上的所有节点变为白色）",
         "confidence": "1/1"
       },
       {
-        "name": "edge_replacement",
-        "description": "边两端的节点上的数字可以互换",
+        "name": "probability_distribution",
+        "description": "节点选择概率与节点上的数字成正比（选择节点的概率与其上的数字成正比）",
         "confidence": "1/1"
       },
       {
-        "name": "modulo_accumulation",
-        "description": "答案需要取模 10^9 + 7",
+        "name": "state_transition",
+        "description": "节点颜色状态转移约束（节点颜色从蓝色变为白色，直到所有节点都变成白色）",
         "confidence": "1/1"
       }
     ],
@@ -73,24 +73,25 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "图必须连通（题目中的树结构）"
+              "name": "connectivity",
+              "description": "图必须连通（题目中的树是一个连通无环图）"
             },
             {
-              "name": "path_vertex_coloring",
-              "description": "路径上的节点颜色变化约束，从蓝色变为白色"
+              "name": "acyclicity",
+              "description": "图必须无环（题目中的树是一个无环图）"
             },
             {
-              "name": "weight_proportional_probability",
-              "description": "选择节点的概率与节点上的数字成正比"
+              "name": "path_constraint",
+              "description": "路径上的节点颜色变化规则（从蓝色节点到白色节点的简单路径上的所有节点变为白色）"
             },
             {
-              "name": "edge_replacement",
-              "description": "边两端的节点上的数字可以互换"
+              "name": "probability_distribution",
+              "description": "节点选择概率与节点上的数字成正比（选择节点的概率与其上的数字成正比）",
+              "formal": "P(i) = p_i / (Σ p_j for all j with color c)"
             },
             {
-              "name": "modulo_accumulation",
-              "description": "答案需要取模 10^9 + 7"
+              "name": "state_transition",
+              "description": "节点颜色状态转移约束（节点颜色从蓝色变为白色，直到所有节点都变成白色）"
             }
           ]
         }
@@ -98,34 +99,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_expected_value",
+    "type": "minimize_probability",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_expected_value",
-          "description": "求从初始状态到目标状态的期望操作次数"
+          "type": "minimize_probability",
+          "description": "求将所有节点变为白色的期望操作次数"
         }
       }
     ],
-    "description": "求从初始状态到目标状态的期望操作次数"
+    "description": "求将所有节点变为白色的期望操作次数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "flow_conservation",
+        "description": "在每次操作中，节点上的数字总和保持不变，满足流守恒性质。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的解可以通过子路径的期望值递归地构建，满足最优子结构。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移过程中，从蓝色节点到白色节点的转换遵循固定的概率规则，且状态转移具有一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，具体表现为从节点s到节点t的路径上的节点颜色变化过程可以分解为多个子路径的颜色变化过程，并且这些子路径的变化过程是独立的。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "flow_conservation",
+              "description": "在每次操作中，节点上的数字总和保持不变，满足流守恒性质。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "问题的解可以通过子路径的期望值递归地构建，满足最优子结构。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移过程中，从蓝色节点到白色节点的转换遵循固定的概率规则，且状态转移具有一致性。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，具体表现为从节点s到节点t的路径上的节点颜色变化过程可以分解为多个子路径的颜色变化过程，并且这些子路径的变化过程是独立的。"
+    ]
   }
 }

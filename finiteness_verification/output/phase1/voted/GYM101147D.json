@@ -2,14 +2,14 @@
   "problem_id": "GYM101147D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 20
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "minimum_element_count_constraint",
-        "description": "选取的子集大小必须等于给定的 M",
+        "name": "subset_constraint",
+        "description": "选取的子集大小不超过给定上限（Marwa 选择的 Popcorn 数量不能超过她能携带的最大数量）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_positions",
-        "description": "所有元素都是唯一的（即集合中的元素互不相同）",
+        "name": "distinctness",
+        "description": "所有元素都是唯一的（每个 Popcorn 都是独特的）",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "minimum_element_count_constraint",
-              "description": "选取的子集大小必须等于给定的 M",
-              "formal": "|S| = M"
+              "name": "subset_constraint",
+              "description": "选取的子集大小不超过给定上限（Marwa 选择的 Popcorn 数量不能超过她能携带的最大数量）",
+              "formal": "|S| <= M, where S is a subset of the set of all Popcorn pieces"
             },
             {
-              "name": "distinct_positions",
-              "description": "所有元素都是唯一的（即集合中的元素互不相同）",
-              "formal": "∀i, j ∈ S, i ≠ j"
+              "name": "distinctness",
+              "description": "所有元素都是唯一的（每个 Popcorn 都是独特的）",
+              "formal": "all elements in the set are unique"
             }
           ]
         }
@@ -71,34 +71,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "计算从N个不同元素中选取M个元素的组合数"
+          "type": "enumeration",
+          "description": "求从N个不同元素中选取M个元素的组合数"
         }
       }
     ],
-    "description": "计算从N个不同元素中选取M个元素的组合数"
+    "description": "求从N个不同元素中选取M个元素的组合数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合而成，即从N个物品中选择M个物品的方案数可以由更小规模的选择方案数递推得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "counting_invariance",
+        "description": "组合不变性：在给定的范围内，选择特定数量元素的方式数是一个固定的数学性质，不依赖于具体的元素内容。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，具体表现为从n个不同元素中选取m个元素的组合数可以由更小规模的组合数递推得到",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解组合而成，即从N个物品中选择M个物品的方案数可以由更小规模的选择方案数递推得到。",
+              "properties": {}
+            },
+            {
+              "name": "counting_invariance",
+              "description": "组合不变性：在给定的范围内，选择特定数量元素的方式数是一个固定的数学性质，不依赖于具体的元素内容。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，具体表现为从n个不同元素中选取m个元素的组合数可以由更小规模的组合数递推得到"
+    ]
   }
 }

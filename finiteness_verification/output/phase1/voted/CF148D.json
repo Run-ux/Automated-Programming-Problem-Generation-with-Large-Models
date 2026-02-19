@@ -2,14 +2,14 @@
   "problem_id": "CF148D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 2
@@ -35,28 +35,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "parallel_operation",
-        "description": "双方轮流从集合中抽取元素，直到满足某个条件（一方抽到特定元素）或集合为空",
+        "name": "turn_based",
+        "description": "双方轮流进行操作，每次操作从集合中移除一个元素",
         "confidence": "1/1"
       },
       {
-        "name": "turn_based_operation",
-        "description": "每轮抽取后，集合中的一个随机元素被移除（不计入胜利条件）",
+        "name": "exclusion",
+        "description": "一旦某个特定条件满足（即某一方抽到白鼠），游戏立即结束",
         "confidence": "1/1"
       },
       {
-        "name": "probability_proportional_to_weight",
-        "description": "每次抽取时，每个元素被抽取的概率相同",
+        "name": "probability_distribution",
+        "description": "每个元素被选中的概率相同，且在每轮操作后剩余元素的概率分布保持均匀",
         "confidence": "1/1"
       },
       {
-        "name": "edge_exclusion_constraint",
-        "description": "一旦元素被移除，不再返回集合",
-        "confidence": "1/1"
-      },
-      {
-        "name": "subset_non_empty",
-        "description": "初始集合包含两种类型的元素，数量分别为 w 和 b",
+        "name": "state_transition",
+        "description": "每轮操作后，状态（剩余元素的数量和类型）发生变化，且不可逆",
         "confidence": "1/1"
       }
     ],
@@ -67,24 +62,20 @@
         "result": {
           "constraints": [
             {
-              "name": "parallel_operation",
-              "description": "双方轮流从集合中抽取元素，直到满足某个条件（一方抽到特定元素）或集合为空"
+              "name": "turn_based",
+              "description": "双方轮流进行操作，每次操作从集合中移除一个元素"
             },
             {
-              "name": "turn_based_operation",
-              "description": "每轮抽取后，集合中的一个随机元素被移除（不计入胜利条件）"
+              "name": "exclusion",
+              "description": "一旦某个特定条件满足（即某一方抽到白鼠），游戏立即结束"
             },
             {
-              "name": "probability_proportional_to_weight",
-              "description": "每次抽取时，每个元素被抽取的概率相同"
+              "name": "probability_distribution",
+              "description": "每个元素被选中的概率相同，且在每轮操作后剩余元素的概率分布保持均匀"
             },
             {
-              "name": "edge_exclusion_constraint",
-              "description": "一旦元素被移除，不再返回集合"
-            },
-            {
-              "name": "subset_non_empty",
-              "description": "初始集合包含两种类型的元素，数量分别为 w 和 b"
+              "name": "state_transition",
+              "description": "每轮操作后，状态（剩余元素的数量和类型）发生变化，且不可逆"
             }
           ]
         }
@@ -92,36 +83,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "maximize_probability",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "计算在给定条件下，先手获胜的概率"
+          "type": "maximize_probability",
+          "description": "最大化先手获胜的概率"
         }
       }
     ],
-    "description": "计算在给定条件下，先手获胜的概率"
+    "description": "最大化先手获胜的概率"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即当前状态的概率可以通过前一个状态的概率计算得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移方程保持一致性，即每一步的状态转移都遵循相同的规则。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，当前状态的概率依赖于前一状态的概率。",
-          "properties": {
-            "subproblem_independence": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即当前状态的概率可以通过前一个状态的概率计算得出。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移方程保持一致性，即每一步的状态转移都遵循相同的规则。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，当前状态的概率依赖于前一状态的概率。"
+    ]
   }
 }

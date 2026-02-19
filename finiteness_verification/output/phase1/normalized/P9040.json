@@ -1,0 +1,84 @@
+{
+  "problem_id": "P9040",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": -1000000000,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subsequence_constraint",
+            "description": "选取的子序列必须由 k 个连续元素组成",
+            "formal": "对于每个选择的子序列 S，|S| = k 且 S 中的元素在原数组中是连续的"
+          },
+          {
+            "name": "distinctness",
+            "description": "每个元素最多只能被一个子序列包含",
+            "formal": "对于任意两个子序列 S1 和 S2，S1 ∩ S2 = ∅"
+          },
+          {
+            "name": "range_bound",
+            "description": "子序列的选择范围必须在给定的区间 [l, r] 内",
+            "formal": "对于每个选择的子序列 S，S 的起始位置和结束位置必须满足 l ≤ start(S) ≤ end(S) ≤ r"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "目标是最大化所有选定子序列的元素和",
+            "formal": "maximize(∑_{S in selected_subsequences} sum(S))"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足条件的子数组的最大和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和计算任意子区间的技能值之和，满足区间和可通过端点差值计算",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在给定范围内的最大技能值之和可以通过该范围内的子区间的最优解组合得到",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

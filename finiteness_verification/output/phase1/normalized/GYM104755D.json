@@ -17,7 +17,7 @@
         },
         "properties": {
           "directed": true,
-          "connected": false
+          "inferred": true
         }
       }
     }
@@ -29,16 +29,14 @@
       "result": {
         "constraints": [
           {
-            "name": "alternating_sequence_constraint",
-            "description": "路径选择基于节点访问次数的奇偶性，奇数次访问时选择第一条边，偶数次访问时选择第二条边"
+            "name": "state_transition",
+            "description": "状态转移约束：根据当前节点的访问次数决定下一个节点的选择。如果当前节点被访问了奇数次，则选择第一个出边，否则选择第二个出边。",
+            "formal": "next_station = (visit_count % 2 == 1) ? first_outgoing_connection : second_outgoing_connection"
           },
           {
-            "name": "circular_sequence_constraint",
-            "description": "图是循环的，每个节点的第一条边指向下一个节点或第一个节点，第二条边同理"
-          },
-          {
-            "name": "source_node_fixed",
-            "description": "起始节点在路径计算中被视为已访问一次"
+            "name": "cycle_count_constraint",
+            "description": "图结构约束：每个节点有两个出边，一个指向下一个节点，另一个指向前一个节点，形成一个环形图。",
+            "formal": "outgoing_connections[i] = ['>', '<']"
           }
         ]
       }
@@ -49,7 +47,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
+        "type": "construction",
         "description": "构造一个满足给定条件的路径终点"
       }
     }
@@ -59,11 +57,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "当前状态仅依赖于前序有限状态，具体为上一次访问该站点的次数奇偶性决定下一次移动方向",
-        "properties": {
-          "finite_state_dependency": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：根据当前状态和访问次数的奇偶性决定下一个状态，满足状态机的一致性。",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：由于存在循环连接（如最后的符号总是 '<'），系统最终会进入一个循环模式，且该循环模式在给定的规则下是固定的。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,86 @@
+{
+  "problem_id": "P9329",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通"
+          },
+          {
+            "name": "path_constraint",
+            "description": "从起点到终点的路径上，每个检查站只能选择支付金币或银币中的一种"
+          },
+          {
+            "name": "capacity_constraint",
+            "description": "在路径上支付的银币总数不能超过持有的银币数"
+          },
+          {
+            "name": "minimum_index_constraint",
+            "description": "在满足路径约束的前提下，最大化保留的金币数"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化路径上的剩余权值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从起点到终点的路径上，每个子路径的最优解可以组合成整个路径的最优解",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，优先使用金币支付检查站费用，以最大化保留的金币数量",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个城市到另一个城市的移动过程中，状态（持有的金币和银币数量）根据当前路径上的检查站费用进行更新",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

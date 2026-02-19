@@ -19,6 +19,7 @@
             "max": 1073741823
           },
           "properties": {
+            "connected": false,
             "weighted": true
           }
         }
@@ -33,24 +34,30 @@
       "max": 1073741823
     },
     "properties": {
+      "connected": false,
       "weighted": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "bottleneck_path",
+        "name": "path_xor_constraint",
         "description": "图中任意两点之间的最短路径长度定义为路径上所有边权的异或和",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "不连通的点对之间的异或最短路长度视为0",
+        "name": "pairwise_exclusion",
+        "description": "不连通的点对之间的异或最短路长度视为 0",
         "confidence": "1/1"
       },
       {
-        "name": "modulo_accumulation",
-        "description": "所有点对间异或最短路长度和需要对998244353取模",
+        "name": "undirected_graph",
+        "description": "给定的图是无向图",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "最终结果需要对 998244353 取模",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +68,20 @@
         "result": {
           "constraints": [
             {
-              "name": "bottleneck_path",
+              "name": "path_xor_constraint",
               "description": "图中任意两点之间的最短路径长度定义为路径上所有边权的异或和"
             },
             {
-              "name": "adjacent_difference",
-              "description": "不连通的点对之间的异或最短路长度视为0"
+              "name": "pairwise_exclusion",
+              "description": "不连通的点对之间的异或最短路长度视为 0"
             },
             {
-              "name": "modulo_accumulation",
-              "description": "所有点对间异或最短路长度和需要对998244353取模"
+              "name": "undirected_graph",
+              "description": "给定的图是无向图"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "最终结果需要对 998244353 取模"
             }
           ]
         }
@@ -78,14 +89,14 @@
     ]
   },
   "objective": {
-    "type": "maximize_sum_of_squares",
+    "type": "maximize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_sum_of_squares",
+          "type": "maximize_value",
           "description": "求所有点对间异或最短路径长度的总和"
         }
       }
@@ -93,19 +104,39 @@
     "description": "求所有点对间异或最短路径长度的总和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：异或最短路的长度可以通过子路径的异或值计算得到，满足动态规划中的最优子结构性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：通过基尔霍夫矩阵或其他方法进行状态转移时，每个状态的更新方式保持一致，确保了算法的一致性和正确性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：异或最短路的长度可以通过子路径的异或值组合得到，满足无向图上的最优子结构性质",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：异或最短路的长度可以通过子路径的异或值计算得到，满足动态规划中的最优子结构性质",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过基尔霍夫矩阵或其他方法进行状态转移时，每个状态的更新方式保持一致，确保了算法的一致性和正确性",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：异或最短路的长度可以通过子路径的异或值组合得到，满足无向图上的最优子结构性质"
+    ]
   }
 }

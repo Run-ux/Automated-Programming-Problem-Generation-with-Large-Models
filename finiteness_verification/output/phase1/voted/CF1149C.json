@@ -2,14 +2,14 @@
   "problem_id": "CF1149C",
   "source": "codeforces",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 4,
             "max": 199998
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "substring_deletion_constraint",
-        "description": "输入的括号序列必须是合法的，即每个左括号都有一个对应的右括号，并且括号匹配正确（树结构约束）",
+        "name": "palindrome",
+        "description": "括号序列必须是合法的，即每个左括号都有一个对应的右括号，并且括号嵌套正确",
         "confidence": "1/1"
       },
       {
-        "name": "pairwise_interaction_constraint",
-        "description": "每次交换后的括号序列也必须是合法的，即每次交换后仍然能够构成一棵树（树结构约束）",
+        "name": "acyclicity",
+        "description": "括号序列描述的结构必须是一棵树，即从根节点出发，遍历每条边两次（一次向下，一次向上）",
         "confidence": "1/1"
       },
       {
-        "name": "bottleneck_path",
-        "description": "需要计算每棵树的直径，即树中任意两点之间的最长路径长度（图论中的路径约束）",
+        "name": "operation_type",
+        "description": "每次交换两个括号后，新的括号序列仍然必须是合法的树结构描述",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "substring_deletion_constraint",
-              "description": "输入的括号序列必须是合法的，即每个左括号都有一个对应的右括号，并且括号匹配正确（树结构约束）"
+              "name": "palindrome",
+              "description": "括号序列必须是合法的，即每个左括号都有一个对应的右括号，并且括号嵌套正确"
             },
             {
-              "name": "pairwise_interaction_constraint",
-              "description": "每次交换后的括号序列也必须是合法的，即每次交换后仍然能够构成一棵树（树结构约束）"
+              "name": "acyclicity",
+              "description": "括号序列描述的结构必须是一棵树，即从根节点出发，遍历每条边两次（一次向下，一次向上）"
             },
             {
-              "name": "bottleneck_path",
-              "description": "需要计算每棵树的直径，即树中任意两点之间的最长路径长度（图论中的路径约束）"
+              "name": "operation_type",
+              "description": "每次交换两个括号后，新的括号序列仍然必须是合法的树结构描述"
             }
           ]
         }
@@ -86,29 +86,46 @@
         "status": "success",
         "result": {
           "type": "maximize_value",
-          "description": "求每个构造树的最大简单路径长度"
+          "description": "求每个构造出的树的最大简单路径长度"
         }
       }
     ],
-    "description": "求每个构造树的最大简单路径长度"
+    "description": "求每个构造出的树的最大简单路径长度"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每次交换操作后，括号序列仍能表示一棵合法的树结构，且树的直径可以通过动态规划或深度优先搜索等方法计算得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：树的直径问题可以分解为子树的直径问题，通过递归求解子问题并合并结果来得到整棵树的直径。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：树的直径可以通过子树的直径和当前节点的信息组合计算得出",
-          "properties": {
-            "subtree_diameter": true,
-            "root_inclusion": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次交换操作后，括号序列仍能表示一棵合法的树结构，且树的直径可以通过动态规划或深度优先搜索等方法计算得出。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：树的直径问题可以分解为子树的直径问题，通过递归求解子问题并合并结果来得到整棵树的直径。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：树的直径可以通过子树的直径和当前节点的信息组合计算得出"
+    ]
   }
 }

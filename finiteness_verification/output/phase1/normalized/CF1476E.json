@@ -1,0 +1,79 @@
+{
+  "problem_id": "CF1476E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 4
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "所有模式必须是两两不同的（唯一性约束）",
+            "formal": "∀ i, j (1 ≤ i < j ≤ n), p_i ≠ p_j"
+          },
+          {
+            "name": "matching_constraint",
+            "description": "每个字符串必须匹配其指定的第一个模式（匹配约束）",
+            "formal": "∀ j (1 ≤ j ≤ m), s_j matches p[mt_j]"
+          },
+          {
+            "name": "permutation_constraint",
+            "description": "模式的排列必须是唯一的（排列约束）",
+            "formal": "The order of patterns is a permutation of [1, 2, ..., n]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种排列方案，使得每个字符串匹配到指定的第一个模式"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：通过构建有向无环图（DAG）来表示模式匹配的依赖关系，确保每个字符串匹配的第一个模式是其在拓扑排序中的第一个可达节点。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个字符串的匹配问题可以独立处理，不受其他字符串匹配结果的影响。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

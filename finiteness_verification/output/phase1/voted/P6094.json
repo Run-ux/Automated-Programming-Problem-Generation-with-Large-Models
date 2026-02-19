@@ -1,0 +1,145 @@
+{
+  "problem_id": "P6094",
+  "source": "luogu",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 200
+          },
+          "value_range": {
+            "min": -1000,
+            "max": 1000
+          },
+          "properties": {
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200
+    },
+    "value_range": {
+      "min": -1000,
+      "max": 1000
+    },
+    "properties": {
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "bipartiteness",
+        "description": "图必须是二部图，即每个节点只能属于两个互斥的集合之一（南南或强强）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "每个买家的房子必须形成连通块，即每个买家的房子在图中必须是连通的",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "每个房子只能卖给一个买家或者不卖，不能同时卖给多个买家",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "bipartiteness",
+              "description": "图必须是二部图，即每个节点只能属于两个互斥的集合之一（南南或强强）",
+              "formal": "G = (V, E) 是一个二部图，V 可以划分为 V1 和 V2，使得 V1 ∩ V2 = ∅ 且 V1 ∪ V2 = V"
+            },
+            {
+              "name": "connectivity",
+              "description": "每个买家的房子必须形成连通块，即每个买家的房子在图中必须是连通的",
+              "formal": "对于每个买家 i，其房子构成的子图 G_i = (V_i, E_i) 是连通的"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "每个房子只能卖给一个买家或者不卖，不能同时卖给多个买家",
+              "formal": "对于每个房子 v，v ∈ V1 或 v ∈ V2 或 v ∉ V1 ∪ V2"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化收益减去花费的差值"
+        }
+      }
+    ],
+    "description": "最大化收益减去花费的差值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过动态规划的方式求解最大收益问题",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在动态规划过程中，状态之间的转移保持一致性，确保每个状态的值都是基于其前驱状态计算得出的",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "flow_conservation",
+        "description": "流守恒：在构建网络流模型时，每个节点的流入和流出必须保持平衡，以确保整个网络的连通性和隔离性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过动态规划的方式求解最大收益问题",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在动态规划过程中，状态之间的转移保持一致性，确保每个状态的值都是基于其前驱状态计算得出的",
+              "properties": {}
+            },
+            {
+              "name": "flow_conservation",
+              "description": "流守恒：在构建网络流模型时，每个节点的流入和流出必须保持平衡，以确保整个网络的连通性和隔离性",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

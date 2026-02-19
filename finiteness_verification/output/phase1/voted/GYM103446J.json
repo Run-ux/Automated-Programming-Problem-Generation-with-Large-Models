@@ -1,0 +1,128 @@
+{
+  "problem_id": "GYM103446J",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 50000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 50000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "sum_constraint",
+        "description": "区间内元素和超过半数时，函数 f 返回 1，否则返回 0",
+        "confidence": "1/1"
+      },
+      {
+        "name": "matching_constraint",
+        "description": "对于每个 k，区间 [max(i-k+1, 1), i] 内的元素和必须满足 f 的条件，并且结果必须与 b_i 相等",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "sum_constraint",
+              "description": "区间内元素和超过半数时，函数 f 返回 1，否则返回 0",
+              "formal": "f(l, r) = 1 if Σ_{i=l}^r a_i > (r - l + 1) / 2, otherwise 0"
+            },
+            {
+              "name": "matching_constraint",
+              "description": "对于每个 k，区间 [max(i-k+1, 1), i] 内的元素和必须满足 f 的条件，并且结果必须与 b_i 相等",
+              "formal": "For each k, f(max(i-k+1, 1), i) == b_i for all i in [1, n]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断每个整数k是否满足给定条件"
+        }
+      }
+    ],
+    "description": "判断每个整数k是否满足给定条件"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间和可通过端点差值计算，用于快速判断区间内1的数量是否超过半数",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "随着k的增加，需要检查的区间范围单调扩展，可以利用前缀和进行高效计算",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间和可通过端点差值计算，用于快速判断区间内1的数量是否超过半数",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "随着k的增加，需要检查的区间范围单调扩展，可以利用前缀和进行高效计算",
+              "properties": {
+                "right_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

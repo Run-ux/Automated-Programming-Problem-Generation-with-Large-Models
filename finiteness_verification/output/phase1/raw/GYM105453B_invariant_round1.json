@@ -4,12 +4,26 @@
   "dimension": "invariant",
   "round": 1,
   "result": {
-    "name": "monotonicity",
-    "description": "队列处理过程中，每个个体的处理顺序和位置变化满足单调性。未完成请求的个体在队尾重新排队，已处理完成的个体按序离开。",
-    "properties": {
-      "left_monotonic": false,
-      "right_monotonic": true
-    }
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "队列中每个元素的处理时间单调递减，且每次处理后剩余时间小于等于M的元素会被移除，大于M的元素会重新加入队尾。",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "队列中的每个元素在每一轮处理后，其状态（剩余处理时间）会发生变化，并且这种变化是确定性的。如果剩余处理时间小于等于M，则该元素被移除；否则，该元素被重新加入队尾。",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "每个元素的处理过程独立于其他元素，即一个元素的处理不会影响到其他元素的处理顺序和结果。",
+        "properties": {}
+      }
+    ]
   },
   "status": "success"
 }

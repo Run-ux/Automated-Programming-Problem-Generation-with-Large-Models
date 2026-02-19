@@ -1,0 +1,77 @@
+{
+  "problem_id": "GYM105139D",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "xor_subarray_sum_constraint",
+            "description": "子数组的异或和等于给定值 d 的区间数量需要最小化",
+            "formal": "minimize |{[l, r] : L_i ≤ l ≤ r ≤ R_i, ⊕_{i=l}^r a_i = d}|"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制，即在 k 天内完成阅读",
+            "formal": "k days to complete reading"
+          },
+          {
+            "name": "partition",
+            "description": "将 n 个章节划分成最多 k 个连续的子序列（可以有空闲天数）",
+            "formal": "partition n chapters into at most k contiguous subsequences (allowing idle days)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化给定天数内的总悲伤值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在给定天数内完成阅读的最小悲伤值可以通过前i天的最小悲伤值和第i+1天的决策来确定。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀异或和可以计算任意区间的异或值，从而判断该区间是否满足条件（即异或结果等于d），进而计算出该区间的悲伤值。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "weighted_undirected_graph",
         "length": {
           "min": 2,
           "max": 500
@@ -29,20 +29,16 @@
       "result": {
         "constraints": [
           {
-            "name": "node_degree_constraint",
+            "name": "degree_bound",
             "description": "所有顶点的度数为3"
           },
           {
-            "name": "grid_dimension_constraint",
-            "description": "顶点数量为偶数"
+            "name": "path_constraint",
+            "description": "图可以被分割成长度为3的链，每个链包含三个不同的边"
           },
           {
-            "name": "edge_count",
-            "description": "边的数量等于顶点数量的1.5倍，且是3的倍数"
-          },
-          {
-            "name": "path_partition",
-            "description": "图可以被分解成长度为3的链，每个链包含三条边，且这些链覆盖了所有的边"
+            "name": "coverage",
+            "description": "所有给定的边必须被恰好使用一次，且每个链中的边不能重复"
           }
         ]
       }
@@ -53,8 +49,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在一种方案，将图分解为若干条长度为3的链"
+        "type": "feasibility",
+        "description": "判断是否存在一种方案，将给定的3-正则图分解为长度为3的链"
       }
     }
   ],
@@ -63,9 +59,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成。具体来说，将图分解为长度为3的链的过程可以看作是通过解决一系列较小的子问题（即找到合适的三边链）来构建整个图的解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个三边链的构造过程不会影响其他三边链的构造，且每个三边链的构造可以独立进行",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：在构造三边链的过程中，图中的环结构保持不变，即每次选择三条边形成一个三边链时，不会破坏原有的环结构",
+            "properties": {}
+          },
+          {
+            "name": "odd_degree_partition_invariance",
+            "description": "度数约束：每个顶点的度数始终保持为3，在构造三边链的过程中，每个顶点的度数不会发生变化",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

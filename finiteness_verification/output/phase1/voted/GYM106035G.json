@@ -1,0 +1,157 @@
+{
+  "problem_id": "GYM106035G",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "directed_tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "directed_tree",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "connected": true,
+            "rooted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "connected": true,
+      "rooted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "acyclicity",
+        "description": "图必须是无环的（有向无环图）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "除了根节点外，每个节点的入度为1；根节点的入度为0",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subtree_count_constraint",
+        "description": "对于每个节点，需要计算其子树中出现频率最高的颜色",
+        "confidence": "1/1"
+      },
+      {
+        "name": "color_count_constraint",
+        "description": "如果多个颜色出现频率相同，则选择颜色值最小的那个",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "acyclicity",
+              "description": "图必须是无环的（有向无环图）"
+            },
+            {
+              "name": "degree_bound",
+              "description": "除了根节点外，每个节点的入度为1；根节点的入度为0"
+            },
+            {
+              "name": "acyclicity",
+              "description": "图是一个有根树，有一个唯一的根节点"
+            },
+            {
+              "name": "subtree_count_constraint",
+              "description": "对于每个节点，需要计算其子树中出现频率最高的颜色"
+            },
+            {
+              "name": "color_count_constraint",
+              "description": "如果多个颜色出现频率相同，则选择颜色值最小的那个"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "对于每个顶点，求以其为根的子树中出现次数最多的颜色"
+        }
+      }
+    ],
+    "description": "对于每个顶点，求以其为根的子树中出现次数最多的颜色"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个节点的解依赖于其子树的解，通过合并子树的解来得到当前节点的解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从叶子节点到根节点的递归过程中，每个节点的状态（最频繁颜色）由其子节点的状态决定",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个子树的解可以独立计算，且不影响其他子树的解",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个节点的解依赖于其子树的解，通过合并子树的解来得到当前节点的解",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从叶子节点到根节点的递归过程中，每个节点的状态（最频繁颜色）由其子节点的状态决定",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个子树的解可以独立计算，且不影响其他子树的解",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

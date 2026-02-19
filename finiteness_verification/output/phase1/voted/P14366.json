@@ -1,0 +1,152 @@
+{
+  "problem_id": "P14366",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": -200,
+            "max": 200
+          },
+          "properties": {
+            "ordered": false,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": -200,
+      "max": 200
+    },
+    "properties": {
+      "ordered": false,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "circular_boundary_constraint",
+        "description": "栅栏必须围住牧场，使得从牧场内任意一点出发，若不经过任何栅栏（包括栅栏的端点），则无法到达土地的外部。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "intersection",
+        "description": "已建栅栏中的任意两段，若它们有公共点，则该点必为其中至少一段栅栏的端点。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "建造新栅栏的成本最小化，即新栅栏的总长度最小。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "circular_boundary_constraint",
+              "description": "栅栏必须围住牧场，使得从牧场内任意一点出发，若不经过任何栅栏（包括栅栏的端点），则无法到达土地的外部。",
+              "formal": "对于任意点 (x, y) 在牧场内，若 (x, y) 不在栅栏上，则不存在路径从 (x, y) 到达土地外部而不经过栅栏。"
+            },
+            {
+              "name": "intersection",
+              "description": "已建栅栏中的任意两段，若它们有公共点，则该点必为其中至少一段栅栏的端点。",
+              "formal": "对于任意两段栅栏 i 和 j，若存在点 p 使得 p 在 i 和 j 上，则 p 必为 i 或 j 的端点。"
+            },
+            {
+              "name": "circular_boundary_constraint",
+              "description": "新栅栏不能穿过牧场内部或土地外部。",
+              "formal": "新栅栏的每一点 (x, y) 必须满足 -S <= x, y <= S。"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "建造新栅栏的成本最小化，即新栅栏的总长度最小。",
+              "formal": "minimize Σ l_i，其中 l_i 是新栅栏的长度。"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求围住给定区域所需的最小总成本"
+        }
+      }
+    ],
+    "description": "求围住给定区域所需的最小总成本"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过已有的栅栏和新添加的栅栏来最小化总成本。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，总是选择当前情况下最优的选择，例如选择最短的新栅栏来封闭牧场边界。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：已有的栅栏可以被视为多个区间的集合，这些区间可以通过合并操作来形成更大的有效区间，从而减少需要添加的新栅栏长度。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过已有的栅栏和新添加的栅栏来最小化总成本。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，总是选择当前情况下最优的选择，例如选择最短的新栅栏来封闭牧场边界。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：已有的栅栏可以被视为多个区间的集合，这些区间可以通过合并操作来形成更大的有效区间，从而减少需要添加的新栅栏长度。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

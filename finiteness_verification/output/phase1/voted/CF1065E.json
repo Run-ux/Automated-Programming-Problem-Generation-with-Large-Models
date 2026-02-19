@@ -39,18 +39,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "transformation_invariance",
-        "description": "字符串 S 和 T 被认为是等价的，如果存在一系列操作可以将 S 转换为 T。这种等价关系具有传递性。",
+        "name": "permutation_constraint",
+        "description": "字符串 S 可以通过一系列操作转换为另一个字符串 T，且这些操作可以任意次执行。",
         "confidence": "1/1"
       },
       {
-        "name": "string_reversal_pattern",
-        "description": "允许的操作是选择一个整数 i，并将前缀 Pr_i 和后缀 Su_i 分别反转，然后拼接成新的字符串。",
+        "name": "distinctness",
+        "description": "字符集 A 中的字符是互不相同的。",
         "confidence": "1/1"
       },
       {
-        "name": "operation_invariance",
-        "description": "可以对字符串执行任意次数（包括零次）的操作，且每次操作可以选择不同的 i。",
+        "name": "operation_limit",
+        "description": "操作次数没有限制，可以执行任意多次。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "字符串 S 的每个字符都必须来自字符集 A。",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +66,20 @@
         "result": {
           "constraints": [
             {
-              "name": "transformation_invariance",
-              "description": "字符串 S 和 T 被认为是等价的，如果存在一系列操作可以将 S 转换为 T。这种等价关系具有传递性。",
-              "formal": "S ~ T 如果存在一系列操作使得 S 可以转换为 T"
+              "name": "permutation_constraint",
+              "description": "字符串 S 可以通过一系列操作转换为另一个字符串 T，且这些操作可以任意次执行。"
             },
             {
-              "name": "string_reversal_pattern",
-              "description": "允许的操作是选择一个整数 i，并将前缀 Pr_i 和后缀 Su_i 分别反转，然后拼接成新的字符串。",
-              "formal": "对于任意 i (1 ≤ i < n/2)，Pr_i = S[0:i], Su_i = S[n-i:n]，操作后 S' = reverse(Su_i) + S[i:n-i] + reverse(Pr_i)"
+              "name": "distinctness",
+              "description": "字符集 A 中的字符是互不相同的。"
             },
             {
-              "name": "operation_invariance",
-              "description": "可以对字符串执行任意次数（包括零次）的操作，且每次操作可以选择不同的 i。",
-              "formal": "操作次数不限，每次操作可以选择不同的 i"
+              "name": "operation_limit",
+              "description": "操作次数没有限制，可以执行任意多次。"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "字符串 S 的每个字符都必须来自字符集 A。"
             }
           ]
         }
@@ -81,34 +87,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "计算满足条件的不同字符串的数量"
+          "type": "enumeration",
+          "description": "求满足条件的不同字符串的数量（模998244353）"
         }
       }
     ],
-    "description": "计算满足条件的不同字符串的数量"
+    "description": "求满足条件的不同字符串的数量（模998244353）"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "symmetry",
+        "description": "对称性：字符串的前缀和后缀可以通过反转操作相互转换，从而保持字符串的等价类不变",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：通过多次操作可以将多个区间合并成一个等价类，且合并后的结果与合并顺序无关",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，且子问题之间相互独立。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "symmetry",
+              "description": "对称性：字符串的前缀和后缀可以通过反转操作相互转换，从而保持字符串的等价类不变",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：通过多次操作可以将多个区间合并成一个等价类，且合并后的结果与合并顺序无关",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，且子问题之间相互独立。"
+    ]
   }
 }

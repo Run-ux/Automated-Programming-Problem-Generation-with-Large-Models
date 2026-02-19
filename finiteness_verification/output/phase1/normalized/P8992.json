@@ -1,0 +1,97 @@
+{
+  "problem_id": "P8992",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 97,
+          "max": 122
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "比较两个序列时，按字典序进行比较（较小的字母优先）"
+          },
+          {
+            "name": "subsequence_constraint",
+            "description": "玩家的手牌是从一个更大的序列中选取的一个子序列"
+          },
+          {
+            "name": "distinctness",
+            "description": "两堆手牌视为不同当且仅当两堆手牌数量不同，或存在一个位置 d 使得两堆手牌中距离堆顶为 d 的牌不同"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每轮游戏只能从牌堆顶翻开一张牌进行比较"
+          },
+          {
+            "name": "state_transition",
+            "description": "如果两人翻开的牌相同，则将翻开的牌塞入牌堆底，继续游戏"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足条件的方案数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，通过比较字符大小决定胜负",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，即每一轮游戏的结果依赖于当前牌堆顶的字符比较",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间和可通过端点差值计算，用于处理牌堆底的相同字符情况",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量，当前状态（牌堆顶字符）决定了后续状态（继续比较或结束游戏）",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

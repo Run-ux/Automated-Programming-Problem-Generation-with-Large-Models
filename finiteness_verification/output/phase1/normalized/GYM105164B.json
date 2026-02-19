@@ -1,0 +1,75 @@
+{
+  "problem_id": "GYM105164B",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 50
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "sequence_pattern_constraint",
+            "description": "细菌数量随时间呈指数增长，初始时刻为1个细菌，每分钟数量翻倍",
+            "formal": "bacteria_count(N) = 2^N"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "最终结果需要对 10^9 + 7 取模",
+            "formal": "result = bacteria_count(N) % (10^9 + 7)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求在给定时间点的细菌数量，结果取模"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：当前状态的解可以通过前一个状态的解推导出来，满足动态规划的基本性质",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：细菌数量随时间单调递增，每分钟细菌数量是上一分钟的两倍",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

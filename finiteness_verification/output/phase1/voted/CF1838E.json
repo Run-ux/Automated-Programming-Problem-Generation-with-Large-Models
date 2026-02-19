@@ -2,14 +2,14 @@
   "problem_id": "CF1838E",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -35,23 +35,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "subset_inclusion",
+        "name": "subsequence_constraint",
         "description": "数组 b 必须包含数组 a 作为子序列",
         "confidence": "1/1"
       },
       {
-        "name": "node_value_constraint",
-        "description": "数组 a 和 b 的所有元素必须在 [1, k] 范围内",
+        "name": "range_bound",
+        "description": "数组 a 和 b 的元素值域限制在 [1, k]",
         "confidence": "1/1"
       },
       {
-        "name": "edge_count",
-        "description": "数组 b 的长度 m 必须大于等于数组 a 的长度 n",
-        "confidence": "1/1"
-      },
-      {
-        "name": "modulo_expected_value_constraint",
-        "description": "结果必须对 10^9 + 7 取模",
+        "name": "modular_arithmetic",
+        "description": "结果需要对 10^9 + 7 取模",
         "confidence": "1/1"
       }
     ],
@@ -62,20 +57,19 @@
         "result": {
           "constraints": [
             {
-              "name": "subset_inclusion",
-              "description": "数组 b 必须包含数组 a 作为子序列"
+              "name": "subsequence_constraint",
+              "description": "数组 b 必须包含数组 a 作为子序列",
+              "formal": "a 是 b 的子序列"
             },
             {
-              "name": "node_value_constraint",
-              "description": "数组 a 和 b 的所有元素必须在 [1, k] 范围内"
+              "name": "range_bound",
+              "description": "数组 a 和 b 的元素值域限制在 [1, k]",
+              "formal": "∀i, 1 ≤ a_i, b_i ≤ k"
             },
             {
-              "name": "edge_count",
-              "description": "数组 b 的长度 m 必须大于等于数组 a 的长度 n"
-            },
-            {
-              "name": "modulo_expected_value_constraint",
-              "description": "结果必须对 10^9 + 7 取模"
+              "name": "modular_arithmetic",
+              "description": "结果需要对 10^9 + 7 取模",
+              "formal": "result ≡ (count of valid b) (mod 10^9 + 7)"
             }
           ]
         }
@@ -83,34 +77,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的数组数量"
+          "type": "enumeration",
+          "description": "求满足条件的数组数量，结果取模"
         }
       }
     ],
-    "description": "统计满足条件的数组数量"
+    "description": "求满足条件的数组数量，结果取模"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合得到，即计算数组b的方案数可以通过其子序列的方案数递推得出",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：通过定义合适的DP状态（如dp[i][j]表示前i个位置中以j结尾的合法序列数量），可以确保状态之间的转移是基于已知的子问题解进行的",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，即大问题的解依赖于其子问题的最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解组合得到，即计算数组b的方案数可以通过其子序列的方案数递推得出",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过定义合适的DP状态（如dp[i][j]表示前i个位置中以j结尾的合法序列数量），可以确保状态之间的转移是基于已知的子问题解进行的",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，即大问题的解依赖于其子问题的最优解。"
+    ]
   }
 }

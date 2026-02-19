@@ -2,14 +2,14 @@
   "problem_id": "GYM103102C",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 1,
             "max": 19
@@ -41,28 +41,28 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "相邻节点取值不同（图着色约束）",
+        "name": "coloring_constraint",
+        "description": "图的每个顶点必须被分配一个颜色（1, 2, 或 3），且相邻顶点的颜色必须不同",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_vertex_colorings",
-        "description": "图的3-着色数量必须恰好为 6k",
+        "name": "color_count_constraint",
+        "description": "最终图的三色着色数必须恰好为 6k，其中 k 的范围是 1 到 500",
         "confidence": "1/1"
       },
       {
-        "name": "edge_count",
-        "description": "初始图的顶点数不超过 19",
+        "name": "initial_graph_size_constraint",
+        "description": "初始图的顶点数 n 必须在 1 到 19 之间，边数 m 必须在 1 到 n(n-1)/2 之间",
         "confidence": "1/1"
       },
       {
-        "name": "edge_count",
-        "description": "每种 k 值下，可以添加的边数不超过 17",
+        "name": "edge_addition_limit",
+        "description": "对于每个 k 值，可以添加的边数 e 必须在 1 到 17 之间",
         "confidence": "1/1"
       },
       {
         "name": "distinct_edges",
-        "description": "所有边必须是唯一的，不能有自环",
+        "description": "对于每个 k 值，所有使用的边（包括初始图的边和添加的边）必须两两不同，且不能有自环",
         "confidence": "1/1"
       }
     ],
@@ -73,29 +73,24 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "相邻节点取值不同（图着色约束）",
-              "formal": "对于任意边 (u, v)，color[u] ≠ color[v]"
+              "name": "coloring_constraint",
+              "description": "图的每个顶点必须被分配一个颜色（1, 2, 或 3），且相邻顶点的颜色必须不同"
             },
             {
-              "name": "distinct_vertex_colorings",
-              "description": "图的3-着色数量必须恰好为 6k",
-              "formal": "number_of_3_colorings(G) = 6k"
+              "name": "color_count_constraint",
+              "description": "最终图的三色着色数必须恰好为 6k，其中 k 的范围是 1 到 500"
             },
             {
-              "name": "edge_count",
-              "description": "初始图的顶点数不超过 19",
-              "formal": "n ≤ 19"
+              "name": "initial_graph_size_constraint",
+              "description": "初始图的顶点数 n 必须在 1 到 19 之间，边数 m 必须在 1 到 n(n-1)/2 之间"
             },
             {
-              "name": "edge_count",
-              "description": "每种 k 值下，可以添加的边数不超过 17",
-              "formal": "e ≤ 17"
+              "name": "edge_addition_limit",
+              "description": "对于每个 k 值，可以添加的边数 e 必须在 1 到 17 之间"
             },
             {
               "name": "distinct_edges",
-              "description": "所有边必须是唯一的，不能有自环",
-              "formal": "∀ (u, v) ∈ E, u ≠ v 且 ∀ (u, v), (u', v') ∈ E, (u, v) ≠ (u', v')"
+              "description": "对于每个 k 值，所有使用的边（包括初始图的边和添加的边）必须两两不同，且不能有自环"
             }
           ]
         }
@@ -103,34 +98,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足特定条件的图，使得在添加一定数量的边后，图的3-着色数恰好为给定值"
+          "type": "construction",
+          "description": "构造一个初始图和一系列边的添加方案，使得对于每个给定的k值，最终图的3-着色数恰好为6k"
         }
       }
     ],
-    "description": "构造一个满足特定条件的图，使得在添加一定数量的边后，图的3-着色数恰好为给定值"
+    "description": "构造一个初始图和一系列边的添加方案，使得对于每个给定的k值，最终图的3-着色数恰好为6k"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：通过构建初始图和后续添加边的方式，使得最终图的3-着色数满足给定条件。每个子问题（特定k值）的解依赖于初始图和已添加边的组合。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：对于不同的k值，可以通过在初始图基础上添加不同边集来构造满足条件的图，且这些边集之间相互独立。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过逐步添加边来构造满足特定条件的图",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：通过构建初始图和后续添加边的方式，使得最终图的3-着色数满足给定条件。每个子问题（特定k值）的解依赖于初始图和已添加边的组合。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：对于不同的k值，可以通过在初始图基础上添加不同边集来构造满足条件的图，且这些边集之间相互独立。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过逐步添加边来构造满足特定条件的图"
+    ]
   }
 }

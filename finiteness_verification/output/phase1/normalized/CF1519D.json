@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 5000
@@ -26,9 +26,12 @@
       "result": {
         "constraints": [
           {
-            "name": "substring_deletion_constraint",
-            "description": "最多可以反转一个子数组（连续子段）",
-            "formal": "reverse at most one subarray (continuous subsegment) of a"
+            "name": "transformation",
+            "description": "允许对数组的一个连续子段进行反转操作，且最多只能反转一次"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "目标是最大化两个数组对应元素乘积的和"
           }
         ]
       }
@@ -40,7 +43,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "最大化两个数组对应位置元素乘积之和"
+        "description": "最大化两个数组对应位置元素乘积的和"
       }
     }
   ],
@@ -49,9 +52,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过考虑所有可能的子数组反转情况来找到最大和",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过考虑所有可能的子数组反转情况来找到最大和。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过计算前缀和，可以快速求得任意子区间的和，从而在O(1)时间内计算出反转某个子数组后的结果。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

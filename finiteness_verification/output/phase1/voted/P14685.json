@@ -1,0 +1,144 @@
+{
+  "problem_id": "P14685",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100
+          },
+          "value_range": {
+            "min": 1,
+            "max": 40000000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100
+    },
+    "value_range": {
+      "min": 1,
+      "max": 40000000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制（最多进行 300 次测量）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "所有星星的位置不同（没有两个星星在相同位置）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "星星的坐标范围在 -4000 到 4000 之间（包括边界）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "report_generation_constraint",
+        "description": "输出格式必须符合指定的矩阵形式，表示所有星星对之间的距离",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制（最多进行 300 次测量）",
+              "formal": "number_of_measurements <= 300"
+            },
+            {
+              "name": "distinctness",
+              "description": "所有星星的位置不同（没有两个星星在相同位置）",
+              "formal": "∀i, j (1 ≤ i < j ≤ n), position(i) ≠ position(j)"
+            },
+            {
+              "name": "range_bound",
+              "description": "星星的坐标范围在 -4000 到 4000 之间（包括边界）",
+              "formal": "∀i (1 ≤ i ≤ n), -4000 ≤ x_i, y_i, z_i ≤ 4000"
+            },
+            {
+              "name": "report_generation_constraint",
+              "description": "输出格式必须符合指定的矩阵形式，表示所有星星对之间的距离",
+              "formal": "output_matrix = [d_{i,j} for 1 ≤ i < j ≤ n]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造所有点对之间的距离矩阵"
+        }
+      }
+    ],
+    "description": "构造所有点对之间的距离矩阵"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "symmetry",
+        "description": "对称性：测量结果与星体的相对位置有关，而与绝对位置无关。通过测量两两星体之间的距离，可以构建出一个完全图，其中边的权重为星体间的距离平方。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：通过已知的星体到原点的距离和两两星体之间的距离，可以逐步推导出所有星体之间的距离。每个子问题（即每对星体之间的距离）的解是整个问题解的一部分。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "symmetry",
+              "description": "对称性：测量结果与星体的相对位置有关，而与绝对位置无关。通过测量两两星体之间的距离，可以构建出一个完全图，其中边的权重为星体间的距离平方。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：通过已知的星体到原点的距离和两两星体之间的距离，可以逐步推导出所有星体之间的距离。每个子问题（即每对星体之间的距离）的解是整个问题解的一部分。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

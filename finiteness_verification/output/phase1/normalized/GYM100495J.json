@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 10
@@ -28,16 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "pairwise_gcd_constraint",
-            "description": "序列中的每对相邻元素必须互质（GCD 为 1）"
+            "name": "gcd_constraint",
+            "description": "相邻元素的最大公约数必须为1（即相邻元素互质）"
           },
           {
-            "name": "non_prime_digit_constraint",
-            "description": "序列中的每个元素不能是质数"
+            "name": "pairwise_exclusion",
+            "description": "所有提取的2位数不能是质数"
           },
           {
-            "name": "distinct_elements",
-            "description": "序列中的所有元素必须各不相同"
+            "name": "distinctness",
+            "description": "所有提取的2位数必须各不相同"
           }
         ]
       }
@@ -48,8 +48,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足特定条件的整数数量"
+        "type": "enumeration",
+        "description": "求满足特定条件的数的数量"
       }
     }
   ],
@@ -58,11 +58,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过检查每个子序列是否满足条件来确定整个数是否为Vilmantas'数",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和计算区间内的Vilmantas'数的数量，满足区间和可通过端点差值计算",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：大范围的Vilmantas'数计数问题可以分解为多个小范围的子问题，每个子问题的解可以合并得到原问题的解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

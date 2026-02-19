@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 100000
@@ -28,19 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_adjacent_nodes",
-            "description": "相邻点不同（即对于任意 i，C_i ≠ C_{i+1}）",
-            "formal": "∀ i, C_i ≠ C_{i+1}"
+            "name": "distinctness",
+            "description": "相邻点不同（即任意两个相邻点不重合）",
+            "formal": "C_i ≠ C_{i+1} for all i"
           },
           {
-            "name": "periodic_generation_constraint",
-            "description": "生成点的规则必须严格遵循给定的函数 f 和 T 的定义",
-            "formal": "f(C_i) = (T(T(T(T(f(C_{i-1}), 16), -11), 20), -24) * 161120241) % 2^32"
+            "name": "distance_bound",
+            "description": "所有圆的半径和切线满足特定几何关系，确保每个圆与相邻圆相切且通过给定点D",
+            "formal": "Each circle ω_i is tangent to the next circle ω_{i+1} and passes through point D"
           },
           {
-            "name": "coordinate_constraint",
-            "description": "所有点的坐标范围在 [0, 2^16) 内",
-            "formal": "0 ≤ x, y < 2^16"
+            "name": "coverage",
+            "description": "生成的点集必须覆盖所有需要的点，包括通过生成函数生成的点",
+            "formal": "The set of generated points must cover exactly n + 1 points, including D"
           }
         ]
       }
@@ -61,9 +61,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题的解是独立且最优的。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个子问题的解都是整体问题的一部分最优解。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：在生成点的过程中，通过特定的变换函数保持点的分布特性不变，使得生成的点集具有某种对称性质。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

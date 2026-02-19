@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1000
@@ -28,19 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "resource_limit",
-            "description": "资源总量有限制，不能超过初始供应量",
-            "formal": "balloons_bought <= n_b, candies_bought <= n_c"
+            "name": "operation_limit",
+            "description": "资源总量有限制（气球和糖果的数量有限）",
+            "formal": "n_b, n_c 为气球和糖果的初始数量，且在交易过程中不会增加"
           },
           {
             "name": "consistency_constraint",
-            "description": "交易不可分割，必须按整数单位进行",
-            "formal": "balloons_bought % k_ab == 0, candies_bought % k_ac == 0, balloons_sold % k_ba == 0, candies_sold % k_ca == 0, balloons_to_candies % k_bc == 0, candies_to_balloons % k_cb == 0"
+            "description": "交易不可分割（每次交易必须完整进行）",
+            "formal": "每笔交易必须完整执行，不能部分执行"
           },
           {
-            "name": "resource_limit",
-            "description": "资源售出后不会补充，即资源池中的资源数量不会增加",
-            "formal": "n_b - balloons_bought + balloons_sold >= 0, n_c - candies_bought + candies_sold >= 0"
+            "name": "operation_limit",
+            "description": "操作次数无限制（每种交易可以进行任意次）",
+            "formal": "每种交易可以进行 0 次或多次"
           }
         ]
       }
@@ -52,7 +52,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "最大化通过一系列交易操作后获得的总价值"
+        "description": "最大化最终的货币值"
       }
     }
   ],
@@ -61,9 +61,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优解可以通过子问题的最优解组合而成，即通过逐步选择交易策略来最大化最终收益",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解可以通过子问题的最优解组合得到，即通过不同交易顺序和次数的子问题来构建最终的最大收益",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "在每一步选择中，总是选择当前能带来最大收益的操作（如购买或出售），从而逐步逼近全局最优解",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移过程中，每次操作后的状态都由前一个状态和当前操作决定，并且这些状态转移满足一致性",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

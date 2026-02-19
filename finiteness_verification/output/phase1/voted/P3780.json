@@ -1,0 +1,136 @@
+{
+  "problem_id": "P3780",
+  "source": "luogu",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 1,
+            "max": 20000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 20000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "acyclicity",
+        "description": "如果在一个结点取走了至少一个苹果，则必须要在其父结点处取走至少一个苹果（父子节点依赖约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "level_uniformity_constraint",
+        "description": "总计取走了 t 个苹果，且所有取了至少一个苹果的那些结点的最大深度为 h，则要求 t-h ≤ k（深度与取苹果数量的关系约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "acyclicity",
+              "description": "如果在一个结点取走了至少一个苹果，则必须要在其父结点处取走至少一个苹果（父子节点依赖约束）"
+            },
+            {
+              "name": "level_uniformity_constraint",
+              "description": "总计取走了 t 个苹果，且所有取了至少一个苹果的那些结点的最大深度为 h，则要求 t-h ≤ k（深度与取苹果数量的关系约束）",
+              "formal": "t - h ≤ k"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化满足约束条件的路径上的权值和"
+        }
+      }
+    ],
+    "description": "最大化满足约束条件的路径上的权值和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，通过递归或迭代求解每个子树的最大幸福度，并结合父节点的约束条件进行合并。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在处理每个结点时，根据其子结点的状态和当前结点的苹果数量及幸福度，更新当前结点的状态。状态转移过程中保持一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：处理结点时按照深度优先遍历的顺序（即拓扑序），确保在处理一个结点之前，其所有子结点已经处理完毕。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，通过递归或迭代求解每个子树的最大幸福度，并结合父节点的约束条件进行合并。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在处理每个结点时，根据其子结点的状态和当前结点的苹果数量及幸福度，更新当前结点的状态。状态转移过程中保持一致性。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：处理结点时按照深度优先遍历的顺序（即拓扑序），确保在处理一个结点之前，其所有子结点已经处理完毕。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

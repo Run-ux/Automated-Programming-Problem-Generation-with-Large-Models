@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 3,
           "max": 100000
@@ -26,14 +26,19 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
+            "name": "distance_bound",
             "description": "相邻节点取值差值为1（图着色约束）",
-            "formal": "对于所有相邻节点 u, v，有 |A[u] - A[v]| = 1"
+            "formal": "∀i, |A[i] - A[(i + 1) % n]| = 1"
           },
           {
-            "name": "circular_sequence_constraint",
-            "description": "元素必须排列成一个环形结构（循环链表约束）",
-            "formal": "最后一个元素与第一个元素也视为相邻"
+            "name": "cycle_count_constraint",
+            "description": "元素必须排列成一个环形结构",
+            "formal": "A[0], A[1], ..., A[n-1] 形成一个环"
+          },
+          {
+            "name": "coverage",
+            "description": "必须使用所有给定的元素",
+            "formal": "所有输入的 n 个元素都必须出现在环中"
           }
         ]
       }
@@ -44,8 +49,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在一种排列方式，使得所有给定的数在环中相邻两数之差恰好为1"
+        "type": "feasibility",
+        "description": "判断是否存在一种排列，使得所有相邻元素之间的差值恰好为1"
       }
     }
   ],
@@ -54,9 +59,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，即如果存在一个合法的环形排列，则该排列中的任意连续子序列也必须满足相邻元素差值为1的条件",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即如果存在一个合法的环，则该环上的每个子段也必须满足相邻元素差值为1的条件。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：对于任意两个数x和y，如果x可以接在y后面形成合法序列的一部分，则y也可以接在x后面。这种性质允许我们通过检查每一对可能的相邻数字来验证整个序列的可能性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

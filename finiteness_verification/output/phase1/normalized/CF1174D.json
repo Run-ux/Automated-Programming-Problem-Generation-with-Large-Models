@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 18
@@ -26,12 +26,12 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "存在一个子段，其异或和等于给定值 x"
+            "name": "subsequence_constraint",
+            "description": "存在一个子序列，其异或和等于给定值 x"
           },
           {
-            "name": "node_value_constraint",
-            "description": "数组元素的取值范围在 1 到 2^n - 1 之间"
+            "name": "range_bound",
+            "description": "数组元素的值域在 1 到 2^n - 1 之间"
           }
         ]
       }
@@ -42,7 +42,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
+        "type": "construction",
         "description": "构造一个满足特定条件的数组"
       }
     }
@@ -52,11 +52,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，且子问题之间相互独立",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：构造的数组中任意子段的异或和可以通过其子段的异或和计算得到，满足问题的分解性质",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：通过逐步选择当前最优解（即每次选择一个数使得当前子段的异或和最接近目标值），最终能够构造出满足条件的数组",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,173 @@
+{
+  "problem_id": "CF1282D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 300
+          },
+          "value_range": {
+            "min": 97,
+            "max": 98
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300
+    },
+    "value_range": {
+      "min": 97,
+      "max": 98
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "query_limit",
+        "description": "查询次数限制，不超过 n + 2 次，其中 n 是未知字符串 s 的长度",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "每次查询的字符串 t 的长度不超过 300",
+        "confidence": "1/1"
+      },
+      {
+        "name": "alphabet_constraint",
+        "description": "每次查询的字符串 t 只能包含字符 'a' 和 'b'",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distance_bound",
+        "description": "每次查询返回的值是查询字符串 t 与目标字符串 s 之间的编辑距离",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "当查询返回的编辑距离为 0 时，程序应立即终止",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "query_limit",
+              "description": "查询次数限制，不超过 n + 2 次，其中 n 是未知字符串 s 的长度",
+              "formal": "queries <= n + 2"
+            },
+            {
+              "name": "range_bound",
+              "description": "每次查询的字符串 t 的长度不超过 300",
+              "formal": "|t| <= 300"
+            },
+            {
+              "name": "alphabet_constraint",
+              "description": "每次查询的字符串 t 只能包含字符 'a' 和 'b'",
+              "formal": "t ∈ {a, b}*"
+            },
+            {
+              "name": "distance_bound",
+              "description": "每次查询返回的值是查询字符串 t 与目标字符串 s 之间的编辑距离",
+              "formal": "distance(t, s) = min(operations to transform t into s)"
+            },
+            {
+              "name": "operation_limit",
+              "description": "当查询返回的编辑距离为 0 时，程序应立即终止",
+              "formal": "if distance(t, s) == 0 then terminate"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一个字符串，使得其与目标字符串的编辑距离为0"
+        }
+      }
+    ],
+    "description": "判断是否存在一个字符串，使得其与目标字符串的编辑距离为0"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "查询次数单调递增，且不超过 n + 2 次（n 为未知字符串 s 的长度）",
+        "confidence": "1/1",
+        "properties": {
+          "query_count_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "每次查询的结果（编辑距离）提供了关于目标字符串 s 的部分信息，这些信息可以用于构建最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "divide_conquer",
+        "description": "通过逐步缩小可能的字符集和位置来逼近目标字符串 s，每次查询都进一步划分问题空间",
+        "confidence": "1/1",
+        "properties": {
+          "problem_space_reduction": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "查询次数单调递增，且不超过 n + 2 次（n 为未知字符串 s 的长度）",
+              "properties": {
+                "query_count_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "每次查询的结果（编辑距离）提供了关于目标字符串 s 的部分信息，这些信息可以用于构建最优解",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "通过逐步缩小可能的字符集和位置来逼近目标字符串 s，每次查询都进一步划分问题空间",
+              "properties": {
+                "problem_space_reduction": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

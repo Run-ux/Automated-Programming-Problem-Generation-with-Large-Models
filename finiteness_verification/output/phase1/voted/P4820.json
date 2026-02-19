@@ -1,0 +1,124 @@
+{
+  "problem_id": "P4820",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000000000000000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000000000000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "consistency_constraint",
+        "description": "每本书以上的所有书的重心的竖直射影必须在这本书上，否则结构不稳定",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "书本必须水平摆放，宽必须平行于桌缘，不允许同一高度摆多本书",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "consistency_constraint",
+              "description": "每本书以上的所有书的重心的竖直射影必须在这本书上，否则结构不稳定",
+              "formal": "对于每一本书 i，∑(j=1 to i-1) (x_j + M/2) * 1/M <= x_i + M/2"
+            },
+            {
+              "name": "ordering",
+              "description": "书本必须水平摆放，宽必须平行于桌缘，不允许同一高度摆多本书",
+              "formal": "所有书的 y 坐标相同，且 x 坐标互不相同"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求满足稳定性条件的最大水平延伸距离"
+        }
+      }
+    ],
+    "description": "求满足稳定性条件的最大水平延伸距离"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过前i本书的最大伸出距离可以推导出前i+1本书的最大伸出距离。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "partition_balance",
+        "description": "平衡条件：每本书以上的所有书的重心必须在当前书的范围内，以保证整体结构稳定。这一性质决定了每本书放置的位置。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过前i本书的最大伸出距离可以推导出前i+1本书的最大伸出距离。",
+              "properties": {}
+            },
+            {
+              "name": "partition_balance",
+              "description": "平衡条件：每本书以上的所有书的重心必须在当前书的范围内，以保证整体结构稳定。这一性质决定了每本书放置的位置。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

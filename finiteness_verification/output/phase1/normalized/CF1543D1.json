@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 10000
@@ -28,19 +28,20 @@
       "result": {
         "constraints": [
           {
-            "name": "query_count_constraint",
-            "description": "查询次数不超过 n 次",
-            "formal": "queries <= n"
+            "name": "query_limit",
+            "description": "查询次数限制，最多可以进行 n 次查询"
           },
           {
-            "name": "weight_adjustment",
-            "description": "每次错误猜测后，密码会根据当前密码和猜测值进行自适应变化（x ⊕_k z = y）",
-            "formal": "new_password = current_password ⊕_k guess"
+            "name": "password_adaptation_constraint",
+            "description": "密码是自适应的，每次错误猜测后会根据当前密码和猜测值更新密码"
           },
           {
-            "name": "query_count_constraint",
-            "description": "系统保证在任何时刻都存在一个初始密码使得所有查询响应一致",
-            "formal": "∃ initial_password, ∀ queries, responses are consistent"
+            "name": "xor_transformation",
+            "description": "密码更新规则为 x ⊕_k z = y，其中 x 是当前密码，y 是猜测值，z 是新的密码"
+          },
+          {
+            "name": "range_bound",
+            "description": "每次查询的值 y 必须在 0 到 2 * 10^7 之间"
           }
         ]
       }
@@ -51,8 +52,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否能在给定的查询次数内猜中密码"
+        "type": "feasibility",
+        "description": "判断是否存在一个数作为密码，使得在给定的查询次数内能够通过与系统的交互猜中该密码"
       }
     }
   ],
@@ -61,11 +62,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "当前状态只依赖于前一状态，每次猜测后密码的更新规则保证了新密码与旧密码之间的确定性关系",
-        "properties": {
-          "markov_property": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次查询后，密码的状态根据当前查询值和上一个密码值进行确定性的更新。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：在每次查询后，新的密码可以通过当前密码和查询值的异或运算得到，这种操作具有对称性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

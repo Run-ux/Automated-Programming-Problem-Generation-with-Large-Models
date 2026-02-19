@@ -1,0 +1,159 @@
+{
+  "problem_id": "CF1333D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 3000
+          },
+          "value_range": {
+            "min": "L",
+            "max": "R"
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 3000
+    },
+    "value_range": {
+      "min": "L",
+      "max": "R"
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "相邻节点取值不同（图着色约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制为 k 次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pairwise_exclusion",
+        "description": "每次操作中，每对相邻节点只能有一个被选择进行操作",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "每次操作后，状态必须满足相邻节点取值不同的约束",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "相邻节点取值不同（图着色约束）",
+              "formal": "对于所有 i (1 ≤ i < n)，A[i] ≠ A[i+1]"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制为 k 次",
+              "formal": "总操作次数 = k"
+            },
+            {
+              "name": "pairwise_exclusion",
+              "description": "每次操作中，每对相邻节点只能有一个被选择进行操作",
+              "formal": "对于每个操作 t (1 ≤ t ≤ k)，存在若干对 (i, i+1) 使得 A[i] 和 A[i+1] 同时翻转"
+            },
+            {
+              "name": "state_transition",
+              "description": "每次操作后，状态必须满足相邻节点取值不同的约束",
+              "formal": "对于每个操作 t (1 ≤ t ≤ k)，操作后的状态 A' 满足 ∀i (1 ≤ i < n), A'[i] ≠ A'[i+1]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造一个在给定步数内完成特定操作的方案"
+        }
+      }
+    ],
+    "description": "构造一个在给定步数内完成特定操作的方案"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "每轮操作中，相邻孩子对的数量单调减少，直到没有相邻孩子对为止",
+        "confidence": "1/1",
+        "properties": {
+          "window_shrinkable": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "每次操作后，孩子的朝向状态按照固定的规则进行转移，且新的状态满足无相邻孩子对的条件",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "每一步选择尽可能多的相邻孩子对进行转向操作，以确保在最少的步数内完成任务",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "每轮操作中，相邻孩子对的数量单调减少，直到没有相邻孩子对为止",
+              "properties": {
+                "window_shrinkable": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "每次操作后，孩子的朝向状态按照固定的规则进行转移，且新的状态满足无相邻孩子对的条件",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "每一步选择尽可能多的相邻孩子对进行转向操作，以确保在最少的步数内完成任务",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

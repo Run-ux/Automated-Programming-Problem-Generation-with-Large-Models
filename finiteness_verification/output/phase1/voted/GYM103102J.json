@@ -2,14 +2,14 @@
   "problem_id": "GYM103102J",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 1,
             "max": 250000
@@ -41,23 +41,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "tree_structure",
+        "name": "acyclicity",
         "description": "图必须是树结构（无环连通图）",
         "confidence": "1/1"
       },
       {
-        "name": "maximum_distance_constraint",
-        "description": "每个节点的值表示从该节点到最远宝藏的距离",
+        "name": "distance_uniformity_constraint",
+        "description": "每个节点到最远宝藏的距离已知且固定",
         "confidence": "1/1"
       },
       {
-        "name": "subset_inclusion",
-        "description": "存在至少一个非空子集与输入数据一致",
+        "name": "probability_distribution",
+        "description": "每个子集的概率相等，初始时每个节点有 50% 的概率包含宝藏",
         "confidence": "1/1"
       },
       {
-        "name": "weight_proportional_probability",
-        "description": "初始时，每个节点独立有 50% 的概率包含宝藏",
+        "name": "permutation_constraint",
+        "description": "输出的顺序是从最高到最低的概率排列，如果概率相同则按节点编号升序排列",
         "confidence": "1/1"
       }
     ],
@@ -68,20 +68,20 @@
         "result": {
           "constraints": [
             {
-              "name": "tree_structure",
+              "name": "acyclicity",
               "description": "图必须是树结构（无环连通图）"
             },
             {
-              "name": "maximum_distance_constraint",
-              "description": "每个节点的值表示从该节点到最远宝藏的距离"
+              "name": "distance_uniformity_constraint",
+              "description": "每个节点到最远宝藏的距离已知且固定"
             },
             {
-              "name": "subset_inclusion",
-              "description": "存在至少一个非空子集与输入数据一致"
+              "name": "probability_distribution",
+              "description": "每个子集的概率相等，初始时每个节点有 50% 的概率包含宝藏"
             },
             {
-              "name": "weight_proportional_probability",
-              "description": "初始时，每个节点独立有 50% 的概率包含宝藏"
+              "name": "permutation_constraint",
+              "description": "输出的顺序是从最高到最低的概率排列，如果概率相同则按节点编号升序排列"
             }
           ]
         }
@@ -89,36 +89,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "lexicographic_optimize",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的排列，使得元素按某种概率从高到低排序"
+          "type": "lexicographic_optimize",
+          "description": "根据给定的每个节点到最远宝藏的距离，输出节点按包含宝藏概率从高到低排序的序列"
         }
       }
     ],
-    "description": "构造一个满足条件的排列，使得元素按某种概率从高到低排序"
+    "description": "根据给定的每个节点到最远宝藏的距离，输出节点按包含宝藏概率从高到低排序的序列"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个岛屿的最优解可以通过其子树中的最优解来构建，即每个岛屿的概率取决于其子树中所有节点的概率。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在树结构上，从叶子节点到根节点的处理顺序保证了每个节点在其所有子节点处理完毕后再进行处理。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个子树的处理结果独立于其他子树，可以并行或顺序处理。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个岛屿的概率计算依赖于其子树中所有节点的信息",
-          "properties": {
-            "subproblem_independence": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个岛屿的最优解可以通过其子树中的最优解来构建，即每个岛屿的概率取决于其子树中所有节点的概率。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在树结构上，从叶子节点到根节点的处理顺序保证了每个节点在其所有子节点处理完毕后再进行处理。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个子树的处理结果独立于其他子树，可以并行或顺序处理。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个岛屿的概率计算依赖于其子树中所有节点的信息"
+    ]
   }
 }

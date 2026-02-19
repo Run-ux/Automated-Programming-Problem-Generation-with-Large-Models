@@ -1,0 +1,77 @@
+{
+  "problem_id": "P14969",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "k_mex_constraint",
+            "description": "选取一个区间 [l, r]，令 x = mex(a[l:r])，并将该区间内的所有元素更新为 min(a[i], x)。其中 mex(S) 表示 S 中最小的未出现的非负整数。",
+            "formal": "x = mex(a[l:r]), a[i] = min(a[i], x) for all i in [l, r]"
+          },
+          {
+            "name": "minimize_max_min_difference",
+            "description": "操作后序列中所有元素的和的最小值。",
+            "formal": "minimize(sum(a))"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化序列中所有元素的和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：操作后的序列和的最小值可以通过子区间操作后的最小值合成",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：区间的 mex 操作结果可以通过端点差值计算，从而影响整个序列的和",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：选取使当前区间 mex 最小的区间进行操作可以逐步逼近全局最优解",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

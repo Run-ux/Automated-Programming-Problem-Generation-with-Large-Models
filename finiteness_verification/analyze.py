@@ -82,11 +82,12 @@ def collect_labels_from_voted(voted_dir: Path, logger: logging.Logger) -> Dict[s
                 labels_data["objective"]["labels"].add(label)
                 labels_data["objective"]["timeline"].append((idx, label))
         
-        if "invariant" in data and data["invariant"].get("name"):
-            label = data["invariant"]["name"]
-            if label not in labels_data["invariant"]["labels"]:
-                labels_data["invariant"]["labels"].add(label)
-                labels_data["invariant"]["timeline"].append((idx, label))
+        if "invariant" in data:
+            for inv in data["invariant"].get("invariants", []):
+                label = inv.get("name")
+                if label and label not in labels_data["invariant"]["labels"]:
+                    labels_data["invariant"]["labels"].add(label)
+                    labels_data["invariant"]["timeline"].append((idx, label))
     
     for dim in labels_data:
         labels_data[dim]["labels"] = sorted(labels_data[dim]["labels"])

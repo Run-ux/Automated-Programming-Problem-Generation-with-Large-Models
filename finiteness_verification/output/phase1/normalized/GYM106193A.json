@@ -1,0 +1,84 @@
+{
+  "problem_id": "GYM106193A",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 2000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 500
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "所有指令的时间戳必须唯一（去重约束）",
+            "formal": "∀ i, j ∈ [1, n], i ≠ j → timestamp(i) ≠ timestamp(j)"
+          },
+          {
+            "name": "ordering",
+            "description": "指令按时间戳的非递减顺序执行（有序性约束）",
+            "formal": "∀ i, j ∈ [1, n], i < j → timestamp(i) < timestamp(j)"
+          },
+          {
+            "name": "range_bound",
+            "description": "异步指令的时间戳可以调整为大于其初始值的任意实数（值域约束）",
+            "formal": "∀ i ∈ [1, n], if async(i) then timestamp(i) > i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求不同执行顺序下，最终状态值的可能数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最终结果由子问题的最优解组合而成，每个子问题的解都是独立且最优的",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：处理器的状态（寄存器 A 的值）根据指令类型和参数进行确定性的状态转移",
+            "properties": {}
+          },
+          {
+            "name": "query_independence",
+            "description": "异步独立性：异步指令的时间戳调整不影响其他同步指令的执行顺序，且异步指令之间的时间戳调整相互独立",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

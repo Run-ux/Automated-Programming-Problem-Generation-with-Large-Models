@@ -1,0 +1,141 @@
+{
+  "problem_id": "CF1359D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -30,
+            "max": 30
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -30,
+      "max": 30
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subsequence_constraint",
+        "description": "选取一个非空连续子序列（区间）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_type",
+        "description": "从选定的子序列中移除一个元素，使得剩余元素的和最大化",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "对手会选择移除一个元素，使得剩余元素的和最小化",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subsequence_constraint",
+              "description": "选取一个非空连续子序列（区间）",
+              "formal": "1 ≤ l ≤ r ≤ n"
+            },
+            {
+              "name": "operation_type",
+              "description": "从选定的子序列中移除一个元素，使得剩余元素的和最大化",
+              "formal": "maximize (sum(a[l:r]) - a[j]) for some j in [l, r]"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "对手会选择移除一个元素，使得剩余元素的和最小化",
+              "formal": "minimize (sum(a[l:r]) - a[j]) for some j in [l, r]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "min_max",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "min_max",
+          "description": "求在所有可能的子数组中，移除一个元素后剩余元素和的最大值"
+        }
+      }
+    ],
+    "description": "求在所有可能的子数组中，移除一个元素后剩余元素和的最大值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即Alice选择的最优段落可以分解为更小子段落的最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：任意连续子区间的总和可以通过其端点的前缀和差值计算得出，这允许我们高效地评估不同段落的价值",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：Bob总是会选择移除使得剩余卡片总价值最小的那个卡片，这种局部最优的选择导致了全局最优的结果",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即Alice选择的最优段落可以分解为更小子段落的最优解",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：任意连续子区间的总和可以通过其端点的前缀和差值计算得出，这允许我们高效地评估不同段落的价值",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：Bob总是会选择移除使得剩余卡片总价值最小的那个卡片，这种局部最优的选择导致了全局最优的结果",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

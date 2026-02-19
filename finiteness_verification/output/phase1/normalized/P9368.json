@@ -1,0 +1,92 @@
+{
+  "problem_id": "P9368",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 5000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "cost_constraint",
+            "description": "选取的矩形的成本不超过给定的上限 c",
+            "formal": "cost(rectangle) <= c"
+          },
+          {
+            "name": "distance_cost_constraint",
+            "description": "矩形边的成本定义为边长与所在线段权重的乘积",
+            "formal": "cost(segment) = length(segment) * weight(line)"
+          },
+          {
+            "name": "axis_aligned_lines",
+            "description": "矩形的四条边必须在给定的垂直线和水平线上",
+            "formal": "edges(rectangle) ⊆ {x1, x2, ..., xn} × {y1, y2, ..., ym}"
+          },
+          {
+            "name": "reverse_ordering_constraint",
+            "description": "垂直线和水平线的坐标是严格递增的",
+            "formal": "x1 < x2 < ... < xn 且 y1 < y2 < ... < ym"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "在给定成本约束下，最大化矩形面积"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，通过调整指针位置来维护矩形的合法性",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，即最大面积的矩形可以通过子矩形的最优解组合得到",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性，矩形的成本可以通过其边长和权重的乘积累加计算",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

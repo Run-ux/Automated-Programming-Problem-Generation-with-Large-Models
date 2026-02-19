@@ -2,14 +2,14 @@
   "problem_id": "GYM104453E",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "ordering_constraint",
-        "description": "选取元素在排序后的排名不超过给定阈值（预算名额）",
+        "name": "k_largest_element_selection",
+        "description": "选取前 K 个最大值（根据成绩选择前 N 名学生）",
         "confidence": "1/1"
       },
       {
-        "name": "tie_breaking_rule",
-        "description": "如果存在多个元素具有相同的值且这些元素的排名等于给定阈值，则需要额外处理（如进行额外考试）",
+        "name": "equality_constraint",
+        "description": "检查是否存在与给定值相等的元素（检查是否有其他学生的成绩与伊戈尔相同）",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "ordering_constraint",
-              "description": "选取元素在排序后的排名不超过给定阈值（预算名额）"
+              "name": "k_largest_element_selection",
+              "description": "选取前 K 个最大值（根据成绩选择前 N 名学生）",
+              "formal": "select top k elements from a list of scores"
             },
             {
-              "name": "tie_breaking_rule",
-              "description": "如果存在多个元素具有相同的值且这些元素的排名等于给定阈值，则需要额外处理（如进行额外考试）"
+              "name": "equality_constraint",
+              "description": "检查是否存在与给定值相等的元素（检查是否有其他学生的成绩与伊戈尔相同）",
+              "formal": "check if there exists an element in the list such that element == given_value"
             }
           ]
         }
@@ -69,37 +71,60 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断给定值是否在排序后的前n个最大值中，或是否与第n个最大值相等"
+          "type": "feasibility",
+          "description": "判断给定值是否在排序后的数组中排名前n"
         }
       }
     ],
-    "description": "判断给定值是否在排序后的前n个最大值中，或是否与第n个最大值相等"
+    "description": "判断给定值是否在排序后的数组中排名前n"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "候选者按成绩排序后，排名与预算名额的关系单调递增",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解组合得到，即通过比较当前候选者与已知排名确定是否需要参加额外考试",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "排序后，候选人的录取状态随排名单调变化。具体来说，排名越靠前的候选人越有可能被直接录取，而排名越靠后的候选人则可能需要参加额外的考试或无法被录取。",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "候选者按成绩排序后，排名与预算名额的关系单调递增",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解可以通过子问题的最优解组合得到，即通过比较当前候选者与已知排名确定是否需要参加额外考试",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "排序后，候选人的录取状态随排名单调变化。具体来说，排名越靠前的候选人越有可能被直接录取，而排名越靠后的候选人则可能需要参加额外的考试或无法被录取。"
+    ]
   }
 }

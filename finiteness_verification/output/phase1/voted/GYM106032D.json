@@ -1,0 +1,137 @@
+{
+  "problem_id": "GYM106032D",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -100000,
+            "max": 100000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -100000,
+      "max": 100000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subsequence_constraint",
+        "description": "子数组是通过从数组的开头和结尾删除若干元素（可能为零）得到的连续子序列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "max_subarray_sum",
+        "description": "子数组的最大子数组和等于该子数组中所有连续子段和的最大值",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subsequence_constraint",
+              "description": "子数组是通过从数组的开头和结尾删除若干元素（可能为零）得到的连续子序列",
+              "formal": "A[L ... R] where 1 ≤ L ≤ R ≤ N"
+            },
+            {
+              "name": "max_subarray_sum",
+              "description": "子数组的最大子数组和等于该子数组中所有连续子段和的最大值",
+              "formal": "max(B_L + B_{L+1} + ... + B_R) for all 1 ≤ L ≤ R ≤ M"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求满足条件的子数组数量"
+        }
+      }
+    ],
+    "description": "求满足条件的子数组数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：子数组的和可以通过端点差值计算，满足前缀和性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：滑动窗口右端点单调递增，左端点在必要时单调前进以维护窗口合法性",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true,
+          "window_shrinkable": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最大子数组和问题可以分解为更小子数组的问题，且全局最优解包含子问题的最优解",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：子数组的和可以通过端点差值计算，满足前缀和性质",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：滑动窗口右端点单调递增，左端点在必要时单调前进以维护窗口合法性",
+              "properties": {
+                "right_monotonic": true,
+                "window_shrinkable": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最大子数组和问题可以分解为更小子数组的问题，且全局最优解包含子问题的最优解",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

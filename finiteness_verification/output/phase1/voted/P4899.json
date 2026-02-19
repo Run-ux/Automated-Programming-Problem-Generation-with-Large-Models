@@ -1,0 +1,151 @@
+{
+  "problem_id": "P4899",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 199999
+          },
+          "properties": {
+            "connected": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 199999
+    },
+    "properties": {
+      "connected": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "图必须连通，即从任意一个节点可以到达其他任意一个节点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "在每个行程中，必须在指定的区间 [L_i, R_i] 内的一个城市进行一次且仅一次变身操作",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "每个行程开始时处于人形状态，结束时必须处于狼形状态，并且在行程中必须恰好变换一次形态",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "当处于人形状态时，必须避开编号为 0 到 L_i-1 的城市；当处于狼形状态时，必须避开编号为 R_i+1 到 N-1 的城市",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "图必须连通，即从任意一个节点可以到达其他任意一个节点"
+            },
+            {
+              "name": "range_bound",
+              "description": "在每个行程中，必须在指定的区间 [L_i, R_i] 内的一个城市进行一次且仅一次变身操作"
+            },
+            {
+              "name": "state_transition",
+              "description": "每个行程开始时处于人形状态，结束时必须处于狼形状态，并且在行程中必须恰好变换一次形态"
+            },
+            {
+              "name": "exclusion",
+              "description": "当处于人形状态时，必须避开编号为 0 到 L_i-1 的城市；当处于狼形状态时，必须避开编号为 R_i+1 到 N-1 的城市"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在满足给定条件的路径"
+        }
+      }
+    ],
+    "description": "判断是否存在满足给定条件的路径"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在每个行程中，从人形到狼形的转变必须在特定的城市范围内进行，且该范围内的城市是连通的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：城市的编号根据人口数量升序排列，形成了一个隐式的拓扑顺序。在这个顺序下，某些城市可以被避开或必须经过。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：对于每个行程，起点和终点之间的路径可以通过子路径的合并来确定，且这些子路径满足特定的约束条件。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在每个行程中，从人形到狼形的转变必须在特定的城市范围内进行，且该范围内的城市是连通的。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：城市的编号根据人口数量升序排列，形成了一个隐式的拓扑顺序。在这个顺序下，某些城市可以被避开或必须经过。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：对于每个行程，起点和终点之间的路径可以通过子路径的合并来确定，且这些子路径满足特定的约束条件。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

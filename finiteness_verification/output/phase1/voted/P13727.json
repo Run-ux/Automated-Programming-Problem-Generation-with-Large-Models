@@ -1,0 +1,134 @@
+{
+  "problem_id": "P13727",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 7,
+            "max": 7
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 7,
+      "max": 7
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "每个负载中最多可以放置 k 个物品",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "每种组合的物品必须使用特定的洗涤程序之一进行洗涤",
+        "confidence": "1/1"
+      },
+      {
+        "name": "partition",
+        "description": "所有物品必须被分成若干负载，每个负载使用一个洗涤程序",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "每个负载中最多可以放置 k 个物品",
+              "formal": "sum(items_in_load) <= k"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "每种组合的物品必须使用特定的洗涤程序之一进行洗涤",
+              "formal": "items_in_pile[i] must be washed with one of the allowed programs for pile i"
+            },
+            {
+              "name": "partition",
+              "description": "所有物品必须被分成若干负载，每个负载使用一个洗涤程序",
+              "formal": "all_items = union(loads), where each load uses one program"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求满足条件的最少操作次数"
+        }
+      }
+    ],
+    "description": "求满足条件的最少操作次数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，每个子问题的最优解（即每种组合的最小负载数）可以合并成整个问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，优先选择当前最优的方案（如尽可能多地使用某个程序来减少总负载数），这种局部最优选择最终会导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，每个子问题的最优解（即每种组合的最小负载数）可以合并成整个问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，优先选择当前最优的方案（如尽可能多地使用某个程序来减少总负载数），这种局部最优选择最终会导致全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "problem_id": "GYM102760H",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 6
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 6
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "选取元素权重和不超过容量上限（总费用不超过 K）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "从给定集合中选择一个子集（选择的广告类型集合）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "操作顺序固定（拍卖按顺序进行，不能跳过或重排）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "选取元素权重和不超过容量上限（总费用不超过 K）",
+              "formal": "sum(b[c_i] for c_i in selected_types) <= K"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "从给定集合中选择一个子集（选择的广告类型集合）",
+              "formal": "selected_types ⊆ {1, 2, 3, 4, 5, 6}"
+            },
+            {
+              "name": "ordering",
+              "description": "操作顺序固定（拍卖按顺序进行，不能跳过或重排）",
+              "formal": "auctions = [c_1, c_2, ..., c_N]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "最大化在给定预算下可以成功竞标的广告数量"
+        }
+      }
+    ],
+    "description": "最大化在给定预算下可以成功竞标的广告数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，选择一个广告类型集合后，剩余预算下的最大广告数量可以通过之前的选择和当前选择的最优解来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步中，选择当前最优（即成本效益最高的广告类型）可以导致全局最优解。通过优先选择成本效益高的广告类型，可以在有限预算内最大化广告数量。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，选择一个广告类型集合后，剩余预算下的最大广告数量可以通过之前的选择和当前选择的最优解来确定。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步中，选择当前最优（即成本效益最高的广告类型）可以导致全局最优解。通过优先选择成本效益高的广告类型，可以在有限预算内最大化广告数量。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

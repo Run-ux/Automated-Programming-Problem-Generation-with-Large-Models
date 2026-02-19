@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 150
@@ -28,19 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "weight_sum_constraint",
-            "description": "存在一个非负整数 x，使得 f(x) + f(x + 1) + ... + f(x + k) 的和等于给定的 n",
-            "formal": "∃x ≥ 0, s.t. Σ_{i=0}^k f(x + i) = n"
+            "name": "sum_constraint",
+            "description": "选取的连续 k+1 个整数的数字和之和等于给定值 n",
+            "formal": "f(x) + f(x + 1) + ... + f(x + k) = n"
           },
           {
-            "name": "global_optimization_objective",
-            "description": "在满足上述条件的情况下，找到最小的 x",
-            "formal": "minimize x, s.t. Σ_{i=0}^k f(x + i) = n"
-          },
-          {
-            "name": "global_optimization_objective",
-            "description": "如果不存在满足条件的 x，则输出 -1",
-            "formal": "if no such x, output -1"
+            "name": "optimization_objective",
+            "description": "在满足上述和约束的情况下，找到最小的非负整数 x",
+            "formal": "minimize x such that f(x) + f(x + 1) + ... + f(x + k) = n"
           }
         ]
       }
@@ -51,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求满足条件的最小非负整数"
+        "type": "minimize_value",
+        "description": "求满足给定条件的最小非负整数"
       }
     }
   ],
@@ -61,12 +56,21 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence",
-        "description": "随着x的增加，f(x) + f(x + 1) + ... + f(x + k) 的值单调变化，可以通过调整x来逼近目标和n",
-        "properties": {
-          "left_monotonic": false,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过计算连续整数的数字和，可以将问题转化为区间和的形式，利用前缀和的思想进行求解",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着x的增加，f(x) + f(x + 1) + ... + f(x + k)的值也呈现出一定的单调性，可以通过枚举或二分搜索来找到满足条件的最小x",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          }
+        ]
       }
     }
   ]

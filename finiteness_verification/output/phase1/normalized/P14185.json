@@ -1,0 +1,84 @@
+{
+  "problem_id": "P14185",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 97,
+          "max": 122
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "partition",
+            "description": "将字符串划分为若干个互不相交的子串（划分约束）",
+            "formal": "S = S_1 + S_2 + ... + S_m, 其中 S_i 互不相交"
+          },
+          {
+            "name": "palindrome",
+            "description": "每个子串必须是回文串（回文约束）",
+            "formal": "∀i ∈ [1, m], S_{L_i}S_{L_i+1}...S_{R_i} 是回文串"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "相邻子串之间没有空隙，即前一个子串的结束位置加一等于下一个子串的开始位置（相邻关系）",
+            "formal": "∀i ∈ [1, m-1], R_i + 1 = L_{i+1}"
+          },
+          {
+            "name": "circular_boundary_constraint",
+            "description": "第一个子串的起始位置为1，最后一个子串的结束位置为字符串长度（边界约束）",
+            "formal": "L_1 = 1, R_m = |S|"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足条件的划分方案数（对给定模数取模）"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：将字符串划分为若干回文子串的方案数可以通过子问题的解来构建，即当前子串的划分方案数依赖于其前缀子串的划分方案数。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：通过动态规划或记忆化搜索，可以将多个子区间的划分方案数合并为一个更大区间的划分方案数。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

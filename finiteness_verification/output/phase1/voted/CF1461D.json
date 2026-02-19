@@ -1,0 +1,120 @@
+{
+  "problem_id": "CF1461D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "sum_constraint",
+        "description": "通过切片操作得到的子数组元素和必须等于给定的目标值 s_i",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每个测试用例中可以进行任意次（包括零次）的切片操作",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "sum_constraint",
+              "description": "通过切片操作得到的子数组元素和必须等于给定的目标值 s_i",
+              "formal": "∃ A' ⊆ A, sum(A') = s_i"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每个测试用例中可以进行任意次（包括零次）的切片操作",
+              "formal": "0 ≤ |slices| < ∞"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一种切分方式，使得切分后的子数组元素和等于给定的目标值"
+        }
+      }
+    ],
+    "description": "判断是否存在一种切分方式，使得切分后的子数组元素和等于给定的目标值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，即如果一个数组可以被切分成若干段使得这些段的和等于目标值，则这些段本身也是满足条件的子问题。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：任意区间的和可以通过其端点的前缀和相减得到，这允许我们通过维护前缀和快速计算任意子数组的和。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，即如果一个数组可以被切分成若干段使得这些段的和等于目标值，则这些段本身也是满足条件的子问题。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：任意区间的和可以通过其端点的前缀和相减得到，这允许我们通过维护前缀和快速计算任意子数组的和。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

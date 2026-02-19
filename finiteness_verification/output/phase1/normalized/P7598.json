@@ -1,0 +1,87 @@
+{
+  "problem_id": "P7598",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 3,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true,
+          "inferred": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "cycle_count_constraint",
+            "description": "路径是封闭的，起点和终点相同"
+          },
+          {
+            "name": "acyclicity",
+            "description": "路径是简单的，除了初始节点外，其他节点只能访问一次"
+          },
+          {
+            "name": "path_disjointness_constraint",
+            "description": "路径是暴露的，每个节点至少与一个不在路径中的非内部节点相邻"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化路径上的权值和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "cycle_invariant",
+            "description": "路径是封闭的，意味着起点和终点相同，形成一个环。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "路径上的格子访问顺序满足拓扑序，即每个格子在被访问时，其前驱格子已经访问过。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "从一个格子到相邻格子的状态转移是确定的，且满足六边形网格的邻接关系。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "路径上每个格子的距离可以通过前缀和的方式计算，即当前格子的距离等于前一个格子的距离加上步长。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

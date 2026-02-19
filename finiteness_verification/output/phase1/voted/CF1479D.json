@@ -2,14 +2,14 @@
   "problem_id": "CF1479D",
   "source": "codeforces",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 1,
             "max": 300000
@@ -19,7 +19,8 @@
             "max": 300000
           },
           "properties": {
-            "connected": true
+            "connected": true,
+            "weighted": false
           }
         }
       }
@@ -33,14 +34,20 @@
       "max": 300000
     },
     "properties": {
-      "connected": true
+      "connected": true,
+      "weighted": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "path_weight_constraint",
-        "description": "路径上存在一个资源 c_i 满足 l_i ≤ c_i ≤ r_i 且 c_i 在路径 u_i 到 v_i 上出现",
+        "name": "connectivity",
+        "description": "图必须连通（所有节点通过边可以互相到达）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "路径上存在一个元素 c_i 满足 l_i ≤ c_i ≤ r_i 且 c_i 在路径 u_i 到 v_i 上出现",
         "confidence": "1/1"
       }
     ],
@@ -51,9 +58,12 @@
         "result": {
           "constraints": [
             {
-              "name": "path_weight_constraint",
-              "description": "路径上存在一个资源 c_i 满足 l_i ≤ c_i ≤ r_i 且 c_i 在路径 u_i 到 v_i 上出现",
-              "formal": "∃c_i ∈ [l_i, r_i] 且 c_i ∈ path(u_i, v_i)"
+              "name": "connectivity",
+              "description": "图必须连通（所有节点通过边可以互相到达）"
+            },
+            {
+              "name": "path_constraint",
+              "description": "路径上存在一个元素 c_i 满足 l_i ≤ c_i ≤ r_i 且 c_i 在路径 u_i 到 v_i 上出现"
             }
           ]
         }
@@ -61,37 +71,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否存在满足条件的节点值"
+          "type": "feasibility",
+          "description": "判断是否存在满足给定条件的元素"
         }
       }
     ],
-    "description": "判断是否存在满足条件的节点值"
+    "description": "判断是否存在满足给定条件的元素"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "tree_invariant",
+        "description": "树结构不变量：给定的图是一个无环连通图，满足树的定义",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：在查询路径上的资源时，可以通过子路径的信息进行合并来得到完整路径的信息",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个查询的答案可以通过分解为更小的子问题（如子路径）的解来获得",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，满足树上路径查询的最优子结构性质",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinability": true
-          }
+          "invariants": [
+            {
+              "name": "tree_invariant",
+              "description": "树结构不变量：给定的图是一个无环连通图，满足树的定义",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：在查询路径上的资源时，可以通过子路径的信息进行合并来得到完整路径的信息",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个查询的答案可以通过分解为更小的子问题（如子路径）的解来获得",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，满足树上路径查询的最优子结构性质"
+    ]
   }
 }

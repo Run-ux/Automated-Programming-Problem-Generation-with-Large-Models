@@ -1,0 +1,83 @@
+{
+  "problem_id": "GYM100519E",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 2
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "alphabet_constraint",
+            "description": "N 在 K 进制表示中，末尾连续出现 D 的最大数量"
+          },
+          {
+            "name": "alternating_pattern_constraint",
+            "description": "在 N 的 K 进制表示中，末尾连续出现的 D 的数量必须是最大的"
+          },
+          {
+            "name": "range_bound",
+            "description": "K 必须大于等于 2"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足条件的最小基数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "基数 K 的搜索区间单调缩小，从大到小尝试不同的基数 K，直到找到满足条件的最小 K 值",
+            "properties": {
+              "search_interval_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解来构建，即在不同基数 K 下，N 的表示中连续 D 的最大数量可以由更小的 N 和 K 的子问题解推导得出",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "选择当前最优的基数 K 使得 N 在该基数下的表示中连续 D 的数量最大化，从而逐步逼近全局最优解",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "problem_id": "P10421",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 2,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distance_bound",
+            "description": "路径长度在给定区间内（L到R之间）",
+            "formal": "L <= dis(i, j) <= R"
+          },
+          {
+            "name": "acyclicity",
+            "description": "输入数据构成一棵树结构",
+            "formal": "每个节点有且仅有一个父节点，根节点除外"
+          },
+          {
+            "name": "path_disjointness_constraint",
+            "description": "两条路径经过的边集完全相同时视作同一条路径",
+            "formal": "dis(i, j) = dis(k, l) 当且仅当 {i, j} 和 {k, l} 经过的边集相同"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足特定长度范围内的所有路径的长度之和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：树上路径长度的计算可以通过子树路径长度的组合来实现，满足动态规划的最优子结构性质",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在遍历树的过程中，当前节点的状态（如深度、子树大小等）可以由其父节点的状态推导出来，保持一致性",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：树上任意两点之间的距离可以通过它们到最近公共祖先的距离之和减去两倍的最近公共祖先到根的距离来计算",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

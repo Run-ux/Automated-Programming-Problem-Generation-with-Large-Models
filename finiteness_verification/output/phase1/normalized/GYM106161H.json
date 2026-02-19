@@ -1,0 +1,80 @@
+{
+  "problem_id": "GYM106161H",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 3000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "flow_constraint",
+            "description": "选取元素权重和不超过容量上限（背包重量不超过 W）"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "两个选择策略的子集必须相同（Alice 和 Bob 选择的物品集合必须相同）"
+          },
+          {
+            "name": "range_bound",
+            "description": "未知值必须被赋为正整数（每个未知的重量或价值必须被赋为一个正整数）"
+          },
+          {
+            "name": "undefined_value_constraint",
+            "description": "每个元素最多有一个未知值（每个物品的重量和价值中最多只有一个未知）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种正整数分配方案，使得两个基于不同贪心策略的子集选择结果相同"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：局部最优选择导致全局最优。对于每个物品，通过适当分配未知值，使得两种贪心策略（如按价值密度或按重量）选择的物品集合相同。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在处理每个物品时，其选择不影响其他物品的选择。即，每个物品的处理可以独立进行，最终结果由所有独立处理的结果合成。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

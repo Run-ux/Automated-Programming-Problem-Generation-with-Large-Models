@@ -1,0 +1,98 @@
+{
+  "problem_id": "CF191D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": true,
+          "vertex_cactus": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "图是顶点仙人掌（每个顶点最多在一个简单环上）"
+          },
+          {
+            "name": "connectivity",
+            "description": "图是连通的"
+          },
+          {
+            "name": "exclusion",
+            "description": "图中没有重边或自环"
+          },
+          {
+            "name": "linear_relation",
+            "description": "每条线由一系列不重复的站点组成，且相邻站点之间有隧道连接"
+          },
+          {
+            "name": "cyclic_shift_constraint",
+            "description": "环线至少包含三个不同的站点，并且首尾站点也通过隧道连接"
+          },
+          {
+            "name": "star_graph_structure",
+            "description": "径向线至少包含两个不同的站点，并且相邻站点之间有隧道连接"
+          },
+          {
+            "name": "path_disjointness_constraint",
+            "description": "每条隧道属于且仅属于一条线"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "min_max",
+        "description": "求解图中满足条件的最小和最大线数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在处理地铁线路时，可以通过拓扑排序来确定无环路径的顺序，确保每条路径的处理顺序满足依赖关系。",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：地铁图中的每个简单环可以独立处理，且每个顶点最多属于一个简单环。这保证了在计算最大和最小线路数时，环的结构不会被破坏。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在计算最小和最大线路数时，每个连通分量（包括环和树）可以独立处理，互不影响。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

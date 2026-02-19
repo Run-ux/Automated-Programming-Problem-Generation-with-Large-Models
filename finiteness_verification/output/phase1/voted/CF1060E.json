@@ -2,14 +2,14 @@
   "problem_id": "CF1060E",
   "source": "codeforces",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 2,
             "max": 200000
@@ -19,7 +19,8 @@
             "max": 200000
           },
           "properties": {
-            "connected": true
+            "connected": true,
+            "weighted": false
           }
         }
       }
@@ -33,19 +34,25 @@
       "max": 200000
     },
     "properties": {
-      "connected": true
+      "connected": true,
+      "weighted": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "tree_structure",
-        "description": "输入的图是一个树结构，即存在且仅存在一条简单路径连接任意两个节点",
+        "name": "acyclicity",
+        "description": "图必须是树结构，即无环且连通",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "新增边的条件是两个节点共享一个邻居节点，即如果存在节点 w 使得 (u, w) 和 (w, v) 是原图中的边，则在新图中添加边 (u, v)",
+        "name": "distance_bound",
+        "description": "计算所有节点对之间的最短路径距离之和",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "在共享邻居的节点之间添加新边",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +63,16 @@
         "result": {
           "constraints": [
             {
-              "name": "tree_structure",
-              "description": "输入的图是一个树结构，即存在且仅存在一条简单路径连接任意两个节点"
+              "name": "acyclicity",
+              "description": "图必须是树结构，即无环且连通"
             },
             {
-              "name": "adjacent_difference",
-              "description": "新增边的条件是两个节点共享一个邻居节点，即如果存在节点 w 使得 (u, w) 和 (w, v) 是原图中的边，则在新图中添加边 (u, v)"
+              "name": "distance_bound",
+              "description": "计算所有节点对之间的最短路径距离之和"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "在共享邻居的节点之间添加新边"
             }
           ]
         }
@@ -69,37 +80,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_sum",
+    "type": "maximize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_sum",
-          "description": "最小化所有节点对之间的最短路径和"
+          "type": "maximize_value",
+          "description": "求所有节点对之间的最短路径长度之和"
         }
       }
     ],
-    "description": "最小化所有节点对之间的最短路径和"
+    "description": "求所有节点对之间的最短路径长度之和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即在树上添加边后，新的图中任意两点之间的最短路径可以通过原树中的路径和新增边来计算。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在处理每个节点时，其贡献值（到其他所有节点的距离之和）可以通过其子节点的贡献值递归地计算得出。这种状态转移的一致性保证了算法的正确性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：对于任意两个节点u和v，如果它们通过一个共同邻居w相连，则u到v的路径长度等于v到u的路径长度，这表明在计算距离时可以利用这种对称性简化计算。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过递归或迭代解决树上的距离计算问题",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即在树上添加边后，新的图中任意两点之间的最短路径可以通过原树中的路径和新增边来计算。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在处理每个节点时，其贡献值（到其他所有节点的距离之和）可以通过其子节点的贡献值递归地计算得出。这种状态转移的一致性保证了算法的正确性。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：对于任意两个节点u和v，如果它们通过一个共同邻居w相连，则u到v的路径长度等于v到u的路径长度，这表明在计算距离时可以利用这种对称性简化计算。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过递归或迭代解决树上的距离计算问题"
+    ]
   }
 }

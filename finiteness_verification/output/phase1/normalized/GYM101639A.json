@@ -1,0 +1,92 @@
+{
+  "problem_id": "GYM101639A",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "partition",
+            "description": "将序列分成两部分，每部分至少包含一个元素",
+            "formal": "∃k ∈ [1, n-1] 使得 1 ≤ k < n"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "最小化因技术限制而必须丢弃的总颜料量",
+            "formal": "minimize(∑(ceil(s_j / a) * a - s_j) + ∑(ceil(s_j / b) * b - s_j))"
+          },
+          {
+            "name": "partition_constraint",
+            "description": "如果存在多个满足前两个条件的划分方案，则选择使两部分长度差最小的方案",
+            "formal": "minimize(|k - (n - k)|)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化因技术限制而必须废弃的总油漆量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，将房子分成两部分分别用两种颜色进行涂色，每部分的最优解可以独立求解。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着分割点 k 的增加，左侧部分的总需求量和右侧部分的总需求量的变化是单调的。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：对于任意两个不相交的区间，它们的总需求量可以直接相加得到合并区间的总需求量。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在满足最小浪费的前提下，选择使得两部分房子数量差最小的分割点 k。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

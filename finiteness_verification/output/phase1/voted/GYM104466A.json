@@ -1,0 +1,135 @@
+{
+  "problem_id": "GYM104466A",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "新块的轮廓必须严格包含在旧块的轮廓内，不能相切或相交",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "当没有合法的放置操作时，当前玩家输掉游戏",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "新块的轮廓必须严格包含在旧块的轮廓内，不能相切或相交",
+              "formal": "new_block ⊂ old_block"
+            },
+            {
+              "name": "operation_limit",
+              "description": "当没有合法的放置操作时，当前玩家输掉游戏",
+              "formal": "if no valid move, player loses"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求满足条件的初始操作数，使得先手玩家能够获胜"
+        }
+      }
+    ],
+    "description": "求满足条件的初始操作数，使得先手玩家能够获胜"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前状态的最优解可以通过子问题的最优解来确定，即每个堆栈的最优解可以由其上一个可能放置的块的状态决定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态的变化是基于明确的规则进行的。在本题中，每次放置一个新的块时，新的状态必须满足严格包含于前一个状态的条件。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "divide_conquer",
+        "description": "分治不变量：大问题的解可以通过分解成多个子问题的解来合成。在本题中，整个游戏的胜负可以通过分析每个初始堆栈的胜负情况来决定。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：当前状态的最优解可以通过子问题的最优解来确定，即每个堆栈的最优解可以由其上一个可能放置的块的状态决定。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态的变化是基于明确的规则进行的。在本题中，每次放置一个新的块时，新的状态必须满足严格包含于前一个状态的条件。",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：大问题的解可以通过分解成多个子问题的解来合成。在本题中，整个游戏的胜负可以通过分析每个初始堆栈的胜负情况来决定。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

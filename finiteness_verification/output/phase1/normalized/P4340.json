@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -16,7 +16,7 @@
           "max": 10000
         },
         "properties": {
-          "ordered": true
+          "ordered": false
         }
       }
     }
@@ -28,12 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "modulo_accumulation",
-            "description": "所有可能表达式的和对 10^9+7 取模"
+            "name": "operation_limit",
+            "description": "操作次数限制，每次修改都是在上一次修改的基础上进行"
           },
           {
-            "name": "persistent_preference_constraint",
-            "description": "每次修改都是在上一次修改的基础上进行，而不是在最初的表达式上进行"
+            "name": "modular_arithmetic",
+            "description": "结果对 10^9+7 取模"
           }
         ]
       }
@@ -54,11 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：每个位置的贡献可以由其左右两侧的子问题解组合而成，修改某个元素后，可以通过更新受影响的子问题来维护全局解。",
-        "properties": {
-          "subproblem_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个位置的贡献可以由其左右子问题的解组合而成，满足动态规划的分解性质",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和的思想，可以将区间的贡献分解为端点差值计算，从而快速求解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

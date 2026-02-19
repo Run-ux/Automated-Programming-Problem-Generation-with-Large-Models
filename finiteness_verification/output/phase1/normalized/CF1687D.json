@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1000000
@@ -28,14 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "pairwise_exclusion",
-            "description": "对于任意正整数 x，x 必须满足 x - g(x) < f(x) - x，其中 f(x) 是严格大于 x 的最小平方数，g(x) 是小于或等于 x 的最大平方数。",
-            "formal": "∀ x ∈ Z+, x - g(x) < f(x) - x, 其中 f(x) = min{y^2 | y^2 > x}, g(x) = max{y^2 | y^2 ≤ x}"
+            "name": "cute_number_constraint",
+            "description": "对于任意正整数 x，x 必须满足 x - g(x) < f(x) - x，其中 f(x) 是严格大于 x 的最小平方数，g(x) 是小于或等于 x 的最大平方数"
           },
           {
             "name": "non_decreasing_sequence",
-            "description": "数组 a 必须是非递减的。",
-            "formal": "a[1] ≤ a[2] ≤ ... ≤ a[n]"
+            "description": "输入数组 a 必须是非递减的"
           }
         ]
       }
@@ -46,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求最小的非负整数，使得数组中每个元素加上该整数后满足特定条件"
+        "type": "minimize_value",
+        "description": "求最小的非负整数，使得数组中每个元素加上该整数后满足给定条件"
       }
     }
   ],
@@ -56,12 +54,21 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence",
-        "description": "双指针左右端点单调前进，区间合法性可单调维护",
-        "properties": {
-          "left_monotonic": true,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "随着k的增加，数组中每个元素加上k后是否为cute数的状态单调变化",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择（最小的k使得所有元素加k后为cute数）导致全局最优解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

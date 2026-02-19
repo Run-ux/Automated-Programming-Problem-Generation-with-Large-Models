@@ -1,0 +1,155 @@
+{
+  "problem_id": "CF1221E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 300000
+          },
+          "value_range": {
+            "min": ".",
+            "max": "X"
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300000
+    },
+    "value_range": {
+      "min": ".",
+      "max": "X"
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "每个玩家的操作次数有限制，Alice 必须选择长度为 a 的子串，Bob 必须选择长度为 b 的子串，且 a > b。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pattern_matching",
+        "description": "操作只能在由字符 . 组成的连续子串上进行，将这些字符替换为 X。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "turn_based",
+        "description": "游戏是回合制的，Alice 先手，然后 Alice 和 Bob 交替进行操作。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "每次操作后，字符串的状态会发生变化，直到某一方无法进行有效操作为止。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "每个玩家的操作次数有限制，Alice 必须选择长度为 a 的子串，Bob 必须选择长度为 b 的子串，且 a > b。",
+              "formal": "Alice: |substring| = a, Bob: |substring| = b, a > b"
+            },
+            {
+              "name": "pattern_matching",
+              "description": "操作只能在由字符 . 组成的连续子串上进行，将这些字符替换为 X。",
+              "formal": "Replace '.' with 'X' in contiguous substring of '.'"
+            },
+            {
+              "name": "turn_based",
+              "description": "游戏是回合制的，Alice 先手，然后 Alice 和 Bob 交替进行操作。",
+              "formal": "Turn-based game: Alice -> Bob -> Alice -> ... until no valid move"
+            },
+            {
+              "name": "state_transition",
+              "description": "每次操作后，字符串的状态会发生变化，直到某一方无法进行有效操作为止。",
+              "formal": "State transition: s -> s' after each move, game ends when no valid move"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "game_outcome",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "game_outcome",
+          "description": "判断在给定规则下，先手玩家是否能获胜"
+        }
+      }
+    ],
+    "description": "判断在给定规则下，先手玩家是否能获胜"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前状态的最优解可以通过子问题的最优解来确定",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态的变化是确定且一致的",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个子问题的解决不依赖于其他子问题的具体解法",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：当前状态的最优解可以通过子问题的最优解来确定",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态的变化是确定且一致的",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个子问题的解决不依赖于其他子问题的具体解法",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "problem_id": "CF1423C",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 10000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "图必须是无环的（初始图为树）"
+          },
+          {
+            "name": "connectivity",
+            "description": "图必须是连通的（初始图为树）"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数有限制（添加的捷径数量不超过 10 * n）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径中的每条边只能出现一次（无论是作为普通铁路还是捷径的一部分）"
+          },
+          {
+            "name": "distance_bound",
+            "description": "最短好路径的最大长度不超过 k"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "在满足特定条件下，最小化添加的边的数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过添加最少数量的捷径来优化路径长度，使得整个网络的最短好路径满足给定的直径限制。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步决策中，选择当前情况下最优的选择（例如，选择能够最大程度减少最大好路径长度的捷径），最终可以达到全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子问题的解决方案不会受到其他子问题的影响，即在解决某个子问题时，可以独立地考虑其最优解，而不需要考虑其他子问题的具体情况。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "problem_id": "P3466",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "run_length_constraint",
+            "description": "存在长度为 k 的连续子序列，其所有元素相等（即高度相同）",
+            "formal": "∃ l, r (0 ≤ l < r < n 且 r - l + 1 = k) 使得 ∀ i, j (l ≤ i, j ≤ r), h_i = h_j"
+          },
+          {
+            "name": "min_operations",
+            "description": "从初始状态到目标状态的最小操作次数（增加或减少高度）",
+            "formal": "minimize |{i: h'_i ≠ h_i}| where h' is the final height array"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化将某些连续k个柱子调整为相同高度所需的操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即在确定某一段连续高度相同的列时，可以基于更小规模的子问题的最优解进行扩展。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：对于任意给定的一段区间，选择该区间内所有列的高度调整至中位数高度所需的操作次数最少，从而保证了局部最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "problem_id": "CF1901D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "攻击顺序必须是随机选择的相邻未被攻击过的怪物，每个怪物只能被攻击一次",
+            "formal": "对于每个怪物 i，其攻击顺序为一个排列 P，且 P[i] 与 P[j] 相邻当且仅当 |i - j| = 1"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "初始法术能量 x 必须使得所有怪物在最坏情况下都能被击败",
+            "formal": "对于任意排列 P，Σ_{i=1}^n (x - (i-1)) >= a_{P[i]}"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足条件的最小初始值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即最小初始法力值的选择依赖于子区间内怪物的生命值和攻击顺序。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着初始法力值的增加，能够击败的怪物数量非严格递增。因此，存在一个最小的初始法力值使得所有怪物都能被击败。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在确定了初始目标和法力值后，每个子区间的计算可以独立进行，不受其他子区间的影响。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

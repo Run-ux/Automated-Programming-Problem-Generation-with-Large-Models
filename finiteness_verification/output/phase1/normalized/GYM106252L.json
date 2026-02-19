@@ -6,18 +6,20 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "directed_acyclic_graph",
+        "type": "directed_graph",
         "length": {
           "min": 3,
           "max": 100000
         },
         "value_range": {
-          "min": 1,
-          "max": 100000
+          "min": 0,
+          "max": 3
         },
         "properties": {
-          "directed": true,
-          "acyclic": true
+          "ordered": true,
+          "connected": true,
+          "weighted": false,
+          "directed": true
         }
       }
     }
@@ -29,24 +31,16 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_elements",
-            "description": "输入节点的状态集合中必须包含至少一个 R、G 和 B，且 * 可以出现任意次数（包括零次）。",
-            "formal": "∀ input nodes, {R, G, B} ⊆ states and * can appear 0 or more times"
+            "name": "distinctness",
+            "description": "输入节点的状态中必须包含至少一次 R、G 和 B，* 可以出现任意次数（包括零次）"
           },
           {
-            "name": "final_state_equality",
-            "description": "输出节点的状态必须是输入节点中第三个不同颜色状态的值（忽略所有 *），即在 R、G 和 B 中，输出的是首次出现位置最靠后的那个颜色。",
-            "formal": "output = third_distinct_color(input[1:n], ignoring '*')"
+            "name": "acyclicity",
+            "description": "内部节点构成的图必须是无环的"
           },
           {
-            "name": "node_type_uniformity",
-            "description": "每个内部节点必须是两种类型之一：'&' 表示三色 AND 类型，'|' 表示三色 OR 类型。",
-            "formal": "∀ internal nodes, type ∈ {'&', '|'}"
-          },
-          {
-            "name": "precedence_constraint",
-            "description": "每个内部节点有两个前驱节点，前驱节点的索引必须小于当前节点的索引。",
-            "formal": "∀ internal nodes i, ∃ u, v such that 1 ≤ u, v < n + i"
+            "name": "report_generation_constraint",
+            "description": "输出节点的状态必须是输入节点中第三个不同颜色状态（忽略 *），即在 R、G 和 B 中，输出的是第一次出现位置最靠后的那个颜色"
           }
         ]
       }
@@ -57,7 +51,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
+        "type": "construction",
         "description": "构造一个满足特定逻辑功能的有向无环图"
       }
     }
@@ -67,9 +61,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个节点的状态依赖于其前驱节点的状态组合",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个内部节点的状态由其前驱节点的状态决定，最终输出节点的状态依赖于所有输入节点的状态组合。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个内部节点根据其类型（'&' 或 '|'）和前驱节点的状态进行状态转移，确保整个图的计算过程一致。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：整个计算图是一个有向无环图（DAG），节点的计算顺序遵循拓扑排序，确保每个节点在计算时其前驱节点的状态已经确定。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

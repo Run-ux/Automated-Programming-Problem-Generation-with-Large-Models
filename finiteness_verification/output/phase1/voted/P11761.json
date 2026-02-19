@@ -1,0 +1,134 @@
+{
+  "problem_id": "P11761",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "median_selection",
+        "description": "选择中位数作为结果（在可重集合中，中位数为排序后的中间值）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "partition",
+        "description": "将数组划分为连续的若干段，并在每段中取出中位数（划分方案可以任意，但必须满足划分条件）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "median_selection",
+              "description": "选择中位数作为结果（在可重集合中，中位数为排序后的中间值）",
+              "formal": "result = mid({a_1, a_2, ..., a_n})"
+            },
+            {
+              "name": "median_selection",
+              "description": "每个子数组的中位数作为划分的一部分（子数组的中位数是该子数组排序后的中间值）",
+              "formal": "f(l, r) = mid({a_l, a_{l+1}, ..., a_r})"
+            },
+            {
+              "name": "partition",
+              "description": "将数组划分为连续的若干段，并在每段中取出中位数（划分方案可以任意，但必须满足划分条件）",
+              "formal": "partition: 1 ≤ l_1 < l_2 < ... < l_k < n"
+            },
+            {
+              "name": "median_selection",
+              "description": "最终结果是从所有划分权值的中位数中再次取中位数（所有划分权值的中位数构成一个新的集合，从中取中位数）",
+              "formal": "final_result = mid({mid({f(1, l_1), f(l_1+1, l_2), ..., f(l_k+1, n)}) for all partitions})"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "max_min",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "max_min",
+          "description": "求所有可能划分方案的权值集合中的中位数"
+        }
+      }
+    ],
+    "description": "求所有可能划分方案的权值集合中的中位数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "order_statistic_invariance",
+        "description": "中位数不变性：无论如何划分，最终的中位数总是相同的",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每段的中位数是该段的最优解，整体的中位数由这些子问题的解合成",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "order_statistic_invariance",
+              "description": "中位数不变性：无论如何划分，最终的中位数总是相同的",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每段的中位数是该段的最优解，整体的中位数由这些子问题的解合成",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

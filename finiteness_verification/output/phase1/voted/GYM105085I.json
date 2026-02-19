@@ -1,0 +1,164 @@
+{
+  "problem_id": "GYM105085I",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 2,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "connected": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "connected": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "acyclicity",
+        "description": "输入数据构成一棵树，根节点为1（魔法袜），其他节点通过边连接到根或已连接的节点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "turn_based",
+        "description": "游戏是回合制的，两名玩家轮流进行操作",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每轮操作中，玩家只能移除一条边",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "移除一条边后，所有不再与根节点（魔法袜）相连的子树及其边将被移除",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimal_play",
+        "description": "两名玩家都采取最优策略进行游戏",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "acyclicity",
+              "description": "输入数据构成一棵树，根节点为1（魔法袜），其他节点通过边连接到根或已连接的节点"
+            },
+            {
+              "name": "turn_based",
+              "description": "游戏是回合制的，两名玩家轮流进行操作"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每轮操作中，玩家只能移除一条边"
+            },
+            {
+              "name": "state_transition",
+              "description": "移除一条边后，所有不再与根节点（魔法袜）相连的子树及其边将被移除"
+            },
+            {
+              "name": "optimal_play",
+              "description": "两名玩家都采取最优策略进行游戏"
+            },
+            {
+              "name": "operation_limit",
+              "description": "当只剩下根节点（魔法袜）时，当前玩家输掉游戏"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "game_outcome",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "game_outcome",
+          "description": "确定在双方都采取最优策略的情况下，先手玩家或后手玩家的胜负"
+        }
+      }
+    ],
+    "description": "确定在双方都采取最优策略的情况下，先手玩家或后手玩家的胜负"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：游戏状态的转移遵循固定的规则，每次操作后剩余的子树结构决定了后续的操作空间。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前玩家的最优策略依赖于子问题（即子树）的最优解。通过递归解决子问题可以得到整个问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个子树的游戏状态和结果独立于其他子树，可以在求解过程中分别处理。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：游戏状态的转移遵循固定的规则，每次操作后剩余的子树结构决定了后续的操作空间。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：当前玩家的最优策略依赖于子问题（即子树）的最优解。通过递归解决子问题可以得到整个问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个子树的游戏状态和结果独立于其他子树，可以在求解过程中分别处理。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

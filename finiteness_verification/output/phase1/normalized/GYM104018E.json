@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 4,
           "max": 100
@@ -28,12 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "polygon_convexity_constraint",
+            "name": "geometric_shape_constraint",
             "description": "形成的三角形必须是非退化的，即具有严格正的面积"
           },
           {
-            "name": "distinct_vertex_colorings",
-            "description": "两个三角形如果顶点集合不同，则视为不同的三角形"
+            "name": "distinctness",
+            "description": "两个三角形被认为是不同的，如果它们的顶点集合不同"
           }
         ]
       }
@@ -45,7 +45,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计满足条件的三角形数量"
+        "description": "求给定点集中的所有不同非退化三角形的数量"
       }
     }
   ],
@@ -54,9 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，即通过计算所有可能的三角形组合来找到总的三角形数量。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解组合得到，即通过计算每三个点构成的三角形数量来求解整个问题",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子问题（即每三个点构成的三角形）的解是独立的，不依赖于其他子问题的解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

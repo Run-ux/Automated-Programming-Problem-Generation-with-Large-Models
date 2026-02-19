@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "tree",
         "length": {
           "min": 1,
           "max": 10000
@@ -32,20 +32,24 @@
       "result": {
         "constraints": [
           {
-            "name": "tree_structure",
-            "description": "输入数据构成一棵有根树，根节点为1，叶子节点表示初始元素，内部节点表示合并操作"
+            "name": "acyclicity",
+            "description": "输入数据构成一棵有根树，根节点为1，叶子节点表示初始输入元素"
           },
           {
-            "name": "substring_merge_operation",
-            "description": "每个内部节点的值由其子节点的值通过加权求和得到，权重为1或-1，取决于子节点是否在投票中获胜"
+            "name": "operation_type",
+            "description": "每个内部节点进行的操作是基于其子节点的投票结果，将子节点的坐标加权求和生成新的坐标"
           },
           {
-            "name": "maximum_tree_depth_constraint",
+            "name": "attribute_constraint",
+            "description": "加权求和时，获胜子节点的权重为1，失败子节点的权重为-1"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "最终输出的质量度量为欧几里得距离的平方（x^2 + y^2）"
+          },
+          {
+            "name": "range_bound",
             "description": "树的高度不超过10"
-          },
-          {
-            "name": "beauty_minimization",
-            "description": "最终结果的质量度量为欧几里得距离的平方（x^2 + y^2）"
           }
         ]
       }
@@ -57,7 +61,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "最大化根节点处生成的点的欧几里得距离平方值"
+        "description": "最大化树根节点处的欧几里得距离平方值"
       }
     }
   ],
@@ -66,9 +70,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个节点的最优解依赖于其子节点的最优解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个节点的最优解由其子节点的最优解合成，最终根节点的最优解即为整个问题的最优解",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个内部节点的状态（x, y值）由其子节点的状态通过加权求和的方式确定，权重取决于投票结果",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

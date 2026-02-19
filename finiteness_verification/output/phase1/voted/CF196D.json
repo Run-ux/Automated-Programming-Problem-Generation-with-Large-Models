@@ -1,0 +1,139 @@
+{
+  "problem_id": "CF196D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 400000
+          },
+          "value_range": {
+            "min": 97,
+            "max": 122
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 400000
+    },
+    "value_range": {
+      "min": 97,
+      "max": 122
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "palindrome_substring_constraint",
+        "description": "字符串中不允许存在长度大于或等于 d 的回文子串",
+        "confidence": "1/1"
+      },
+      {
+        "name": "lexicographical_order",
+        "description": "找到的字符串 t 必须在字典序上严格大于给定的字符串 s，并且在所有满足条件的字符串中字典序最小",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "palindrome_substring_constraint",
+              "description": "字符串中不允许存在长度大于或等于 d 的回文子串",
+              "formal": "对于所有 1 ≤ i ≤ j ≤ |s|，如果 s[i:j] 是回文且 j - i + 1 ≥ d，则 s 不是好的字符串"
+            },
+            {
+              "name": "lexicographical_order",
+              "description": "找到的字符串 t 必须在字典序上严格大于给定的字符串 s，并且在所有满足条件的字符串中字典序最小",
+              "formal": "t > s 且 ∀u, (u > s 且 u 是好的字符串) → t ≤ u"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "lexicographic_optimize",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "lexicographic_optimize",
+          "description": "求满足特定条件的字典序最小的字符串"
+        }
+      }
+    ],
+    "description": "求满足特定条件的字典序最小的字符串"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "lexicographic_invariance",
+        "description": "字典序最小化：在满足条件的情况下，生成的字符串是字典序最小的",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "palindrome_constraint",
+        "description": "避免回文子串：生成的字符串中不包含长度大于等于 d 的回文子串",
+        "confidence": "1/1",
+        "properties": {
+          "min_length": "d"
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择当前字符时，尽可能选择字典序最小的字符以满足无长回文子串的约束",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "lexicographic_invariance",
+              "description": "字典序最小化：在满足条件的情况下，生成的字符串是字典序最小的",
+              "properties": {}
+            },
+            {
+              "name": "palindrome_constraint",
+              "description": "避免回文子串：生成的字符串中不包含长度大于等于 d 的回文子串",
+              "properties": {
+                "min_length": "d"
+              }
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择当前字符时，尽可能选择字典序最小的字符以满足无长回文子串的约束",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

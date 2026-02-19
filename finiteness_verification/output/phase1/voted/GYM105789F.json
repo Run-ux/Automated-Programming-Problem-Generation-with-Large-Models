@@ -1,0 +1,144 @@
+{
+  "problem_id": "GYM105789F",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "window_constraint",
+        "description": "查询指定区间内的最小未覆盖高度",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "每个矩形覆盖一个水平区间 [A, B] 和垂直高度 H，表示为 (x, y) 满足 A ≤ x ≤ B 且 0 ≤ y < H 的所有点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "支持动态添加和删除矩形，并在每次操作后更新覆盖情况",
+        "confidence": "1/1"
+      },
+      {
+        "name": "intersection",
+        "description": "不同矩形可以重叠",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "window_constraint",
+              "description": "查询指定区间内的最小未覆盖高度",
+              "formal": "min { y | (x, y) 未被任何矩形覆盖且 L ≤ x ≤ R }"
+            },
+            {
+              "name": "coverage",
+              "description": "每个矩形覆盖一个水平区间 [A, B] 和垂直高度 H，表示为 (x, y) 满足 A ≤ x ≤ B 且 0 ≤ y < H 的所有点",
+              "formal": "对于每个矩形 (A, B, H)，覆盖的点集为 {(x, y) | A ≤ x ≤ B 且 0 ≤ y < H}"
+            },
+            {
+              "name": "operation_limit",
+              "description": "支持动态添加和删除矩形，并在每次操作后更新覆盖情况",
+              "formal": "支持 ' + A B H ' 添加矩形，' - I ' 删除矩形 I"
+            },
+            {
+              "name": "intersection",
+              "description": "不同矩形可以重叠",
+              "formal": "矩形 (A1, B1, H1) 和 (A2, B2, H2) 可以有交集"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求给定区间内未被覆盖的最小高度"
+        }
+      }
+    ],
+    "description": "求给定区间内未被覆盖的最小高度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_mergeable",
+        "description": "区间信息可通过子区间合并，适用于线段树等数据结构",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移一致性，每个事件（添加、删除、查询）导致的状态变化是确定的",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间信息可通过子区间合并，适用于线段树等数据结构",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移一致性，每个事件（添加、删除、查询）导致的状态变化是确定的",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

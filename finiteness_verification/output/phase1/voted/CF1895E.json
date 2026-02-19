@@ -2,14 +2,14 @@
   "problem_id": "CF1895E",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 300000
@@ -35,28 +35,28 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_exclusion",
-        "description": "一个元素的攻击值必须严格大于另一个元素的防御值才能击败它（偏序关系约束）",
+        "name": "matching_constraint",
+        "description": "一个元素的攻击值必须严格大于另一个元素的防御值才能击败它（图着色约束）",
         "confidence": "1/1"
       },
       {
-        "name": "cyclic_sequence_constraint",
-        "description": "被击败的元素会返回到原持有者的手中，允许在后续回合中再次使用（循环替换约束）",
+        "name": "cyclic_shift_constraint",
+        "description": "被击败的元素会返回到玩家手中，允许在后续回合中再次使用（循环替换约束）",
         "confidence": "1/1"
       },
       {
-        "name": "global_optimization_objective",
-        "description": "双方玩家都采取最优策略，即如果存在必胜策略则选择必胜策略，否则选择平局策略（最优策略约束）",
+        "name": "optimal_play",
+        "description": "双方玩家都采取最优策略进行游戏（最优策略约束）",
         "confidence": "1/1"
       },
       {
-        "name": "path_length_constraint",
-        "description": "当当前玩家无法找到可以击败对手上一张卡牌的卡牌时，游戏结束且该玩家失败（终止条件约束）",
+        "name": "operation_limit",
+        "description": "如果当前玩家没有可以击败对手刚出的牌，则该玩家输掉游戏（终止条件约束）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_solution_constraint",
-        "description": "如果游戏进行超过 100^500 回合，则宣布为平局（超长回合平局约束）",
+        "name": "terminal_vertex",
+        "description": "如果游戏持续超过 $100^{500}$ 回合，则宣布平局（平局条件约束）",
         "confidence": "1/1"
       }
     ],
@@ -67,24 +67,29 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_exclusion",
-              "description": "一个元素的攻击值必须严格大于另一个元素的防御值才能击败它（偏序关系约束）"
+              "name": "matching_constraint",
+              "description": "一个元素的攻击值必须严格大于另一个元素的防御值才能击败它（图着色约束）",
+              "formal": "s.beats(t) if s.attack > t.defence"
             },
             {
-              "name": "cyclic_sequence_constraint",
-              "description": "被击败的元素会返回到原持有者的手中，允许在后续回合中再次使用（循环替换约束）"
+              "name": "cyclic_shift_constraint",
+              "description": "被击败的元素会返回到玩家手中，允许在后续回合中再次使用（循环替换约束）",
+              "formal": "after s.beats(t), t returns to player's hand"
             },
             {
-              "name": "global_optimization_objective",
-              "description": "双方玩家都采取最优策略，即如果存在必胜策略则选择必胜策略，否则选择平局策略（最优策略约束）"
+              "name": "optimal_play",
+              "description": "双方玩家都采取最优策略进行游戏（最优策略约束）",
+              "formal": "both players play optimally"
             },
             {
-              "name": "path_length_constraint",
-              "description": "当当前玩家无法找到可以击败对手上一张卡牌的卡牌时，游戏结束且该玩家失败（终止条件约束）"
+              "name": "operation_limit",
+              "description": "如果当前玩家没有可以击败对手刚出的牌，则该玩家输掉游戏（终止条件约束）",
+              "formal": "if no card in current player's hand can beat the opponent's last card, current player loses"
             },
             {
-              "name": "distinct_solution_constraint",
-              "description": "如果游戏进行超过 100^500 回合，则宣布为平局（超长回合平局约束）"
+              "name": "terminal_vertex",
+              "description": "如果游戏持续超过 $100^{500}$ 回合，则宣布平局（平局条件约束）",
+              "formal": "if game lasts for 100^500 moves, it's a draw"
             }
           ]
         }
@@ -92,34 +97,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的方案数量"
+          "type": "enumeration",
+          "description": "计算在给定条件下，不同结果（胜利、平局、失败）的方案数"
         }
       }
     ],
-    "description": "统计满足条件的方案数量"
+    "description": "计算在给定条件下，不同结果（胜利、平局、失败）的方案数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：游戏的最终结果可以通过分析每个玩家在每一步的最优选择来确定。即，如果一个玩家在某一步有必胜策略，则该玩家在整个游戏中也有必胜策略。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步中，玩家总是选择能够击败对手当前卡片的最佳卡片。这种局部最优选择可以导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：游戏的状态（当前玩家、当前卡片）在每一步都会根据规则进行转移，并且这种转移是确定性的。即，给定当前状态和下一步的选择，下一个状态是唯一的。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：游戏的最终结果可以通过分析每个玩家在每一步的最优选择来确定，即大问题的解由子问题的解组合而成",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：游戏的最终结果可以通过分析每个玩家在每一步的最优选择来确定。即，如果一个玩家在某一步有必胜策略，则该玩家在整个游戏中也有必胜策略。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步中，玩家总是选择能够击败对手当前卡片的最佳卡片。这种局部最优选择可以导致全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：游戏的状态（当前玩家、当前卡片）在每一步都会根据规则进行转移，并且这种转移是确定性的。即，给定当前状态和下一步的选择，下一个状态是唯一的。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：游戏的最终结果可以通过分析每个玩家在每一步的最优选择来确定，即大问题的解由子问题的解组合而成"
+    ]
   }
 }

@@ -2,14 +2,14 @@
   "problem_id": "CF128C",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 3,
             "max": 3
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "hierarchical_structure",
+        "name": "rectangular_layout",
         "description": "每个新矩形必须完全包含在前一个矩形内部，且不与前一个矩形有公共点",
         "confidence": "1/1"
       },
       {
-        "name": "operation_sequence",
-        "description": "游戏进行 k 轮，每轮由一个玩家绘制一个新的矩形",
+        "name": "operation_limit",
+        "description": "总共进行 k 次操作（即绘制 k 个新矩形）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_submatrix",
-        "description": "每次绘制的矩形必须是不同的，即不能重复绘制相同的矩形",
+        "name": "distinctness",
+        "description": "每次绘制的新矩形必须是唯一的，不能重复",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "hierarchical_structure",
+              "name": "rectangular_layout",
               "description": "每个新矩形必须完全包含在前一个矩形内部，且不与前一个矩形有公共点"
             },
             {
-              "name": "operation_sequence",
-              "description": "游戏进行 k 轮，每轮由一个玩家绘制一个新的矩形"
+              "name": "operation_limit",
+              "description": "总共进行 k 次操作（即绘制 k 个新矩形）"
             },
             {
-              "name": "distinct_submatrix",
-              "description": "每次绘制的矩形必须是不同的，即不能重复绘制相同的矩形"
+              "name": "distinctness",
+              "description": "每次绘制的新矩形必须是唯一的，不能重复"
             }
           ]
         }
@@ -78,34 +78,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "计算满足条件的不同方案数量"
+          "type": "enumeration",
+          "description": "求满足条件的方案数（常取模）"
         }
       }
     ],
-    "description": "计算满足条件的不同方案数量"
+    "description": "求满足条件的方案数（常取模）"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即在给定的矩形内选择一个更小的矩形进行绘制的方式可以分解为多个子问题的组合。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "divide_conquer",
+        "description": "分治不变量：大问题的解由子问题解合成。每次绘制新的矩形时，问题规模减小，但整体问题的解法保持一致。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的解是独立且最优的",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即在给定的矩形内选择一个更小的矩形进行绘制的方式可以分解为多个子问题的组合。",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：大问题的解由子问题解合成。每次绘制新的矩形时，问题规模减小，但整体问题的解法保持一致。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的解是独立且最优的"
+    ]
   }
 }

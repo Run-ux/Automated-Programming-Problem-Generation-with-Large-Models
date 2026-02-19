@@ -2,14 +2,14 @@
   "problem_id": "GYM105873F",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -35,13 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "query_range_validity",
-        "description": "操作范围必须在数组的有效索引范围内（1 ≤ l ≤ r ≤ N）",
+        "name": "range_bound",
+        "description": "操作范围在数组的有效索引范围内（1 ≤ l ≤ r ≤ N）",
         "confidence": "1/1"
       },
       {
-        "name": "operation_sequence",
-        "description": "所有操作必须按顺序依次处理",
+        "name": "operation_type",
+        "description": "操作类型限制为三种：Q, A, R",
         "confidence": "1/1"
       }
     ],
@@ -52,12 +52,14 @@
         "result": {
           "constraints": [
             {
-              "name": "query_range_validity",
-              "description": "操作范围必须在数组的有效索引范围内（1 ≤ l ≤ r ≤ N）"
+              "name": "range_bound",
+              "description": "操作范围在数组的有效索引范围内（1 ≤ l ≤ r ≤ N）",
+              "formal": "1 ≤ l ≤ r ≤ N"
             },
             {
-              "name": "operation_sequence",
-              "description": "所有操作必须按顺序依次处理"
+              "name": "operation_type",
+              "description": "操作类型限制为三种：Q, A, R",
+              "formal": "C ∈ {Q, A, R}"
             }
           ]
         }
@@ -65,37 +67,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断给定区间内是否满足特定条件"
+          "type": "feasibility",
+          "description": "对给定区间进行查询操作并输出结果"
         }
       }
     ],
-    "description": "判断给定区间内是否满足特定条件"
+    "description": "对给定区间进行查询操作并输出结果"
   },
   "invariant": {
-    "name": "interval_mergeable",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "interval_mergeable",
+        "description": "区间信息可通过子区间合并，支持区间更新和查询操作",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，适用于区间操作的累积效应",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间信息可通过子区间合并，支持高效查询和更新操作",
-          "properties": {
-            "prefix_sum": true,
-            "segment_tree": true
-          }
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间信息可通过子区间合并，支持区间更新和查询操作",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，适用于区间操作的累积效应",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "区间信息可通过子区间合并，支持高效查询和更新操作"
+    ]
   }
 }

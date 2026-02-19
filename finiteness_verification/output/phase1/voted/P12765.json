@@ -2,14 +2,14 @@
   "problem_id": "P12765",
   "source": "luogu",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1000000
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_element_count_constraint",
+        "name": "distinctness",
         "description": "区间内不同元素数量必须为3（三种颜色的积木）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_element_count_constraint",
-        "description": "区间内每种元素的数量必须互不相同（三座塔的高度必须互不相同）",
+        "name": "frequency_bound",
+        "description": "每种颜色的积木数量必须互不相同",
         "confidence": "1/1"
       },
       {
-        "name": "continuous_path_constraint",
-        "description": "选择的元素必须是连续的子数组（连续的积木段）",
+        "name": "subsequence_constraint",
+        "description": "选择的子序列必须是连续的",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_element_count_constraint",
-              "description": "区间内不同元素数量必须为3（三种颜色的积木）",
-              "formal": "|distinct(A[l:r])| = 3"
+              "name": "distinctness",
+              "description": "区间内不同元素数量必须为3（三种颜色的积木）"
             },
             {
-              "name": "distinct_element_count_constraint",
-              "description": "区间内每种元素的数量必须互不相同（三座塔的高度必须互不相同）",
-              "formal": "count(A[l:r], 'B') ≠ count(A[l:r], 'S') ≠ count(A[l:r], 'C')"
+              "name": "frequency_bound",
+              "description": "每种颜色的积木数量必须互不相同"
             },
             {
-              "name": "continuous_path_constraint",
-              "description": "选择的元素必须是连续的子数组（连续的积木段）",
-              "formal": "A[l:r] 是 A 的一个连续子数组"
+              "name": "subsequence_constraint",
+              "description": "选择的子序列必须是连续的"
             }
           ]
         }
@@ -96,22 +93,56 @@
     "description": "求满足条件的最长子数组长度"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "双指针左右端点单调前进，区间合法性可单调维护",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，通过子区间的最优解来构建全局最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间和可通过端点差值计算，前缀和用于快速查询区间内的积木颜色数量",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "双指针左右端点单调前进，区间合法性可单调维护",
-          "properties": {
-            "left_monotonic": true,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针左右端点单调前进，区间合法性可单调维护",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，通过子区间的最优解来构建全局最优解",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间和可通过端点差值计算，前缀和用于快速查询区间内的积木颜色数量",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "双指针左右端点单调前进，区间合法性可单调维护"
+    ]
   }
 }

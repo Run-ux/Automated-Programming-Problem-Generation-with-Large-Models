@@ -13,7 +13,8 @@ phase2 在 phase1 完成后执行，使用 Phase 1 生成的标签集合作为�
 
 1. ✅ phase1已完成（`labels_per_dimension.json` 已生成）
 2. ✅ API Key 已设置（`DASHSCOPE_API_KEY` 或 `QWEN_API_KEY`）
-3. ✅ 全量题目数据存在：
+3. ✅ 依赖已安装：`numpy`, `matplotlib`
+4. ✅ 全量题目数据存在：
    - `爬取题目/output/luogu/index.json`
    - `爬取题目/output/codeforces/index.json`
    - `爬取题目/output/icpc/index.json`
@@ -60,6 +61,8 @@ python -m finiteness_verification.classify \
 - `finiteness_verification/output/phase2/classified_codeforces/` — Codeforces 分类结果
 - `finiteness_verification/output/phase2/classified_icpc/` — ICPC 分类结果
 
+说明：invariant 维度支持多标签分类，输出字段为 `categories` 数组；其他维度仍为单一 `category`。
+
 ---
 
 ### Step 2: 覆盖率与收敛报告
@@ -67,7 +70,7 @@ python -m finiteness_verification.classify \
 ```bash
 python -m finiteness_verification.report \
     --input finiteness_verification/output/phase2/ \
-    --output finiteness_verification/output/phase2/
+    --output finiteness_verification/output/phase2/coverage_report.json
 ```
 
 **输出**：
@@ -88,6 +91,8 @@ r = json.load(open(r'finiteness_verification/output/phase2/coverage_report.json'
 for dim, data in r['per_dimension'].items():
     print(f'{dim}: coverage={data["coverage_rate"]:.1%}, OTHER={data["other_rate"]:.1%}')
 "
+
+说明：invariant 维度现在支持多标签分类，因此 coverage/OTHER 统计基于不变量条目数而不是题目数。
 ```
 
 ### 跨平台一致性检查

@@ -1,0 +1,143 @@
+{
+  "problem_id": "GYM106170B",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 10000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "相邻节点取值不同（图着色约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个节点的度数相同（出度和入度相等）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "相邻节点取值不同（图着色约束）",
+              "formal": "对于任意两个相邻的节点 u 和 v，退出 u 的方法类型 j 不能等于进入 v 的方法类型 j"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个节点的度数相同（出度和入度相等）",
+              "formal": "对于每个节点 i 和每种方法类型 j，c_{i,j} 表示退出和进入该节点的方法数量，且 c_{i,j} 相同"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求在给定天数内，满足特定转换规则的路径总数（模10^9+7）"
+        }
+      }
+    ],
+    "description": "求在给定天数内，满足特定转换规则的路径总数（模10^9+7）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即每一天的状态转移依赖于前一天的状态。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每一天的状态转移遵循特定规则，即离开和进入的方法不能相同。",
+        "confidence": "1/1",
+        "properties": {
+          "transition_rule": "departure_method != entry_method"
+        }
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：每个枢纽的离开方法数量与进入方法数量相同，保证了状态转移的对称性。",
+        "confidence": "1/1",
+        "properties": {
+          "departure_entry_symmetry": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即每一天的状态转移依赖于前一天的状态。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每一天的状态转移遵循特定规则，即离开和进入的方法不能相同。",
+              "properties": {
+                "transition_rule": "departure_method != entry_method"
+              }
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：每个枢纽的离开方法数量与进入方法数量相同，保证了状态转移的对称性。",
+              "properties": {
+                "departure_entry_symmetry": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

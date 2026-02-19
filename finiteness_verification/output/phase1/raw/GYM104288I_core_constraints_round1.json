@@ -6,24 +6,29 @@
   "result": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "相邻节点取值不同（图着色约束）",
-        "formal": "对于任意两个相邻的桥，它们的距离 d 必须不同"
-      },
-      {
         "name": "degree_upper_bound",
-        "description": "每个节点的最大度数不超过 2（每个点最多连接两条边）",
-        "formal": "对于每个节点 i，其度数 deg(i) <= 2"
+        "description": "每个节点的度数不超过2（每个节点最多有两个桥连接）",
+        "formal": "∀v ∈ V, deg(v) ≤ 2"
       },
       {
         "name": "path_constraint",
-        "description": "路径必须从起点到终点且经过所有遇到的桥",
-        "formal": "路径 P 从起点 s 开始，经过所有遇到的桥，直到到达终点 t"
+        "description": "路径必须经过所有遇到的桥（路径上不能跳过任何桥）",
+        "formal": "∀e ∈ E, e 必须在路径上"
       },
       {
-        "name": "pairwise_exclusion",
-        "description": "添加的桥不能与已有的桥重叠",
-        "formal": "对于任意两个桥 (d1, t1) 和 (d2, t2)，如果 d1 = d2 且 t1 = t2，则不能同时存在"
+        "name": "adjacency_relation",
+        "description": "桥只能连接相邻的边（桥的两个端点必须在同一距离圆周上的相邻边）",
+        "formal": "∀e = (u, v) ∈ E, u 和 v 是相邻的边"
+      },
+      {
+        "name": "distance_bound",
+        "description": "桥的两个端点到中心的距离相同（桥的两个端点必须在同一个距离圆周上）",
+        "formal": "∀e = (u, v) ∈ E, dist(u, center) = dist(v, center)"
+      },
+      {
+        "name": "operation_limit",
+        "description": "添加的桥数量最小化（需要添加的桥的数量最少）",
+        "formal": "minimize |E' - E|, 其中 E' 是添加桥后的边集"
       }
     ]
   },

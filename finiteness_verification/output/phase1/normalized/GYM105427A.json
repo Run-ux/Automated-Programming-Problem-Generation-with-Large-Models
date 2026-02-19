@@ -6,16 +6,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1000000000
         },
         "value_range": {
-          "min": 2,
-          "max": 1000000000
+          "min": 0,
+          "max": 1
         },
-        "properties": {}
+        "properties": {
+          "ordered": true
+        }
       }
     }
   ],
@@ -26,9 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_repetition_constraint",
-            "description": "连续重复元素的最大数量不超过 K（即，如果某个元素连续出现 K 次，则必须改变）",
-            "formal": "对于任意 i (1 ≤ i < N)，若 s[i] = s[i+1] = ... = s[i+K-1]，则 s[i+K] ≠ s[i]"
+            "name": "repetition",
+            "description": "序列中连续相同元素的最大长度不超过 K-1",
+            "formal": "对于所有 i, s[i] == s[i+1] == ... == s[i+K-2] 且 s[i+K-1] != s[i]"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "序列中每个位置的值取决于前 K-1 个位置的值",
+            "formal": "s[i] 的值由 s[i-K+1:i] 决定"
           }
         ]
       }
@@ -40,7 +47,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "计算满足条件的字符数量"
+        "description": "计算字符串中满足特定条件的字符数量"
       }
     }
   ],
@@ -49,11 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，且子问题之间相互独立",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前状态由前K个状态决定，满足状态机DP的转移一致性",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即N天的问题可以分解为N-1天的问题加上第N天的状态",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

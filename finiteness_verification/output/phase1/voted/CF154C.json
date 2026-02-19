@@ -1,0 +1,134 @@
+{
+  "problem_id": "CF154C",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "connected": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "connected": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distance_bound",
+        "description": "对于任意两个不同的节点 i 和 j，如果对于所有其他节点 k（k ≠ i 且 k ≠ j），要么 k 与 i 和 j 都是朋友，要么 k 与 i 和 j 都不是朋友，则称 i 和 j 是相似的。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "图是无向图，即如果节点 i 和 j 之间存在边，则 i 是 j 的朋友，j 也是 i 的朋友。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "图中没有自环，即每个节点不能与自己是朋友。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distance_bound",
+              "description": "对于任意两个不同的节点 i 和 j，如果对于所有其他节点 k（k ≠ i 且 k ≠ j），要么 k 与 i 和 j 都是朋友，要么 k 与 i 和 j 都不是朋友，则称 i 和 j 是相似的。",
+              "formal": "∀i, j (i ≠ j), ∀k (k ≠ i ∧ k ≠ j), (friend(i, k) ↔ friend(j, k)) ∨ (¬friend(i, k) ∧ ¬friend(j, k))"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "图是无向图，即如果节点 i 和 j 之间存在边，则 i 是 j 的朋友，j 也是 i 的朋友。",
+              "formal": "friend(i, j) ↔ friend(j, i)"
+            },
+            {
+              "name": "exclusion",
+              "description": "图中没有自环，即每个节点不能与自己是朋友。",
+              "formal": "¬friend(i, i)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求满足条件的无序对的数量"
+        }
+      }
+    ],
+    "description": "求满足条件的无序对的数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "symmetry",
+        "description": "对称性：两个节点的邻居关系在判断是否为双胞胎时具有对称性，即如果节点i和j是双胞胎，则对于任意节点k，k与i和j的关系是对称的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题可以分解为更小的子问题，每个子问题的解可以用于构建原问题的解。具体来说，可以通过检查每个节点的邻居关系来确定是否存在双胞胎节点。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "symmetry",
+              "description": "对称性：两个节点的邻居关系在判断是否为双胞胎时具有对称性，即如果节点i和j是双胞胎，则对于任意节点k，k与i和j的关系是对称的。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题可以分解为更小的子问题，每个子问题的解可以用于构建原问题的解。具体来说，可以通过检查每个节点的邻居关系来确定是否存在双胞胎节点。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

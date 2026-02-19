@@ -2,14 +2,14 @@
   "problem_id": "CF167C",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 10000
@@ -35,13 +35,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "non_zero_count_constraint",
-        "description": "至少一个元素非零（操作约束）",
+        "name": "termination_condition",
+        "description": "当任意一个数为零时，游戏结束（无法进行操作）",
         "confidence": "1/1"
       },
       {
-        "name": "global_optimization_objective",
-        "description": "双方玩家均采取最优策略（博弈论约束）",
+        "name": "optimal_play",
+        "description": "双方玩家都采取最优策略",
+        "confidence": "1/1"
+      },
+      {
+        "name": "turn_based",
+        "description": "游戏是回合制的，玩家轮流进行操作",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_type",
+        "description": "每一步操作只能选择两个特定的操作之一：取模或减法",
         "confidence": "1/1"
       }
     ],
@@ -52,14 +62,20 @@
         "result": {
           "constraints": [
             {
-              "name": "non_zero_count_constraint",
-              "description": "至少一个元素非零（操作约束）",
-              "formal": "a > 0 或 b > 0"
+              "name": "termination_condition",
+              "description": "当任意一个数为零时，游戏结束（无法进行操作）"
             },
             {
-              "name": "global_optimization_objective",
-              "description": "双方玩家均采取最优策略（博弈论约束）",
-              "formal": "players play optimally"
+              "name": "optimal_play",
+              "description": "双方玩家都采取最优策略"
+            },
+            {
+              "name": "turn_based",
+              "description": "游戏是回合制的，玩家轮流进行操作"
+            },
+            {
+              "name": "operation_type",
+              "description": "每一步操作只能选择两个特定的操作之一：取模或减法"
             }
           ]
         }
@@ -67,37 +83,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "game_outcome",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断在给定初始状态下，先手玩家是否能赢得游戏"
+          "type": "game_outcome",
+          "description": "判断在给定初始状态下的博弈结果，即先手胜或后手胜"
         }
       }
     ],
-    "description": "判断在给定初始状态下，先手玩家是否能赢得游戏"
+    "description": "判断在给定初始状态下的博弈结果，即先手胜或后手胜"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解来构建，即当前状态的胜负情况可以由更小规模的状态推导得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态之间的转换规则保持一致，且每个状态的胜负情况仅依赖于其前驱状态。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：当前状态的解依赖于前序状态的最优解，通过递归或迭代求解整个问题的最优解",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的最优解来构建，即当前状态的胜负情况可以由更小规模的状态推导得出。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态之间的转换规则保持一致，且每个状态的胜负情况仅依赖于其前驱状态。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：当前状态的解依赖于前序状态的最优解，通过递归或迭代求解整个问题的最优解"
+    ]
   }
 }

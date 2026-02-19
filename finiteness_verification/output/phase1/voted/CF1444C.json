@@ -2,14 +2,14 @@
   "problem_id": "CF1444C",
   "source": "codeforces",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 1,
             "max": 500000
@@ -41,13 +41,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "bipartite_matching",
-        "description": "选取的两个集合可以被划分为两个不相交的子集，使得每个子集内部没有边（即没有相识对）",
+        "name": "bipartiteness",
+        "description": "选取的两个组内的学生可以被划分为两个团队，且每个团队内部没有相识的学生（二分图约束）",
         "confidence": "1/1"
       },
       {
-        "name": "pairwise_exclusion",
-        "description": "每对相识的学生不能同时出现在同一个团队中",
+        "name": "subset_constraint",
+        "description": "选择的两个组必须是不同的组（子集约束）",
         "confidence": "1/1"
       }
     ],
@@ -58,14 +58,12 @@
         "result": {
           "constraints": [
             {
-              "name": "bipartite_matching",
-              "description": "选取的两个集合可以被划分为两个不相交的子集，使得每个子集内部没有边（即没有相识对）",
-              "formal": "存在一个二分图划分 (A, B) 使得 A 和 B 内部没有边"
+              "name": "bipartiteness",
+              "description": "选取的两个组内的学生可以被划分为两个团队，且每个团队内部没有相识的学生（二分图约束）"
             },
             {
-              "name": "pairwise_exclusion",
-              "description": "每对相识的学生不能同时出现在同一个团队中",
-              "formal": "对于所有 (u, v) ∈ E, u 和 v 不能同时在同一个子集中"
+              "name": "subset_constraint",
+              "description": "选择的两个组必须是不同的组（子集约束）"
             }
           ]
         }
@@ -81,26 +79,46 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "统计满足条件的组对数量"
+          "description": "求满足条件的组对数量"
         }
       }
     ],
-    "description": "统计满足条件的组对数量"
+    "description": "求满足条件的组对数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "bipartite_graph_property",
+        "description": "二分图划分：对于任意两个组，如果它们的并集可以被划分为两个不包含任何相识对的子集，则这两个组满足二分图性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个组之间的选择是独立的，一个组的选择不影响另一个组的选择",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，具体表现为通过判断每对组之间的二分图性质来确定是否可以形成两个不包含任何相识对的团队。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "bipartite_graph_property",
+              "description": "二分图划分：对于任意两个组，如果它们的并集可以被划分为两个不包含任何相识对的子集，则这两个组满足二分图性质",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个组之间的选择是独立的，一个组的选择不影响另一个组的选择",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，具体表现为通过判断每对组之间的二分图性质来确定是否可以形成两个不包含任何相识对的团队。"
+    ]
   }
 }

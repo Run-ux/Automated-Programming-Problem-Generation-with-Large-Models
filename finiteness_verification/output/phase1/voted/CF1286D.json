@@ -1,0 +1,161 @@
+{
+  "problem_id": "CF1286D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "所有管道的坐标必须是唯一的（无重复）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "管道的坐标必须按升序排列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "probability_distribution",
+        "description": "每个质子向右飞行的概率为 p_i，向左飞行的概率为 1 - p_i",
+        "confidence": "1/1"
+      },
+      {
+        "name": "intersection",
+        "description": "实验持续时间由第一次碰撞的时间决定，如果没有碰撞则实验时间为零",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "所有管道的坐标必须是唯一的（无重复）",
+              "formal": "∀ i, j (i ≠ j) => x_i ≠ x_j"
+            },
+            {
+              "name": "ordering",
+              "description": "管道的坐标必须按升序排列",
+              "formal": "x_1 < x_2 < ... < x_n"
+            },
+            {
+              "name": "probability_distribution",
+              "description": "每个质子向右飞行的概率为 p_i，向左飞行的概率为 1 - p_i",
+              "formal": "P(right) = p_i, P(left) = 1 - p_i"
+            },
+            {
+              "name": "intersection",
+              "description": "实验持续时间由第一次碰撞的时间决定，如果没有碰撞则实验时间为零",
+              "formal": "duration = min(t | ∃ i, j (i ≠ j) such that t = |x_i - x_j| / (v_i + v_j) and directions are opposite)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_probability",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_probability",
+          "description": "最大化首次碰撞事件的期望时间"
+        }
+      }
+    ],
+    "description": "最大化首次碰撞事件的期望时间"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "双指针左右端点单调前进，用于确定碰撞时间的最小值",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，通过计算每对质子的碰撞时间来确定整体的期望碰撞时间",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间和可通过端点差值计算，用于计算质子在不同方向上的移动距离",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针左右端点单调前进，用于确定碰撞时间的最小值",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，通过计算每对质子的碰撞时间来确定整体的期望碰撞时间",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间和可通过端点差值计算，用于计算质子在不同方向上的移动距离",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

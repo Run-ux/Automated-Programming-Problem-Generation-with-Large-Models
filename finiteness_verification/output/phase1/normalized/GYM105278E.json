@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1000000
@@ -28,13 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_elements",
-            "description": "数组中的所有元素必须是唯一的（无重复）"
+            "name": "distinctness",
+            "description": "数组中的所有元素必须是唯一的（去重）",
+            "formal": "∀i, j (1 ≤ i < j ≤ N) : A[i] ≠ A[j]"
           },
           {
-            "name": "stack_sortable",
-            "description": "子数组可以通过栈操作排序为升序，且栈最终为空",
-            "formal": "对于子数组 A[l:r]，存在一个操作序列使得通过栈操作后 A[l:r] 为升序且栈为空"
+            "name": "stack_sortable_constraint",
+            "description": "子数组可以通过栈操作排序为升序",
+            "formal": "对于每个子数组 A[l:r]，存在一个操作序列使得通过栈操作可以将其排序为升序"
+          },
+          {
+            "name": "subsequence_constraint",
+            "description": "计算数组中满足特定条件的子数组数量",
+            "formal": "计算满足 stack_sortable 条件的子数组数量"
           }
         ]
       }
@@ -46,7 +52,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计满足特定条件的子数组数量"
+        "description": "求满足条件的子数组数量"
       }
     }
   ],
@@ -55,12 +61,26 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "双指针左右端点单调前进，通过维护一个单调栈来判断子数组是否为melo子数组",
-        "properties": {
-          "left_monotonic": true,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，用于维护当前子数组的合法性",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，通过动态规划计算每个子数组是否为 melo 子数组",
+            "properties": {}
+          },
+          {
+            "name": "stack_invariant",
+            "description": "栈操作满足 LIFO 特性，且在处理过程中保持栈内元素的相对顺序不变",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -2,14 +2,14 @@
   "problem_id": "GYM104873A",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 2
@@ -39,18 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "piecewise_linear_function_constraint",
-        "description": "电池电量在不同区间内以不同的速率减少，当电量达到20%时，减少速率变为原来的1/2",
+        "name": "piecewise_linear_constraint",
+        "description": "电池电量随时间的变化是分段线性的，当电量达到20%时，耗电速度变为原来的1/2",
         "confidence": "1/1"
       },
       {
-        "name": "state_value_constraint",
-        "description": "初始电量为100%",
-        "confidence": "1/1"
-      },
-      {
-        "name": "state_value_constraint",
-        "description": "到达目的地时的电量为p%，且1 ≤ p ≤ 99",
+        "name": "range_bound",
+        "description": "初始电量为100%，到达目的地时电量在1%到99%之间",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +56,12 @@
         "result": {
           "constraints": [
             {
-              "name": "piecewise_linear_function_constraint",
-              "description": "电池电量在不同区间内以不同的速率减少，当电量达到20%时，减少速率变为原来的1/2"
+              "name": "piecewise_linear_constraint",
+              "description": "电池电量随时间的变化是分段线性的，当电量达到20%时，耗电速度变为原来的1/2"
             },
             {
-              "name": "state_value_constraint",
-              "description": "初始电量为100%"
-            },
-            {
-              "name": "state_value_constraint",
-              "description": "到达目的地时的电量为p%，且1 ≤ p ≤ 99"
+              "name": "range_bound",
+              "description": "初始电量为100%，到达目的地时电量在1%到99%之间"
             }
           ]
         }
@@ -78,37 +69,60 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "maximize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求从当前状态到特定条件达成的最短时间"
+          "type": "maximize_value",
+          "description": "求在给定初始条件下的最大持续时间"
         }
       }
     ],
-    "description": "求从当前状态到特定条件达成的最短时间"
+    "description": "求在给定初始条件下的最大持续时间"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "电池电量随时间单调递减，且在不同模式下递减速率不同但始终为负",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：当电池电量达到特定阈值时（20%），系统从正常模式切换到节能模式，且这种切换是确定性的",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "电池电量随时间单调递减，且在不同模式下递减速率发生变化但始终保持递减趋势",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "电池电量随时间单调递减，且在不同模式下递减速率不同但始终为负",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：当电池电量达到特定阈值时（20%），系统从正常模式切换到节能模式，且这种切换是确定性的",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "电池电量随时间单调递减，且在不同模式下递减速率发生变化但始终保持递减趋势"
+    ]
   }
 }

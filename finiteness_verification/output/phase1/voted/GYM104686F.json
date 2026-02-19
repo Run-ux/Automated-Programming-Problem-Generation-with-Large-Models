@@ -1,0 +1,136 @@
+{
+  "problem_id": "GYM104686F",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 4
+          },
+          "properties": {
+            "ordered": false,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 4
+    },
+    "properties": {
+      "ordered": false,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distance_cost_constraint",
+        "description": "存在一个特殊字符串，它与所有其他字符串的距离恰好为 K",
+        "confidence": "1/1"
+      },
+      {
+        "name": "alphabet_constraint",
+        "description": "所有字符串仅由字符 A, B, C 和 D 组成",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "所有字符串的长度相同且为 M",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distance_cost_constraint",
+              "description": "存在一个特殊字符串，它与所有其他字符串的距离恰好为 K",
+              "formal": "∃ S_i, ∀ j ≠ i, distance(S_i, S_j) = K"
+            },
+            {
+              "name": "alphabet_constraint",
+              "description": "所有字符串仅由字符 A, B, C 和 D 组成",
+              "formal": "∀ S_i, S_i ∈ {A, B, C, D}^M"
+            },
+            {
+              "name": "range_bound",
+              "description": "所有字符串的长度相同且为 M",
+              "formal": "∀ S_i, |S_i| = M"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一个字符串，它与所有其他字符串的汉明距离均为给定值，并输出该字符串的索引"
+        }
+      }
+    ],
+    "description": "判断是否存在一个字符串，它与所有其他字符串的汉明距离均为给定值，并输出该字符串的索引"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：特殊字符串的性质可以通过检查每个字符位置上的差异来确定，且这些局部差异的累积结果决定了全局最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：对于任意两个非特殊字符串，它们之间的距离与特殊字符串到这两个字符串的距离之和具有对称关系，即 d(Si, Sj) = d(Si, Sk) + d(Sk, Sj)，其中 Sk 为特殊字符串",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：特殊字符串的性质可以通过检查每个字符位置上的差异来确定，且这些局部差异的累积结果决定了全局最优解",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：对于任意两个非特殊字符串，它们之间的距离与特殊字符串到这两个字符串的距离之和具有对称关系，即 d(Si, Sj) = d(Si, Sk) + d(Sk, Sj)，其中 Sk 为特殊字符串",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

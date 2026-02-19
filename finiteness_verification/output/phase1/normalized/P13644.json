@@ -1,0 +1,87 @@
+{
+  "problem_id": "P13644",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": true,
+          "rooted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（所有节点都可以通过路径到达根节点）"
+          },
+          {
+            "name": "distinctness",
+            "description": "区间内选择的元素必须互不相同（每个旅行者选择的城市不能重复）",
+            "formal": "|distinct(A[l:r])| = k"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过 2（树的形态是一条链，每个节点最多有两个邻居）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径长度约束（最终会聚的城市离首都尽可能远）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化路径上的最远公共祖先距离"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "树的深度单调递减，从任意节点到根节点的路径上，节点深度逐渐减小",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "子树内的最优解可以合并为更大范围的最优解，即在某个子树内找到的最远汇聚点可以作为整个问题的一部分解",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "选择离首都尽可能远的汇聚点，通过贪心策略选择当前最优解，最终得到全局最优解",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

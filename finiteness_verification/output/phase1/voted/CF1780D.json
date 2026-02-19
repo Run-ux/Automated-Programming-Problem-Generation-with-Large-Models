@@ -1,0 +1,150 @@
+{
+  "problem_id": "CF1780D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制为30次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_type",
+        "description": "每次操作的减数不能大于当前值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "每次操作后，当前值会更新，并且返回更新后的单位比特数",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制为30次",
+              "formal": "operations <= 30"
+            },
+            {
+              "name": "operation_type",
+              "description": "每次操作的减数不能大于当前值",
+              "formal": "x <= n"
+            },
+            {
+              "name": "state_transition",
+              "description": "每次操作后，当前值会更新，并且返回更新后的单位比特数",
+              "formal": "n = n - x; cnt = count_unit_bits(n)"
+            },
+            {
+              "name": "operation_limit",
+              "description": "当猜测到初始值时，必须输出答案并结束当前测试用例",
+              "formal": "if (guessed_n == n) then output ' ! n ' and move to next test case"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造出满足给定条件的整数"
+        }
+      }
+    ],
+    "description": "构造出满足给定条件的整数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "操作过程中，每次减去的数x不会超过当前n的值，确保n单调非增",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "通过逐步减小n并根据cnt的变化来推断n的二进制表示，问题可以分解为子问题，每个子问题的解有助于最终解的确定",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "每次操作后，n的状态（即其二进制表示中的1的数量）会发生变化，但这种变化是基于前一个状态的，且遵循一定的规则",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "操作过程中，每次减去的数x不会超过当前n的值，确保n单调非增",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "通过逐步减小n并根据cnt的变化来推断n的二进制表示，问题可以分解为子问题，每个子问题的解有助于最终解的确定",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "每次操作后，n的状态（即其二进制表示中的1的数量）会发生变化，但这种变化是基于前一个状态的，且遵循一定的规则",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

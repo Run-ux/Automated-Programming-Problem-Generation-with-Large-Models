@@ -1,0 +1,80 @@
+{
+  "problem_id": "CF1550E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 97,
+          "max": 113
+        },
+        "properties": {
+          "ordered": true,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "alphabet_constraint",
+            "description": "字符串中的字符必须是前 k 个小写字母之一或问号",
+            "formal": "s[i] ∈ {a, b, ..., k-th letter, ?} for all i"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每个问号必须被替换为前 k 个小写字母之一",
+            "formal": "s[i] = ? → s[i] ∈ {a, b, ..., k-th letter}"
+          },
+          {
+            "name": "range_bound",
+            "description": "字符串的值定义为所有字母的最大连续子串长度的最小值",
+            "formal": "value(s) = min(f_i) for all i from 1 to k, where f_i is the length of the longest substring consisting entirely of the i-th letter"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "max_min",
+        "description": "最大化最小值，即最大化所有字符中最短的连续子串长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即字符串的最大值可以通过每个字符位置的最佳选择来确定。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，局部最优的选择（即替换问号为当前最优字母）可以导致全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

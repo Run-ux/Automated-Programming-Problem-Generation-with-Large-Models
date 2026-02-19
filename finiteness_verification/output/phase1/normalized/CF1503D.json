@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,24 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "ascending_order",
-            "description": "前部值必须按递增顺序排列"
+            "name": "ordering",
+            "description": "前值序列必须非递减，后值序列必须非递增（排序约束）"
           },
           {
-            "name": "descending_order",
-            "description": "后部值必须按递减顺序排列"
+            "name": "distinctness",
+            "description": "所有卡片上的数字在1到2n之间且每个数字恰好出现一次（唯一性约束）"
           },
           {
-            "name": "distinct_elements",
-            "description": "所有卡片上的数字在1到2n之间且每个数字恰好出现一次"
-          },
-          {
-            "name": "reverse_sequence",
-            "description": "可以翻转任意子集的卡片，使得前部和后部值互换"
-          },
-          {
-            "name": "permutation_constraint",
-            "description": "翻转后可以重新排列卡片的顺序"
+            "name": "operation_limit",
+            "description": "翻转操作次数最小化（操作次数限制）"
           }
         ]
       }
@@ -56,8 +48,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_cost",
-        "description": "求最小操作次数以满足特定排序条件"
+        "type": "minimize_count",
+        "description": "求最小化操作次数以满足特定排序条件"
       }
     }
   ],
@@ -66,9 +58,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过确定每个卡片是否翻转来达到全局最优排序。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过局部最优解构造全局最优解",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，选择当前看起来最优的选择，最终可以得到全局最优解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

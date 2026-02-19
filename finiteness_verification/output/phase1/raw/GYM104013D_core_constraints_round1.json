@@ -6,24 +6,24 @@
   "result": {
     "constraints": [
       {
-        "name": "pixel_switch_limit",
-        "description": "每个像素的开关次数不超过 s 次（状态变化约束）",
-        "formal": "对于每个像素 p，其状态变化次数 switch_count(p) <= s"
+        "name": "switch_limit",
+        "description": "每个像素的开关次数不超过 s 次（像素在显示过程中最多切换 s 次状态）",
+        "formal": "对于每个像素 p，其开关次数 switch_count(p) <= s"
       },
       {
-        "name": "initial_state_off",
-        "description": "所有像素初始状态为关闭（初始状态约束）",
+        "name": "pixel_transition",
+        "description": "像素的状态在相邻时间点之间可以发生变化（从开到关或从关到开），但不变化时不计为开关",
+        "formal": "对于每个像素 p 和相邻时间点 t, t+1，如果 p 在 t 和 t+1 之间的状态不同，则 switch_count(p) += 1"
+      },
+      {
+        "name": "initial_state",
+        "description": "所有像素初始状态为关闭（显示开始前所有像素均为关闭状态）",
         "formal": "对于所有像素 p，初始状态 state(p, 0) = off"
       },
       {
-        "name": "text_non_looping",
-        "description": "文本只显示一次且不循环（单次遍历约束）",
-        "formal": "文本 T 只显示一次，不重复显示"
-      },
-      {
-        "name": "character_separation",
-        "description": "字符之间有一列关闭的像素分隔（间隔约束）",
-        "formal": "对于每个字符 c_i 和 c_{i+1}，它们之间有一列关闭的像素"
+        "name": "text_length_bound",
+        "description": "输出文本长度不超过 s 个字符（找到最短的文本使得某个像素的开关次数达到 s 次）",
+        "formal": "输出文本长度 |T| <= s"
       }
     ]
   },

@@ -2,14 +2,14 @@
   "problem_id": "CF1316D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 1000
@@ -39,28 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "从任意起点出发，路径必须在网格内且最终停在某个格子或无限循环",
+        "name": "state_transition",
+        "description": "每个节点根据其上的字符进行状态转移，直到到达一个终止状态（X）或无限循环",
         "confidence": "1/1"
       },
       {
-        "name": "edge_exclusion_constraint",
-        "description": "标记为 X 的格子是阻塞区，玩家到达后停止移动",
+        "name": "distance_bound",
+        "description": "玩家移动时不能超出边界，即所有移动指令必须保证在网格内",
         "confidence": "1/1"
       },
       {
-        "name": "orientation_constraint",
-        "description": "每个格子上的字符 U, D, L, R 指示玩家的移动方向，必须按照指示移动",
-        "confidence": "1/1"
-      },
-      {
-        "name": "path_length_constraint",
-        "description": "玩家的移动路径不能超出网格边界",
-        "confidence": "1/1"
-      },
-      {
-        "name": "source_node_fixed",
-        "description": "对于每个起点 (r, c)，Alice 提供的终点 (x, y) 必须与实际路径一致",
+        "name": "operation_limit",
+        "description": "存在一些节点（X）作为终止状态，玩家到达这些节点后停止移动",
         "confidence": "1/1"
       }
     ],
@@ -71,24 +61,20 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "从任意起点出发，路径必须在网格内且最终停在某个格子或无限循环"
+              "name": "state_transition",
+              "description": "每个节点根据其上的字符进行状态转移，直到到达一个终止状态（X）或无限循环"
             },
             {
-              "name": "edge_exclusion_constraint",
-              "description": "标记为 X 的格子是阻塞区，玩家到达后停止移动"
+              "name": "distance_bound",
+              "description": "玩家移动时不能超出边界，即所有移动指令必须保证在网格内"
             },
             {
-              "name": "orientation_constraint",
-              "description": "每个格子上的字符 U, D, L, R 指示玩家的移动方向，必须按照指示移动"
+              "name": "operation_limit",
+              "description": "存在一些节点（X）作为终止状态，玩家到达这些节点后停止移动"
             },
             {
-              "name": "path_length_constraint",
-              "description": "玩家的移动路径不能超出网格边界"
-            },
-            {
-              "name": "source_node_fixed",
-              "description": "对于每个起点 (r, c)，Alice 提供的终点 (x, y) 必须与实际路径一致"
+              "name": "state_transition",
+              "description": "给定的每个起始节点的最终位置必须与生成的网格一致"
             }
           ]
         }
@@ -96,14 +82,14 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
+          "type": "feasibility",
           "description": "判断是否存在一个满足给定条件的矩阵"
         }
       }
@@ -111,21 +97,50 @@
     "description": "判断是否存在一个满足给定条件的矩阵"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个格子的指令决定了下一个状态，且该转移是确定性的。玩家从一个格子移动到另一个格子的过程遵循固定的规则。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "cycle_invariant",
+        "description": "环不变量：如果存在一个循环路径，那么从该路径上的任意一个格子出发，最终会回到这个格子。这种循环路径的存在与否可以通过DFS或BFS检测出来。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：对于非循环路径，可以构建一个有向无环图（DAG），其中每个节点表示一个格子，边表示从一个格子到另一个格子的移动。在DAG中，可以找到一个拓扑排序，使得每个格子的移动方向满足拓扑序。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "状态依赖：每个单元格的最终状态仅由其自身及相邻单元格的状态决定，满足局部状态依赖性",
-          "properties": {
-            "local_state_dependency": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个格子的指令决定了下一个状态，且该转移是确定性的。玩家从一个格子移动到另一个格子的过程遵循固定的规则。",
+              "properties": {}
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "环不变量：如果存在一个循环路径，那么从该路径上的任意一个格子出发，最终会回到这个格子。这种循环路径的存在与否可以通过DFS或BFS检测出来。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：对于非循环路径，可以构建一个有向无环图（DAG），其中每个节点表示一个格子，边表示从一个格子到另一个格子的移动。在DAG中，可以找到一个拓扑排序，使得每个格子的移动方向满足拓扑序。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "状态依赖：每个单元格的最终状态仅由其自身及相邻单元格的状态决定，满足局部状态依赖性"
+    ]
   }
 }

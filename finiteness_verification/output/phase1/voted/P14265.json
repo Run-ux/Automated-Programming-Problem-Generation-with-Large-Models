@@ -2,14 +2,14 @@
   "problem_id": "P14265",
   "source": "luogu",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -39,18 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_subintervals",
+        "name": "segment_count_upper_bound",
         "description": "简化条带中连续的色段数量不超过 K",
         "confidence": "1/1"
       },
       {
-        "name": "minimum_operation_count_constraint",
+        "name": "edit_distance_constraint",
         "description": "通过最少次数地修改像素颜色，使原条带转化为合法的简化条带",
-        "confidence": "1/1"
-      },
-      {
-        "name": "adjacent_difference",
-        "description": "相邻色段的颜色必须不同（黑白交替）",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_subintervals",
+              "name": "segment_count_upper_bound",
               "description": "简化条带中连续的色段数量不超过 K",
               "formal": "count(segments) <= k_i"
             },
             {
-              "name": "minimum_operation_count_constraint",
+              "name": "edit_distance_constraint",
               "description": "通过最少次数地修改像素颜色，使原条带转化为合法的简化条带",
-              "formal": "minimize(modifications)"
-            },
-            {
-              "name": "adjacent_difference",
-              "description": "相邻色段的颜色必须不同（黑白交替）",
-              "formal": "∀i, segments[i] ≠ segments[i+1]"
+              "formal": "minimize(edit_distance(original, simplified))"
             }
           ]
         }
@@ -81,34 +71,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求将原序列转换为满足条件的简化序列所需的最少修改次数"
+          "type": "minimize_value",
+          "description": "最小化将原条带转化为合法简化条带所需的像素颜色修改次数"
         }
       }
     ],
-    "description": "求将原序列转换为满足条件的简化序列所需的最少修改次数"
+    "description": "最小化将原条带转化为合法简化条带所需的像素颜色修改次数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解组合得到，即原问题的最优解可以由其子段的最优解构成",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "在每一步选择中，通过局部最优选择（如最小化颜色修改次数）来达到全局最优解",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过最少次数地修改像素颜色使原条带转化为合法简化条带的问题可以分解为更小规模的相同问题来解决。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优解可以通过子问题的最优解组合得到，即原问题的最优解可以由其子段的最优解构成",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "在每一步选择中，通过局部最优选择（如最小化颜色修改次数）来达到全局最优解",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过最少次数地修改像素颜色使原条带转化为合法简化条带的问题可以分解为更小规模的相同问题来解决。"
+    ]
   }
 }

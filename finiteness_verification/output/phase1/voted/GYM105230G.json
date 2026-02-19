@@ -2,14 +2,14 @@
   "problem_id": "GYM105230G",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -39,13 +39,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "query_range_validity",
-        "description": "区间查询，对于每个类型 2 操作，需要计算给定区间 [l, r] 内的最小质因数和",
+        "name": "range_bound",
+        "description": "数组元素的值域约束（1 ≤ a_i ≤ 10^4）",
         "confidence": "1/1"
       },
       {
-        "name": "weight_adjustment",
-        "description": "区间更新，对于每个类型 3 操作，需要将区间 [l, r] 内的所有元素更新为 x",
+        "name": "operation_limit",
+        "description": "操作次数限制（1 ≤ q ≤ 10^5）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "区间操作的有效性约束（1 ≤ l ≤ r ≤ n）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "操作中数值 x 的值域约束（1 ≤ x ≤ 10^4）",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +66,24 @@
         "result": {
           "constraints": [
             {
-              "name": "query_range_validity",
-              "description": "区间查询，对于每个类型 2 操作，需要计算给定区间 [l, r] 内的最小质因数和",
-              "formal": "对于每个 t=2 的操作，计算 min_prime_sum(a[l:r])"
+              "name": "range_bound",
+              "description": "数组元素的值域约束（1 ≤ a_i ≤ 10^4）"
             },
             {
-              "name": "weight_adjustment",
-              "description": "区间更新，对于每个类型 3 操作，需要将区间 [l, r] 内的所有元素更新为 x",
-              "formal": "对于每个 t=3 的操作，执行 a[l:r] = x"
+              "name": "operation_limit",
+              "description": "操作次数限制（1 ≤ q ≤ 10^5）"
+            },
+            {
+              "name": "range_bound",
+              "description": "操作中索引范围的约束（1 ≤ i, l, r ≤ n）"
+            },
+            {
+              "name": "coverage",
+              "description": "区间操作的有效性约束（1 ≤ l ≤ r ≤ n）"
+            },
+            {
+              "name": "degree_bound",
+              "description": "操作中数值 x 的值域约束（1 ≤ x ≤ 10^4）"
             }
           ]
         }
@@ -71,14 +91,14 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
+          "type": "minimize_value",
           "description": "求区间内元素的质因数和的最小值"
         }
       }
@@ -86,21 +106,39 @@
     "description": "求区间内元素的质因数和的最小值"
   },
   "invariant": {
-    "name": "interval_mergeable",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "interval_mergeable",
+        "description": "区间信息可通过子区间合并，适用于线段树等数据结构",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，适用于动态规划求解区间最小质因数和",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间可合并性：区间的最小质因数和可以通过子区间的值进行合并计算",
-          "properties": {
-            "merge_function": "min_prime_sum"
-          }
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间信息可通过子区间合并，适用于线段树等数据结构",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，适用于动态规划求解区间最小质因数和",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "区间可合并性：区间的最小质因数和可以通过子区间的值进行合并计算"
+    ]
   }
 }

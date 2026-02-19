@@ -1,0 +1,134 @@
+{
+  "problem_id": "P5454",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 3000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 50
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 3000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 50
+    },
+    "properties": {
+      "connected": true,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "图必须连通（任意两座地标之间都需要能通过地铁相互到达）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个节点的度数有限制（如果有 d 条地铁轨道经过了某个地标，那么该地标的便利度为 f(d) mod 59393）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimum_edge_count",
+        "description": "边的数量应尽可能少（修建的地铁轨道尽可能少）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "图必须连通（任意两座地标之间都需要能通过地铁相互到达）"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个节点的度数有限制（如果有 d 条地铁轨道经过了某个地标，那么该地标的便利度为 f(d) mod 59393）",
+              "formal": "对于每个节点 v, 度数 deg(v) 的便利度为 f(deg(v)) mod 59393"
+            },
+            {
+              "name": "minimum_edge_count",
+              "description": "边的数量应尽可能少（修建的地铁轨道尽可能少）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化图中所有节点的权值和，其中每个节点的权值由其度数决定"
+        }
+      }
+    ],
+    "description": "最大化图中所有节点的权值和，其中每个节点的权值由其度数决定"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的全局最优解可以通过子问题的最优解组合得到，即最小生成树的每条边的选择都是基于当前子图的最优选择。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "matroid_exchange",
+        "description": "拟阵交换性：在构建最小生成树的过程中，如果存在一个更优的边可以替换当前选择的边而不破坏树的性质，则进行替换。这种交换保证了最终结果的最优性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的全局最优解可以通过子问题的最优解组合得到，即最小生成树的每条边的选择都是基于当前子图的最优选择。",
+              "properties": {}
+            },
+            {
+              "name": "matroid_exchange",
+              "description": "拟阵交换性：在构建最小生成树的过程中，如果存在一个更优的边可以替换当前选择的边而不破坏树的性质，则进行替换。这种交换保证了最终结果的最优性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

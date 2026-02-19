@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 2,
           "max": 2000
@@ -28,14 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "相邻角共享的两个单元格必须具有相同的值（图着色约束）",
-            "formal": "∀ (x1, y1), (x2, y2) ∈ constraints, grid[x1][y1] = grid[x2][y2]"
+            "name": "adjacency_relation",
+            "description": "相邻节点取值相同（图着色约束）",
+            "formal": "grid[x1][y1] == grid[x2][y2] for all (x1, y1) and (x2, y2) in constraints"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "每个约束中的单元格对是成对不同的，即没有重复的约束对",
-            "formal": "∀ 1 ≤ i < j ≤ k, (xi1, yi1, xi2, yi2) ≠ (xj1, yj1, xj2, yj2)"
+            "name": "exclusion",
+            "description": "约束对中的单元格是成对且互不相同的",
+            "formal": "for all 1 ≤ i < j ≤ k, (x_{i,1}, y_{i,1}, x_{i,2}, y_{i,2}) ≠ (x_{j,1}, y_{j,1}, x_{j,2}, y_{j,2})"
           }
         ]
       }
@@ -46,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在满足所有约束条件的解"
+        "type": "feasibility",
+        "description": "判断是否存在满足给定约束条件的解"
       }
     }
   ],
@@ -56,9 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过满足约束条件的局部一致性来保证全局解的存在性",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "symmetry",
+            "description": "对称性：约束条件下的单元格对称关系，确保共享角的单元格具有相同的字符",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：通过构建有向图表示单元格之间的依赖关系，并检查是否存在合法的拓扑排序",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

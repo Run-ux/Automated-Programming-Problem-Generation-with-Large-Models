@@ -2,14 +2,14 @@
   "problem_id": "CF1107E",
   "source": "codeforces",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "substring_deletion_constraint",
-        "description": "每次操作必须选择一个由相同字符组成的连续子串进行删除，并将剩余部分拼接起来",
+        "name": "operation_limit",
+        "description": "操作次数限制，每次操作必须选择并删除一个连续的相同字符子串",
         "confidence": "1/1"
       },
       {
-        "name": "value_distribution_rule",
-        "description": "删除长度为 x 的子串可以获得 a_x 分，其中 a_x 是给定数组中的值",
+        "name": "subsequence_constraint",
+        "description": "子序列约束，每次删除操作后剩余部分会重新拼接成新的字符串",
         "confidence": "1/1"
       },
       {
-        "name": "global_optimization_objective",
-        "description": "目标是最大化通过删除子串获得的总分数",
+        "name": "sum_constraint",
+        "description": "和约束，目标是最大化所有删除操作获得的总分数",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "substring_deletion_constraint",
-              "description": "每次操作必须选择一个由相同字符组成的连续子串进行删除，并将剩余部分拼接起来"
+              "name": "operation_limit",
+              "description": "操作次数限制，每次操作必须选择并删除一个连续的相同字符子串"
             },
             {
-              "name": "value_distribution_rule",
-              "description": "删除长度为 x 的子串可以获得 a_x 分，其中 a_x 是给定数组中的值"
+              "name": "subsequence_constraint",
+              "description": "子序列约束，每次删除操作后剩余部分会重新拼接成新的字符串"
             },
             {
-              "name": "global_optimization_objective",
-              "description": "目标是最大化通过删除子串获得的总分数"
+              "name": "sum_constraint",
+              "description": "和约束，目标是最大化所有删除操作获得的总分数"
             }
           ]
         }
@@ -86,26 +86,46 @@
         "status": "success",
         "result": {
           "type": "maximize_value",
-          "description": "最大化通过删除子串获得的权值和"
+          "description": "最大化通过删除连续相同子串获得的总分数"
         }
       }
     ],
-    "description": "最大化通过删除子串获得的权值和"
+    "description": "最大化通过删除连续相同子串获得的总分数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过删除不同长度的连续相同字符子串获得的最大分数可以由更短字符串的最优解递推得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步操作中，总是选择当前可以获得最大分数的连续相同字符子串进行删除，这种局部最优的选择能够导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即删除某个连续相同字符子串后的剩余部分的最优解可以独立求解并合并得到整体最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过删除不同长度的连续相同字符子串获得的最大分数可以由更短字符串的最优解递推得出。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步操作中，总是选择当前可以获得最大分数的连续相同字符子串进行删除，这种局部最优的选择能够导致全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即删除某个连续相同字符子串后的剩余部分的最优解可以独立求解并合并得到整体最优解。"
+    ]
   }
 }

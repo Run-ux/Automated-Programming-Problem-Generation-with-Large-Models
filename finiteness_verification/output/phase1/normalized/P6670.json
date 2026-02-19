@@ -1,0 +1,82 @@
+{
+  "problem_id": "P6670",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 50000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 10000000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通，即任意两个节点之间存在一条路径"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径长度不超过 n-1，且路径上的每个节点只能访问一次"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "路径上所有边的权重和与给定值 k 的绝对差值最小化"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化路径上平均权值与给定值的绝对差"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过计算从每个节点出发的所有可能路径的平均值来找到全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在树形结构中，每个节点的状态（如从该节点出发的最佳路径）可以由其子节点的状态递归地确定。",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解可以通过分解为多个子问题的解来合成，例如将树分成多个子树分别求解再合并结果。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

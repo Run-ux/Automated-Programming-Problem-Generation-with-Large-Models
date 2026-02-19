@@ -2,14 +2,14 @@
   "problem_id": "CF1186D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "weight_sum_constraint",
-        "description": "选取元素的和为零（整数部分和小数部分分别取整后的和为零）",
+        "name": "sum_constraint",
+        "description": "选取元素的和必须为0",
         "confidence": "1/1"
       },
       {
-        "name": "value_distribution_rule",
+        "name": "range_bound",
         "description": "每个元素必须是其对应实数的向下取整或向上取整",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "每个元素与其对应的实数的差值绝对值小于1",
+        "name": "distance_bound",
+        "description": "每个元素与其对应的实数之间的差值绝对值小于1",
         "confidence": "1/1"
       }
     ],
@@ -61,18 +61,18 @@
         "result": {
           "constraints": [
             {
-              "name": "weight_sum_constraint",
-              "description": "选取元素的和为零（整数部分和小数部分分别取整后的和为零）",
+              "name": "sum_constraint",
+              "description": "选取元素的和必须为0",
               "formal": "sum(b_i) = 0"
             },
             {
-              "name": "value_distribution_rule",
+              "name": "range_bound",
               "description": "每个元素必须是其对应实数的向下取整或向上取整",
               "formal": "b_i ∈ {⌊a_i⌋, ⌈a_i⌉}"
             },
             {
-              "name": "adjacent_difference",
-              "description": "每个元素与其对应的实数的差值绝对值小于1",
+              "name": "distance_bound",
+              "description": "每个元素与其对应的实数之间的差值绝对值小于1",
               "formal": "|a_i - b_i| < 1"
             }
           ]
@@ -81,34 +81,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的序列"
+          "type": "construction",
+          "description": "构造一个满足给定条件的序列"
         }
       }
     ],
-    "description": "构造一个满足条件的序列"
+    "description": "构造一个满足给定条件的序列"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "prefix_sum",
+        "description": "在选择过程中，所选序列的元素和始终为0，满足题目约束条件",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "bound_invariance",
+        "description": "每个元素的取值范围严格限制在其上下取整之间，确保|a_i - b_i| < 1",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "局部最优选择（即对每个元素独立地选择其上下取整中的一个）能够保证全局解的可行性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "局部最优选择导致全局最优：通过贪心地选择每个元素的向下取整或向上取整，使得最终序列的和为0",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "prefix_sum",
+              "description": "在选择过程中，所选序列的元素和始终为0，满足题目约束条件",
+              "properties": {}
+            },
+            {
+              "name": "bound_invariance",
+              "description": "每个元素的取值范围严格限制在其上下取整之间，确保|a_i - b_i| < 1",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "局部最优选择（即对每个元素独立地选择其上下取整中的一个）能够保证全局解的可行性",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "局部最优选择导致全局最优：通过贪心地选择每个元素的向下取整或向上取整，使得最终序列的和为0"
+    ]
   }
 }

@@ -1,0 +1,208 @@
+{
+  "problem_id": "P12867",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 200
+          },
+          "value_range": {
+            "min": 0,
+            "max": 199
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 200
+    },
+    "value_range": {
+      "min": 0,
+      "max": 199
+    },
+    "properties": {
+      "connected": true,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "图必须连通，即从任意一个节点可以通过边到达任意另一个节点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "permutation_constraint",
+        "description": "Aitana 和 Bruno 的地图标号是 0 到 N-1 的排列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "Aitana 和 Bruno 必须在 6d 轮内汇合，其中 d 是 Aitana 和 Bruno 当前所在节点的最短路径长度",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "每一轮移动时，Aitana 和 Bruno 只能移动到相邻节点或原地不动",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "Aitana 和 Bruno 的动向序列长度必须为 10N+1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "Aitana 和 Bruno 的动向序列中的每个元素必须在 0 到 N-1 之间",
+        "confidence": "1/1"
+      },
+      {
+        "name": "fixed_start_node",
+        "description": "Aitana 和 Bruno 的初始位置必须分别为 S 和 T",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "Aitana 和 Bruno 的动向序列中，每一步要么保持不变，要么移动到相邻节点",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "图必须连通，即从任意一个节点可以通过边到达任意另一个节点"
+            },
+            {
+              "name": "permutation_constraint",
+              "description": "Aitana 和 Bruno 的地图标号是 0 到 N-1 的排列"
+            },
+            {
+              "name": "path_constraint",
+              "description": "Aitana 和 Bruno 必须在 6d 轮内汇合，其中 d 是 Aitana 和 Bruno 当前所在节点的最短路径长度"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "每一轮移动时，Aitana 和 Bruno 只能移动到相邻节点或原地不动"
+            },
+            {
+              "name": "operation_limit",
+              "description": "Aitana 和 Bruno 的动向序列长度必须为 10N+1"
+            },
+            {
+              "name": "range_bound",
+              "description": "Aitana 和 Bruno 的动向序列中的每个元素必须在 0 到 N-1 之间"
+            },
+            {
+              "name": "fixed_start_node",
+              "description": "Aitana 和 Bruno 的初始位置必须分别为 S 和 T"
+            },
+            {
+              "name": "state_transition",
+              "description": "Aitana 和 Bruno 的动向序列中，每一步要么保持不变，要么移动到相邻节点"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "最小化两人汇合所需的轮数"
+        }
+      }
+    ],
+    "description": "最小化两人汇合所需的轮数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "symmetry",
+        "description": "对称性：Aitana 和 Bruno 的移动策略在结构上是对称的，无论他们从哪个节点开始，最终都能通过相同的策略汇合。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每一轮 Aitana 和 Bruno 的位置变化是基于当前状态和地图信息进行的，且每次移动或停留都保持了状态的一致性和合法性。",
+        "confidence": "1/1",
+        "properties": {
+          "valid_moves": true
+        }
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：Aitana 和 Bruno 的移动策略可以视为两个独立的子问题，每个子问题的解法不影响另一个子问题的解法。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：Aitana 和 Bruno 在树形结构上的移动顺序遵循拓扑序，即从一个节点到另一个节点的路径是唯一的。",
+        "confidence": "1/1",
+        "properties": {
+          "unique_path": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "symmetry",
+              "description": "对称性：Aitana 和 Bruno 的移动策略在结构上是对称的，无论他们从哪个节点开始，最终都能通过相同的策略汇合。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每一轮 Aitana 和 Bruno 的位置变化是基于当前状态和地图信息进行的，且每次移动或停留都保持了状态的一致性和合法性。",
+              "properties": {
+                "valid_moves": true
+              }
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：Aitana 和 Bruno 的移动策略可以视为两个独立的子问题，每个子问题的解法不影响另一个子问题的解法。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：Aitana 和 Bruno 在树形结构上的移动顺序遵循拓扑序，即从一个节点到另一个节点的路径是唯一的。",
+              "properties": {
+                "unique_path": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,160 @@
+{
+  "problem_id": "P14581",
+  "source": "luogu",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 5000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 5000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 5000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 5000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "初始位置互不相同（海鸥和食物的初始位置必须唯一）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制为 n（恰好执行 n 步指挥，每步指挥一只海鸥）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "移动方向约束（海鸥只能向上、下、左、右四个方向移动到最近的没有海鸥的格子）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "海鸥和食物消失约束（当海鸥飞到有食物的格子时，海鸥和食物会立即从网格中消失）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "覆盖所有食物（通过 n 步指挥使得所有海鸥吃掉食物并飞离网格）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "初始位置互不相同（海鸥和食物的初始位置必须唯一）"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制为 n（恰好执行 n 步指挥，每步指挥一只海鸥）"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "移动方向约束（海鸥只能向上、下、左、右四个方向移动到最近的没有海鸥的格子）"
+            },
+            {
+              "name": "exclusion",
+              "description": "海鸥和食物消失约束（当海鸥飞到有食物的格子时，海鸥和食物会立即从网格中消失）"
+            },
+            {
+              "name": "coverage",
+              "description": "覆盖所有食物（通过 n 步指挥使得所有海鸥吃掉食物并飞离网格）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一种方案使得所有海鸥都能吃到食物并飞离网格"
+        }
+      }
+    ],
+    "description": "判断是否存在一种方案使得所有海鸥都能吃到食物并飞离网格"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每一步指挥的选择依赖于当前状态下的最优解，即每一步指挥都是在当前状态下选择一个最优的海鸥和方向，使得最终所有海鸥都能吃到食物并飞离网格。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每一步指挥后，网格的状态（海鸥和食物的位置）会发生变化，但这种变化是确定且可预测的。每次指挥后，被指挥的海鸥会移动到最近的空格子，并且如果该格子有食物，则海鸥和食物都会消失。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每一步指挥中选择的海鸥和方向都是局部最优的，即选择一个能够使当前状态向目标状态（所有海鸥吃掉食物并飞离网格）最接近的方向进行移动。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每一步指挥的选择依赖于当前状态下的最优解，即每一步指挥都是在当前状态下选择一个最优的海鸥和方向，使得最终所有海鸥都能吃到食物并飞离网格。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每一步指挥后，网格的状态（海鸥和食物的位置）会发生变化，但这种变化是确定且可预测的。每次指挥后，被指挥的海鸥会移动到最近的空格子，并且如果该格子有食物，则海鸥和食物都会消失。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每一步指挥中选择的海鸥和方向都是局部最优的，即选择一个能够使当前状态向目标状态（所有海鸥吃掉食物并飞离网格）最接近的方向进行移动。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

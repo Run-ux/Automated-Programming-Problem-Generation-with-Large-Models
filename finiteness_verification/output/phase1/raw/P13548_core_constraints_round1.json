@@ -6,25 +6,27 @@
   "result": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图必须连通（通过Berlaflot航班可以到达任何城市）"
+        "name": "connectivity",
+        "description": "图必须连通（所有节点之间可以通过边到达）"
       },
       {
         "name": "max_cost_route",
-        "description": "路径成本等于路径中最大边的成本（Berlaflot和S8 Airlines的定价规则）",
-        "formal": "cost(t1, tk) = max(cost(ti, ti+1)) for all i in [1, k-1]"
+        "description": "路径成本等于路径中最大边的成本（路径成本定义为路径中所有边的最大成本）",
+        "formal": "cost(path) = max(cost(edge) for edge in path)"
       },
       {
-        "name": "s8_completeness",
-        "description": "S8 Airlines提供所有未被Berlaflot连接的城市对之间的双向航班"
+        "name": "complementary_edges",
+        "description": "S8 航空公司提供 Berlaflot 未连接的所有城市对之间的双向航班（即，如果两个城市之间没有 Berlaflot 的航班，则 S8 提供航班）"
       },
       {
-        "name": "s8_min_cost_route",
-        "description": "S8 Airlines航班的成本等于Berlaflot航线中的最小成本路径"
+        "name": "min_cost_route",
+        "description": "S8 航空公司的航班成本等于 Berlaflot 航班的最小路径成本（即，S8 航班的成本是 Berlaflot 航班中从一个城市到另一个城市的最小路径成本）",
+        "formal": "cost(S8_flight(x, y)) = min(max(cost(Berlaflot_path(x, y))))"
       },
       {
-        "name": "berlaflot_reform_cost",
-        "description": "Berlaflot航班的新成本等于S8 Airlines航线中的最小成本路径"
+        "name": "reassignment_cost",
+        "description": "Berlaflot 航班的新成本等于 S8 航班的最小路径成本（即，Berlaflot 航班的新成本是 S8 航班中从一个城市到另一个城市的最小路径成本）",
+        "formal": "new_cost(Berlaflot_flight(a_i, b_i)) = cost(S8_flight(a_i, b_i))"
       }
     ]
   },

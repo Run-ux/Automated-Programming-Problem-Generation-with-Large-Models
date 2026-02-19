@@ -1,0 +1,90 @@
+{
+  "problem_id": "P3037",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 40000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "图中每条边的长度最多出现三次（度数约束）",
+            "formal": "∀ edge length l, count(l) ≤ 3"
+          },
+          {
+            "name": "spanning_constraint",
+            "description": "生成树必须是连通且无环的（生成结构约束）",
+            "formal": "T is a spanning tree of G"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "生成树的总边长度必须是最小的（和约束）",
+            "formal": "minimize Σ(edge weights in T)"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "计算不同最小生成树的数量（计数约束）",
+            "formal": "count distinct MSTs (mod 10^9 + 7)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求图的最小生成树的总边长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最小生成树的总长度由其子树的最优解组成，且这些子树的最优解也是全局最优解的一部分。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择当前可选边中权重最小的边，并确保不形成环，最终得到的生成树是全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "matroid_exchange",
+            "description": "拟阵交换性：在最小生成树问题中，如果存在多条相同权重的边，可以通过交换这些边来保持生成树的最优性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -2,14 +2,14 @@
   "problem_id": "GYM105788D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "unknown_type",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "unknown_type",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1
@@ -35,13 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "alternating_vertex_coloring",
-        "description": "相邻节点在不同步骤中取值不同（图着色约束）",
+        "name": "state_transition",
+        "description": "状态转移约束：每个步骤的状态依赖于前一步骤的状态，且每一步的操作规则固定（根据前一步的黑色或白色决定下一步的颜色）",
         "confidence": "1/1"
       },
       {
-        "name": "source_node_fixed",
-        "description": "初始节点必须被指定为黑色",
+        "name": "adjacency_relation",
+        "description": "相邻关系：每次操作只影响当前状态下的相邻节点（上下左右四个方向）",
         "confidence": "1/1"
       }
     ],
@@ -52,12 +52,12 @@
         "result": {
           "constraints": [
             {
-              "name": "alternating_vertex_coloring",
-              "description": "相邻节点在不同步骤中取值不同（图着色约束）"
+              "name": "state_transition",
+              "description": "状态转移约束：每个步骤的状态依赖于前一步骤的状态，且每一步的操作规则固定（根据前一步的黑色或白色决定下一步的颜色）"
             },
             {
-              "name": "source_node_fixed",
-              "description": "初始节点必须被指定为黑色"
+              "name": "adjacency_relation",
+              "description": "相邻关系：每次操作只影响当前状态下的相邻节点（上下左右四个方向）"
             }
           ]
         }
@@ -73,28 +73,46 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "计算在给定步骤数后，满足特定条件的节点数量"
+          "description": "求在给定步骤数后，满足特定条件的节点数量"
         }
       }
     ],
-    "description": "计算在给定步骤数后，满足特定条件的节点数量"
+    "description": "求在给定步骤数后，满足特定条件的节点数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个步骤的状态仅依赖于前一步骤的状态，且状态转换规则固定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：问题的解法在每一步都保持对称性，即黑色和白色区域的扩展是对称的。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "当前状态仅依赖于有限的前序状态，具体表现为每一步的颜色填充规则基于上一步的状态确定。",
-          "properties": {
-            "dependency_on_previous_state": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个步骤的状态仅依赖于前一步骤的状态，且状态转换规则固定。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：问题的解法在每一步都保持对称性，即黑色和白色区域的扩展是对称的。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "当前状态仅依赖于有限的前序状态，具体表现为每一步的颜色填充规则基于上一步的状态确定。"
+    ]
   }
 }

@@ -2,14 +2,14 @@
   "problem_id": "GYM105494A",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100
@@ -39,13 +39,8 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "substring_merge_operation",
-        "description": "所有部分字符串拼接后必须等于原始字符串",
-        "confidence": "1/1"
-      },
-      {
-        "name": "non_decreasing_sequence",
-        "description": "各部分字符串的顺序与原始字符串中的顺序一致",
+        "name": "operation_count",
+        "description": "计算将一个字符串分割成多个部分所需的最少操作次数（按 Enter 键的次数）",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +51,9 @@
         "result": {
           "constraints": [
             {
-              "name": "substring_merge_operation",
-              "description": "所有部分字符串拼接后必须等于原始字符串"
-            },
-            {
-              "name": "non_decreasing_sequence",
-              "description": "各部分字符串的顺序与原始字符串中的顺序一致"
+              "name": "operation_count",
+              "description": "计算将一个字符串分割成多个部分所需的最少操作次数（按 Enter 键的次数）",
+              "formal": "min(Enter_key_presses) = n - 1, where n is the number of parts"
             }
           ]
         }
@@ -69,34 +61,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求将一个序列分割成给定子序列所需的最少操作次数"
+          "type": "minimize_count",
+          "description": "求最少的操作次数"
         }
       }
     ],
-    "description": "求将一个序列分割成给定子序列所需的最少操作次数"
+    "description": "求最少的操作次数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即原问题的最小分割次数等于各部分之间的分割次数之和。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次在相邻两部分之间插入一个分隔符（Enter键）即可达到局部最优解，最终得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过计算每个部分之间的连接次数来确定总的Enter键按压次数。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即原问题的最小分割次数等于各部分之间的分割次数之和。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次在相邻两部分之间插入一个分隔符（Enter键）即可达到局部最优解，最终得到全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过计算每个部分之间的连接次数来确定总的Enter键按压次数。"
+    ]
   }
 }

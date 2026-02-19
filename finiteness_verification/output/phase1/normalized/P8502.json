@@ -1,0 +1,85 @@
+{
+  "problem_id": "P8502",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "directed_graph",
+        "length": {
+          "min": 1,
+          "max": 500
+        },
+        "value_range": {
+          "min": 0,
+          "max": 500
+        },
+        "properties": {
+          "directed": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "路径长度固定为 m 条单向通道",
+            "formal": "path_length = m"
+          },
+          {
+            "name": "exclusion",
+            "description": "路径中不能经过指定的节点 c",
+            "formal": "c ∉ path"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "每个节点 i 向区间 [l_i, r_i] 中的所有节点连有单向通道",
+            "formal": "∀i, ∀j ∈ [l_i, r_i], (i, j) ∈ E"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足条件的路径方案数模998244353的结果"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从起点到终点的路径方案数可以通过子路径的方案数计算得出，满足动态规划的最优子结构性质",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过恰好 m 条单向通道到达目标房间的状态转移一致性，每个状态仅依赖于前一个状态的方案数",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：从当前房间到目标房间的方案数可以通过区间内的子区间方案数累加得到",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

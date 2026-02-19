@@ -1,0 +1,88 @@
+{
+  "problem_id": "GYM105431I",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 3,
+          "max": 3
+        },
+        "value_range": {
+          "min": 1,
+          "max": 21000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "budget_uniformity_constraint",
+            "description": "每天花费剩余金额的一半，向上取整",
+            "formal": "spend = ceil(remaining_money / 2)"
+          },
+          {
+            "name": "accumulated_sum_constraint",
+            "description": "每隔 d 天获得 s 单位的收入，从第 d 天开始",
+            "formal": "income = s if (day % d == 0) and (day >= d)"
+          },
+          {
+            "name": "fixed_position_constraint",
+            "description": "初始金额为 m",
+            "formal": "initial_money = m"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求在给定初始值和周期性增加条件下，满足特定递减规则的最小天数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "资金量单调递减：每天结束时，剩余资金量严格减少或保持不变。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": false,
+              "window_shrinkable": false
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移一致性：每一天的资金状态由前一天的状态和当天的支出及收入决定。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：每 d 天的总收入是 s 的整数倍，可以通过累加计算。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

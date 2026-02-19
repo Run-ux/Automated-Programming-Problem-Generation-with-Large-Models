@@ -1,0 +1,84 @@
+{
+  "problem_id": "CF187D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 100001
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "concurrency",
+            "description": "所有交通灯的周期相同且同步，从时间零开始绿灯持续 g 秒，红灯持续 r 秒，然后重复。",
+            "formal": "∀ i, light[i] = green if (t % (g + r) < g), otherwise red"
+          },
+          {
+            "name": "distance_bound",
+            "description": "每个路段的通过时间是固定的，车辆在通过每个路段时需要的时间为 l_i。",
+            "formal": "∀ i, traversal_time[i] = l_i"
+          },
+          {
+            "name": "operation_type",
+            "description": "车辆在到达交叉口时，如果遇到红灯必须停止，直到绿灯亮起才能继续前进。",
+            "formal": "if (t % (g + r) >= g), vehicle stops until (t % (g + r) < g)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求从起点到终点的最短时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "时间单调递增：每个公交车的出发时间和到达目的地的时间都是严格递增的。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：总行程时间可以通过各段路程时间累加得到。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在每个交通灯处，根据当前时间和红绿灯周期，可以确定是否需要等待以及等待时间。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

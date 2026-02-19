@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -28,24 +28,20 @@
       "result": {
         "constraints": [
           {
-            "name": "turn_based_operation",
-            "description": "选择过程按轮次进行，每轮中两个参与者轮流选择一个元素，直到所有元素被选完"
+            "name": "exclusion",
+            "description": "每个元素只能被选择一次（选择的元素不能重复）"
           },
           {
-            "name": "distinct_operation_types_constraint",
-            "description": "每个类型的元素只能被每个参与者选择一次"
+            "name": "turn_based",
+            "description": "操作按回合进行，且每个回合的操作顺序固定（Alice先选，然后Bob和Alice交替选择）"
           },
           {
-            "name": "continuous_path_constraint",
-            "description": "每个类型中的第二个元素只有在第一个元素被选择后才能被选择"
+            "name": "operation_limit",
+            "description": "每个元素最多被选择两次，且第二次选择必须在第一次选择之后"
           },
           {
-            "name": "global_optimization_objective",
-            "description": "每个参与者的目标是使自己的总成本最小化"
-          },
-          {
-            "name": "balanced_flow_constraint",
-            "description": "选择顺序确保公平性，即第一个参与者先选择一个元素，然后两个参与者轮流选择两个元素，直到只剩下一个元素"
+            "name": "optimization_objective",
+            "description": "双方都采取最优策略以最小化自己的成本"
           }
         ]
       }
@@ -56,8 +52,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求在多阶段决策过程中，最小化总代价"
+        "type": "minimize_value",
+        "description": "求在给定条件下，最小化总代价"
       }
     }
   ],
@@ -66,9 +62,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即每一天的最小成本可以基于前一天的成本和当天的价格变化来计算。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即在每一天中，Alice和Bob选择购买石英的策略都是基于当前价格下的最优选择。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每天的选择（谁先买、买哪一块）是局部最优的，并且这种局部最优选择能够导致全局最优解。具体来说，Alice和Bob总是会选择当前最便宜的石英块以最小化当天的成本。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一天到下一天，系统状态（已购石英种类及剩余未购石英的价格）的变化遵循一定的规则，确保了状态间的连贯性和一致性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,82 @@
+{
+  "problem_id": "P5826",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subsequence_constraint",
+            "description": "序列 b 必须是序列 a 的子序列，即存在一个单调递增的索引序列 z，使得对于所有 i，a[z[i]] = b[i]。",
+            "formal": "∃ z, 使得 |z| = |b|, z 是单调递增的, 且 ∀ i ∈ [1, |b|], a[z[i]] = b[i]"
+          },
+          {
+            "name": "range_bound",
+            "description": "序列 a 和所有 b 中的元素都不大于给定的正整数 m。",
+            "formal": "∀ i, a[i] ≤ m 且 ∀ i, j, b[i][j] ≤ m"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断给定序列是否为另一个序列的子序列"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，用于匹配子序列中的元素",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：子序列的匹配问题可以通过子问题的解来构建",
+            "properties": {}
+          },
+          {
+            "name": "prefix_decomposability",
+            "description": "前缀可分解性：通过维护前缀信息来判断子序列的存在性",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

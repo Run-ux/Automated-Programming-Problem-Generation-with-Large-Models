@@ -28,12 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "pairwise_exclusion",
-            "description": "选取的边集必须构成一个匹配（即每条边的端点互不相同）"
+            "name": "matching_constraint",
+            "description": "选取的边互不相交（匹配约束）",
+            "formal": "对于任意两条边 (i, j) 和 (k, l)，有 {i, j} ∩ {k, l} = ∅"
           },
           {
             "name": "edge_weight_constraint",
-            "description": "边 (i, j) 的权重定义为 w_ij = max(|a_i - a_j|, |a_i - b_j|, |b_i - a_j|, |b_i - b_j|)"
+            "description": "边的权重定义为四个差值的最大值（边权定义）",
+            "formal": "w_{ij} = max(|a_i - a_j|, |a_i - b_j|, |b_i - a_j|, |b_i - b_j|)"
           }
         ]
       }
@@ -45,7 +47,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "最大化匹配边的总权重"
+        "description": "求最大匹配的总权重"
       }
     }
   ],
@@ -54,9 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的最优解组合而成，通过解决子问题来构建全局最优解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最大匹配的权重可以通过子问题的最优解组合得到",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择当前可选的最大权重边，最终可以得到全局最优解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

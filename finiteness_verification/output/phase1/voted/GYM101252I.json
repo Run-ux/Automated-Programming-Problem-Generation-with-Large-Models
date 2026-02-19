@@ -1,0 +1,167 @@
+{
+  "problem_id": "GYM101252I",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "directed_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "directed_graph",
+          "length": {
+            "min": 2,
+            "max": 100
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100
+          },
+          "properties": {
+            "weighted": true,
+            "connected": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100
+    },
+    "properties": {
+      "weighted": true,
+      "connected": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "选取路径上的每条边的权重（雪量）必须减少，直到为零",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "路径必须从指定起点 A 到达指定终点 B",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "所有历史道路必须完全连通，可以从起点 A 步行到达任意历史道路",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每条边只能在有雪的情况下被选择",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "所有历史道路必须被完全清理干净",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "选取路径上的每条边的权重（雪量）必须减少，直到为零",
+              "formal": "对于每条边 (u, v) ∈ E，若 w(u, v) > 0，则每次经过该边时 w(u, v) 减少 1"
+            },
+            {
+              "name": "path_constraint",
+              "description": "路径必须从指定起点 A 到达指定终点 B",
+              "formal": "路径 P 必须满足 P[0] = A 且 P[|P|-1] = B"
+            },
+            {
+              "name": "connectivity",
+              "description": "所有历史道路必须完全连通，可以从起点 A 步行到达任意历史道路",
+              "formal": "对于所有 t_i = 1 的边 (u, v)，存在一条从 A 到 u 或 v 的路径，忽略边的方向"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每条边只能在有雪的情况下被选择",
+              "formal": "对于每条边 (u, v) ∈ E，只有当 w(u, v) > 0 时才能选择该边"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "所有历史道路必须被完全清理干净",
+              "formal": "对于所有 t_i = 1 的边 (u, v)，最终 w(u, v) = 0"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "最大化从起点到终点的路径数量，每条路径必须清除至少一条道路上的雪"
+        }
+      }
+    ],
+    "description": "最大化从起点到终点的路径数量，每条路径必须清除至少一条道路上的雪"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "flow_conservation",
+        "description": "在网络流模型中，每个节点的流入量等于流出量，除了源点和汇点。这保证了每条路径上的雪量减少是合法的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的最优解可以通过子问题的最优解来构建。具体来说，从A到B的最长路径可以由从A到某个中间节点的最长路径加上从该中间节点到B的最长路径组成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "在每一步选择中，总是选择当前能够清理最多雪量的道路，以最大化工作天数。这种局部最优选择最终导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "flow_conservation",
+              "description": "在网络流模型中，每个节点的流入量等于流出量，除了源点和汇点。这保证了每条路径上的雪量减少是合法的。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "问题的最优解可以通过子问题的最优解来构建。具体来说，从A到B的最长路径可以由从A到某个中间节点的最长路径加上从该中间节点到B的最长路径组成。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "在每一步选择中，总是选择当前能够清理最多雪量的道路，以最大化工作天数。这种局部最优选择最终导致全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

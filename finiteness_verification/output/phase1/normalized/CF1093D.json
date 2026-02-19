@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "weighted_undirected_graph",
         "length": {
           "min": 1,
           "max": 300000
@@ -29,14 +29,14 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_sum_constraint",
-            "description": "相邻节点的数值和必须为奇数（图着色约束）",
-            "formal": "∀ (u, v) ∈ E, (value[u] + value[v]) % 2 == 1"
+            "name": "adjacency_relation",
+            "description": "相邻节点的数值和为奇数（图着色约束）",
+            "formal": "∀ (u, v) ∈ E, (value(u) + value(v)) % 2 = 1"
           },
           {
-            "name": "node_value_constraint",
+            "name": "range_bound",
             "description": "每个节点的数值只能是 1, 2 或 3",
-            "formal": "∀ u ∈ V, value[u] ∈ {1, 2, 3}"
+            "formal": "∀ u ∈ V, value(u) ∈ {1, 2, 3}"
           }
         ]
       }
@@ -47,8 +47,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "计算满足特定条件的图着色方案数量"
+        "type": "enumeration",
+        "description": "求满足条件的方案数（常取模）"
       }
     }
   ],
@@ -57,9 +57,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个顶点的颜色选择依赖于其相邻顶点的颜色选择",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "bipartite_graph_property",
+            "description": "二分图划分：图可以被划分为两个独立的集合，使得每个边连接不同集合中的顶点",
+            "properties": {}
+          },
+          {
+            "name": "parity_invariant",
+            "description": "奇数和约束：每条边连接的两个顶点上的数字之和为奇数",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

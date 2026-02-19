@@ -1,0 +1,155 @@
+{
+  "problem_id": "P3940",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "pairwise_exclusion",
+        "description": "两个元素不能同时存在于同一子集内，当且仅当它们的和为一个正整数的平方",
+        "confidence": "1/1"
+      },
+      {
+        "name": "partition",
+        "description": "每个子集内的元素可以进一步划分为若干小团体，使得每个小团体内任意两个元素之间都不会发生矛盾",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_size_maximum_constraint",
+        "description": "每个子集内的小团体数量不超过 K",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_size_minimum_constraint",
+        "description": "分组数量最少的情况下，字典序最小的方案",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "pairwise_exclusion",
+              "description": "两个元素不能同时存在于同一子集内，当且仅当它们的和为一个正整数的平方",
+              "formal": "∀ i, j ∈ [1, n], a_i + a_j = k^2 (k ∈ Z+) → a_i 和 a_j 不能在同一子集"
+            },
+            {
+              "name": "partition",
+              "description": "每个子集内的元素可以进一步划分为若干小团体，使得每个小团体内任意两个元素之间都不会发生矛盾",
+              "formal": "每个子集 S 可以划分为若干小团体 T_1, T_2, ..., T_k，使得 ∀ i, j ∈ T_m, a_i + a_j ≠ k^2 (k ∈ Z+)"
+            },
+            {
+              "name": "subset_size_maximum_constraint",
+              "description": "每个子集内的小团体数量不超过 K",
+              "formal": "每个子集 S 的小团体数量 ≤ K"
+            },
+            {
+              "name": "subset_size_minimum_constraint",
+              "description": "分组数量最少的情况下，字典序最小的方案",
+              "formal": "在满足所有约束条件下，分组数量最少且字典序最小"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求满足条件的最少分组数量"
+        }
+      }
+    ],
+    "description": "求满足条件的最少分组数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，即分组方案的最优性可以通过子区间的最优分组方案来构建",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "局部最优选择导致全局最优，即在满足矛盾值不超过K的前提下，尽可能少地进行分组，并且保证字典序最小",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间信息可通过子区间合并，即通过合并相邻的子区间来构建更大的区间，并保持矛盾值不超过K的性质",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，即分组方案的最优性可以通过子区间的最优分组方案来构建",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "局部最优选择导致全局最优，即在满足矛盾值不超过K的前提下，尽可能少地进行分组，并且保证字典序最小",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间信息可通过子区间合并，即通过合并相邻的子区间来构建更大的区间，并保持矛盾值不超过K的性质",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

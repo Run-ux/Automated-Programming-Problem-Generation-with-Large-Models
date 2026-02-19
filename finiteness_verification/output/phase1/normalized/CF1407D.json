@@ -1,0 +1,76 @@
+{
+  "problem_id": "CF1407D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distance_bound",
+            "description": "跳跃必须满足离散条件，即从 i 跳到 j（i < j）时，中间的所有元素必须严格小于或大于 i 和 j 的值。",
+            "formal": "对于所有 i < k < j, h_k < min(h_i, h_j) 或 h_k > max(h_i, h_j)"
+          },
+          {
+            "name": "operation_limit",
+            "description": "目标是从第一个元素跳到最后一个元素，且跳跃次数最少。",
+            "formal": "求从 1 到 n 的最小离散跳跃次数"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "求从起点到终点的最少操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从起点到终点的最小跳跃次数可以通过子问题的最优解组合得到，即到达每个中间点的最小跳跃次数可以递推计算。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：在寻找下一个可跳跃的高楼时，搜索范围随着当前高楼的高度变化而单调前进或后退。",
+            "properties": {
+              "right_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

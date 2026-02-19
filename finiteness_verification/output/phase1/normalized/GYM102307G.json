@@ -29,14 +29,19 @@
       "result": {
         "constraints": [
           {
-            "name": "turn_based_operation",
-            "description": "节点的访问顺序必须满足依赖关系（拓扑排序约束）",
-            "formal": "对于每个节点 i，如果 a_i > 0，则节点 a_i 必须在节点 i 之前被访问"
+            "name": "degree_bound",
+            "description": "每个节点的出度不超过 1（每个课程最多是另一个课程的先修课）",
+            "formal": "∀i, out_degree(i) ≤ 1"
           },
           {
-            "name": "bottleneck_path",
-            "description": "每组选取元素数量不超过 K（容量上限约束）",
-            "formal": "每组课程数量 |S| <= k"
+            "name": "flow_constraint",
+            "description": "每学期选择的课程数量不超过 k（每学期最多选 k 门课）",
+            "formal": "∀semester, |courses_in_semester| ≤ k"
+          },
+          {
+            "name": "ordering",
+            "description": "课程之间存在先修关系，必须按顺序完成（拓扑排序约束）",
+            "formal": "对于所有 (u, v) ∈ prerequisites, u 必须在 v 之前完成"
           }
         ]
       }
@@ -47,8 +52,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求满足依赖关系的最小时间成本"
+        "type": "minimize_value",
+        "description": "求满足依赖关系和每期限制条件下的最小时间周期数"
       }
     }
   ],
@@ -57,9 +62,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个学期选择最多k门课程，使得总学期数最少",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：课程的依赖关系构成有向无环图（DAG），存在一个拓扑排序使得所有课程按其依赖关系有序排列。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，每个学期选择最多k门没有前置课程要求的课程，最终所需的最少学期数由这些子问题的最优解决定。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

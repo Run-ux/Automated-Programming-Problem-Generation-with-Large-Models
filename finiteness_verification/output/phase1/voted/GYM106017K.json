@@ -1,0 +1,124 @@
+{
+  "problem_id": "GYM106017K",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "相邻节点取值不同（图着色约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subsequence_constraint",
+        "description": "选取元素构成的子序列必须保持原顺序",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "相邻节点取值不同（图着色约束）",
+              "formal": "c_{i_j} ≠ c_{i_{j+1}} for all 1 ≤ j ≤ k-1"
+            },
+            {
+              "name": "subsequence_constraint",
+              "description": "选取元素构成的子序列必须保持原顺序",
+              "formal": "i_1 < i_2 < ... < i_k"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化满足条件的子序列权值和"
+        }
+      }
+    ],
+    "description": "最大化满足条件的子序列权值和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即对于任意一个位置i，选择或不选择该位置的糖果，可以基于前i-1个位置的最优解来决定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：通过维护两个状态（最后一个选中的糖果颜色为c和不为c的最大和），可以在遍历过程中根据当前糖果的颜色和价值更新这两个状态，从而保证在每一步都保持了到目前为止的最佳选择。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即对于任意一个位置i，选择或不选择该位置的糖果，可以基于前i-1个位置的最优解来决定。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过维护两个状态（最后一个选中的糖果颜色为c和不为c的最大和），可以在遍历过程中根据当前糖果的颜色和价值更新这两个状态，从而保证在每一步都保持了到目前为止的最佳选择。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

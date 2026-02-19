@@ -2,14 +2,14 @@
   "problem_id": "GYM102465C",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 2,
             "max": 4
@@ -19,7 +19,7 @@
             "max": 122
           },
           "properties": {
-            "ordered": false
+            "inferred": true
           }
         }
       }
@@ -33,24 +33,29 @@
       "max": 122
     },
     "properties": {
-      "ordered": false
+      "inferred": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_positions",
-        "description": "每个列表中的单词互不相同（无重复元素约束）",
+        "name": "distinctness",
+        "description": "每个列表中的单词不重复",
         "confidence": "1/1"
       },
       {
-        "name": "pattern_filling_constraint",
-        "description": "网格的每一行和每一列都必须由一个完整的单词填充（二维数组填充约束）",
+        "name": "subset_constraint",
+        "description": "当 N = M 时，只有同时出现在两个列表中的单词才能在网格中既水平又垂直使用",
         "confidence": "1/1"
       },
       {
-        "name": "orientation_constraint",
-        "description": "当 N 等于 M 时，不允许使用第一列表中的单词水平填充或第二列表中的单词垂直填充，除非这些单词同时出现在另一个列表中（方向约束）",
+        "name": "alphabet_constraint",
+        "description": "单词由小写字母 'a' 到 'z' 组成",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "第一列表中的单词必须从上到下垂直显示，第二列表中的单词必须从左到右水平显示",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +66,20 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_positions",
-              "description": "每个列表中的单词互不相同（无重复元素约束）"
+              "name": "distinctness",
+              "description": "每个列表中的单词不重复"
             },
             {
-              "name": "pattern_filling_constraint",
-              "description": "网格的每一行和每一列都必须由一个完整的单词填充（二维数组填充约束）"
+              "name": "subset_constraint",
+              "description": "当 N = M 时，只有同时出现在两个列表中的单词才能在网格中既水平又垂直使用"
             },
             {
-              "name": "orientation_constraint",
-              "description": "当 N 等于 M 时，不允许使用第一列表中的单词水平填充或第二列表中的单词垂直填充，除非这些单词同时出现在另一个列表中（方向约束）"
+              "name": "alphabet_constraint",
+              "description": "单词由小写字母 'a' 到 'z' 组成"
+            },
+            {
+              "name": "ordering",
+              "description": "第一列表中的单词必须从上到下垂直显示，第二列表中的单词必须从左到右水平显示"
             }
           ]
         }
@@ -78,37 +87,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的网格数量"
+          "type": "enumeration",
+          "description": "求满足条件的方案总数"
         }
       }
     ],
-    "description": "统计满足条件的网格数量"
+    "description": "求满足条件的方案总数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合得到，即网格中的每个位置的匹配状态可以由其相邻位置的状态推导出来。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在构建网格的过程中，当前状态（即已填充的部分）到下一个状态（即新增一个字符或单词）的转换是确定且一致的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在计算网格的某个部分时，该部分的解仅依赖于其直接相关的子问题，而不受其他无关子问题的影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的解是独立且最优的",
-          "properties": {
-            "subproblems_independent": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解组合得到，即网格中的每个位置的匹配状态可以由其相邻位置的状态推导出来。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在构建网格的过程中，当前状态（即已填充的部分）到下一个状态（即新增一个字符或单词）的转换是确定且一致的。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在计算网格的某个部分时，该部分的解仅依赖于其直接相关的子问题，而不受其他无关子问题的影响。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的解是独立且最优的"
+    ]
   }
 }

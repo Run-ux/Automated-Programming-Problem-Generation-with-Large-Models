@@ -1,0 +1,79 @@
+{
+  "problem_id": "P13844",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1048576
+        },
+        "value_range": {
+          "min": 0,
+          "max": 18446744073709551615
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "fixed_initial_placement",
+            "description": "初始值约束，即空集的系数为1",
+            "formal": "[x^∅]F(x) = 1"
+          },
+          {
+            "name": "subset_sum_modulo_constraint",
+            "description": "子集卷积定义，当且仅当两个集合不相交时，它们的乘积为并集，否则为0",
+            "formal": "x^S * x^T = {0 if S ∩ T ≠ ∅, x^(S ∪ T) otherwise}"
+          },
+          {
+            "name": "exponential_growth_constraint",
+            "description": "存在一个G(x)满足e^G(x) = F(x)，需要求出G(x)的系数",
+            "formal": "e^G(x) = F(x)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造满足给定条件的集合幂级数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：解法中每个集合幂级数的系数可以通过其子集的系数递归计算得出，满足动态规划中的最优子结构性质。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过子集卷积和泰勒展开的方式，从已知的 $F(x)$ 逐步推导出 $G(x)$ 的系数，保证了状态转移的一致性和正确性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

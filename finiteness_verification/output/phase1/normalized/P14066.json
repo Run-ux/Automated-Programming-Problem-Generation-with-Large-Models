@@ -1,0 +1,72 @@
+{
+  "problem_id": "P14066",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 3,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 500000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "存在三个集合，每个元素对其他集合的大小有下限要求（循环依赖约束）",
+            "formal": "对于每个学生 i，如果 i 在集合 S1，则 |S2| >= A_i；如果 i 在集合 S2，则 |S3| >= A_i；如果 i 在集合 S3，则 |S1| >= A_i"
+          },
+          {
+            "name": "partition",
+            "description": "所有元素必须被划分为三个互不相交的子集（划分约束）",
+            "formal": "S1 ∪ S2 ∪ S3 = {1, 2, ..., N} 且 S1 ∩ S2 = S2 ∩ S3 = S3 ∩ S1 = ∅"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种分组方案，使得所有学生都满意"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优。通过贪心地将学生分配到满足条件的组中，可以确保所有学生的需求得到满足。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "分治或 DP 中子问题相互独立。每个学生的分配决策不会影响其他学生的分配决策，可以独立处理。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

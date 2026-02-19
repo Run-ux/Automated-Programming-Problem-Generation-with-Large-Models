@@ -1,0 +1,160 @@
+{
+  "problem_id": "P13658",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "injective_mapping",
+        "description": "每个节点在每一天只能被一个团队操作（一对一映射约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_order",
+        "description": "每个团队的操作必须是连续的天数（连续操作约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_intersecting_segments",
+        "description": "每个团队不能同时操作多个节点（无重叠约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "每个团队在整个假期中只能使用一次（单次使用约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "只有在指定的清洁日才能进行操作（有效天数约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "injective_mapping",
+              "description": "每个节点在每一天只能被一个团队操作（一对一映射约束）"
+            },
+            {
+              "name": "operation_order",
+              "description": "每个团队的操作必须是连续的天数（连续操作约束）"
+            },
+            {
+              "name": "non_intersecting_segments",
+              "description": "每个团队不能同时操作多个节点（无重叠约束）"
+            },
+            {
+              "name": "distinctness",
+              "description": "每个团队在整个假期中只能使用一次（单次使用约束）"
+            },
+            {
+              "name": "range_bound",
+              "description": "只有在指定的清洁日才能进行操作（有效天数约束）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化在给定约束条件下所有团队的最小总收入"
+        }
+      }
+    ],
+    "description": "最大化在给定约束条件下所有团队的最小总收入"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个团队在特定时间段内的最大收益可以由更短时间段的最大收益递推得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每一天的状态（哪些商店是干净的）决定了可以分配给团队的商店范围。状态转移时，新的状态只依赖于前一天的状态和当前天的清洁情况。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：对于连续的几天，如果这些天内某些商店都是干净的，那么这些天的总收益可以通过每天的收益累加得到。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个团队在特定时间段内的最大收益可以由更短时间段的最大收益递推得到。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每一天的状态（哪些商店是干净的）决定了可以分配给团队的商店范围。状态转移时，新的状态只依赖于前一天的状态和当前天的清洁情况。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：对于连续的几天，如果这些天内某些商店都是干净的，那么这些天的总收益可以通过每天的收益累加得到。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "problem_id": "P4338",
+  "source": "luogu",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 2,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 300000
+          },
+          "properties": {
+            "connected": true,
+            "rooted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 300000
+    },
+    "properties": {
+      "connected": true,
+      "rooted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "从任意节点到根节点的路径上所有节点的控制权会被同一个国家取得",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "图是连通的，即任意两个节点之间都存在路径",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个节点的度数为 n-1 条边连接的节点数",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pairwise_exclusion",
+        "description": "同一国家在崛起过程中不会与同一个其他国家进行多次战争",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "一个城市崛起后，新的城市不会在该城市称霸世界之前崛起",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "从任意节点到根节点的路径上所有节点的控制权会被同一个国家取得"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "图是连通的，即任意两个节点之间都存在路径"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个节点的度数为 n-1 条边连接的节点数"
+            },
+            {
+              "name": "pairwise_exclusion",
+              "description": "同一国家在崛起过程中不会与同一个其他国家进行多次战争"
+            },
+            {
+              "name": "state_transition",
+              "description": "一个城市崛起后，新的城市不会在该城市称霸世界之前崛起"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化所有可能的崛起顺序中的灾难度之和"
+        }
+      }
+    ],
+    "description": "最大化所有可能的崛起顺序中的灾难度之和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个城市的崛起次数对最终灾难度的影响可以独立计算后合并。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在处理每个城市崛起时，其对路径上其他城市控制权的影响遵循一致的状态转移规则，确保了算法的一致性和正确性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：对于任意一条从城市i到城市1的路径上的所有城市，其被控制的情况可以通过累加的方式进行更新和查询。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个城市的崛起次数对最终灾难度的影响可以独立计算后合并。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在处理每个城市崛起时，其对路径上其他城市控制权的影响遵循一致的状态转移规则，确保了算法的一致性和正确性。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：对于任意一条从城市i到城市1的路径上的所有城市，其被控制的情况可以通过累加的方式进行更新和查询。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

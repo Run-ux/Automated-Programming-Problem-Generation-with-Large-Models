@@ -29,25 +29,27 @@
       "result": {
         "constraints": [
           {
-            "name": "graph_connectivity",
-            "description": "图必须连通（通过Berlaflot航班可以到达任何城市）"
+            "name": "connectivity",
+            "description": "图必须连通（所有节点之间可以通过边到达）"
           },
           {
-            "name": "maximum_path_length_constraint",
-            "description": "路径成本等于路径中最大边的成本（Berlaflot和S8 Airlines的定价规则）",
-            "formal": "cost(t1, tk) = max(cost(ti, ti+1)) for all i in [1, k-1]"
+            "name": "maximize_path_cost",
+            "description": "路径成本等于路径中最大边的成本（路径成本定义为路径中所有边的最大成本）",
+            "formal": "cost(path) = max(cost(edge) for edge in path)"
           },
           {
-            "name": "distinct_solution_constraint",
-            "description": "S8 Airlines提供所有未被Berlaflot连接的城市对之间的双向航班"
+            "name": "complement_graph_constraint",
+            "description": "S8 航空公司提供 Berlaflot 未连接的所有城市对之间的双向航班（即，如果两个城市之间没有 Berlaflot 的航班，则 S8 提供航班）"
           },
           {
-            "name": "minimum_path_length_constraint",
-            "description": "S8 Airlines航班的成本等于Berlaflot航线中的最小成本路径"
+            "name": "minimize_path_cost",
+            "description": "S8 航空公司的航班成本等于 Berlaflot 航班的最小路径成本（即，S8 航班的成本是 Berlaflot 航班中从一个城市到另一个城市的最小路径成本）",
+            "formal": "cost(S8_flight(x, y)) = min(max(cost(Berlaflot_path(x, y))))"
           },
           {
-            "name": "weight_sum_constraint",
-            "description": "Berlaflot航班的新成本等于S8 Airlines航线中的最小成本路径"
+            "name": "cost_of_reassignment",
+            "description": "Berlaflot 航班的新成本等于 S8 航班的最小路径成本（即，Berlaflot 航班的新成本是 S8 航班中从一个城市到另一个城市的最小路径成本）",
+            "formal": "new_cost(Berlaflot_flight(a_i, b_i)) = cost(S8_flight(a_i, b_i))"
           }
         ]
       }
@@ -58,8 +60,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求每条边在新图中的最小代价"
+        "type": "min_max",
+        "description": "求每条边在新图中的最小瓶颈路径代价"
       }
     }
   ],
@@ -68,9 +70,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，具体表现为通过最短路径树来确定每条边的新权重。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，任意两点之间的最短路径可以通过中间点的最短路径组合得到。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：在计算最短路径时，可以将多个区间的最短路径信息合并以得到更大范围的最短路径信息。例如，在使用线段树或稀疏表等数据结构时，可以高效地合并区间信息。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,97 @@
+{
+  "problem_id": "GYM104030A",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 0,
+          "max": 11
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "alternating_pattern_constraint",
+            "description": "服务方在每轮后交替，且每名玩家连续服务的次数固定（Alice 1 次，Bob 2 次）",
+            "formal": "serving_sequence = [A, B, B, A, A, B, B, ...]"
+          },
+          {
+            "name": "non_decreasing_sequence",
+            "description": "每一轮后，当前服务方的分数增加 1，另一方分数不变",
+            "formal": "if X is serving, then (X', Y) = (X + 1, Y)"
+          },
+          {
+            "name": "maximum_value_constraint",
+            "description": "任意一方的分数不超过 11，且当一方达到 11 分时游戏结束",
+            "formal": "0 <= X, Y <= 11 and if X == 11 or Y == 11, game ends"
+          },
+          {
+            "name": "syntax_validity",
+            "description": "日志中的每一项必须是有效的得分记录，且按时间顺序排列",
+            "formal": "log[i] = (X_i, Y_i) and log[i-1] -> log[i] must be valid transition"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断给定序列是否满足预设规则"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "得分单调递增：每一轮得分只能增加，不能减少",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "发球权状态转移一致性：发球权按照预定的模式在两个玩家之间交替",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "得分差值可加性：任意两轮之间的得分差值可以通过端点差值计算",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "得分记录的拓扑序不变量：得分记录必须满足时间顺序上的依赖关系",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

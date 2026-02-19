@@ -1,0 +1,157 @@
+{
+  "problem_id": "P11933",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 1500
+          },
+          "value_range": {
+            "min": -100000,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 1500
+    },
+    "value_range": {
+      "min": -100000,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "decrease_only_constraint",
+        "description": "序列的 y 坐标严格递增（y_i < y_{i+1}）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "acyclicity",
+        "description": "不存在三点共线",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "路径必须从起点 (x_1, y_1) 到终点 (x_n, y_n)",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distance_cost_constraint",
+        "description": "路径穿过河流的次数 b 会影响总代价 a + T * b",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "decrease_only_constraint",
+              "description": "序列的 y 坐标严格递增（y_i < y_{i+1}）"
+            },
+            {
+              "name": "acyclicity",
+              "description": "不存在三点共线"
+            },
+            {
+              "name": "path_constraint",
+              "description": "路径必须从起点 (x_1, y_1) 到终点 (x_n, y_n)"
+            },
+            {
+              "name": "distance_cost_constraint",
+              "description": "路径穿过河流的次数 b 会影响总代价 a + T * b"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求路径总长度与穿过次数加权和的最小值"
+        }
+      }
+    ],
+    "description": "求路径总长度与穿过次数加权和的最小值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从起点到终点的最小代价路径可以通过从起点到中间点和从中间点到终点的最小代价路径组合得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在考虑路径穿过河流时，路径的总长度和穿过次数随着路径的变化而单调变化。具体来说，路径的总长度和穿过次数不会因为路径的局部调整而变得更差。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，选择当前最优的路径段（即最短的路径段或最少的穿过次数），最终可以得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从起点到终点的最小代价路径可以通过从起点到中间点和从中间点到终点的最小代价路径组合得到。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在考虑路径穿过河流时，路径的总长度和穿过次数随着路径的变化而单调变化。具体来说，路径的总长度和穿过次数不会因为路径的局部调整而变得更差。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false
+              }
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，选择当前最优的路径段（即最短的路径段或最少的穿过次数），最终可以得到全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

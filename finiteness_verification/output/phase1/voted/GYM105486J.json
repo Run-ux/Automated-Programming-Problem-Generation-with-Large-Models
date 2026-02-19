@@ -1,0 +1,159 @@
+{
+  "problem_id": "GYM105486J",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 500000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 10000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 500000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "time_window_constraint",
+        "description": "只有在当前有效时间段内的消息才被考虑（时间窗口约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "valid_message_first_occurrence",
+        "description": "每个参与者在每个级别上只有第一个有效的消息才被计分（唯一性约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "score_ordering_constraint",
+        "description": "根据完成级别的排名分配分数（排名约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "total_score_ordering",
+        "description": "输出按总分降序排列，相同分数按参与者编号升序排列（排序约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "time_window_constraint",
+              "description": "只有在当前有效时间段内的消息才被考虑（时间窗口约束）",
+              "formal": "对于每个类型 1 消息，只处理其指定的级别 x 的后续消息，直到下一个类型 1 消息出现"
+            },
+            {
+              "name": "valid_message_first_occurrence",
+              "description": "每个参与者在每个级别上只有第一个有效的消息才被计分（唯一性约束）",
+              "formal": "对于每个参与者 id 和每个级别 x，只处理第一个有效的类型 2 或类型 3 消息"
+            },
+            {
+              "name": "score_ordering_constraint",
+              "description": "根据完成级别的排名分配分数（排名约束）",
+              "formal": "第 i 个完成级别的参与者获得 m - i + 1 分，未完成的参与者得分为 0"
+            },
+            {
+              "name": "total_score_ordering",
+              "description": "输出按总分降序排列，相同分数按参与者编号升序排列（排序约束）",
+              "formal": "输出 (id, total_points) 对，按 total_points 降序排列，相同 total_points 时按 id 升序排列"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "计算每个参与者的总得分，并按总得分降序排列，若总得分相同则按参与者编号升序排列"
+        }
+      }
+    ],
+    "description": "计算每个参与者的总得分，并按总得分降序排列，若总得分相同则按参与者编号升序排列"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "消息处理过程中，当前活跃关卡的标识单调递增，即每个新的Type 1消息会更新当前活跃关卡，且不会回退到之前的关卡。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "每个参与者的总分数是其在各个关卡得分的累加。每个关卡的得分独立于其他关卡，且每个关卡的得分基于完成该关卡的排名顺序。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移一致性：从一个关卡到下一个关卡的过程中，参与者的得分状态根据他们在当前关卡的表现进行更新，并且这种更新方式在整个比赛过程中保持一致。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "消息处理过程中，当前活跃关卡的标识单调递增，即每个新的Type 1消息会更新当前活跃关卡，且不会回退到之前的关卡。",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "每个参与者的总分数是其在各个关卡得分的累加。每个关卡的得分独立于其他关卡，且每个关卡的得分基于完成该关卡的排名顺序。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移一致性：从一个关卡到下一个关卡的过程中，参与者的得分状态根据他们在当前关卡的表现进行更新，并且这种更新方式在整个比赛过程中保持一致。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

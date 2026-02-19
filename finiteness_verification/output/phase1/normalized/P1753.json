@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 100
@@ -28,12 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "matrix_chain_multiplication_optimization",
-            "description": "矩阵链乘积的结合律约束，即可以通过不同的括号化方式来减少运算次数"
+            "name": "ordering",
+            "description": "矩阵链乘积的顺序固定，不能改变矩阵的相对位置"
           },
           {
-            "name": "dimension_consistency_constraint",
-            "description": "相邻矩阵的维度必须兼容，即第 i 个矩阵的列数等于第 i+1 个矩阵的行数"
+            "name": "matching_constraint",
+            "description": "相邻矩阵的列数和行数必须匹配，才能进行乘法运算"
           }
         ]
       }
@@ -44,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求矩阵链乘的最小运算次数"
+        "type": "minimize_value",
+        "description": "求矩阵链乘法的最小运算次数"
       }
     }
   ],
@@ -54,9 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优解可以通过子问题的最优解组合而成，满足动态规划的最优子结构性质",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即矩阵链乘积的最小运算次数可以通过其子链的最小运算次数计算得出",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在求解过程中，不同子问题的解互不影响，可以独立求解。例如，在计算某段矩阵链的最小运算次数时，该段内部的矩阵链乘积方式不会受到外部矩阵的影响",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

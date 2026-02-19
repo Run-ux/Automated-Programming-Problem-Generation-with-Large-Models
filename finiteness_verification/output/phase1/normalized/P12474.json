@@ -1,0 +1,92 @@
+{
+  "problem_id": "P12474",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 5000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 100
+        },
+        "properties": {
+          "weighted": true,
+          "directed": true,
+          "self_loops": true,
+          "parallel_edges": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distance_bound",
+            "description": "所有简单回路的权重和不大于一个定值 B",
+            "formal": "∀ 简单回路 C, Σ(w_i) ≤ B"
+          },
+          {
+            "name": "revisiting_allowed",
+            "description": "神经节点的兴奋状态不会保留到下一个时刻，除非有新的信号传递",
+            "formal": "f(u, t+1) = 0 if no new signal to u at t+1"
+          },
+          {
+            "name": "repetition",
+            "description": "经过充分长的时间后，n 号神经节点以一个固定时间周期重复进入兴奋状态",
+            "formal": "∃ p, M, ∀ x ≥ M, f(n, x) = f(n, x + p)"
+          },
+          {
+            "name": "exclusion",
+            "description": "图中允许存在自环和重边",
+            "formal": "允许 (u, u) 和多条 (u, v) 边"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足条件的最小周期长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：在神经网络中，兴奋状态的传递最终会进入一个固定的周期性模式，且该模式由简单回路的长度决定。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：对于不存在简单回路的情况（DAG），可以利用拓扑排序来确定节点的处理顺序，确保每个节点在其所有前驱节点处理完毕后才被处理。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：兴奋状态的传递可以通过状态转移来描述，即某个节点在时刻 t 的兴奋状态取决于其前驱节点在时刻 t - w_i 的兴奋状态。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

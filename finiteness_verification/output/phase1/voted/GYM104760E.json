@@ -2,14 +2,14 @@
   "problem_id": "GYM104760E",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -35,8 +35,8 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_permutation",
-        "description": "输入的整数集合是一个排列，即每个整数在1到N之间且不重复",
+        "name": "permutation_constraint",
+        "description": "输入的整数集合是一个排列，需要恢复其原始顺序",
         "confidence": "1/1"
       }
     ],
@@ -47,8 +47,8 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_permutation",
-              "description": "输入的整数集合是一个排列，即每个整数在1到N之间且不重复"
+              "name": "permutation_constraint",
+              "description": "输入的整数集合是一个排列，需要恢复其原始顺序"
             }
           ]
         }
@@ -56,34 +56,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足特定条件的序列"
+          "type": "construction",
+          "description": "构造一个满足特定条件的排列"
         }
       }
     ],
-    "description": "构造一个满足特定条件的序列"
+    "description": "构造一个满足特定条件的排列"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：解法通过子问题的最优解来构建整体问题的最优解，确保每个子问题的解都是全局最优解的一部分。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "排列不变性：输入序列的重新排列不会改变解法的有效性和正确性，即解法对输入序列的任意排列都适用。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：解法通过子问题的最优解来构建整体问题的最优解，确保每个子问题的解都是全局最优解的一部分。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "排列不变性：输入序列的重新排列不会改变解法的有效性和正确性，即解法对输入序列的任意排列都适用。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的"
+    ]
   }
 }

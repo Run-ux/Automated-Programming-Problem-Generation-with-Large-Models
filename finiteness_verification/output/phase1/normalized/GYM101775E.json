@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 1,
           "max": 20
@@ -28,28 +28,20 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "节点只能移动到相邻的空节点或特定类型的节点（如水果）"
+            "name": "state_transition",
+            "description": "状态转移约束：每次移动只能选择一个蛇鸟，并将其头部移动到相邻的空格或水果格，且移动后蛇鸟会受到重力影响下落直到碰到障碍物或其他有支撑的蛇鸟"
           },
           {
-            "name": "uniform_movement",
-            "description": "节点在没有支撑的情况下会下落，直到遇到障碍物或其他有支撑的节点"
+            "name": "adjacency_relation",
+            "description": "相邻关系：蛇鸟的头部只能移动到四个方向（上、下、左、右）的相邻格子"
           },
           {
-            "name": "cell_clearance_rule",
-            "description": "节点掉落到尖刺或掉出边界会导致失败"
+            "name": "exclusion",
+            "description": "互斥/禁止：蛇鸟不能移动到尖刺格或移出棋盘边界，否则会导致死亡"
           },
           {
-            "name": "constant_submatrix",
-            "description": "节点在下落过程中形状不变"
-          },
-          {
-            "name": "initial_state_connectivity",
-            "description": "初始状态下所有节点都是稳定的，不会下落"
-          },
-          {
-            "name": "endpoint_node_constraint",
-            "description": "所有节点必须到达目标位置且存活"
+            "name": "operation_limit",
+            "description": "操作次数限制：需要找到使所有蛇鸟存活并到达天堂的最小移动次数"
           }
         ]
       }
@@ -60,8 +52,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_cost",
-        "description": "求满足条件的最少操作次数"
+        "type": "minimize_value",
+        "description": "求满足条件的最小操作次数"
       }
     }
   ],
@@ -70,11 +62,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个状态的最优解依赖于其前序状态的最优解",
-        "properties": {
-          "state_dependency": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每一步移动后，蛇鸟的状态（位置和形状）根据重力作用进行更新，且新的状态是基于当前状态的合法转移。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在每个状态下，蛇鸟的移动顺序和重力作用下的下落顺序形成一个有向无环图（DAG），确保了状态之间的依赖关系。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。即，从初始状态到目标状态的最短路径可以通过一系列局部最优选择来实现。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

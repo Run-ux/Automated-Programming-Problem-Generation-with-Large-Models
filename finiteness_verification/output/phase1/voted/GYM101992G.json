@@ -41,13 +41,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图必须是连通的",
+        "name": "connectivity",
+        "description": "图必须连通",
         "confidence": "1/1"
       },
       {
-        "name": "valid_cell_only_constraint",
-        "description": "栈中的节点序列必须满足特定的有效性规则",
+        "name": "operation_type",
+        "description": "操作序列必须符合栈的操作规则（如入栈、出栈）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "节点序列必须在图中形成一条有效的路径",
         "confidence": "1/1"
       }
     ],
@@ -58,12 +63,16 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "图必须是连通的"
+              "name": "connectivity",
+              "description": "图必须连通"
             },
             {
-              "name": "valid_cell_only_constraint",
-              "description": "栈中的节点序列必须满足特定的有效性规则"
+              "name": "operation_type",
+              "description": "操作序列必须符合栈的操作规则（如入栈、出栈）"
+            },
+            {
+              "name": "path_constraint",
+              "description": "节点序列必须在图中形成一条有效的路径"
             }
           ]
         }
@@ -71,14 +80,14 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
+          "type": "feasibility",
           "description": "判断给定序列是否满足特定规则"
         }
       }
@@ -86,21 +95,39 @@
     "description": "判断给定序列是否满足特定规则"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：机器人执行命令时，其内存栈的状态转移满足一致性，即每次操作后栈内节点序列的合法性可由前一状态推导得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：对于任意给定的节点序列，其合法性的判断可以分解为更小子序列的合法性问题。若所有子序列均合法，则整个序列合法。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "状态依赖：当前节点的有效性仅依赖于其前驱节点的状态，满足栈结构的后进先出特性",
-          "properties": {
-            "stack_structure": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：机器人执行命令时，其内存栈的状态转移满足一致性，即每次操作后栈内节点序列的合法性可由前一状态推导得出。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：对于任意给定的节点序列，其合法性的判断可以分解为更小子序列的合法性问题。若所有子序列均合法，则整个序列合法。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "状态依赖：当前节点的有效性仅依赖于其前驱节点的状态，满足栈结构的后进先出特性"
+    ]
   }
 }

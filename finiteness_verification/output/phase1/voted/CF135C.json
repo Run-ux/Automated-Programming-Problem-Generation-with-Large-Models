@@ -1,0 +1,151 @@
+{
+  "problem_id": "CF135C",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 105
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 105
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "ordering",
+        "description": "最终结果的有序性（输出结果按字典序排序）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "parity",
+        "description": "最终结果为两个二进制位的组合（游戏结束时剩余两张卡片，其上的数字组成一个二进制数）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimal_play",
+        "description": "双方玩家均采取最优策略（Masha 试图最小化结果，Petya 试图最大化结果）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_order",
+        "description": "每次操作移除一张卡片，并重新排列剩余卡片以填补空缺（移除卡片后，其余卡片向左移动填补空位）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "ordering",
+              "description": "最终结果的有序性（输出结果按字典序排序）"
+            },
+            {
+              "name": "parity",
+              "description": "最终结果为两个二进制位的组合（游戏结束时剩余两张卡片，其上的数字组成一个二进制数）"
+            },
+            {
+              "name": "optimal_play",
+              "description": "双方玩家均采取最优策略（Masha 试图最小化结果，Petya 试图最大化结果）"
+            },
+            {
+              "name": "operation_order",
+              "description": "每次操作移除一张卡片，并重新排列剩余卡片以填补空缺（移除卡片后，其余卡片向左移动填补空位）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "lexicographic_optimize",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "lexicographic_optimize",
+          "description": "求所有可能的最终状态集合，并按字典序排序"
+        }
+      }
+    ],
+    "description": "求所有可能的最终状态集合，并按字典序排序"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最终结果由子问题的最优解组合而成，即每一步移除卡片后剩余卡片的最优解决定了最终的两个卡片状态。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步中，玩家会选择当前最优的卡片移除策略以达到自己的目标（Masha最小化，Petya最大化），这种局部最优选择将导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：游戏状态随着每一步操作的变化而变化，但始终满足从一个状态到另一个状态的确定性转移规则，且每个状态都是前一个状态通过合法操作得到的。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最终结果由子问题的最优解组合而成，即每一步移除卡片后剩余卡片的最优解决定了最终的两个卡片状态。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步中，玩家会选择当前最优的卡片移除策略以达到自己的目标（Masha最小化，Petya最大化），这种局部最优选择将导致全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：游戏状态随着每一步操作的变化而变化，但始终满足从一个状态到另一个状态的确定性转移规则，且每个状态都是前一个状态通过合法操作得到的。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

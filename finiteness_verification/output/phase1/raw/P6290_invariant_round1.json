@@ -4,12 +4,32 @@
   "dimension": "invariant",
   "round": 1,
   "result": {
-    "name": "monotonicity",
-    "description": "双指针左右端点单调前进，分别指向x粒子和y粒子的发射序列，确保每次碰撞都是当前最早可能发生的碰撞。",
-    "properties": {
-      "left_monotonic": true,
-      "right_monotonic": true
-    }
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "碰撞事件的时间顺序单调递增，即每次碰撞发生的时间严格大于前一次碰撞的时间。",
+        "properties": {
+          "time_monotonic": true
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "在每一步选择中，总是选择当前最早可能发生碰撞的粒子对进行处理，确保局部最优解导致全局最优解。",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移过程中，每次碰撞后更新粒子的状态（如位置、是否已碰撞等），且这些状态的更新是确定性的。",
+        "properties": {
+          "deterministic_update": true
+        }
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "每次碰撞事件的处理独立于其他碰撞事件，即每个碰撞事件的处理不影响其他未处理的碰撞事件。",
+        "properties": {}
+      }
+    ]
   },
   "status": "success"
 }

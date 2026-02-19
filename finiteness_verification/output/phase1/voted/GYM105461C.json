@@ -2,14 +2,14 @@
   "problem_id": "GYM105461C",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 100000
@@ -39,28 +39,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_modulo_values",
-        "description": "每次更新操作的参数 k 必须是偶数",
+        "name": "operation_limit",
+        "description": "操作次数限制，每个测试用例中的更新次数不超过 n-1 次",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "移除前 k/2 个奇数位置的元素",
+        "name": "distinctness",
+        "description": "初始艺术家编号是唯一的，即没有重复的编号",
         "confidence": "1/1"
       },
       {
-        "name": "submatrix_transformation",
-        "description": "反转前 k/2 个偶数位置的元素",
+        "name": "k_mex_constraint",
+        "description": "每次更新的 k 值必须是偶数，并且不大于当前艺术家数量",
         "confidence": "1/1"
       },
       {
-        "name": "parallel_operation",
-        "description": "移除和反转操作必须同时进行",
-        "confidence": "1/1"
-      },
-      {
-        "name": "minimum_element_count_constraint",
-        "description": "每次更新操作的参数 k 不得大于当前序列的长度",
+        "name": "concurrency",
+        "description": "每次更新中，移除奇数位置的前 k/2 个艺术家和反转偶数位置的前 k/2 个艺术家的操作是同时进行的",
         "confidence": "1/1"
       }
     ],
@@ -71,24 +66,24 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_modulo_values",
-              "description": "每次更新操作的参数 k 必须是偶数"
+              "name": "operation_limit",
+              "description": "操作次数限制，每个测试用例中的更新次数不超过 n-1 次",
+              "formal": "q < n"
             },
             {
-              "name": "adjacent_difference",
-              "description": "移除前 k/2 个奇数位置的元素"
+              "name": "distinctness",
+              "description": "初始艺术家编号是唯一的，即没有重复的编号",
+              "formal": "a_i are distinct"
             },
             {
-              "name": "submatrix_transformation",
-              "description": "反转前 k/2 个偶数位置的元素"
+              "name": "k_mex_constraint",
+              "description": "每次更新的 k 值必须是偶数，并且不大于当前艺术家数量",
+              "formal": "k_i is even and k_i <= current number of artists"
             },
             {
-              "name": "parallel_operation",
-              "description": "移除和反转操作必须同时进行"
-            },
-            {
-              "name": "minimum_element_count_constraint",
-              "description": "每次更新操作的参数 k 不得大于当前序列的长度"
+              "name": "concurrency",
+              "description": "每次更新中，移除奇数位置的前 k/2 个艺术家和反转偶数位置的前 k/2 个艺术家的操作是同时进行的",
+              "formal": "remove first k/2 odd-indexed artists and reverse first k/2 even-indexed artists simultaneously"
             }
           ]
         }
@@ -96,38 +91,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个经过一系列操作后的序列"
+          "type": "construction",
+          "description": "构造并输出经过一系列更新操作后的最终序列"
         }
       }
     ],
-    "description": "构造一个经过一系列操作后的序列"
+    "description": "构造并输出经过一系列更新操作后的最终序列"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每次更新操作后，艺术家的排列顺序可以通过固定的规则从上一个状态推导出来。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：对于每个更新操作，奇数位置和偶数位置的艺术家分别进行独立且对称的操作（移除和反转），保证了操作的对称性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "操作过程中，艺术家的移除和重排保持了位置的单调变化。每次更新后，剩余艺术家的位置关系保持有序。",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": false,
-            "window_shrinkable": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次更新操作后，艺术家的排列顺序可以通过固定的规则从上一个状态推导出来。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：对于每个更新操作，奇数位置和偶数位置的艺术家分别进行独立且对称的操作（移除和反转），保证了操作的对称性。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "操作过程中，艺术家的移除和重排保持了位置的单调变化。每次更新后，剩余艺术家的位置关系保持有序。"
+    ]
   }
 }

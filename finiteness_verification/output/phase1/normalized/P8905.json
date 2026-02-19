@@ -1,0 +1,83 @@
+{
+  "problem_id": "P8905",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": false,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（每个小团体内的节点必须通过边完全连接）"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数至少为1（每头奶牛至少有一个朋友）"
+          },
+          {
+            "name": "subgraph_connectivity",
+            "description": "子图强度定义为子图内最小度数乘以子图节点数量（小团体的强度计算方式）",
+            "formal": "strength(G) = min_degree(G) * |V(G)|"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求所有连通子图中，节点数与该子图内每个节点最小度数乘积的最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个小团体的强度可以通过其子集的强度计算得出，即大问题的解由子问题的解合成。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在计算某个小团体的强度时，该小团体内的奶牛与其他小团体内的奶牛是独立的，不会互相影响。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在处理小团体时，可以按照某种顺序（如DFS遍历顺序）来确保每个小团体的处理都是基于已经处理过的子问题。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

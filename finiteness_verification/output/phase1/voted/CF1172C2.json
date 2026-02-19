@@ -2,14 +2,14 @@
   "problem_id": "CF1172C2",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -39,23 +39,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "weight_adjustment",
-        "description": "每次访问后，根据访问结果对权重进行修改：喜欢的图片权重加1，不喜欢的图片权重减1",
+        "name": "probability_distribution",
+        "description": "每个元素的选取概率与其权重成正比，即第 i 个元素被选中的概率为 w_i / (sum(w_j) for j in 1..n)",
         "confidence": "1/1"
       },
       {
-        "name": "weight_proportional_probability",
-        "description": "每个元素被选中的概率与其权重成正比",
+        "name": "transformation",
+        "description": "每次操作后，如果选中的是喜欢的元素，则其权重加 1；否则，其权重减 1",
         "confidence": "1/1"
       },
       {
-        "name": "modulo_expected_value_constraint",
-        "description": "最终结果需要计算期望值，并对给定的大质数取模",
+        "name": "modular_arithmetic",
+        "description": "最终输出的期望值需要对 998244353 取模",
         "confidence": "1/1"
       },
       {
-        "name": "weight_sum_constraint",
-        "description": "初始权重之和不超过给定上限（998244352 - m）",
+        "name": "sum_constraint",
+        "description": "初始权重之和不超过 998244352 - m",
         "confidence": "1/1"
       }
     ],
@@ -66,20 +66,20 @@
         "result": {
           "constraints": [
             {
-              "name": "weight_adjustment",
-              "description": "每次访问后，根据访问结果对权重进行修改：喜欢的图片权重加1，不喜欢的图片权重减1"
+              "name": "probability_distribution",
+              "description": "每个元素的选取概率与其权重成正比，即第 i 个元素被选中的概率为 w_i / (sum(w_j) for j in 1..n)"
             },
             {
-              "name": "weight_proportional_probability",
-              "description": "每个元素被选中的概率与其权重成正比"
+              "name": "transformation",
+              "description": "每次操作后，如果选中的是喜欢的元素，则其权重加 1；否则，其权重减 1"
             },
             {
-              "name": "modulo_expected_value_constraint",
-              "description": "最终结果需要计算期望值，并对给定的大质数取模"
+              "name": "modular_arithmetic",
+              "description": "最终输出的期望值需要对 998244353 取模"
             },
             {
-              "name": "weight_sum_constraint",
-              "description": "初始权重之和不超过给定上限（998244352 - m）"
+              "name": "sum_constraint",
+              "description": "初始权重之和不超过 998244352 - m"
             }
           ]
         }
@@ -87,36 +87,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_expected_value",
+    "type": "maximize_probability",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_expected_value",
-          "description": "计算每个元素在多次操作后的期望值"
+          "type": "maximize_probability",
+          "description": "求每个元素在一系列操作后的期望值"
         }
       }
     ],
-    "description": "计算每个元素在多次操作后的期望值"
+    "description": "求每个元素在一系列操作后的期望值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "expectation_preservation",
+        "description": "每次访问后，每张图片的期望权重更新满足线性递推关系，且更新规则基于当前权重和偏好状态",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "modular_invariance",
+        "description": "所有计算均在模 998244353 下进行，确保结果的一致性和唯一性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "当前状态的期望值仅依赖于前一状态的期望值，满足马尔可夫性质",
-          "properties": {
-            "markov_property": true
-          }
+          "invariants": [
+            {
+              "name": "expectation_preservation",
+              "description": "每次访问后，每张图片的期望权重更新满足线性递推关系，且更新规则基于当前权重和偏好状态",
+              "properties": {}
+            },
+            {
+              "name": "modular_invariance",
+              "description": "所有计算均在模 998244353 下进行，确保结果的一致性和唯一性",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "当前状态的期望值仅依赖于前一状态的期望值，满足马尔可夫性质"
+    ]
   }
 }

@@ -1,0 +1,86 @@
+{
+  "problem_id": "GYM106193K",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 50000
+        },
+        "value_range": {
+          "min": -1000000,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "injective_mapping",
+            "description": "每个钥匙对应唯一一个锁，且每个锁只能被一个特定的钥匙解锁（匹配约束）"
+          },
+          {
+            "name": "distinctness",
+            "description": "所有位置坐标（包括初始位置、出口位置、钥匙位置和锁的位置）都是唯一的（唯一性/去重）",
+            "formal": "∀i, j (i ≠ j) => s[i] ≠ s[j]"
+          },
+          {
+            "name": "connectivity",
+            "description": "Katniss 必须能够从初始位置到达出口位置，中间可能需要通过多个锁和钥匙（连通性）"
+          },
+          {
+            "name": "distance_bound",
+            "description": "求解从初始位置到出口位置的最短路径，考虑解锁锁所需的额外距离（路径约束）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求从起点到终点的最短路径长度，考虑路径上的障碍物和解锁条件"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从初始位置到任意一个关键点（钥匙或栅栏）的最短路径可以分解为更小规模的子问题。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在解决过程中，当前状态（已访问的关键点集合）和下一个状态之间的转移是确定且一致的。每个状态都基于前一个状态通过获取新的钥匙或解锁新的栅栏来更新。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在计算从一个关键点到另一个关键点的最短路径时，各个子问题之间是相互独立的，即一个子问题的解不会影响其他子问题的解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -8,16 +8,16 @@
       "result": {
         "type": "weighted_undirected_graph",
         "length": {
-          "min": 2,
-          "max": 10005
+          "min": 1,
+          "max": 30000
         },
         "value_range": {
           "min": 0,
-          "max": 14142
+          "max": 10000
         },
         "properties": {
           "connected": true,
-          "weighted": true
+          "weighted": false
         }
       }
     }
@@ -29,29 +29,24 @@
       "result": {
         "constraints": [
           {
-            "name": "path_length_constraint",
-            "description": "路径长度不超过铁路段的最大长度",
-            "formal": "对于每条铁路段 (u, v)，路径长度 L ≤ 段长度 d(u, v)"
+            "name": "path_constraint",
+            "description": "路径长度不超过铁路段的最大长度（即路径上所有铁路段的最小长度）"
           },
           {
-            "name": "orientation_constraint",
-            "description": "相邻铁路段之间的夹角不超过 60 度",
-            "formal": "对于每对相邻铁路段 (u, v) 和 (v, w)，夹角 θ ≤ 60°"
+            "name": "degree_bound",
+            "description": "每个节点（开关或海关点）的度数有限制，不能超过其连接的铁路段数量"
           },
           {
-            "name": "node_degree_constraint",
-            "description": "列车不能同时占用多个开关点",
-            "formal": "对于每个开关点 s，最多只能有一个列车端点在 s 上"
+            "name": "geometric_angle_constraint",
+            "description": "列车在通过开关点时，相邻车厢之间的角度变化不能超过60度"
           },
           {
-            "name": "simple_graph",
-            "description": "铁路段不能连接同一个开关点",
-            "formal": "对于每条铁路段 (u, v)，u ≠ v"
+            "name": "distinctness",
+            "description": "所有开关和海关点的坐标必须是唯一的"
           },
           {
-            "name": "distinct_adjacent_nodes",
-            "description": "两个开关点之间不能有多条铁路段连接",
-            "formal": "对于每对开关点 (u, v)，最多只有一条铁路段连接 u 和 v"
+            "name": "connectivity",
+            "description": "铁路网络必须是连通的，使得列车可以从一个海关点到达另一个海关点"
           }
         ]
       }
@@ -62,8 +57,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_value",
-        "description": "求满足条件的最长路径长度"
+        "type": "maximize_count",
+        "description": "求满足条件的最大计数（即最大列车长度，以车厢数为单位）"
       }
     }
   ],
@@ -72,9 +67,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即最大列车长度可以通过计算路径上每段铁路的最大通过长度来确定",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "flow_conservation",
+            "description": "网络流中的守恒性质，即流入一个节点的流量等于流出该节点的流量（除了源点和汇点）",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解来构造。在网络流中，最大流问题的最优解可以通过求解子图的最大流来逐步构建",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "在计算最大流时，不同路径上的流是独立的，可以分别计算再合并结果",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

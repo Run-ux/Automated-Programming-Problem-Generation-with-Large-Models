@@ -1,0 +1,80 @@
+{
+  "problem_id": "P13182",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": -1,
+          "max": 1
+        },
+        "properties": {
+          "ordered": true,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "coverage",
+            "description": "路径必须覆盖所有可能的半球（即路径必须与每个大圆相交）",
+            "formal": "∀ great_circle, ∃ point_on_path ∈ great_circle"
+          },
+          {
+            "name": "cycle_count_constraint",
+            "description": "路径必须是闭合的，即最后一个点连接到第一个点",
+            "formal": "path[N-1] -> path[0]"
+          },
+          {
+            "name": "non_self_intersecting_constraint",
+            "description": "路径中的任意两个相邻点（包括首尾两点）不能是反向点或相同点",
+            "formal": "∀ i, (i+1) % N ≠ -path[i] 且 (i+1) % N ≠ path[i]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断给定的点序列是否构成一个满足特定条件的闭合路径"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "convexity",
+            "description": "凸性不变量：路径在球面上形成的闭合曲线必须是凸的，以确保它能够覆盖所有可能的大圆。",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：路径形成一个闭合的环，起点和终点重合，并且路径上的点按顺序连接。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

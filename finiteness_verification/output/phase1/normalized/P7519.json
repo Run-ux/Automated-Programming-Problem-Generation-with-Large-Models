@@ -1,0 +1,86 @@
+{
+  "problem_id": "P7519",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 13
+        },
+        "value_range": {
+          "min": 0,
+          "max": 10000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "序列按非递减顺序排列（b_i 不降序）",
+            "formal": "b_1 <= b_2 <= ... <= b_n"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "序列元素和等于给定值（b_i 的总和为 m）",
+            "formal": "sum(b_i) = m"
+          },
+          {
+            "name": "maximum_value_constraint",
+            "description": "每次更新后，当前公布的元素成为最大值（a_i + b_i 成为当前最大值）",
+            "formal": "对于每个公布的 b_i，a_i + b_i >= a_j + b_j 对于所有 j < i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足条件的排列数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "公布顺序的单调性：每支队伍在封榜后的过题数 b_i 按不降顺序公布，且每次公布的队伍成为新排行榜上的第一名。",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最终排名情况可以由每个公布步骤的局部最优解（即每次公布的队伍成为第一名）组合而成。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次公布后，排行榜的状态会根据当前公布队伍的总过题数进行更新，并且新的状态是唯一的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "problem_id": "P2571",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 11,
+          "max": 11
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distance_bound",
+            "description": "两点之间的距离必须在平面上计算，且移动速度不同",
+            "formal": "d(A, B) = sqrt((B_x - A_x)^2 + (B_y - A_y)^2), d(C, D) = sqrt((D_x - C_x)^2 + (D_y - C_y)^2)"
+          },
+          {
+            "name": "random_velocity_constraint",
+            "description": "在不同的线段上移动速度不同，在平面上的移动速度也不同",
+            "formal": "speed_on_AB = P, speed_on_CD = Q, speed_on_plane = R"
+          },
+          {
+            "name": "path_constraint",
+            "description": "从起点到终点的路径可以经过两条线段和平面，需要找到最短时间路径",
+            "formal": "min_time_path(A, D) = min(time(A, B, C, D), time(A, plane, D))"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求两点间最短路径时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从A点到D点的最短时间可以通过子路径的最短时间组合得到",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解由子问题解合成，通过递归或迭代将问题分解为更小的子问题",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

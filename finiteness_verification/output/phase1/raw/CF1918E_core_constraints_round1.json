@@ -7,18 +7,28 @@
     "constraints": [
       {
         "name": "query_limit",
-        "description": "查询次数不超过 40n 次",
-        "formal": "number_of_queries <= 40 * n"
+        "description": "查询次数限制，不超过 40n 次查询",
+        "formal": "queries <= 40 * n"
       },
       {
-        "name": "permutation_distinctness",
-        "description": "排列中的元素必须是 1 到 n 的一个排列，且所有元素互不相同",
-        "formal": "a_1, a_2, ..., a_n 是 1 到 n 的一个排列，且 a_i ≠ a_j 对于所有 i ≠ j"
+        "name": "permutation_constraint",
+        "description": "输入是一个长度为 n 的排列，包含 1 到 n 的所有整数且每个整数恰好出现一次",
+        "formal": "a_1, a_2, ..., a_n 是一个排列，1 ≤ a_i ≤ n 且所有 a_i 互不相同"
       },
       {
-        "name": "output_format",
-        "description": "输出的排列必须是一个长度为 n 的数组，且所有元素互不相同",
-        "formal": "输出 ! a_1 a_2 ... a_n，其中 1 ≤ a_i ≤ n 且 a_i ≠ a_j 对于所有 i ≠ j"
+        "name": "operation_type",
+        "description": "每次查询的形式为 ? i，其中 1 ≤ i ≤ n，查询结果为当前 x 和 a_i 的比较结果",
+        "formal": "query: ? i, 1 ≤ i ≤ n, response: -1, 0, 或 1"
+      },
+      {
+        "name": "state_transition",
+        "description": "根据查询结果更新 x 的值：-1 表示 x < a_i，0 表示 x = a_i，1 表示 x > a_i",
+        "formal": "if response == -1 then x < a_i; if response == 0 then x = a_i; if response == 1 then x > a_i"
+      },
+      {
+        "name": "termination_condition",
+        "description": "如果查询次数超过 40n 或者查询无效，则返回 -1 并终止程序",
+        "formal": "if queries > 40 * n or invalid_query then return -1 and terminate"
       }
     ]
   },

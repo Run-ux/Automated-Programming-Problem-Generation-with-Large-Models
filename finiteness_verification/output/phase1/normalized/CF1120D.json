@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "tree",
         "length": {
           "min": 2,
           "max": 200000
@@ -29,19 +29,24 @@
       "result": {
         "constraints": [
           {
-            "name": "tree_structure",
-            "description": "对于每个被选择的顶点，其子树中的所有叶子节点可以独立地进行操作（即加一个整数 x）以达到目标值（这里是 0）。",
-            "formal": "对于每个被选择的顶点 v，存在一个整数 x 使得 ∀ 叶子节点 a ∈ 子树(v)，a 的值可以通过加 x 达到 0。"
+            "name": "transformation",
+            "description": "在某个节点的子树中，可以对所有叶子节点进行相同的加法操作",
+            "formal": "对于任意节点 v 和整数 x，可以执行 operation(v, x) 使得所有叶子节点 u (u 在 v 的子树中) 的值加上 x"
           },
           {
-            "name": "node_value_constraint",
-            "description": "所有叶子节点必须在至少一个被选择的顶点的子树中，以确保所有叶子节点的值可以被调整为 0。",
-            "formal": "∀ 叶子节点 a, ∃ 一个被选择的顶点 v 使得 a 在子树(v) 中。"
+            "name": "transformation",
+            "description": "目标是通过一系列操作使所有叶子节点的值变为零",
+            "formal": "最终所有叶子节点 u 的值应满足 value(u) = 0"
           },
           {
-            "name": "bottleneck_path",
-            "description": "选择的顶点集合的总代价最小化，以保证在满足其他约束条件的情况下，总代价最小。",
-            "formal": "minimize Σ c_i for all selected vertices i."
+            "name": "optimization_objective",
+            "description": "选择的节点集合的总代价最小化，以保证能够完成任务",
+            "formal": "minimize Σ cost(v) for all v in selected set S, such that the task can be completed"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "找到所有属于最优解集的节点",
+            "formal": "找出所有节点 v，使得存在一个最优解集 S 包含 v 且满足 cost(S) = s"
           }
         ]
       }
@@ -53,7 +58,7 @@
       "status": "success",
       "result": {
         "type": "minimize_value",
-        "description": "求最小化购买顶点的总代价，使得能够通过一系列操作将所有叶子节点的值变为零"
+        "description": "求最小化总代价，使得在所有可能的输入下都能将叶子节点的值调整为零"
       }
     }
   ],
@@ -62,9 +67,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，具体表现为树上每个子树的最优解可以合并成整棵树的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子树的最优解组合得到，每个子树的最优解独立于其他子树的选择。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在选择购买哪些顶点时，不同子树之间的选择是独立的，一个子树的选择不影响另一个子树的最优解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

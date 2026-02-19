@@ -1,0 +1,159 @@
+{
+  "problem_id": "GYM104821E",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 500
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 500
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "路径必须从第一列的任意点到最后一列的任意点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "flow_constraint",
+        "description": "路径权重和增加 k，通过增加边权重实现",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "边仅存在于相邻点之间（水平或垂直方向）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每次操作只能将一条边的权重增加 1",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "路径必须从第一列的任意点到最后一列的任意点"
+            },
+            {
+              "name": "flow_constraint",
+              "description": "路径权重和增加 k，通过增加边权重实现"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "边仅存在于相邻点之间（水平或垂直方向）"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每次操作只能将一条边的权重增加 1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "最小化增加边权重的操作次数以使最短路径长度增加指定值"
+        }
+      }
+    ],
+    "description": "最小化增加边权重的操作次数以使最短路径长度增加指定值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：从起点到终点的最短路径可以通过子路径的最短路径组合得到，且增加边权的操作不影响该性质。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在寻找最短路径的过程中，路径长度随操作次数单调递增。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：路径的总权重可以通过其组成边的权重累加得到。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：从起点到终点的最短路径可以通过子路径的最短路径组合得到，且增加边权的操作不影响该性质。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在寻找最短路径的过程中，路径长度随操作次数单调递增。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：路径的总权重可以通过其组成边的权重累加得到。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

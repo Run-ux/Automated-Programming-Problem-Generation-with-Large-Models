@@ -1,0 +1,90 @@
+{
+  "problem_id": "P11307",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 2000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distance_cost_constraint",
+            "description": "边权由两个顶点的权重之和决定（边 (i, j) 的边权为 p_i + p_j）",
+            "formal": "weight(i, j) = p[i] + p[j]"
+          },
+          {
+            "name": "existence_requirement",
+            "description": "对于每个三元组 (x, l, r)，在区间 [l, r] 内的所有顶点 y 与 x 之间存在边",
+            "formal": "∀ l ≤ y ≤ r, edge(x, y) exists"
+          },
+          {
+            "name": "non_intersecting_segments",
+            "description": "每个三元组中的 x 不在区间 [l, r] 内",
+            "formal": "x ∉ [l, r]"
+          },
+          {
+            "name": "connectivity",
+            "description": "输入数据保证图是连通的，即存在一组解",
+            "formal": "graph is connected"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求无向图的最小生成树的边权和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最小生成树的解包含子问题的最优解，即通过选择边权和最小的边来构建生成树",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择当前可用的最小边权的边加入生成树，最终得到全局最优解",
+            "properties": {}
+          },
+          {
+            "name": "matroid_exchange",
+            "description": "拟阵交换性：在构建最小生成树的过程中，可以通过交换边的方式保持生成树的最优性",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

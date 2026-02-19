@@ -1,0 +1,75 @@
+{
+  "problem_id": "P3171",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 500
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "flow_constraint",
+            "description": "网络的最大吞吐量受限于路径上各节点的最小吞吐量（瓶颈约束）",
+            "formal": "max_flow = min(c_i) for i in shortest_path(1, n)"
+          },
+          {
+            "name": "path_constraint",
+            "description": "数据包必须沿最短路径转发",
+            "formal": "data_packet_path = shortest_path(1, n)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化从起点到终点的路径上的最小权值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从起点到终点的最大吞吐量可以通过子路径的最大吞吐量计算得出",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在网络中的每个节点，流入的流量等于流出的流量",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

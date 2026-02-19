@@ -1,0 +1,84 @@
+{
+  "problem_id": "P3472",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每个节点的出度为1（每个参与者只能选择一个目标）"
+          },
+          {
+            "name": "acyclicity",
+            "description": "图中可能存在环（参与者可能互相瞄准形成环）"
+          },
+          {
+            "name": "state_transition",
+            "description": "一旦某个节点被删除，其后续节点不能再进行操作（被射击者死亡后不能继续射击）"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每个节点最多进行一次操作（每个参与者最多射击一次）"
+          },
+          {
+            "name": "matching_constraint",
+            "description": "每个节点只能匹配一个目标，且目标不可更改（每个参与者只能选择一个目标，并且不能改变目标）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "multi_objective",
+        "description": "求在给定条件下，最小和最大可能的节点删除数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：在射击过程中，每个参与者只能射击一次，且射击顺序不影响最终的死亡人数。因此，可以将问题转化为寻找有向图中的环和独立节点。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个连通分量（环或独立节点）的处理是独立的，一个连通分量的结果不会影响其他连通分量的结果。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

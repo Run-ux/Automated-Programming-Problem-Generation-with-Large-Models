@@ -1,0 +1,81 @@
+{
+  "problem_id": "CF1635E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "directed": false,
+          "weighted": false,
+          "bipartite": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "所有元素必须具有唯一的整数值且互不相同（位置唯一性约束）",
+            "formal": "∀ i, j (1 ≤ i < j ≤ n) : x_i ≠ x_j"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "两个元素之间存在不可相交的约束，即它们在任何时刻都不会处于同一位置（无关性约束）",
+            "formal": "∀ i, j (1 ≤ i, j ≤ n, i ≠ j, type = 1) : ori_i = L ∧ ori_j = R ∨ ori_i = R ∧ ori_j = L"
+          },
+          {
+            "name": "intersection",
+            "description": "两个元素之间存在必然相交的约束，即它们在某个时刻一定会处于同一位置（注定性约束）",
+            "formal": "∀ i, j (1 ≤ i, j ≤ n, i ≠ j, type = 2) : ori_i = L ∧ ori_j = L ∨ ori_i = R ∧ ori_j = R"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在满足给定关系的汽车方向和位置配置"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：根据给定的关系，可以构建一个有向无环图（DAG），其中每个节点代表一辆车，边的方向表示两辆车的相对位置关系。通过拓扑排序，可以确定每辆车的位置和方向。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在处理每一对车的关系时，可以独立地考虑它们之间的约束条件，而不影响其他车的关系。这种独立性使得我们可以逐个解决每对车的关系，最终得到全局解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

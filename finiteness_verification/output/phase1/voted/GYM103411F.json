@@ -2,14 +2,14 @@
   "problem_id": "GYM103411F",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "integer",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "integer",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1
@@ -35,13 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "sequence_fibonacci",
+        "name": "recurrence_relation",
         "description": "输入的数 n 对应于斐波那契数列中的第 n 项，即 F_n",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_modulo_values",
-        "description": "将 F_n 个物品尽可能平均分配给 3 个接收者后，剩余的物品数量",
+        "name": "modular_arithmetic",
+        "description": "计算 F_n % 3 的结果，即求解斐波那契数列中第 n 项对 3 取模的结果",
         "confidence": "1/1"
       }
     ],
@@ -52,12 +52,13 @@
         "result": {
           "constraints": [
             {
-              "name": "sequence_fibonacci",
+              "name": "recurrence_relation",
               "description": "输入的数 n 对应于斐波那契数列中的第 n 项，即 F_n"
             },
             {
-              "name": "distinct_modulo_values",
-              "description": "将 F_n 个物品尽可能平均分配给 3 个接收者后，剩余的物品数量"
+              "name": "modular_arithmetic",
+              "description": "计算 F_n % 3 的结果，即求解斐波那契数列中第 n 项对 3 取模的结果",
+              "formal": "F_n % 3"
             }
           ]
         }
@@ -65,36 +66,62 @@
     ]
   },
   "objective": {
-    "type": "min_remainder",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "min_remainder",
-          "description": "求将总数尽可能平均分配后的最小剩余"
+          "type": "minimize_value",
+          "description": "求将总数分解为三个相等部分后的最小剩余值"
         }
       }
     ],
-    "description": "求将总数尽可能平均分配后的最小剩余"
+    "description": "求将总数分解为三个相等部分后的最小剩余值"
   },
   "invariant": {
-    "name": "modular_invariant",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "modular_invariance",
+        "description": "模数运算不变性：在处理大数时，通过模数运算保持结果的等价性",
+        "confidence": "1/1",
+        "properties": {
+          "modulus": 3
+        }
+      },
+      {
+        "name": "pattern_preservation",
+        "description": "周期性：斐波那契数列在模3下的余数序列具有周期性",
+        "confidence": "1/1",
+        "properties": {
+          "period_length": 8
+        }
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "modular_invariant",
-          "description": "模数运算的周期性：斐波那契数列在模特定数下的值具有周期性，可以通过预处理找到周期并利用周期性快速计算结果。",
-          "properties": {
-            "periodicity": true
-          }
+          "invariants": [
+            {
+              "name": "modular_invariance",
+              "description": "模数运算不变性：在处理大数时，通过模数运算保持结果的等价性",
+              "properties": {
+                "modulus": 3
+              }
+            },
+            {
+              "name": "pattern_preservation",
+              "description": "周期性：斐波那契数列在模3下的余数序列具有周期性",
+              "properties": {
+                "period_length": 8
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "模数运算的周期性：斐波那契数列在模特定数下的值具有周期性，可以通过预处理找到周期并利用周期性快速计算结果。"
+    ]
   }
 }

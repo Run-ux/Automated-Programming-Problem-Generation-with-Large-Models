@@ -1,0 +1,79 @@
+{
+  "problem_id": "CF1713D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 131072
+        },
+        "value_range": {
+          "min": 0,
+          "max": 17
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "query_limit",
+            "description": "查询次数限制，不超过 ⌈(1/3) * 2^(n+1)⌉ 次查询",
+            "formal": "queries <= ceil((1/3) * 2^(n+1))"
+          },
+          {
+            "name": "comparison_constraint",
+            "description": "每次查询比较两个参赛者赢得的比赛数量，返回三者之一：a 赢得更多、b 赢得更多或两者相同",
+            "formal": "compare(a, b) -> {1, 2, 0}"
+          },
+          {
+            "name": "tournament_structure_constraint",
+            "description": "单淘汰赛制，每轮比赛后胜者进入下一轮，直到决出唯一胜者",
+            "formal": "tournament(n) -> single_winner"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "确定满足条件的唯一解"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解由子问题解合成，通过递归地将问题分解为更小的子问题来解决整个问题",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最终的胜者可以通过比较子问题（即每一轮比赛）的胜者来确定，每个子问题的最优解是全局最优解的一部分",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

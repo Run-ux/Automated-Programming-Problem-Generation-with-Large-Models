@@ -2,14 +2,14 @@
   "problem_id": "GYM105677J",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 16
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "minimum_sum_constraint",
-        "description": "每个约束区间内的元素和必须等于给定的值 s",
+        "name": "sum_constraint",
+        "description": "选取元素的和必须等于给定的目标值（水平或垂直约束）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_subset_selection",
-        "description": "每个白色节点（元素）恰好被一个水平约束和一个垂直约束覆盖",
+        "name": "coverage",
+        "description": "每个白色单元格必须被恰好一个水平约束和一个垂直约束覆盖",
         "confidence": "1/1"
       },
       {
-        "name": "minimum_distance_constraint",
-        "description": "目标是使所有白色节点的绝对差值之和最小化",
+        "name": "distance_uniformity_constraint",
+        "description": "每个白色单元格的值与提议解的值之间的绝对差值之和最小化",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "minimum_sum_constraint",
-              "description": "每个约束区间内的元素和必须等于给定的值 s",
-              "formal": "∑(A[i:j]) = s"
+              "name": "sum_constraint",
+              "description": "选取元素的和必须等于给定的目标值（水平或垂直约束）"
             },
             {
-              "name": "distinct_subset_selection",
-              "description": "每个白色节点（元素）恰好被一个水平约束和一个垂直约束覆盖",
-              "formal": "∀ white cell (i, j), ∃! H(i, j, s) and ∃! V(i, j, s)"
+              "name": "coverage",
+              "description": "每个白色单元格必须被恰好一个水平约束和一个垂直约束覆盖"
             },
             {
-              "name": "minimum_distance_constraint",
-              "description": "目标是使所有白色节点的绝对差值之和最小化",
-              "formal": "minimize Σ|X - T| for all white cells (i, j)"
+              "name": "distance_uniformity_constraint",
+              "description": "每个白色单元格的值与提议解的值之间的绝对差值之和最小化"
             }
           ]
         }
@@ -81,37 +78,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求满足约束条件的最小代价"
+          "type": "minimize_value",
+          "description": "最小化网格中所有单元格的绝对差值之和"
         }
       }
     ],
-    "description": "求满足约束条件的最小代价"
+    "description": "最小化网格中所有单元格的绝对差值之和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，通过解决每个子问题并组合其结果来找到全局最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：当前状态的值由前一个或多个状态的值决定，且这种转移关系在整个求解过程中保持一致",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：可以通过计算区间的端点差值来确定区间的和，适用于处理连续的数值约束",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的最优解可以独立求解并合并得到全局最优解",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，通过解决每个子问题并组合其结果来找到全局最优解",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：当前状态的值由前一个或多个状态的值决定，且这种转移关系在整个求解过程中保持一致",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：可以通过计算区间的端点差值来确定区间的和，适用于处理连续的数值约束",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的最优解可以独立求解并合并得到全局最优解"
+    ]
   }
 }

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 3000000
@@ -16,10 +16,7 @@
           "max": 9
         },
         "properties": {
-          "ordered": true,
-          "inferred": {
-            "no_leading_zeros": true
-          }
+          "ordered": true
         }
       }
     }
@@ -31,16 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "non_prime_digit_constraint",
-            "description": "在给定的进制下，字符串表示的数必须是合数（即存在大于1且小于自身的因数）"
+            "name": "divisibility",
+            "description": "在给定的进制下，字符串表示的数必须是合数（即有大于1且小于自身的正除数）"
           },
           {
-            "name": "divisor_frequency_constraint",
-            "description": "存在一个大于1且小于合数D的整数X，使得X是D的因数"
+            "name": "divisibility",
+            "description": "需要找到一个大于1且小于合数D的正整数X，使得X是D的因数"
           },
           {
-            "name": "value_range_constraint",
-            "description": "进制B和因数X都必须满足2 ≤ B, X ≤ 10^9"
+            "name": "range_bound",
+            "description": "进制B必须满足2 ≤ B ≤ 10^9"
+          },
+          {
+            "name": "divisibility",
+            "description": "因数X必须满足2 ≤ X ≤ 10^9"
+          },
+          {
+            "name": "exclusion",
+            "description": "输入字符串不能以0开头"
           }
         ]
       }
@@ -51,8 +56,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足条件的解，包括系统基数和对应的因子"
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的解，并在存在时构造一个解"
       }
     }
   ],
@@ -61,9 +66,25 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解可以通过子问题的解组合而成，即在不同进制下，数的分解和验证可以基于其子部分进行",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解组合得到，即在寻找合适的B和X时，可以基于更小规模的问题（较短的数字串）的解来构建当前问题的解。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着基数B的增加，对应的数值D也单调递增。因此，可以通过调整B的值来搜索满足条件的最小B。",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：对于不同的基数B，其对应的数值D是相互独立的，这意味着每个B下的D计算不会受到其他B的影响。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

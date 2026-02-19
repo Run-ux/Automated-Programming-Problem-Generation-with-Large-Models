@@ -1,0 +1,146 @@
+{
+  "problem_id": "P7604",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 10000000
+          },
+          "value_range": {
+            "min": 40,
+            "max": 41
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 10000000
+    },
+    "value_range": {
+      "min": 40,
+      "max": 41
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "parentheses_invariance",
+        "description": "输入字符串必须是合法的括号序列，即每个左括号有对应的右括号且顺序正确",
+        "confidence": "1/1"
+      },
+      {
+        "name": "partition",
+        "description": "存在一个划分 s=uvw 使得 uwv 是合法的括号序列，其中 u 可以为空串，但 v 和 w 不是空串",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "两种还原方案本质不同当且仅当两种方案中的 l 或 r 不相同，即使还原出的串相同也可能本质不同",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "parentheses_invariance",
+              "description": "输入字符串必须是合法的括号序列，即每个左括号有对应的右括号且顺序正确"
+            },
+            {
+              "name": "partition",
+              "description": "存在一个划分 s=uvw 使得 uwv 是合法的括号序列，其中 u 可以为空串，但 v 和 w 不是空串"
+            },
+            {
+              "name": "distinctness",
+              "description": "两种还原方案本质不同当且仅当两种方案中的 l 或 r 不相同，即使还原出的串相同也可能本质不同"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足条件的方案数"
+        }
+      }
+    ],
+    "description": "求满足条件的方案数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，即一个括号序列的合法划分可以由其子序列的合法划分组合而成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：通过维护当前未匹配的左括号数量，可以确定在任意位置是否可以进行合法的括号匹配。",
+        "confidence": "1/1",
+        "properties": {
+          "left_parentheses_count": true
+        }
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：不同区间的括号序列合法性信息可以通过子区间的合法性信息合并得到。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，即一个括号序列的合法划分可以由其子序列的合法划分组合而成。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过维护当前未匹配的左括号数量，可以确定在任意位置是否可以进行合法的括号匹配。",
+              "properties": {
+                "left_parentheses_count": true
+              }
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：不同区间的括号序列合法性信息可以通过子区间的合法性信息合并得到。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -2,14 +2,14 @@
   "problem_id": "GYM104160E",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 2,
             "max": 5000
@@ -41,23 +41,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图必须是连通的",
+        "name": "connectivity",
+        "description": "图必须连通",
         "confidence": "1/1"
       },
       {
-        "name": "graph_connectivity",
-        "description": "图必须是双连通的（即不存在割边）",
-        "confidence": "1/1"
-      },
-      {
-        "name": "simple_graph",
-        "description": "图必须是简单图（无自环和重边）",
-        "confidence": "1/1"
-      },
-      {
-        "name": "permutation_count_modulo_constraint",
-        "description": "不同加边方式的数量需要对 998,244,353 取模",
+        "name": "acyclicity",
+        "description": "图必须是简单图，即无自环和重边",
         "confidence": "1/1"
       }
     ],
@@ -68,20 +58,16 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "图必须是连通的"
+              "name": "connectivity",
+              "description": "图必须连通"
             },
             {
-              "name": "graph_connectivity",
-              "description": "图必须是双连通的（即不存在割边）"
+              "name": "connectivity",
+              "description": "图必须是双连通的"
             },
             {
-              "name": "simple_graph",
-              "description": "图必须是简单图（无自环和重边）"
-            },
-            {
-              "name": "permutation_count_modulo_constraint",
-              "description": "不同加边方式的数量需要对 998,244,353 取模"
+              "name": "acyclicity",
+              "description": "图必须是简单图，即无自环和重边"
             }
           ]
         }
@@ -89,34 +75,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "计算使图变为双连通的加边方案数"
+          "type": "enumeration",
+          "description": "求使图成为双连通图的不同加边方案数（模998244353）"
         }
       }
     ],
-    "description": "计算使图变为双连通的加边方案数"
+    "description": "求使图成为双连通图的不同加边方案数（模998244353）"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解组合得到，即通过将图分解为更小的部分并解决这些部分来找到使图二连通的方法。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在计算过程中，不同子问题的解是相互独立的，一个子问题的解不会影响另一个子问题的解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "divide_conquer",
+        "description": "分治不变量：大问题的解可以由子问题的解合成。通过递归地将图分解成更小的部分，并在每个部分上解决问题，最终合并这些部分的解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过递归或迭代解决子问题并合并结果得到最终解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的最优解组合得到，即通过将图分解为更小的部分并解决这些部分来找到使图二连通的方法。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在计算过程中，不同子问题的解是相互独立的，一个子问题的解不会影响另一个子问题的解。",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：大问题的解可以由子问题的解合成。通过递归地将图分解成更小的部分，并在每个部分上解决问题，最终合并这些部分的解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过递归或迭代解决子问题并合并结果得到最终解"
+    ]
   }
 }

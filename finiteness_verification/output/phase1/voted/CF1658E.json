@@ -2,14 +2,14 @@
   "problem_id": "CF1658E",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 3,
             "max": 2000
@@ -35,28 +35,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_modulo_values",
-        "description": "所有网格上的值都是唯一的（即没有重复的值）",
+        "name": "distinctness",
+        "description": "所有网格上的值都是唯一的（即每个单元格的值都不相同）",
         "confidence": "1/1"
       },
       {
-        "name": "turn_based_operation",
-        "description": "两名玩家轮流放置标记，每轮只能放置一个标记",
+        "name": "optimal_play",
+        "description": "玩家在每一步都采取最优策略以最大化自己的得分",
         "confidence": "1/1"
       },
       {
-        "name": "path_weight_constraint",
-        "description": "每次放置标记时，玩家获得该位置的分数，即使该位置已有标记",
+        "name": "turn_based",
+        "description": "游戏是回合制的，Marin先手，然后交替进行",
         "confidence": "1/1"
       },
       {
-        "name": "repeated_vertices_allowed",
-        "description": "游戏进行 n^2 次，每次游戏中 Marin 在不同的初始位置放置第一个标记",
-        "confidence": "1/1"
-      },
-      {
-        "name": "global_optimization_objective",
-        "description": "两名玩家都以最优策略进行游戏",
+        "name": "revisiting_allowed",
+        "description": "允许在同一单元格上多次放置令牌，并且每次放置都会获得该单元格的分数",
         "confidence": "1/1"
       }
     ],
@@ -67,29 +62,24 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_modulo_values",
-              "description": "所有网格上的值都是唯一的（即没有重复的值）",
-              "formal": "∀ (i, j) ≠ (k, l), v_{i,j} ≠ v_{k,l}"
+              "name": "distinctness",
+              "description": "所有网格上的值都是唯一的（即每个单元格的值都不相同）",
+              "formal": "∀ (i, j) ≠ (i', j'), v_{i,j} ≠ v_{i',j'}"
             },
             {
-              "name": "turn_based_operation",
-              "description": "两名玩家轮流放置标记，每轮只能放置一个标记",
-              "formal": "Marin 和 Gojou 轮流在网格上放置标记"
+              "name": "optimal_play",
+              "description": "玩家在每一步都采取最优策略以最大化自己的得分",
+              "formal": "Marin and Gojou play optimally to maximize their points"
             },
             {
-              "name": "path_weight_constraint",
-              "description": "每次放置标记时，玩家获得该位置的分数，即使该位置已有标记",
-              "formal": "每当玩家在 (x, y) 位置放置标记时，该玩家获得 v_{x,y} 分数"
+              "name": "turn_based",
+              "description": "游戏是回合制的，Marin先手，然后交替进行",
+              "formal": "Players take turns, with Marin starting first"
             },
             {
-              "name": "repeated_vertices_allowed",
-              "description": "游戏进行 n^2 次，每次游戏中 Marin 在不同的初始位置放置第一个标记",
-              "formal": "对于每个 (i, j)，存在一次游戏，其中 Marin 在 (i, j) 位置放置第一个标记"
-            },
-            {
-              "name": "global_optimization_objective",
-              "description": "两名玩家都以最优策略进行游戏",
-              "formal": "Marin 和 Gojou 都以最优策略进行游戏"
+              "name": "revisiting_allowed",
+              "description": "允许在同一单元格上多次放置令牌，并且每次放置都会获得该单元格的分数",
+              "formal": "Tokens can be placed on the same cell multiple times, and each placement scores the value of the cell"
             }
           ]
         }
@@ -97,34 +87,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "game_outcome",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断在给定初始条件下，两个玩家在博弈中最终得分的胜负关系"
+          "type": "game_outcome",
+          "description": "对于每个初始位置，判断在双方最优策略下游戏的结果（先手胜、后手胜或平局）"
         }
       }
     ],
-    "description": "判断在给定初始条件下，两个玩家在博弈中最终得分的胜负关系"
+    "description": "对于每个初始位置，判断在双方最优策略下游戏的结果（先手胜、后手胜或平局）"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个子问题的最优解可以组合成原问题的最优解，即在每一步选择中，玩家总是会选择当前最优的策略以最大化自己的得分。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：由于游戏规则和初始条件对双方是对称的（除了Marin的第一步），因此在Marin第一步之后，双方的策略和得分情况是对称的。这种对称性保证了在相同的条件下，双方的得分差异仅由Marin的第一步决定。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的最优解可以递归地构建出整个问题的最优解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个子问题的最优解可以组合成原问题的最优解，即在每一步选择中，玩家总是会选择当前最优的策略以最大化自己的得分。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：由于游戏规则和初始条件对双方是对称的（除了Marin的第一步），因此在Marin第一步之后，双方的策略和得分情况是对称的。这种对称性保证了在相同的条件下，双方的得分差异仅由Marin的第一步决定。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的最优解可以递归地构建出整个问题的最优解"
+    ]
   }
 }

@@ -41,23 +41,28 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图必须连通，即从任意一个节点出发可以到达所有其他节点",
+        "name": "connectivity",
+        "description": "图必须连通，从一个指定节点（根节点）可以到达所有其他节点",
         "confidence": "1/1"
       },
       {
-        "name": "node_degree_constraint",
-        "description": "每个节点的度数不超过 42（最多属于 42 个环）",
+        "name": "degree_bound",
+        "description": "每个节点的度数不超过其所属环的数量加一",
         "confidence": "1/1"
       },
       {
-        "name": "bottleneck_path",
-        "description": "选取边的集合使得所有节点连通且这些边的修复成本的异或和最小",
+        "name": "cycle_count_constraint",
+        "description": "图中最多包含 42 个环",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_simple_paths",
-        "description": "每个节点最多属于一个环",
+        "name": "optimization_objective",
+        "description": "选取边的集合，使得这些边的权值异或和最小",
+        "confidence": "1/1"
+      },
+      {
+        "name": "spanning_constraint",
+        "description": "选取的边必须形成一棵生成树",
         "confidence": "1/1"
       }
     ],
@@ -68,20 +73,24 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "图必须连通，即从任意一个节点出发可以到达所有其他节点"
+              "name": "connectivity",
+              "description": "图必须连通，从一个指定节点（根节点）可以到达所有其他节点"
             },
             {
-              "name": "node_degree_constraint",
-              "description": "每个节点的度数不超过 42（最多属于 42 个环）"
+              "name": "degree_bound",
+              "description": "每个节点的度数不超过其所属环的数量加一"
             },
             {
-              "name": "bottleneck_path",
-              "description": "选取边的集合使得所有节点连通且这些边的修复成本的异或和最小"
+              "name": "cycle_count_constraint",
+              "description": "图中最多包含 42 个环"
             },
             {
-              "name": "distinct_simple_paths",
-              "description": "每个节点最多属于一个环"
+              "name": "optimization_objective",
+              "description": "选取边的集合，使得这些边的权值异或和最小"
+            },
+            {
+              "name": "spanning_constraint",
+              "description": "选取的边必须形成一棵生成树"
             }
           ]
         }
@@ -89,34 +98,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求最小化异或和的生成树代价"
+          "type": "minimize_value",
+          "description": "求最小化异或和的值"
         }
       }
     ],
-    "description": "求最小化异或和的生成树代价"
+    "description": "求最小化异或和的值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最小生成树的子树也是其对应子图的最小生成树，且整体最优解由各子问题的最优解组成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "matroid_exchange",
+        "description": "拟阵交换性：在生成树中替换边时，可以通过交换操作保持生成树性质，并且能够找到更优的解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：异或运算具有交换律和结合律，因此在选择边时可以任意顺序进行，不影响最终结果。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，具体表现为在生成最小代价生成树的过程中，每个子树的最优解可以合并为整个树的最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最小生成树的子树也是其对应子图的最小生成树，且整体最优解由各子问题的最优解组成。",
+              "properties": {}
+            },
+            {
+              "name": "matroid_exchange",
+              "description": "拟阵交换性：在生成树中替换边时，可以通过交换操作保持生成树性质，并且能够找到更优的解。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：异或运算具有交换律和结合律，因此在选择边时可以任意顺序进行，不影响最终结果。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，具体表现为在生成最小代价生成树的过程中，每个子树的最优解可以合并为整个树的最优解。"
+    ]
   }
 }

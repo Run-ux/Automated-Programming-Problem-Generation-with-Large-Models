@@ -1,0 +1,134 @@
+{
+  "problem_id": "GYM103960G",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -1000000,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -1000000,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "选择的子集必须保持原集合中的所有边（即边集 L 不变）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "选择的子集 S 的总面积最小化",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "每个新添加的三角形必须与已有的一个三角形共享一条边",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "选择的子集必须保持原集合中的所有边（即边集 L 不变）",
+              "formal": "∀ l ∈ L, l 是 S 中某些三角形的边"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "选择的子集 S 的总面积最小化",
+              "formal": "minimize ∑_{t ∈ S} area(t)"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "每个新添加的三角形必须与已有的一个三角形共享一条边",
+              "formal": "∀ t_i, t_j ∈ T, ∃ e ∈ E, e 是 t_i 和 t_j 的公共边"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求在满足特定条件下，所选子集的最小总和"
+        }
+      }
+    ],
+    "description": "求在满足特定条件下，所选子集的最小总和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即选择一个子集S使得剩余三角形的总面积最小且保持边集L不变。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在求解过程中，每个子问题的解不受其他子问题的影响，可以独立求解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即选择一个子集S使得剩余三角形的总面积最小且保持边集L不变。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在求解过程中，每个子问题的解不受其他子问题的影响，可以独立求解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

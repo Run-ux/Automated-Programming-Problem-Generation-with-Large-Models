@@ -1,0 +1,102 @@
+{
+  "problem_id": "P9037",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distance_bound",
+            "description": "相同车道的两辆车的位置差不能小于 1（即，车之间不能相撞）",
+            "formal": "对于所有在同一车道上的车 i 和 j，|position(i) - position(j)| >= 1"
+          },
+          {
+            "name": "velocity_range_constraint",
+            "description": "Karol 的车速不能超过 v0，并且在区间 [0, v0] 中",
+            "formal": "0 <= speed(Karol) <= v0"
+          },
+          {
+            "name": "uniform_velocity_constraint",
+            "description": "每条车道的速度是固定的，且 v1 > v2 > v3",
+            "formal": "v1 > v2 > v3"
+          },
+          {
+            "name": "non_intersecting_segments",
+            "description": "车辆之间不能有重叠部分（即，车头位置不能重合）",
+            "formal": "对于所有在同一车道上的车 i 和 j，position(i) != position(j)"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "Karol 初始位置在第三车道的起点处",
+            "formal": "initial_position(Karol) = (0, lane_3)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求在满足约束条件下的最短时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "Karol 的位置随时间单调递增，且在每个车道上的速度是固定的，因此 Karol 在每个车道上的位置随时间单调递增。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "在每个时刻，Karol 选择当前最优的车道和速度以最大化前进距离。这种局部最优选择最终导致全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "Karol 的状态（位置、车道）根据当前车道的速度和前方车辆的位置进行转移。状态转移满足一致性，即每次转移后的状态都是合法的。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "Karol 在每个车道上的行驶距离可以通过时间和速度的乘积计算，即区间和可通过端点差值计算。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

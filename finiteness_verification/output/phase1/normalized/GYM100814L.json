@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 1000
@@ -26,12 +26,12 @@
       "result": {
         "constraints": [
           {
-            "name": "global_optimization_objective",
-            "description": "双方玩家均采取最优策略进行游戏，即在每一步都选择对自己最有利的行动"
+            "name": "optimal_play",
+            "description": "双方玩家均采取最优策略进行游戏"
           },
           {
-            "name": "turn_based_operation",
-            "description": "游戏为回合制，两名玩家轮流进行操作"
+            "name": "turn_based",
+            "description": "游戏是回合制的，每次由一个玩家进行操作"
           }
         ]
       }
@@ -42,8 +42,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断在给定条件下，先手玩家是否能赢得游戏"
+        "type": "game_outcome",
+        "description": "判断先手玩家是否能在博弈中获胜"
       }
     }
   ],
@@ -52,9 +52,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个状态的最优解依赖于其子状态的最优解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，当前状态的胜负情况取决于后续所有可能状态的胜负情况。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态到另一个状态的转移规则保持一致。在本题中，玩家的选择（即选择哪个罐子）决定了下一个状态。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子问题的解不受其他子问题的影响。在本题中，每个罐子的状态是独立的，不会因为其他罐子的状态而改变。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

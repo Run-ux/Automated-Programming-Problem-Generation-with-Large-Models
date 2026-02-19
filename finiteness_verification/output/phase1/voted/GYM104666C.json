@@ -2,14 +2,14 @@
   "problem_id": "GYM104666C",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 1,
             "max": 300000
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "node_degree_constraint",
-        "description": "每个节点的度数不超过 2（在最终的链中，每个节点最多连接两个其他节点）",
+        "name": "degree_bound",
+        "description": "每个节点的度数不超过2（直链约束）",
         "confidence": "1/1"
       },
       {
-        "name": "connected_components_constraint",
-        "description": "图必须是连通的（整个链不能被分割成多个不相连的部分）",
+        "name": "connectivity",
+        "description": "图必须连通（单一片段约束）",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "node_degree_constraint",
-              "description": "每个节点的度数不超过 2（在最终的链中，每个节点最多连接两个其他节点）"
+              "name": "degree_bound",
+              "description": "每个节点的度数不超过2（直链约束）",
+              "formal": "∀v ∈ V, deg(v) ≤ 2"
             },
             {
-              "name": "connected_components_constraint",
-              "description": "图必须是连通的（整个链不能被分割成多个不相连的部分）"
+              "name": "connectivity",
+              "description": "图必须连通（单一片段约束）",
+              "formal": "G is connected"
             }
           ]
         }
@@ -69,34 +71,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求将图转换为链所需的最少操作次数"
+          "type": "minimize_count",
+          "description": "求将给定图转换为一条链所需的最少操作次数"
         }
       }
     ],
-    "description": "求将图转换为链所需的最少操作次数"
+    "description": "求将给定图转换为一条链所需的最少操作次数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，将链分解为多个子链，并通过解决这些子链的问题来找到整个链的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个子链的处理是独立的，一个子链的处理结果不会影响其他子链的处理。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "divide_conquer",
+        "description": "分治不变量：大问题的解可以通过子问题的解合成。在本题中，通过递归地处理子链并将结果合并来得到最终的解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，即通过逐步优化局部结构来达到全局最优解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，将链分解为多个子链，并通过解决这些子链的问题来找到整个链的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个子链的处理是独立的，一个子链的处理结果不会影响其他子链的处理。",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：大问题的解可以通过子问题的解合成。在本题中，通过递归地处理子链并将结果合并来得到最终的解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，即通过逐步优化局部结构来达到全局最优解"
+    ]
   }
 }

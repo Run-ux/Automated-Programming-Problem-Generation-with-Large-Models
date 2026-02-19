@@ -1,0 +1,134 @@
+{
+  "problem_id": "P5278",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "linear_relation",
+        "description": "区间内元素从小到大排序后能形成公差为 k 的等差数列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation",
+        "description": "支持对序列中的某个元素进行修改",
+        "confidence": "1/1"
+      },
+      {
+        "name": "information_security_constraint",
+        "description": "查询和更新操作的参数需要异或之前输出的 Yes 的个数进行解密",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "linear_relation",
+              "description": "区间内元素从小到大排序后能形成公差为 k 的等差数列",
+              "formal": "∃d, ∀i ∈ [l, r-1], A[sorted_index[i+1]] - A[sorted_index[i]] = d 且 d = k"
+            },
+            {
+              "name": "transformation",
+              "description": "支持对序列中的某个元素进行修改",
+              "formal": "A[x] = y"
+            },
+            {
+              "name": "information_security_constraint",
+              "description": "查询和更新操作的参数需要异或之前输出的 Yes 的个数进行解密",
+              "formal": "x' = x ⊕ count(Yes), y' = y ⊕ count(Yes), l' = l ⊕ count(Yes), r' = r ⊕ count(Yes), k' = k ⊕ count(Yes)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断给定区间内的数能否形成指定公差的等差数列"
+        }
+      }
+    ],
+    "description": "判断给定区间内的数能否形成指定公差的等差数列"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和可以高效计算任意子区间的和，进而判断该区间是否满足等差数列的条件",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：通过线段树或其他区间数据结构，可以在对数时间内合并子区间信息，从而快速响应修改和查询操作",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和可以高效计算任意子区间的和，进而判断该区间是否满足等差数列的条件",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：通过线段树或其他区间数据结构，可以在对数时间内合并子区间信息，从而快速响应修改和查询操作",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -2,14 +2,14 @@
   "problem_id": "GYM102920J",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 3,
             "max": 500
@@ -18,7 +18,9 @@
             "min": 0,
             "max": 1
           },
-          "properties": {}
+          "properties": {
+            "inferred": true
+          }
         }
       }
     ],
@@ -30,18 +32,20 @@
       "min": 0,
       "max": 1
     },
-    "properties": {}
+    "properties": {
+      "inferred": true
+    }
   },
   "core_constraints": {
     "constraints": [
       {
         "name": "pairwise_exclusion",
-        "description": "每个节点（灯）可以通过某些操作（开关组合）独立激活，且其他节点（灯）不被激活",
+        "description": "每个元素只能通过特定的操作组合单独激活，且其他元素必须处于非激活状态",
         "confidence": "1/1"
       },
       {
-        "name": "state_transition_constraint",
-        "description": "每个节点（灯）的状态由与其相连的操作（开关）的奇偶性决定，即开关状态的异或结果",
+        "name": "cyclic_shift_constraint",
+        "description": "每个操作对多个元素有切换效果（即从开到关或从关到开）",
         "confidence": "1/1"
       }
     ],
@@ -53,11 +57,13 @@
           "constraints": [
             {
               "name": "pairwise_exclusion",
-              "description": "每个节点（灯）可以通过某些操作（开关组合）独立激活，且其他节点（灯）不被激活"
+              "description": "每个元素只能通过特定的操作组合单独激活，且其他元素必须处于非激活状态",
+              "formal": "对于每个 i (1 ≤ i ≤ N)，存在一个开关集合 S_i 使得只有第 i 个灯亮，其余灯都灭"
             },
             {
-              "name": "state_transition_constraint",
-              "description": "每个节点（灯）的状态由与其相连的操作（开关）的奇偶性决定，即开关状态的异或结果"
+              "name": "cyclic_shift_constraint",
+              "description": "每个操作对多个元素有切换效果（即从开到关或从关到开）",
+              "formal": "对于每个开关 j (1 ≤ j ≤ N)，存在一个灯的集合 L_j 使得开关 j 的状态改变会导致 L_j 中的灯状态切换"
             }
           ]
         }
@@ -65,36 +71,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个开关序列，使得每个灯泡可以独立点亮且其他灯泡熄灭"
+          "type": "feasibility",
+          "description": "判断是否存在一种开关操作方案，使得每个灯泡都能独立被点亮而其他灯泡保持熄灭"
         }
       }
     ],
-    "description": "构造一个开关序列，使得每个灯泡可以独立点亮且其他灯泡熄灭"
+    "description": "判断是否存在一种开关操作方案，使得每个灯泡都能独立被点亮而其他灯泡保持熄灭"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个开关操作可以看作是对当前灯光状态的一种转换，通过一系列的开关操作可以达到目标状态。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "flow_conservation",
+        "description": "流守恒不变量：在开关操作过程中，每个灯的状态变化（开或关）可以通过开关的操作来实现，且每个开关对灯的影响是确定的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性不变量：对于每个灯，其状态可以通过一组开关操作来唯一确定，且这些操作具有对称性，即每个灯的状态变化可以通过相同的开关操作序列来实现。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "当前状态只依赖有限的前序状态，通过开关操作可以唯一确定每个灯的状态",
-          "properties": {
-            "dependency_on_previous_states": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个开关操作可以看作是对当前灯光状态的一种转换，通过一系列的开关操作可以达到目标状态。",
+              "properties": {}
+            },
+            {
+              "name": "flow_conservation",
+              "description": "流守恒不变量：在开关操作过程中，每个灯的状态变化（开或关）可以通过开关的操作来实现，且每个开关对灯的影响是确定的。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性不变量：对于每个灯，其状态可以通过一组开关操作来唯一确定，且这些操作具有对称性，即每个灯的状态变化可以通过相同的开关操作序列来实现。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "当前状态只依赖有限的前序状态，通过开关操作可以唯一确定每个灯的状态"
+    ]
   }
 }

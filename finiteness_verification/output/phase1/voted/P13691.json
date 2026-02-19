@@ -1,0 +1,149 @@
+{
+  "problem_id": "P13691",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 500000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 500000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 500000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "cost_constraint",
+        "description": "从一个节点到另一个节点的路径成本由两种操作决定：楼梯（1单位成本）和通风口（2单位成本）。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "reachability_constraint",
+        "description": "从节点 i 可以通过楼梯到达的最远节点是 i + v[i]，通过通风口到达的最远节点是 i + w[i]。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "对于每个查询 (A, B)，需要找到从 A 到 B 的最小成本路径。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "cost_constraint",
+              "description": "从一个节点到另一个节点的路径成本由两种操作决定：楼梯（1单位成本）和通风口（2单位成本）。",
+              "formal": "cost(i, j) = 1 if using stairs, 2 if using vents"
+            },
+            {
+              "name": "reachability_constraint",
+              "description": "从节点 i 可以通过楼梯到达的最远节点是 i + v[i]，通过通风口到达的最远节点是 i + w[i]。",
+              "formal": "reachable_stairs(i) = [i+1, i+v[i]], reachable_vents(i) = [i+1, i+w[i]]"
+            },
+            {
+              "name": "path_constraint",
+              "description": "对于每个查询 (A, B)，需要找到从 A 到 B 的最小成本路径。",
+              "formal": "min_cost_path(A, B)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求两点间最短路径长度"
+        }
+      }
+    ],
+    "description": "求两点间最短路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：从任意楼层i到目标楼层j的最小代价可以通过从i到k（i < k < j）的最小代价加上从k到j的最小代价来计算",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：从任意楼层i出发，可到达的楼层范围是单调递增的，即随着i的增加，可到达的楼层范围也逐渐增加",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从当前楼层i到下一个楼层的状态转移是确定的，且只依赖于当前楼层和下一步的选择（楼梯或通风口）",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：从任意楼层i到目标楼层j的最小代价可以通过从i到k（i < k < j）的最小代价加上从k到j的最小代价来计算",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：从任意楼层i出发，可到达的楼层范围是单调递增的，即随着i的增加，可到达的楼层范围也逐渐增加",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从当前楼层i到下一个楼层的状态转移是确定的，且只依赖于当前楼层和下一步的选择（楼梯或通风口）",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

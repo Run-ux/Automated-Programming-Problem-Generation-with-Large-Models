@@ -1,0 +1,87 @@
+{
+  "problem_id": "CF1707D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 2,
+          "max": 2000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 2000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false,
+          "directed": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_constraint",
+            "description": "集合 S1 是集合 S2 的子集，并且 S1 不等于 S2"
+          },
+          {
+            "name": "inclusion",
+            "description": "对于集合 S1 中的任意两个顶点 i 和 j，它们的最近公共祖先 LCA(i, j) 也必须在 S1 中"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作次数 k 必须是固定的，且需要计算在恰好 k 次操作后将 U 变为 {1} 的方案数"
+          },
+          {
+            "name": "distinctness",
+            "description": "两种方式被认为是不同的，如果存在一个整数 z (1 ≤ z ≤ k)，使得在 z 次操作后 U 的集合不同"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求在给定操作次数下，将初始集合通过一系列特定规则转换为目标集合的方案数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即在每一步操作中，选择一个部分虚拟树作为新的顶点集，最终使得顶点集变为{1}的过程可以分解为一系列子问题。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个顶点集到另一个顶点集的状态转移是通过选择部分虚拟树实现的，每次转移都保持了部分虚拟树的性质。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在每一步操作中，选择的部分虚拟树只依赖于当前的顶点集，而不依赖于之前的操作路径，因此每个子问题都是独立的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "tree",
         "length": {
           "min": 2,
           "max": 500000
@@ -29,24 +29,28 @@
       "result": {
         "constraints": [
           {
-            "name": "graph_connectivity",
-            "description": "图必须是连通的（树结构）"
+            "name": "acyclicity",
+            "description": "图必须是无环的（树结构）"
           },
           {
-            "name": "path_length_constraint",
-            "description": "简单路径长度至少为2"
+            "name": "connectivity",
+            "description": "图必须是连通的"
           },
           {
-            "name": "single_edge_operation",
+            "name": "path_constraint",
+            "description": "路径必须是简单路径，即每个顶点最多访问一次"
+          },
+          {
+            "name": "operation_limit",
             "description": "只能添加一条边"
           },
           {
-            "name": "edge_exclusion_constraint",
+            "name": "exclusion",
             "description": "不能添加自环"
           },
           {
-            "name": "distinct_simple_paths",
-            "description": "最大化不同简单路径的数量"
+            "name": "distance_bound",
+            "description": "考虑的简单路径长度至少为2"
           }
         ]
       }
@@ -67,9 +71,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即通过添加一条边后形成的新的简单路径数量可以由原树中某些子树的路径数和新增路径数决定。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，通过计算每个子树的贡献来决定添加哪条边可以最大化简单路径的数量。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在求解过程中，不同子树的贡献是相互独立的，即一个子树的最优解不影响另一个子树的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解由子问题的解合成。在本题中，通过递归地分解树结构，并在回溯时合并子树的结果来求解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

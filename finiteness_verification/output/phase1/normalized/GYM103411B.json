@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 4,
           "max": 4
@@ -31,14 +31,19 @@
       "result": {
         "constraints": [
           {
-            "name": "pairwise_exclusion",
-            "description": "数字序列中不能包含特定的数字（如1）",
-            "formal": "∀i, digit(i) ≠ 1"
+            "name": "exclusion",
+            "description": "数字序列中不能包含特定的数字（本题中为1）",
+            "formal": "∀i, digit[i] ≠ 1"
           },
           {
-            "name": "distinct_elements",
+            "name": "product_constraint",
+            "description": "数字序列与其每一位数字相乘的结果必须等于给定的数n",
+            "formal": "∃digits such that n = digits * (digits[0] * digits[1] * digits[2] * digits[3])"
+          },
+          {
+            "name": "distinctness",
             "description": "解码结果必须是唯一的，否则输出错误信息",
-            "formal": "∃! x, x * digit(x) = n"
+            "formal": "if multiple solutions exist, output 'ERROR'"
           }
         ]
       }
@@ -49,7 +54,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
+        "type": "feasibility",
         "description": "判断是否存在一个四位数，使得该数与其每一位数字的乘积等于给定的数"
       }
     }
@@ -59,9 +64,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：解法依赖于分解问题为更小的子问题，并且这些子问题的解可以组合成原问题的解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即如果一个四位数 n 是某个四位数 m 与其每一位数字相乘的结果，则 m 的每一位数字的选择可以独立考虑，并且每个选择都应满足不使用数字 1 的约束。",
+            "properties": {}
+          },
+          {
+            "name": "pattern_preservation",
+            "description": "数字排除不变量：在生成可能的四位数时，始终排除数字 1，确保所有候选解都不包含该数字。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

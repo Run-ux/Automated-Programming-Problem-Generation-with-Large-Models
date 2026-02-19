@@ -1,0 +1,92 @@
+{
+  "problem_id": "GYM105431A",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 3,
+          "max": 3
+        },
+        "value_range": {
+          "min": -10000,
+          "max": 10000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacency_relation",
+            "description": "路径不能穿过或接触障碍物（矩形区域）",
+            "formal": "∀ (x, y) ∈ path, (x, y) ∉ [x_l, x_r] × [y_l, y_r]"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径由一系列线段组成，且起点和终点固定",
+            "formal": "path = (x_s, y_s), (x_1, y_1), ..., (x_N, y_N), (x_t, y_t)"
+          },
+          {
+            "name": "distinctness",
+            "description": "起点和终点必须不同",
+            "formal": "(x_s, y_s) ≠ (x_t, y_t)"
+          },
+          {
+            "name": "inclusion",
+            "description": "给定的点在障碍物内或边界上",
+            "formal": "(x_p, y_p) ∈ [x_l, x_r] × [y_l, y_r]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一条从起点到终点的路径，使得路径不穿过给定的矩形障碍区域"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "path_uniqueness",
+            "description": "路径规划过程中，始终避免与已知障碍物区域相交",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "路径规划中的每一步移动保持在可行区域内，且逐步逼近目标点",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": false
+            }
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "路径规划的子问题（从起点到中间点，从中间点到终点）相互独立，可以分别求解",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

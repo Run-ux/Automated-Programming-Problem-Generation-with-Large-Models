@@ -1,0 +1,149 @@
+{
+  "problem_id": "GYM104021C",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_size_minimum_constraint",
+        "description": "每个分组必须包含至少 K 个元素",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subsequence_constraint",
+        "description": "每个分组必须是连续的子序列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimize_max_min_difference",
+        "description": "每个分组内的最大值与最小值之差应尽可能小",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_size_minimum_constraint",
+              "description": "每个分组必须包含至少 K 个元素",
+              "formal": "∀ group, |group| ≥ k"
+            },
+            {
+              "name": "subsequence_constraint",
+              "description": "每个分组必须是连续的子序列",
+              "formal": "∀ group, ∃ l, r, group = {v_l, v_{l+1}, ..., v_r}"
+            },
+            {
+              "name": "minimize_max_min_difference",
+              "description": "每个分组内的最大值与最小值之差应尽可能小",
+              "formal": "minimize(max(v_i) - min(v_i)) for each group"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "最小化每组内最大差值，使得每组至少包含k个连续元素"
+        }
+      }
+    ],
+    "description": "最小化每组内最大差值，使得每组至少包含k个连续元素"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前问题的最优解可以通过子问题的最优解来构建，即$c_i$的值依赖于前$i-1$个图像的最优分组结果。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着图像数量的增加，最大对比度差$c_i$不会减少。这是因为更多的图像意味着可能需要更大的对比度差来满足每组至少包含$k$张图像的要求。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：对于任意两个连续的图像子集，如果它们各自内部的最大对比度差已经是最小，则这两个子集合并后的最大对比度差可通过比较边界元素的对比度值来更新。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：当前问题的最优解可以通过子问题的最优解来构建，即$c_i$的值依赖于前$i-1$个图像的最优分组结果。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着图像数量的增加，最大对比度差$c_i$不会减少。这是因为更多的图像意味着可能需要更大的对比度差来满足每组至少包含$k$张图像的要求。",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：对于任意两个连续的图像子集，如果它们各自内部的最大对比度差已经是最小，则这两个子集合并后的最大对比度差可通过比较边界元素的对比度值来更新。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

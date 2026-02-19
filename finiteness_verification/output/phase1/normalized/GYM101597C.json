@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100
@@ -26,9 +26,14 @@
       "result": {
         "constraints": [
           {
-            "name": "subset_sum_imbalance",
-            "description": "将整数 n 分成三个正整数 a1, a2, a3 的和，且每个 ai 都是 n 的因数",
-            "formal": "n = a1 + a2 + a3 且 ∀i, ai | n"
+            "name": "divisibility",
+            "description": "每个选取的元素必须是总和的因子（即每个 ai 必须整除 n）",
+            "formal": "∀i, ai | n"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "选取的三个元素之和必须等于给定的总数 n",
+            "formal": "a1 + a2 + a3 = n"
           }
         ]
       }
@@ -39,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造满足条件的三个整数，使得它们的和等于给定值且每个整数都是给定值的因数"
+        "type": "construction",
+        "description": "构造满足条件的三个整数，使得它们的和等于给定值且每个整数都是该值的因数"
       }
     }
   ],
@@ -49,11 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过其子问题的解组合而成，即找到三个整数a1, a2, a3使得n = a1 + a2 + a3且每个ai是n的因数的问题可以分解为更小规模的子问题来解决。",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "modular_invariance",
+            "description": "每个部分的值必须是总和的因数，确保分配方案满足整除条件",
+            "properties": {}
+          },
+          {
+            "name": "bounded_sum_absolute_values",
+            "description": "所有部分的和始终等于给定的总数，确保分配方案的完整性",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

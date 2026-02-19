@@ -19,6 +19,7 @@
             "max": 50
           },
           "properties": {
+            "ordered": false,
             "inferred": true
           }
         }
@@ -33,34 +34,25 @@
       "max": 50
     },
     "properties": {
+      "ordered": false,
       "inferred": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "unique_elements",
-        "description": "所有元素（立方体）具有不同的标识（颜色），且数量不超过网格大小",
+        "name": "distinctness",
+        "description": "所有元素具有唯一性（每个立方体的颜色和位置都是唯一的）",
         "confidence": "1/1"
       },
       {
-        "name": "element_swap",
-        "description": "每次操作只能移动一个元素到相邻的空位置",
+        "name": "adjacency_relation",
+        "description": "相邻节点约束（每次操作只能将一个立方体移动到其四个相邻的空单元格之一）",
         "confidence": "1/1"
       },
       {
-        "name": "operation_count_limit",
-        "description": "总操作次数不能超过给定的最大值（10800次）",
-        "confidence": "1/1"
-      },
-      {
-        "name": "grid_adjacency",
-        "description": "移动的目标位置必须与当前元素位置相邻（四连通）",
-        "confidence": "1/1"
-      },
-      {
-        "name": "target_cell_empty",
-        "description": "目标位置在移动前必须为空",
+        "name": "operation_limit",
+        "description": "操作次数限制（总操作次数不超过 10800 次）",
         "confidence": "1/1"
       }
     ],
@@ -71,24 +63,16 @@
         "result": {
           "constraints": [
             {
-              "name": "unique_elements",
-              "description": "所有元素（立方体）具有不同的标识（颜色），且数量不超过网格大小"
+              "name": "distinctness",
+              "description": "所有元素具有唯一性（每个立方体的颜色和位置都是唯一的）"
             },
             {
-              "name": "element_swap",
-              "description": "每次操作只能移动一个元素到相邻的空位置"
+              "name": "adjacency_relation",
+              "description": "相邻节点约束（每次操作只能将一个立方体移动到其四个相邻的空单元格之一）"
             },
             {
-              "name": "operation_count_limit",
-              "description": "总操作次数不能超过给定的最大值（10800次）"
-            },
-            {
-              "name": "grid_adjacency",
-              "description": "移动的目标位置必须与当前元素位置相邻（四连通）"
-            },
-            {
-              "name": "target_cell_empty",
-              "description": "目标位置在移动前必须为空"
+              "name": "operation_limit",
+              "description": "操作次数限制（总操作次数不超过 10800 次）"
             }
           ]
         }
@@ -96,34 +80,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的操作序列，使得所有元素从初始位置移动到目标位置"
+          "type": "construction",
+          "description": "构造一个满足条件的操作序列，使得所有对象从初始位置移动到目标位置"
         }
       }
     ],
-    "description": "构造一个满足条件的操作序列，使得所有元素从初始位置移动到目标位置"
+    "description": "构造一个满足条件的操作序列，使得所有对象从初始位置移动到目标位置"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每次操作后，每个立方体的位置状态都符合棋盘上的移动规则（只能移动到相邻的空格），且最终所有立方体都能到达指定位置。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个立方体的移动路径可以独立计算，互不影响。即在确定一个立方体的移动路径时，其他立方体的位置和移动路径不会对其产生影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：每个立方体的移动路径可以独立考虑，整体最优解由各个立方体的最优移动路径组合而成",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次操作后，每个立方体的位置状态都符合棋盘上的移动规则（只能移动到相邻的空格），且最终所有立方体都能到达指定位置。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个立方体的移动路径可以独立计算，互不影响。即在确定一个立方体的移动路径时，其他立方体的位置和移动路径不会对其产生影响。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：每个立方体的移动路径可以独立考虑，整体最优解由各个立方体的最优移动路径组合而成"
+    ]
   }
 }

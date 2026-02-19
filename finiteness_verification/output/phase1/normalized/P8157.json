@@ -1,0 +1,89 @@
+{
+  "problem_id": "P8157",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "non_negative_value_constraint",
+            "description": "矩形高度非负（操作后高度不低于0）",
+            "formal": "∀i, a_i ≥ 0"
+          },
+          {
+            "name": "contiguous_submatrix",
+            "description": "子矩形必须是连续的一块",
+            "formal": "子矩形由连续的矩形组成"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制为k次",
+            "formal": "操作次数 k"
+          },
+          {
+            "name": "decrease_only_constraint",
+            "description": "每次操作使一个矩形的高度减1",
+            "formal": "a_id' = a_id - 1"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "操作编号通过异或上一次询问的答案得到",
+            "formal": "id = id' ⊕ lastans"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "每次操作后求最大子矩形面积"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：子矩形的最大面积可以通过子区间的最大面积信息合并得到",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每次操作后的最大子矩形面积可以通过前一次操作后的最大子矩形面积和当前操作的影响来计算",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

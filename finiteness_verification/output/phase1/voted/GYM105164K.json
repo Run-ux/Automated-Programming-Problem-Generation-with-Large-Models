@@ -1,0 +1,124 @@
+{
+  "problem_id": "GYM105164K",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 3,
+            "max": 25
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 25
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "pairwise_exclusion",
+        "description": "任意两个元素不能同时存在（图中任意两个节点不能直接相连）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个节点的度数不超过8（每个位置最多有8个攻击范围内的其他位置）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "pairwise_exclusion",
+              "description": "任意两个元素不能同时存在（图中任意两个节点不能直接相连）",
+              "formal": "∀ (i, j) ∈ E, i ≠ j → (i, j) ∉ E"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个节点的度数不超过8（每个位置最多有8个攻击范围内的其他位置）",
+              "formal": "∀ v ∈ V, deg(v) ≤ 8"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求需要移除的最少元素数量，使得剩余元素满足特定条件"
+        }
+      }
+    ],
+    "description": "求需要移除的最少元素数量，使得剩余元素满足特定条件"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在确定一个骑士是否移除时，可以基于剩余骑士的最优配置来决定",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择局部最优解（移除最少数量的骑士），最终能够达到全局最优解（使得棋盘上没有两个骑士互相攻击）",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在确定一个骑士是否移除时，可以基于剩余骑士的最优配置来决定",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择局部最优解（移除最少数量的骑士），最终能够达到全局最优解（使得棋盘上没有两个骑士互相攻击）",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -6,10 +6,10 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "weighted_directed_graph",
+        "type": "directed_graph",
         "length": {
-          "min": 1,
-          "max": 1000000
+          "min": 2,
+          "max": 200000
         },
         "value_range": {
           "min": 1,
@@ -29,12 +29,14 @@
       "result": {
         "constraints": [
           {
-            "name": "node_degree_constraint",
-            "description": "每个节点的出度不超过 1（每个人最多支付一次）"
+            "name": "operation_limit",
+            "description": "每个节点最多只能进行一次支付操作（图中每个节点的出度不超过1）",
+            "formal": "对于每个节点 i, out_degree(i) <= 1"
           },
           {
-            "name": "adjacent_difference",
-            "description": "相邻节点取值不同（支付关系中，A_i 和 B_i 不能相同）"
+            "name": "flow_constraint",
+            "description": "支付金额必须与借款金额相匹配，即总支付金额等于总借款金额",
+            "formal": "sum(C_i) = sum(C'_i)"
           }
         ]
       }
@@ -45,8 +47,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足条件的交易方案，使得每个人最多支付一次，且所有债务得以清偿"
+        "type": "construction",
+        "description": "构造一个满足条件的交易方案，使得每个人最多支付一次，且所有债务被清偿"
       }
     }
   ],
@@ -55,9 +57,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个个体的净债务可以通过子问题的解来确定",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：每个节点的净流入等于净流出，即所有交易的总和为零。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个人最多只能支付一次，但可以接收多次支付。这意味着每个支付操作是独立的，不会影响其他支付操作。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

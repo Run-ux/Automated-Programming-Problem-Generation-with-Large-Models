@@ -2,14 +2,14 @@
   "problem_id": "GYM102775I",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -35,8 +35,8 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "modulo_constraint",
-        "description": "计算结果需要对 10^9 + 7 取模",
+        "name": "modular_arithmetic",
+        "description": "计算结果需对 10^9 + 7 取模",
         "confidence": "1/1"
       }
     ],
@@ -47,8 +47,8 @@
         "result": {
           "constraints": [
             {
-              "name": "modulo_constraint",
-              "description": "计算结果需要对 10^9 + 7 取模"
+              "name": "modular_arithmetic",
+              "description": "计算结果需对 10^9 + 7 取模"
             }
           ]
         }
@@ -56,37 +56,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造给定函数在指定点的值"
+          "type": "enumeration",
+          "description": "求给定函数在多个点处的值并取模"
         }
       }
     ],
-    "description": "构造给定函数在指定点的值"
+    "description": "求给定函数在多个点处的值并取模"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：函数 f(a) 的值可以通过其子问题 f(a-1) 的值递推计算得出，满足动态规划的最优子结构性质。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "modular_invariance",
+        "description": "模运算不变量：在计算过程中，所有中间结果和最终结果都对 10^9 + 7 取模，确保数值不会溢出且保持一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解可以通过子问题的解组合而成，适用于动态规划求解",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：函数 f(a) 的值可以通过其子问题 f(a-1) 的值递推计算得出，满足动态规划的最优子结构性质。",
+              "properties": {}
+            },
+            {
+              "name": "modular_invariance",
+              "description": "模运算不变量：在计算过程中，所有中间结果和最终结果都对 10^9 + 7 取模，确保数值不会溢出且保持一致性。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解可以通过子问题的解组合而成，适用于动态规划求解"
+    ]
   }
 }

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,13 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_sum_constraint",
-            "description": "所有位置的高度之和必须为偶数（因为2x1砖块只能覆盖偶数高度）"
+            "name": "coverage",
+            "description": "使用给定的 2x1 砖和 1x1 砖覆盖整个 w x h 的区域，且 1x1 砖的数量有限"
           },
           {
-            "name": "adjacent_difference",
-            "description": "相邻位置的高度差必须为偶数（因为2x1砖块只能覆盖偶数高度差）",
-            "formal": "∀i, (h[i] - h[i-1]) % 2 == 0"
+            "name": "adjacency_relation",
+            "description": "2x1 砖必须水平或垂直放置，相邻砖块之间不能有空隙"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "所有位置的高度之和等于 w * h"
           }
         ]
       }
@@ -45,7 +48,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
+        "type": "feasibility",
         "description": "判断是否存在一种方案使得所有位置的高度达到给定的目标高度"
       }
     }
@@ -55,9 +58,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过解决每个位置的高度差问题来确定整个墙是否可以完成",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即局部高度调整的最优方案可以推导出全局的高度调整方案。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，优先使用2x1砖块填充空缺，仅在必要时使用1x1砖块，这种局部最优选择能导致全局最优解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

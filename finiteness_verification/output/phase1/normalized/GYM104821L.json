@@ -1,0 +1,88 @@
+{
+  "problem_id": "GYM104821L",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": false,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "flow_constraint",
+            "description": "选取元素权重和不超过容量上限（电梯每次运送的包裹总重量不能超过 k）",
+            "formal": "∑_{(w, f) ∈ P} w ≤ k"
+          },
+          {
+            "name": "range_bound",
+            "description": "选取元素的最大值决定成本（每次运送的成本由最高楼层的包裹决定）",
+            "formal": "cost = max_{(w, f) ∈ P} f"
+          },
+          {
+            "name": "discrete_weight_constraint",
+            "description": "元素权重只能取离散值（每个包裹的重量只能是 1 或 2）",
+            "formal": "w_i ∈ {1, 2}"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求最小化总代价"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即电梯每次运送的包裹集合的选择依赖于之前选择的最优方案。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步决策中，优先选择当前情况下能使得总电能消耗最小的包裹组合进行运送。这种局部最优选择最终可以导致全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着电梯运送过程的进行，已处理的包裹重量和楼层高度均呈现非递减趋势，且剩余未处理包裹的重量和目标楼层高度也保持非递增。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": false
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

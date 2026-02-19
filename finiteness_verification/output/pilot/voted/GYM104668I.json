@@ -67,13 +67,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "volume_leq_n",
-        "description": "灯的体积不能超过给定的最大值 N",
+        "name": "range_bound",
+        "description": "选取元素的体积不超过给定的最大值",
         "confidence": "3/3"
       },
       {
-        "name": "no_square_face",
-        "description": "灯的形状不能有任何一个面是正方形",
+        "name": "distinctness",
+        "description": "选取元素的所有维度长度互不相同",
         "confidence": "3/3"
       }
     ],
@@ -84,12 +84,14 @@
         "result": {
           "constraints": [
             {
-              "name": "no_square_face",
-              "description": "灯的形状不能有任何一个面是正方形"
+              "name": "range_bound",
+              "description": "选取元素的体积不超过给定的最大值",
+              "formal": "a * b * c <= N"
             },
             {
-              "name": "volume_leq_n",
-              "description": "灯的体积不能超过给定的最大值 N"
+              "name": "distinctness",
+              "description": "选取元素的所有维度长度互不相同",
+              "formal": "a != b && b != c && a != c"
             }
           ]
         }
@@ -100,12 +102,12 @@
         "result": {
           "constraints": [
             {
-              "name": "no_square_face",
-              "description": "灯的形状不能有任何一个面是正方形"
+              "name": "distinctness",
+              "description": "所有边长必须互不相同（无平方面）"
             },
             {
-              "name": "volume_leq_n",
-              "description": "灯的体积不能超过给定的最大值 N"
+              "name": "range_bound",
+              "description": "体积不超过给定的最大值 N"
             }
           ]
         }
@@ -116,13 +118,14 @@
         "result": {
           "constraints": [
             {
-              "name": "no_square_face",
-              "description": "灯的形状不能有任何一个面是正方形"
+              "name": "range_bound",
+              "description": "选取元素的体积不超过给定的最大值",
+              "formal": "a * b * c <= N"
             },
             {
-              "name": "volume_leq_n",
-              "description": "灯的体积不能超过给定的最大值 N",
-              "formal": "a * b * c <= N, 其中 a, b, c 为灯的长宽高"
+              "name": "distinctness",
+              "description": "选取元素的每个维度长度必须不同",
+              "formal": "a != b && b != c && a != c"
             }
           ]
         }
@@ -130,68 +133,106 @@
     ]
   },
   "objective": {
-    "type": "count",
+    "type": "enumeration",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计满足条件的灯泡形状数量，条件为灯泡没有正方形面且体积不超过给定的最大值"
+          "type": "enumeration",
+          "description": "求满足条件的立方体数量"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计所有满足条件的灯的形状数量"
+          "type": "enumeration",
+          "description": "求满足条件的立方体数量"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计满足条件的灯泡形状数量"
+          "type": "enumeration",
+          "description": "求满足条件的立方体数量"
         }
       }
     ],
-    "description": "统计满足条件的灯泡形状数量，条件为灯泡没有正方形面且体积不超过给定的最大值"
+    "description": "求满足条件的立方体数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "3/3",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，每个子问题的解都是独立且最优的。",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：通过定义合适的状态和状态转移方程，确保从一个状态到另一个状态的转移是合法且一致的。",
+        "confidence": "3/3",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优解可以通过子问题的最优解组合而成，即对于每个体积V，其解依赖于比它小的体积的解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，每个子问题的解都是独立且最优的。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过定义合适的状态和状态转移方程，确保从一个状态到另一个状态的转移是合法且一致的。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优解可以通过子问题的解组合而成，即对于每个可能的长宽高组合，其是否满足条件可以基于更小体积的组合来判断。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即每个体积不超过N的符合条件的灯的形状数量可以由更小体积的符合条件的灯的形状数量递推得到。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过定义一个三维DP数组dp[i][j][k]表示长宽高分别为i, j, k的灯的数量，状态转移方程保证了从较小的状态向较大的状态转移时的一致性和正确性。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优解可以通过子问题的最优解组合而成，即对于每个可能的长宽高组合，其是否满足条件可以基于更小体积的情况来判断。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，每个子问题的解都是独立且最优的。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过定义合适的状态和状态转移方程，确保从一个状态到另一个状态的转移是有效的，并且能够覆盖所有可能的情况。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优解可以通过子问题的最优解组合而成，即对于每个体积V，其解依赖于比它小的体积的解。"
+    ]
   }
 }

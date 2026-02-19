@@ -1,0 +1,74 @@
+{
+  "problem_id": "CF1142D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 9
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "range_bound",
+            "description": "定义了一种特殊的数列，其中每个数的生成规则基于其在数列中的位置和模11的结果。具体来说，如果x是第m个不充分数，且m除以11的余数为c，则10*x+0, 10*x+1, ..., 10*x+(c-1)都是不充分数，而10*x+c, 10*x+(c+1), ..., 10*x+9不是不充分数。",
+            "formal": "Let x be the m-th inadequate number. If m % 11 = c, then 10*x + i is inadequate for 0 ≤ i < c, and not inadequate for c ≤ i ≤ 9."
+          },
+          {
+            "name": "subset_constraint",
+            "description": "需要计算字符串s中所有子串的数量，这些子串能够形成一个不充分数。如果一个子串在多个位置出现，每次出现都应单独计数。",
+            "formal": "Count all substrings of s that form an inadequate number. Each occurrence of a substring is counted separately."
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求字符串中满足特定条件的子串数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "prefix_decomposability",
+            "description": "前缀可分解性：通过前缀结构识别子串是否为特定模式的数，可以利用前缀信息进行快速判断",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和等方法，可以在常数时间内计算任意区间的性质，适用于快速统计满足条件的子串数量",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

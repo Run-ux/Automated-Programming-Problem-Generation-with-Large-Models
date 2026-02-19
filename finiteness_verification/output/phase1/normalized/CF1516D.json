@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -15,9 +15,7 @@
           "min": 1,
           "max": 100000
         },
-        "properties": {
-          "ordered": false
-        }
+        "properties": {}
       }
     }
   ],
@@ -28,14 +26,12 @@
       "result": {
         "constraints": [
           {
-            "name": "product_lcm_equivalence",
-            "description": "每个子数组的元素乘积等于其最小公倍数",
-            "formal": "∀ subarray S, product(S) = LCM(S)"
+            "name": "lcm_constraint",
+            "description": "每个子数组的元素乘积等于其最小公倍数"
           },
           {
-            "name": "minimum_partition_by_subarray",
-            "description": "将区间内的元素划分为最少数量的子数组，满足每个子数组的乘积等于其最小公倍数",
-            "formal": "minimize |P| such that ∀ S ∈ P, product(S) = LCM(S)"
+            "name": "partition",
+            "description": "将区间内的元素划分为若干个连续子数组"
           }
         ]
       }
@@ -46,8 +42,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求将指定区间内的元素划分成若干连续子数组的最少数量，使得每个子数组的乘积等于其最小公倍数"
+        "type": "minimize_count",
+        "description": "求满足条件的最少子数组数量"
       }
     }
   ],
@@ -56,9 +52,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个子数组的划分方案可以独立求解并合并",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：大问题的解可以通过子问题的最优解组合得到，即区间[l, r]的最小分割数可以由其子区间的最小分割数推导得出。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：任意两个满足条件（子数组乘积等于LCM）的相邻子数组可以合并为一个更大的满足条件的子数组，而不会影响最终结果。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

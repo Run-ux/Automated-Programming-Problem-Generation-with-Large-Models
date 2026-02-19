@@ -1,0 +1,79 @@
+{
+  "problem_id": "GYM106252H",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "序列必须是非递增的（即，每个元素不大于其前一个元素）",
+            "formal": "a_1 ≥ a_2 ≥ ... ≥ a_n"
+          },
+          {
+            "name": "partition_constraint",
+            "description": "每次操作后，结果必须仍然是一个有效的 Young 图（即，行长度非递增且每行至少有一个单元格）",
+            "formal": "对于任意 (i, j)，替换后的子图仍满足 λ_i ≥ λ_{i+1} 且 λ_i ≥ 1"
+          },
+          {
+            "name": "conjugate_diagram_constraint",
+            "description": "允许的操作是选择任意单元格 (i, j)，取以 (i, j) 为左上角的子图，并将其替换为其共轭图",
+            "formal": "对于任意 (i, j)，将子图 (x, y) 且 x ≥ i, y ≥ j 替换为其共轭图"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "计算每个给定Young图的可爱度，即通过一系列操作能获得的不同Young图的数量，结果需取模"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即每个子问题的解都是整个问题解的一部分。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理每个子问题时，状态的转移是基于前一个状态的结果，并且这种转移方式在整个过程中保持一致。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

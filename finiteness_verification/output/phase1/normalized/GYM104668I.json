@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -26,13 +26,14 @@
       "result": {
         "constraints": [
           {
-            "name": "non_square_shape_constraint",
-            "description": "所有维度的长度互不相等（无正方形面）"
+            "name": "distinctness",
+            "description": "所有边长必须互不相同（无平方面）",
+            "formal": "a ≠ b, a ≠ c, b ≠ c"
           },
           {
-            "name": "volume_upper_bound_constraint",
-            "description": "选取元素的乘积不超过给定上限（体积约束）",
-            "formal": "a * b * c <= N, a, b, c 为整数且 a != b, b != c, a != c"
+            "name": "geometric_volume_constraint",
+            "description": "体积不超过给定的最大值 N",
+            "formal": "a * b * c ≤ N"
           }
         ]
       }
@@ -43,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足条件的长方体数量"
+        "type": "enumeration",
+        "description": "求满足条件的立方体数量"
       }
     }
   ],
@@ -53,9 +54,20 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解都是独立且最优的",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即每个体积不超过N的符合条件的灯的形状可以由更小体积的符合条件的灯的形状组合而成。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着体积的增加，符合条件的灯的形状数量不会减少。即对于任意两个体积V1和V2，如果V1 < V2，则满足条件的V1的形状数量不会超过V2的形状数量。",
+            "properties": {
+              "volume_monotonic": true
+            }
+          }
+        ]
       }
     }
   ]

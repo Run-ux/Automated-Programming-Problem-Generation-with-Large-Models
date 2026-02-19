@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 1,
           "max": 500
@@ -26,16 +26,16 @@
       "result": {
         "constraints": [
           {
-            "name": "stack_structure_composition",
-            "description": "堆栈中每个位置的可见值等于从顶到底第一个非透明像素的值，如果所有层都是透明的，则该位置的可见值为0"
+            "name": "stack_sortable_constraint",
+            "description": "复合图像的可见值等于从上到下第一个非透明像素的可见值，如果所有层都是透明的，则可见值为0"
           },
           {
-            "name": "target_pattern_matching",
-            "description": "最终合成图像必须与目标图像在每个位置的可见值完全一致"
+            "name": "pattern_matching",
+            "description": "最终的复合图像必须与目标图像在每个位置的可见值完全一致"
           },
           {
-            "name": "minimum_cost_constraint",
-            "description": "操作总成本需要最小化"
+            "name": "optimization_objective",
+            "description": "需要最小化操作总成本以达到目标图像"
           }
         ]
       }
@@ -46,7 +46,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
+        "type": "minimize_value",
         "description": "求最小化操作总代价"
       }
     }
@@ -56,9 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的最优解可以独立求解并合并得到全局最优解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，每个像素位置的最小成本依赖于其上方和下方层的最小成本",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态到另一个状态的转移是基于当前层的状态和目标图像的状态，确保每一步操作都朝着最终目标推进",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

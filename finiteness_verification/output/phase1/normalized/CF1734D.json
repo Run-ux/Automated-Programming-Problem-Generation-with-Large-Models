@@ -1,0 +1,89 @@
+{
+  "problem_id": "CF1734D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 3,
+          "max": 200000
+        },
+        "value_range": {
+          "min": -1000000000,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "range_bound",
+            "description": "初始健康值非负（玩家控制的元素初始值非负）"
+          },
+          {
+            "name": "state_transition",
+            "description": "吸收规则（移动到有其他元素的位置时，必须吸收该位置的元素，并更新自身值为两者之和）",
+            "formal": "health[i] = health[i] + health[j]; health[j] = 0"
+          },
+          {
+            "name": "range_bound",
+            "description": "所有其他元素的值非零（除了玩家控制的元素外，其他元素的值均不为零）"
+          },
+          {
+            "name": "reachability_constraint",
+            "description": "可达性约束（必须能够到达边界位置之一，且过程中健康值不能为负）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一条路径，使得从起点到任一终点的过程中，路径上的权值和始终非负"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "状态转移方向受限（仅向左/向右），满足 DAG 上的最优子结构",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "当前状态的最优解可以通过子问题的最优解来构造",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移的一致性，即从一个状态转移到另一个状态的过程中，状态的变化是确定且一致的",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

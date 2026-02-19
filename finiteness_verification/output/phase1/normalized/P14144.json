@@ -1,0 +1,87 @@
+{
+  "problem_id": "P14144",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "frequency_bound",
+            "description": "区间内不同元素数量不超过 K",
+            "formal": "|distinct(A[l:r])| <= K"
+          },
+          {
+            "name": "ordering",
+            "description": "选择的元素必须满足非递减顺序（即每次选择的元素不能小于之前选择的任何元素）",
+            "formal": "对于所有 i, j (l <= i < j <= r)，如果 a_i 被选中且 a_j 被选中，则 a_i <= a_j"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足条件的子区间内可选元素的最大数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "在处理每个试炼区间时，诺艾儿遇到的魔族编号是单调递增的，且每次选择攻击的魔族编号也是单调递增的。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "在每个试炼区间内，诺艾儿选择攻击的魔族编号满足局部最优选择，即选择当前可以攻击的最大编号魔族，从而保证全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解来构建。具体来说，对于每个试炼区间，其最优解可以通过该区间内的子区间的最优解来推导。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "通过前缀和或类似的方法，可以在常数时间内计算出任意子区间内符合条件的魔族数量。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -28,19 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "每个元素的逆序对数量不超过其索引值减一",
-            "formal": "对于所有 1 ≤ i ≤ n, b_i = |{j | j < i 且 p_j > p_i}| 且 0 ≤ b_i < i"
+            "name": "inversion_count_constraint",
+            "description": "数组 b 中的每个元素 b_i 表示在 i 之前且值大于 p_i 的元素个数",
+            "formal": "b_i = |{j | j < i 且 p_j > p_i}|"
           },
           {
-            "name": "query_count_constraint",
-            "description": "更新操作只能将 b_i 的值设置为小于 i 的非负整数",
-            "formal": "对于查询 1 i x, 0 ≤ x < i ≤ n"
+            "name": "permutation_constraint",
+            "description": "p 是一个长度为 n 的排列，即 p 包含 1 到 n 的所有整数，且每个整数恰好出现一次",
+            "formal": "p 是 [1, 2, ..., n] 的一个排列"
           },
           {
-            "name": "query_count_constraint",
-            "description": "重构操作需要根据当前的 b 数组恢复出一个有效的排列 p",
-            "formal": "对于查询 2 i, 需要找到一个排列 p 使得 b_i = |{j | j < i 且 p_j > p_i}| 对于所有 1 ≤ i ≤ n 成立"
+            "name": "query_type_1",
+            "description": "查询类型 1 更新 b 数组中的某个元素 b_i 为 x，其中 0 ≤ x < i",
+            "formal": "b[i] = x (0 ≤ x < i)"
+          },
+          {
+            "name": "query_type_2",
+            "description": "查询类型 2 要求输出当前的排列 p",
+            "formal": "输出当前的排列 p"
           }
         ]
       }
@@ -51,8 +56,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足给定条件的排列"
+        "type": "construction",
+        "description": "根据给定的逆序对信息构造满足条件的排列"
       }
     }
   ],
@@ -61,11 +66,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：当前状态的解可以通过前序状态的解组合而成，满足动态规划的基本性质",
-        "properties": {
-          "state_dependency": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：当前排列的逆序对数量可以通过子问题的解来计算，即通过已知的b数组和之前计算出的部分排列来推导整个排列。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理每个查询时，根据查询类型更新b数组，并且能够基于当前b数组的状态正确地恢复或更新排列p。这种状态转移保证了算法的一致性和正确性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

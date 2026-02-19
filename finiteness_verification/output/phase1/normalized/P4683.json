@@ -1,0 +1,85 @@
+{
+  "problem_id": "P4683",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 25000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 20
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制，需要最小化操作总数"
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移约束，打印机的状态只能通过添加字母、删除字母或打印单词来改变"
+          },
+          {
+            "name": "ordering",
+            "description": "有序性约束，打印顺序可以任意，但必须保证每个单词都能被正确打印"
+          },
+          {
+            "name": "distinctness",
+            "description": "唯一性约束，所有单词都不相同"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化完成所有任务所需的操作数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即打印每个单词所需的最小操作数可以由前一个单词的状态转移而来。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态到另一个状态的转换是基于当前打印机上的字母序列和下一个要打印的单词之间的差异。这种状态转移保证了操作序列的连贯性和最优性。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步中，选择使得当前操作数最少的操作（添加、删除或打印），以达到全局最优解。这种局部最优选择最终导致全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

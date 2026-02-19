@@ -1,0 +1,155 @@
+{
+  "problem_id": "P13242",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "substring_presence_constraint",
+        "description": "计算字符串子串在另一个字符串中的出现次数",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "计算区间内的最小值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation",
+        "description": "查询参数根据前一个查询的结果进行修改",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "substring_presence_constraint",
+              "description": "计算字符串子串在另一个字符串中的出现次数",
+              "formal": "occ(u, v) 表示字符串 v 在字符串 u 中的出现次数"
+            },
+            {
+              "name": "range_bound",
+              "description": "计算区间内的最小值",
+              "formal": "min_{j=l_1}^{i} a_j 表示从 l_1 到 i 的 a 数组中的最小值"
+            },
+            {
+              "name": "transformation",
+              "description": "查询参数根据前一个查询的结果进行修改",
+              "formal": "l_1 = (L_1 + o * lst - 1) % n + 1, r_1 = (R_1 + o * lst - 1) % n + 1, l_2 = (L_2 + o * lst - 1) % |t| + 1, r_2 = (R_2 + o * lst - 1) % |t| + 1"
+            },
+            {
+              "name": "range_bound",
+              "description": "如果 l_1 > r_1 或 l_2 > r_2，则交换 l 和 r",
+              "formal": "if l_1 > r_1 then swap(l_1, r_1), if l_2 > r_2 then swap(l_2, r_2)"
+            },
+            {
+              "name": "range_bound",
+              "description": "根据 L 和 R 的值固定 l_1 和 r_1 的边界",
+              "formal": "if L != -1 then l_1 = L, if R != -1 then r_1 = R"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求给定区间内字符串出现次数与最小值乘积的总和"
+        }
+      }
+    ],
+    "description": "求给定区间内字符串出现次数与最小值乘积的总和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和计算任意子区间的出现次数和最小值的乘积",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个子问题的解可以通过子问题的解组合得到，即求解子区间的问题可以分解为更小子区间的问题",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "prefix_decomposability",
+        "description": "前缀可分解性：通过前缀和等方法，可以将复杂查询分解为简单的前缀查询",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和计算任意子区间的出现次数和最小值的乘积",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个子问题的解可以通过子问题的解组合得到，即求解子区间的问题可以分解为更小子区间的问题",
+              "properties": {}
+            },
+            {
+              "name": "prefix_decomposability",
+              "description": "前缀可分解性：通过前缀和等方法，可以将复杂查询分解为简单的前缀查询",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

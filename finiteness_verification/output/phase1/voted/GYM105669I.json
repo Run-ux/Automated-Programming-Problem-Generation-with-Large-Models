@@ -2,14 +2,14 @@
   "problem_id": "GYM105669I",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "integer",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "integer",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1
@@ -35,8 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "modulo_constraint",
-        "description": "计算结果需要对给定的模数取模（本题中为 10^9 + 7）",
+        "name": "sum_constraint",
+        "description": "选取元素的和等于给定的目标值 n",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "结果需要对 10^9 + 7 取模",
         "confidence": "1/1"
       }
     ],
@@ -47,8 +52,14 @@
         "result": {
           "constraints": [
             {
-              "name": "modulo_constraint",
-              "description": "计算结果需要对给定的模数取模（本题中为 10^9 + 7）"
+              "name": "sum_constraint",
+              "description": "选取元素的和等于给定的目标值 n",
+              "formal": "∑x_i = n, x_i > 0"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "结果需要对 10^9 + 7 取模",
+              "formal": "result % (10^9 + 7)"
             }
           ]
         }
@@ -56,37 +67,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "计算将一个整数表示为若干正整数之和的方案数量"
+          "type": "enumeration",
+          "description": "求将一个整数表示为若干正整数之和的方案数，结果取模"
         }
       }
     ],
-    "description": "计算将一个整数表示为若干正整数之和的方案数量"
+    "description": "求将一个整数表示为若干正整数之和的方案数，结果取模"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即计算n的划分方式可以基于计算n-1, n-2, ..., 1的划分方式。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：当前状态（n的划分方式）可以通过前一个或多个状态（n-1, n-2, ... 的划分方式）以固定规则进行更新。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，满足重叠子问题和无后效性",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即计算n的划分方式可以基于计算n-1, n-2, ..., 1的划分方式。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：当前状态（n的划分方式）可以通过前一个或多个状态（n-1, n-2, ... 的划分方式）以固定规则进行更新。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，满足重叠子问题和无后效性"
+    ]
   }
 }

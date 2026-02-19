@@ -58,16 +58,16 @@
       "result": {
         "constraints": [
           {
-            "name": "polynomial_coefficients_non_negative_integers",
+            "name": "range_bound",
             "description": "多项式的系数必须是非负整数"
           },
           {
-            "name": "input_positive_integers",
-            "description": "输入的三个整数必须是正整数"
+            "name": "linear_relation",
+            "description": "多项式在给定点的值必须等于给定的整数 b"
           },
           {
-            "name": "output_infinite_or_modulo",
-            "description": "如果存在无限多个这样的多项式，则输出 'inf'，否则输出答案对 10^9 + 7 取模的结果"
+            "name": "modular_arithmetic",
+            "description": "结果需要对 10^9 + 7 取模"
           }
         ]
       }
@@ -78,20 +78,12 @@
       "result": {
         "constraints": [
           {
-            "name": "polynomial_non_negative_coefficients",
+            "name": "range_bound",
             "description": "多项式的系数必须是非负整数"
           },
           {
-            "name": "polynomial_integer_coefficients",
-            "description": "多项式的系数必须是整数"
-          },
-          {
-            "name": "input_positive_integers",
-            "description": "输入的三个整数必须是正整数"
-          },
-          {
-            "name": "output_infinite_or_modulo",
-            "description": "如果存在无限多个这样的多项式，则输出 'inf'，否则输出答案对 10^9 + 7 取模的结果"
+            "name": "linear_relation",
+            "description": "多项式在给定点的值必须等于给定的整数 b"
           }
         ]
       }
@@ -102,16 +94,16 @@
       "result": {
         "constraints": [
           {
-            "name": "polynomial_non_negative_coefficients",
+            "name": "range_bound",
             "description": "多项式的系数必须是非负整数"
           },
           {
-            "name": "positive_integers_a_b",
-            "description": "给定的 a 和 b 必须是正整数"
+            "name": "linear_relation",
+            "description": "多项式在给定点的值必须等于给定的整数"
           },
           {
-            "name": "infinite_polynomials",
-            "description": "如果满足条件的多项式有无限多个，则输出 'inf'，否则输出答案对 10^9 + 7 取模的结果"
+            "name": "modular_arithmetic",
+            "description": "结果需要对 10^9 + 7 取模"
           }
         ]
       }
@@ -122,24 +114,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算满足给定条件的多项式的数量，如果数量无限则输出'inf'，否则输出结果对10^9+7取模后的值"
+        "type": "enumeration",
+        "description": "求满足给定条件的多项式数量，结果对特定模数取模"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算满足给定条件的多项式的数量，如果数量无限则输出'inf'，否则输出结果对10^9+7取模后的值"
+        "type": "enumeration",
+        "description": "求满足给定条件的多项式数量，结果对10^9+7取模"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算满足给定条件的多项式数量，如果数量无限则输出'inf'，否则输出结果对10^9+7取模后的值"
+        "type": "enumeration",
+        "description": "求满足给定条件的多项式数量，结果对特定模数取模"
       }
     }
   ],
@@ -148,27 +140,58 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优解可以通过子问题的最优解组合而成，即大问题的解依赖于其子问题的解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，且子问题的解是独立的",
+            "properties": {
+              "subproblem_independence": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过状态转移方程，从一个状态转移到另一个状态的过程中，状态的合法性保持不变",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优解可以通过子问题的最优解组合而成，即大问题的解依赖于其子问题的解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，且子问题的解是独立的",
+            "properties": {
+              "subproblem_independence": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过状态转移方程，从一个状态转移到另一个状态的过程中，状态转移的一致性和正确性得到保证",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优解可以通过子问题的最优解组合而成，即大问题的解依赖于较小规模问题的解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，且子问题的解是独立的",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过状态转移方程，从一个状态转移到另一个状态的过程中，状态转移的一致性和正确性保持不变",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,87 @@
+{
+  "problem_id": "P3726",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 10
+        },
+        "value_range": {
+          "min": {
+            "a": 1,
+            "b": 1,
+            "k": 1
+          },
+          "max": {
+            "a": 1000000000000000,
+            "b": 1000000000000000,
+            "k": 9
+          }
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "sum_constraint",
+            "description": "小 A 的正面朝上的次数大于小 B 正面朝上的次数",
+            "formal": "sum(A) > sum(B)"
+          },
+          {
+            "name": "range_bound",
+            "description": "最终答案保留 k 位整数，不足 k 位以 0 补全",
+            "formal": "result % 10^k"
+          },
+          {
+            "name": "operation_limit",
+            "description": "小 A 抛硬币的次数比小 B 多，但不会超过 b + 10^4 次",
+            "formal": "b <= a <= b + 10^4"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足条件的方案数（小A正面朝上的次数大于小B正面朝上的次数），并对结果取模"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即小 A 和小 B 抛硬币次数较少的情况下的获胜方案数可以用来计算更多次数的情况下的获胜方案数。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和的方式，可以将不同区间的正面朝上次数进行组合，从而计算出总的获胜方案数。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

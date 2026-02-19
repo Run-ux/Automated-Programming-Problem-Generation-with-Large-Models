@@ -1,0 +1,82 @@
+{
+  "problem_id": "GYM105637D",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "输入的元素按位置严格递增排序（即 x_i < x_{i+1}）",
+            "formal": "∀ i ∈ [1, n-1], x_i < x_{i+1}"
+          },
+          {
+            "name": "coverage",
+            "description": "计算多个几何形状（这里是四分之一圆）的并集面积，重叠部分只计算一次",
+            "formal": "Area(∪_i Q_i) where Q_i is a quarter circle"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "计算每个初始选择下，倒下的多米诺骨牌所覆盖的总面积"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，用于维护当前考虑的区间",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "通过计算区间的并集面积来求解总成本，利用前缀和的思想进行区间合并",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解组合得到，每个子问题对应一个初始倒下的多米诺骨牌",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

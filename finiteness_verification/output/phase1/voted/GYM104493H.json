@@ -1,0 +1,159 @@
+{
+  "problem_id": "GYM104493H",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制，每个节点最多访问一次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "相邻关系，元素只能向前移动到第一个关闭的节点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移约束，每次操作后更新最大值",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制，每个节点最多访问一次"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "相邻关系，元素只能向前移动到第一个关闭的节点"
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移约束，每次操作后更新最大值"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求每次操作后所有区间中的最大值"
+        }
+      }
+    ],
+    "description": "求每次操作后所有区间中的最大值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "操作顺序的单调性：每次选择一个未被选择过的区段进行操作，且操作顺序固定，不会重复选择同一区段。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每次操作后，鱼的数量在各区段之间的转移是确定的，且新的状态只依赖于前一个状态和当前操作。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：每个区段的鱼数量可以通过前缀和的方式计算，且区段间的鱼数量转移可以表示为区段端点值的变化。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每一步操作后的最大鱼数量可以通过之前的最大鱼数量和当前操作的结果来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "操作顺序的单调性：每次选择一个未被选择过的区段进行操作，且操作顺序固定，不会重复选择同一区段。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次操作后，鱼的数量在各区段之间的转移是确定的，且新的状态只依赖于前一个状态和当前操作。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：每个区段的鱼数量可以通过前缀和的方式计算，且区段间的鱼数量转移可以表示为区段端点值的变化。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每一步操作后的最大鱼数量可以通过之前的最大鱼数量和当前操作的结果来确定。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

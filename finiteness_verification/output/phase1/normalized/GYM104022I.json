@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 10000
@@ -15,9 +15,7 @@
           "min": 1,
           "max": 1000000000
         },
-        "properties": {
-          "ordered": false
-        }
+        "properties": {}
       }
     }
   ],
@@ -28,8 +26,9 @@
       "result": {
         "constraints": [
           {
-            "name": "modulo_constraint",
-            "description": "结果需要对给定的模数 m 取模"
+            "name": "modular_arithmetic",
+            "description": "计算结果需要取模 m",
+            "formal": "result = (expression) % m"
           }
         ]
       }
@@ -40,8 +39,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足给定条件的整数"
+        "type": "enumeration",
+        "description": "求给定运算结果对指定模数取模后的值"
       }
     }
   ],
@@ -50,9 +49,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解可以通过子问题的解组合而成，适用于动态规划或分治法求解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "modular_invariance",
+            "description": "模运算性质：在计算过程中，所有中间结果和最终结果都保持在模m的意义下进行，确保结果的正确性。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：大问题的解可以通过子问题的解来构造，特别是在处理幂次运算时，可以利用快速幂算法递归地分解问题。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

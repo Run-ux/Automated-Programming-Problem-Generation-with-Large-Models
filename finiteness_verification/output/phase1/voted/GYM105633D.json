@@ -2,21 +2,21 @@
   "problem_id": "GYM105633D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 700000
           },
           "value_range": {
             "min": 40,
-            "max": 40
+            "max": 41
           },
           "properties": {
             "ordered": true
@@ -30,7 +30,7 @@
     },
     "value_range": {
       "min": 40,
-      "max": 40
+      "max": 41
     },
     "properties": {
       "ordered": true
@@ -39,13 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "tree_structure_isomorphism",
-        "description": "生成的树必须在结构上相同，即两棵树中任意两个顶点之间的连通性必须一致",
+        "name": "tree_structure_constraint",
+        "description": "生成的树必须符合给定的表达式规则，即每个表达式代表一种随机生成树的方法",
         "confidence": "1/1"
       },
       {
-        "name": "expression_validity_constraint",
-        "description": "输入的表达式必须符合给定的语法，并且能够生成有效的树结构",
+        "name": "symmetric_structure_constraint",
+        "description": "两个表达式生成的树被认为是不同的，当且仅当存在两个顶点 i 和 j，在一个树中它们是连通的而在另一个树中不连通",
+        "confidence": "1/1"
+      },
+      {
+        "name": "fixed_graph_size_constraint",
+        "description": "两个表达式生成的树具有相同数量的顶点",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "tree_structure_isomorphism",
-              "description": "生成的树必须在结构上相同，即两棵树中任意两个顶点之间的连通性必须一致"
+              "name": "tree_structure_constraint",
+              "description": "生成的树必须符合给定的表达式规则，即每个表达式代表一种随机生成树的方法"
             },
             {
-              "name": "expression_validity_constraint",
-              "description": "输入的表达式必须符合给定的语法，并且能够生成有效的树结构"
+              "name": "symmetric_structure_constraint",
+              "description": "两个表达式生成的树被认为是不同的，当且仅当存在两个顶点 i 和 j，在一个树中它们是连通的而在另一个树中不连通"
+            },
+            {
+              "name": "fixed_graph_size_constraint",
+              "description": "两个表达式生成的树具有相同数量的顶点"
             }
           ]
         }
@@ -69,37 +78,69 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计两个生成器表达式可以共同生成的不同树的数量"
+          "type": "enumeration",
+          "description": "求两个生成过程可以共同产生的不同结构数量，结果需取模"
         }
       }
     ],
-    "description": "统计两个生成器表达式可以共同生成的不同树的数量"
+    "description": "求两个生成过程可以共同产生的不同结构数量，结果需取模"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合得到，且子问题之间相互独立",
+        "confidence": "1/1",
+        "properties": {
+          "subproblem_independence": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：通过解析表达式生成树的过程中，每个状态的转移规则保持一致",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：两个表达式生成的树在结构上具有对称性，可以利用这种对称性简化计算",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinability": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解组合得到，且子问题之间相互独立",
+              "properties": {
+                "subproblem_independence": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过解析表达式生成树的过程中，每个状态的转移规则保持一致",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：两个表达式生成的树在结构上具有对称性，可以利用这种对称性简化计算",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的"
+    ]
   }
 }

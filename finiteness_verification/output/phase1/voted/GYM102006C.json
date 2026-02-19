@@ -2,14 +2,14 @@
   "problem_id": "GYM102006C",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 200000
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "edge_exclusion_constraint",
-        "description": "必须通过改变最少数量的空节点（类型1）为障碍节点（类型2），使得从起点到终点不存在路径",
+        "name": "connectivity",
+        "description": "图必须不连通（即从起点到终点的路径被阻断）",
         "confidence": "1/1"
       },
       {
-        "name": "vertex_repetition_permissible",
-        "description": "某些类型的节点（类型2, 3, 4, 5）不能被改变",
+        "name": "degree_bound",
+        "description": "某些节点的度数不可改变（类型 2, 3, 4, 5 的节点不能被修改）",
         "confidence": "1/1"
       },
       {
-        "name": "source_node_fixed",
-        "description": "图中存在唯一的起点和终点",
+        "name": "operation_limit",
+        "description": "操作次数最小化（需要改变的空节点数量最少）",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "edge_exclusion_constraint",
-              "description": "必须通过改变最少数量的空节点（类型1）为障碍节点（类型2），使得从起点到终点不存在路径"
+              "name": "connectivity",
+              "description": "图必须不连通（即从起点到终点的路径被阻断）"
             },
             {
-              "name": "vertex_repetition_permissible",
-              "description": "某些类型的节点（类型2, 3, 4, 5）不能被改变"
+              "name": "degree_bound",
+              "description": "某些节点的度数不可改变（类型 2, 3, 4, 5 的节点不能被修改）"
             },
             {
-              "name": "source_node_fixed",
-              "description": "图中存在唯一的起点和终点"
+              "name": "operation_limit",
+              "description": "操作次数最小化（需要改变的空节点数量最少）"
             }
           ]
         }
@@ -78,34 +78,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求最小代价使得图中两点不连通"
+          "type": "minimize_count",
+          "description": "求最少需要改变的空单元格数量，使得从起点到终点的路径被阻断"
         }
       }
     ],
-    "description": "求最小代价使得图中两点不连通"
+    "description": "求最少需要改变的空单元格数量，使得从起点到终点的路径被阻断"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即通过改变最少数量的空格为障碍物来阻断从起点到终点的路径。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步中选择局部最优解（即尽可能早地放置障碍物以阻止路径），最终能够达到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过将网格划分为更小的部分来解决整个问题。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即通过改变最少数量的空格为障碍物来阻断从起点到终点的路径。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步中选择局部最优解（即尽可能早地放置障碍物以阻止路径），最终能够达到全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过将网格划分为更小的部分来解决整个问题。"
+    ]
   }
 }

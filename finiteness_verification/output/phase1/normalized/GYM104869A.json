@@ -1,0 +1,73 @@
+{
+  "problem_id": "GYM104869A",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "permutation_constraint",
+            "description": "构造一个长度为 n 的排列，使得每个整数从 1 到 n 恰好出现一次"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "对于每对相邻的场景，如果前一个场景的主要颜色在后一个场景的调色板中，则贡献一个过渡",
+            "formal": "对于排列 p_1, p_2, ..., p_n，最大化 ∑_{i=1}^{n-1} [max(S_{p_i}) ∈ S_{p_{i+1}}]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化满足特定条件的相邻对数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，通过选择当前场景的最大颜色作为下一个场景的可选颜色之一，可以确保每一步的选择都是局部最优的，从而构建全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择当前场景的最大颜色作为下一个场景的可选颜色之一，可以确保每一步的选择都是局部最优的，从而逐步构建出全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

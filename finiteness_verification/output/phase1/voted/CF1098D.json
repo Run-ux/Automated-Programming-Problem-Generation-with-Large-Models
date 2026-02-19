@@ -1,0 +1,145 @@
+{
+  "problem_id": "CF1098D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 500000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "matching_constraint",
+        "description": "战斗被认为是危险的，如果两个元素 a 和 b 满足 a ≤ b 且 b ≤ 2a。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "frequency_bound",
+        "description": "定义危险性为在给定集合中可能发生的最大数量的危险战斗。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "支持对集合进行添加和删除操作，并在每次操作后计算当前集合的危险性。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "matching_constraint",
+              "description": "战斗被认为是危险的，如果两个元素 a 和 b 满足 a ≤ b 且 b ≤ 2a。",
+              "formal": "a ≤ b 且 b ≤ 2a"
+            },
+            {
+              "name": "frequency_bound",
+              "description": "定义危险性为在给定集合中可能发生的最大数量的危险战斗。",
+              "formal": "max { |{ (a, b) | a ≤ b 且 b ≤ 2a }| }"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "支持对集合进行添加和删除操作，并在每次操作后计算当前集合的危险性。",
+              "formal": "S = S ∪ {x} 或 S = S - {x}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "最大化满足特定条件的事件数"
+        }
+      }
+    ],
+    "description": "最大化满足特定条件的事件数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前集合的危险值可以通过子集的危险值计算得出，即大问题的解由子问题的解合成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次操作（添加或移除）后，通过局部最优选择（更新当前集合的危险值）可以得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在每次操作（添加或移除）后，当前集合的状态（包括元素和危险值）能够一致地进行更新。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：当前集合的危险值可以通过子集的危险值计算得出，即大问题的解由子问题的解合成。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次操作（添加或移除）后，通过局部最优选择（更新当前集合的危险值）可以得到全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在每次操作（添加或移除）后，当前集合的状态（包括元素和危险值）能够一致地进行更新。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

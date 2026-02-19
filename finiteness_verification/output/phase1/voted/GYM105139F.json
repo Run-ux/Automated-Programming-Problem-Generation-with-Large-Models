@@ -2,14 +2,14 @@
   "problem_id": "GYM105139F",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1000000
@@ -18,7 +18,9 @@
             "min": 1,
             "max": 30
           },
-          "properties": {}
+          "properties": {
+            "ordered": false
+          }
         }
       }
     ],
@@ -30,23 +32,30 @@
       "min": 1,
       "max": 30
     },
-    "properties": {}
+    "properties": {
+      "ordered": false
+    }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_vertex_colorings",
-        "description": "区间内不同元素数量不超过 K（合并操作后，区间内所有元素的级别必须唯一）",
+        "name": "distinctness",
+        "description": "区间内不同元素数量在合并操作后不超过初始数量，且最终结果中没有两个相同级别的元素",
         "confidence": "1/1"
       },
       {
-        "name": "operation_cost",
-        "description": "合并两个相同级别的元素时，新元素的级别为原级别加一，且合并成本为 2^(l+1)（合并操作的成本计算）",
+        "name": "sum_constraint",
+        "description": "合并操作的总成本是所有合并操作的成本之和，并且需要对结果取模 10^9 + 7",
         "confidence": "1/1"
       },
       {
-        "name": "maximum_operation_count_constraint",
-        "description": "在给定的序列中，最大化合并操作的次数（通过选择合适的合并策略，使得合并操作的次数最多）",
+        "name": "operation_limit",
+        "description": "每个操作步骤（Step 1, Step 2, Step 3）必须按照给定的顺序执行",
+        "confidence": "1/1"
+      },
+      {
+        "name": "frequency_bound",
+        "description": "每个级别的书的数量在合并过程中受到限制，不能超过初始数量",
         "confidence": "1/1"
       }
     ],
@@ -57,19 +66,20 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_vertex_colorings",
-              "description": "区间内不同元素数量不超过 K（合并操作后，区间内所有元素的级别必须唯一）",
-              "formal": "|distinct(A[l:r])| <= K"
+              "name": "distinctness",
+              "description": "区间内不同元素数量在合并操作后不超过初始数量，且最终结果中没有两个相同级别的元素"
             },
             {
-              "name": "operation_cost",
-              "description": "合并两个相同级别的元素时，新元素的级别为原级别加一，且合并成本为 2^(l+1)（合并操作的成本计算）",
-              "formal": "cost(l, l) = 2^(l+1)"
+              "name": "sum_constraint",
+              "description": "合并操作的总成本是所有合并操作的成本之和，并且需要对结果取模 10^9 + 7"
             },
             {
-              "name": "maximum_operation_count_constraint",
-              "description": "在给定的序列中，最大化合并操作的次数（通过选择合适的合并策略，使得合并操作的次数最多）",
-              "formal": "maximize(merge_count(A))"
+              "name": "operation_limit",
+              "description": "每个操作步骤（Step 1, Step 2, Step 3）必须按照给定的顺序执行"
+            },
+            {
+              "name": "frequency_bound",
+              "description": "每个级别的书的数量在合并过程中受到限制，不能超过初始数量"
             }
           ]
         }
@@ -77,14 +87,14 @@
     ]
   },
   "objective": {
-    "type": "maximize_value",
+    "type": "maximize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_value",
+          "type": "maximize_count",
           "description": "最大化合并操作的次数"
         }
       }
@@ -92,19 +102,73 @@
     "description": "最大化合并操作的次数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "在合并过程中，书的等级单调递增，且每次合并后新书的等级比原书高一级。",
+        "confidence": "1/1",
+        "properties": {
+          "level_increase": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解组合得到。在合并过程中，局部最优解（即每次合并后的结果）可以构成全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "每次选择相同等级的书进行合并，使得合并次数最大化。这种局部最优选择最终导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {
+          "maximize_merge_count": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从初始状态到最终状态的过程中，每一步的状态转移都满足特定规则，即每次合并操作后的新状态由当前状态唯一确定。",
+        "confidence": "1/1",
+        "properties": {
+          "unique_transition": true
+        }
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，合并操作的成本和结果依赖于子问题的最优解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "在合并过程中，书的等级单调递增，且每次合并后新书的等级比原书高一级。",
+              "properties": {
+                "level_increase": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解可以通过子问题的最优解组合得到。在合并过程中，局部最优解（即每次合并后的结果）可以构成全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "每次选择相同等级的书进行合并，使得合并次数最大化。这种局部最优选择最终导致全局最优解。",
+              "properties": {
+                "maximize_merge_count": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从初始状态到最终状态的过程中，每一步的状态转移都满足特定规则，即每次合并操作后的新状态由当前状态唯一确定。",
+              "properties": {
+                "unique_transition": true
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，合并操作的成本和结果依赖于子问题的最优解"
+    ]
   }
 }

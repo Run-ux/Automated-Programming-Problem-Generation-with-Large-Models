@@ -2,14 +2,14 @@
   "problem_id": "CF1530D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 200000
@@ -39,18 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_transformation_cost",
-        "description": "所有元素必须是 1 到 n 的一个排列（即每个元素在 1 到 n 之间且互不相同）",
+        "name": "permutation_constraint",
+        "description": "排列约束：每个元素必须映射到一个不同的元素，且不能映射到自身",
         "confidence": "1/1"
       },
       {
-        "name": "pairwise_exclusion",
-        "description": "每个元素不能指向自身（即 b_i ≠ i）",
-        "confidence": "1/1"
-      },
-      {
-        "name": "global_optimization_objective",
-        "description": "最大化匹配数量（即最大化 a_i = b_i 的数量）",
+        "name": "matching_constraint",
+        "description": "匹配约束：最大化满足的匹配对数",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +56,12 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_transformation_cost",
-              "description": "所有元素必须是 1 到 n 的一个排列（即每个元素在 1 到 n 之间且互不相同）"
+              "name": "permutation_constraint",
+              "description": "排列约束：每个元素必须映射到一个不同的元素，且不能映射到自身"
             },
             {
-              "name": "pairwise_exclusion",
-              "description": "每个元素不能指向自身（即 b_i ≠ i）"
-            },
-            {
-              "name": "global_optimization_objective",
-              "description": "最大化匹配数量（即最大化 a_i = b_i 的数量）"
+              "name": "matching_constraint",
+              "description": "匹配约束：最大化满足的匹配对数"
             }
           ]
         }
@@ -86,26 +77,57 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "最大化满足条件的匹配数量"
+          "description": "最大化满足条件的匹配数"
         }
       }
     ],
-    "description": "最大化满足条件的匹配数量"
+    "description": "最大化满足条件的匹配数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，通过将员工分配问题分解为更小的子问题，并确保每个子问题的解是最优的，从而保证整体解的最优性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：局部最优选择可以导致全局最优解。在本题中，优先满足尽可能多的员工的愿望，通过逐步选择并固定已经满足愿望的员工，最终得到最大化的满足愿望数量。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "cycle_invariant",
+        "description": "环不变量：在处理员工分配时，如果存在一个环，则可以通过调整环内的分配来满足更多的愿望。这种环的结构调整不会影响其他部分的分配结果。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题的最优解对整体最优解有贡献。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，通过将员工分配问题分解为更小的子问题，并确保每个子问题的解是最优的，从而保证整体解的最优性。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：局部最优选择可以导致全局最优解。在本题中，优先满足尽可能多的员工的愿望，通过逐步选择并固定已经满足愿望的员工，最终得到最大化的满足愿望数量。",
+              "properties": {}
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "环不变量：在处理员工分配时，如果存在一个环，则可以通过调整环内的分配来满足更多的愿望。这种环的结构调整不会影响其他部分的分配结果。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题的最优解对整体最优解有贡献。"
+    ]
   }
 }

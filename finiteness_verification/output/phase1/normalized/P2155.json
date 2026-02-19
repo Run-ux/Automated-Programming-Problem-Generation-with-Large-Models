@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 10000
@@ -28,14 +28,9 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_modulo_values",
-            "description": "计算在给定范围内与特定值互质的数的数量",
+            "name": "coprime_constraint",
+            "description": "计算在给定范围内与特定数互质的数的数量",
             "formal": "count(i in [1, N!] | gcd(i, M!) == 1) % R"
-          },
-          {
-            "name": "modulo_output_constraint",
-            "description": "结果需要对给定的模数取模",
-            "formal": "result % R"
           }
         ]
       }
@@ -46,8 +41,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "计算在给定范围内与特定值互质的数的数量"
+        "type": "enumeration",
+        "description": "求在给定范围内与特定数互质的数的数量，并对结果取模"
       }
     }
   ],
@@ -56,11 +51,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，且子问题之间相互独立。",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即求解 $[1, N!]$ 中与 $M!$ 互质的数的数量可以分解为更小规模的问题。",
+            "properties": {}
+          },
+          {
+            "name": "modular_invariance",
+            "description": "模运算不变量：所有计算结果都对给定的模数 $R$ 取模，确保中间结果和最终结果都在合理范围内。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

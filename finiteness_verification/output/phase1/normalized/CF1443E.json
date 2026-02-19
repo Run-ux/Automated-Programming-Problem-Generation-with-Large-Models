@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 200000
@@ -28,20 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "lexicographic_sorting",
-            "description": "序列必须是字典序排列的，且下一个序列是当前序列的最小字典序递增序列"
+            "name": "permutation_constraint",
+            "description": "序列是长度为 n 的排列，包含从 1 到 n 的每个整数恰好一次"
           },
           {
-            "name": "permutation_initialization",
-            "description": "初始序列是一个从 1 到 n 的排列，即 a[i] = i (1 ≤ i ≤ n)"
+            "name": "ordering",
+            "description": "排列 a 在字典序上小于排列 b，如果在第一个不同的位置 i 上，a[i] < b[i]"
           },
           {
-            "name": "query_sum_constraint",
-            "description": "对于类型 1 的查询，需要计算指定区间 [l, r] 内的元素和"
+            "name": "permutation_constraint",
+            "description": "下一个排列是字典序上大于当前排列的最小排列"
           },
           {
-            "name": "next_permutation_query",
-            "description": "对于类型 2 的查询，需要将当前排列更新为下一个字典序排列"
+            "name": "query_limit",
+            "description": "查询类型 1：给定区间 [l, r]，计算所需和"
+          },
+          {
+            "name": "query_limit",
+            "description": "查询类型 2：给定 x，进行某种操作（题目中未明确具体操作，但保证所有此类查询均可处理）"
           }
         ]
       }
@@ -53,7 +57,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "求区间内元素的和"
+        "description": "求给定区间内的元素和"
       }
     }
   ],
@@ -62,11 +66,26 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间信息可通过端点差值计算，满足区间可合并性",
-        "properties": {
-          "prefix_sum": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "区间合法性可单调维护，查询和更新操作保持区间的有序性",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间和可通过端点差值计算，支持快速求解区间和",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移一致性，每次更新操作后，当前状态能够正确反映最新排列情况",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

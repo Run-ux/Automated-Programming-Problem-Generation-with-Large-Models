@@ -1,0 +1,90 @@
+{
+  "problem_id": "GYM100495F",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 3,
+          "max": 10
+        },
+        "value_range": {
+          "min": 0,
+          "max": 3
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "蛇必须能够从初始位置移动到一个不包含自身或障碍物的位置，且路径上不能有重复节点（图路径约束）"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数受限于其相邻节点的数量，且不能超过4（网格图中每个节点最多有4个邻居）"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "相邻节点之间不能同时被蛇占据（相邻关系约束）"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "蛇的路径必须是整个网格的一个子集，且不能包含障碍物（子集约束）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一条路径使得蛇能够离开初始区域而不碰到障碍物或自身"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：蛇的移动和生长过程可以通过状态机进行描述，每个状态表示蛇在当前时刻的位置和长度，状态之间的转移满足一定的规则。",
+            "properties": {
+              "valid_moves": true,
+              "length_increase_on_food": true
+            }
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：蛇的移动路径可以看作是有向无环图（DAG）上的一个序列，从起点到终点的路径必须满足拓扑序，即每一步移动都是合法且不回退的。",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：蛇在移动过程中不能形成自交环，即蛇的身体不能与自身相交。如果检测到自交，则该状态无效。",
+            "properties": {
+              "no_self_intersection": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

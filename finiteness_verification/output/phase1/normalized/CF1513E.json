@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -26,12 +26,12 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_transformation_cost",
-            "description": "数组可以被转换为所有元素相等的数组，且转换成本唯一确定（最小转换成本等于最大转换成本）"
+            "name": "distinctness",
+            "description": "数组可以被转换为所有元素相等的数组，且转换成本唯一确定（最小成本等于最大成本）"
           },
           {
-            "name": "invariant_under_permutation",
-            "description": "平衡数组是给定数组的一个排列，且不同排列视为不同的数组"
+            "name": "permutation_constraint",
+            "description": "结果数组必须是给定数组的一个排列"
           }
         ]
       }
@@ -42,8 +42,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足特定条件的排列数量"
+        "type": "enumeration",
+        "description": "求满足特定条件的排列数（取模）"
       }
     }
   ],
@@ -52,12 +52,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，且每个子问题的解都是独立且最优的",
-        "properties": {
-          "subproblem_independence": true,
-          "subproblem_optimality": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过计算每个元素作为平衡数组中所有元素的目标值时的最小和最大代价，并检查这些代价是否相等来确定该数组是否为平衡数组。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：对于给定数组中的任意两个不同的元素，如果它们在平衡数组中的位置互换，那么整个数组的转换成本不变。这种性质允许我们考虑不同排列的等价性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

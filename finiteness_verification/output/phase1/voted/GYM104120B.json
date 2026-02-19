@@ -2,14 +2,14 @@
   "problem_id": "GYM104120B",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 100
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
+        "name": "adjacency_relation",
         "description": "节点只能移动到与其相邻的节点（共享边的节点）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_operation_types_constraint",
-        "description": "访问某个节点需要具备该节点对应的特定标记",
+        "name": "subset_constraint",
+        "description": "必须选择一个子集，使得从起点到终点的路径上所有节点都满足特定条件（拥有必要的印章）",
         "confidence": "1/1"
       },
       {
-        "name": "graph_connectivity",
-        "description": "必须存在一条从起点到终点的路径，且路径上的每个节点都满足标记要求",
+        "name": "coverage_constraint",
+        "description": "找到最小的印章集合，使得从起点到终点的路径上所有节点都满足条件",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "节点只能移动到与其相邻的节点（共享边的节点）",
-              "formal": "For a node (i, j), it can only move to (i-1, j), (i+1, j), (i, j-1), or (i, j+1) if the destination is within the grid."
+              "name": "adjacency_relation",
+              "description": "节点只能移动到与其相邻的节点（共享边的节点）"
             },
             {
-              "name": "distinct_operation_types_constraint",
-              "description": "访问某个节点需要具备该节点对应的特定标记",
-              "formal": "To visit node (i, j), the vehicle must have stamp M_{i,j}."
+              "name": "subset_constraint",
+              "description": "必须选择一个子集，使得从起点到终点的路径上所有节点都满足特定条件（拥有必要的印章）"
             },
             {
-              "name": "graph_connectivity",
-              "description": "必须存在一条从起点到终点的路径，且路径上的每个节点都满足标记要求",
-              "formal": "There exists a path from (r_h, c_h) to (r_w, c_w) such that for every node (i, j) on the path, the vehicle has stamp M_{i,j}."
+              "name": "coverage_constraint",
+              "description": "找到最小的印章集合，使得从起点到终点的路径上所有节点都满足条件"
             }
           ]
         }
@@ -81,34 +78,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求两点间最小路径代价"
+          "type": "minimize_count",
+          "description": "求从起点到终点所需的最小不同权值路径数量"
         }
       }
     ],
-    "description": "求两点间最小路径代价"
+    "description": "求从起点到终点所需的最小不同权值路径数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：从起点到终点的最短路径可以通过子问题的最优解组合而成，每个子问题表示从当前节点到终点的最小印章数。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个节点到相邻节点的状态转移过程中，所需的印章数是基于当前节点的最优解和相邻节点的印章要求进行更新的。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：从起点到终点的最短路径可以通过子路径的最优解组合而成，满足无后效性",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：从起点到终点的最短路径可以通过子问题的最优解组合而成，每个子问题表示从当前节点到终点的最小印章数。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个节点到相邻节点的状态转移过程中，所需的印章数是基于当前节点的最优解和相邻节点的印章要求进行更新的。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：从起点到终点的最短路径可以通过子路径的最优解组合而成，满足无后效性"
+    ]
   }
 }

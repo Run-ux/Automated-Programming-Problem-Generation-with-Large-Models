@@ -2,14 +2,14 @@
   "problem_id": "GYM104639G",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 1,
             "max": 1000000
@@ -19,8 +19,7 @@
             "max": 1000000
           },
           "properties": {
-            "connected": true,
-            "weighted": false
+            "connected": true
           }
         }
       }
@@ -34,25 +33,19 @@
       "max": 1000000
     },
     "properties": {
-      "connected": true,
-      "weighted": false
+      "connected": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "minimum_spanning_tree",
-        "description": "生成的图必须是连通无环图（即生成树）",
+        "name": "spanning_constraint",
+        "description": "生成的图必须是连通且无环的（生成树约束）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_edges",
-        "description": "每条边在生成过程中只能被添加一次，且不能形成环",
-        "confidence": "1/1"
-      },
-      {
-        "name": "graph_connectivity",
-        "description": "每次操作后，所有节点必须保持连通",
+        "name": "distinctness",
+        "description": "每次操作选择的两个节点在之前的操作中没有被连接过（唯一性约束）",
         "confidence": "1/1"
       }
     ],
@@ -63,16 +56,12 @@
         "result": {
           "constraints": [
             {
-              "name": "minimum_spanning_tree",
-              "description": "生成的图必须是连通无环图（即生成树）"
+              "name": "spanning_constraint",
+              "description": "生成的图必须是连通且无环的（生成树约束）"
             },
             {
-              "name": "distinct_edges",
-              "description": "每条边在生成过程中只能被添加一次，且不能形成环"
-            },
-            {
-              "name": "graph_connectivity",
-              "description": "每次操作后，所有节点必须保持连通"
+              "name": "distinctness",
+              "description": "每次操作选择的两个节点在之前的操作中没有被连接过（唯一性约束）"
             }
           ]
         }
@@ -80,37 +69,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "maximize_probability",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "计算给定生成树在随机过程中出现的概率，并输出该概率对998244353取模的结果"
+          "type": "maximize_probability",
+          "description": "求生成给定生成树的概率"
         }
       }
     ],
-    "description": "计算给定生成树在随机过程中出现的概率，并输出该概率对998244353取模的结果"
+    "description": "求生成给定生成树的概率"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：生成的每一步操作都依赖于前一步操作的结果，且最终形成的树是所有可能生成树中的一种。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "matroid_exchange",
+        "description": "拟阵交换性：在生成过程中，每次选择的边都可以通过交换其他未选择的边来保持生成树的性质。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：生成的每一步操作都基于当前已有的部分树结构，最终形成的树是所有局部选择的组合结果",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：生成的每一步操作都依赖于前一步操作的结果，且最终形成的树是所有可能生成树中的一种。",
+              "properties": {}
+            },
+            {
+              "name": "matroid_exchange",
+              "description": "拟阵交换性：在生成过程中，每次选择的边都可以通过交换其他未选择的边来保持生成树的性质。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：生成的每一步操作都基于当前已有的部分树结构，最终形成的树是所有局部选择的组合结果"
+    ]
   }
 }

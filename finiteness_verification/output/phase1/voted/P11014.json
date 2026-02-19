@@ -1,0 +1,154 @@
+{
+  "problem_id": "P11014",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 182376
+          },
+          "value_range": {
+            "min": 2,
+            "max": 182376
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 182376
+    },
+    "value_range": {
+      "min": 2,
+      "max": 182376
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "maximum_value_constraint",
+        "description": "每天的期待值是基于前一天的期待值和特定函数计算的最大值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation",
+        "description": "定义了一个函数 a(x)，表示自然数 x 的不同质因子的和",
+        "confidence": "1/1"
+      },
+      {
+        "name": "fixed_position_constraint",
+        "description": "第一天的期待值是给定的初始值 m_1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "最终结果是所有天数的期待值之和",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "答案与正确答案的绝对误差不超过 10^-6 即判为正确",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "maximum_value_constraint",
+              "description": "每天的期待值是基于前一天的期待值和特定函数计算的最大值",
+              "formal": "m_i = max{ m_j / (a(lcm(w_i, w_j)) + a(gcd(w_i, w_j))) + k } for 1 ≤ j < i"
+            },
+            {
+              "name": "transformation",
+              "description": "定义了一个函数 a(x)，表示自然数 x 的不同质因子的和",
+              "formal": "a(x) = sum{ p_i * [d_i ≥ 1] } where x = ∏ p_i^d_i and p_i ∈ P (set of primes)"
+            },
+            {
+              "name": "fixed_position_constraint",
+              "description": "第一天的期待值是给定的初始值 m_1",
+              "formal": "m_1 is given as an initial value"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "最终结果是所有天数的期待值之和",
+              "formal": "result = ∑ m_i for 1 ≤ i ≤ n"
+            },
+            {
+              "name": "range_bound",
+              "description": "答案与正确答案的绝对误差不超过 10^-6 即判为正确",
+              "formal": "|result - correct_answer| ≤ 10^-6"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化每天的期待值之和"
+        }
+      }
+    ],
+    "description": "最大化每天的期待值之和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每一天的期待值由之前天数的期待值通过特定公式计算得出，满足动态规划中的最优子结构性质。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每一天的状态（期待值）通过前一天的状态和给定的公式进行转移，保持一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每一天的期待值由之前天数的期待值通过特定公式计算得出，满足动态规划中的最优子结构性质。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每一天的状态（期待值）通过前一天的状态和给定的公式进行转移，保持一致性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "problem_id": "P6573",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 50000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 10000
+          },
+          "properties": {
+            "connected": false,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 50000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 10000
+    },
+    "properties": {
+      "connected": false,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "orientation",
+        "description": "边的方向性约束（从 a 到 b 的边必须满足 ⌊b/k⌋ = 1 + ⌊a/k⌋）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "任意两点之间最多只有一条边",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "对于每个订单，如果存在从 a 到 b 的路径，则输出最小花费；否则输出 -1",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "orientation",
+              "description": "边的方向性约束（从 a 到 b 的边必须满足 ⌊b/k⌋ = 1 + ⌊a/k⌋）",
+              "formal": "∀ (a, b) ∈ E, ⌊b/k⌋ = 1 + ⌊a/k⌋"
+            },
+            {
+              "name": "distinctness",
+              "description": "任意两点之间最多只有一条边",
+              "formal": "∀ (a, b) ∈ E, ∃! (a, b)"
+            },
+            {
+              "name": "connectivity",
+              "description": "对于每个订单，如果存在从 a 到 b 的路径，则输出最小花费；否则输出 -1",
+              "formal": "∀ (a, b) ∈ O, if ∃ path from a to b, output min cost; else output -1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求两点间最短路径长度"
+        }
+      }
+    ],
+    "description": "求两点间最短路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个订单的最短路径可以通过子路径的最短路径组合得到",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "flow_conservation",
+        "description": "流守恒：从起点到终点的每条路径上的流量总和等于该路径的费用总和",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个订单的最短路径可以通过子路径的最短路径组合得到",
+              "properties": {}
+            },
+            {
+              "name": "flow_conservation",
+              "description": "流守恒：从起点到终点的每条路径上的流量总和等于该路径的费用总和",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

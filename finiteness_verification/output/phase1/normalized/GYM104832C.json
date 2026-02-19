@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "unknown_type",
+        "type": "unknown_input",
         "length": {
           "min": 0,
           "max": 0
@@ -15,9 +15,7 @@
           "min": 0,
           "max": 0
         },
-        "properties": {
-          "inferred": true
-        }
+        "properties": {}
       }
     }
   ],
@@ -35,8 +33,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在满足条件的解"
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的方案"
       }
     }
   ],
@@ -45,12 +43,36 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "双指针左右端点单调前进，区间合法性可单调维护",
-        "properties": {
-          "left_monotonic": true,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，区间合法性可单调维护",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，满足动态规划的最优子结构性质",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，满足贪心算法的选择性质",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间和可通过端点差值计算，满足前缀和的区间可加性",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间信息可通过子区间合并，满足线段树等数据结构的区间可合并性",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

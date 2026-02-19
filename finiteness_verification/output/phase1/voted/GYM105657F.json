@@ -1,0 +1,154 @@
+{
+  "problem_id": "GYM105657F",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 200000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 200000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "permutation_constraint",
+        "description": "每个排名列表是一个从1到n的排列（即每个元素在列表中恰好出现一次）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "排名列表中的位置越靠前，表示排名越高",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pairwise_exclusion",
+        "description": "两个大学之间存在模糊关系，当且仅当它们在所有排名列表中的相对位置不一致",
+        "confidence": "1/1"
+      },
+      {
+        "name": "window_constraint",
+        "description": "查询范围内的大学必须在指定的排名列表和指定的位置范围内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "查询结果依赖于前一个查询的结果，需要按顺序处理查询",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "permutation_constraint",
+              "description": "每个排名列表是一个从1到n的排列（即每个元素在列表中恰好出现一次）",
+              "formal": "对于每个排名列表 i，a_{i,1}, a_{i,2}, ..., a_{i,n} 是一个 1 到 n 的排列"
+            },
+            {
+              "name": "ordering",
+              "description": "排名列表中的位置越靠前，表示排名越高",
+              "formal": "对于排名列表 i，a_{i,j} < a_{i,k} 表示 j 位置的大学排名高于 k 位置的大学"
+            },
+            {
+              "name": "pairwise_exclusion",
+              "description": "两个大学之间存在模糊关系，当且仅当它们在所有排名列表中的相对位置不一致",
+              "formal": "对于大学 x 和 y，如果存在至少一个排名列表 i 使得 a_{i,x} < a_{i,y} 且存在另一个排名列表 j 使得 a_{i,x} > a_{i,y}，则 x 和 y 之间存在模糊关系"
+            },
+            {
+              "name": "window_constraint",
+              "description": "查询范围内的大学必须在指定的排名列表和指定的位置范围内",
+              "formal": "对于第 i 个查询，考虑 id_i 排名列表中从 l_i 到 r_i 位置的大学"
+            },
+            {
+              "name": "operation_limit",
+              "description": "查询结果依赖于前一个查询的结果，需要按顺序处理查询",
+              "formal": "v_i = f(v_{i-1}), 其中 v_0 = 0, 并且每个查询的解码依赖于 v_{i-1}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求满足条件的元素对数量"
+        }
+      }
+    ],
+    "description": "求满足条件的元素对数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即在处理查询时，可以利用已有的排名信息来计算模糊对的数量。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：对于任意两个不相交的区间，它们的信息（如模糊对数量）可以独立计算，并且这些信息可以合并以得到更大区间的答案。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即在处理查询时，可以利用已有的排名信息来计算模糊对的数量。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：对于任意两个不相交的区间，它们的信息（如模糊对数量）可以独立计算，并且这些信息可以合并以得到更大区间的答案。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

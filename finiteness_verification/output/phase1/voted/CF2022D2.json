@@ -1,0 +1,154 @@
+{
+  "problem_id": "CF2022D2",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 3,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -1,
+            "max": 1
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -1,
+      "max": 1
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "query_limit",
+        "description": "查询次数限制，必须在最少的查询次数内确定目标元素（即找到唯一的特定角色）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "每次查询涉及两个不同的元素，且这两个元素不能相同",
+        "confidence": "1/1"
+      },
+      {
+        "name": "binary_matrix_constraint",
+        "description": "每次查询的结果是二元的（0 或 1），表示一个布尔值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "所有查询结果必须与当前已知信息一致，即存在一种角色分配方案满足所有查询结果",
+        "confidence": "1/1"
+      },
+      {
+        "name": "existence_requirement",
+        "description": "目标元素（即特定角色）在整个集合中是唯一的",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "query_limit",
+              "description": "查询次数限制，必须在最少的查询次数内确定目标元素（即找到唯一的特定角色）",
+              "formal": "使用不超过 f(n) 次查询确定唯一的目标元素"
+            },
+            {
+              "name": "exclusion",
+              "description": "每次查询涉及两个不同的元素，且这两个元素不能相同",
+              "formal": "对于每次查询 (i, j)，有 1 ≤ i, j ≤ n 且 i ≠ j"
+            },
+            {
+              "name": "binary_matrix_constraint",
+              "description": "每次查询的结果是二元的（0 或 1），表示一个布尔值",
+              "formal": "查询结果为 0 或 1"
+            },
+            {
+              "name": "state_transition",
+              "description": "所有查询结果必须与当前已知信息一致，即存在一种角色分配方案满足所有查询结果",
+              "formal": "存在一种角色分配方案使得所有查询结果一致"
+            },
+            {
+              "name": "existence_requirement",
+              "description": "目标元素（即特定角色）在整个集合中是唯一的",
+              "formal": "存在唯一的索引 i 使得 a_i = -1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "使用最少的查询次数确定特定目标"
+        }
+      }
+    ],
+    "description": "使用最少的查询次数确定特定目标"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：通过询问两个玩家之间的关系，可以逐步缩小可能的Impostor范围，最终确定唯一解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "divide_conquer",
+        "description": "分治不变量：将问题分解为更小的子问题，通过递归地解决这些子问题来找到最终答案。每次询问可以看作是将玩家集合划分为两部分，并根据回答进一步缩小范围。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：通过询问两个玩家之间的关系，可以逐步缩小可能的Impostor范围，最终确定唯一解。",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：将问题分解为更小的子问题，通过递归地解决这些子问题来找到最终答案。每次询问可以看作是将玩家集合划分为两部分，并根据回答进一步缩小范围。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

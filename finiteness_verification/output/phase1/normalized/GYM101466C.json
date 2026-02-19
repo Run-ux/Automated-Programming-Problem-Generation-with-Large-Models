@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 5000
@@ -28,14 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "overlapping_interval_constraint",
-            "description": "每条光线可以覆盖其路径上的所有节点（行星），并且在相反方向上也发射光线。",
-            "formal": "对于每个光线起点 s，光线覆盖从 s 出发的所有直线路径上的节点及其反方向路径上的节点。"
+            "name": "coverage",
+            "description": "每条光线必须覆盖所有行星，且光线在两个方向上同时发射"
           },
           {
-            "name": "distinct_positions",
-            "description": "所有节点（行星）的坐标必须是唯一的。",
-            "formal": "对于所有 i ≠ j, (x_i, y_i, z_i) ≠ (x_j, y_j, z_j)"
+            "name": "distinctness",
+            "description": "所有行星的坐标必须唯一"
           }
         ]
       }
@@ -46,7 +44,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_cost",
+        "type": "minimize_count",
         "description": "求覆盖所有点所需的最小操作次数"
       }
     }
@@ -56,9 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的最优解可以合并成全局最优解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过选择最少的激光发射次数覆盖所有行星可以分解为多个子问题的最优解",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：每次激光发射同时向两个相反方向发射，因此在计算时可以利用这种对称性来简化问题",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,74 @@
+{
+  "problem_id": "P6939",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 10
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subsequence_constraint",
+            "description": "预测序列必须是最终比赛序列的子序列（连续子串）",
+            "formal": "对于每个预测序列 P，存在一个区间 [l, r] 使得 A[l:r] = P"
+          },
+          {
+            "name": "independence",
+            "description": "每轮选择是独立且均匀随机的",
+            "formal": "每轮选择的概率分布为 P(R) = P(P) = P(S) = 1/3，且各轮选择之间相互独立"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_probability",
+        "description": "最大化给定序列在随机生成的序列中出现的概率"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和计算任意子区间的出现概率，满足区间和可通过端点差值计算",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：预测序列的出现概率可以通过其子序列的概率进行计算，即大问题的解由子问题的解合成",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

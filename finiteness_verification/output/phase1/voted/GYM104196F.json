@@ -1,0 +1,157 @@
+{
+  "problem_id": "GYM104196F",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "transformation",
+        "description": "两个圆相交时，合并成一个新的圆，新圆的面积为两个圆面积之和，中心为两个圆中心的中点，扩张速率为两个圆中的最大值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "merge_order_constraint",
+        "description": "新的圆可能与其他现有圆相交，导致一系列合并反应（称为ooblection），这些合并反应是瞬时发生的。如果三个或更多圆参与合并，新圆的中心为所有参与圆中心的平均值，面积为所有参与圆面积之和，扩张速率为所有参与圆中的最大值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "输入中的任何两个圆在初始时刻不相交",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "在任何给定的时间点，最多只有一个ooblection开始，并且每个ooblection从恰好两个圆接触开始",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "transformation",
+              "description": "两个圆相交时，合并成一个新的圆，新圆的面积为两个圆面积之和，中心为两个圆中心的中点，扩张速率为两个圆中的最大值"
+            },
+            {
+              "name": "merge_order_constraint",
+              "description": "新的圆可能与其他现有圆相交，导致一系列合并反应（称为ooblection），这些合并反应是瞬时发生的。如果三个或更多圆参与合并，新圆的中心为所有参与圆中心的平均值，面积为所有参与圆面积之和，扩张速率为所有参与圆中的最大值"
+            },
+            {
+              "name": "exclusion",
+              "description": "输入中的任何两个圆在初始时刻不相交"
+            },
+            {
+              "name": "operation_limit",
+              "description": "在任何给定的时间点，最多只有一个ooblection开始，并且每个ooblection从恰好两个圆接触开始"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造最终合并后的圆的中心坐标和半径"
+        }
+      }
+    ],
+    "description": "构造最终合并后的圆的中心坐标和半径"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：当两个或多个圆相交时，它们会合并成一个新的圆，新圆的属性（如面积、中心位置和扩张速率）可以通过子区间的属性计算得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着圆的不断扩张，新的合并事件只会发生在时间轴上更晚的时间点，即合并事件的发生时间是单调递增的。",
+        "confidence": "1/1",
+        "properties": {
+          "time_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最终形成的单个圆的属性（如面积、中心位置和扩张速率）是由所有初始圆的属性通过一系列合并操作得到的，每一步合并操作都保持了最优解的性质。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：当两个或多个圆相交时，它们会合并成一个新的圆，新圆的属性（如面积、中心位置和扩张速率）可以通过子区间的属性计算得出。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着圆的不断扩张，新的合并事件只会发生在时间轴上更晚的时间点，即合并事件的发生时间是单调递增的。",
+              "properties": {
+                "time_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最终形成的单个圆的属性（如面积、中心位置和扩张速率）是由所有初始圆的属性通过一系列合并操作得到的，每一步合并操作都保持了最优解的性质。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -2,14 +2,14 @@
   "problem_id": "GYM102279G",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 1,
             "max": 100000
@@ -41,18 +41,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图必须是连通的（树结构）",
+        "name": "connectivity",
+        "description": "图必须连通（树的定义）",
         "confidence": "1/1"
       },
       {
-        "name": "maximum_tree_depth_constraint",
-        "description": "通过选择最优根节点使树的高度最大化",
+        "name": "acyclicity",
+        "description": "图必须无环（树的定义）",
         "confidence": "1/1"
       },
       {
-        "name": "pairwise_comparison",
-        "description": "B21 的树高度必须大于 Lowie 的树高度才能获胜",
+        "name": "path_constraint",
+        "description": "树的高度定义为从根节点到最远叶子节点的距离",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "B21 的树高度与 Lowie 的树高度进行比较，B21 需要选择一个根节点使得其树的高度大于或等于 Lowie 的树的高度",
         "confidence": "1/1"
       }
     ],
@@ -63,16 +68,20 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "图必须是连通的（树结构）"
+              "name": "connectivity",
+              "description": "图必须连通（树的定义）"
             },
             {
-              "name": "maximum_tree_depth_constraint",
-              "description": "通过选择最优根节点使树的高度最大化"
+              "name": "acyclicity",
+              "description": "图必须无环（树的定义）"
             },
             {
-              "name": "pairwise_comparison",
-              "description": "B21 的树高度必须大于 Lowie 的树高度才能获胜"
+              "name": "path_constraint",
+              "description": "树的高度定义为从根节点到最远叶子节点的距离"
+            },
+            {
+              "name": "range_bound",
+              "description": "B21 的树高度与 Lowie 的树高度进行比较，B21 需要选择一个根节点使得其树的高度大于或等于 Lowie 的树的高度"
             }
           ]
         }
@@ -80,34 +89,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否存在一种选择根节点的方式使得一棵树的高度大于另一棵树的高度"
+          "type": "feasibility",
+          "description": "判断是否存在一种选择根节点的方案，使得第一棵树的最大高度大于第二棵树的最大高度"
         }
       }
     ],
-    "description": "判断是否存在一种选择根节点的方式使得一棵树的高度大于另一棵树的高度"
+    "description": "判断是否存在一种选择根节点的方案，使得第一棵树的最大高度大于第二棵树的最大高度"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：树的高度可以通过其子树的高度计算得出，选择最优根节点时，树的最大高度由其子树的最大高度决定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：在树中，任意两个节点之间的路径长度是固定的，因此从不同节点出发计算树的高度具有对称性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：树的高度可以通过其子树的高度计算得出，选择最佳根节点的问题可以分解为在每个节点作为根时求解子问题的最优解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：树的高度可以通过其子树的高度计算得出，选择最优根节点时，树的最大高度由其子树的最大高度决定。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：在树中，任意两个节点之间的路径长度是固定的，因此从不同节点出发计算树的高度具有对称性。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：树的高度可以通过其子树的高度计算得出，选择最佳根节点的问题可以分解为在每个节点作为根时求解子问题的最优解"
+    ]
   }
 }

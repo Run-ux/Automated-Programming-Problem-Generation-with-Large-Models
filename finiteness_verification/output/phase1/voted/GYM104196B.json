@@ -1,0 +1,142 @@
+{
+  "problem_id": "GYM104196B",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "directed_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "directed_graph",
+          "length": {
+            "min": 2,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000
+          },
+          "properties": {
+            "weighted": true,
+            "acyclic": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000
+    },
+    "properties": {
+      "weighted": true,
+      "acyclic": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "degree_bound",
+        "description": "每个节点的出度不超过1（即每个章节最多依赖一个其他章节）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "terminal_vertex_count_constraint",
+        "description": "至少存在两个没有后继节点的节点（即至少有两个Culminating Concept章节）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "acyclicity",
+        "description": "图中不存在环（即章节依赖关系形成有向无环图）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "选择的两个Culminating Concept章节及其所有前置章节构成的子集，使得总页数最小",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "degree_bound",
+              "description": "每个节点的出度不超过1（即每个章节最多依赖一个其他章节）"
+            },
+            {
+              "name": "terminal_vertex_count_constraint",
+              "description": "至少存在两个没有后继节点的节点（即至少有两个Culminating Concept章节）"
+            },
+            {
+              "name": "acyclicity",
+              "description": "图中不存在环（即章节依赖关系形成有向无环图）"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "选择的两个Culminating Concept章节及其所有前置章节构成的子集，使得总页数最小"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求两个顶点及其所有依赖顶点的权值和的最小值"
+        }
+      }
+    ],
+    "description": "求两个顶点及其所有依赖顶点的权值和的最小值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：章节依赖关系形成有向无环图（DAG），解法中通过拓扑排序确定章节的阅读顺序，确保每个章节在其所有前置章节之后被处理。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，选择两个“Culminating Concept”章节及其前置章节的最小总页数可以通过计算每个章节及其前置章节的总页数来实现。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：章节依赖关系形成有向无环图（DAG），解法中通过拓扑排序确定章节的阅读顺序，确保每个章节在其所有前置章节之后被处理。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，选择两个“Culminating Concept”章节及其前置章节的最小总页数可以通过计算每个章节及其前置章节的总页数来实现。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

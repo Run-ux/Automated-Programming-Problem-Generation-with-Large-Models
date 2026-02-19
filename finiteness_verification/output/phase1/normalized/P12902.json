@@ -1,0 +1,94 @@
+{
+  "problem_id": "P12902",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "图中每条边最多属于一个简单环（即图是仙人掌）"
+          },
+          {
+            "name": "connectivity",
+            "description": "图必须是连通的"
+          },
+          {
+            "name": "degree_bound",
+            "description": "不允许有多重边和自环"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径中的相邻顶点不同"
+          },
+          {
+            "name": "distinct_edges",
+            "description": "每条边在整个测试用例中只被遍历一次"
+          },
+          {
+            "name": "pseudotree_structure",
+            "description": "无法再添加一条边使得图仍然是仙人掌"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "最小化添加边的数量以使图成为强仙人掌"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "在处理图的边和顶点时，始终维护一个拓扑序，确保每个节点在其所有前驱节点之后被处理。",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "在处理过程中，始终保持环结构的不变性，即每个环中的边和顶点关系不被破坏。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "在处理每个子问题（如每个环或路径）时，确保子问题之间相互独立，不影响其他子问题的处理结果。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

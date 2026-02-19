@@ -2,14 +2,14 @@
   "problem_id": "GYM104857H",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "state_transition_constraint",
-        "description": "函数 f(n) 和 g(n) 互相递归调用，且每次调用的参数为 n 的不同比例（如 n/2, n/3 等）",
+        "name": "recurrence_relation",
+        "description": "函数 f(n) 和 g(n) 通过递归关系定义，其中 f(n) 依赖于 g(n/2), g(n/3), g(n/5), g(n/7)，g(n) 依赖于 f(n/2), f(n/3), f(n/4), f(n/5)",
         "confidence": "1/1"
       },
       {
-        "name": "modulo_constraint",
-        "description": "计算结果需要对给定的模数 M 取模",
+        "name": "modular_arithmetic",
+        "description": "计算结果需要对 M 取模",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "state_transition_constraint",
-              "description": "函数 f(n) 和 g(n) 互相递归调用，且每次调用的参数为 n 的不同比例（如 n/2, n/3 等）",
+              "name": "recurrence_relation",
+              "description": "函数 f(n) 和 g(n) 通过递归关系定义，其中 f(n) 依赖于 g(n/2), g(n/3), g(n/5), g(n/7)，g(n) 依赖于 f(n/2), f(n/3), f(n/4), f(n/5)",
               "formal": "f(n) = max(n, g(⌊n/2⌋) + g(⌊n/3⌋) + g(⌊n/5⌋) + g(⌊n/7⌋)), g(n) = max(n, f(⌊n/2⌋) + f(⌊n/3⌋) + f(⌊n/4⌋) + f(⌊n/5⌋))"
             },
             {
-              "name": "modulo_constraint",
-              "description": "计算结果需要对给定的模数 M 取模",
-              "formal": "result = (f(m) % M, g(m) % M)"
+              "name": "modular_arithmetic",
+              "description": "计算结果需要对 M 取模",
+              "formal": "f(m) % M, g(m) % M"
             }
           ]
         }
@@ -71,36 +71,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_value",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_value",
-          "description": "求解递归关系定义的两个函数在给定点的最大值，并对结果取模"
+          "type": "enumeration",
+          "description": "求解递归关系定义的两个函数在给定点的值并取模"
         }
       }
     ],
-    "description": "求解递归关系定义的两个函数在给定点的最大值，并对结果取模"
+    "description": "求解递归关系定义的两个函数在给定点的值并取模"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，即f(n)和g(n)的值依赖于更小规模的子问题f(⌊n/k⌋)和g(⌊n/k⌋)的解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "divide_conquer",
+        "description": "分治不变量：大问题的解由子问题解合成，通过递归地解决较小规模的问题，并将结果合并以得到原问题的解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，且子问题的解是独立的",
-          "properties": {
-            "subproblem_independence": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，即f(n)和g(n)的值依赖于更小规模的子问题f(⌊n/k⌋)和g(⌊n/k⌋)的解。",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：大问题的解由子问题解合成，通过递归地解决较小规模的问题，并将结果合并以得到原问题的解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，且子问题的解是独立的"
+    ]
   }
 }

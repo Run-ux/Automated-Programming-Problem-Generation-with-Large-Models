@@ -1,0 +1,86 @@
+{
+  "problem_id": "GYM106268B",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "decrease_only_constraint",
+            "description": "从西到东的地块中，野猪每晚吃掉一个单位的小麦，直到遇到没有小麦的地块或到达最东边的地块。因此，每个地块的小麦数量在后续的夜晚中只会减少或保持不变。",
+            "formal": "对于每个地块 i，a_i 在后续的夜晚中只会减少或保持不变"
+          },
+          {
+            "name": "adjacency_difference",
+            "description": "野猪从西到东逐个地块吃小麦，如果当前地块没有小麦，则停止前进。因此，相邻地块的小麦数量差值会影响野猪的行动。",
+            "formal": "对于每个地块 i，如果 a_i > 0 且 a_{i+1} = 0，则野猪会在地块 i 停止前进"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "可以选择一些地块移除所有小麦，以减少野猪的损害。选择的地块数量和位置会影响最终剩余的小麦数量。",
+            "formal": "选择一些地块 i 使得 a_i = 0，以最大化剩余小麦数量"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化在给定天数后剩余的总权值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即对于每个候选收获日，最大剩余小麦量可以通过前一个或几个状态的最优解推导出来。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着天数的增加，剩余的小麦量不会增加。也就是说，如果在某一天选择移除某些地块的小麦，那么在之后的每一天，这些地块的小麦量都不会再增加。",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步中，选择当前最优的策略（即移除某些地块的小麦）可以导致全局最优解。具体来说，选择移除西部最远的有小麦的地块可以使后续的损失最小化。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

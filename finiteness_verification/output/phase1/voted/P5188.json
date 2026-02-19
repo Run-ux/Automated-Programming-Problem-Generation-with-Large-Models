@@ -41,23 +41,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "cyclic_path_length_constraint",
-        "description": "路径必须从指定起点开始并回到该起点（回路约束）",
+        "name": "path_constraint",
+        "description": "路径长度不超过 T 分钟，且必须从起点 1 出发并返回起点 1",
         "confidence": "1/1"
       },
       {
-        "name": "trial_limit",
-        "description": "路径总耗时不能超过给定的时间上限 T",
+        "name": "coverage",
+        "description": "路径中必须覆盖所有四种原材料（B, J, M, P）",
         "confidence": "1/1"
       },
       {
-        "name": "target_sequence",
-        "description": "必须收集到所有指定的物品（四种原材料）",
-        "confidence": "1/1"
-      },
-      {
-        "name": "path_weight_constraint",
-        "description": "通过一条边的耗时取决于是否在该边上购物，购物耗时 2 分钟，不购物耗时 1 分钟",
+        "name": "operation_limit",
+        "description": "每条边上的操作次数限制为 1 或 2 次（买或不买材料）",
         "confidence": "1/1"
       }
     ],
@@ -68,20 +63,19 @@
         "result": {
           "constraints": [
             {
-              "name": "cyclic_path_length_constraint",
-              "description": "路径必须从指定起点开始并回到该起点（回路约束）"
+              "name": "path_constraint",
+              "description": "路径长度不超过 T 分钟，且必须从起点 1 出发并返回起点 1",
+              "formal": "sum(path_length) <= T and path[0] == 1 and path[-1] == 1"
             },
             {
-              "name": "trial_limit",
-              "description": "路径总耗时不能超过给定的时间上限 T"
+              "name": "coverage",
+              "description": "路径中必须覆盖所有四种原材料（B, J, M, P）",
+              "formal": "set(ingredients_on_path) == {B, J, M, P}"
             },
             {
-              "name": "target_sequence",
-              "description": "必须收集到所有指定的物品（四种原材料）"
-            },
-            {
-              "name": "path_weight_constraint",
-              "description": "通过一条边的耗时取决于是否在该边上购物，购物耗时 2 分钟，不购物耗时 1 分钟"
+              "name": "operation_limit",
+              "description": "每条边上的操作次数限制为 1 或 2 次（买或不买材料）",
+              "formal": "edge_time = 1 if not buy else 2"
             }
           ]
         }
@@ -89,37 +83,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的路径数量"
+          "type": "enumeration",
+          "description": "求满足条件的路径方案数"
         }
       }
     ],
-    "description": "统计满足条件的路径数量"
+    "description": "求满足条件的路径方案数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从起点到任意节点的最短路径可以由更短路径的最优解组合而成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在状态机中，当前状态和决策（是否购买材料）决定了下一个状态。状态转移函数保持一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个子问题（从一个节点到另一个节点的路径选择）的解决不受其他子问题的影响，可以独立求解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优解可以通过子问题的最优解组合而成，满足动态规划的最优子结构性质",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从起点到任意节点的最短路径可以由更短路径的最优解组合而成。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在状态机中，当前状态和决策（是否购买材料）决定了下一个状态。状态转移函数保持一致性。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个子问题（从一个节点到另一个节点的路径选择）的解决不受其他子问题的影响，可以独立求解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优解可以通过子问题的最优解组合而成，满足动态规划的最优子结构性质"
+    ]
   }
 }

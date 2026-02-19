@@ -6,32 +6,44 @@
   "result": {
     "constraints": [
       {
-        "name": "range_update",
-        "description": "区间更新操作，将指定行的某个区间内的元素修改为给定值"
+        "name": "range_bound",
+        "description": "矩阵 A 的初始值均为 0",
+        "formal": "A_{i,j} = 0, \\forall i, j"
       },
       {
-        "name": "range_query_max_product",
-        "description": "区间查询操作，查询指定子矩阵内元素与序列对应位置元素乘积的最大值"
+        "name": "update_constraint",
+        "description": "对于操作 1，将矩阵 A 中指定行的指定列范围内的元素修改为给定值",
+        "formal": "A_{x,i} = v, \\forall l \\le i \\le r"
       },
       {
-        "name": "update_before_query",
-        "description": "所有修改操作必须在查询操作之前执行（特殊性质 A）"
+        "name": "query_constraint",
+        "description": "对于操作 2，查询矩阵 A 中指定子矩阵的最大值，并乘以序列 b 对应位置的值",
+        "formal": "\\max_{i=l}^r \\max_{j=x}^y (A_{i,j} \\times b_j)"
+      },
+      {
+        "name": "operation_limit",
+        "description": "所有修改操作在查询之前",
+        "formal": "所有操作 1 在所有操作 2 之前"
       },
       {
         "name": "single_column_update",
-        "description": "修改操作只能修改单列（特殊性质 B）"
+        "description": "对于修改操作，保证 l = r，即只修改单个列",
+        "formal": "l = r"
       },
       {
         "name": "random_data",
-        "description": "数据随机生成（特殊性质 C）"
+        "description": "数据随机生成，包括操作参数和序列 b",
+        "formal": "参数和 b 序列在其限制范围内等概率随机"
       },
       {
-        "name": "uniform_weight_sequence",
-        "description": "序列 b 中所有元素均为 1（特殊性质 D）"
+        "name": "uniform_b_sequence",
+        "description": "序列 b 中所有元素均为 1",
+        "formal": "b_i = 1, \\forall i"
       },
       {
-        "name": "limited_updates",
-        "description": "修改操作出现次数不超过总操作次数的 1/4"
+        "name": "modification_frequency",
+        "description": "修改操作出现不超过 q/4 次",
+        "formal": "修改操作次数 ≤ q/4"
       }
     ]
   },

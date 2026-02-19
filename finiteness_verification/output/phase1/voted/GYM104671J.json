@@ -2,16 +2,16 @@
   "problem_id": "GYM104671J",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "forest",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "forest",
           "length": {
-            "min": 4,
+            "min": 2,
             "max": 1500
           },
           "value_range": {
@@ -26,7 +26,7 @@
       }
     ],
     "length": {
-      "min": 4,
+      "min": 2,
       "max": 1500
     },
     "value_range": {
@@ -41,23 +41,28 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_exclusion",
-        "description": "任意两个不兼容的元素不能同时出现在同一集合中",
+        "name": "degree_bound",
+        "description": "每个节点的度数至少为1（每个元素至少与一个其他元素不兼容）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_subset_selection",
-        "description": "每次操作选择的子集大小不超过 k",
+        "name": "acyclicity",
+        "description": "图是一个森林结构（无环且连通分量可以有多个）",
         "confidence": "1/1"
       },
       {
-        "name": "graph_connectivity",
-        "description": "输入图是一个森林，且每个节点至少有一个邻居",
+        "name": "flow_constraint",
+        "description": "每次操作选取的元素数量不超过k（船的容量限制）",
         "confidence": "1/1"
       },
       {
-        "name": "query_count_constraint",
-        "description": "操作序列的长度不超过 4000",
+        "name": "exclusion",
+        "description": "任意两个不兼容的元素不能同时处于未被监管的状态（即不能同时在A或B集合中）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移约束，初始状态A包含所有元素，B为空集；最终状态A为空集，B包含所有元素",
         "confidence": "1/1"
       }
     ],
@@ -68,20 +73,24 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_exclusion",
-              "description": "任意两个不兼容的元素不能同时出现在同一集合中"
+              "name": "degree_bound",
+              "description": "每个节点的度数至少为1（每个元素至少与一个其他元素不兼容）"
             },
             {
-              "name": "distinct_subset_selection",
-              "description": "每次操作选择的子集大小不超过 k"
+              "name": "acyclicity",
+              "description": "图是一个森林结构（无环且连通分量可以有多个）"
             },
             {
-              "name": "graph_connectivity",
-              "description": "输入图是一个森林，且每个节点至少有一个邻居"
+              "name": "flow_constraint",
+              "description": "每次操作选取的元素数量不超过k（船的容量限制）"
             },
             {
-              "name": "query_count_constraint",
-              "description": "操作序列的长度不超过 4000"
+              "name": "exclusion",
+              "description": "任意两个不兼容的元素不能同时处于未被监管的状态（即不能同时在A或B集合中）"
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移约束，初始状态A包含所有元素，B为空集；最终状态A为空集，B包含所有元素"
             }
           ]
         }
@@ -89,37 +98,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的操作序列，使得所有元素从一个集合移动到另一个集合"
+          "type": "feasibility",
+          "description": "判断是否存在一种操作序列，使得所有元素能够从一个集合移动到另一个集合，并且在每一步操作中满足给定的约束条件"
         }
       }
     ],
-    "description": "构造一个满足条件的操作序列，使得所有元素从一个集合移动到另一个集合"
+    "description": "判断是否存在一种操作序列，使得所有元素能够从一个集合移动到另一个集合，并且在每一步操作中满足给定的约束条件"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在每一步操作中，从一侧到另一侧的鸡的集合变化满足不兼容性约束，即任何时刻两侧的鸡集合均不含直接相连的边。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "flow_conservation",
+        "description": "流守恒：在整个过程中，所有鸡最终都必须从一侧移动到另一侧，且每个鸡只能被移动一次。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：由于鸡之间的不兼容关系形成森林结构，可以利用拓扑排序来确定鸡的移动顺序，确保每次移动的鸡不会违反不兼容性约束。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "状态依赖：当前状态只依赖于有限的前序状态，且状态转移满足特定约束条件（如不兼容性）",
-          "properties": {
-            "dependency_on_previous_states": true,
-            "constraint_satisfaction": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在每一步操作中，从一侧到另一侧的鸡的集合变化满足不兼容性约束，即任何时刻两侧的鸡集合均不含直接相连的边。",
+              "properties": {}
+            },
+            {
+              "name": "flow_conservation",
+              "description": "流守恒：在整个过程中，所有鸡最终都必须从一侧移动到另一侧，且每个鸡只能被移动一次。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：由于鸡之间的不兼容关系形成森林结构，可以利用拓扑排序来确定鸡的移动顺序，确保每次移动的鸡不会违反不兼容性约束。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "状态依赖：当前状态只依赖于有限的前序状态，且状态转移满足特定约束条件（如不兼容性）"
+    ]
   }
 }

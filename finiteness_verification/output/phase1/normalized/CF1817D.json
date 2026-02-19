@@ -1,0 +1,92 @@
+{
+  "problem_id": "CF1817D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 2
+        },
+        "value_range": {
+          "min": 5,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制，最多进行 1,000,000 次按钮按下操作",
+            "formal": "len(button_presses) <= 1_000_000"
+          },
+          {
+            "name": "degree_bound",
+            "description": "图中某些节点的度数受限，底部行的左、右和中心单元格被阻塞",
+            "formal": "blocked_cells = {bottom_left, bottom_right, bottom_center}"
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移约束，每次操作后玩具的位置必须符合移动规则（不能穿过墙壁或被阻塞的单元格）",
+            "formal": "new_position = move(current_position, direction, blocked_cells)"
+          },
+          {
+            "name": "reachability_constraint",
+            "description": "目标可达性约束，最终第 k 个玩具必须到达顶部行的最左侧单元格",
+            "formal": "final_position[k] == top_left"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一个满足条件的操作序列，使得特定元素移动到指定位置"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次按钮操作后，玩具的位置和排列方式满足特定的状态转移规则，确保最终能够将第 k 个玩具移动到目标位置。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：在某些方向上的操作（如左移 L 和右移 R）会导致玩具位置的单调变化，即玩具只能向一个方向移动或停止。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：上下移动 U 和 D 操作具有对称性，可以消除某些情况下个体差异的影响，使得问题可以通过对称变换简化。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

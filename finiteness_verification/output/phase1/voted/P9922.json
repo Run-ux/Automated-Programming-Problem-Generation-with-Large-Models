@@ -1,0 +1,151 @@
+{
+  "problem_id": "P9922",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 97,
+            "max": 122
+          },
+          "properties": {
+            "ordered": true,
+            "inferred": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 97,
+      "max": 122
+    },
+    "properties": {
+      "ordered": true,
+      "inferred": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "frequency_bound",
+        "description": "新添加的字母是紧接着后缀 R 出现频率最高的字母，如果有多个出现频率最高的字母，取最小的一个。如果 R 在字符串 S 中的其他地方都没有出现，则取 X = a。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "R 是字符串 S 的后 k 个字母形成的子串。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "输出字符串 S' 的第 a 个字符至第 b 个字符。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "frequency_bound",
+              "description": "新添加的字母是紧接着后缀 R 出现频率最高的字母，如果有多个出现频率最高的字母，取最小的一个。如果 R 在字符串 S 中的其他地方都没有出现，则取 X = a。",
+              "formal": "X = argmax_{c in alphabet} count(c, S, R) if count(R, S) > 0 else 'a'"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "R 是字符串 S 的后 k 个字母形成的子串。",
+              "formal": "R = S[n-k:n]"
+            },
+            {
+              "name": "range_bound",
+              "description": "输出字符串 S' 的第 a 个字符至第 b 个字符。",
+              "formal": "output = S'[a-1:b]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造并输出扩展字符串的指定子串"
+        }
+      }
+    ],
+    "description": "构造并输出扩展字符串的指定子串"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：字符串扩展过程中的新字符选择基于当前后缀R的出现频率，确保了每次扩展后的字符串S'满足相同的规则。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着字符串S的不断扩展，其长度单调递增，且每次扩展都是在末尾添加一个字符。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择添加的字符是基于当前后缀R出现频率最高的字符（若有多个则取最小的一个），这种局部最优选择保证了全局的扩展规则一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：字符串扩展过程中的新字符选择基于当前后缀R的出现频率，确保了每次扩展后的字符串S'满足相同的规则。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着字符串S的不断扩展，其长度单调递增，且每次扩展都是在末尾添加一个字符。",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择添加的字符是基于当前后缀R出现频率最高的字符（若有多个则取最小的一个），这种局部最优选择保证了全局的扩展规则一致性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

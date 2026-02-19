@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "integer",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1
@@ -26,19 +26,14 @@
       "result": {
         "constraints": [
           {
-            "name": "region_union_constraint",
-            "description": "每个节点必须被恰好一个元素覆盖（完全覆盖约束）",
-            "formal": "∀ (i, j) ∈ [1, n] × [1, n], ∃! T-patch 覆盖 (i, j)"
+            "name": "coverage",
+            "description": "每个网格边必须被恰好一个T形补丁覆盖",
+            "formal": "∀ 边 e, ∃! T-补丁 t 使得 e ∈ t"
           },
           {
-            "name": "orientation_constraint",
-            "description": "每个元素可以有四种不同的方向（旋转约束）",
-            "formal": "每个 T-patch 可以是 'D', 'R', 'U', 'L' 中的一种"
-          },
-          {
-            "name": "weighted_graph",
-            "description": "网格结构中每个单元格的边必须被恰好一个 T-patch 覆盖（网格覆盖约束）",
-            "formal": "∀ (i, j) ∈ [1, n] × [1, n], 每个边 (i, j) 到 (i+1, j), (i, j+1), (i-1, j), (i, j-1) 必须被恰好一个 T-patch 覆盖"
+            "name": "orientation",
+            "description": "T形补丁可以旋转成四种正交方向之一",
+            "formal": "T-补丁的方向 ∈ {D, R, U, L}"
           }
         ]
       }
@@ -49,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在满足条件的解"
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的方案"
       }
     }
   ],
@@ -59,9 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个T-patch的放置依赖于其周围已放置的T-patch，形成一个整体覆盖方案。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "interval_coverage",
+            "description": "网格覆盖不变量：每个网格边恰好被一个T型块覆盖，且T型块的放置满足网格结构约束",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：T型块在网格中的放置方式可以通过旋转和翻转保持不变，从而保证解的多样性和正确性",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

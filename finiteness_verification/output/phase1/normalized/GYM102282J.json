@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1024
@@ -28,8 +28,9 @@
       "result": {
         "constraints": [
           {
-            "name": "string_edit_distance",
-            "description": "字符串 s1 和 s2 之间的编辑距离（即从 s1 转换到 s2 所需的最少操作数，操作包括插入、删除和替换字符）"
+            "name": "distance_bound",
+            "description": "两个字符串之间的最小编辑距离（插入、删除或替换操作的次数）",
+            "formal": "min_edit_distance(s1, s2)"
           }
         ]
       }
@@ -40,8 +41,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求将一个字符串转换为另一个字符串所需的最小编辑距离"
+        "type": "minimize_count",
+        "description": "求两个字符串之间的最小编辑距离"
       }
     }
   ],
@@ -50,9 +51,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过比较两个字符串的每个字符来确定最小编辑距离",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构建。具体来说，字符串s1和s2之间的最小编辑距离可以通过计算其子串之间的最小编辑距离来得到。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在动态规划过程中，从一个状态到另一个状态的转移是基于明确且一致的规则进行的，例如通过插入、删除或替换字符来改变字符串。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

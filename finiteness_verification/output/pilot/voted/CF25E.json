@@ -19,8 +19,7 @@
             "max": 100000
           },
           "properties": {
-            "element_type": "string",
-            "character_set": "lowercase Latin letters"
+            "ordered": false
           }
         }
       },
@@ -38,8 +37,7 @@
             "max": 100000
           },
           "properties": {
-            "element_type": "string",
-            "character_set": "lowercase Latin letters"
+            "ordered": false
           }
         }
       },
@@ -57,8 +55,7 @@
             "max": 100000
           },
           "properties": {
-            "element_type": "string",
-            "character_set": "lowercase Latin letters"
+            "ordered": false
           }
         }
       }
@@ -72,20 +69,14 @@
       "max": 100000
     },
     "properties": {
-      "element_type": "string",
-      "character_set": "lowercase Latin letters"
+      "ordered": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "substring_inclusion",
-        "description": "输入字符串必须包含 s1, s2 和 s3 作为子串",
-        "confidence": "3/3"
-      },
-      {
-        "name": "minimal_length",
-        "description": "输出的字符串长度应为包含 s1, s2 和 s3 作为子串的最短长度",
+        "name": "subsequence_constraint",
+        "description": "目标字符串必须包含给定的三个子串",
         "confidence": "3/3"
       }
     ],
@@ -96,12 +87,8 @@
         "result": {
           "constraints": [
             {
-              "name": "substring_inclusion",
-              "description": "输入字符串必须包含 s1, s2 和 s3 作为子串"
-            },
-            {
-              "name": "minimal_length",
-              "description": "输出的字符串长度应为包含 s1, s2 和 s3 作为子串的最短长度"
+              "name": "subsequence_constraint",
+              "description": "目标字符串必须包含给定的三个子串"
             }
           ]
         }
@@ -112,12 +99,8 @@
         "result": {
           "constraints": [
             {
-              "name": "substring_inclusion",
-              "description": "输入字符串必须包含 s1, s2 和 s3 作为子串"
-            },
-            {
-              "name": "minimal_length",
-              "description": "输出的字符串长度应为包含 s1, s2 和 s3 作为子串的最短长度"
+              "name": "subsequence_constraint",
+              "description": "字符串必须包含给定的三个子串 s1, s2 和 s3"
             }
           ]
         }
@@ -128,12 +111,8 @@
         "result": {
           "constraints": [
             {
-              "name": "substring_inclusion",
-              "description": "输入字符串必须包含 s1, s2 和 s3 作为子串"
-            },
-            {
-              "name": "minimal_length",
-              "description": "输出的字符串长度应为包含 s1, s2 和 s3 作为子串的最短长度"
+              "name": "subsequence_constraint",
+              "description": "字符串必须包含给定的三个子串 s1, s2 和 s3"
             }
           ]
         }
@@ -141,68 +120,106 @@
     ]
   },
   "objective": {
-    "type": "min_length",
+    "type": "minimize_value",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "min_length",
-          "description": "求包含s1, s2和s3作为子串的最短字符串长度"
+          "type": "minimize_value",
+          "description": "求包含给定三个子串的最短字符串长度"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "min_length",
-          "description": "求包含s1, s2和s3作为子串的最短字符串长度"
+          "type": "minimize_value",
+          "description": "求包含给定三个子串的最短字符串长度"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "min_length",
-          "description": "求包含s1, s2和s3作为子串的最短字符串长度"
+          "type": "minimize_value",
+          "description": "求包含三个给定子串的最短字符串长度"
         }
       }
     ],
-    "description": "求包含s1, s2和s3作为子串的最短字符串长度"
+    "description": "求包含给定三个子串的最短字符串长度"
   },
   "invariant": {
-    "name": "greedy_choice",
-    "confidence": "3/3",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即包含所有给定子串的最短字符串可以通过找到这些子串在最终字符串中的最优排列来构造。",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：通过局部最优的选择（如将一个子串尽可能早地加入到结果中）可以逐步构建全局最优解，即最小长度的字符串。",
+        "confidence": "3/3",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "greedy_choice",
-          "description": "通过构造一个尽可能短的字符串，使得该字符串同时包含s1, s2, s3作为子串。在每一步选择中，总是尝试将当前处理的字符串与下一个字符串进行最优重叠，以达到全局最短的结果。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即包含所有给定子串的最短字符串可以通过找到这些子串在最终字符串中的最优排列来构造。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：通过局部最优的选择（如将一个子串尽可能早地加入到结果中）可以逐步构建全局最优解，即最小长度的字符串。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "greedy_choice",
-          "description": "通过构造一个尽可能短的字符串，使得该字符串同时包含s1, s2, s3作为子串。在每一步选择中，总是尝试将新的子串以最紧凑的方式添加到当前已构建的字符串上，从而保证最终结果是最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即包含所有给定子串的最短字符串可以通过找到这些子串在最终字符串中的最优排列来构造。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：通过局部最优的选择（如将一个子串尽可能早地放置在结果字符串中）可以逐步构建全局最优解，即最小化最终字符串长度。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "greedy_choice",
-          "description": "通过构造一个尽可能短的字符串，使得该字符串包含s1, s2, s3作为子串。在每一步选择中，总是尝试将当前未被包含的最短字符串加入到结果字符串中，以确保最终得到的字符串长度最小。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即包含所有给定子串的最短字符串可以通过找到这些子串之间的最优拼接方式来构造。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在构建包含所有给定子串的最短字符串时，局部最优的选择（如尽可能早地引入新的子串）能够导致全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "通过构造一个尽可能短的字符串，使得该字符串同时包含s1, s2, s3作为子串。在每一步选择中，总是尝试将当前处理的字符串与下一个字符串进行最优重叠，以达到全局最短的结果。"
+    ]
   }
 }

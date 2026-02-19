@@ -1,0 +1,84 @@
+{
+  "problem_id": "CF1290C",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "intersection",
+            "description": "任意三个子集的交集为空（三元组互斥约束）",
+            "formal": "∀ 1 ≤ i1 < i2 < i3 ≤ k, A_{i1} ∩ A_{i2} ∩ A_{i3} = ∅"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "可以选择一个子集并切换其中所有元素的状态（操作类型约束）",
+            "formal": "选择子集 A_i 并切换其所有元素的状态"
+          },
+          {
+            "name": "coverage",
+            "description": "通过给定的操作可以将所有元素同时变为开启状态（可达性约束）",
+            "formal": "存在一系列操作使得所有灯泡同时为 1"
+          },
+          {
+            "name": "prefix_suffix_elimination",
+            "description": "计算使前 i 个元素同时变为开启状态所需的最小操作次数（前缀约束）",
+            "formal": "m_i = min(操作次数) 使得 s[1:i] 全部为 1"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求使前i个元素满足条件的最小操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构建，即前i个灯泡的状态转换次数依赖于前i-1个灯泡的状态转换次数。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过选择特定的子集进行状态切换，可以保证从一个状态转移到另一个状态的过程中，满足题目要求的约束条件（如任意三个子集无交集）。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

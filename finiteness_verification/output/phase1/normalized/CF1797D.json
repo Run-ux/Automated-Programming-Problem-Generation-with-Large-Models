@@ -1,0 +1,87 @@
+{
+  "problem_id": "CF1797D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": -1000000000,
+          "max": 1000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false,
+          "rooted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "图必须是树结构（连通无环）"
+          },
+          {
+            "name": "acyclicity",
+            "description": "树必须有根节点，且根节点为1"
+          },
+          {
+            "name": "parent_child_dependency",
+            "description": "非叶子节点的重儿子定义为其子树大小最大的儿子，如果有多个，则选择编号最小的儿子"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作类型限制为两种：1. 查询操作；2. 修改操作。修改操作不能应用于根节点"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足条件的子树的最大重要性"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理树的重链剖分时，每个节点的状态（如子树大小、子树重要性）通过其子节点的状态进行更新。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：子树的重要性可以通过子树中所有节点的重要性之和来计算。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：在处理操作时，当前节点的最优解依赖于其子节点的最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

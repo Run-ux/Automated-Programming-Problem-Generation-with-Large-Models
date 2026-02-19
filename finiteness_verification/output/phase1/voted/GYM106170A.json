@@ -1,0 +1,145 @@
+{
+  "problem_id": "GYM106170A",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 99999
+          },
+          "properties": {
+            "connected": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 99999
+    },
+    "properties": {
+      "connected": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "路径上所有边的颜色必须互不相同（即路径上的颜色集合大小等于路径长度）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "每条边必须至少属于一条满足上述颜色互不相同的路径",
+        "confidence": "1/1"
+      },
+      {
+        "name": "maximum_rainbow_count",
+        "description": "需要找到最大的 K 使得树成为 K-树（即每条边都至少属于一条 K-彩虹路径）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "路径上所有边的颜色必须互不相同（即路径上的颜色集合大小等于路径长度）",
+              "formal": "∀ path P, |{c(e) | e ∈ P}| = |P|"
+            },
+            {
+              "name": "path_constraint",
+              "description": "每条边必须至少属于一条满足上述颜色互不相同的路径",
+              "formal": "∀ e ∈ E, ∃ path P, e ∈ P and |{c(e) | e ∈ P}| = |P|"
+            },
+            {
+              "name": "maximum_rainbow_count",
+              "description": "需要找到最大的 K 使得树成为 K-树（即每条边都至少属于一条 K-彩虹路径）",
+              "formal": "max K such that ∀ e ∈ E, ∃ path P, e ∈ P and |{c(e) | e ∈ P}| = |P| = K"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化满足条件的路径长度"
+        }
+      }
+    ],
+    "description": "最大化满足条件的路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：树的每条边的颜色分配依赖于其子树中边的颜色分配，且整个树的最优解由各子树的最优解组合而成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在树的深度优先遍历过程中，每个节点的状态（颜色分配）根据其子节点的状态进行更新，并保持一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：对于任意一条边，其两端点的角色可以互换，不影响最终的K-rainbow路径的存在性和颜色分配。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：树的每条边的颜色分配依赖于其子树中边的颜色分配，且整个树的最优解由各子树的最优解组合而成。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在树的深度优先遍历过程中，每个节点的状态（颜色分配）根据其子节点的状态进行更新，并保持一致性。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：对于任意一条边，其两端点的角色可以互换，不影响最终的K-rainbow路径的存在性和颜色分配。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

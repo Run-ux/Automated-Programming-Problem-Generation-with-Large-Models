@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,16 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "bipartite_matching",
-            "description": "构建的图必须是二分图（所有顶点可以分为两个不相交的集合，使得每条边连接不同集合中的顶点）"
+            "name": "bipartiteness",
+            "description": "图必须是二部图（所有顶点可以分为两个不相交的集合，使得每条边连接不同集合中的顶点）"
           },
           {
-            "name": "edge_exclusion_constraint",
-            "description": "如果两个顶点 i 和 j 之间的差值 |i - j| 属于集合 B，则在这两个顶点之间添加一条边"
+            "name": "adjacency_relation",
+            "description": "如果 |i - j| 属于集合 B，则在图中存在一条连接 i 和 j 的边"
           },
           {
-            "name": "subset_sum_imbalance",
-            "description": "从集合 B 中删除一个最小大小的子集，使得剩余的集合构建的图是二分图"
+            "name": "subset_constraint",
+            "description": "从集合 B 中移除一个最小的子集，使得剩余的集合构建的图是二部图"
           }
         ]
       }
@@ -48,8 +48,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求最小的删除元素数量，使得剩余集合构建的图是二分图"
+        "type": "minimize_count",
+        "description": "求需要删除的最小元素数量，使得基于剩余元素构建的图是二分图"
       }
     }
   ],
@@ -58,9 +58,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过其子问题的解组合而成，即通过删除某些元素使得剩余集合满足特定性质（本题中为构造二分图）的问题可以分解为更小规模的相同问题。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "bipartite_graph_structure",
+            "description": "图的二分性质：通过删除某些边使得图变为二分图，即所有顶点可以被划分为两个不相交的集合，每条边连接不同集合中的顶点。",
+            "properties": {}
+          },
+          {
+            "name": "parity_preservation",
+            "description": "奇偶不变性：在构建图时，如果一个差值是偶数，则该差值会导致图中出现奇环，从而破坏二分图的性质。因此，必须删除所有偶数差值以确保图的二分性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

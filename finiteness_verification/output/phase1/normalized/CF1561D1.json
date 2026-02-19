@@ -1,0 +1,77 @@
+{
+  "problem_id": "CF1561D1",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 999999999
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "从节点 n 到节点 1 的路径必须经过所有中间节点，且每个节点只能访问一次",
+            "formal": "存在唯一路径 P 从 n 到 1，使得 P 包含所有节点 {n, n-1, ..., 2, 1} 且每个节点仅出现一次"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每次操作只能将令牌从当前节点 x 移动到节点 x-1 或 x-2",
+            "formal": "对于每个 x > 1，可以执行的操作为：x -> x-1 或 x -> x-2"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求从起点到终点的所有路径数，结果取模"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从当前状态到目标状态的路径数可以通过子问题的解来计算，即到达每个单元格的方式数可以由其下方单元格的路径数推导得出。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：令牌只能向上移动，因此从底部到顶部的移动过程是严格递减的。",
+            "properties": {
+              "right_monotonic": false,
+              "left_monotonic": false
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

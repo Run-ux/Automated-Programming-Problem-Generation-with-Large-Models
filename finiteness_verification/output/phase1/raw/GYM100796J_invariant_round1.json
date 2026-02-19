@@ -4,11 +4,22 @@
   "dimension": "invariant",
   "round": 1,
   "result": {
-    "name": "state_dependency",
-    "description": "当前状态只依赖于有限的前序状态，即乘客进出顺序和位置决定了后续操作的结果",
-    "properties": {
-      "dependency_on_previous_states": true
-    }
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "乘客进入和离开的顺序是单调的，不会发生交换。进入和离开操作保持了队列的顺序不变。",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false,
+          "order_preservation": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移一致性：每次操作（进入或离开）后，队列的状态可以唯一确定，并且新的状态只依赖于前一个状态和当前操作。",
+        "properties": {}
+      }
+    ]
   },
   "status": "success"
 }

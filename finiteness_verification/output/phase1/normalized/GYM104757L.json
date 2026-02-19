@@ -1,0 +1,86 @@
+{
+  "problem_id": "GYM104757L",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 2500
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过4（因为路径是正交网格，每个节点最多有4条边）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径必须沿着正交网格进行，且每次只能在90度转弯处改变方向"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每条路径最多可以被遍历两次，超过两次后该路径将不再可用"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "从指定起点和方向开始遍历，且初始方向上必须存在路径"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一条从起点出发，按照给定规则行走的路径，并输出路径的终点位置"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在每个交叉点，根据当前路径的兴趣值和已访问次数决定下一步的方向和路径选择，确保路径选择的一致性和有效性。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：路径的选择和遍历顺序遵循一定的拓扑结构，即从起点出发，按照规则逐步推进，直到无法继续前进为止。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每次路径选择和更新都是基于当前状态的独立决策，不受之前路径选择的具体影响，仅依赖于当前兴趣值和访问次数。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

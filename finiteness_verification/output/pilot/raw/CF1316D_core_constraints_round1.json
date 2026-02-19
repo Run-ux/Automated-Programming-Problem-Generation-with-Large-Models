@@ -6,24 +6,24 @@
   "result": {
     "constraints": [
       {
-        "name": "blocked_zone",
-        "description": "玩家在遇到标记为 X 的单元格时必须停止移动，该单元格称为阻塞区。"
+        "name": "state_transition",
+        "description": "每个节点根据其上的字符进行状态转移，直到到达终止状态（X）或无限循环。",
+        "formal": "对于每个节点 (r, c)，根据字符 U, D, L, R 或 X 进行状态转移。"
       },
       {
-        "name": "movement_instructions",
-        "description": "每个单元格上有一个字符 U, D, L, R 或 X，指示玩家的移动方向或表示阻塞区。U 表示向上移动，D 表示向下移动，L 表示向左移动，R 表示向右移动，X 表示阻塞区。"
+        "name": "termination_condition",
+        "description": "玩家在遇到 X 字符时停止移动，否则继续移动直到进入无限循环。",
+        "formal": "如果当前节点的字符是 X，则停止；否则，根据字符指示的方向移动到下一个节点。"
       },
       {
-        "name": "within_board_boundaries",
-        "description": "玩家根据当前单元格上的字符移动时，永远不会被要求走出棋盘边界。"
+        "name": "boundary_constraint",
+        "description": "玩家不能移出网格边界。",
+        "formal": "所有移动必须保持在 1 ≤ r, c ≤ n 的范围内。"
       },
       {
-        "name": "infinite_movement",
-        "description": "玩家可能会无限地移动，直到进入一个阻塞区。"
-      },
-      {
-        "name": "unique_end_position",
-        "description": "对于每个起始单元格，Alice 记录了玩家最终停下的单元格或玩家永远不会停下。"
+        "name": "consistency_constraint",
+        "description": "给定的终止位置信息必须与生成的网格一致。",
+        "formal": "对于每个起始节点 (i, j)，最终停止的位置 (x_j, y_j) 必须与网格中的路径一致。"
       }
     ]
   },

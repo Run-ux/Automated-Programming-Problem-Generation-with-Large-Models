@@ -1,0 +1,88 @@
+{
+  "problem_id": "CF1418D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false,
+          "distinct": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "所有元素最终需要被收集到不超过两个不同的坐标上",
+            "formal": "|distinct(final_positions)| <= 2"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每次操作只能将某个坐标上的所有元素移动到相邻的坐标上",
+            "formal": "move(x) -> move all elements from x to x+1 or x-1"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "查询中添加或删除的元素必须是当前集合中的有效元素",
+            "formal": "if t_i = 0, x_i in current_set; if t_i = 1, x_i not in current_set"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化将所有点移动到不超过两个不同坐标所需的总移动次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：将所有垃圾堆移动到两个坐标点的最小移动次数可以通过子问题的最优解来计算",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：在处理查询时，垃圾堆的坐标集合的变化是单调的（增加或删除）",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": false
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和可以快速计算任意区间的垃圾堆数量，从而辅助计算移动次数",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

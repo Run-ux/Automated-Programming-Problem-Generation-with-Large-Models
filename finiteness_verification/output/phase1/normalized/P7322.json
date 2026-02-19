@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 500000
@@ -29,18 +29,18 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_permutation",
-            "description": "输入序列是一个长度为 n 的排列，即每个在 [1, n] 中的整数都在序列中恰好出现了一次"
+            "name": "permutation_constraint",
+            "description": "输入是一个长度为 n 的排列，即每个在 [1, n] 中的整数都在排列中恰好出现一次"
           },
           {
-            "name": "maximum_subarray_size_constraint",
-            "description": "对于一个长度为 n 的排列 p，定义 f(p) 为 p 中每 k 个连续元素的最大值组成的序列",
-            "formal": "f(p) = {max(p[i:i+k]) for i in range(n-k+1)}"
+            "name": "subsequence_constraint",
+            "description": "定义 f(a) 为 a 的 k 长度滑动窗口的最大值序列",
+            "formal": "f(a) = {max_{i=1}^{k}{a_i}, max_{i=2}^{k+1}{a_i}, ..., max_{i=n-k+1}^{n}{a_i}}"
           },
           {
-            "name": "distinct_element_count_constraint",
-            "description": "权值 w(a) 定义为序列 a 中不同元素的数量",
-            "formal": "w(a) = |{a[i] for i in range(len(a))}|"
+            "name": "distinctness",
+            "description": "w(a) 定义为 a 中不同元素的数量",
+            "formal": "w(a) = |{a_i | i ∈ [1, n]}|"
           }
         ]
       }
@@ -51,8 +51,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_sum_of_squares",
-        "description": "求所有排列的特定函数值之和"
+        "type": "enumeration",
+        "description": "求所有长度为n的排列中，w(f(p))之和"
       }
     }
   ],
@@ -61,9 +61,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解可以通过组合子问题的解来获得，每个子问题的解都是独立且最优的",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即排列的部分最大值序列的权值和可以通过子排列的最大值序列的权值和来计算。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理排列时，通过逐步考虑每个元素的位置及其对最大值序列的影响，可以保持状态的一致性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 10000000
@@ -17,7 +17,7 @@
         },
         "properties": {
           "ordered": false,
-          "inferred": true
+          "distinct": true
         }
       }
     }
@@ -29,9 +29,14 @@
       "result": {
         "constraints": [
           {
-            "name": "minimum_element_count_constraint",
-            "description": "对于所有满足 i > k 且 i ≤ n 的整数 i，a_i 必须大于 a_{i-k} 到 a_{i-1} 之间的最小值",
-            "formal": "∀ i (k < i ≤ n), a_i > min(a_{i-k}, ..., a_{i-1})"
+            "name": "permutation_constraint",
+            "description": "序列是长度为 n 的排列，即每个元素在 [1, n] 范围内且互不相同",
+            "formal": "(a_1, a_2, ..., a_n) 是 [n] 的一个排列"
+          },
+          {
+            "name": "range_bound",
+            "description": "对于所有 i > k 且 i ≤ n，a_i 必须大于前 k 个元素的最小值",
+            "formal": "对于所有 i > k 且 i ≤ n，a_i > min(a_{i-k}, ..., a_{i-1})"
           }
         ]
       }
@@ -42,8 +47,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足特定条件的排列数量"
+        "type": "enumeration",
+        "description": "求满足特定条件的排列数量（取模）"
       }
     }
   ],
@@ -52,11 +57,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，满足动态规划的状态转移方程",
-        "properties": {
-          "state_dependency": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即一个长度为n的排列可以由长度为n-1的排列通过插入一个元素得到。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前状态的合法性依赖于前k个状态的最小值，确保了状态之间的转移一致性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

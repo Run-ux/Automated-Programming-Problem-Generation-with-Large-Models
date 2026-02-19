@@ -1,0 +1,93 @@
+{
+  "problem_id": "P11772",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "multiplicative_property_constraint",
+            "description": "每个节点的值依赖于其倍数节点的值（图中的边表示倍数关系）"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "每个节点购买的报纸数量必须满足其倍数节点的需求"
+          },
+          {
+            "name": "cost_constraint",
+            "description": "每个节点购买报纸的成本由两个数组 a 和 b 决定，具体为 a[i] * b[j+1]"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制，最多进行 T 次操作"
+          },
+          {
+            "name": "query_limit",
+            "description": "询问次数限制，每次询问计算当前 a, b 数组下 n=x 时的总收益"
+          },
+          {
+            "name": "transformation",
+            "description": "允许更新 a 或 b 数组的值，具体为 a[x] = y 或 b[x] = y"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化在给定条件下，所有操作后的总收益"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个妖怪的购买决策基于其倍数关系，可以分解为多个独立的子问题，每个子问题的最优解组合成全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "prefix_decomposability",
+            "description": "前缀可分解性：每个妖怪的购买行为可以基于前缀信息进行分解和计算，即每个妖怪的购买数量可以通过其前缀妖怪的购买情况推导出来。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：每个妖怪的购买成本可以通过区间的累加计算得出，即购买成本可以通过端点差值计算。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

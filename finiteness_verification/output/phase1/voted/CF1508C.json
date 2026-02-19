@@ -41,23 +41,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "path_weight_constraint",
+        "name": "modular_arithmetic",
         "description": "所有边权重的异或和必须为0",
         "confidence": "1/1"
       },
       {
-        "name": "global_optimization_objective",
+        "name": "spanning_constraint",
         "description": "最小生成树的权重和需要尽可能小",
-        "confidence": "1/1"
-      },
-      {
-        "name": "directed_complete_graph",
-        "description": "图是完全图，包含所有可能的边",
-        "confidence": "1/1"
-      },
-      {
-        "name": "weight_sum_constraint",
-        "description": "未赋权的边需要被赋予非负权重",
         "confidence": "1/1"
       }
     ],
@@ -68,20 +58,12 @@
         "result": {
           "constraints": [
             {
-              "name": "path_weight_constraint",
+              "name": "modular_arithmetic",
               "description": "所有边权重的异或和必须为0"
             },
             {
-              "name": "global_optimization_objective",
+              "name": "spanning_constraint",
               "description": "最小生成树的权重和需要尽可能小"
-            },
-            {
-              "name": "directed_complete_graph",
-              "description": "图是完全图，包含所有可能的边"
-            },
-            {
-              "name": "weight_sum_constraint",
-              "description": "未赋权的边需要被赋予非负权重"
             }
           ]
         }
@@ -89,34 +71,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求在满足特定条件下的最小生成树的权重和"
+          "type": "minimize_value",
+          "description": "最小化完全赋权图的最小生成树的权重和，使得所有边的权重异或和为0"
         }
       }
     ],
-    "description": "求在满足特定条件下的最小生成树的权重和"
+    "description": "最小化完全赋权图的最小生成树的权重和，使得所有边的权重异或和为0"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最小生成树的权重和可以通过已知边权和未知边权的最优分配来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，优先选择当前情况下最优的边进行分配，以确保最终结果的最优性。通过合理分配未赋权边的权重，使得整体的最小生成树权重最小化。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "matroid_exchange",
+        "description": "拟阵交换性：在构建最小生成树的过程中，可以利用拟阵的性质，通过交换边的方式保证所选边集的独立性和最优性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，具体表现为最小生成树的权重可以通过已知边和未知边的最优分配来确定。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最小生成树的权重和可以通过已知边权和未知边权的最优分配来确定。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，优先选择当前情况下最优的边进行分配，以确保最终结果的最优性。通过合理分配未赋权边的权重，使得整体的最小生成树权重最小化。",
+              "properties": {}
+            },
+            {
+              "name": "matroid_exchange",
+              "description": "拟阵交换性：在构建最小生成树的过程中，可以利用拟阵的性质，通过交换边的方式保证所选边集的独立性和最优性。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，具体表现为最小生成树的权重可以通过已知边和未知边的最优分配来确定。"
+    ]
   }
 }

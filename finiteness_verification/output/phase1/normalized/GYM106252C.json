@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 3,
           "max": 1500000
@@ -16,6 +16,7 @@
           "max": 500000
         },
         "properties": {
+          "ordered": false,
           "inferred": true
         }
       }
@@ -28,19 +29,19 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_subsets",
+            "name": "distinctness",
             "description": "每个颜色在序列中恰好出现三次",
             "formal": "∀i ∈ [1, m], count(sequence, i) = 3"
           },
           {
-            "name": "bipartite_matching",
-            "description": "颜色集合被划分为两个非空子集，分别映射为0和1",
-            "formal": "S_0 ∪ S_1 = {1, 2, ..., m}, S_0 ∩ S_1 = ∅, S_0 ≠ ∅, S_1 ≠ ∅, ∀i ∈ S_0, map(i) = 0, ∀i ∈ S_1, map(i) = 1"
+            "name": "bipartiteness",
+            "description": "无论如何选择非空二分划 (S0, S1)，每个图像的特征值 xi 必须可以从保存的黑白图像中恢复",
+            "formal": "∀(S0, S1) s.t. S0 ∪ S1 = {1, 2, ..., m} and S0 ∩ S1 = ∅, ∀i, recover(binary_sequence(i)) = xi"
           },
           {
-            "name": "reconstruction_constraint",
-            "description": "无论如何划分颜色集合，每个图像的特征值必须能够从黑白图像中恢复",
-            "formal": "∀(S_0, S_1), ∀i ∈ [1, n], recover(binary_sequence_i) = x_i"
+            "name": "ordering",
+            "description": "输出的顺序必须与输入的黑白图像顺序一致",
+            "formal": "output_order = input_order"
           }
         ]
       }
@@ -51,7 +52,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
+        "type": "construction",
         "description": "构造满足特定条件的序列"
       }
     }
@@ -61,9 +62,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：每个颜色图像的设计可以独立地通过其特征值进行恢复，且每个特征值的恢复仅依赖于该图像对应的黑白序列。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个颜色图像的特征值可以通过其子序列（即转换后的黑白图像）唯一确定，从而保证了从黑白图像恢复原始特征值的可行性。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：无论选择哪种非空二分划 (S_0, S_1)，每个颜色图像的特征值都可以通过黑白图像恢复。这种对称性确保了不同二分划下的黑白图像都能正确反映原始特征值。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

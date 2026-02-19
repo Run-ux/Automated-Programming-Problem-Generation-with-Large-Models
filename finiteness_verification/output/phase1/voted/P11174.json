@@ -2,14 +2,14 @@
   "problem_id": "P11174",
   "source": "luogu",
   "input_structure": {
-    "type": "unknown_type",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "unknown_type",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1
@@ -35,18 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
+        "name": "connectivity",
         "description": "图必须连通",
         "confidence": "1/1"
       },
       {
-        "name": "simple_graph",
-        "description": "图必须是简单图（无自环和重边）",
-        "confidence": "1/1"
-      },
-      {
-        "name": "edge_coloring",
-        "description": "图中的边有两种颜色，白色边构成一棵树，黑色边为额外添加的边",
+        "name": "acyclicity",
+        "description": "初始图是一棵树（无环）",
         "confidence": "1/1"
       }
     ],
@@ -57,16 +52,16 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
+              "name": "connectivity",
               "description": "图必须连通"
             },
             {
-              "name": "simple_graph",
-              "description": "图必须是简单图（无自环和重边）"
+              "name": "acyclicity",
+              "description": "初始图是一棵树（无环）"
             },
             {
-              "name": "edge_coloring",
-              "description": "图中的边有两种颜色，白色边构成一棵树，黑色边为额外添加的边"
+              "name": "acyclicity",
+              "description": "加边后的图忽略颜色后是一张简单图（无自环和重边）"
             }
           ]
         }
@@ -74,34 +69,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_sum_of_squares",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_sum_of_squares",
-          "description": "求所有可能图的统计次数平方和"
+          "type": "enumeration",
+          "description": "求所有可能的图被统计次数的平方和，并对给定模数取模"
         }
       }
     ],
-    "description": "求所有可能图的统计次数平方和"
+    "description": "求所有可能的图被统计次数的平方和，并对给定模数取模"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即图的计数可以通过树和边的组合来计算",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在动态规划过程中，状态之间的转移保持一致性，每个状态的值依赖于其前驱状态的值",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在动态规划或分治过程中，各个子问题的解相互独立，互不影响",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过枚举树和加边的方式，每个连通图的计数可以分解为更小规模的子问题",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即图的计数可以通过树和边的组合来计算",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在动态规划过程中，状态之间的转移保持一致性，每个状态的值依赖于其前驱状态的值",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在动态规划或分治过程中，各个子问题的解相互独立，互不影响",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过枚举树和加边的方式，每个连通图的计数可以分解为更小规模的子问题"
+    ]
   }
 }

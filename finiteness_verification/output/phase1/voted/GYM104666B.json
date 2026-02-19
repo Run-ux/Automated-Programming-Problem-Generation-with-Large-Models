@@ -1,0 +1,130 @@
+{
+  "problem_id": "GYM104666B",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "divisibility",
+        "description": "对于任意区间 [i, j]，计算 gcd(a_i, a_{i+1}, ..., a_j) 与 max(a_i, a_{i+1}, ..., a_j) 的乘积 P(i, j)",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "计算所有可能的区间 [i, j] 的 P(i, j) 之和 F(A)",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "最终结果需要对 1000000007 取模",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "divisibility",
+              "description": "对于任意区间 [i, j]，计算 gcd(a_i, a_{i+1}, ..., a_j) 与 max(a_i, a_{i+1}, ..., a_j) 的乘积 P(i, j)",
+              "formal": "P(i, j) = G(i, j) * M(i, j), where G(i, j) = gcd(a_i, a_{i+1}, ..., a_j) and M(i, j) = max(a_i, a_{i+1}, ..., a_j)"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "计算所有可能的区间 [i, j] 的 P(i, j) 之和 F(A)",
+              "formal": "F(A) = sum(P(i, j)) for all 1 <= i <= j <= N"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "最终结果需要对 1000000007 取模",
+              "formal": "result = F(A) % 1000000007"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化所有子数组的GCD与最大值乘积之和，并对结果取模"
+        }
+      }
+    ],
+    "description": "最大化所有子数组的GCD与最大值乘积之和，并对结果取模"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和计算区间的最大值和最小公倍数的乘积，可以将大区间分解为小区间进行计算并合并结果。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建。具体来说，F(A) 的值可以通过计算所有子区间 [i, j] 的 P(i, j) 来得到。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和计算区间的最大值和最小公倍数的乘积，可以将大区间分解为小区间进行计算并合并结果。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建。具体来说，F(A) 的值可以通过计算所有子区间 [i, j] 的 P(i, j) 来得到。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

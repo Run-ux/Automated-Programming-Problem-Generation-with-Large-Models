@@ -1,0 +1,155 @@
+{
+  "problem_id": "CF1106E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "coverage",
+        "description": "每个元素在指定的时间区间内可用（[s_i, t_i]）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "选择某个元素后，需要等待一段时间才能再次选择其他元素（d_i）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimal_play",
+        "description": "在可选的元素中，优先选择权重最大的元素；如果权重相同，则选择冷却时间最长的元素",
+        "confidence": "1/1"
+      },
+      {
+        "name": "frequency_bound",
+        "description": "最多可以进行 m 次干扰操作，每次干扰阻止在该时间点的选择",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "coverage",
+              "description": "每个元素在指定的时间区间内可用（[s_i, t_i]）",
+              "formal": "s_i <= x <= t_i"
+            },
+            {
+              "name": "operation_limit",
+              "description": "选择某个元素后，需要等待一段时间才能再次选择其他元素（d_i）",
+              "formal": "x + d_i"
+            },
+            {
+              "name": "optimal_play",
+              "description": "在可选的元素中，优先选择权重最大的元素；如果权重相同，则选择冷却时间最长的元素",
+              "formal": "max(w_i) or (w_i == w_j and max(d_i))"
+            },
+            {
+              "name": "frequency_bound",
+              "description": "最多可以进行 m 次干扰操作，每次干扰阻止在该时间点的选择",
+              "formal": "m"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "最小化在给定干扰次数下的总权值和"
+        }
+      }
+    ],
+    "description": "最小化在给定干扰次数下的总权值和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每个时间点，选择当前可选的最优解（即最多金币的红包），并根据规则更新后续不可用的时间段。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，在每个时间点，选择当前最优解后，剩余时间段的问题可以独立求解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在每个时间点，根据当前状态（可用的红包和已选择的红包）进行状态转移，确保状态转移的一致性和正确性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每个时间点，选择当前可选的最优解（即最多金币的红包），并根据规则更新后续不可用的时间段。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，在每个时间点，选择当前最优解后，剩余时间段的问题可以独立求解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在每个时间点，根据当前状态（可用的红包和已选择的红包）进行状态转移，确保状态转移的一致性和正确性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

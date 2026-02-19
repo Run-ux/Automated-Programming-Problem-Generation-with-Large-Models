@@ -19,7 +19,7 @@
             "max": 1000000
           },
           "properties": {
-            "inferred": true
+            "weighted": true
           }
         }
       },
@@ -37,7 +37,7 @@
             "max": 1000000
           },
           "properties": {
-            "inferred": true
+            "weighted": true
           }
         }
       },
@@ -55,7 +55,7 @@
             "max": 1000000
           },
           "properties": {
-            "inferred": true
+            "weighted": true
           }
         }
       }
@@ -69,24 +69,24 @@
       "max": 1000000
     },
     "properties": {
-      "inferred": true
+      "weighted": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "max_networks_joinable",
-        "description": "Ali的程序最多可以连接M个WiFi网络。",
+        "name": "sum_constraint",
+        "description": "目标是最大化所选子集的权重和（最大化选定 WiFi 网络的速度总和）",
         "confidence": "3/3"
       },
       {
-        "name": "total_speed_sum",
-        "description": "当Ali的程序连接多个WiFi网络时，总速度是所有连接网络速度的和。",
+        "name": "subset_constraint",
+        "description": "选取的子集大小不超过 M（最多选择 M 个网络）",
         "confidence": "3/3"
       },
       {
-        "name": "network_coverage",
-        "description": "每个WiFi网络覆盖一个以(x, y)为中心，半径为R的圆区域。",
+        "name": "coverage",
+        "description": "所选子集中的元素必须覆盖某个点（所有选定的 WiFi 网络在某一点上都有信号）",
         "confidence": "3/3"
       }
     ],
@@ -97,19 +97,19 @@
         "result": {
           "constraints": [
             {
-              "name": "max_networks_joinable",
-              "description": "Ali的程序最多可以连接M个WiFi网络。",
-              "formal": "0 <= M <= 100"
+              "name": "subset_constraint",
+              "description": "选取的子集大小不超过 M（最多选择 M 个网络）",
+              "formal": "|S| <= M"
             },
             {
-              "name": "network_coverage",
-              "description": "每个WiFi网络覆盖一个以(x, y)为中心，半径为R的圆区域。",
-              "formal": "circle(x, y, R)"
+              "name": "coverage",
+              "description": "所选子集中的元素必须覆盖某个点（所有选定的 WiFi 网络在某一点上都有信号）",
+              "formal": "∃p, ∀s ∈ S, p ∈ s"
             },
             {
-              "name": "total_speed_sum",
-              "description": "当Ali的程序连接多个WiFi网络时，总速度是所有连接网络速度的和。",
-              "formal": "total_speed = sum(S_i) for all connected networks i"
+              "name": "sum_constraint",
+              "description": "目标是最大化所选子集的权重和（最大化选定 WiFi 网络的速度总和）",
+              "formal": "maximize(∑s ∈ S, speed(s))"
             }
           ]
         }
@@ -120,19 +120,19 @@
         "result": {
           "constraints": [
             {
-              "name": "max_networks_joinable",
-              "description": "Ali的程序最多可以连接M个WiFi网络。",
-              "formal": "M <= N"
+              "name": "subset_constraint",
+              "description": "选取的子集大小不超过 M（最多选择 M 个网络）",
+              "formal": "|S| <= M"
             },
             {
-              "name": "network_coverage",
-              "description": "每个WiFi网络覆盖一个以(x, y)为中心，半径为R的圆。",
-              "formal": "distance(point, (x, y)) <= R"
+              "name": "coverage",
+              "description": "所选网络必须覆盖同一个点（所有选中的网络在某一点上都有信号）",
+              "formal": "∃p, ∀i ∈ S, p ∈ circle(i)"
             },
             {
-              "name": "total_speed_sum",
-              "description": "当Ali的程序连接多个网络时，总速度是所有连接网络速度的总和。",
-              "formal": "total_speed = sum(S_i for all connected networks i)"
+              "name": "sum_constraint",
+              "description": "目标是最大化所选网络的速度和（总速度最大）",
+              "formal": "maximize(∑s_i for i in S)"
             }
           ]
         }
@@ -143,24 +143,19 @@
         "result": {
           "constraints": [
             {
-              "name": "max_networks_joinable",
-              "description": "Ali的程序最多可以连接M个WiFi网络。",
-              "formal": "0 <= M <= 100"
+              "name": "subset_constraint",
+              "description": "选取的子集大小不超过 M（最多选择 M 个网络）",
+              "formal": "|S| <= M"
             },
             {
-              "name": "network_coverage",
-              "description": "每个WiFi网络覆盖一个以(x, y)为中心，半径为R的圆。",
-              "formal": "circle(x, y, R)"
+              "name": "coverage",
+              "description": "所选网络必须覆盖同一个点（所有选定的网络在某一点上都有信号）",
+              "formal": "∃p, ∀i ∈ S, p ∈ circle(i)"
             },
             {
-              "name": "total_speed_sum",
-              "description": "当Ali的程序连接多个网络时，结果网络的速度是所有连接网络速度的总和。",
-              "formal": "total_speed = sum(S_i for all connected networks i)"
-            },
-            {
-              "name": "optimal_location",
-              "description": "Ali需要选择一个位置，使得他能获得的最大总WiFi网络速度最大。",
-              "formal": "maximize(total_speed) over all possible (x, y)"
+              "name": "sum_constraint",
+              "description": "目标是最大化所选网络的速度总和",
+              "formal": "maximize(∑s_i for i in S)"
             }
           ]
         }
@@ -168,68 +163,106 @@
     ]
   },
   "objective": {
-    "type": "max_value",
+    "type": "maximize_value",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "max_value",
-          "description": "求在公寓中选择一个位置时，能够连接到的最多M个WiFi网络的最大总速度"
+          "type": "maximize_value",
+          "description": "求在给定点集覆盖下的最大权值和"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "max_value",
-          "description": "求在公寓中选择一个位置时，可以连接的最多M个WiFi网络的最大总速度"
+          "type": "maximize_value",
+          "description": "最大化覆盖点的权值和"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "max_value",
-          "description": "求在公寓中选择一个位置时，可以连接的最多M个WiFi网络的最大总速度"
+          "type": "maximize_value",
+          "description": "最大化覆盖点的权值和"
         }
       }
     ],
-    "description": "求在公寓中选择一个位置时，能够连接到的最多M个WiFi网络的最大总速度"
+    "description": "求在给定点集覆盖下的最大权值和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "3/3",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择最多 M 个网络时，每个子问题的最优解可以用来构建全局最优解。",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，总是选择当前可选范围内速度最大的 WiFi 网络，这种局部最优的选择最终能够导致全局最优解。",
+        "confidence": "3/3",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的最优解可以通过子问题的最优解组合而成，即在选择最多M个WiFi网络时，可以将问题分解为选择前i个WiFi网络中的最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择最多 M 个网络时，每个子问题的最优解可以用来构建全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，总是选择当前可选范围内速度最大的 WiFi 网络，这种局部最优的选择最终能够导致全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的最优解可以通过子问题的最优解组合而成，即在选择加入哪些WiFi网络时，当前最大速度是基于之前选择的最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择最多M个WiFi网络时，每个子问题的最优解可以用来构建全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，总是选择当前局部最优的WiFi网络（即速度最高的网络），最终能够达到全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的最优解可以通过子问题的最优解组合而成，即在选择最多M个WiFi网络时，当前最大速度是基于之前选择的网络速度累加得到的。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择最多M个WiFi网络时，每个子问题的最优解可以用于构建全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，总是选择当前局部最优的WiFi网络（即速度最大的网络），最终能够达到全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "问题的最优解可以通过子问题的最优解组合而成，即在选择最多M个WiFi网络时，可以将问题分解为选择前i个WiFi网络中的最优解。"
+    ]
   }
 }

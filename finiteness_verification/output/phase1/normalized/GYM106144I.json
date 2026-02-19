@@ -1,0 +1,84 @@
+{
+  "problem_id": "GYM106144I",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 3,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 500000
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "操作后，相同颜色的顶点必须属于同一个连通分量（连通性约束）",
+            "formal": "∀ color c, vertices of color c must be in the same connected component after the operation"
+          },
+          {
+            "name": "degree_bound",
+            "description": "树结构中每个顶点的度数不超过 n-1（度数约束）",
+            "formal": "∀ vertex v, degree(v) ≤ n-1"
+          },
+          {
+            "name": "cost_constraint",
+            "description": "每次操作的成本是 k * c，其中 k 是选择的颜色数量，c 是移除的顶点数量（成本约束）",
+            "formal": "cost = k * c, where k is the number of chosen colors and c is the number of removed vertices"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化满足条件的操作总代价"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个子树的最小移除成本可以独立计算并合并以得到整棵树的最小移除成本。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在计算某个子树的最小移除成本时，该子树内部的颜色移除操作不会影响其他子树的移除成本。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在处理子树时，先处理叶子节点再逐步向上处理父节点，确保每个节点在其所有子节点处理完毕后再进行处理。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

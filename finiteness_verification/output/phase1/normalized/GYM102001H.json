@@ -1,0 +1,84 @@
+{
+  "problem_id": "GYM102001H",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": -1,
+          "max": 1
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "sum_constraint",
+            "description": "区间内元素和必须大于等于给定值",
+            "formal": "sum(A[A_i:B_i]) >= C_i for all 1 <= i <= K"
+          },
+          {
+            "name": "existence_requirement",
+            "description": "序列中某些位置的元素是固定的，不能改变",
+            "formal": "P_i = -1 or P_i = 1 implies A[i] = P_i"
+          },
+          {
+            "name": "ordering",
+            "description": "在满足所有约束条件下，序列应为字典序最小的序列",
+            "formal": "Find the lexicographically smallest sequence that satisfies all constraints"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "lexicographic_optimize",
+        "description": "在满足一系列区间和约束条件下，构造字典序最小的序列"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，满足动态规划的基本性质",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：区间和可以通过端点差值计算，适用于前缀和等技术",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：局部最优选择导致全局最优，通过每次选择最小值来构建字典序最小的序列",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

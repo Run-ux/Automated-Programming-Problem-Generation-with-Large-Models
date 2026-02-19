@@ -1,0 +1,145 @@
+{
+  "problem_id": "CF1470C",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 4,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 2,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 4,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 2,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "询问次数限制，最多不超过 1000 次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "每个玩家在每轮操作中将卡片分给左右邻居，具体为：左邻居获得 ⌊x/2⌋ 张卡片，右邻居获得 ⌈x/2⌉ 张卡片（除了一个特定的玩家 p）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_type",
+        "description": "存在一个特殊玩家 p，该玩家在每轮操作中将所有卡片都给右邻居",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "询问次数限制，最多不超过 1000 次",
+              "formal": "query_count <= 1000"
+            },
+            {
+              "name": "state_transition",
+              "description": "每个玩家在每轮操作中将卡片分给左右邻居，具体为：左邻居获得 ⌊x/2⌋ 张卡片，右邻居获得 ⌈x/2⌉ 张卡片（除了一个特定的玩家 p）",
+              "formal": "for each player i: left_neighbor[i] += floor(cards[i] / 2), right_neighbor[i] += ceil(cards[i] / 2)"
+            },
+            {
+              "name": "operation_type",
+              "description": "存在一个特殊玩家 p，该玩家在每轮操作中将所有卡片都给右邻居",
+              "formal": "if player == p: right_neighbor[p] += cards[p]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "确定是否存在一个特定的节点，该节点的行为与其他节点不同"
+        }
+      }
+    ],
+    "description": "确定是否存在一个特定的节点，该节点的行为与其他节点不同"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "玩家手中的卡片数量在每次操作后单调变化，除了冒名顶替者外，所有玩家的卡片数量会逐渐趋于平衡。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "flow_conservation",
+        "description": "卡片总数在整个过程中保持不变，即所有玩家手中的卡片总和始终为 n * k。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对于非冒名顶替者，其左右邻居的卡片传递方式是对称的，即左邻居得到一半，右邻居得到另一半。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "玩家手中的卡片数量在每次操作后单调变化，除了冒名顶替者外，所有玩家的卡片数量会逐渐趋于平衡。",
+              "properties": {}
+            },
+            {
+              "name": "flow_conservation",
+              "description": "卡片总数在整个过程中保持不变，即所有玩家手中的卡片总和始终为 n * k。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对于非冒名顶替者，其左右邻居的卡片传递方式是对称的，即左邻居得到一半，右邻居得到另一半。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

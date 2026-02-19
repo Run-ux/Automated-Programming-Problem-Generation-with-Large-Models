@@ -1,0 +1,82 @@
+{
+  "problem_id": "CF1603D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "divisibility",
+            "description": "区间内所有整数对 (i, j) 的最大公约数必须大于等于区间的左边界 l",
+            "formal": "∀ (i, j), l ≤ i ≤ j ≤ r, gcd(i, j) ≥ l"
+          },
+          {
+            "name": "partition",
+            "description": "将整数 n 分成 k 个严格递增的子区间，每个子区间的右端点小于下一个子区间的左端点",
+            "formal": "0 = x_1 < x_2 < ... < x_k < x_{k+1} = n"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "求所有子区间 c(x_i + 1, x_{i+1}) 的和的最小值",
+            "formal": "min(∑_{i=1}^{k} c(x_i + 1, x_{i+1}))"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化给定区间划分下的特定条件计数和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，即 f(n, k) 的值可以通过子区间 [x_i+1, x_{i+1}] 的 c(x_i+1, x_{i+1}) 的最小和来计算",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "分割点序列 0=x_1 < x_2 < ... < x_k < x_{k+1}=n 单调递增，确保了每个子区间的合法性",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

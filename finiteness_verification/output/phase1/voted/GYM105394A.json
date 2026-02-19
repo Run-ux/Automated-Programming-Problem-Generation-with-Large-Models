@@ -2,14 +2,14 @@
   "problem_id": "GYM105394A",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 1,
             "max": 200000
@@ -39,8 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图中的每个连通分量必须同时被选取（即，如果选取了一个节点，则该节点所在连通分量的所有节点都必须被选取）",
+        "name": "clique_cycle_constraint",
+        "description": "所有被选中的节点及其相邻节点必须同时被选中（团约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "undirected_graph",
+        "description": "图是无向的，即边是双向的",
         "confidence": "1/1"
       }
     ],
@@ -51,8 +56,12 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "图中的每个连通分量必须同时被选取（即，如果选取了一个节点，则该节点所在连通分量的所有节点都必须被选取）"
+              "name": "clique_cycle_constraint",
+              "description": "所有被选中的节点及其相邻节点必须同时被选中（团约束）"
+            },
+            {
+              "name": "undirected_graph",
+              "description": "图是无向的，即边是双向的"
             }
           ]
         }
@@ -60,14 +69,14 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
+          "type": "minimize_value",
           "description": "求覆盖所有节点所需的最小团数"
         }
       }
@@ -75,19 +84,39 @@
     "description": "求覆盖所有节点所需的最小团数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "flow_conservation",
+        "description": "图中的连通分量数量决定了所需的最小存储空间，每个连通分量需要一次完整的运输。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "不同连通分量之间的处理是独立的，可以分别计算每个连通分量的大小并汇总结果。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个连通分量的最大人数决定了整体所需的最小存储空间",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "flow_conservation",
+              "description": "图中的连通分量数量决定了所需的最小存储空间，每个连通分量需要一次完整的运输。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "不同连通分量之间的处理是独立的，可以分别计算每个连通分量的大小并汇总结果。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个连通分量的最大人数决定了整体所需的最小存储空间"
+    ]
   }
 }

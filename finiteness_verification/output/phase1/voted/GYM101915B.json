@@ -2,25 +2,37 @@
   "problem_id": "GYM101915B",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100
           },
           "value_range": {
-            "min": 0,
-            "max": 1000000
+            "x": {
+              "min": 0,
+              "max": 1000
+            },
+            "y": {
+              "min": 0,
+              "max": 1000
+            },
+            "R": {
+              "min": 1,
+              "max": 1000
+            },
+            "S": {
+              "min": 0,
+              "max": 1000000
+            }
           },
-          "properties": {
-            "weighted": true
-          }
+          "properties": {}
         }
       }
     ],
@@ -29,28 +41,40 @@
       "max": 100
     },
     "value_range": {
-      "min": 0,
-      "max": 1000000
+      "x": {
+        "min": 0,
+        "max": 1000
+      },
+      "y": {
+        "min": 0,
+        "max": 1000
+      },
+      "R": {
+        "min": 1,
+        "max": 1000
+      },
+      "S": {
+        "min": 0,
+        "max": 1000000
+      }
     },
-    "properties": {
-      "weighted": true
-    }
+    "properties": {}
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "minimum_element_count_constraint",
+        "name": "subset_constraint",
         "description": "选取的子集大小不超过 M",
         "confidence": "1/1"
       },
       {
-        "name": "region_size_constraint",
-        "description": "选取的点必须在至少一个圆内（即被至少一个 WiFi 网络覆盖）",
+        "name": "coverage",
+        "description": "选择的点必须被选中的 WiFi 网络覆盖",
         "confidence": "1/1"
       },
       {
-        "name": "maximum_sum_constraint",
-        "description": "目标是最大化所选子集的权重和（即网络速度总和）",
+        "name": "sum_constraint",
+        "description": "目标是最大化选中网络的速度总和",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +85,19 @@
         "result": {
           "constraints": [
             {
-              "name": "minimum_element_count_constraint",
+              "name": "subset_constraint",
               "description": "选取的子集大小不超过 M",
               "formal": "|S| <= M"
             },
             {
-              "name": "region_size_constraint",
-              "description": "选取的点必须在至少一个圆内（即被至少一个 WiFi 网络覆盖）",
-              "formal": "∃(x, y) ∈ ∪i=1N Ci, 其中 Ci 是第 i 个 WiFi 网络的覆盖圆"
+              "name": "coverage",
+              "description": "选择的点必须被选中的 WiFi 网络覆盖",
+              "formal": "∀ (x, y) ∈ P, ∃ (cx, cy, R, S) ∈ S, (x - cx)^2 + (y - cy)^2 <= R^2"
             },
             {
-              "name": "maximum_sum_constraint",
-              "description": "目标是最大化所选子集的权重和（即网络速度总和）",
-              "formal": "maximize Σs∈S s, 其中 S 是选取的 WiFi 网络集合"
+              "name": "sum_constraint",
+              "description": "目标是最大化选中网络的速度总和",
+              "formal": "maximize Σ S_i for all selected networks"
             }
           ]
         }
@@ -89,26 +113,46 @@
         "status": "success",
         "result": {
           "type": "maximize_value",
-          "description": "最大化覆盖点的权值和"
+          "description": "求在给定点集上，选择最多M个圆覆盖的点的最大权值和"
         }
       }
     ],
-    "description": "最大化覆盖点的权值和"
+    "description": "求在给定点集上，选择最多M个圆覆盖的点的最大权值和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择最多M个WiFi网络时，可以将问题分解为选择前k个WiFi网络的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，优先选择当前覆盖点且速度最大的WiFi网络，局部最优选择能够导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在选择最多M个WiFi网络时，每个子问题的最优解可以用于构建全局最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择最多M个WiFi网络时，可以将问题分解为选择前k个WiFi网络的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，优先选择当前覆盖点且速度最大的WiFi网络，局部最优选择能够导致全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在选择最多M个WiFi网络时，每个子问题的最优解可以用于构建全局最优解。"
+    ]
   }
 }

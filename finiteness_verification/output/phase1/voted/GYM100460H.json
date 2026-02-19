@@ -2,14 +2,14 @@
   "problem_id": "GYM100460H",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "substring_matching_constraint",
-        "description": "序列中必须出现指定的子串（desmond）",
+        "name": "subsequence_constraint",
+        "description": "序列中存在一个特定的子序列（如 desmond）",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "子串中的字符必须是连续的七个字符",
+        "name": "operation_limit",
+        "description": "操作次数有限制，最多进行 m 次操作",
         "confidence": "1/1"
       },
       {
-        "name": "state_transition_constraint",
-        "description": "序列中的元素可以被更新，但位置不变",
+        "name": "adjacency_relation",
+        "description": "相邻星座的变化是独立的，每次只改变一个星座的形态",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "substring_matching_constraint",
-              "description": "序列中必须出现指定的子串（desmond）",
-              "formal": "存在 i 使得 s[i:i+6] == 'desmond'"
+              "name": "subsequence_constraint",
+              "description": "序列中存在一个特定的子序列（如 desmond）",
+              "formal": "∃ i, s[i:i+7] = 'desmond'"
             },
             {
-              "name": "adjacent_difference",
-              "description": "子串中的字符必须是连续的七个字符",
-              "formal": "s[i:i+6] 中的字符是连续的"
+              "name": "operation_limit",
+              "description": "操作次数有限制，最多进行 m 次操作",
+              "formal": "m ≤ 10^5"
             },
             {
-              "name": "state_transition_constraint",
-              "description": "序列中的元素可以被更新，但位置不变",
-              "formal": "s[a_j] = c_j, 其中 1 ≤ a_j ≤ n"
+              "name": "adjacency_relation",
+              "description": "相邻星座的变化是独立的，每次只改变一个星座的形态",
+              "formal": "∀ j, 1 ≤ a_j ≤ n"
             }
           ]
         }
@@ -81,37 +81,58 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否存在满足条件的子序列，并输出该子序列首次出现时的操作次数"
+          "type": "feasibility",
+          "description": "判断是否存在满足条件的子序列，并在存在时输出最小的操作次数"
         }
       }
     ],
-    "description": "判断是否存在满足条件的子序列，并输出该子序列首次出现时的操作次数"
+    "description": "判断是否存在满足条件的子序列，并在存在时输出最小的操作次数"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每次星座变化后，当前窗口内的字母序列状态可以由前一个状态通过单个字符的替换得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着星座的变化次数增加，找到目标子串“desmond”的机会不会减少，即一旦出现过目标子串，则后续任何时刻都可能存在该子串。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "滑动窗口右端点单调递增，窗口内字符序列的合法性可单调维护",
-          "properties": {
-            "right_monotonic": true,
-            "window_shrinkable": false
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次星座变化后，当前窗口内的字母序列状态可以由前一个状态通过单个字符的替换得到。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着星座的变化次数增加，找到目标子串“desmond”的机会不会减少，即一旦出现过目标子串，则后续任何时刻都可能存在该子串。",
+              "properties": {
+                "right_monotonic": true
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "滑动窗口右端点单调递增，窗口内字符序列的合法性可单调维护"
+    ]
   }
 }

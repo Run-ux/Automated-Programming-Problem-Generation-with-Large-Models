@@ -1,0 +1,120 @@
+{
+  "problem_id": "GYM102279L",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "jump_operation_constraint",
+        "description": "只能在值相等的两个位置之间进行瞬移（图中的边仅连接值相同的节点）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "从起点 u 到终点 v 的路径上，每一步可以向前、向后或瞬移，并且需要计算最小能量消耗",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "jump_operation_constraint",
+              "description": "只能在值相等的两个位置之间进行瞬移（图中的边仅连接值相同的节点）",
+              "formal": "A[i] == A[j] 时，可以从 i 瞬移到 j"
+            },
+            {
+              "name": "path_constraint",
+              "description": "从起点 u 到终点 v 的路径上，每一步可以向前、向后或瞬移，并且需要计算最小能量消耗",
+              "formal": "min_energy(u, v) = min(energy(u, v)) 其中 energy(u, v) 是从 u 到 v 的所有可能路径的能量消耗"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求两点间最短路径长度"
+        }
+      }
+    ],
+    "description": "求两点间最短路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：从起点到终点的最短路径可以通过子路径的最优解组合而成",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：当前位置的状态（能量消耗）可以由前一个位置的状态通过确定的规则转移而来",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：从起点到终点的最短路径可以通过子路径的最优解组合而成",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：当前位置的状态（能量消耗）可以由前一个位置的状态通过确定的规则转移而来",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

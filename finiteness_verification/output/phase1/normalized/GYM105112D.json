@@ -1,0 +1,74 @@
+{
+  "problem_id": "GYM105112D",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 7,
+          "max": 7
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_constraint",
+            "description": "从7天中选择至少d天，从24小时中选择至少h小时",
+            "formal": "选取的天数 |D| >= d, 选取的小时数 |H| >= h"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "在选定的天和小时内，你必须是可用的（即矩阵中的对应位置为'.'）",
+            "formal": "对于所有 (day, hour) ∈ D × H, 矩阵[day][hour] == '.'"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_probability",
+        "description": "最大化在给定约束条件下，选择的子集内元素满足条件的概率"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过选择特定的天数和小时数来最大化可参加会议的概率。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，优先选择当前情况下可使你有最大概率参加会议的天数和小时数。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

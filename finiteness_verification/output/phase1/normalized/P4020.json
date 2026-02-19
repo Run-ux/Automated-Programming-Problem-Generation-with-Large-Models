@@ -1,0 +1,94 @@
+{
+  "problem_id": "P4020",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_tree",
+        "length": {
+          "min": 3,
+          "max": 50000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 10000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "输入的图是一个树结构，即无环且连通的无向图"
+          },
+          {
+            "name": "fixed_position_constraint",
+            "description": "所有叶子节点（度为1的节点）都接地，即电压为0"
+          },
+          {
+            "name": "non_negative_edge_weight",
+            "description": "每条边上的电阻值固定为10000欧姆"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作类型限制为两种：在边上串联电源和查询节点电压"
+          },
+          {
+            "name": "fixed_position_constraint",
+            "description": "可以在任意边上串联多个电源，每个电源有固定的电压值"
+          },
+          {
+            "name": "precision_constraint",
+            "description": "输出的电压值与标准答案相差不超过10^-3"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "查询节点的电压值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在树结构中，每个节点的电压值可以通过其父节点和子节点的电压值进行递推计算。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在树结构中，从叶子节点向根节点的方向进行处理时，可以确保在计算某个节点的电压值时，其所有子节点的电压值已经计算完毕。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：对于树中的对称分支，其电压分布具有对称性，可以通过对称关系简化计算。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

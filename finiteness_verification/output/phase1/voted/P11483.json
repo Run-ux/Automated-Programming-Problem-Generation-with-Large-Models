@@ -1,0 +1,126 @@
+{
+  "problem_id": "P11483",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 50000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 49999
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 50000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 49999
+    },
+    "properties": {
+      "connected": true,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "路径上的所有点都是危险的，需要找到不在任何从母牛到小牛的路径上的点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "图必须是连通的，即存在从母牛位置到小牛位置的路径",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "路径上的所有点都是危险的，需要找到不在任何从母牛到小牛的路径上的点",
+              "formal": "对于任意路径 p_0, p_1, ..., p_k 从 A 到 B，点 p_i (0 ≤ i ≤ k) 是危险的"
+            },
+            {
+              "name": "connectivity",
+              "description": "图必须是连通的，即存在从母牛位置到小牛位置的路径",
+              "formal": "存在路径 p_0, p_1, ..., p_k 使得 p_0 = A 且 p_k = B"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求图中不在任意一条从指定起点到终点路径上的节点数量"
+        }
+      }
+    ],
+    "description": "求图中不在任意一条从指定起点到终点路径上的节点数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "topological_order",
+        "description": "在有向无环图（DAG）中，存在一个拓扑序，使得对于任意边 (u, v)，节点 u 在节点 v 之前。这保证了从母牛到小牛的路径上的点可以按顺序处理。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "在确定安全点的过程中，每个子问题（即每条路径上的点是否安全）可以独立处理，不受其他路径的影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "topological_order",
+              "description": "在有向无环图（DAG）中，存在一个拓扑序，使得对于任意边 (u, v)，节点 u 在节点 v 之前。这保证了从母牛到小牛的路径上的点可以按顺序处理。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "在确定安全点的过程中，每个子问题（即每条路径上的点是否安全）可以独立处理，不受其他路径的影响。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

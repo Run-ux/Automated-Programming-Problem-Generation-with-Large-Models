@@ -1,0 +1,151 @@
+{
+  "problem_id": "CF1037E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 200000
+          },
+          "properties": {
+            "connected": false,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 200000
+    },
+    "properties": {
+      "connected": false,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "degree_bound",
+        "description": "每个节点的度数不超过 k（每个参与者在旅行团中的朋友数量不超过 k）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pairwise_exclusion",
+        "description": "任意两个节点之间最多只有一条边（任意两个人最多只能成为一次朋友）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "clique_size_constraint",
+        "description": "最大团的大小（每天晚上可以参加旅行的最大人数，要求每个人在团内的朋友数量不超过 k）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "degree_bound",
+              "description": "每个节点的度数不超过 k（每个参与者在旅行团中的朋友数量不超过 k）",
+              "formal": "∀v ∈ V, deg(v) ≤ k"
+            },
+            {
+              "name": "pairwise_exclusion",
+              "description": "任意两个节点之间最多只有一条边（任意两个人最多只能成为一次朋友）",
+              "formal": "∀u, v ∈ V, (u, v) ∈ E → (u, v) 不重复"
+            },
+            {
+              "name": "clique_size_constraint",
+              "description": "最大团的大小（每天晚上可以参加旅行的最大人数，要求每个人在团内的朋友数量不超过 k）",
+              "formal": "max |C| s.t. ∀v ∈ C, |{u ∈ C : (u, v) ∈ E}| ≤ k"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求满足条件的最大集合大小"
+        }
+      }
+    ],
+    "description": "求满足条件的最大集合大小"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每一天的最大旅行人数可以通过前一天的状态和当天的新增友谊关系推导出来。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着天数增加，可以参加旅行的人数不会减少，即每天的最大旅行人数是非递减的。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每一天的最大旅行人数计算只依赖于前一天的状态和当天的新增友谊关系，与其他天无关。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每一天的最大旅行人数可以通过前一天的状态和当天的新增友谊关系推导出来。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着天数增加，可以参加旅行的人数不会减少，即每天的最大旅行人数是非递减的。",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每一天的最大旅行人数计算只依赖于前一天的状态和当天的新增友谊关系，与其他天无关。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,180 @@
+{
+  "problem_id": "P13758",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subgraph_transformation",
+        "description": "每次操作后，图的边集会发生变化，新的边集 E' 包含所有点对 (i, j) 之间的边，且边权为 b_i + b_j + C",
+        "confidence": "1/1"
+      },
+      {
+        "name": "spanning_constraint",
+        "description": "需要求出修改后的图 G' 的最小生成树的边权和",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "有 q 次操作，每次操作可以修改某个点的点权或常数 C",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_negative_edge_weight",
+        "description": "所有边权和点权都是非负整数",
+        "confidence": "1/1"
+      },
+      {
+        "name": "special_property_a_constraint",
+        "description": "特殊性质 A：m = n - 1，原有的道路满足对于所有 i ∈ [1, m]，u_i = i, v_i = i + 1（即图是一个链）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "special_property_b_constraint",
+        "description": "特殊性质 B：b_i ≤ b_{i+1} 对于所有 i ∈ [1, n)，且修改时 x > 1，y ≥ b_1（即点权非递减，且修改时保持非递减）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "special_property_c_constraint",
+        "description": "特殊性质 C：修改时 x = 0（即只能修改常数 C）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subgraph_transformation",
+              "description": "每次操作后，图的边集会发生变化，新的边集 E' 包含所有点对 (i, j) 之间的边，且边权为 b_i + b_j + C"
+            },
+            {
+              "name": "spanning_constraint",
+              "description": "需要求出修改后的图 G' 的最小生成树的边权和"
+            },
+            {
+              "name": "operation_limit",
+              "description": "有 q 次操作，每次操作可以修改某个点的点权或常数 C"
+            },
+            {
+              "name": "non_negative_edge_weight",
+              "description": "所有边权和点权都是非负整数"
+            },
+            {
+              "name": "special_property_a_constraint",
+              "description": "特殊性质 A：m = n - 1，原有的道路满足对于所有 i ∈ [1, m]，u_i = i, v_i = i + 1（即图是一个链）"
+            },
+            {
+              "name": "special_property_b_constraint",
+              "description": "特殊性质 B：b_i ≤ b_{i+1} 对于所有 i ∈ [1, n)，且修改时 x > 1，y ≥ b_1（即点权非递减，且修改时保持非递减）"
+            },
+            {
+              "name": "special_property_c_constraint",
+              "description": "特殊性质 C：修改时 x = 0（即只能修改常数 C）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求每次修改后图的最小生成树的边权和"
+        }
+      }
+    ],
+    "description": "求每次修改后图的最小生成树的边权和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每次修改后的最小生成树可以通过之前的最小生成树和新边集的最优解合成",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "matroid_exchange",
+        "description": "拟阵交换性：在每次修改后，新的边集可以替换旧的边集中的某些边，保持最小生成树的性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：新边集的边权可以通过点权和常数C计算，并且这些边可以与原图的边合并来求解最小生成树",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每次修改后的最小生成树可以通过之前的最小生成树和新边集的最优解合成",
+              "properties": {}
+            },
+            {
+              "name": "matroid_exchange",
+              "description": "拟阵交换性：在每次修改后，新的边集可以替换旧的边集中的某些边，保持最小生成树的性质",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：新边集的边权可以通过点权和常数C计算，并且这些边可以与原图的边合并来求解最小生成树",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -2,14 +2,14 @@
   "problem_id": "GYM101810H",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 2000
@@ -35,8 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_sum_maximization",
-        "description": "在给定的数组中，找到所有配对元素和的最大值（每个元素与其对应的配对元素相加）",
+        "name": "exclusion",
+        "description": "每个元素只能与一个特定的其他元素配对（匹配约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "需要找到所有配对中和最大的一对（最大和约束）",
         "confidence": "1/1"
       }
     ],
@@ -47,8 +52,13 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_sum_maximization",
-              "description": "在给定的数组中，找到所有配对元素和的最大值（每个元素与其对应的配对元素相加）"
+              "name": "exclusion",
+              "description": "每个元素只能与一个特定的其他元素配对（匹配约束）"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "需要找到所有配对中和最大的一对（最大和约束）",
+              "formal": "max(h_i + h_{2n-i+1}) for 1 ≤ i ≤ n"
             }
           ]
         }
@@ -64,26 +74,46 @@
         "status": "success",
         "result": {
           "type": "maximize_value",
-          "description": "求所有匹配对中的最大权值和"
+          "description": "求所有匹配对中最大权值和"
         }
       }
     ],
-    "description": "求所有匹配对中的最大权值和"
+    "description": "求所有匹配对中最大权值和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最大幸福度可以通过比较所有匹配对的幸福度来确定，每个匹配对的幸福度是其两个成员幸福度之和。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：朋友的匹配方式是对称的，即第 i 个朋友与第 (2n - i + 1) 个朋友配对，这种对称性保证了每一对朋友的匹配都是唯一的。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个匹配对的幸福值是两个个体幸福值的和，最大幸福值对可以由所有可能的匹配对中选出。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最大幸福度可以通过比较所有匹配对的幸福度来确定，每个匹配对的幸福度是其两个成员幸福度之和。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：朋友的匹配方式是对称的，即第 i 个朋友与第 (2n - i + 1) 个朋友配对，这种对称性保证了每一对朋友的匹配都是唯一的。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个匹配对的幸福值是两个个体幸福值的和，最大幸福值对可以由所有可能的匹配对中选出。"
+    ]
   }
 }

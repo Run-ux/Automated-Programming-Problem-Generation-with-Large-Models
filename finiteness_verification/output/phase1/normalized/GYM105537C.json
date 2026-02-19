@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "weighted_undirected_graph",
         "length": {
           "min": 3,
           "max": 1000000000
@@ -17,7 +17,7 @@
         },
         "properties": {
           "connected": true,
-          "bipartite": false
+          "weighted": false
         }
       }
     }
@@ -29,14 +29,19 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
+            "name": "coloring_constraint",
             "description": "相邻节点取值不同（图着色约束）",
-            "formal": "对于任意相邻节点 u 和 v，color[u] ≠ color[v]"
+            "formal": "对于所有相邻的节点 u 和 v，颜色 c(u) ≠ c(v)"
           },
           {
-            "name": "edge_exclusion_constraint",
-            "description": "边不相交（除了端点外）",
-            "formal": "对于任意两条边 (u1, v1) 和 (u2, v2)，若 (u1, v1) ≠ (u2, v2)，则它们在内部不相交"
+            "name": "planarity",
+            "description": "图形必须是平面图（无交叉边）",
+            "formal": "所有边不相交，除了在端点处"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过 2m/n + 2（考虑切分后的连通性）",
+            "formal": "对于每个节点 u，deg(u) ≤ 2m/n + 2"
           }
         ]
       }
@@ -47,8 +52,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "计算满足条件的着色方案数量"
+        "type": "enumeration",
+        "description": "求满足条件的着色方案数（模998244353）"
       }
     }
   ],
@@ -57,12 +62,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的",
-        "properties": {
-          "subproblems_independent": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，每个子问题的解是独立且最优的。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理每个切分时，当前状态可以由前一个状态通过一致的规则进行转移。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：不同切分形成的子区间的信息可以通过合并操作得到整个区间的解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

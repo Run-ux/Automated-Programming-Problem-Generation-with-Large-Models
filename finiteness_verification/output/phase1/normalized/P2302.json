@@ -1,0 +1,85 @@
+{
+  "problem_id": "P2302",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 3000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 3000
+        },
+        "properties": {
+          "connected": true,
+          "triangle_free": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "图中不存在三角形，即没有三个节点两两相邻（无三元环）"
+          },
+          {
+            "name": "connectivity",
+            "description": "图是连通的，即从任意一个节点可以到达其他所有节点"
+          },
+          {
+            "name": "turn_based",
+            "description": "回合制操作，每回合由 loidc 先移动，然后 cony 移动"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "每个节点只能移动到与其相邻的节点"
+          },
+          {
+            "name": "state_transition",
+            "description": "如果 loidc 和 cony 在同一节点相遇，则游戏结束"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一条路径使得两个人在最少的回合数内相遇，如果存在则输出最少回合数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在无环图中，存在一个顶点的线性排序，使得对于每一条有向边 (u, v)，u 在排序中都出现在 v 之前。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最短路径最优子结构：从起点到终点的最短路径上的每一个子路径也是最短路径。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "problem_id": "CF1288E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 300000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "permutation_constraint",
+            "description": "输入的初始序列是一个排列，每个元素从1到n恰好出现一次"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每次操作将一个指定元素移动到序列的第一个位置，其余元素依次后移一位"
+          },
+          {
+            "name": "state_transition",
+            "description": "需要跟踪每个元素在所有操作过程中的最小和最大位置"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "min_max",
+        "description": "对于每个元素，求其在一系列操作后的最小和最大位置"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "在处理每个消息时，朋友的位置变化是单调的。每次将一个朋友移动到第一位时，其他朋友的位置只会向后移动一位。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "每次消息处理后，朋友的位置状态会按照固定的规则进行转移。具体来说，当前被移动的朋友位置变为1，其余朋友位置依次后移。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "每个朋友的位置变化独立于其他朋友的位置变化。处理每个消息时，只影响当前被移动的朋友及其之后的朋友位置。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

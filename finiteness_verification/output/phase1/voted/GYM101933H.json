@@ -1,0 +1,143 @@
+{
+  "problem_id": "GYM101933H",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": false,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": false,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "选取元素权重和不超过容量上限（机器人割草机的总工作时间必须足够在一周内完成整个草坪的割草任务）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制（机器人割草机在一周内至少需要完成一次完整的草坪割草任务）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "选取元素权重和不超过容量上限（机器人割草机的总工作时间必须足够在一周内完成整个草坪的割草任务）",
+              "formal": "c * t * (T / (t + r)) >= l, 对所有正整数 T"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制（机器人割草机在一周内至少需要完成一次完整的草坪割草任务）",
+              "formal": "c * t * (10080 / (t + r)) >= l"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "在满足特定条件的选项中，选择具有最小代价的方案"
+        }
+      }
+    ],
+    "description": "在满足特定条件的选项中，选择具有最小代价的方案"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "时间推进过程中，草坪修剪和充电状态的转换是单调的，即每次完成修剪后立即进入充电状态，充电完成后立即开始下一次修剪。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解组合得到。具体来说，选择最便宜且满足条件的割草机可以看作是在所有可行方案中选择最优的一个。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "在满足每周至少修剪一次草坪的前提下，选择价格最低的割草机。这种局部最优选择能够保证全局最优。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "时间推进过程中，草坪修剪和充电状态的转换是单调的，即每次完成修剪后立即进入充电状态，充电完成后立即开始下一次修剪。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解可以通过子问题的最优解组合得到。具体来说，选择最便宜且满足条件的割草机可以看作是在所有可行方案中选择最优的一个。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "在满足每周至少修剪一次草坪的前提下，选择价格最低的割草机。这种局部最优选择能够保证全局最优。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

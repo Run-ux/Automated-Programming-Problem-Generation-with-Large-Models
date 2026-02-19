@@ -2,14 +2,14 @@
   "problem_id": "CF380C",
   "source": "codeforces",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1000000
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "valid_position_count",
-        "description": "子序列必须是有效的括号序列（即每个左括号都有一个对应的右括号，并且顺序正确）",
+        "name": "subsequence_constraint",
+        "description": "子序列必须是合法的括号序列（即每个左括号都有对应的右括号且顺序正确）",
         "confidence": "1/1"
       },
       {
-        "name": "query_range_validity",
-        "description": "查询区间内的最大有效括号子序列长度",
+        "name": "range_bound",
+        "description": "查询区间 [l, r] 必须在字符串 s 的范围内",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "valid_position_count",
-              "description": "子序列必须是有效的括号序列（即每个左括号都有一个对应的右括号，并且顺序正确）"
+              "name": "subsequence_constraint",
+              "description": "子序列必须是合法的括号序列（即每个左括号都有对应的右括号且顺序正确）",
+              "formal": "对于子序列 s[l:r]，存在一个排列 p 使得 s[p[1]], s[p[2]], ..., s[p[k]] 是合法的括号序列"
             },
             {
-              "name": "query_range_validity",
-              "description": "查询区间内的最大有效括号子序列长度"
+              "name": "range_bound",
+              "description": "查询区间 [l, r] 必须在字符串 s 的范围内",
+              "formal": "1 ≤ l ≤ r ≤ n"
             }
           ]
         }
@@ -84,21 +86,39 @@
     "description": "求满足条件的最长子序列长度"
   },
   "invariant": {
-    "name": "interval_mergeable",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：可以通过子区间的解来合并得到更大区间的解，适用于线段树等数据结构",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最大正确括号子序列的长度可以通过子问题的最优解来计算",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间信息可通过子区间合并，适用于处理区间查询问题",
-          "properties": {
-            "mergeable": true
-          }
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：可以通过子区间的解来合并得到更大区间的解，适用于线段树等数据结构",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最大正确括号子序列的长度可以通过子问题的最优解来计算",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "区间信息可通过子区间合并，适用于处理区间查询问题"
+    ]
   }
 }

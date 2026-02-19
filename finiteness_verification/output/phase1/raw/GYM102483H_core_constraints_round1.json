@@ -6,24 +6,14 @@
   "result": {
     "constraints": [
       {
-        "name": "bit_changes_exactly_c",
-        "description": "位串中相邻位不同值的次数必须恰好为 c（即，位变化数必须等于给定值）",
-        "formal": "sum(1 for i in range(1, n) if bit[i] != bit[i-1]) == c"
+        "name": "bit_change_count",
+        "description": "位串中相邻位不同的数量必须恰好为 c",
+        "formal": "sum(1 for i in range(n-1) if s[i] != s[i+1]) == c"
       },
       {
         "name": "fixed_bits",
-        "description": "某些指定位置的位值必须固定为 0（即，存在一些固定的 0 位）",
-        "formal": "bit[z_i] = 0 for all z_i in {z_1, z_2, ..., z_b}"
-      },
-      {
-        "name": "first_bit_one",
-        "description": "第一位必须是 1（即，序列的第一个元素固定）",
-        "formal": "bit[0] = 1"
-      },
-      {
-        "name": "last_bit_zero",
-        "description": "最后一位必须是 0（即，序列的最后一个元素固定）",
-        "formal": "bit[n-1] = 0"
+        "description": "某些指定位置的位必须固定为 0，且第一个位不能是 0，最后一个位必须是 0",
+        "formal": "s[0] == '1' and s[n-1] == '0' and all(s[z_i-1] == '0' for z_i in broken_bits)"
       }
     ]
   },

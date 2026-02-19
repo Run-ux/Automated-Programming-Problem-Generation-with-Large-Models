@@ -1,0 +1,123 @@
+{
+  "problem_id": "GYM100488G",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 2,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 2,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "选取元素权重和不超过容量上限（总金额 s）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "数组必须非递减（每种硬币的面值是非递减的）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "选取元素权重和不超过容量上限（总金额 s）"
+            },
+            {
+              "name": "ordering",
+              "description": "数组必须非递减（每种硬币的面值是非递减的）",
+              "formal": "a[i] <= a[i+1] for all i in [0, n-2]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求满足条件的最小计数（最少硬币数量）"
+        }
+      }
+    ],
+    "description": "求满足条件的最小计数（最少硬币数量）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即支付总金额 s 的最少硬币数可以由支付更小金额的最少硬币数组合得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择当前可用的最大面值硬币，能够保证局部最优解导致全局最优解。即在每一步都选择最大面值的硬币来减少剩余金额，最终使用的硬币数量最少。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即支付总金额 s 的最少硬币数可以由支付更小金额的最少硬币数组合得到。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择当前可用的最大面值硬币，能够保证局部最优解导致全局最优解。即在每一步都选择最大面值的硬币来减少剩余金额，最终使用的硬币数量最少。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

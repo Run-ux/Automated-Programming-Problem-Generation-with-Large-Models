@@ -2,14 +2,14 @@
   "problem_id": "CF1545C",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 5,
             "max": 500
@@ -19,6 +19,7 @@
             "max": 500
           },
           "properties": {
+            "ordered": false,
             "inferred": true
           }
         }
@@ -33,29 +34,30 @@
       "max": 500
     },
     "properties": {
+      "ordered": false,
       "inferred": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "latin_square_structure",
-        "description": "矩阵的每一行和每一列都是从 1 到 n 的排列（拉丁方约束）",
+        "name": "bipartiteness",
+        "description": "矩阵的每一行和每一列都是一个从 1 到 n 的排列（拉丁方约束）",
         "confidence": "1/1"
       },
       {
-        "name": "pairwise_exclusion",
-        "description": "对于所有 2n 个数组，任意两个数组不完全相同（即存在至少一个位置上的元素不同）",
+        "name": "exclusion",
+        "description": "任意两个数组不完全相同，即存在至少一个位置使得两个数组在该位置的元素不同（互斥约束）",
         "confidence": "1/1"
       },
       {
-        "name": "intersection_constraint",
-        "description": "对于前 n 个数组中的每一个，都存在至少一个位置 k，使得第 i 个数组和第 (n + i) 个数组在位置 k 上的元素相同",
+        "name": "subset_constraint",
+        "description": "需要找到大小为 n 的子集，使得这些子集构成一个拉丁方（子集约束）",
         "confidence": "1/1"
       },
       {
-        "name": "subset_latin_square_constraint",
-        "description": "需要找到大小为 n 的子集，使得这些子集构成一个拉丁方",
+        "name": "permutation_constraint",
+        "description": "每个数组是一个从 1 到 n 的排列（排列约束）",
         "confidence": "1/1"
       }
     ],
@@ -66,20 +68,20 @@
         "result": {
           "constraints": [
             {
-              "name": "latin_square_structure",
-              "description": "矩阵的每一行和每一列都是从 1 到 n 的排列（拉丁方约束）"
+              "name": "bipartiteness",
+              "description": "矩阵的每一行和每一列都是一个从 1 到 n 的排列（拉丁方约束）"
             },
             {
-              "name": "pairwise_exclusion",
-              "description": "对于所有 2n 个数组，任意两个数组不完全相同（即存在至少一个位置上的元素不同）"
+              "name": "exclusion",
+              "description": "任意两个数组不完全相同，即存在至少一个位置使得两个数组在该位置的元素不同（互斥约束）"
             },
             {
-              "name": "intersection_constraint",
-              "description": "对于前 n 个数组中的每一个，都存在至少一个位置 k，使得第 i 个数组和第 (n + i) 个数组在位置 k 上的元素相同"
+              "name": "subset_constraint",
+              "description": "需要找到大小为 n 的子集，使得这些子集构成一个拉丁方（子集约束）"
             },
             {
-              "name": "subset_latin_square_constraint",
-              "description": "需要找到大小为 n 的子集，使得这些子集构成一个拉丁方"
+              "name": "permutation_constraint",
+              "description": "每个数组是一个从 1 到 n 的排列（排列约束）"
             }
           ]
         }
@@ -87,37 +89,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的子集数量"
+          "type": "enumeration",
+          "description": "求满足条件的子集数量，并输出一个符合条件的子集"
         }
       }
     ],
-    "description": "统计满足条件的子集数量"
+    "description": "求满足条件的子集数量，并输出一个符合条件的子集"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合得到，即通过选择合适的n个数组形成拉丁方阵的问题可以分解为更小规模的选择问题",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在选择n个数组以形成拉丁方阵的过程中，每个子问题的选择是独立的，不会影响其他子问题的选择",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "exchange_argument",
+        "description": "交换论证：如果存在两个数组A和B，其中A在当前选择中而B不在，且将A替换为B后仍然满足拉丁方阵的条件，则说明当前选择不是最优的，需要进行调整",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解都是独立且最优的",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinability": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解组合得到，即通过选择合适的n个数组形成拉丁方阵的问题可以分解为更小规模的选择问题",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在选择n个数组以形成拉丁方阵的过程中，每个子问题的选择是独立的，不会影响其他子问题的选择",
+              "properties": {}
+            },
+            {
+              "name": "exchange_argument",
+              "description": "交换论证：如果存在两个数组A和B，其中A在当前选择中而B不在，且将A替换为B后仍然满足拉丁方阵的条件，则说明当前选择不是最优的，需要进行调整",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解都是独立且最优的"
+    ]
   }
 }

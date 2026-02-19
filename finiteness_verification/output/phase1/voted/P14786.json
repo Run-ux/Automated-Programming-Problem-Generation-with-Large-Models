@@ -1,0 +1,161 @@
+{
+  "problem_id": "P14786",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 2,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 2,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "所有起始楼层和目标楼层都是唯一的，没有重复",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "电梯从第一层开始，每次只能移动一层楼，且不能在中间楼层停留",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "电梯可以选择去接未上车的乘客或送已上车的乘客到目的地，但不能在中途停留",
+        "confidence": "1/1"
+      },
+      {
+        "name": "capacity_constraint",
+        "description": "电梯可以同时容纳所有乘客，不需要分批运送",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "所有起始楼层和目标楼层都是唯一的，没有重复",
+              "formal": "∀i, j (i ≠ j) => (s_i ≠ s_j ∧ f_i ≠ f_j ∧ s_i ≠ f_j)"
+            },
+            {
+              "name": "ordering",
+              "description": "电梯从第一层开始，每次只能移动一层楼，且不能在中间楼层停留",
+              "formal": "电梯从第1层开始，每次移动一个单位时间到达下一个楼层"
+            },
+            {
+              "name": "path_constraint",
+              "description": "电梯可以选择去接未上车的乘客或送已上车的乘客到目的地，但不能在中途停留",
+              "formal": "电梯路径为一系列直接移动，不包含中间停留"
+            },
+            {
+              "name": "capacity_constraint",
+              "description": "电梯可以同时容纳所有乘客，不需要分批运送",
+              "formal": "电梯容量 ≥ n"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化路径上的总时间"
+        }
+      }
+    ],
+    "description": "最大化路径上的总时间"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即电梯在每个时刻选择下一个楼层时，总是基于当前状态下的最优决策。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：电梯的移动方向是单调的，即每次移动都是从当前楼层到目标楼层，且不会在中间楼层停留。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步决策中，电梯总是选择能够最大化总时间的下一步动作，即选择当前最优的乘客上车或下车。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即电梯在每个时刻选择下一个楼层时，总是基于当前状态下的最优决策。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：电梯的移动方向是单调的，即每次移动都是从当前楼层到目标楼层，且不会在中间楼层停留。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步决策中，电梯总是选择能够最大化总时间的下一步动作，即选择当前最优的乘客上车或下车。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

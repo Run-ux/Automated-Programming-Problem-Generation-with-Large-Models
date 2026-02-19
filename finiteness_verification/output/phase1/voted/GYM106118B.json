@@ -1,0 +1,134 @@
+{
+  "problem_id": "GYM106118B",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "range_bound",
+        "description": "区间内元素值的变化范围有限制",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subsequence_constraint",
+        "description": "区间内的元素可以被统一增加一个固定值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "区间内相邻元素差值的绝对值之和需要计算",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "range_bound",
+              "description": "区间内元素值的变化范围有限制",
+              "formal": "对于所有操作，1 ≤ a_i, x ≤ 10^9"
+            },
+            {
+              "name": "subsequence_constraint",
+              "description": "区间内的元素可以被统一增加一个固定值",
+              "formal": "对于 t = 1 的操作，a[l:r] += x"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "区间内相邻元素差值的绝对值之和需要计算",
+              "formal": "对于 t = 2 的操作，计算 ∑_{i=l}^{r-1} |a_{i+1} - a_i|"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求路径上相邻节点权值差的绝对值之和的最小值"
+        }
+      }
+    ],
+    "description": "求路径上相邻节点权值差的绝对值之和的最小值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：区间的总努力成本可以通过端点差值计算，即任意子区间内的高度差之和可以由其端点的高度差累加得到",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：通过线段树等数据结构维护的区间信息，可以在处理区间更新或查询时，将子区间的信息合并以获得父区间的有效信息",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：区间的总努力成本可以通过端点差值计算，即任意子区间内的高度差之和可以由其端点的高度差累加得到",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：通过线段树等数据结构维护的区间信息，可以在处理区间更新或查询时，将子区间的信息合并以获得父区间的有效信息",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -29,18 +29,21 @@
       "result": {
         "constraints": [
           {
-            "name": "directed_acyclic_graph",
-            "description": "函数调用图中无环（避免无限递归）"
+            "name": "acyclicity",
+            "description": "函数调用图中不存在环（无环性）"
           },
           {
-            "name": "minimum_operation_count_constraint",
-            "description": "每个函数的总执行时间等于其基础执行时间加上所有直接调用的函数的总执行时间之和",
+            "name": "sum_constraint",
+            "description": "每个函数的总执行时间是其基础执行时间和所有直接调用函数的总执行时间之和",
             "formal": "T(i) = B_i + ∑_{j ∈ C(i)} T(j)"
           },
           {
-            "name": "global_optimization_objective",
-            "description": "查询结果的汇总计算方式为：∑_{k=1}^q k * T(i_k) mod (10^9 + 7)",
-            "formal": "(∑_{k=1}^q k * T(i_k)) % (10^9 + 7)"
+            "name": "state_transition",
+            "description": "更新操作会改变函数的基础执行时间，查询操作需要考虑所有之前的更新"
+          },
+          {
+            "name": "operation_limit",
+            "description": "事件列表中至少包含一个查询操作"
           }
         ]
       }
@@ -52,7 +55,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "最大化加权路径和"
+        "description": "计算所有查询函数的总执行时间加权和，并取模"
       }
     }
   ],
@@ -61,9 +64,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：每个函数的总执行时间由其基础执行时间和它直接调用的所有函数的总执行时间组成，满足递归定义下的最优解组合性质",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个函数的总执行时间由其基础执行时间和它直接调用的所有函数的总执行时间组成，满足递归定义的最优子结构。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：由于函数调用图中没有环，可以按照拓扑序处理所有函数，确保在计算某个函数的总执行时间时，所有它直接或间接调用的函数已经计算完毕。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

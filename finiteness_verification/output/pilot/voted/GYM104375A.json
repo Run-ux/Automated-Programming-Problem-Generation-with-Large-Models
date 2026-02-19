@@ -19,7 +19,7 @@
             "max": 20
           },
           "properties": {
-            "inferred": true
+            "ordered": false
           }
         }
       },
@@ -55,7 +55,7 @@
             "max": 20
           },
           "properties": {
-            "inferred": true
+            "ordered": false
           }
         }
       }
@@ -69,19 +69,14 @@
       "max": 20
     },
     "properties": {
-      "inferred": true
+      "ordered": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "name_format",
-        "description": "每个名字中的单词仅由小写字母组成",
-        "confidence": "3/3"
-      },
-      {
-        "name": "distinct_values",
-        "description": "每个名字的首字母组合必须唯一，如果两个或多个名字的首字母组合相同，则视为同一个NAME",
+        "name": "distinctness",
+        "description": "生成的别名必须唯一，即每个别名只能出现一次",
         "confidence": "3/3"
       }
     ],
@@ -92,12 +87,8 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_values",
-              "description": "每个名字的首字母组合必须唯一，如果两个或多个名字的首字母组合相同，则视为同一个NAME"
-            },
-            {
-              "name": "name_format",
-              "description": "每个名字中的单词仅由小写字母组成"
+              "name": "distinctness",
+              "description": "生成的别名必须唯一，即每个别名只能出现一次"
             }
           ]
         }
@@ -108,14 +99,8 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_values",
-              "description": "每个名字的首字母组合成的NAME必须是唯一的，如果两个或多个名字生成相同的NAME，则这些NAME不再被视为独特。",
-              "formal": "For all i, j (i != j), if NAME(i) == NAME(j), then NAME(i) is not unique."
-            },
-            {
-              "name": "name_format",
-              "description": "每个名字由若干个单词组成，每个单词只包含小写字母。每个名字的首字母组合成一个NAME。",
-              "formal": "Each name is a sequence of words, where each word consists only of lowercase letters. The NAME is the concatenation of the first letters of each word in the name."
+              "name": "distinctness",
+              "description": "生成的别名必须唯一，即不同的人不能有相同的别名"
             }
           ]
         }
@@ -126,12 +111,8 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_values",
-              "description": "每个名字的首字母组合必须是唯一的，否则会失去其独特性"
-            },
-            {
-              "name": "name_format",
-              "description": "每个名字中的单词只能包含小写字母"
+              "name": "distinctness",
+              "description": "生成的别名必须唯一，即不同的人不能有相同的别名"
             }
           ]
         }
@@ -139,70 +120,106 @@
     ]
   },
   "objective": {
-    "type": "count",
+    "type": "maximize_count",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计唯一NAME的数量"
+          "type": "maximize_count",
+          "description": "求不同字符串的数量"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计唯一NAME的数量"
+          "type": "maximize_count",
+          "description": "求不同字符串的数量"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计唯一NAME的数量"
+          "type": "maximize_count",
+          "description": "求不同字符串的数量"
         }
       }
     ],
-    "description": "统计唯一NAME的数量"
+    "description": "求不同字符串的数量"
   },
   "invariant": {
-    "name": "state_dependency",
-    "confidence": "3/3",
+    "invariants": [
+      {
+        "name": "hash_invariance",
+        "description": "哈希不变量：通过哈希函数将每个名字转换为唯一的标识符，确保相同的名字具有相同的哈希值，不同的名字具有不同的哈希值。",
+        "confidence": "2/3",
+        "properties": {}
+      },
+      {
+        "name": "set_uniqueness",
+        "description": "集合唯一性不变量：使用集合数据结构存储所有生成的 NAME，集合自动保证元素的唯一性。",
+        "confidence": "3/3",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "state_dependency",
-          "description": "每个名字的别名只依赖于该名字中的每个单词的首字母，与其他名字无关",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "hash_invariance",
+              "description": "哈希不变量：通过哈希函数将每个名字转换为唯一的标识符，确保相同的名字具有相同的哈希值，不同的名字具有不同的哈希值。",
+              "properties": {}
+            },
+            {
+              "name": "set_uniqueness",
+              "description": "集合唯一性不变量：使用集合数据结构存储所有生成的 NAME，集合自动保证元素的唯一性。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "state_dependency",
-          "description": "每个名字的别名只依赖于该名字本身的首字母，与其他名字无关",
-          "properties": {
-            "current_state_depend_on_previous": false
-          }
+          "invariants": [
+            {
+              "name": "set_uniqueness",
+              "description": "集合唯一性：通过将每个名字转换为NAME并存储在集合中，确保所有NAME的唯一性",
+              "properties": {}
+            },
+            {
+              "name": "prefix_decomposability",
+              "description": "前缀可分解性：每个名字可以分解为其各个单词的首字母组合，形成唯一的NAME",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "state_dependency",
-          "description": "每个名字的别名只依赖于该名字中每个单词的首字母，与其他名字无关",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "hash_invariance",
+              "description": "哈希值唯一性：每个名字的首字母组合生成的哈希值是唯一的，用于标识不同的NAME",
+              "properties": {}
+            },
+            {
+              "name": "set_uniqueness",
+              "description": "集合不变量：在处理过程中，已处理的名字集合始终保持不变，新名字加入时只更新集合状态",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "每个名字的别名只依赖于该名字中的每个单词的首字母，与其他名字无关"
+    ]
   }
 }

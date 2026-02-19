@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 5,
           "max": 5
@@ -28,14 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "bottleneck_path",
-            "description": "每个节点的权重和不超过其容量上限（每队球员收到黄牌数量达到上限后被罚下）",
-            "formal": "对于每个节点 i，∑(yellow_cards[i]) ≤ capacity[i]"
+            "name": "frequency_bound",
+            "description": "每个元素的出现次数不超过给定上限（第一队球员收到黄牌次数不超过 k1，第二队球员收到黄牌次数不超过 k2）",
+            "formal": "对于每个玩家 i, count(yellow_cards[i]) <= k1 (如果 i 属于第一队) 或 count(yellow_cards[i]) <= k2 (如果 i 属于第二队)"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "选择的元素不能重复（每张黄牌只能给一个球员）",
-            "formal": "对于每张黄牌 j，存在唯一的球员 i 使得 yellow_cards[i] 包含 j"
+            "name": "subset_constraint",
+            "description": "所有黄牌分配方案必须是总黄牌数 n 的子集分配（即黄牌总数固定为 n）",
+            "formal": "sum(yellow_cards) == n"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制（每个球员最多被罚下一次，且一旦被罚下就不能再收到黄牌）",
+            "formal": "对于每个玩家 i, if count(yellow_cards[i]) >= k1 (如果 i 属于第一队) 或 count(yellow_cards[i]) >= k2 (如果 i 属于第二队), 则 player_i 不能再收到黄牌"
           }
         ]
       }
@@ -46,8 +51,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "计算在给定条件下，可能被移除的元素数量的最小值和最大值"
+        "type": "min_max",
+        "description": "求在给定条件下，最小和最大可能的被移除元素数量"
       }
     }
   ],
@@ -56,9 +61,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即通过计算不同分配方案下的最小和最大被罚出场球员数来确定整体的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即最小和最大被罚下场的球员数可以通过计算每个子问题（每张黄牌分配给哪个队的哪名球员）的最优解来确定。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：为了最大化或最小化被罚下场的球员数，可以采用一种局部最优策略，例如优先将黄牌分配给即将达到罚下条件的球员，或者尽可能分散黄牌以减少被罚下的人数。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

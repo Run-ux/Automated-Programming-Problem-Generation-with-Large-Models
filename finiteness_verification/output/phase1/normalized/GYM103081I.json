@@ -1,0 +1,79 @@
+{
+  "problem_id": "GYM103081I",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（所有读者最终能够互相获取到对方的邮箱地址）"
+          },
+          {
+            "name": "acyclicity",
+            "description": "图是无向的（如果读者 i 有读者 j 的邮箱地址，则读者 j 也有读者 i 的邮箱地址）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种方案使得所有节点在有限步内互相可达，并输出最小步数或-1表示不可行"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "flow_conservation",
+            "description": "连通性：在每一轮信息传递后，所有读者之间的连通关系保持不变或增加，最终形成一个完全连通图或多个不连通的子图。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：每一轮信息传递后，拥有其他读者邮箱地址的数量非严格递增，直到达到稳定状态。",
+            "properties": {
+              "non_decreasing": true
+            }
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个连通分量内的信息传递过程是独立的，不同连通分量之间不会互相影响。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

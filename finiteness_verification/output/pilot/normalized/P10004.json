@@ -6,14 +6,14 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "matrix",
         "length": {
           "min": 2,
           "max": 500
         },
         "value_range": {
           "min": 1,
-          "max": 1000000000
+          "max": 1000000007
         },
         "properties": {
           "inferred": true
@@ -24,17 +24,17 @@
       "round": 2,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "matrix",
         "length": {
-          "min": 2,
-          "max": 2
-        },
-        "value_range": {
           "min": 1,
           "max": 500
         },
+        "value_range": {
+          "min": 1000000000,
+          "max": 1010000000
+        },
         "properties": {
-          "inferred": true
+          "ordered": false
         }
       }
     },
@@ -42,9 +42,9 @@
       "round": 3,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "matrix",
         "length": {
-          "min": 2,
+          "min": 1,
           "max": 2
         },
         "value_range": {
@@ -52,7 +52,7 @@
           "max": 500
         },
         "properties": {
-          "inferred": true
+          "prime_modulo": true
         }
       }
     }
@@ -64,14 +64,24 @@
       "result": {
         "constraints": [
           {
-            "name": "ascending_pairs_count",
-            "description": "排列 p 中相邻元素递增的对数必须等于 x",
-            "formal": "sum([p[i] < p[i+1] for i in range(n-1)]) == x"
+            "name": "pair_count_constraint",
+            "description": "排列中相邻元素递增的对数等于 x",
+            "formal": "sum([p_i < p_{i+1} for i in range(1, n)]) == x"
           },
           {
-            "name": "inverse_ascending_pairs_count",
-            "description": "排列 p 的逆排列 p^{-1} 中相邻元素递增的对数必须等于 y",
-            "formal": "sum([p_inv[i] < p_inv[i+1] for i in range(n-1)]) == y"
+            "name": "pair_count_constraint",
+            "description": "逆排列中相邻元素递增的对数等于 y",
+            "formal": "sum([p^{-1}_i < p^{-1}_{i+1} for i in range(1, n)]) == y"
+          },
+          {
+            "name": "permutation_constraint",
+            "description": "给定的序列是 1 到 n 的排列",
+            "formal": "p 是 1 到 n 的一个排列"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "答案对给定的质数 MOD 取模",
+            "formal": "结果 % MOD"
           }
         ]
       }
@@ -82,14 +92,14 @@
       "result": {
         "constraints": [
           {
-            "name": "ascending_pairs_count",
-            "description": "排列 p 中相邻元素升序对的数量必须等于 x",
-            "formal": "sum([p[i] < p[i+1] for i in range(n-1)]) == x"
+            "name": "pair_count_constraint",
+            "description": "排列中相邻元素递增的对数等于 x",
+            "formal": "sum([p_i < p_{i+1} for i in range(1, n)]) == x"
           },
           {
-            "name": "inverse_ascending_pairs_count",
-            "description": "排列 p 的逆排列 p^{-1} 中相邻元素升序对的数量必须等于 y",
-            "formal": "sum([p_inv[i] < p_inv[i+1] for i in range(n-1)]) == y"
+            "name": "pair_count_constraint",
+            "description": "逆排列中相邻元素递增的对数等于 y",
+            "formal": "sum([p^{-1}_i < p^{-1}_{i+1} for i in range(1, n)]) == y"
           }
         ]
       }
@@ -100,14 +110,14 @@
       "result": {
         "constraints": [
           {
-            "name": "ascending_pairs_count_x",
-            "description": "排列 p 中满足 p_i < p_{i+1} 的 i 的数量必须等于 x",
-            "formal": "sum([p[i] < p[i + 1] for i in range(n - 1)]) == x"
+            "name": "pair_count_constraint",
+            "description": "排列中相邻元素递增的对数等于 x",
+            "formal": "sum([p[i] < p[i+1] for i in range(n-1)]) == x"
           },
           {
-            "name": "inverse_ascending_pairs_count_y",
-            "description": "排列 p 的逆排列 p^{-1} 中满足 p^{-1}_i < p^{-1}_{i+1} 的 i 的数量必须等于 y",
-            "formal": "sum([p_inv[i] < p_inv[i + 1] for i in range(n - 1)]) == y"
+            "name": "pair_count_constraint",
+            "description": "逆排列中相邻元素递增的对数等于 y",
+            "formal": "sum([p_inv[i] < p_inv[i+1] for i in range(n-1)]) == y"
           }
         ]
       }
@@ -118,24 +128,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "对于每组 x, y，求出满足条件的排列 p 的数量"
+        "type": "enumeration",
+        "description": "求满足给定条件的排列数量"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "对于每组 x, y，求出满足条件的 1~n 排列 p 的数量"
+        "type": "enumeration",
+        "description": "求满足给定条件的排列数量"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "对于每组 x, y，求出满足条件的 1~n 排列 p 的数量"
+        "type": "enumeration",
+        "description": "求满足特定条件的排列数量"
       }
     }
   ],
@@ -144,27 +154,64 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于其子问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即排列的计数可以通过较小规模的排列计数来递推得到。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在动态规划过程中，状态之间的转移是基于前一个状态的信息进行的，且这种转移方式在整个算法执行过程中保持一致。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：不同子问题的解可以独立计算，不会互相影响。每个子问题的解只依赖于更小规模的子问题。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于小规模问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，满足动态规划的基本性质",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：状态之间的转移具有一致性，通过定义合适的状态和转移方程可以保证算法的正确性",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于小规模问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，满足动态规划的基本性质",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：状态之间的转移规则一致，确保了状态机或DP表的一致性和正确性",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：不同子问题的解互不影响，可以并行计算或分治处理",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

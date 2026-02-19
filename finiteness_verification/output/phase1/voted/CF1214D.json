@@ -1,0 +1,160 @@
+{
+  "problem_id": "CF1214D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 3,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "ordered": false,
+            "connected": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "ordered": false,
+      "connected": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "路径约束：只能从当前节点移动到下一行或下一列的节点（向下或向右移动）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "互斥约束：起点 (1, 1) 和终点 (n, m) 不能被设置为不可通行",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "连通性约束：必须保证从起点 (1, 1) 到终点 (n, m) 的路径存在",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "路径约束：只能从当前节点移动到下一行或下一列的节点（向下或向右移动）"
+            },
+            {
+              "name": "exclusion",
+              "description": "互斥约束：起点 (1, 1) 和终点 (n, m) 不能被设置为不可通行"
+            },
+            {
+              "name": "connectivity",
+              "description": "连通性约束：必须保证从起点 (1, 1) 到终点 (n, m) 的路径存在"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求最少需要阻断的路径数以使得从起点到终点无可行路径"
+        }
+      }
+    ],
+    "description": "求最少需要阻断的路径数以使得从起点到终点无可行路径"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构建。在本题中，到达某个格子的最短路径可以通过到达其相邻格子的最短路径来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移的一致性保持不变。在本题中，从一个格子到下一个格子的状态转移是通过向下或向右移动实现的。",
+        "confidence": "1/1",
+        "properties": {
+          "directions": [
+            "down",
+            "right"
+          ]
+        }
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在算法执行过程中，某些变量或状态的变化是单调的。在本题中，Vasya 的行和列坐标在移动过程中是单调递增的。",
+        "confidence": "1/1",
+        "properties": {
+          "row_monotonic": true,
+          "col_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构建。在本题中，到达某个格子的最短路径可以通过到达其相邻格子的最短路径来确定。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移的一致性保持不变。在本题中，从一个格子到下一个格子的状态转移是通过向下或向右移动实现的。",
+              "properties": {
+                "directions": [
+                  "down",
+                  "right"
+                ]
+              }
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在算法执行过程中，某些变量或状态的变化是单调的。在本题中，Vasya 的行和列坐标在移动过程中是单调递增的。",
+              "properties": {
+                "row_monotonic": true,
+                "col_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

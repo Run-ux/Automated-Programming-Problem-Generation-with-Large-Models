@@ -1,0 +1,87 @@
+{
+  "problem_id": "P9061",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "submatrix_transformation",
+            "description": "在二维平面上，对满足特定条件的点进行批量更新操作（修改 x 或 y 坐标）",
+            "formal": "对于所有 (x_i, y_i) 满足 x_i <= x 且 y_i <= y，执行更新操作"
+          },
+          {
+            "name": "range_query_max",
+            "description": "在二维平面上，查询满足特定条件的点的数量",
+            "formal": "查询满足 x_i <= X 且 y_i <= Y 的点数"
+          },
+          {
+            "name": "distance_bound",
+            "description": "坐标值在给定范围内",
+            "formal": "1 ≤ x_i, y_i, x, y, X, Y ≤ n"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足条件的点数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_mergeable",
+            "description": "区间信息可通过子区间合并，适用于线段树等数据结构进行高效查询和更新",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "修改操作和查询操作的范围具有单调性，可以利用这种性质进行高效的区间更新和查询",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "每次操作后的状态可以通过前一个状态和当前操作确定，保证了状态转移的一致性和正确性",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -2,14 +2,14 @@
   "problem_id": "GYM105498F",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -35,13 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_elements",
-        "description": "数组中的元素必须是互不相同的（即每个元素在数组中只能出现一次）",
+        "name": "permutation_constraint",
+        "description": "数组必须能够通过操作变成从1到n的排列（即所有元素互不相同且在1到n之间）",
         "confidence": "1/1"
       },
       {
-        "name": "value_range_constraint",
-        "description": "数组中的每个元素必须在 1 到 n 的范围内（即每个元素的值必须在 [1, n] 之间）",
+        "name": "operation_limit",
+        "description": "每个元素最多只能进行一次操作",
         "confidence": "1/1"
       }
     ],
@@ -52,14 +52,12 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_elements",
-              "description": "数组中的元素必须是互不相同的（即每个元素在数组中只能出现一次）",
-              "formal": "|distinct(a)| = n"
+              "name": "permutation_constraint",
+              "description": "数组必须能够通过操作变成从1到n的排列（即所有元素互不相同且在1到n之间）"
             },
             {
-              "name": "value_range_constraint",
-              "description": "数组中的每个元素必须在 1 到 n 的范围内（即每个元素的值必须在 [1, n] 之间）",
-              "formal": "∀ i, 1 ≤ a[i] ≤ n"
+              "name": "operation_limit",
+              "description": "每个元素最多只能进行一次操作"
             }
           ]
         }
@@ -67,34 +65,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否可以通过至多一次操作将数组转换为一个从1到n的排列"
+          "type": "feasibility",
+          "description": "判断是否可以通过至多一次操作将数组转换为从1到n的排列"
         }
       }
     ],
-    "description": "判断是否可以通过至多一次操作将数组转换为一个从1到n的排列"
+    "description": "判断是否可以通过至多一次操作将数组转换为从1到n的排列"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即如果数组的一个子集可以被转换为一个部分排列，则整个数组有可能被转换为完整的排列。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个元素是否能够通过操作变为排列的一部分是独立于其他元素的，即对一个元素的操作不会影响到另一个元素能否成为排列的一部分。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个元素的调整独立且不影响其他元素的可行性",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即如果数组的一个子集可以被转换为一个部分排列，则整个数组有可能被转换为完整的排列。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个元素是否能够通过操作变为排列的一部分是独立于其他元素的，即对一个元素的操作不会影响到另一个元素能否成为排列的一部分。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个元素的调整独立且不影响其他元素的可行性"
+    ]
   }
 }

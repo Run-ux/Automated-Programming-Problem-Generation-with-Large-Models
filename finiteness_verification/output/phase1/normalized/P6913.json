@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 500
@@ -28,16 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "target_alignment",
-            "description": "四边形的四个顶点必须位于原矩形的四条边上"
+            "name": "axis_aligned_lines",
+            "description": "切割线必须连接相邻边界边上的网格点"
           },
           {
-            "name": "edge_exclusion_constraint",
-            "description": "四边形的任意一条边不能与原矩形的边重合"
+            "name": "vertex_position_constraint",
+            "description": "平行四边形的四个角必须位于原矩形的四条边上"
           },
           {
-            "name": "adjacent_difference",
-            "description": "切割线必须连接相邻边界上的两个不同的网格点"
+            "name": "exclusion",
+            "description": "平行四边形的边不能与原矩形的边重合"
           }
         ]
       }
@@ -49,7 +49,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "求在给定范围内，能够切割出最多不同形状的平行四边形的最大数量及其对应的面积"
+        "description": "在给定范围内，找到一个值使得其对应的方案数最大，并输出该值及其方案数"
       }
     }
   ],
@@ -58,9 +58,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个面积的切割方式数量依赖于更小面积的切割方式数量",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解可以通过子问题的最优解组合得到，即对于每个面积a，其最大切割方式数由更小面积的切割方式数决定。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "通过前缀和的方式可以快速计算出任意区间内的可行解数量，从而避免重复计算。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

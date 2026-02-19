@@ -1,0 +1,79 @@
+{
+  "problem_id": "P9361",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 2,
+          "max": 100005
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100005
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "在每个查询中，需要找到一个序列 b 使得 b_1 到 b_{l+1} 的元素在至少一个竞赛中的排名是严格递增的",
+            "formal": "对于所有 1 ≤ i ≤ l, 存在一个 k 使得 a_{k, b_i} < a_{k, b_{i+1}}"
+          },
+          {
+            "name": "path_constraint",
+            "description": "存在一条从 x 到 y 的路径，路径上的每个节点在至少一个竞赛中的排名都比下一个节点小",
+            "formal": "存在一个长度为 l+1 的序列 b，使得 b_1 = x, b_{l+1} = y，并且对于所有 1 ≤ i ≤ l, 存在一个 k 使得 a_{k, b_i} < a_{k, b_{i+1}}"
+          },
+          {
+            "name": "permutation_constraint",
+            "description": "每个竞赛的排名列表是一个排列，即每个参赛者在每个竞赛中都有唯一的排名",
+            "formal": "a_i 是 1, 2, ..., n 的一个排列"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足条件的最小路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即如果存在一个序列使得x是l-更强于y，则该序列的任意子序列也满足较短长度的l-更强关系。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个选手到另一个选手的l-更强关系可以看作是在一个有向图上寻找路径的问题，其中边的存在性基于在至少一个比赛中排名更优。这种状态转移保持了问题的一致性和连贯性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

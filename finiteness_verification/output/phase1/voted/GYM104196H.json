@@ -2,14 +2,14 @@
   "problem_id": "GYM104196H",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 20
@@ -41,23 +41,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "continuous_path_constraint",
-        "description": "序列必须连续，不能有空格（图中的路径约束）",
+        "name": "sequence_pattern_constraint",
+        "description": "放置的数字序列必须是非递减或非递增的",
         "confidence": "1/1"
       },
       {
-        "name": "non_decreasing_sequence",
-        "description": "序列必须是非递减或非递增的（单调性约束）",
+        "name": "adjacency_relation",
+        "description": "放置的数字序列不能有空格，但可以跳过已经放置的数字",
         "confidence": "1/1"
       },
       {
-        "name": "overlapping_interval_constraint",
-        "description": "新放置的序列与已有序列相交时，所有相交的序列都必须是有效的（交叉验证约束）",
+        "name": "sequence_validity_constraint",
+        "description": "放置的数字序列必须形成有效的行或列，并且所有相交的行和列也必须是有效的序列",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_bonus_tiles",
-        "description": "已经覆盖奖励空间的瓷砖不会再次得分（唯一性约束）",
+        "name": "additional_capacity_constraint",
+        "description": "只有放置在奖励空间上的新数字才能获得奖励分数，已经放置的数字不会再次获得奖励分数",
         "confidence": "1/1"
       }
     ],
@@ -68,20 +68,20 @@
         "result": {
           "constraints": [
             {
-              "name": "continuous_path_constraint",
-              "description": "序列必须连续，不能有空格（图中的路径约束）"
+              "name": "sequence_pattern_constraint",
+              "description": "放置的数字序列必须是非递减或非递增的"
             },
             {
-              "name": "non_decreasing_sequence",
-              "description": "序列必须是非递减或非递增的（单调性约束）"
+              "name": "adjacency_relation",
+              "description": "放置的数字序列不能有空格，但可以跳过已经放置的数字"
             },
             {
-              "name": "overlapping_interval_constraint",
-              "description": "新放置的序列与已有序列相交时，所有相交的序列都必须是有效的（交叉验证约束）"
+              "name": "sequence_validity_constraint",
+              "description": "放置的数字序列必须形成有效的行或列，并且所有相交的行和列也必须是有效的序列"
             },
             {
-              "name": "distinct_bonus_tiles",
-              "description": "已经覆盖奖励空间的瓷砖不会再次得分（唯一性约束）"
+              "name": "additional_capacity_constraint",
+              "description": "只有放置在奖励空间上的新数字才能获得奖励分数，已经放置的数字不会再次获得奖励分数"
             }
           ]
         }
@@ -104,19 +104,50 @@
     "description": "最大化单次操作的得分"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在放置数字序列时，每个子序列的得分可以独立计算并累加到总得分中。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态的合法性保持不变。例如，在放置新的数字序列时，所有受影响的行和列都必须形成有效的序列。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：在处理多个子序列时，可以通过合并相邻的有效子序列来形成更大的有效序列，并且这些子序列的得分可以进行合并计算。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的最优解组合而成，通过动态规划方法求解最大得分",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在放置数字序列时，每个子序列的得分可以独立计算并累加到总得分中。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态的合法性保持不变。例如，在放置新的数字序列时，所有受影响的行和列都必须形成有效的序列。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：在处理多个子序列时，可以通过合并相邻的有效子序列来形成更大的有效序列，并且这些子序列的得分可以进行合并计算。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的最优解组合而成，通过动态规划方法求解最大得分"
+    ]
   }
 }

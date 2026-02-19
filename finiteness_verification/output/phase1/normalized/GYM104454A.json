@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 1,
           "max": 100
@@ -16,7 +16,7 @@
           "max": 100
         },
         "properties": {
-          "ordered": true
+          "ordered": false
         }
       }
     }
@@ -28,12 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_positions",
-            "description": "每行和每列中的元素必须是1到n的不重复整数"
+            "name": "distinctness",
+            "description": "每一行和每一列中的元素必须是唯一的，且包含从 1 到 n 的所有整数"
           },
           {
-            "name": "coordinate_fixed_point",
-            "description": "第一行已给定，且包含1到n的不重复整数"
+            "name": "permutation_constraint",
+            "description": "每行和每列的排列必须是 1 到 n 的一个全排列"
           }
         ]
       }
@@ -44,7 +44,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
+        "type": "construction",
         "description": "构造一个满足每行每列均包含1到n所有数字的n×n矩阵"
       }
     }
@@ -54,11 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的解是独立且完整的",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：当前行的填充方案依赖于前一行的合法填充，且每一步都保证了部分解的合法性。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从已知的第一行出发，通过确定的规则（如拉丁方阵的性质）逐步推导出后续每一行的内容，确保每一步的状态转换都是有效的。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

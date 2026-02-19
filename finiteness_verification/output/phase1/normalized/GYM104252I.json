@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 1,
           "max": 100
@@ -28,19 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "continuous_path_constraint",
-            "description": "路径上的元素必须按照给定的顺序出现（图遍历约束）",
-            "formal": "对于路径 P，P[i] < P[j] 对于所有 i < j"
+            "name": "path_constraint",
+            "description": "路径上的节点可以重复访问，但每个节点的值只能被选取一次（图中路径约束）",
+            "formal": "对于路径 P 上的每个节点 v，v 的值在路径 P 中只出现一次"
           },
           {
-            "name": "distinct_vertex_colorings",
-            "description": "路径上的节点不能重复访问（无环路径约束）",
-            "formal": "对于路径 P，所有 P[i] 均不相同"
-          },
-          {
-            "name": "adjacent_movement",
-            "description": "只能移动到相邻的四个方向（四连通图约束）",
-            "formal": "从 (x, y) 可以移动到 (x+1, y), (x-1, y), (x, y+1), (x, y-1)"
+            "name": "ordering",
+            "description": "路径上的节点值必须按照给定的顺序递增（有序性约束）",
+            "formal": "对于路径 P 上的任意两个节点 u 和 v，如果 u 在 v 之前，则 u 的值 < v 的值"
           }
         ]
       }
@@ -51,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_value",
-        "description": "求满足条件的最长路径长度"
+        "type": "maximize_count",
+        "description": "最大化满足特定顺序的路径上的节点数"
       }
     }
   ],
@@ -61,9 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题对应于从某个位置开始按顺序选择尽可能多的菜品。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即当前状态的最优解依赖于前一个状态的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移的一致性保证了算法的正确性。具体来说，在本题中，从一个位置到相邻位置的状态转移是基于当前位置的最优解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

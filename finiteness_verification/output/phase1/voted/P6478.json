@@ -1,0 +1,189 @@
+{
+  "problem_id": "P6478",
+  "source": "luogu",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {
+            "connected": true,
+            "rooted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000
+    },
+    "properties": {
+      "connected": true,
+      "rooted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "bipartiteness",
+        "description": "图是二分图（点集可以分为两个不相交的子集，且每个边的端点分别属于不同的子集）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个节点的度数不超过 n-1（树的性质）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "图必须连通（树的性质）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "acyclicity",
+        "description": "图无环（树的性质）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "每个玩家拥有的点集是整个点集的一个子集，且两个子集互斥",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每回合每个玩家只能选择一个自己拥有的且未被选过的点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "游戏状态根据每回合的选择结果进行转移，直到出现非平局回合",
+        "confidence": "1/1"
+      },
+      {
+        "name": "turn_based",
+        "description": "游戏按回合进行，每回合双方同时选择一个点",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "bipartiteness",
+              "description": "图是二分图（点集可以分为两个不相交的子集，且每个边的端点分别属于不同的子集）"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个节点的度数不超过 n-1（树的性质）"
+            },
+            {
+              "name": "connectivity",
+              "description": "图必须连通（树的性质）"
+            },
+            {
+              "name": "acyclicity",
+              "description": "图无环（树的性质）"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "每个玩家拥有的点集是整个点集的一个子集，且两个子集互斥"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每回合每个玩家只能选择一个自己拥有的且未被选过的点"
+            },
+            {
+              "name": "state_transition",
+              "description": "游戏状态根据每回合的选择结果进行转移，直到出现非平局回合"
+            },
+            {
+              "name": "turn_based",
+              "description": "游戏按回合进行，每回合双方同时选择一个点"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_probability",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_probability",
+          "description": "计算在随机选择条件下，首次出现非平局回合的期望回合数"
+        }
+      }
+    ],
+    "description": "计算在随机选择条件下，首次出现非平局回合的期望回合数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，即每一步选择的结果依赖于之前的选择，并且这些选择共同决定了最终结果。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在每个回合中，根据当前状态（已选点和未选点）转移到下一个状态时，状态转移规则保持一致。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在计算期望值的过程中，每个子问题的解是独立的，不会受到其他子问题的影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，即每一步选择的结果依赖于之前的选择，并且这些选择共同决定了最终结果。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在每个回合中，根据当前状态（已选点和未选点）转移到下一个状态时，状态转移规则保持一致。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在计算期望值的过程中，每个子问题的解是独立的，不会受到其他子问题的影响。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "problem_id": "P11222",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 600
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "connected": true,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "所有停车位必须与出入口连通，且路径上不能经过其他停车位"
+          },
+          {
+            "name": "fixed_position_constraint",
+            "description": "停车场的出入口位置固定为 (1,1)，只能用作车道"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "水景格子不可用作停车位或车道"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化满足连通性条件的停车位数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：停车场的最大停车位数量可以通过子问题的最优解组合得到",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个格子的状态（车道或停车位）依赖于其相邻格子的状态，且满足DAG上的顺序依赖",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：从出入口到其他格子的可达性决定了格子状态的确定顺序",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

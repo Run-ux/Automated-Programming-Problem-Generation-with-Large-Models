@@ -1,0 +1,90 @@
+{
+  "problem_id": "GYM105461H",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（所有节点之间存在路径）"
+          },
+          {
+            "name": "acyclicity",
+            "description": "图必须无环（树结构）"
+          },
+          {
+            "name": "distinctness",
+            "description": "起始站和终点站必须不同（s_i 和 e_i 不能相同）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "每条路径必须是两点之间的最短路径"
+          },
+          {
+            "name": "inclusion",
+            "description": "Bjarki 必须能够从起点到达终点（如果无法通过任何路径到达，输出 -1）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求两点间最短路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从起点到终点的最短路径可以通过分解为多个子路径的最短路径来求解，每个子路径的最优解组合成全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在树形结构中，从一个节点到另一个节点的状态转移是基于当前节点和其父节点之间的关系进行的，确保了状态转移的一致性。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在树形网络中，从根节点到叶子节点的遍历顺序满足拓扑序，保证了在处理某个节点时，其所有祖先节点已经处理完毕。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

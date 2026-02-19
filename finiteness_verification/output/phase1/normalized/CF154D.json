@@ -1,0 +1,89 @@
+{
+  "problem_id": "CF154D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 4,
+          "max": 4
+        },
+        "value_range": {
+          "min": -1000000000,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "range_bound",
+            "description": "第一个参与者可以移动到区间 [x1 + a, x1 + b] 内的任意整数点",
+            "formal": "x1 + a ≤ x ≤ x1 + b"
+          },
+          {
+            "name": "range_bound",
+            "description": "第二个参与者可以移动到区间 [x2 - b, x2 - a] 内的任意整数点",
+            "formal": "x2 - b ≤ x ≤ x2 - a"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "如果一个参与者移动到另一个参与者的当前位置，则该参与者获胜",
+            "formal": "if x1 == x2 or x2 == x1 then player wins"
+          },
+          {
+            "name": "optimal_play",
+            "description": "两个参与者都以最优策略进行游戏",
+            "formal": "both players play optimally"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "game_outcome",
+        "description": "确定在双方玩家都采取最优策略的情况下，先手玩家是否能获胜，并输出获胜的移动位置"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，每个玩家的最优策略取决于对手的最优策略。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：游戏状态的转移是确定性的，并且每个状态的转移规则一致。具体来说，玩家的移动范围和顺序是固定的。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：两个玩家的移动选项是对称的，即第一个玩家可以向右移动 [a, b] 范围内的距离，第二个玩家可以向左移动 [-b, -a] 范围内的距离。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

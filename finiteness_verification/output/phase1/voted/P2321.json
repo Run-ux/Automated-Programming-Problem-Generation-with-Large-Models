@@ -1,0 +1,126 @@
+{
+  "problem_id": "P2321",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 50
+          },
+          "value_range": {
+            "min": 0,
+            "max": 49
+          },
+          "properties": {
+            "ordered": false,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 50
+    },
+    "value_range": {
+      "min": 0,
+      "max": 49
+    },
+    "properties": {
+      "ordered": false,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "一个咒语机产生的所有咒语源是另一个咒语机产生的所有咒语源的子集（升级关系）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "找到最长的升级序列，即满足升级关系的最长链",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "一个咒语机产生的所有咒语源是另一个咒语机产生的所有咒语源的子集（升级关系）",
+              "formal": "∀i, j ∈ [0, k-1], S_i ⊆ S_j"
+            },
+            {
+              "name": "ordering",
+              "description": "找到最长的升级序列，即满足升级关系的最长链",
+              "formal": "Find the longest sequence a_1, a_2, ..., a_t such that ∀i ∈ [1, t-1], S_{a_i} ⊆ S_{a_{i+1}}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求满足条件的最长序列长度"
+        }
+      }
+    ],
+    "description": "求满足条件的最长序列长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最长升级序列的长度可以通过子问题的最优解来构建，即一个咒语机的最长升级序列长度取决于其所有可能的前驱咒语机的最长升级序列长度。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在确定每个咒语机之间的升级关系后，可以构建一个有向无环图（DAG），通过拓扑排序来处理这些咒语机，确保在处理某个咒语机时，其所有前驱咒语机已经处理完毕。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最长升级序列的长度可以通过子问题的最优解来构建，即一个咒语机的最长升级序列长度取决于其所有可能的前驱咒语机的最长升级序列长度。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在确定每个咒语机之间的升级关系后，可以构建一个有向无环图（DAG），通过拓扑排序来处理这些咒语机，确保在处理某个咒语机时，其所有前驱咒语机已经处理完毕。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

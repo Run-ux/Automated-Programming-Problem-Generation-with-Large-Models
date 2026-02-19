@@ -2,14 +2,14 @@
   "problem_id": "CF1717D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 100000
@@ -19,7 +19,7 @@
             "max": 1000000000
           },
           "properties": {
-            "ordered": false
+            "inferred": true
           }
         }
       }
@@ -33,34 +33,24 @@
       "max": 1000000000
     },
     "properties": {
-      "ordered": false
+      "inferred": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "binary_tree_structure",
-        "description": "比赛采用二叉树结构，每轮比赛后胜者进入下一轮，败者被淘汰",
+        "name": "operation_limit",
+        "description": "操作次数限制（最多可以改变 k 次比赛结果）",
         "confidence": "1/1"
       },
       {
-        "name": "turn_based_operation",
-        "description": "比赛共有 n 轮，每轮比赛的对局数为 2^(n-i)，其中 i 是当前轮次（从 1 开始）",
+        "name": "acyclicity",
+        "description": "二叉树结构（比赛采用奥林匹克系统，每轮淘汰一半选手，形成一个完全二叉树）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_solution_constraint",
-        "description": "可以通过调整初始排列和每场比赛的胜负来决定最终胜者",
-        "confidence": "1/1"
-      },
-      {
-        "name": "query_count_constraint",
-        "description": "赞助商最多可以改变 k 场比赛的结果",
-        "confidence": "1/1"
-      },
-      {
-        "name": "global_optimization_objective",
-        "description": "目标是使编号最小的选手获胜",
+        "name": "optimization_objective",
+        "description": "最小化约束（需要找到编号最小的获胜者）",
         "confidence": "1/1"
       }
     ],
@@ -71,24 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "binary_tree_structure",
-              "description": "比赛采用二叉树结构，每轮比赛后胜者进入下一轮，败者被淘汰"
+              "name": "operation_limit",
+              "description": "操作次数限制（最多可以改变 k 次比赛结果）",
+              "formal": "changes <= k"
             },
             {
-              "name": "turn_based_operation",
-              "description": "比赛共有 n 轮，每轮比赛的对局数为 2^(n-i)，其中 i 是当前轮次（从 1 开始）"
+              "name": "acyclicity",
+              "description": "二叉树结构（比赛采用奥林匹克系统，每轮淘汰一半选手，形成一个完全二叉树）",
+              "formal": "tournament as a complete binary tree with 2^n leaves"
             },
             {
-              "name": "distinct_solution_constraint",
-              "description": "可以通过调整初始排列和每场比赛的胜负来决定最终胜者"
-            },
-            {
-              "name": "query_count_constraint",
-              "description": "赞助商最多可以改变 k 场比赛的结果"
-            },
-            {
-              "name": "global_optimization_objective",
-              "description": "目标是使编号最小的选手获胜"
+              "name": "optimization_objective",
+              "description": "最小化约束（需要找到编号最小的获胜者）",
+              "formal": "minimize winner's number"
             }
           ]
         }
@@ -96,34 +81,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求在给定约束条件下，最小化最终结果值"
+          "type": "minimize_value",
+          "description": "求在给定约束条件下最小化获胜者的编号"
         }
       }
     ],
-    "description": "求在给定约束条件下，最小化最终结果值"
+    "description": "求在给定约束条件下最小化获胜者的编号"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，每一轮比赛的结果可以由前一轮比赛的结果推导出来，且最终的最优解（最小编号获胜者）依赖于每一轮比赛结果的最优选择。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "divide_conquer",
+        "description": "分治不变量：大问题的解可以通过解决较小规模的子问题来合成。在本题中，每一轮比赛可以看作是一个子问题，通过解决这些子问题并合并结果，可以得到最终的比赛结果。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态到另一个状态的转换规则在整个过程中保持一致。在本题中，每一轮比赛的状态（即哪些选手晋级）根据固定的规则（如左右选手之间的胜负关系）进行转移。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过递归或迭代解决子问题来构建最终解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，每一轮比赛的结果可以由前一轮比赛的结果推导出来，且最终的最优解（最小编号获胜者）依赖于每一轮比赛结果的最优选择。",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：大问题的解可以通过解决较小规模的子问题来合成。在本题中，每一轮比赛可以看作是一个子问题，通过解决这些子问题并合并结果，可以得到最终的比赛结果。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态到另一个状态的转换规则在整个过程中保持一致。在本题中，每一轮比赛的状态（即哪些选手晋级）根据固定的规则（如左右选手之间的胜负关系）进行转移。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过递归或迭代解决子问题来构建最终解。"
+    ]
   }
 }

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 50
@@ -28,19 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "两个排列 p 和 q 的逆序对数量必须满足特定条件",
-            "formal": "inv(p) + inv(q) = k, 其中 inv 表示逆序对数量"
+            "name": "permutation_constraint",
+            "description": "序列必须是排列，即每个整数从 1 到 n 恰好出现一次"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "p 和 q 是 1 到 n 的排列，每个整数从 1 到 n 恰好出现一次",
-            "formal": "p 和 q 是 [1, 2, ..., n] 的排列"
+            "name": "inversion_count_constraint",
+            "description": "两个排列 (p, q) 的逆序对数量满足特定条件（题目未明确具体条件，但涉及逆序对的计数）"
           },
           {
-            "name": "modulo_expected_value_constraint",
-            "description": "结果需要对给定的模数取模",
-            "formal": "result % mod"
+            "name": "modular_arithmetic",
+            "description": "结果需要取模 mod，且 mod 可能不是质数"
           }
         ]
       }
@@ -51,8 +48,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足条件的排列对数量"
+        "type": "enumeration",
+        "description": "求满足条件的排列对的数量，并输出结果模某个数后的值"
       }
     }
   ],
@@ -61,12 +58,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，满足动态规划的基本性质",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即对于任意两个排列p和q，它们的逆序对数可以通过其子排列的逆序对数来计算。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：在计算排列对(p, q)的逆序对数时，可以利用对称性质减少重复计算。例如，如果已知(p, q)的逆序对数，则(q, p)的逆序对数可以通过简单的转换得到。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -2,14 +2,14 @@
   "problem_id": "GYM105453B",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1000
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "trial_limit",
-        "description": "每个元素在一次处理中最多被处理 M 个单位时间，如果需要更多时间则重新排队",
+        "name": "capacity_constraint",
+        "description": "每个元素的处理时间不能超过给定的最大处理时间，否则需要重新排队",
         "confidence": "1/1"
       },
       {
-        "name": "fifo_operation_constraint",
-        "description": "队列中的元素按照初始顺序依次处理，处理完后离开队列",
+        "name": "ordering",
+        "description": "初始队列按编号顺序排列",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "trial_limit",
-              "description": "每个元素在一次处理中最多被处理 M 个单位时间，如果需要更多时间则重新排队"
+              "name": "capacity_constraint",
+              "description": "每个元素的处理时间不能超过给定的最大处理时间，否则需要重新排队",
+              "formal": "对于每个 R_i，如果 R_i > M，则该元素需要重新排队"
             },
             {
-              "name": "fifo_operation_constraint",
-              "description": "队列中的元素按照初始顺序依次处理，处理完后离开队列"
+              "name": "ordering",
+              "description": "初始队列按编号顺序排列",
+              "formal": "初始队列为 [1, 2, ..., N]"
             }
           ]
         }
@@ -69,37 +71,71 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的序列，表示元素按特定规则处理后的最终顺序"
+          "type": "construction",
+          "description": "构造一个序列，表示元素按特定规则处理后的离开顺序"
         }
       }
     ],
-    "description": "构造一个满足条件的序列，表示元素按特定规则处理后的最终顺序"
+    "description": "构造一个序列，表示元素按特定规则处理后的离开顺序"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "队列中每个元素的处理时间单调递减，且每次处理后剩余时间小于等于M的元素会被移除，大于M的元素会重新加入队尾。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "队列中的每个元素在每一轮处理后，其状态（剩余处理时间）会发生变化，并且这种变化是确定性的。如果剩余处理时间小于等于M，则该元素被移除；否则，该元素被重新加入队尾。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "每个元素的处理过程独立于其他元素，即一个元素的处理不会影响到其他元素的处理顺序和结果。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "队列处理过程中，每个个体的处理顺序和位置变化满足单调性。未完成请求的个体在队尾重新排队，已处理完成的个体按序离开。",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "队列中每个元素的处理时间单调递减，且每次处理后剩余时间小于等于M的元素会被移除，大于M的元素会重新加入队尾。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "队列中的每个元素在每一轮处理后，其状态（剩余处理时间）会发生变化，并且这种变化是确定性的。如果剩余处理时间小于等于M，则该元素被移除；否则，该元素被重新加入队尾。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "每个元素的处理过程独立于其他元素，即一个元素的处理不会影响到其他元素的处理顺序和结果。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "队列处理过程中，每个个体的处理顺序和位置变化满足单调性。未完成请求的个体在队尾重新排队，已处理完成的个体按序离开。"
+    ]
   }
 }

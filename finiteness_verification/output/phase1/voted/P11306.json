@@ -1,0 +1,128 @@
+{
+  "problem_id": "P11306",
+  "source": "luogu",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "weighted": true,
+            "rooted": true,
+            "binary": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "weighted": true,
+      "rooted": true,
+      "binary": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "acyclicity",
+        "description": "树的每个子树必须满足二叉搜索树的性质：左子树的所有节点值不大于根节点值，右子树的所有节点值不小于根节点值。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "independence",
+        "description": "每次修改某个节点的点权后，需要重新计算整个树中满足二叉搜索树性质的子树数量。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "acyclicity",
+              "description": "树的每个子树必须满足二叉搜索树的性质：左子树的所有节点值不大于根节点值，右子树的所有节点值不小于根节点值。",
+              "formal": "对于每个节点 u，若其左子树非空，则 ∀v ∈ left_subtree(u), a[v] ≤ a[u]；若其右子树非空，则 ∀v ∈ right_subtree(u), a[v] ≥ a[u]"
+            },
+            {
+              "name": "independence",
+              "description": "每次修改某个节点的点权后，需要重新计算整个树中满足二叉搜索树性质的子树数量。",
+              "formal": "每次修改 a[x] 后，重新计算满足 BST 性质的子树数量"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "最大化满足二叉搜索树性质的子树数量"
+        }
+      }
+    ],
+    "description": "最大化满足二叉搜索树性质的子树数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个节点的子树是否为二叉搜索树取决于其左右子树是否为二叉搜索树及其点权关系",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：节点的状态（是否为BST）由其子节点的状态和点权关系决定，且在修改点权时可以递归更新",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个节点的子树是否为二叉搜索树取决于其左右子树是否为二叉搜索树及其点权关系",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：节点的状态（是否为BST）由其子节点的状态和点权关系决定，且在修改点权时可以递归更新",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

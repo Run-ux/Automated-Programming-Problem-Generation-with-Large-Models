@@ -2,14 +2,14 @@
   "problem_id": "GYM105911H",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "unknown_type",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "unknown_type",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 10
@@ -35,18 +35,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "non_halfspace_constraint",
-        "description": "不能形成任何一条完整的行、列或对角线（图着色约束）",
+        "name": "axis_aligned_lines",
+        "description": "检查的单元格不能形成任何一条完整的行、列或对角线",
         "confidence": "1/1"
       },
       {
-        "name": "maximum_cell_examination",
-        "description": "在确保不形成完整行、列或对角线的前提下，检查的单元格数量最大化",
+        "name": "maximum_destruction_count",
+        "description": "在确保玩家失败的前提下，检查尽可能多的单元格",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_configuration_count",
-        "description": "计算满足条件的不同方案数，并取模 998244353",
+        "name": "distinctness",
+        "description": "不同的检查方案必须至少有一个单元格的状态不同（即一个方案中某个单元格被检查，另一个方案中该单元格未被检查）",
         "confidence": "1/1"
       }
     ],
@@ -57,16 +57,16 @@
         "result": {
           "constraints": [
             {
-              "name": "non_halfspace_constraint",
-              "description": "不能形成任何一条完整的行、列或对角线（图着色约束）"
+              "name": "axis_aligned_lines",
+              "description": "检查的单元格不能形成任何一条完整的行、列或对角线"
             },
             {
-              "name": "maximum_cell_examination",
-              "description": "在确保不形成完整行、列或对角线的前提下，检查的单元格数量最大化"
+              "name": "maximum_destruction_count",
+              "description": "在确保玩家失败的前提下，检查尽可能多的单元格"
             },
             {
-              "name": "distinct_configuration_count",
-              "description": "计算满足条件的不同方案数，并取模 998244353"
+              "name": "distinctness",
+              "description": "不同的检查方案必须至少有一个单元格的状态不同（即一个方案中某个单元格被检查，另一个方案中该单元格未被检查）"
             }
           ]
         }
@@ -82,28 +82,46 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "统计在不形成任何行、列或对角线全被选中的情况下，选择最多单元格的不同方案数"
+          "description": "求在不满足特定条件的情况下，可以选取的最大元素数量的方案数"
         }
       }
     ],
-    "description": "统计在不形成任何行、列或对角线全被选中的情况下，选择最多单元格的不同方案数"
+    "description": "求在不满足特定条件的情况下，可以选取的最大元素数量的方案数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在确保不形成任何一行、一列或对角线的情况下，最大可选单元格数和方案数可以由更小子问题的解推导出来。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在计算最大可选单元格数及其方案数时，不同行、列及对角线的选择是相互独立的，一个子问题的解不影响另一个子问题的解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，且子问题之间相互独立。",
-          "properties": {
-            "subproblem_independence": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在确保不形成任何一行、一列或对角线的情况下，最大可选单元格数和方案数可以由更小子问题的解推导出来。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在计算最大可选单元格数及其方案数时，不同行、列及对角线的选择是相互独立的，一个子问题的解不影响另一个子问题的解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，且子问题之间相互独立。"
+    ]
   }
 }

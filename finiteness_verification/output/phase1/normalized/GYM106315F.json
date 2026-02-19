@@ -1,0 +1,81 @@
+{
+  "problem_id": "GYM106315F",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "permutation_constraint",
+            "description": "计算所有不同排列的函数值之和，其中两个排列不同当且仅当存在至少一个位置上的元素不同"
+          },
+          {
+            "name": "binary_string",
+            "description": "输入字符串为二进制字符串，字符只能是 '0' 或 '1'"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "结果需要对 998,244,353 取模"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求所有不同排列的特定函数值之和，结果取模"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解组合得到，具体来说，计算 g(a) 的值可以通过计算 f(f(b)) 的值来实现，而 f(b) 的计算又依赖于 b 的子序列。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：在计算 f(b) 时，对于相同的字符（'0' 或 '1'），它们之间的相对位置不影响最终结果。因此，在计算所有不同排列的 g(a) 时，可以利用这种对称性简化计算。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：f(b) 的计算涉及到区间内元素的计数，这些计数可以通过前缀和的方式进行优化，从而快速计算出每个位置的 c_i 值。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

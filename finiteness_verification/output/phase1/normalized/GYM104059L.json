@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 3,
           "max": 3
@@ -28,24 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "rectilinear_partition",
-            "description": "将矩形区域划分为 n 个面积相等的子矩形，每个子矩形具有整数边长"
+            "name": "partition",
+            "description": "将矩形区域划分为 n 个面积相等的子矩形"
           },
           {
-            "name": "equal_area_partition",
-            "description": "每个子矩形的面积必须相等"
-          },
-          {
-            "name": "integer_dimension_constraint",
+            "name": "rectangle_shape_constraint",
             "description": "每个子矩形的边长必须是整数"
           },
           {
-            "name": "distinct_vertex_colorings",
-            "description": "每个子矩形用不同的字母标记，且每个字母出现次数相同"
+            "name": "distinctness",
+            "description": "每个子矩形内的元素（字母）必须相同"
           },
           {
-            "name": "connected_component",
-            "description": "每个字母标记的子矩形必须形成一个连通的矩形区域"
+            "name": "frequency_bound",
+            "description": "每种字母出现的次数必须相同"
+          },
+          {
+            "name": "rectangular_layout",
+            "description": "每种字母形成的区域必须是单个矩形"
           }
         ]
       }
@@ -56,7 +56,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
+        "type": "construction",
         "description": "构造一个满足条件的矩形划分方案"
       }
     }
@@ -66,9 +66,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成。将整个矩形区域划分为多个小矩形，每个小矩形的划分方案是独立且最优的。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "modular_invariance",
+            "description": "整除性：土地可以被均匀分割成n个面积相等的矩形区域，每个区域的长和宽均为整数",
+            "properties": {}
+          },
+          {
+            "name": "partition_balance",
+            "description": "矩形划分不变量：每个字母代表的区域都是一个矩形，并且这些矩形不重叠地覆盖整个土地",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

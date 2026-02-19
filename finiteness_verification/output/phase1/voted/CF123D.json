@@ -2,14 +2,14 @@
   "problem_id": "CF123D",
   "source": "codeforces",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -18,9 +18,7 @@
             "min": 97,
             "max": 122
           },
-          "properties": {
-            "ordered": true
-          }
+          "properties": {}
         }
       }
     ],
@@ -32,20 +30,18 @@
       "min": 97,
       "max": 122
     },
-    "properties": {
-      "ordered": true
-    }
+    "properties": {}
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "substring_frequency_optimization",
-        "description": "计算所有子串在原字符串中出现的连续序列数量之和",
+        "name": "subsequence_constraint",
+        "description": "计算所有子串在原字符串中出现的连续序列数量",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_sum_constraint",
-        "description": "连续序列是指在排序后的子串位置对列表中，相邻位置对之间的差值为1的序列",
+        "name": "ordered_segments",
+        "description": "连续序列的数量，基于排序后的子串起始位置对",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +52,12 @@
         "result": {
           "constraints": [
             {
-              "name": "substring_frequency_optimization",
-              "description": "计算所有子串在原字符串中出现的连续序列数量之和"
+              "name": "subsequence_constraint",
+              "description": "计算所有子串在原字符串中出现的连续序列数量"
             },
             {
-              "name": "adjacent_sum_constraint",
-              "description": "连续序列是指在排序后的子串位置对列表中，相邻位置对之间的差值为1的序列"
+              "name": "ordered_segments",
+              "description": "连续序列的数量，基于排序后的子串起始位置对"
             }
           ]
         }
@@ -77,29 +73,46 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "计算所有子串在原字符串中出现的非空连续序列数量之和"
+          "description": "求所有子串在原串中出现的所有不重叠连续段的总数"
         }
       }
     ],
-    "description": "计算所有子串在原字符串中出现的非空连续序列数量之和"
+    "description": "求所有子串在原串中出现的所有不重叠连续段的总数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即F(s, x)的值可以通过计算s中所有x的出现位置及其连续序列来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和等方法，可以将区间的贡献进行累加，从而高效地计算出整个字符串的所有子串的F(s, x)值。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的解对整体解有贡献",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinability": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即F(s, x)的值可以通过计算s中所有x的出现位置及其连续序列来确定。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和等方法，可以将区间的贡献进行累加，从而高效地计算出整个字符串的所有子串的F(s, x)值。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的解对整体解有贡献"
+    ]
   }
 }

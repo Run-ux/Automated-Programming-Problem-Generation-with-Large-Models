@@ -1,0 +1,137 @@
+{
+  "problem_id": "P3587",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "circular": true,
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "circular": true,
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "partition",
+        "description": "将序列分割成两个子序列，每个子序列中包含的颜色互不相同（即每种颜色只能出现在一个子序列中）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimize_max_min_difference",
+        "description": "求两段长度之差的最小值",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "partition",
+              "description": "将序列分割成两个子序列，每个子序列中包含的颜色互不相同（即每种颜色只能出现在一个子序列中）",
+              "formal": "对于所有颜色 c，c 只能出现在 A 或 B 中的一个子序列中"
+            },
+            {
+              "name": "minimize_max_min_difference",
+              "description": "求两段长度之差的最小值",
+              "formal": "min(|len(A) - len(B)|)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "multi_objective",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "multi_objective",
+          "description": "求满足条件的方案数量及最小化两段长度之差绝对值"
+        }
+      }
+    ],
+    "description": "求满足条件的方案数量及最小化两段长度之差绝对值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即分割项链的问题可以分解为更小规模的子问题，并且这些子问题的最优解可以合并成原问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在动态规划过程中，状态的转移是基于前一个状态的信息进行的，确保了状态之间的转换一致性。具体来说，当前状态的值依赖于之前的状态值，通过特定的转移方程来更新。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：在处理项链分割时，可以将项链视为一个环形区间，通过合并相邻区间的颜色信息来判断是否满足分割条件。这种合并操作保证了区间信息的一致性和有效性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即分割项链的问题可以分解为更小规模的子问题，并且这些子问题的最优解可以合并成原问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在动态规划过程中，状态的转移是基于前一个状态的信息进行的，确保了状态之间的转换一致性。具体来说，当前状态的值依赖于之前的状态值，通过特定的转移方程来更新。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：在处理项链分割时，可以将项链视为一个环形区间，通过合并相邻区间的颜色信息来判断是否满足分割条件。这种合并操作保证了区间信息的一致性和有效性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

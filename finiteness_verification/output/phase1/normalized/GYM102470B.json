@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1000
@@ -28,24 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "non_decreasing_sequence",
-            "description": "元素必须按照输入顺序处理（栈操作约束）",
-            "formal": "对于所有 DROP 和 TAKE 操作，输出的顺序必须与输入的顺序一致"
+            "name": "ordering",
+            "description": "元素必须按照特定顺序处理（如：操作序列必须保持原有顺序）",
+            "formal": "对于所有操作 i 和 j，如果 i < j，则操作 i 必须在操作 j 之前完成"
           },
           {
-            "name": "stack_size_constraint",
-            "description": "最多使用两个栈来存储元素（双栈约束）",
-            "formal": "存在两个栈 S1 和 S2，所有元素必须在这两个栈中进行操作"
+            "name": "flow_constraint",
+            "description": "存储结构的容量有限制（如：最多只能有两个堆栈）",
+            "formal": "存在两个堆栈 S1 和 S2，所有元素必须在这两个堆栈中进行操作"
           },
           {
-            "name": "operation_count_constraint",
-            "description": "总操作次数限制（操作次数约束）",
-            "formal": "总的操作次数（包括 DROP, TAKE, MOVE）不超过 6M"
+            "name": "operation_limit",
+            "description": "总操作次数有限制（如：总操作次数不超过 6M）",
+            "formal": "sum(m) <= 6M，其中 m 是每次操作的数量"
           },
           {
-            "name": "operation_sequence",
-            "description": "命令必须按顺序执行（顺序约束）",
-            "formal": "对于每个命令，必须在执行下一个命令之前完成当前命令的所有操作"
+            "name": "state_transition",
+            "description": "状态转移必须遵循特定规则（如：从一个堆栈移动到另一个堆栈时，必须保持顺序）",
+            "formal": "对于所有操作 i 和 j，如果 i < j，则操作 i 的元素必须先于操作 j 的元素被处理"
           }
         ]
       }
@@ -56,8 +56,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足给定操作序列的合法方案，使得所有操作按顺序执行且总移动次数不超过6M"
+        "type": "construction",
+        "description": "构造一个满足给定操作序列的合法方案，使得所有操作都能按顺序执行且总移动次数不超过限制"
       }
     }
   ],
@@ -66,11 +66,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "当前状态只依赖有限的前序状态，即每个操作（DROP, TAKE, MOVE）都基于当前两个堆栈的状态进行决策",
-        "properties": {
-          "finite_preceding_states": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理每个操作时，通过有限的状态转换（DROP, TAKE, MOVE）确保所有操作的顺序和数量正确。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "顺序保持不变量：无论中间如何移动或堆叠，最终传递给洗碗机的盘子顺序必须与从服务员处接收的顺序一致。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

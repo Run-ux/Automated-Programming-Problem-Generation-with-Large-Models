@@ -2,14 +2,14 @@
   "problem_id": "CF1783E",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -39,18 +39,8 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "对于每个 k 从 1 到 n，判断是否存在一种顺序使得 Monocarp 能够在第 k 次尝试之前杀死所有 boss。",
-        "confidence": "1/1"
-      },
-      {
-        "name": "turn_based_operation",
-        "description": "每次杀死一个 boss 后，尝试计数器重置。",
-        "confidence": "1/1"
-      },
-      {
-        "name": "pairwise_exclusion",
-        "description": "对于每个 boss，只有一个人（Monocarp 或 Polycarp）能够杀死它。",
+        "name": "ordering",
+        "description": "Monocarp 和 Polycarp 的尝试次数序列必须保持有序，即 Monocarp 在第 i 个 boss 上的尝试次数 a_i 必须小于等于 Polycarp 的尝试次数 b_i 才能保证 Monocarp 杀死所有 boss。",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +51,9 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "对于每个 k 从 1 到 n，判断是否存在一种顺序使得 Monocarp 能够在第 k 次尝试之前杀死所有 boss。"
-            },
-            {
-              "name": "turn_based_operation",
-              "description": "每次杀死一个 boss 后，尝试计数器重置。"
-            },
-            {
-              "name": "pairwise_exclusion",
-              "description": "对于每个 boss，只有一个人（Monocarp 或 Polycarp）能够杀死它。"
+              "name": "ordering",
+              "description": "Monocarp 和 Polycarp 的尝试次数序列必须保持有序，即 Monocarp 在第 i 个 boss 上的尝试次数 a_i 必须小于等于 Polycarp 的尝试次数 b_i 才能保证 Monocarp 杀死所有 boss。",
+              "formal": "∀i ∈ [1, n], a_i ≤ b_i"
             }
           ]
         }
@@ -86,26 +69,46 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "统计满足条件的k值数量"
+          "description": "求满足条件的 k 的数量，使得在给定的尝试次数下，某一方能够完成所有任务"
         }
       }
     ],
-    "description": "统计满足条件的k值数量"
+    "description": "求满足条件的 k 的数量，使得在给定的尝试次数下，某一方能够完成所有任务"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：Monocarp 能够击杀所有 boss 的条件可以分解为在每个子问题（即每个 boss）上 Monocarp 的尝试次数小于等于 Polycarp 的尝试次数。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：对于任意一个 boss，如果 Monocarp 的尝试次数小于等于 Polycarp 的尝试次数，则 Monocarp 优先击杀该 boss 是局部最优解，从而保证全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，即Monocarp在每一步的选择依赖于前序步骤的结果，且最终结果是所有子问题最优解的组合。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：Monocarp 能够击杀所有 boss 的条件可以分解为在每个子问题（即每个 boss）上 Monocarp 的尝试次数小于等于 Polycarp 的尝试次数。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：对于任意一个 boss，如果 Monocarp 的尝试次数小于等于 Polycarp 的尝试次数，则 Monocarp 优先击杀该 boss 是局部最优解，从而保证全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，即Monocarp在每一步的选择依赖于前序步骤的结果，且最终结果是所有子问题最优解的组合。"
+    ]
   }
 }

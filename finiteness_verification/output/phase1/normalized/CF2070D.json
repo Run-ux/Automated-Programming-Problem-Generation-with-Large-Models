@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "tree",
         "length": {
           "min": 2,
           "max": 300000
@@ -16,7 +16,8 @@
           "max": 300000
         },
         "properties": {
-          "connected": true
+          "connected": true,
+          "rooted": true
         }
       }
     }
@@ -28,12 +29,12 @@
       "result": {
         "constraints": [
           {
-            "name": "tree_structure",
-            "description": "给定的图是一个有根树结构，根节点为1"
+            "name": "path_constraint",
+            "description": "路径约束：芯片必须按照给定的顺序访问所有顶点，且只能通过树中的边进行移动"
           },
           {
-            "name": "non_decreasing_sequence",
-            "description": "有效的顶点序列必须满足：从根节点开始，按照序列顺序访问所有顶点，并且每个顶点只能通过其父节点或子节点访问"
+            "name": "acyclicity",
+            "description": "有根树结构：树的根节点为1，每个节点都有一个唯一的父节点"
           }
         ]
       }
@@ -44,8 +45,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足条件的序列数量"
+        "type": "enumeration",
+        "description": "求满足条件的序列数量，结果对给定模数取模"
       }
     }
   ],
@@ -54,9 +55,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个子树的解可以独立计算并合并得到整棵树的解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解组合得到，即每个节点的有效序列数可以由其子节点的有效序列数组合计算得出。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从根节点到任意节点的路径上，每个节点的状态（有效序列数）可以通过其父节点和兄弟节点的状态进行转移。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：不同子树之间的有效序列数计算是相互独立的，一个子树的有效序列数不会影响另一个子树的有效序列数。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,46 @@
+{
+  "problem_id": "GYM103466G",
+  "source": "icpc_gym",
+  "dimension": "core_constraints",
+  "round": 1,
+  "result": {
+    "constraints": [
+      {
+        "name": "state_transition",
+        "description": "玩家的状态（是否被淘汰）在每一轮结束后根据其当前的筹码数量进行更新。如果筹码数量为零，则该玩家被淘汰，不再参与后续轮次。",
+        "formal": "if (player.pots == 0) player.disqualified = true"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每个玩家在每一轮中只能进行一次操作（弃牌或跟注）。如果所有其他玩家都弃牌，则剩余的玩家自动赢得这一轮。",
+        "formal": "for each round: if (all other players fold) remaining player wins the round"
+      },
+      {
+        "name": "capacity_constraint",
+        "description": "玩家在每一轮中的投注金额受到其当前筹码数量的限制。如果筹码不足15个，则必须全押或弃牌。",
+        "formal": "if (player.pots < 15) player must all-in or fold"
+      },
+      {
+        "name": "pairwise_exclusion",
+        "description": "在同一轮中，不同玩家的操作是互斥的。即，一个玩家的操作不会影响其他玩家的操作决策。",
+        "formal": "players' actions in a round are independent of each other"
+      },
+      {
+        "name": "ordering",
+        "description": "玩家的行动顺序是固定的，从第一个未被淘汰的玩家开始依次进行。",
+        "formal": "players act in a fixed order, starting from the first non-disqualified player"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "每一轮中使用的牌是从一副标准的52张扑克牌中抽取的子集。每一轮使用的牌数可能少于15张，因为有些玩家可能已经被淘汰。",
+        "formal": "cards used in each round is a subset of a standard 52-card deck, and may be less than 15 cards due to disqualification"
+      },
+      {
+        "name": "inclusion",
+        "description": "每一轮中，玩家必须使用自己的两张底牌和五张公共牌来组成最好的手牌。",
+        "formal": "each player must use their two hole cards and five community cards to form the best hand"
+      }
+    ]
+  },
+  "status": "success"
+}

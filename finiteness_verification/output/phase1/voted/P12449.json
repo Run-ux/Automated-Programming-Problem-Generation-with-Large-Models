@@ -1,0 +1,162 @@
+{
+  "problem_id": "P12449",
+  "source": "luogu",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 2,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 300000
+          },
+          "properties": {
+            "connected": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 300000
+    },
+    "properties": {
+      "connected": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "图必须连通（所有节点通过边互相可达）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个节点的度数不超过 2（每个房间最多连接两条走廊）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "路径长度不超过电缆长度（从插入插座的房间到目标房间的距离不超过电缆长度）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制（移动和清理走廊的操作次数有限制）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移约束（吸尘器的状态在已通电和未通电之间切换，且只有在特定状态下才能进行某些操作）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "图必须连通（所有节点通过边互相可达）"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个节点的度数不超过 2（每个房间最多连接两条走廊）",
+              "formal": "∀v ∈ V, deg(v) ≤ 2"
+            },
+            {
+              "name": "path_constraint",
+              "description": "路径长度不超过电缆长度（从插入插座的房间到目标房间的距离不超过电缆长度）",
+              "formal": "d(u, v) ≤ r_i"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制（移动和清理走廊的操作次数有限制）"
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移约束（吸尘器的状态在已通电和未通电之间切换，且只有在特定状态下才能进行某些操作）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求清理所有边的最短时间"
+        }
+      }
+    ],
+    "description": "求清理所有边的最短时间"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，清理所有走廊的最短时间可以通过清理每个子树的最短时间组合得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个房间到另一个房间的状态转移是确定的，且转移过程中保持一致性。具体来说，从一个房间移动到相邻房间的时间和操作（插入/拔出吸尘器）是固定的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个子树的清理过程是独立的，不会受到其他子树的影响。具体来说，清理一个子树的走廊时，可以独立于其他子树进行。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。具体来说，清理所有走廊的最短时间可以通过清理每个子树的最短时间组合得到。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个房间到另一个房间的状态转移是确定的，且转移过程中保持一致性。具体来说，从一个房间移动到相邻房间的时间和操作（插入/拔出吸尘器）是固定的。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个子树的清理过程是独立的，不会受到其他子树的影响。具体来说，清理一个子树的走廊时，可以独立于其他子树进行。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

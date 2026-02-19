@@ -1,0 +1,144 @@
+{
+  "problem_id": "P5945",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 4,
+            "max": 4
+          },
+          "value_range": {
+            "min": [
+              2,
+              1,
+              1,
+              2
+            ],
+            "max": [
+              10,
+              1000,
+              100,
+              100
+            ]
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 4,
+      "max": 4
+    },
+    "value_range": {
+      "min": [
+        2,
+        1,
+        1,
+        2
+      ],
+      "max": [
+        10,
+        1000,
+        100,
+        100
+      ]
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "相邻元素不能相同（序列中相邻的电平必须不同）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subsequence_constraint",
+        "description": "子序列中不允许有连续 l 个相同的元素（数据包内不能有连续 l 个相同的电平）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "相邻元素不能相同（序列中相邻的电平必须不同）",
+              "formal": "∀ i ∈ [1, m-1], A[i] ≠ A[i+1]"
+            },
+            {
+              "name": "subsequence_constraint",
+              "description": "子序列中不允许有连续 l 个相同的元素（数据包内不能有连续 l 个相同的电平）",
+              "formal": "∀ i ∈ [1, m-l+1], ∃ j ∈ [i, i+l-1], A[j] ≠ A[j+1]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求在给定约束条件下，一秒内最大能发送的信息位数"
+        }
+      }
+    ],
+    "description": "求在给定约束条件下，一秒内最大能发送的信息位数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即数据包的合法序列数可以通过较短序列的合法数量递推计算得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在动态规划过程中，当前状态仅依赖于前一个或几个状态，且这种依赖关系在整个算法执行过程中保持一致。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即数据包的合法序列数可以通过较短序列的合法数量递推计算得出。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在动态规划过程中，当前状态仅依赖于前一个或几个状态，且这种依赖关系在整个算法执行过程中保持一致。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -2,14 +2,14 @@
   "problem_id": "P5070",
   "source": "luogu",
   "input_structure": {
-    "type": "array",
+    "type": "matrix",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "array",
+          "type": "matrix",
           "length": {
             "min": 1,
             "max": 1000000
@@ -25,7 +25,7 @@
         "round": 2,
         "status": "success",
         "result": {
-          "type": "array",
+          "type": "matrix",
           "length": {
             "min": 1,
             "max": 1000000
@@ -41,7 +41,7 @@
         "round": 3,
         "status": "success",
         "result": {
-          "type": "array",
+          "type": "matrix",
           "length": {
             "min": 1,
             "max": 1000000
@@ -68,13 +68,13 @@
     "constraints": [
       {
         "name": "output_format",
-        "description": "对于每次询问，输出一个长度为 10 的字符串，第 i 个字符表示长度为 i 的极长连续段个数 mod 10 的结果。",
-        "confidence": "3/3"
+        "description": "每次查询的结果是一个长度为10的字符串，第i个字符表示长度为i的极长值域连续段个数模10的结果",
+        "confidence": "2/3"
       },
       {
-        "name": "valid_values",
-        "description": "定义值域连续段为：把区间里面所有数排序后去重，设排序后得到的序列为 b。如果对于二元组 (l, r) 满足 b_l, b_{l+1}, ..., b_r 中每个数为前一个数 +1，并且对于二元组 (l, r+1) 和 (l-1, r) 均不满足，则称 (l, r) 为一个长度为 r-l+1 的极长值域连续段。",
-        "confidence": "3/3"
+        "name": "range_continuity",
+        "description": "区间内值域连续段的定义：排序去重后的序列中，每个数为前一个数+1的最长子段",
+        "confidence": "2/3"
       }
     ],
     "all_rounds": [
@@ -84,14 +84,14 @@
         "result": {
           "constraints": [
             {
-              "name": "valid_values",
-              "description": "定义值域连续段为：把区间里面所有数排序后去重，设排序后得到的序列为 b。如果对于二元组 (l, r) 满足 b_l, b_{l+1}, ..., b_r 中每个数为前一个数 +1，并且对于二元组 (l, r+1) 和 (l-1, r) 均不满足，则称 (l, r) 为一个长度为 r-l+1 的极长值域连续段。",
-              "formal": "For a subarray [l, r] of the sorted and deduplicated sequence b, if b_i = b_{i-1} + 1 for all l <= i <= r and neither (l, r+1) nor (l-1, r) satisfy this condition, then (l, r) is a maximal value range segment of length r - l + 1."
+              "name": "range_continuity",
+              "description": "区间内值域连续段的定义：排序去重后的序列中，每个数为前一个数+1的最长子段",
+              "formal": "对于区间 [l, r]，设 b 为 a[l:r] 排序去重后的序列。若存在 (l', r') 满足 b[l'], b[l'+1], ..., b[r'] 中每个数为前一个数 +1，且 (l'-1, r') 和 (l', r'+1) 不满足，则 (l', r') 为一个长度为 r'-l'+1 的极长值域连续段"
             },
             {
               "name": "output_format",
-              "description": "对于每次询问，输出一个长度为 10 的字符串，第 i 个字符表示长度为 i 的极长连续段个数 mod 10 的结果。",
-              "formal": "For each query, output a string of length 10 where the i-th character represents the count of maximal value range segments of length i modulo 10."
+              "description": "每次查询的结果是一个长度为10的字符串，第i个字符表示长度为i的极长值域连续段个数模10的结果",
+              "formal": "对于每次查询 [l, r]，输出一个长度为10的字符串 s，其中 s[i-1] = (count of length-i range continuity segments) % 10"
             }
           ]
         }
@@ -102,14 +102,14 @@
         "result": {
           "constraints": [
             {
-              "name": "valid_values",
-              "description": "值域连续段定义为排序后去重的序列中，每个数为前一个数+1的最长子序列。",
-              "formal": "对于二元组 (l, r)，b_l, b_{l+1}, ..., b_r 中每个数为前一个数 +1，且 (l, r+1) 和 (l-1, r) 均不满足此条件。"
+              "name": "range_segment_count",
+              "description": "区间内长度为 1 到 10 的极长值域连续段个数",
+              "formal": "对于每个查询区间 [l, r]，计算长度为 1 到 10 的极长值域连续段的个数"
             },
             {
-              "name": "output_format",
-              "description": "每次查询的结果是一个长度为 10 的字符串，第 i 个字符表示长度为 i 的极长值域连续段个数模 10 的结果。",
-              "formal": "result[i] = (count of segments with length i) % 10"
+              "name": "value_continuity",
+              "description": "值域连续段定义：排序去重后的序列中，每个数为前一个数 +1 的最长子序列",
+              "formal": "设 b 为区间 [l, r] 内所有数排序去重后的序列。如果 b_l, b_{l+1}, ..., b_r 满足 b_i = b_{i-1} + 1 且 (l-1, r) 和 (l, r+1) 不满足，则 (l, r) 为一个极长值域连续段"
             }
           ]
         }
@@ -120,14 +120,14 @@
         "result": {
           "constraints": [
             {
-              "name": "valid_values",
-              "description": "值域连续段定义为排序后去重的序列中，每个数为前一个数+1的最长子序列。",
-              "formal": "对于二元组 (l, r)，b_l, b_{l+1}, ..., b_r 满足 b_i = b_{i-1} + 1，且 (l, r+1) 和 (l-1, r) 不满足该条件。"
+              "name": "range_continuity",
+              "description": "区间内值域连续段的定义：排序去重后的序列中，每个数为前一个数+1的最长子序列",
+              "formal": "对于区间 [l, r]，设 b 为 a[l:r] 排序去重后的序列，(l', r') 是极长值域连续段当且仅当 ∀i ∈ [l', r'-1], b[i+1] = b[i] + 1 且 (l'-1, r') 和 (l', r'+1) 不满足该条件"
             },
             {
               "name": "output_format",
-              "description": "每次查询的结果是一个长度为10的字符串，第i个字符表示长度为i的极长值域连续段个数模10的结果。",
-              "formal": "result[i] = (count of segments with length i) % 10"
+              "description": "每次查询的结果是一个长度为10的字符串，第i个字符表示长度为i的极长值域连续段个数模10的结果",
+              "formal": "对于每次查询 [l, r]，输出一个长度为10的字符串 s，s[i-1] = (count of length-i range continuity segments) % 10"
             }
           ]
         }
@@ -135,70 +135,106 @@
     ]
   },
   "objective": {
-    "type": "count",
+    "type": "enumeration",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计每次查询区间中长度为1到10的极长值域连续段的个数"
+          "type": "enumeration",
+          "description": "对于每次查询，统计区间内长度为1到10的极长值域连续段的个数，并对每个长度的结果取模10"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计每次查询区间中长度为1到10的极长值域连续段的个数"
+          "type": "enumeration",
+          "description": "对于每次查询，统计区间内长度为1到10的极长值域连续段的个数，并对每个长度的结果取模10"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计每次查询区间内长度为1到10的极长值域连续段的个数"
+          "type": "enumeration",
+          "description": "对于每次查询，统计区间内长度为1到10的极长值域连续段的个数，并对每个长度的结果取模10"
         }
       }
     ],
-    "description": "统计每次查询区间中长度为1到10的极长值域连续段的个数"
+    "description": "对于每次查询，统计区间内长度为1到10的极长值域连续段的个数，并对每个长度的结果取模10"
   },
   "invariant": {
-    "name": "interval_mergeable",
-    "confidence": "3/3",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，适用于动态规划算法",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间信息可通过子区间合并，适用于线段树等数据结构",
+        "confidence": "3/3",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间信息可通过子区间合并，适用于前缀和、线段树等数据结构来处理区间查询问题",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间信息可通过子区间合并，适用于线段树等数据结构",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，适用于动态规划算法",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间信息可通过子区间合并，适用于前缀和或线段树等数据结构来处理区间查询问题",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：通过子区间的值域连续段信息可以合并得到更大区间的值域连续段信息",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：查询区间的极长值域连续段个数可以通过其子区间的极长值域连续段个数计算得出",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间信息可通过子区间合并，适用于前缀和、线段树等数据结构",
-          "properties": {
-            "prefix_sum": true
-          }
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间信息可通过子区间合并，适用于线段树等数据结构",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，适用于动态规划算法",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "区间信息可通过子区间合并，适用于前缀和、线段树等数据结构来处理区间查询问题"
+    ]
   }
 }

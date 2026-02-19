@@ -1,0 +1,124 @@
+{
+  "problem_id": "P5405",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "对于任意非空真子集 S，存在一个二元组 (u, v) 满足 u 在 S 中且 v 不在 S 中，或者 u 不在 S 中且 v 在 S 中（集合覆盖约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "抽卡时间 T_i 必须满足所有给定的二元组 (u_i, v_i) 的顺序关系，即 T_{u_i} < T_{v_i}（有序性约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "对于任意非空真子集 S，存在一个二元组 (u, v) 满足 u 在 S 中且 v 不在 S 中，或者 u 不在 S 中且 v 在 S 中（集合覆盖约束）",
+              "formal": "∀ ∅ ≠ S ⊂neq {1, 2, ..., N}, ∃ (u, v) s.t. (u ∈ S ∧ v ∉ S) ∨ (u ∉ S ∧ v ∈ S)"
+            },
+            {
+              "name": "ordering",
+              "description": "抽卡时间 T_i 必须满足所有给定的二元组 (u_i, v_i) 的顺序关系，即 T_{u_i} < T_{v_i}（有序性约束）",
+              "formal": "∀ (u_i, v_i), T_{u_i} < T_{v_i}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_probability",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_probability",
+          "description": "最大化满足给定条件的概率"
+        }
+      }
+    ],
+    "description": "最大化满足给定条件的概率"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：根据给定的二元组约束，可以构建一个有向无环图（DAG），其中每个节点代表一种卡，边的方向表示抽到该卡的时间顺序。解法中需要保证在任何合法的抽卡序列中，这些拓扑序关系始终成立。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造。具体来说，计算小刘同学能够得到幸运大奖的概率时，可以通过考虑每种卡的权值分布和已知的拓扑序约束，将问题分解为更小的子问题，并通过这些子问题的解来求得最终结果。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：根据给定的二元组约束，可以构建一个有向无环图（DAG），其中每个节点代表一种卡，边的方向表示抽到该卡的时间顺序。解法中需要保证在任何合法的抽卡序列中，这些拓扑序关系始终成立。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造。具体来说，计算小刘同学能够得到幸运大奖的概率时，可以通过考虑每种卡的权值分布和已知的拓扑序约束，将问题分解为更小的子问题，并通过这些子问题的解来求得最终结果。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

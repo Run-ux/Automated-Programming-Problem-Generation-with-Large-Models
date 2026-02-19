@@ -1,0 +1,90 @@
+{
+  "problem_id": "CF1076D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "保留的边数不超过 K",
+            "formal": "e <= k"
+          },
+          {
+            "name": "connectivity",
+            "description": "图必须连通（任意顶点可以从顶点 1 到达）",
+            "formal": "G is connected"
+          },
+          {
+            "name": "path_constraint",
+            "description": "删除边后，从顶点 1 到其他顶点的最短路径长度不变",
+            "formal": "d_i' = d_i for all good vertices i"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "最大化满足最短路径长度不变的顶点数量",
+            "formal": "maximize |{i | d_i' = d_i}|"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化满足特定条件的顶点数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，保留的边集使得从起点到各顶点的最短路径长度不变，且保留的边数不超过k。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择当前情况下最优的边进行保留，最终可以得到全局最优解。具体来说，优先保留那些对保持最短路径贡献最大的边。",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在图中，每个顶点的入度和出度之和保持不变。在删除边的过程中，确保从起点出发能够到达尽可能多的顶点，并且这些顶点的最短路径长度不变。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

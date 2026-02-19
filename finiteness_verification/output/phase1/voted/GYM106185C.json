@@ -1,0 +1,144 @@
+{
+  "problem_id": "GYM106185C",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 300
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000000000000
+          },
+          "properties": {
+            "ordered": false,
+            "duplicates": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000000000000
+    },
+    "properties": {
+      "ordered": false,
+      "duplicates": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "exclusion",
+        "description": "某些特定天数被标记为非工作日，不能在这些天工作（集合排除约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "pattern_matching",
+        "description": "每周的周六和周日是固定的非工作日（周期性固定模式约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "exclusion",
+              "description": "某些特定天数被标记为非工作日，不能在这些天工作（集合排除约束）"
+            },
+            {
+              "name": "pattern_matching",
+              "description": "每周的周六和周日是固定的非工作日（周期性固定模式约束）",
+              "formal": "For all i, if (i % 7 == 5) or (i % 7 == 6), then day i is a non-working day."
+            },
+            {
+              "name": "exclusion",
+              "description": "非工作日列表中可能存在重复的日期，但重复的日期不会增加额外的非工作日（去重约束）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求在给定区间内满足条件的天数"
+        }
+      }
+    ],
+    "description": "求在给定区间内满足条件的天数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过计算工作日和非工作日的差值来确定总的工作天数",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着日期的增加，非工作日的数量单调递增",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个周期内的工作日数量可以独立计算，并且这些子问题的结果可以合并以得到最终结果",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过计算工作日和非工作日的差值来确定总的工作天数",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着日期的增加，非工作日的数量单调递增",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个周期内的工作日数量可以独立计算，并且这些子问题的结果可以合并以得到最终结果",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

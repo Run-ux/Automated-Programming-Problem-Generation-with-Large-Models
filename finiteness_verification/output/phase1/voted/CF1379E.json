@@ -1,0 +1,151 @@
+{
+  "problem_id": "CF1379E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000
+          },
+          "properties": {
+            "connected": true,
+            "directed": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100000
+    },
+    "properties": {
+      "connected": true,
+      "directed": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "acyclicity",
+        "description": "结构为一棵树，每个节点有且仅有一个子节点，除了一个特殊节点没有子节点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "不平衡条件：如果一个人有两个父节点，并且其中一个父节点的祖先数量至少是另一个父节点的两倍，则该人是不平衡的",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "acyclicity",
+              "description": "结构为一棵树，每个节点有且仅有一个子节点，除了一个特殊节点没有子节点"
+            },
+            {
+              "name": "acyclicity",
+              "description": "祖先关系定义为：a 是 b 的祖先当且仅当 a = b 或 a 有子节点 c 且 c 是 b 的祖先"
+            },
+            {
+              "name": "degree_bound",
+              "description": "不平衡条件：如果一个人有两个父节点，并且其中一个父节点的祖先数量至少是另一个父节点的两倍，则该人是不平衡的"
+            },
+            {
+              "name": "degree_bound",
+              "description": "不平衡的人数必须等于给定的 k"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在满足给定条件的构造方案"
+        }
+      }
+    ],
+    "description": "判断是否存在满足给定条件的构造方案"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "tree_topology",
+        "description": "树结构不变量：整个基因结构形成一棵有向树，每个节点最多有一个父节点和一个子节点，除了根节点外所有节点都有且仅有一个父节点。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "tree_depth_invariance",
+        "description": "祖先计数不变量：每个节点的祖先数量可以通过其父节点的祖先数量加一来计算。对于没有父节点的根节点，其祖先数量为1。",
+        "confidence": "1/1",
+        "properties": {
+          "additive_ancestors": true
+        }
+      },
+      {
+        "name": "balance_constraint",
+        "description": "不平衡条件不变量：如果一个节点有两个父节点，并且其中一个父节点的祖先数量至少是另一个的两倍，则该节点被认为是不平衡的。",
+        "confidence": "1/1",
+        "properties": {
+          "ancestor_ratio": 2
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "tree_topology",
+              "description": "树结构不变量：整个基因结构形成一棵有向树，每个节点最多有一个父节点和一个子节点，除了根节点外所有节点都有且仅有一个父节点。",
+              "properties": {}
+            },
+            {
+              "name": "tree_depth_invariance",
+              "description": "祖先计数不变量：每个节点的祖先数量可以通过其父节点的祖先数量加一来计算。对于没有父节点的根节点，其祖先数量为1。",
+              "properties": {
+                "additive_ancestors": true
+              }
+            },
+            {
+              "name": "balance_constraint",
+              "description": "不平衡条件不变量：如果一个节点有两个父节点，并且其中一个父节点的祖先数量至少是另一个的两倍，则该节点被认为是不平衡的。",
+              "properties": {
+                "ancestor_ratio": 2
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

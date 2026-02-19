@@ -1,0 +1,90 @@
+{
+  "problem_id": "CF1340D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（题目中的城市地图是一个树结构）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径必须访问每个节点至少一次并返回起点"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "路径中最大时间值应最小化"
+          },
+          {
+            "name": "distinctness",
+            "description": "在相同位置和时间不能出现两次（避免爆炸）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "min_max",
+        "description": "求使得路径上最大时间最小的路径"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过访问每个子树的最优路径来构建整个树的最优路径。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在遍历树的过程中，当前节点的状态（时间）由其父节点的状态和边的权重决定，并且这种状态转移是确定性的。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：由于图是一个树，因此存在一个拓扑排序，使得每个节点在其所有子节点之后被访问。这保证了在回溯时可以正确地更新时间。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：在树的遍历过程中，对于任意两个子树，它们的遍历顺序可以互换而不影响最终结果，因为每个子树的遍历是独立的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -2,14 +2,14 @@
   "problem_id": "GYM105230D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -35,13 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "divisor_frequency_constraint",
-        "description": "计算一个数的所有真因子（不包括自身）的和",
+        "name": "sum_constraint",
+        "description": "每个数的真因子和（不包括自身）必须计算并用于分类",
         "confidence": "1/1"
       },
       {
-        "name": "hierarchical_structure",
-        "description": "如果一个数同时属于多个分类，必须按照特定顺序输出分类（例如先输出“romantico”，再输出“abundante”）",
+        "name": "ordering",
+        "description": "如果一个数同时属于多个分类，必须按照特定顺序输出分类（例如先输出“romantico”再输出“abundante”）",
         "confidence": "1/1"
       }
     ],
@@ -52,12 +52,12 @@
         "result": {
           "constraints": [
             {
-              "name": "divisor_frequency_constraint",
-              "description": "计算一个数的所有真因子（不包括自身）的和"
+              "name": "sum_constraint",
+              "description": "每个数的真因子和（不包括自身）必须计算并用于分类"
             },
             {
-              "name": "hierarchical_structure",
-              "description": "如果一个数同时属于多个分类，必须按照特定顺序输出分类（例如先输出“romantico”，再输出“abundante”）"
+              "name": "ordering",
+              "description": "如果一个数同时属于多个分类，必须按照特定顺序输出分类（例如先输出“romantico”再输出“abundante”）"
             }
           ]
         }
@@ -65,34 +65,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断每个数属于哪种类型并输出"
+          "type": "feasibility",
+          "description": "判断每个数是否属于特定类别"
         }
       }
     ],
-    "description": "判断每个数属于哪种类型并输出"
+    "description": "判断每个数是否属于特定类别"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个数的分类依赖于其所有真因子和的分类结果，通过递归或迭代计算可以得到最终分类",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个数到其真因子和的状态转移过程中，状态的合法性保持不变，即始终在合法的整数范围内进行状态转移",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：每个数的分类依赖于其所有真因子和的分类，大问题的解由子问题的解组合而成",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个数的分类依赖于其所有真因子和的分类结果，通过递归或迭代计算可以得到最终分类",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个数到其真因子和的状态转移过程中，状态的合法性保持不变，即始终在合法的整数范围内进行状态转移",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：每个数的分类依赖于其所有真因子和的分类，大问题的解由子问题的解组合而成"
+    ]
   }
 }

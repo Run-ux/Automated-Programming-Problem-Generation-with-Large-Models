@@ -1,0 +1,79 @@
+{
+  "problem_id": "CF1452E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 2000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 2000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "coverage",
+            "description": "每个参与者只能选择一个区间，且该区间必须完全覆盖其感兴趣的子区间",
+            "formal": "对于每个参与者 i，选择的区间 [x, x+k-1] 必须满足 l_i ≤ x 且 x + k - 1 ≤ r_i"
+          },
+          {
+            "name": "coverage",
+            "description": "每个参与者会选择覆盖其感兴趣子区间最多的那个区间",
+            "formal": "对于每个参与者 i，选择的区间 [x, x+k-1] 使得 |[l_i, r_i] ∩ [x, x+k-1]| 最大化"
+          },
+          {
+            "name": "intersection",
+            "description": "每个参与者只能选择一个区间的解，不能同时选择两个区间的解",
+            "formal": "对于每个参与者 i，只能选择一个区间 [x, x+k-1] 或 [y, y+k-1]，不能同时选择两者"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化所有参与者感兴趣任务数的最大值之和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个作者选择的连续k个任务段的最优解可以组合成整个问题的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：不同区间的贡献可以通过合并的方式计算总贡献，即两个作者选择的任务段对所有参与者的贡献可以独立计算后合并。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -16,8 +16,8 @@
           "max": 90
         },
         "properties": {
-          "ordered": true,
-          "circular": true
+          "circular": true,
+          "inferred": true
         }
       }
     }
@@ -29,24 +29,28 @@
       "result": {
         "constraints": [
           {
-            "name": "cyclic_path_length_constraint",
-            "description": "路径长度必须是环的长度的整数倍（即 (d + 1) 整除 N）",
-            "formal": "(d + 1) | N"
+            "name": "circular_adjacency",
+            "description": "图结构为环形（节点编号从 1 到 N，N 和 1 相邻）"
           },
           {
-            "name": "distinct_simple_paths",
-            "description": "不同路径不能访问相同的节点集合（避免冲突）",
-            "formal": "∀ i, j ∈ [1, m], P_i ≠ P_j, 其中 P_i 和 P_j 分别表示第 i 和第 j 条路径访问的节点集合"
+            "name": "degree_bound",
+            "description": "每个节点的度数固定为 2（每个房子有两个邻居）"
           },
           {
-            "name": "uniform_movement",
-            "description": "每条路径上的步长固定且为非负整数 d，且在整个路径上保持不变",
-            "formal": "对于每条路径，每次移动跳过 d 个节点，d 为非负整数"
+            "name": "path_constraint",
+            "description": "路径必须是环形且起点和终点相同（PC 的旅程必须从一个房子开始并回到同一个房子）"
           },
           {
-            "name": "path_category_uniformity",
-            "description": "每条路径上的所有节点必须属于同一类别",
-            "formal": "对于每条路径 P，所有节点 v ∈ P 满足 category(v) = c, 其中 c 是某个固定的类别"
+            "name": "step_size_modulo_constraint",
+            "description": "路径步长 d+1 必须整除 N（即 (d + 1) | N）"
+          },
+          {
+            "name": "path_disjointness_constraint",
+            "description": "不同 PC 的路径不能访问相同的房子集合（避免两个 PC 访问相同的房子集合）"
+          },
+          {
+            "name": "uniformity_constraint",
+            "description": "路径上的所有节点必须属于同一类别（PC 收集 pizzo 的房子必须属于同一类别）"
           }
         ]
       }
@@ -67,9 +71,28 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题对应于特定步长d下的最大收益计算",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解可以通过子问题的最优解组合得到，即动态规划中的状态转移方程保证了整体最优解由局部最优解构成。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移过程中，每个状态的更新都基于前一个或多个状态的值，确保了状态机的一致性和正确性。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间信息可以通过子区间的合并来计算，适用于线段树等数据结构中对区间操作的支持。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题之间相互独立，每个子问题的解不影响其他子问题的解，这使得分治或动态规划方法可以有效应用。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

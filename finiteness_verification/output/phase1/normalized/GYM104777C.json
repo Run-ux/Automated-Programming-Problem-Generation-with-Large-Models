@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,16 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "continuous_path_constraint",
-            "description": "必须按照给定的顺序依次访问所有点"
+            "name": "path_constraint",
+            "description": "机器人必须按照给定的顺序访问所有点（路径约束）"
           },
           {
-            "name": "manhattan_distance_constraint",
-            "description": "每次移动只能是上下左右四个方向之一，且每次移动的距离为一个单位（曼哈顿距离）"
-          },
-          {
-            "name": "vertex_repetition_permissible",
-            "description": "即使某个点已经被访问过，如果它再次出现在序列中，仍然需要重新访问"
+            "name": "repetition",
+            "description": "如果一个点在序列中出现多次，机器人每次都需要访问该点（重复性约束）"
           }
         ]
       }
@@ -48,7 +44,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_distance",
+        "type": "minimize_value",
         "description": "求访问所有指定点的最短路径长度"
       }
     }
@@ -58,9 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：从起点到当前点的最短路径可以通过之前点的最短路径加上当前步长得到，满足动态规划的最优子结构性质",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从起点到任意点的最短路径可以通过已知的前驱点的最短路径推导出来",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前位置的状态（坐标）可以由前一个位置的状态通过确定的移动规则（上下左右）转移而来",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

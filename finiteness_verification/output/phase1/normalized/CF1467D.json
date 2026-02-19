@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 5000
@@ -15,9 +15,7 @@
           "min": 1,
           "max": 1000000000
         },
-        "properties": {
-          "ordered": true
-        }
+        "properties": {}
       }
     }
   ],
@@ -28,24 +26,16 @@
       "result": {
         "constraints": [
           {
-            "name": "path_length_constraint",
-            "description": "路径长度固定为 k（机器人必须恰好移动 k 步）"
+            "name": "path_constraint",
+            "description": "路径长度固定为 k+1，且每次移动只能向左或向右一步，不能越界"
           },
           {
-            "name": "adjacent_transition_probability",
-            "description": "每次移动只能向相邻节点（左右相邻的单元格）移动"
+            "name": "sum_constraint",
+            "description": "路径的值是路径上所有节点值的和，需要计算所有可能路径的值之和，并对结果取模 10^9 + 7"
           },
           {
-            "name": "edge_exclusion_constraint",
-            "description": "移动不能超出边界（机器人不能移出 1 到 n 的范围）"
-          },
-          {
-            "name": "path_sum_function",
-            "description": "路径值为路径上所有节点值的和（路径上的每个节点值相加）"
-          },
-          {
-            "name": "distinct_simple_paths",
-            "description": "不同路径的定义是起始节点不同或在某一步后当前位置不同（路径唯一性约束）"
+            "name": "operation_limit",
+            "description": "必须处理 q 次更新操作，每次更新改变一个节点的值，并重新计算所有路径的值之和"
           }
         ]
       }
@@ -66,12 +56,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的解是独立且可重用的",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：路径的总价值可以分解为子路径的价值之和，每个子路径的价值由其经过的单元格值决定。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：路径上的单元格值可以通过前缀和的方式进行计算，从而快速求得任意路径的总价值。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：从任意单元格出发的路径，向左或向右移动的次数是对称的，因此可以利用对称性简化计算。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

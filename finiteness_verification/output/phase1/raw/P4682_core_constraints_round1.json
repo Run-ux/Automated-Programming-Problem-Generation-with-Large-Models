@@ -7,23 +7,28 @@
     "constraints": [
       {
         "name": "collision_limit",
-        "description": "每个粒子在碰撞器皿壁达到指定次数后消亡",
-        "formal": "对于每个粒子 i，若碰撞次数达到 k，则该粒子消亡"
+        "description": "每个粒子碰撞次数不超过 K 次后消亡",
+        "formal": "∀i, collision_count(i) ≤ k"
       },
       {
         "name": "boundary_reflection",
-        "description": "粒子碰撞器皿壁时发生完全弹性碰撞，速度方向镜面反射，速度大小不变",
-        "formal": "若粒子 i 在时刻 t 碰撞器皿壁，则 v_i' = reflect(v_i, normal)"
+        "description": "粒子碰到边界时发生完全弹性碰撞，速度方向镜面反射，速度大小不变",
+        "formal": "if particle collides with boundary at (x, y), new velocity = reflect(velocity, tangent(x, y))"
+      },
+      {
+        "name": "independent_motion",
+        "description": "所有粒子的运动互不干扰",
+        "formal": "∀i, j, motion(i) is independent of motion(j)"
       },
       {
         "name": "initial_position_constraint",
-        "description": "所有粒子的初始位置必须在圆形器皿内",
-        "formal": "对于每个粒子 i，(x_i - x_0)^2 + (y_i - y_0)^2 <= R^2"
+        "description": "初始位置在圆形区域内",
+        "formal": "∀i, (x_i - x_0)^2 + (y_i - y_0)^2 ≤ R^2"
       },
       {
         "name": "non_zero_velocity",
         "description": "每个粒子的速度向量非零",
-        "formal": "对于每个粒子 i，v_{x_i} != 0 或 v_{y_i} != 0"
+        "formal": "∀i, (v_{x_i}, v_{y_i}) ≠ (0, 0)"
       }
     ]
   },

@@ -1,0 +1,126 @@
+{
+  "problem_id": "CF107C",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "directed_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "directed_graph",
+          "length": {
+            "min": 1,
+            "max": 16
+          },
+          "value_range": {
+            "min": 1,
+            "max": 16
+          },
+          "properties": {
+            "directed": true,
+            "acyclic": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 16
+    },
+    "value_range": {
+      "min": 1,
+      "max": 16
+    },
+    "properties": {
+      "directed": true,
+      "acyclic": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "ordering",
+        "description": "教授的座位安排必须满足给定的“高级-低级”关系，即对于每一对座位 (a, b)，坐在 a 位置的教授的资历必须高于坐在 b 位置的教授。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "permutation_constraint",
+        "description": "教授的座位安排是一个从 1 到 n 的排列，每个教授的资历不同且唯一。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "ordering",
+              "description": "教授的座位安排必须满足给定的“高级-低级”关系，即对于每一对座位 (a, b)，坐在 a 位置的教授的资历必须高于坐在 b 位置的教授。",
+              "formal": "对于所有 (a, b) ∈ pairs: seniority[seat[a]] < seniority[seat[b]]"
+            },
+            {
+              "name": "permutation_constraint",
+              "description": "教授的座位安排是一个从 1 到 n 的排列，每个教授的资历不同且唯一。",
+              "formal": "排列 P 是一个从 1 到 n 的全排列，且每个元素在 P 中出现一次。"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在满足给定约束条件的排列"
+        }
+      }
+    ],
+    "description": "判断是否存在满足给定约束条件的排列"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：根据给定的“高级-低级”关系，可以构建一个有向无环图（DAG），并找到一个满足所有约束条件的拓扑排序。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造。具体来说，每个教授的座位安排依赖于其前驱节点的安排。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：根据给定的“高级-低级”关系，可以构建一个有向无环图（DAG），并找到一个满足所有约束条件的拓扑排序。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造。具体来说，每个教授的座位安排依赖于其前驱节点的安排。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

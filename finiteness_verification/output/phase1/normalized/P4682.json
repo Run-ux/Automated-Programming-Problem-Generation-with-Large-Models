@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 100
@@ -16,7 +16,6 @@
           "max": 10000
         },
         "properties": {
-          "ordered": false,
           "inferred": true
         }
       }
@@ -29,24 +28,29 @@
       "result": {
         "constraints": [
           {
-            "name": "minimum_distance_constraint",
-            "description": "每个粒子在碰撞器皿壁达到指定次数后消亡",
-            "formal": "对于每个粒子 i，若碰撞次数达到 k，则该粒子消亡"
+            "name": "maximum_destruction_count",
+            "description": "每个粒子碰撞次数不超过 K 次后消亡",
+            "formal": "∀i, collision_count(i) ≤ k"
           },
           {
-            "name": "edge_exclusion_constraint",
-            "description": "粒子碰撞器皿壁时发生完全弹性碰撞，速度方向镜面反射，速度大小不变",
-            "formal": "若粒子 i 在时刻 t 碰撞器皿壁，则 v_i' = reflect(v_i, normal)"
+            "name": "reflection_constraint",
+            "description": "粒子碰到边界时发生完全弹性碰撞，速度方向镜面反射，速度大小不变",
+            "formal": "if particle collides with boundary at (x, y), new velocity = reflect(velocity, tangent(x, y))"
           },
           {
-            "name": "coordinate_fixed_point",
-            "description": "所有粒子的初始位置必须在圆形器皿内",
-            "formal": "对于每个粒子 i，(x_i - x_0)^2 + (y_i - y_0)^2 <= R^2"
+            "name": "independence",
+            "description": "所有粒子的运动互不干扰",
+            "formal": "∀i, j, motion(i) is independent of motion(j)"
           },
           {
-            "name": "uniform_movement",
+            "name": "fixed_start_node",
+            "description": "初始位置在圆形区域内",
+            "formal": "∀i, (x_i - x_0)^2 + (y_i - y_0)^2 ≤ R^2"
+          },
+          {
+            "name": "non_zero_vector_constraint",
             "description": "每个粒子的速度向量非零",
-            "formal": "对于每个粒子 i，v_{x_i} != 0 或 v_{y_i} != 0"
+            "formal": "∀i, (v_{x_i}, v_{y_i}) ≠ (0, 0)"
           }
         ]
       }
@@ -57,8 +61,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求所有粒子在运动过程中的最小距离"
+        "type": "minimize_value",
+        "description": "求所有粒子在运动过程中的历史最近距离"
       }
     }
   ],
@@ -67,11 +71,31 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "粒子状态仅依赖于前一时刻的状态，包括位置和速度。每次碰撞后的新状态可以由碰撞前的状态直接计算得出。",
-        "properties": {
-          "markov_property": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：粒子在碰撞前后的位置和速度遵循确定的物理规则，确保状态转移的一致性。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：粒子与器皿壁发生完全弹性碰撞时，碰撞前后的轨迹具有镜像对称性。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：每个粒子的碰撞次数随时间单调递增，直到达到消亡条件。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个粒子的运动和碰撞过程可以独立处理，互不影响。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

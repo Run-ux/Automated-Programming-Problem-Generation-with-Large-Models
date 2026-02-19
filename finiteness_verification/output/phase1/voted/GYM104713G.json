@@ -1,0 +1,157 @@
+{
+  "problem_id": "GYM104713G",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 5
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 5
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "degree_bound",
+        "description": "每个节点的度数上限为1，即任意两个节点之间最多有一条边",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "连接新节点和已有节点的边类型必须满足特定规则：技术等级成员要求新边类型与当前边类型相同，社会等级成员要求新边类型与当前边类型不同",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "新节点只能连接到与请求中两个节点之一已经相连的节点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "每次新建节点后，需要计算从总部节点到所有可达节点的最短路径之和",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "degree_bound",
+              "description": "每个节点的度数上限为1，即任意两个节点之间最多有一条边"
+            },
+            {
+              "name": "exclusion",
+              "description": "连接新节点和已有节点的边类型必须满足特定规则：技术等级成员要求新边类型与当前边类型相同，社会等级成员要求新边类型与当前边类型不同"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "新节点只能连接到与请求中两个节点之一已经相连的节点"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "请求中的两个节点不能直接相连"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "每次新建节点后，需要计算从总部节点到所有可达节点的最短路径之和"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求从指定起点到所有可达点的最短路径长度之和"
+        }
+      }
+    ],
+    "description": "求从指定起点到所有可达点的最短路径长度之和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：从总部到所有其他办公室的最短路径可以通过子问题的最优解组合得到",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：新办公室的连接类型由其请求者所在的办公室连接类型决定，且这种决定方式保持一致",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "flow_conservation",
+        "description": "流守恒：信号在任意节点的流入等于流出，确保了路径计算的正确性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：从总部到所有其他办公室的最短路径可以通过子问题的最优解组合得到",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：新办公室的连接类型由其请求者所在的办公室连接类型决定，且这种决定方式保持一致",
+              "properties": {}
+            },
+            {
+              "name": "flow_conservation",
+              "description": "流守恒：信号在任意节点的流入等于流出，确保了路径计算的正确性",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

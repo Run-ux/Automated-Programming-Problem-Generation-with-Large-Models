@@ -2,14 +2,14 @@
   "problem_id": "CF1420D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 300000
@@ -39,8 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "overlapping_interval_constraint",
+        "name": "intersection",
         "description": "选择的 k 个区间必须存在一个公共时间点，即这些区间的交集非空",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "从 n 个区间中选择 k 个区间，要求这 k 个区间满足特定条件（即存在一个公共时间点）",
         "confidence": "1/1"
       }
     ],
@@ -51,9 +56,12 @@
         "result": {
           "constraints": [
             {
-              "name": "overlapping_interval_constraint",
-              "description": "选择的 k 个区间必须存在一个公共时间点，即这些区间的交集非空",
-              "formal": "∃ t, ∀ i ∈ chosen_k, l_i ≤ t ≤ r_i"
+              "name": "intersection",
+              "description": "选择的 k 个区间必须存在一个公共时间点，即这些区间的交集非空"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "从 n 个区间中选择 k 个区间，要求这 k 个区间满足特定条件（即存在一个公共时间点）"
             }
           ]
         }
@@ -61,36 +69,71 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的子集数量"
+          "type": "enumeration",
+          "description": "求满足条件的子集数量，条件为子集中所有元素在某一时刻同时处于激活状态"
         }
       }
     ],
-    "description": "统计满足条件的子集数量"
+    "description": "求满足条件的子集数量，条件为子集中所有元素在某一时刻同时处于激活状态"
   },
   "invariant": {
-    "name": "interval_mergeable",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过端点差值计算区间内同时点亮的灯的数量",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：时间轴上的事件（灯的开关）按时间顺序处理，保证了事件序列的单调性",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：在任意时刻，选择 k 个同时点亮的灯的问题可以分解为子问题的组合",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间可合并性：通过端点差值计算区间重叠情况，从而确定同时点亮的灯的数量",
-          "properties": {
-            "mergeable_by_endpoints": true
-          }
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过端点差值计算区间内同时点亮的灯的数量",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：时间轴上的事件（灯的开关）按时间顺序处理，保证了事件序列的单调性",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：在任意时刻，选择 k 个同时点亮的灯的问题可以分解为子问题的组合",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "区间可合并性：通过端点差值计算区间重叠情况，从而确定同时点亮的灯的数量"
+    ]
   }
 }

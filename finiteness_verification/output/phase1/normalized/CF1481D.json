@@ -16,12 +16,9 @@
           "max": 100000
         },
         "properties": {
-          "complete": true,
-          "edge_labels": [
-            "a",
-            "b"
-          ],
-          "no_self_loops": true
+          "connected": true,
+          "weighted": false,
+          "directed": true
         }
       }
     }
@@ -33,28 +30,24 @@
       "result": {
         "constraints": [
           {
-            "name": "palindromic_path",
+            "name": "palindrome",
             "description": "路径上的边标签构成的字符串必须是回文串"
           },
           {
-            "name": "path_length_constraint",
-            "description": "路径长度固定为 m"
+            "name": "distance_bound",
+            "description": "路径长度必须为给定的 m"
           },
           {
-            "name": "directed_complete_graph",
-            "description": "图是完全有向图，每对顶点之间都有两条方向相反的边"
+            "name": "acyclicity",
+            "description": "图是一个完全有向图，每对不同的顶点之间都有两条方向相反的边"
           },
           {
-            "name": "binary_edge_weight",
-            "description": "每条边的标签只能是 'a' 或 'b'"
+            "name": "labeling_constraint",
+            "description": "每条有向边被标记为 'a' 或 'b'，且两个方向的边可以有不同的标签"
           },
           {
-            "name": "vertex_repetition_permissible",
-            "description": "允许路径中重复访问同一个顶点"
-          },
-          {
-            "name": "edge_repetition_permissible",
-            "description": "允许路径中重复使用同一条边"
+            "name": "revisiting_allowed",
+            "description": "可以多次访问同一个顶点和同一条有向边"
           }
         ]
       }
@@ -65,8 +58,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在长度为m的回文路径"
+        "type": "feasibility",
+        "description": "判断是否存在长度为m的路径，使得路径上的边标签构成回文串"
       }
     }
   ],
@@ -75,9 +68,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，即路径的回文性质可以通过子路径的回文性质递归地构建",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "symmetry",
+            "description": "对称性：路径上的字符序列与其逆序相同，满足回文性质",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子路径的回文性质独立于其他子路径，可以分别处理",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

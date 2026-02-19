@@ -2,14 +2,14 @@
   "problem_id": "GYM102012I",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 50
@@ -39,13 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "longest_increasing_subsequence",
-        "description": "最长递增子序列的长度至少为 (n - 1)",
+        "name": "subsequence_constraint",
+        "description": "最长递增子序列长度至少为 (n - 1)",
         "confidence": "1/1"
       },
       {
-        "name": "non_decreasing_sequence",
-        "description": "每个比较器 [u, v] 将第 u 个和第 v 个元素排序为非递减顺序",
+        "name": "permutation_constraint",
+        "description": "输入是一个从 1 到 n 的排列",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "每个比较器将两个元素排序成非递减顺序",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "longest_increasing_subsequence",
-              "description": "最长递增子序列的长度至少为 (n - 1)"
+              "name": "subsequence_constraint",
+              "description": "最长递增子序列长度至少为 (n - 1)",
+              "formal": "LIS(A) >= n - 1"
             },
             {
-              "name": "non_decreasing_sequence",
-              "description": "每个比较器 [u, v] 将第 u 个和第 v 个元素排序为非递减顺序"
+              "name": "permutation_constraint",
+              "description": "输入是一个从 1 到 n 的排列",
+              "formal": "A 是 [1, 2, ..., n] 的一个排列"
+            },
+            {
+              "name": "ordering",
+              "description": "每个比较器将两个元素排序成非递减顺序",
+              "formal": "对于每个比较器 [u, v]，有 A[u] <= A[v]"
             }
           ]
         }
@@ -69,34 +81,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的排列数量"
+          "type": "enumeration",
+          "description": "求满足条件的排列数（对给定的质数取模）"
         }
       }
     ],
-    "description": "统计满足条件的排列数量"
+    "description": "求满足条件的排列数（对给定的质数取模）"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合而成，即通过比较器网络对排列进行排序的过程可以分解为多个子过程，每个子过程的最优解组合成最终的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在通过比较器网络处理排列的过程中，每一步的状态转换都是确定且一致的。每次应用一个比较器时，都会将两个位置的元素调整为非递减顺序，从而逐步逼近目标状态。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解组合而成，即通过比较器网络对排列进行排序的过程可以分解为多个子过程，每个子过程的最优解组合成最终的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在通过比较器网络处理排列的过程中，每一步的状态转换都是确定且一致的。每次应用一个比较器时，都会将两个位置的元素调整为非递减顺序，从而逐步逼近目标状态。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的"
+    ]
   }
 }

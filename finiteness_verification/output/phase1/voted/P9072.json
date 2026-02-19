@@ -1,0 +1,172 @@
+{
+  "problem_id": "P9072",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 200000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 200000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "frequency_bound",
+        "description": "序列中每个元素的出现次数恰好为 α",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "对于任意两个相同的元素 a[i] 和 a[j] (i < j)，在 i 和 j 之间的所有元素都大于等于 a[i]",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subsequence_constraint",
+        "description": "目标序列必须包含给定的子序列 P",
+        "confidence": "1/1"
+      },
+      {
+        "name": "inversion_count_constraint",
+        "description": "序列中恰好有 m 个位置满足 a[i] > a[i+1]",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "frequency_bound",
+              "description": "序列中每个元素的出现次数恰好为 α",
+              "formal": "∀k ∈ [1, n], count(a, k) = α"
+            },
+            {
+              "name": "ordering",
+              "description": "对于任意两个相同的元素 a[i] 和 a[j] (i < j)，在 i 和 j 之间的所有元素都大于等于 a[i]",
+              "formal": "∀i, j, a[i] = a[j] ∧ i < j → ∀k, i < k < j, a[k] ≥ a[i]"
+            },
+            {
+              "name": "subsequence_constraint",
+              "description": "目标序列必须包含给定的子序列 P",
+              "formal": "P 是 a 的子序列"
+            },
+            {
+              "name": "inversion_count_constraint",
+              "description": "序列中恰好有 m 个位置满足 a[i] > a[i+1]",
+              "formal": "|{i | a[i] > a[i+1]}| = m"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足特定条件的序列数量（取模）"
+        }
+      }
+    ],
+    "description": "求满足特定条件的序列数量（取模）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，满足动态规划的基本性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在状态机或动态规划中，状态之间的转移具有一致性和确定性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：序列中的某些性质（如递增或递减）在算法执行过程中保持不变",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和等方法，区间的和可以通过端点差值计算",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，满足动态规划的基本性质",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在状态机或动态规划中，状态之间的转移具有一致性和确定性",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：序列中的某些性质（如递增或递减）在算法执行过程中保持不变",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和等方法，区间的和可以通过端点差值计算",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

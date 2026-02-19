@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "tree",
         "length": {
           "min": 999,
           "max": 999
@@ -29,28 +29,33 @@
       "result": {
         "constraints": [
           {
-            "name": "graph_connectivity",
-            "description": "图必须连通（树的定义）"
-          },
-          {
-            "name": "directed_acyclic_graph",
+            "name": "acyclicity",
             "description": "图中没有环（树的定义）"
           },
           {
-            "name": "edge_count",
-            "description": "边的数量为 n-1（树的定义）"
+            "name": "connectivity",
+            "description": "图是连通的（树的定义）"
           },
           {
-            "name": "node_degree_constraint",
-            "description": "每个节点的度数至少为 1（树的定义）"
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过 n-1（树的性质）",
+            "formal": "∀v ∈ V, deg(v) ≤ n-1"
           },
           {
-            "name": "node_degree_constraint",
-            "description": "每个节点的度数最多为 n-1（树的定义）"
+            "name": "permutation_constraint",
+            "description": "生成树的方法基于全排列（第一种和第二种方法）"
           },
           {
-            "name": "pattern_matching_substitution",
-            "description": "每棵树必须能够通过四种生成方法之一来识别"
+            "name": "path_constraint",
+            "description": "从节点 i 到节点 j 的路径长度受生成方法限制（第一种和第二种方法）"
+          },
+          {
+            "name": "spanning_constraint",
+            "description": "生成的图必须是生成树（第三种方法）"
+          },
+          {
+            "name": "distinctness",
+            "description": "每棵树的边集合是唯一的（第四种方法）"
           }
         ]
       }
@@ -61,8 +66,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断每棵树由哪种随机生成方式生成"
+        "type": "feasibility",
+        "description": "判断每棵树由哪种随机生成方法生成"
       }
     }
   ],
@@ -71,11 +76,30 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：树的生成方式可以通过其子树的生成方式进行推断，每种生成方法在局部（子树）上的性质决定了整体（整棵树）的生成方式。",
-        "properties": {
-          "subtree_independence": true
-        }
+        "invariants": [
+          {
+            "name": "acyclic_graph_property",
+            "description": "生成的图始终为一棵树，即无环且连通的无向图",
+            "properties": {}
+          },
+          {
+            "name": "tree_structure",
+            "description": "对于每种生成方法，节点之间的父子关系满足特定的结构约束",
+            "properties": {
+              "method_1_random_parent": true,
+              "method_2_constrained_parent": true,
+              "method_3_incremental_connectivity": true,
+              "method_4_uniform_distribution": true
+            }
+          },
+          {
+            "name": "flow_conservation",
+            "description": "在生成过程中，图的连通性逐步增加，最终形成一棵树",
+            "properties": {
+              "incremental_edge_addition": true
+            }
+          }
+        ]
       }
     }
   ]

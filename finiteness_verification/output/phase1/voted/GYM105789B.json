@@ -1,0 +1,155 @@
+{
+  "problem_id": "GYM105789B",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1500
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1500
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "partition",
+        "description": "将集合划分为两个子集，每个子集的元素数量相等",
+        "confidence": "1/1"
+      },
+      {
+        "name": "xor_sum_zero",
+        "description": "两个子集的元素按位异或结果相等",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "每个元素只能属于一个子集或不属于任何子集",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_empty_partition",
+        "description": "两个子集均不能为空",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "partition",
+              "description": "将集合划分为两个子集，每个子集的元素数量相等",
+              "formal": "|S1| = |S2|"
+            },
+            {
+              "name": "xor_sum_zero",
+              "description": "两个子集的元素按位异或结果相等",
+              "formal": "XOR(S1) = XOR(S2)"
+            },
+            {
+              "name": "exclusion",
+              "description": "每个元素只能属于一个子集或不属于任何子集",
+              "formal": "∀i, i ∈ S1 ∨ i ∈ S2 ∨ i ∉ (S1 ∪ S2)"
+            },
+            {
+              "name": "non_empty_partition",
+              "description": "两个子集均不能为空",
+              "formal": "S1 ≠ ∅ ∧ S2 ≠ ∅"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一种方案，将N个元素分成两个非空子集，使得每个子集的异或和相等"
+        }
+      }
+    ],
+    "description": "判断是否存在一种方案，将N个元素分成两个非空子集，使得每个子集的异或和相等"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合而成，即通过将球员分配到两个团队中的子问题的解来构造整个问题的解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：在分配球员时，两个团队的角色可以互换，不影响最终结果。如果一个分配方案有效，则交换两个团队的所有球员后仍然有效。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "bitwise_independence",
+        "description": "异或不变量：所有球员的能力字符串的异或结果在整个过程中保持不变。如果所有球员的能力字符串的异或结果为0，则存在一种分配方案使得两个团队的异或结果相等。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解组合而成，即通过将球员分配到两个团队中的子问题的解来构造整个问题的解。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：在分配球员时，两个团队的角色可以互换，不影响最终结果。如果一个分配方案有效，则交换两个团队的所有球员后仍然有效。",
+              "properties": {}
+            },
+            {
+              "name": "bitwise_independence",
+              "description": "异或不变量：所有球员的能力字符串的异或结果在整个过程中保持不变。如果所有球员的能力字符串的异或结果为0，则存在一种分配方案使得两个团队的异或结果相等。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

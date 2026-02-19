@@ -1,0 +1,89 @@
+{
+  "problem_id": "P13332",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": -10000,
+          "max": 100000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "window_constraint",
+            "description": "每个事件（僵尸出现）有一个固定的时间窗口，在该窗口内可以进行操作（砸僵尸）",
+            "formal": "对于每个事件 i，操作时间 t 必须满足 M_i ≤ t ≤ M_i + 1000"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每次操作后需要等待一段固定的冷却时间才能进行下一次操作",
+            "formal": "每次操作后需要等待 750ms 才能进行下一次操作"
+          },
+          {
+            "name": "distance_cost_constraint",
+            "description": "从一个位置移动到相邻位置需要固定的代价（时间）",
+            "formal": "从当前位置 (x, y) 移动到相邻位置 (x', y') 需要 100ms"
+          },
+          {
+            "name": "operation_limit",
+            "description": "在某个时间点只能进行一次操作（砸僵尸），不能同时进行多个操作",
+            "formal": "在时间 t 只能砸一个僵尸"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化在给定时间窗口内可以访问的点的数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在任意时刻选择下一个目标时，基于当前状态和剩余时间窗口内的所有可能目标，选择一个使得后续能够击碎最多僵尸的目标。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态的变化满足一定的规则。在这个问题中，状态包括玩家的位置、时间以及是否可以立即攻击僵尸。状态转移过程中，时间和位置的变化是确定的，并且是否可以立即攻击僵尸取决于上一次攻击的时间。",
+            "properties": {}
+          },
+          {
+            "name": "interval_overlap_invariant",
+            "description": "时间窗口不变量：每个僵尸出现的时间段是一个固定的时间窗口，在这个时间段内，如果玩家到达僵尸所在位置并且武器处于可用状态，则可以击碎该僵尸。时间窗口的存在保证了玩家必须在特定的时间范围内做出决策。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

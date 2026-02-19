@@ -1,0 +1,95 @@
+{
+  "problem_id": "CF1061E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 500
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数约束（每个城市最多修建 n-1 条道路）",
+            "formal": "deg(v) = n - 1, ∀ v ∈ V"
+          },
+          {
+            "name": "spanning_constraint",
+            "description": "生成树约束（两个候选人的计划都必须是连通且无环的生成树）",
+            "formal": "G1, G2 are spanning trees of the graph"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "子集约束（每个候选人的需求必须在各自的生成树中满足）",
+            "formal": "∀ (k, x) in demands, number of ports in subtree(k) ≤ x"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "容量约束（每个节点最多只能有一个港口）",
+            "formal": "port_count(v) ≤ 1, ∀ v ∈ V"
+          },
+          {
+            "name": "inclusion",
+            "description": "包含约束（每个候选人的首都必须在其需求列表中）",
+            "formal": "x ∈ demands1, y ∈ demands2"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化满足所有约束条件下的总收益"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，每个子树的最优解可以独立计算并合并。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子树的最优解可以在不考虑其他子树的情况下独立计算。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从根节点到叶子节点的状态转移过程中，每个节点的状态由其子节点的状态决定，并且满足特定的需求约束。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

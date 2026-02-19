@@ -4,12 +4,21 @@
   "dimension": "invariant",
   "round": 1,
   "result": {
-    "name": "interval_mergeable",
-    "description": "区间可合并性：通过端点差值计算区间信息，适用于前缀和或哈希等技术来识别唯一子串",
-    "properties": {
-      "prefix_computable": true,
-      "hashable": true
-    }
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和计算任意子区间的哈希值，从而判断子串的唯一性",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：滑动窗口的右端点单调递增，左端点根据当前窗口内的子串唯一性进行调整",
+        "properties": {
+          "right_monotonic": true,
+          "window_shrinkable": true
+        }
+      }
+    ]
   },
   "status": "success"
 }

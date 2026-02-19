@@ -1,0 +1,92 @@
+{
+  "problem_id": "GYM105278F",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 5000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 5000
+        },
+        "properties": {
+          "ordered": false,
+          "connected": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "cyclic_shift_constraint",
+            "description": "当Pacman移动到迷宫边界时，会从对边出现（如果对边不是墙）",
+            "formal": "if (x, y) is on the border and (x', y') is the opposite side, then move (x, y) to (x', y')"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "Pacman和Ghost不能穿过墙壁，如果尝试移动到墙壁位置，则保持在当前位置",
+            "formal": "if (x, y) is a wall, then stay at current position"
+          },
+          {
+            "name": "path_constraint",
+            "description": "Ghost总是沿着最短路径跟随Pacman",
+            "formal": "Ghost follows the shortest path to Pacman's current position"
+          },
+          {
+            "name": "distance_bound",
+            "description": "Pacman的路径长度不超过3 * (R + C)",
+            "formal": "|S| ≤ 3 * (R + C)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在路径使得一个移动者在给定的路径上不被另一个始终沿着最短路径跟随的移动者追上"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：Pacman 和 Ghost 的位置随时间变化，且每个时刻的状态仅依赖于前一时刻的状态。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：Pacman 和 Ghost 在迷宫中的移动路径形成一个有向无环图（DAG），每一步移动都遵循特定的顺序。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：Ghost 始终沿着最短路径追赶 Pacman，其与 Pacman 之间的距离在每一步移动中非递增。",
+            "properties": {
+              "distance_non_increasing": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "tree",
         "length": {
           "min": 3,
           "max": 100000
@@ -16,8 +16,7 @@
           "max": 100000
         },
         "properties": {
-          "connected": true,
-          "weighted": false
+          "connected": true
         }
       }
     }
@@ -29,12 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "tree_structure",
-            "description": "输入的图必须是一棵树（无环连通图）"
+            "name": "connectivity",
+            "description": "图必须连通（题目中的树结构保证了这一点）"
           },
           {
-            "name": "hierarchical_structure",
-            "description": "求解的目标是找到最长的嵌套序列，每个元素代表一个橡胶圈"
+            "name": "acyclicity",
+            "description": "图必须无环（题目中的树结构保证了这一点）"
+          },
+          {
+            "name": "symmetric_structure_constraint",
+            "description": "生成的橡胶圈序列必须是嵌套的（即每个橡胶圈都完全包含在另一个橡胶圈内部）"
           }
         ]
       }
@@ -45,8 +48,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_value",
-        "description": "求满足条件的最长子序列长度"
+        "type": "maximize_count",
+        "description": "求满足条件的最大嵌套序列长度"
       }
     }
   ],
@@ -55,9 +58,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个子树的最大嵌套橡胶带序列长度可以独立计算，并通过合并得到整个树的结果",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：树的每个子树的最大嵌套橡胶带序列长度可以独立计算，并且整个树的最大嵌套橡胶带序列长度可以通过子树的最优解合成。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在遍历树的过程中，当前节点的状态（最大嵌套橡胶带序列长度）可以通过其子节点的状态递归地确定。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子树的最优解可以独立计算，不受其他子树的影响。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

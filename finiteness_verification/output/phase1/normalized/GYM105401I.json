@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,12 +28,20 @@
       "result": {
         "constraints": [
           {
-            "name": "uniform_probability_distribution",
-            "description": "每个选择的概率分布必须有效，即概率之和大于0且各概率非负"
+            "name": "turn_based",
+            "description": "游戏按回合进行，每回合有一个玩家作为攻击者"
           },
           {
-            "name": "fraction_modulo_constraint",
-            "description": "输出结果为两个互质整数的比值，并将其转换为模998244353下的等价整数"
+            "name": "probability_distribution",
+            "description": "每个选择的概率分布是给定的，并且所有选择是独立的"
+          },
+          {
+            "name": "optimal_play",
+            "description": "计算A获胜的概率，假设双方都采取最优策略"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "输出结果需要对998244353取模"
           }
         ]
       }
@@ -44,8 +52,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "计算并输出一个事件发生的概率"
+        "type": "maximize_probability",
+        "description": "最大化一方获胜的概率"
       }
     }
   ],
@@ -54,9 +62,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个回合的结果依赖于前一回合的状态和当前回合的选择概率",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：当前轮次的获胜概率可以通过前一轮的获胜概率和当前轮次的选择概率计算得出",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每一轮的状态（A获胜、B获胜或平局）可以从前一轮的状态通过概率转移矩阵进行更新",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

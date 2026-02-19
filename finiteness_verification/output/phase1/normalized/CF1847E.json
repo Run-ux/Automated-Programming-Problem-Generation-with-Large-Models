@@ -1,0 +1,89 @@
+{
+  "problem_id": "CF1847E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 3,
+          "max": 5000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 4
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "query_limit",
+            "description": "查询次数限制（最多5500次）",
+            "formal": "number_of_queries <= 5500"
+          },
+          {
+            "name": "distance_constraint",
+            "description": "三个正整数a, b, c构成非退化三角形的条件是：a + b > c, a + c > b, b + c > a",
+            "formal": "a + b > c and a + c > b and b + c > a"
+          },
+          {
+            "name": "distinctness",
+            "description": "必须唯一确定所有隐藏整数a_i，否则报告无法唯一确定",
+            "formal": "determine_unique(a_1, a_2, ..., a_n) or report_not_possible"
+          },
+          {
+            "name": "range_bound",
+            "description": "每个隐藏整数a_i的值在1到4之间",
+            "formal": "1 <= a_i <= 4 for all i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否能唯一确定隐藏数组的值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：通过询问三元组 (i, j, k) 可以确定部分子序列的合法性，从而逐步构建整个序列的解。",
+            "properties": {}
+          },
+          {
+            "name": "query_limit",
+            "description": "查询效率：每次查询都能提供关于隐藏数组的部分信息，使得在有限次数内（最多 5500 次）可以确定所有隐藏值。",
+            "properties": {
+              "max_queries": 5500
+            }
+          },
+          {
+            "name": "query_independence",
+            "description": "非自适应交互器：隐藏数组在交互开始前固定不变，不会根据查询结果进行调整。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

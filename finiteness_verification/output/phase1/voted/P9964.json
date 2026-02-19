@@ -1,0 +1,153 @@
+{
+  "problem_id": "P9964",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 5000
+          },
+          "value_range": {
+            "min": 94,
+            "max": 118
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 5000
+    },
+    "value_range": {
+      "min": 94,
+      "max": 118
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "相邻折痕必须相反（即，如果第 k 条折痕为 v，则第 (k-1) 和第 (k+1) 条折痕必须为 ^，反之亦然）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "symmetric_structure_constraint",
+        "description": "每次折叠时，被折叠的折痕两侧的折痕数量之差应尽可能小",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "折叠次数应尽可能少",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "相邻折痕必须相反（即，如果第 k 条折痕为 v，则第 (k-1) 和第 (k+1) 条折痕必须为 ^，反之亦然）",
+              "formal": "对于所有 1 < k < N，s[k] != s[k-1] 且 s[k] != s[k+1]"
+            },
+            {
+              "name": "symmetric_structure_constraint",
+              "description": "每次折叠时，被折叠的折痕两侧的折痕数量之差应尽可能小",
+              "formal": "最小化 ∑ |left_count - right_count|，其中 left_count 和 right_count 分别是被折叠折痕左侧和右侧的折痕数量"
+            },
+            {
+              "name": "operation_limit",
+              "description": "折叠次数应尽可能少",
+              "formal": "最小化折叠次数"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求最小化折叠次数和在此前提下的最小不对称程度"
+        }
+      }
+    ],
+    "description": "求最小化折叠次数和在此前提下的最小不对称程度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，即通过递归地解决子问题来找到全局最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：折叠操作在两侧折痕数量相等时是旋转对称的，可以消除个体差异",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "折叠次数和不对称程度在每次折叠后单调减少，直到说明书被折叠整齐",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false,
+          "window_shrinkable": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，即通过递归地解决子问题来找到全局最优解",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：折叠操作在两侧折痕数量相等时是旋转对称的，可以消除个体差异",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "折叠次数和不对称程度在每次折叠后单调减少，直到说明书被折叠整齐",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false,
+                "window_shrinkable": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

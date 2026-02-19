@@ -1,0 +1,86 @@
+{
+  "problem_id": "CF1365D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 50
+        },
+        "value_range": {
+          "min": 1,
+          "max": 50
+        },
+        "properties": {
+          "ordered": true,
+          "connected": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "所有标记为 'G' 的节点必须能够到达目标节点 (n, m)，且路径上不能有标记为 'B' 的节点"
+          },
+          {
+            "name": "exclusion",
+            "description": "所有标记为 'B' 的节点不能到达目标节点 (n, m)"
+          },
+          {
+            "name": "degree_bound",
+            "description": "标记为 'G' 或 'B' 的节点不能被替换为墙壁，即这些节点的度数不能变为 0"
+          },
+          {
+            "name": "goal_reachability",
+            "description": "目标节点 (n, m) 必须是可达的，但可以被替换为墙壁"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种方式，使得所有指定的起点能够到达目标点，而另一些指定的起点不能到达目标点"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "可达性不变量：从起点到终点的路径在添加障碍后，好人的路径仍然保持可达，而坏人的路径变得不可达。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过修改空格的状态（变为墙），确保状态转移的一致性，即从一个状态转移到另一个状态时，满足题目要求的条件。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个单元格的状态修改是独立的，不影响其他单元格的状态修改，且最终结果由所有单元格的状态共同决定。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

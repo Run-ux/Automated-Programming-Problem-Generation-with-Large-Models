@@ -1,0 +1,157 @@
+{
+  "problem_id": "P10802",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1000,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1000,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "query_limit",
+        "description": "每次询问的混合样本检测结果只能是阳性或阴性，且总询问次数有限制",
+        "confidence": "1/1"
+      },
+      {
+        "name": "independence",
+        "description": "每个样本的阳性与否是独立的，不受其他样本的影响",
+        "confidence": "1/1"
+      },
+      {
+        "name": "probability_distribution",
+        "description": "每个样本呈阳性的概率为 P，且通过公平的随机数生成器独立决定",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "query_limit",
+              "description": "每次询问的混合样本检测结果只能是阳性或阴性，且总询问次数有限制"
+            },
+            {
+              "name": "independence",
+              "description": "每个样本的阳性与否是独立的，不受其他样本的影响"
+            },
+            {
+              "name": "probability_distribution",
+              "description": "每个样本呈阳性的概率为 P，且通过公平的随机数生成器独立决定"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "最小化所需的检测次数以确定所有样本的阳性情况"
+        }
+      }
+    ],
+    "description": "最小化所需的检测次数以确定所有样本的阳性情况"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "divide_conquer",
+        "description": "分治不变量：大问题的解可以通过子问题的解合成，通过递归地将样本分成更小的组进行检测，最终确定所有样本的状态。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "二分搜索不变量：在某些情况下，可以使用二分搜索来减少检测次数，通过不断缩小搜索区间来定位阳性样本。",
+        "confidence": "1/1",
+        "properties": {
+          "search_interval_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个子问题的最优解可以组合成原问题的最优解。通过递归地解决子问题，最终得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，选择当前最优的策略（如选择最小的子集进行检测），以期望达到全局最优。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：大问题的解可以通过子问题的解合成，通过递归地将样本分成更小的组进行检测，最终确定所有样本的状态。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "二分搜索不变量：在某些情况下，可以使用二分搜索来减少检测次数，通过不断缩小搜索区间来定位阳性样本。",
+              "properties": {
+                "search_interval_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个子问题的最优解可以组合成原问题的最优解。通过递归地解决子问题，最终得到全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，选择当前最优的策略（如选择最小的子集进行检测），以期望达到全局最优。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "problem_id": "P6424",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 3
+        },
+        "properties": {
+          "ordered": true,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "tree_traversal",
+            "description": "遍历过程由字符 L、R 和 P 组成的字符串描述，L 表示跳到左孩子，R 表示跳到右孩子，P 表示暂停一轮操作。",
+            "formal": "每个节点 x 的左子节点为 2x，右子节点为 2x+1。遍历字符串中的 L、R、P 分别表示移动到左子节点、右子节点或停留在当前节点。"
+          },
+          {
+            "name": "wildcard_replacement",
+            "description": "遍历字符串中的 * 可以被 L、R 或 P 替换，表示多种可能的遍历路径。",
+            "formal": "遍历字符串中的每个 * 可以被 L、R 或 P 替换，形成多个不同的遍历路径。"
+          },
+          {
+            "name": "path_sum_constraint",
+            "description": "最终的 walk 值是所有可能遍历路径的 walk 值的总和。",
+            "formal": "walk = Σ (所有可能路径的终点节点标签)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求所有可能路径的节点标签总和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前节点的值由其父节点的值和遍历操作（L, R, P）决定，满足二叉树结构上的状态转移一致性。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最终节点的标签值是所有可能路径的标签值之和，每个子问题的解（即每个*位置的选择）对总解有贡献，且可以独立计算。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

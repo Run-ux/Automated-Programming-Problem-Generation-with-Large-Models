@@ -1,0 +1,91 @@
+{
+  "problem_id": "P11779",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 10000
+        },
+        "properties": {
+          "connected": true,
+          "rooted": true,
+          "full_binary": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "query_limit",
+            "description": "询问次数限制（不超过 50000 次）",
+            "formal": "number_of_queries <= 50000"
+          },
+          {
+            "name": "acyclicity",
+            "description": "树结构为满二叉树，根节点度数为 2 或 0",
+            "formal": "if n == 1 then root_degree = 0 else root_degree = 2"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "根节点的父亲为其自身",
+            "formal": "parent(root) = root"
+          },
+          {
+            "name": "lca_inclusion",
+            "description": "每次查询返回两个节点路径中离根最近的节点编号",
+            "formal": "query(a, b) -> nearest_common_ancestor(a, b)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一棵有根满二叉树中每个节点的父节点"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "divide_conquer",
+            "description": "大问题的解由子问题解合成，通过递归地将树分解为更小的子树来解决问题",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "在有根满二叉树上，节点的父子关系形成了一种拓扑序，查询操作依赖于这种顺序",
+            "properties": {}
+          },
+          {
+            "name": "tree_structure",
+            "description": "满二叉树的结构特性决定了每个节点的度数和位置关系，这种结构不变量有助于确定节点之间的关系",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

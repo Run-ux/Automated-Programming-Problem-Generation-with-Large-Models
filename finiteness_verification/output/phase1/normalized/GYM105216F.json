@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1000
@@ -28,8 +28,8 @@
       "result": {
         "constraints": [
           {
-            "name": "value_range_constraint",
-            "description": "选取元素的值不超过给定上限（选择的奖品价值不能超过得分）",
+            "name": "constant_value_constraint",
+            "description": "选取的元素值不超过给定阈值（选择的奖品价值不超过 John 的得分）",
             "formal": "v_i <= p"
           }
         ]
@@ -42,7 +42,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "在给定的数值序列中，找到小于等于给定阈值的最大元素"
+        "description": "在给定的数组中，找到小于等于给定值的最大元素"
       }
     }
   ],
@@ -51,11 +51,20 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "搜索区间单调缩小，通过二分查找定位满足条件的最大值",
-        "properties": {
-          "search_interval_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "搜索区间单调缩小，通过二分查找的方式逐步逼近最优解",
+            "properties": {
+              "search_interval_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，即选择不超过给定限制的最大值",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

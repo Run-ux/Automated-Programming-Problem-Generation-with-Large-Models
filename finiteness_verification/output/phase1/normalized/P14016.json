@@ -1,0 +1,80 @@
+{
+  "problem_id": "P14016",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 2,
+          "max": 5000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 5000
+        },
+        "properties": {
+          "connected": true,
+          "rooted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "排列必须满足拓扑序，即对于所有 1 ≤ i < j ≤ n，节点 p_j 不是节点 p_i 的父节点",
+            "formal": "∀ 1 ≤ i < j ≤ n, p_j ∉ ancestors(p_i)"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "根节点（编号为 1 的节点）在排列中的位置固定为 p_1 = 1",
+            "formal": "p_1 = 1"
+          },
+          {
+            "name": "acyclicity",
+            "description": "每个节点的编号都比它所有子节点小，即树的结构具有严格的父子关系顺序",
+            "formal": "∀ 1 ≤ i < j ≤ n, f_j ≠ i → j > i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "计算满足特定条件的排列数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即每个节点的拓扑序数量可以通过其子节点的拓扑序数量计算得出",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：树的拓扑序满足节点编号比其所有子节点小的约束，且每个节点的父节点编号小于该节点编号",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

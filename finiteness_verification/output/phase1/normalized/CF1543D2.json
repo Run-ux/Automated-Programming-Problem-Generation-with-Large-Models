@@ -1,0 +1,84 @@
+{
+  "problem_id": "CF1543D2",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 20000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "查询次数限制，最多可以进行 n 次查询",
+            "formal": "queries <= n"
+          },
+          {
+            "name": "state_transition",
+            "description": "每次查询后，系统会根据当前密码和查询值更新密码，新的密码满足 x ⊕_k z = y",
+            "formal": "new_password = (current_password ⊕_k query_value)"
+          },
+          {
+            "name": "range_bound",
+            "description": "每次查询的值必须在 0 到 2 * 10^7 之间",
+            "formal": "0 <= query_value <= 2 * 10^7"
+          },
+          {
+            "name": "password_adaptation_constraint",
+            "description": "交互器是自适应的，初始密码不是固定的，可能依赖于你的查询，但保证所有查询的答案是一致的",
+            "formal": "∃ initial_password, ∀ queries, answers are consistent"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一个查询序列，使得在最多n次查询内找到正确的密码"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次猜测后，新的密码通过特定的运算规则从旧密码和猜测值确定，保持了状态的一致性和可预测性。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：在k-进制XOR操作下，任意两个数的XOR结果与它们的顺序无关，即a ⊕_k b = b ⊕_k a。这种对称性保证了无论密码如何变化，其转换规则始终一致。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

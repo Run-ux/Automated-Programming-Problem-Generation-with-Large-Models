@@ -2,14 +2,14 @@
   "problem_id": "GYM105901C",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1000000
@@ -39,13 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "range_deletion_constraint",
-        "description": "在每个检查周期内，某些元素会在特定时间点重新出现，并且如果在该时间点被访问，则会被移除。",
+        "name": "repeated_verification",
+        "description": "每个节点在每轮检查中最多被检查两次（除了最后一个节点只检查一次）",
         "confidence": "1/1"
       },
       {
-        "name": "validation_check",
-        "description": "前 n-1 个节点在每个周期中会被访问两次，而最后一个节点只被访问一次。",
+        "name": "periodic_renewal_interval",
+        "description": "每个节点的再生时间间隔是固定的，并且在再生时如果被检查到则会被移除",
+        "confidence": "1/1"
+      },
+      {
+        "name": "output_interval",
+        "description": "每轮检查后需要报告移除的杂草数量",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "range_deletion_constraint",
-              "description": "在每个检查周期内，某些元素会在特定时间点重新出现，并且如果在该时间点被访问，则会被移除。",
-              "formal": "对于每个 i (1 ≤ i ≤ n)，如果 Sisyphus 在 t 时刻访问了第 i 个单元格，并且 t % (a_i + 1) == 0，则该单元格的杂草将被移除。"
+              "name": "repeated_verification",
+              "description": "每个节点在每轮检查中最多被检查两次（除了最后一个节点只检查一次）",
+              "formal": "对于 1 ≤ i < n，每轮检查中节点 i 被检查两次；节点 n 每轮检查中被检查一次"
             },
             {
-              "name": "validation_check",
-              "description": "前 n-1 个节点在每个周期中会被访问两次，而最后一个节点只被访问一次。",
-              "formal": "对于 1 ≤ i < n，每个节点 i 在一个周期内被访问两次；对于 i = n，节点 n 只被访问一次。"
+              "name": "periodic_renewal_interval",
+              "description": "每个节点的再生时间间隔是固定的，并且在再生时如果被检查到则会被移除",
+              "formal": "对于每个节点 i，再生时间为 a_i + 1 小时；如果在再生时被检查到，则会被移除"
+            },
+            {
+              "name": "output_interval",
+              "description": "每轮检查后需要报告移除的杂草数量",
+              "formal": "每轮检查结束后，报告该轮移除的杂草数量"
             }
           ]
         }
@@ -71,37 +81,71 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "计算每轮检查中被移除的单元格数量"
+          "type": "enumeration",
+          "description": "求每轮检查中被清除的单元格数量"
         }
       }
     ],
-    "description": "计算每轮检查中被移除的单元格数量"
+    "description": "求每轮检查中被清除的单元格数量"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "检查轮次单调递增，每一轮检查的细胞数量和位置具有确定性",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每一轮检查后，每个细胞的状态（有无杂草）根据其再生时间进行更新",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：每一轮检查中，被清除的杂草数量可以通过累加每个细胞的清除情况来计算",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "双指针左右端点单调前进，区间合法性可单调维护",
-          "properties": {
-            "left_monotonic": true,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "检查轮次单调递增，每一轮检查的细胞数量和位置具有确定性",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每一轮检查后，每个细胞的状态（有无杂草）根据其再生时间进行更新",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：每一轮检查中，被清除的杂草数量可以通过累加每个细胞的清除情况来计算",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "双指针左右端点单调前进，区间合法性可单调维护"
+    ]
   }
 }

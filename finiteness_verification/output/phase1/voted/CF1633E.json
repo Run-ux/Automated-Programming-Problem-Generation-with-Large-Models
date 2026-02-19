@@ -41,23 +41,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图必须连通",
+        "name": "spanning_constraint",
+        "description": "必须选择一个生成树，且该生成树的边权和满足特定条件",
         "confidence": "1/1"
       },
       {
-        "name": "minimum_spanning_tree",
-        "description": "生成树的代价为所有边权重与给定值 x 的绝对差之和（即 ∑|w_i - x|）",
+        "name": "sum_constraint",
+        "description": "生成树的成本是所有边权与给定值 x 的绝对差之和",
         "confidence": "1/1"
       },
       {
-        "name": "query_count_constraint",
-        "description": "查询以压缩格式给出，前 p 个查询直接提供，后续查询通过递推公式 q_j = (q_{j-1} * a + b) % c 生成",
+        "name": "query_limit",
+        "description": "查询次数有限制，部分查询通过递推公式生成",
         "confidence": "1/1"
       },
       {
-        "name": "path_weight_constraint",
-        "description": "输出所有查询答案的异或值",
+        "name": "modular_arithmetic",
+        "description": "最终输出为所有查询结果的异或值",
         "confidence": "1/1"
       }
     ],
@@ -68,22 +68,21 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "图必须连通"
+              "name": "spanning_constraint",
+              "description": "必须选择一个生成树，且该生成树的边权和满足特定条件"
             },
             {
-              "name": "minimum_spanning_tree",
-              "description": "生成树的代价为所有边权重与给定值 x 的绝对差之和（即 ∑|w_i - x|）",
-              "formal": "cost = ∑|w_i - x|, 其中 w_i 是生成树中的边权重"
+              "name": "sum_constraint",
+              "description": "生成树的成本是所有边权与给定值 x 的绝对差之和",
+              "formal": "cost = ∑ |w_i - x|, i = 1 to n-1"
             },
             {
-              "name": "query_count_constraint",
-              "description": "查询以压缩格式给出，前 p 个查询直接提供，后续查询通过递推公式 q_j = (q_{j-1} * a + b) % c 生成",
-              "formal": "q_j = (q_{j-1} * a + b) % c, 对于 j > p"
+              "name": "query_limit",
+              "description": "查询次数有限制，部分查询通过递推公式生成"
             },
             {
-              "name": "path_weight_constraint",
-              "description": "输出所有查询答案的异或值"
+              "name": "modular_arithmetic",
+              "description": "最终输出为所有查询结果的异或值"
             }
           ]
         }
@@ -91,34 +90,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求所有查询中，每个查询对应的最小生成树的代价之和的异或值"
+          "type": "minimize_value",
+          "description": "求给定参数下，所有查询中最小化生成树的代价之和"
         }
       }
     ],
-    "description": "求所有查询中，每个查询对应的最小生成树的代价之和的异或值"
+    "description": "求给定参数下，所有查询中最小化生成树的代价之和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个查询的最优解可以通过子问题的最优解构造，即最小生成树的代价可以通过已知的边权和查询值x计算得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：对于给定的x值，选择与x最接近的边权可以使得绝对差之和最小，从而构建出成本最低的生成树。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：在处理多个查询时，可以通过将查询结果进行异或操作来合并不同查询的结果，最终得到所有查询的异或结果。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成。在本题中，每个查询的最优解可以通过选择具有最小绝对差值和的生成树来确定。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个查询的最优解可以通过子问题的最优解构造，即最小生成树的代价可以通过已知的边权和查询值x计算得到。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：对于给定的x值，选择与x最接近的边权可以使得绝对差之和最小，从而构建出成本最低的生成树。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：在处理多个查询时，可以通过将查询结果进行异或操作来合并不同查询的结果，最终得到所有查询的异或结果。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成。在本题中，每个查询的最优解可以通过选择具有最小绝对差值和的生成树来确定。"
+    ]
   }
 }

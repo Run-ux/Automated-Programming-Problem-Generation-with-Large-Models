@@ -2,14 +2,14 @@
   "problem_id": "GYM104375G",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "integer",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "integer",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1
@@ -35,18 +35,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "turn_based_operation",
-        "description": "在第 i 轮，玩家必须选择移除 1 到 i 个元素",
+        "name": "turn_based",
+        "description": "游戏是回合制的，玩家交替进行操作",
         "confidence": "1/1"
       },
       {
-        "name": "turn_based_operation",
-        "description": "两名玩家交替进行操作，先手玩家为 Jane",
+        "name": "operation_limit",
+        "description": "在第 i 轮，玩家可以移除 1 到 i 个筹码",
         "confidence": "1/1"
       },
       {
-        "name": "global_optimization_objective",
-        "description": "两名玩家都采取最优策略",
+        "name": "optimal_play",
+        "description": "假设双方都以最优策略进行游戏",
         "confidence": "1/1"
       }
     ],
@@ -57,19 +57,16 @@
         "result": {
           "constraints": [
             {
-              "name": "turn_based_operation",
-              "description": "在第 i 轮，玩家必须选择移除 1 到 i 个元素",
-              "formal": "1 ≤ chips_removed ≤ i"
+              "name": "turn_based",
+              "description": "游戏是回合制的，玩家交替进行操作"
             },
             {
-              "name": "turn_based_operation",
-              "description": "两名玩家交替进行操作，先手玩家为 Jane",
-              "formal": "player = (i % 2 == 0) ? John : Jane"
+              "name": "operation_limit",
+              "description": "在第 i 轮，玩家可以移除 1 到 i 个筹码"
             },
             {
-              "name": "global_optimization_objective",
-              "description": "两名玩家都采取最优策略",
-              "formal": "players play optimally"
+              "name": "optimal_play",
+              "description": "假设双方都以最优策略进行游戏"
             }
           ]
         }
@@ -77,36 +74,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "game_outcome",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断在给定初始值的情况下，先手玩家是否能赢得游戏"
+          "type": "game_outcome",
+          "description": "确定在双方玩家均采取最优策略的情况下，先手或后手的胜者"
         }
       }
     ],
-    "description": "判断在给定初始值的情况下，先手玩家是否能赢得游戏"
+    "description": "确定在双方玩家均采取最优策略的情况下，先手或后手的胜者"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前状态的最优解可以通过子问题的最优解来确定",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个状态的转移规则是确定的，且依赖于前一个状态",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：当前状态的解依赖于前序状态的最优解，通过递归或动态规划的方式构建全局最优解。",
-          "properties": {
-            "state_dependency": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：当前状态的最优解可以通过子问题的最优解来确定",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个状态的转移规则是确定的，且依赖于前一个状态",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：当前状态的解依赖于前序状态的最优解，通过递归或动态规划的方式构建全局最优解。"
+    ]
   }
 }

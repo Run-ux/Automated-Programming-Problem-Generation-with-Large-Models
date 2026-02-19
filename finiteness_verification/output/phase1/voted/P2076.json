@@ -41,18 +41,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "directed_complete_graph",
-        "description": "图是完全图，每个节点与其他所有节点之间都有一条边",
+        "name": "spanning_constraint",
+        "description": "生成的树必须是图的最小生成树，即边权之和最小且包含所有节点",
         "confidence": "1/1"
       },
       {
-        "name": "weighted_graph",
-        "description": "边的权重为两个节点坐标之间的曼哈顿距离（|x_u - x_v| + |y_u - y_v|）",
-        "confidence": "1/1"
-      },
-      {
-        "name": "minimum_spanning_tree",
-        "description": "需要找到该图的最小生成树，即边权之和最小的生成树",
+        "name": "distance_cost_constraint",
+        "description": "边的权重由曼哈顿距离公式计算：|x_u - x_v| + |y_u - y_v|",
         "confidence": "1/1"
       }
     ],
@@ -63,16 +58,13 @@
         "result": {
           "constraints": [
             {
-              "name": "directed_complete_graph",
-              "description": "图是完全图，每个节点与其他所有节点之间都有一条边"
+              "name": "spanning_constraint",
+              "description": "生成的树必须是图的最小生成树，即边权之和最小且包含所有节点"
             },
             {
-              "name": "weighted_graph",
-              "description": "边的权重为两个节点坐标之间的曼哈顿距离（|x_u - x_v| + |y_u - y_v|）"
-            },
-            {
-              "name": "minimum_spanning_tree",
-              "description": "需要找到该图的最小生成树，即边权之和最小的生成树"
+              "name": "distance_cost_constraint",
+              "description": "边的权重由曼哈顿距离公式计算：|x_u - x_v| + |y_u - y_v|",
+              "formal": "weight(u, v) = |x_u - x_v| + |y_u - y_v|"
             }
           ]
         }
@@ -80,34 +72,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求给定图的最小生成树的边权之和"
+          "type": "minimize_value",
+          "description": "求给定完全图的最小生成树的边权之和"
         }
       }
     ],
-    "description": "求给定图的最小生成树的边权之和"
+    "description": "求给定完全图的最小生成树的边权之和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最小生成树的解包含子问题（子图）的最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择当前权值最小的边加入生成树，最终得到全局最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "matroid_exchange",
+        "description": "拟阵交换性：在满足独立集条件的情况下，可以进行边的交换以保持最优性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：最小生成树的解可以通过组合子问题的最优解来构造，即任意一棵最小生成树的子树也是其对应顶点集的最小生成树。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最小生成树的解包含子问题（子图）的最优解",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择当前权值最小的边加入生成树，最终得到全局最优解",
+              "properties": {}
+            },
+            {
+              "name": "matroid_exchange",
+              "description": "拟阵交换性：在满足独立集条件的情况下，可以进行边的交换以保持最优性",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：最小生成树的解可以通过组合子问题的最优解来构造，即任意一棵最小生成树的子树也是其对应顶点集的最小生成树。"
+    ]
   }
 }

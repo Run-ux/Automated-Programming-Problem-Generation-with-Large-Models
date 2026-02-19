@@ -1,0 +1,87 @@
+{
+  "problem_id": "GYM102511B",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "range_bound",
+            "description": "每个支柱的高度必须大于等于地面高度且小于等于桥的高度（h）",
+            "formal": "y_i <= h_i < h + y_i"
+          },
+          {
+            "name": "geometric_shape_constraint",
+            "description": "拱形不能低于地面，即任意两个相邻支柱之间的拱形半径必须满足不触地的条件",
+            "formal": "对于任意相邻支柱 (x_i, h_i) 和 (x_{i+1}, h_{i+1})，拱形半径 r = 0.5 * (h_i + h_{i+1} - (y_i + y_{i+1})) 必须满足 r >= 0"
+          },
+          {
+            "name": "unrestricted_position",
+            "description": "支柱只能建在给定的关键点上，且第一个和最后一个支柱必须建在第一个和最后一个关键点上",
+            "formal": "支柱位置 x_i ∈ {x_1, x_2, ..., x_n} 且 x_1 和 x_n 必须有支柱"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求在给定约束条件下，构造满足要求的结构的最小成本"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即桥的最小成本可以由其各部分（支柱和拱）的最小成本组合而成。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：在选择支柱位置时，随着位置的增加，地面高度的变化是单调的，这保证了在某些情况下可以提前停止搜索。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：桥的成本可以通过各个区间的成本累加得到，即总成本等于所有支柱成本和所有拱成本之和。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "problem_id": "CF1416D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "connected": false,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "每个顶点上的初始值是唯一的，且在1到n之间"
+          },
+          {
+            "name": "connectivity",
+            "description": "图是无向的，且不包含重边"
+          },
+          {
+            "name": "operation_limit",
+            "description": "处理q个查询，查询类型有两种：第一种是选择一个顶点v，找到从v可达的所有顶点中值最大的顶点u；第二种是删除一条边"
+          },
+          {
+            "name": "state_transition",
+            "description": "在处理查询的过程中，图的结构可能会发生变化（通过删除边）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "对于每个查询，输出连通块中具有最大初始值的顶点的值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "cycle_invariant",
+            "description": "连通分量不变性：在处理查询过程中，每个连通分量内的顶点值保持一致，且连通分量的划分不会改变（除非删除边）",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理第一类查询时，选择的顶点值是当前连通分量中的最大值；在处理第二类查询时，删除边后，连通分量的划分会更新，但新的连通分量内的顶点值仍然保持一致",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

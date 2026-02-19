@@ -1,0 +1,144 @@
+{
+  "problem_id": "GYM104686J",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subsequence_constraint",
+        "description": "子序列的和必须非负（即在每个时间区间内，总收入减去总支出必须非负）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "accumulated_sum_constraint",
+        "description": "每个时间区间的支付金额固定（即每个月的支付金额相同）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_negative_pairwise_product",
+        "description": "收入可以为负数（即某些月份可能有净支出）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "时间区间必须有效（即起始月和结束月都在给定的 n 个月内）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subsequence_constraint",
+              "description": "子序列的和必须非负（即在每个时间区间内，总收入减去总支出必须非负）",
+              "formal": "∀ i, Σ_{j=s_i}^{s_i+k_i-1} (a_j - x) ≥ 0"
+            },
+            {
+              "name": "accumulated_sum_constraint",
+              "description": "每个时间区间的支付金额固定（即每个月的支付金额相同）",
+              "formal": "x = const for all months in the interval [s_i, s_i + k_i - 1]"
+            },
+            {
+              "name": "non_negative_pairwise_product",
+              "description": "收入可以为负数（即某些月份可能有净支出）",
+              "formal": "a_i ∈ [-10^9, 10^9]"
+            },
+            {
+              "name": "coverage",
+              "description": "时间区间必须有效（即起始月和结束月都在给定的 n 个月内）",
+              "formal": "1 ≤ s_i ≤ n and s_i + k_i - 1 ≤ n"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求每个给定区间内可以承受的最大固定月付款金额"
+        }
+      }
+    ],
+    "description": "求每个给定区间内可以承受的最大固定月付款金额"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和计算任意子区间的总和，从而判断该区间是否满足支付条件",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个子区间内的最大可支付金额由其子区间的最优解决定",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和计算任意子区间的总和，从而判断该区间是否满足支付条件",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个子区间内的最大可支付金额由其子区间的最优解决定",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

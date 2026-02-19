@@ -2,14 +2,14 @@
   "problem_id": "P12444",
   "source": "luogu",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 2,
             "max": 5000
@@ -20,6 +20,7 @@
           },
           "properties": {
             "connected": true,
+            "weighted": false,
             "rooted": true
           }
         }
@@ -35,24 +36,30 @@
     },
     "properties": {
       "connected": true,
+      "weighted": false,
       "rooted": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "priority_based_selection",
-        "description": "如果一个节点获得奖金，则其直接父节点必须至少获得 1 的奖金",
+        "name": "acyclicity",
+        "description": "输入数据构成一棵树，根节点为1，每个节点的直接上级唯一",
         "confidence": "1/1"
       },
       {
-        "name": "weight_sum_constraint",
-        "description": "所有节点的奖金总和不超过给定的上限 K",
+        "name": "parent_child_relation",
+        "description": "如果一个节点获得奖金，则其直接上级必须至少获得1的奖金",
         "confidence": "1/1"
       },
       {
-        "name": "weight_threshold",
-        "description": "每个节点只有在获得至少 ci 的奖金时，才能提高积极性 pi",
+        "name": "budget_uniformity_constraint",
+        "description": "所有节点的奖金总和不超过给定的上限K",
+        "confidence": "1/1"
+      },
+      {
+        "name": "value_bound",
+        "description": "每个节点只有在获得至少ci的奖金时，积极性才会提高pi",
         "confidence": "1/1"
       }
     ],
@@ -63,16 +70,20 @@
         "result": {
           "constraints": [
             {
-              "name": "priority_based_selection",
-              "description": "如果一个节点获得奖金，则其直接父节点必须至少获得 1 的奖金"
+              "name": "acyclicity",
+              "description": "输入数据构成一棵树，根节点为1，每个节点的直接上级唯一"
             },
             {
-              "name": "weight_sum_constraint",
-              "description": "所有节点的奖金总和不超过给定的上限 K"
+              "name": "parent_child_relation",
+              "description": "如果一个节点获得奖金，则其直接上级必须至少获得1的奖金"
             },
             {
-              "name": "weight_threshold",
-              "description": "每个节点只有在获得至少 ci 的奖金时，才能提高积极性 pi"
+              "name": "budget_uniformity_constraint",
+              "description": "所有节点的奖金总和不超过给定的上限K"
+            },
+            {
+              "name": "value_bound",
+              "description": "每个节点只有在获得至少ci的奖金时，积极性才会提高pi"
             }
           ]
         }
@@ -88,26 +99,57 @@
         "status": "success",
         "result": {
           "type": "maximize_value",
-          "description": "在给定的约束条件下，最大化路径上的权值和"
+          "description": "在给定的预算限制下，最大化满足条件的总收益"
         }
       }
     ],
-    "description": "在给定的约束条件下，最大化路径上的权值和"
+    "description": "在给定的预算限制下，最大化满足条件的总收益"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个节点的最优解依赖于其子节点的最优解，通过递归或动态规划的方式求解整个树的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在树形 DP 中，每个节点的状态转移规则保持一致，即当前节点的状态由其子节点的状态决定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：不同子树之间的子问题是相互独立的，可以分别求解后再合并结果。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个节点的奖金分配依赖于其子树的最优分配方案",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个节点的最优解依赖于其子节点的最优解，通过递归或动态规划的方式求解整个树的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在树形 DP 中，每个节点的状态转移规则保持一致，即当前节点的状态由其子节点的状态决定。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：不同子树之间的子问题是相互独立的，可以分别求解后再合并结果。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个节点的奖金分配依赖于其子树的最优分配方案"
+    ]
   }
 }

@@ -2,14 +2,14 @@
   "problem_id": "GYM100814K",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1000000
@@ -39,8 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "substring_divisibility_constraint",
-        "description": "子串必须能够被给定的素数整除",
+        "name": "divisibility",
+        "description": "子串必须能被给定的素数整除（无余数）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "计算字符串 s 的所有子串",
         "confidence": "1/1"
       }
     ],
@@ -51,8 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "substring_divisibility_constraint",
-              "description": "子串必须能够被给定的素数整除"
+              "name": "divisibility",
+              "description": "子串必须能被给定的素数整除（无余数）",
+              "formal": "∀ substring s[i:j] of s, s[i:j] % p == 0"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "计算字符串 s 的所有子串",
+              "formal": "s = a / b (first n digits), find all substrings of s"
             }
           ]
         }
@@ -68,28 +79,46 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "统计满足条件的子串数量"
+          "description": "求满足条件的子串数量"
         }
       }
     ],
-    "description": "统计满足条件的子串数量"
+    "description": "求满足条件的子串数量"
   },
   "invariant": {
-    "name": "interval_mergeable",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和计算任意子区间的和，进而判断其是否能被 p 整除",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合得到，即每个子串的整除性质可以由更小子串的整除性质推导",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间可合并性：通过前缀和或类似方法，可以高效地计算任意子区间的性质（如是否能被p整除），并且这些子区间的性质可以通过端点差值进行合并。",
-          "properties": {
-            "prefix_sum": true
-          }
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和计算任意子区间的和，进而判断其是否能被 p 整除",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解组合得到，即每个子串的整除性质可以由更小子串的整除性质推导",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "区间可合并性：通过前缀和或类似方法，可以高效地计算任意子区间的性质（如是否能被p整除），并且这些子区间的性质可以通过端点差值进行合并。"
+    ]
   }
 }

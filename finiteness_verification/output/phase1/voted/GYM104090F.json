@@ -1,0 +1,168 @@
+{
+  "problem_id": "GYM104090F",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 10000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 10000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 10000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "消息字符串必须包含子串 ' bie ' 才被选中",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "每个消息在转发到目标组之前必须是唯一的，即不能重复出现",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "消息按组顺序依次检查并转发，每组内消息也按顺序检查",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_empty_query",
+        "description": "如果某组没有符合条件的消息，则输出特定字符串 ' Time to play Genshin Impact, Teacher Rice! '",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "消息字符串必须包含子串 ' bie ' 才被选中"
+            },
+            {
+              "name": "distinctness",
+              "description": "每个消息在转发到目标组之前必须是唯一的，即不能重复出现"
+            },
+            {
+              "name": "ordering",
+              "description": "消息按组顺序依次检查并转发，每组内消息也按顺序检查"
+            },
+            {
+              "name": "non_empty_query",
+              "description": "如果某组没有符合条件的消息，则输出特定字符串 ' Time to play Genshin Impact, Teacher Rice! '"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造满足条件的消息序列"
+        }
+      }
+    ],
+    "description": "构造满足条件的消息序列"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "搜索顺序单调递增，从第一个组到第n个组依次检查消息",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "每个组的消息处理独立于其他组，即一个组的消息是否被转发不影响其他组的消息处理",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "对于每个组中的每条消息，如果满足条件且未出现过，则立即选择并转发，保证局部最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "prefix_decomposability",
+        "description": "已处理过的消息集合（前缀）决定了后续消息的处理方式，即新消息是否被转发取决于它是否在已处理的消息集合中出现过",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "搜索顺序单调递增，从第一个组到第n个组依次检查消息",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "每个组的消息处理独立于其他组，即一个组的消息是否被转发不影响其他组的消息处理",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "对于每个组中的每条消息，如果满足条件且未出现过，则立即选择并转发，保证局部最优解",
+              "properties": {}
+            },
+            {
+              "name": "prefix_decomposability",
+              "description": "已处理过的消息集合（前缀）决定了后续消息的处理方式，即新消息是否被转发取决于它是否在已处理的消息集合中出现过",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

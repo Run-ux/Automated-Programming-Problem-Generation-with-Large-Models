@@ -16,8 +16,7 @@
           "max": 200000
         },
         "properties": {
-          "connected": true,
-          "weighted": false
+          "connected": true
         }
       }
     },
@@ -35,8 +34,7 @@
           "max": 200000
         },
         "properties": {
-          "connected": true,
-          "weighted": false
+          "connected": true
         }
       }
     },
@@ -54,8 +52,7 @@
           "max": 200000
         },
         "properties": {
-          "connected": true,
-          "weighted": false
+          "connected": true
         }
       }
     }
@@ -67,20 +64,20 @@
       "result": {
         "constraints": [
           {
-            "name": "graph_is_tree",
-            "description": "给定的图必须是一棵树，即无环且连通"
-          },
-          {
-            "name": "node_coloring",
+            "name": "coloring_constraint",
             "description": "每个节点只能被染成 0 或 1 两种颜色之一"
           },
           {
-            "name": "path_value_mex",
-            "description": "路径 (u, v) 的值等于从 u 到 v 的最短路径上所有节点颜色的 MEX（最小未出现的非负整数）"
+            "name": "sum_constraint",
+            "description": "路径 (u, v) 的值是该路径上所有节点颜色的 MEX 值（最小未出现的非负整数）"
           },
           {
-            "name": "coloring_value_sum",
-            "description": "一种染色方案的价值等于所有满足 1 ≤ u ≤ v ≤ n 的路径 (u, v) 的值之和"
+            "name": "sum_constraint",
+            "description": "着色方案的价值是所有路径 (u, v) 的 MEX 值之和，其中 1 ≤ u ≤ v ≤ n"
+          },
+          {
+            "name": "connectivity",
+            "description": "给定的边构成一棵树，即图是连通且无环的"
           }
         ]
       }
@@ -91,19 +88,20 @@
       "result": {
         "constraints": [
           {
-            "name": "path_value_mex",
-            "description": "路径 (u, v) 的值等于从 u 到 v 的最短路径上所有节点颜色的 MEX 值。",
-            "formal": "value(u, v) = MEX(colors(path(u, v)))"
+            "name": "coloring_constraint",
+            "description": "每个节点只能被染成 0 或 1 两种颜色之一"
           },
           {
-            "name": "coloring_value_sum",
-            "description": "着色方案的值等于所有路径 (u, v) 的值之和，其中 1 ≤ u ≤ v ≤ n。",
-            "formal": "coloring_value = Σ value(u, v) for all 1 ≤ u ≤ v ≤ n"
+            "name": "sum_constraint",
+            "description": "路径 (u, v) 的值等于从 u 到 v 的最短路径上所有节点颜色的 MEX 值"
           },
           {
-            "name": "graph_is_tree",
-            "description": "给定的边形成一棵树。",
-            "formal": "edges form a tree"
+            "name": "sum_constraint",
+            "description": "着色方案的值等于所有路径 (u, v) 的值之和，其中 1 ≤ u ≤ v ≤ n"
+          },
+          {
+            "name": "connectivity",
+            "description": "给定的边构成一棵树"
           }
         ]
       }
@@ -114,19 +112,20 @@
       "result": {
         "constraints": [
           {
-            "name": "path_value_mex",
-            "description": "路径 (u, v) 的值等于从 u 到 v 的最短路径上所有节点颜色的 MEX 值。",
-            "formal": "value(u, v) = MEX(colors(path(u, v)))"
+            "name": "coloring_constraint",
+            "description": "每个节点只能被染成 0 或 1 两种颜色之一"
           },
           {
-            "name": "node_coloring",
-            "description": "着色方案的值等于所有路径 (u, v) 的值之和，其中 1 ≤ u ≤ v ≤ n。",
-            "formal": "coloring_value = Σ value(u, v) for all 1 ≤ u ≤ v ≤ n"
+            "name": "sum_constraint",
+            "description": "路径 (u, v) 的值是该路径上所有节点颜色的 MEX 值（即最小未出现的非负整数）"
           },
           {
-            "name": "graph_is_tree",
-            "description": "给定的边形成一棵树。",
-            "formal": "edges form a tree"
+            "name": "sum_constraint",
+            "description": "着色方案的价值是所有路径 (u, v) 的 MEX 值之和，其中 1 ≤ u ≤ v ≤ n"
+          },
+          {
+            "name": "connectivity",
+            "description": "给定的图是一个树结构，保证连通且无环"
           }
         ]
       }
@@ -137,24 +136,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "max_value",
-        "description": "求树上所有节点在0或1着色方案下的最大可能路径值总和"
+        "type": "maximize_value",
+        "description": "最大化所有路径的MEX值之和"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "max_value",
-        "description": "求树上所有节点在0或1着色方案下的最大路径值总和"
+        "type": "maximize_value",
+        "description": "最大化所有路径的MEX值之和"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "max_value",
-        "description": "求树上所有节点在0或1着色方案下的最大可能路径值总和"
+        "type": "maximize_value",
+        "description": "最大化所有路径的MEX值之和"
       }
     }
   ],
@@ -163,27 +162,69 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的最优解组合而成，即树中每个节点的颜色选择依赖于其子树的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：树的每个子树的最优解可以组合成整个树的最优解",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：不同子树之间的最优解相互独立，互不影响",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从根节点到叶子节点的状态转移过程中，每个节点的状态由其子节点的状态决定",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优解可以通过子树的最优解组合而成，即大问题的解由子问题的解组合而成。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：树的每个子树的最优解可以组合成整个树的最优解",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过递归或动态规划，子树的状态可以正确地转移到父节点的状态",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：不同子树之间的最优解计算是独立的，互不影响",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优解可以通过子树的最优解组合而成，即大问题的解由子问题的解组合而成。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解可以通过子树的最优解组合得到，满足动态规划中的最优子结构性质",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移过程中，当前节点的状态由其子节点的状态决定，且这种转移方式在整棵树上保持一致",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "不同子树之间的子问题相互独立，一个子树的解不影响另一个子树的解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

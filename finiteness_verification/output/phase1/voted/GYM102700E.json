@@ -1,0 +1,160 @@
+{
+  "problem_id": "GYM102700E",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 1,
+            "max": 29
+          },
+          "value_range": {
+            "min": 0,
+            "max": 536870911
+          },
+          "properties": {
+            "connected": true,
+            "binary": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 29
+    },
+    "value_range": {
+      "min": 0,
+      "max": 536870911
+    },
+    "properties": {
+      "connected": true,
+      "binary": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "query_limit",
+        "description": "查询次数限制为 29 次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distance_bound",
+        "description": "每次查询返回的值是查询节点与目标节点之间的距离",
+        "confidence": "1/1"
+      },
+      {
+        "name": "acyclicity",
+        "description": "图结构为深度为 n 的完全二叉树，每个节点 k 的子节点分别为 2k 和 2k+1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "找到目标节点后必须立即终止程序并输出结果",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_type",
+        "description": "每次输出查询或结果后必须进行输出流刷新操作",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "query_limit",
+              "description": "查询次数限制为 29 次",
+              "formal": "queries <= 29"
+            },
+            {
+              "name": "distance_bound",
+              "description": "每次查询返回的值是查询节点与目标节点之间的距离",
+              "formal": "distance(query_node, target_node) = response"
+            },
+            {
+              "name": "acyclicity",
+              "description": "图结构为深度为 n 的完全二叉树，每个节点 k 的子节点分别为 2k 和 2k+1",
+              "formal": "node(k).left = 2k, node(k).right = 2k + 1"
+            },
+            {
+              "name": "operation_limit",
+              "description": "找到目标节点后必须立即终止程序并输出结果",
+              "formal": "if found_target: print('! x') and exit()"
+            },
+            {
+              "name": "operation_type",
+              "description": "每次输出查询或结果后必须进行输出流刷新操作",
+              "formal": "print(query) and flush_output()"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造一个查询序列以找到特定节点"
+        }
+      }
+    ],
+    "description": "构造一个查询序列以找到特定节点"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "divide_conquer",
+        "description": "分治不变量：大问题的解由子问题解合成。通过递归查询二叉树节点，逐步缩小搜索范围，最终确定目标节点。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "二分搜索不变量：搜索区间单调缩小。每次查询后根据返回的距离信息，可以将搜索范围缩小到当前节点的左子树或右子树。",
+        "confidence": "1/1",
+        "properties": {
+          "search_interval_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：大问题的解由子问题解合成。通过递归查询二叉树节点，逐步缩小搜索范围，最终确定目标节点。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "二分搜索不变量：搜索区间单调缩小。每次查询后根据返回的距离信息，可以将搜索范围缩小到当前节点的左子树或右子树。",
+              "properties": {
+                "search_interval_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

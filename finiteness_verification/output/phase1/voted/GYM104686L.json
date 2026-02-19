@@ -1,0 +1,160 @@
+{
+  "problem_id": "GYM104686L",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 98,
+            "max": 98
+          },
+          "value_range": {
+            "min": 2,
+            "max": 99
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 98,
+      "max": 98
+    },
+    "value_range": {
+      "min": 2,
+      "max": 99
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "ordering",
+        "description": "在每行中，卡片必须按照升序或降序排列（根据方向卡的指示）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "每次只能将两张卡片放置在相邻的位置上，并且这两张卡片必须分别放在不同的行中",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每次操作后，玩家必须从抽牌堆中抽取两张新卡片，直到抽牌堆为空",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "ordering",
+              "description": "在每行中，卡片必须按照升序或降序排列（根据方向卡的指示）",
+              "formal": "对于每个方向卡 i，如果 i 为上升方向，则 cards[i] 必须满足 cards[i-1] < cards[i]；如果 i 为下降方向，则 cards[i] 必须满足 cards[i-1] > cards[i]"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "每次只能将两张卡片放置在相邻的位置上，并且这两张卡片必须分别放在不同的行中",
+              "formal": "每次操作中，选择两张卡片 card1 和 card2，分别放置在不同的行 row1 和 row2 中"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每次操作后，玩家必须从抽牌堆中抽取两张新卡片，直到抽牌堆为空",
+              "formal": "每次操作后，从抽牌堆中抽取两张新卡片，如果抽牌堆为空则不进行抽取"
+            },
+            {
+              "name": "operation_limit",
+              "description": "游戏结束条件是玩家手中没有卡片或者无法再放置任何卡片",
+              "formal": "游戏结束当且仅当 player_hand 为空 或者 无法将 player_hand 中的任何卡片放置在行中"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造一个满足游戏规则的最终状态"
+        }
+      }
+    ],
+    "description": "构造一个满足游戏规则的最终状态"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "在每一轮操作中，四个方向卡的行中的卡片值严格单调递增或递减。具体来说，两个上升行中的卡片值严格递增，两个下降行中的卡片值严格递减。",
+        "confidence": "1/1",
+        "properties": {
+          "ascending_rows": true,
+          "descending_rows": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "玩家每次从手中选择两张卡片放置到相应的行中，并从抽牌堆中抽取两张新卡片补充手牌。这种状态转移过程保持了游戏的状态一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "玩家在每一轮操作中总是选择当前可以放置的最小或最大卡片，以确保尽可能多的卡片被放置到行中。这种局部最优选择有助于全局最优解的达成。",
+        "confidence": "1/1",
+        "properties": {
+          "local_optimal_selection": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "在每一轮操作中，四个方向卡的行中的卡片值严格单调递增或递减。具体来说，两个上升行中的卡片值严格递增，两个下降行中的卡片值严格递减。",
+              "properties": {
+                "ascending_rows": true,
+                "descending_rows": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "玩家每次从手中选择两张卡片放置到相应的行中，并从抽牌堆中抽取两张新卡片补充手牌。这种状态转移过程保持了游戏的状态一致性。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "玩家在每一轮操作中总是选择当前可以放置的最小或最大卡片，以确保尽可能多的卡片被放置到行中。这种局部最优选择有助于全局最优解的达成。",
+              "properties": {
+                "local_optimal_selection": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

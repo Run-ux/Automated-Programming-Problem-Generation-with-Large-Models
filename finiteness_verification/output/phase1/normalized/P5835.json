@@ -1,0 +1,102 @@
+{
+  "problem_id": "P5835",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 50000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "所有奶牛的初始位置各不相同（唯一性约束）"
+          },
+          {
+            "name": "range_bound",
+            "description": "奶牛的初始位置必须在 (0, L) 之间（值域约束）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "每头奶牛的移动方向只能是正向或负向（方向约束）"
+          },
+          {
+            "name": "pairwise_exclusion",
+            "description": "当两头奶牛相遇时，它们交换速度（状态转移约束）"
+          },
+          {
+            "name": "operation_limit",
+            "description": "奶牛停止移动的条件是到达牛棚（边界终止约束）"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "停止移动的奶牛重量之和至少达到总重量的一半（权重和约束）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求在给定时间内发生的事件总数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "奶牛的移动方向和速度在相遇时交换，但整体移动方向不变。所有奶牛最终会停止在牛棚处。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "symmetry",
+            "description": "奶牛相遇时的速度交换对称性，使得可以将问题简化为忽略个体差异，只考虑位置和方向。",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "奶牛在数轴上的总重量守恒，即在任何时刻，所有奶牛的总重量保持不变。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "可以通过计算每个时间点上停止移动的奶牛的重量之和来确定T时刻，利用前缀和的思想进行区间加法。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

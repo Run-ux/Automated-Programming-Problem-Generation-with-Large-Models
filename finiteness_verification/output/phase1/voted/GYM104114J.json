@@ -1,0 +1,151 @@
+{
+  "problem_id": "GYM104114J",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "pairwise_exclusion",
+        "description": "每个元素只能与满足特定条件的另一个元素配对（一个精灵只能吃健康指数小于其病态指数的菜肴）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "选取元素的权重和最大化（选择的菜肴美味度之和最大化）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "prefix_sum_constraint",
+        "description": "对于前缀子序列独立求解最优解（对于前 i 个精灵，独立求解最优解）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "pairwise_exclusion",
+              "description": "每个元素只能与满足特定条件的另一个元素配对（一个精灵只能吃健康指数小于其病态指数的菜肴）",
+              "formal": "∀ x, y: (h_y < s_x) → (x 与 y 配对)"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "选取元素的权重和最大化（选择的菜肴美味度之和最大化）",
+              "formal": "maximize(∑ t_i for all selected i)"
+            },
+            {
+              "name": "prefix_sum_constraint",
+              "description": "对于前缀子序列独立求解最优解（对于前 i 个精灵，独立求解最优解）",
+              "formal": "∀ 1 ≤ i ≤ n: solve for the first i elements independently"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化满足条件的元素权值和"
+        }
+      }
+    ],
+    "description": "最大化满足条件的元素权值和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解来构建，即前i个精灵的最大美味值可以通过前i-1个精灵的最大美味值加上第i个精灵的最优选择来计算。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：对于每个精灵，其可选的菜肴集合是单调递增的。随着精灵的增加，可选的菜肴集合不会减少。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，总是选择当前最优的菜肴（即健康指数小于当前精灵的病态值且美味指数最大的菜肴），以确保局部最优解能够导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的最优解来构建，即前i个精灵的最大美味值可以通过前i-1个精灵的最大美味值加上第i个精灵的最优选择来计算。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：对于每个精灵，其可选的菜肴集合是单调递增的。随着精灵的增加，可选的菜肴集合不会减少。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，总是选择当前最优的菜肴（即健康指数小于当前精灵的病态值且美味指数最大的菜肴），以确保局部最优解能够导致全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

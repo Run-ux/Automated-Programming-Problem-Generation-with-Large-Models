@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 3,
           "max": 200000
@@ -26,14 +26,12 @@
       "result": {
         "constraints": [
           {
-            "name": "triple_sum_constraint",
-            "description": "分析序列中的所有三元组，这些三元组是序列的子序列，即三元组中的元素在原序列中按相同顺序出现，但不一定连续。",
-            "formal": "对于序列 A，找到所有 (i, j, k) 使得 i < j < k 且 A[i], A[j], A[k] 是一个三元组"
+            "name": "subsequence_constraint",
+            "description": "三元组必须是测量序列的子序列，即三元组中的元素在测量序列中按相同顺序出现，但不一定连续"
           },
           {
-            "name": "distinct_vertex_colorings",
-            "description": "三元组根据其标签进行分组，需要输出所有不同的三元组标签，并按字典序排序。",
-            "formal": "对于每个三元组 (A[i], A[j], A[k])，生成标签 L = (A[i], A[j], A[k]) 并去重后按字典序输出"
+            "name": "distinctness",
+            "description": "输出所有不同的三元组标签，每个标签由三个连续的测量值组成"
           }
         ]
       }
@@ -44,8 +42,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计所有不同的三元组标签数量"
+        "type": "enumeration",
+        "description": "枚举所有不同的三元组标签"
       }
     }
   ],
@@ -54,9 +52,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过分析所有可能的三元组来确定最终结果",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：三元组的标签可以通过子序列的标签组合得到，即大问题的解由子问题的解合成。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在分析三元组时，每个子序列的处理是独立的，不会影响其他子序列的结果。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

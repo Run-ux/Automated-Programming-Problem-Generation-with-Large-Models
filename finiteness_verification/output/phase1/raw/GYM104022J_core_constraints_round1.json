@@ -6,19 +6,24 @@
   "result": {
     "constraints": [
       {
-        "name": "adjacency_constraint",
-        "description": "每个节点的相邻节点数量不超过4个，且相邻节点编号在-1到m^2之间（图的边约束）",
-        "formal": "∀i ∈ [1, m^2], n_i, s_i, w_i, e_i ∈ {-1} ∪ [1, m^2]"
+        "name": "distinctness",
+        "description": "所有拼图块的编号唯一，范围从 1 到 m^2。",
+        "formal": "∀i, j ∈ [1, m^2], i ≠ j → piece_id(i) ≠ piece_id(j)"
       },
       {
-        "name": "unique_identification",
-        "description": "每个节点具有唯一的标识编号，范围从1到m^2（图节点唯一性约束）",
-        "formal": "∀i ∈ [1, m^2], id_i ∈ [1, m^2] 且 id_i 唯一"
+        "name": "adjacency_relation",
+        "description": "每个拼图块有四个相邻关系（北、南、西、东），如果某个方向没有相邻块，则该方向的值为 -1。",
+        "formal": "∀i ∈ [1, m^2], (n_i, s_i, w_i, e_i) ∈ {-1} ∪ [1, m^2]"
       },
       {
-        "name": "grid_layout",
-        "description": "最终布局必须是一个m行m列的网格，每个位置恰好放置一个节点（二维网格布局约束）",
-        "formal": "输出为 m × m 的矩阵，每个元素在 [1, m^2] 中且唯一"
+        "name": "connectivity",
+        "description": "拼图块构成一个连通的方形网格，即每个块都能通过相邻关系连接到其他块。",
+        "formal": "存在一条路径使得任意两个拼图块可以通过相邻关系互相到达"
+      },
+      {
+        "name": "grid_structure",
+        "description": "最终拼图结果是一个 m 行 m 列的方形网格。",
+        "formal": "结果是一个 m × m 的矩阵"
       }
     ]
   },

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100
@@ -26,12 +26,16 @@
       "result": {
         "constraints": [
           {
-            "name": "turn_based_operation",
-            "description": "两名玩家轮流从各自的堆中移除任意数量的棋子，直到某一方无法再移除为止"
+            "name": "sum_constraint",
+            "description": "双方玩家的堆中棋子数量的 Nim 和为 0 时，先手玩家无法确保胜利"
           },
           {
-            "name": "global_optimization_objective",
-            "description": "先移除完自己所有棋子的玩家获胜"
+            "name": "operation_limit",
+            "description": "每次操作只能从一个堆中移除任意正数个棋子"
+          },
+          {
+            "name": "turn_based",
+            "description": "游戏是回合制的，红方先手"
           }
         ]
       }
@@ -42,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断先手玩家是否能确保胜利"
+        "type": "feasibility",
+        "description": "判断先手玩家是否有必胜策略"
       }
     }
   ],
@@ -52,12 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解都是全局最优解的一部分",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即通过解决每个堆的Nim游戏来决定整个游戏的胜负。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：在Nim游戏中，双方玩家的操作是对称的，即任意一方可以进行的操作另一方也可以进行，且操作的效果是等价的。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

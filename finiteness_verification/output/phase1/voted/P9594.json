@@ -1,0 +1,137 @@
+{
+  "problem_id": "P9594",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "weighted": true,
+            "inferred": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "weighted": true,
+      "inferred": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "disjoint_intervals",
+        "description": "对于任意两条不同的线段，如果它们的种类相同，则它们可以重叠；否则，它们必须不相交。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_overlapping_intervals",
+        "description": "不存在互不相同的正整数 i, j 使得 l_i < l_j ≤ r_j < r_i（特殊性质 A）。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "disjoint_intervals",
+              "description": "对于任意两条不同的线段，如果它们的种类相同，则它们可以重叠；否则，它们必须不相交。",
+              "formal": "∀ i, j (i ≠ j), (c_i = c_j) ∨ ([l_i, r_i] ∩ [l_j, r_j] = ∅)"
+            },
+            {
+              "name": "non_overlapping_intervals",
+              "description": "不存在互不相同的正整数 i, j 使得 l_i < l_j ≤ r_j < r_i（特殊性质 A）。",
+              "formal": "¬∃ i, j (i ≠ j), (l_i < l_j ≤ r_j < r_i)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化满足条件的线段权值总和"
+        }
+      }
+    ],
+    "description": "最大化满足条件的线段权值总和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择线段时，每个种类的线段选择方案可以独立考虑，并且最终结果是这些独立选择方案的最优组合。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：对于不同种类的线段，其权值和可以通过子区间的权值和进行合并计算。具体来说，如果两个线段种类不同且不重叠，则它们的权值可以直接相加。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_disjointness",
+        "description": "互斥区间：对于同一种类的线段，只有当它们的区间不重叠时才能同时被选中。这种互斥关系保证了选择的线段集合是合法的。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择线段时，每个种类的线段选择方案可以独立考虑，并且最终结果是这些独立选择方案的最优组合。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：对于不同种类的线段，其权值和可以通过子区间的权值和进行合并计算。具体来说，如果两个线段种类不同且不重叠，则它们的权值可以直接相加。",
+              "properties": {}
+            },
+            {
+              "name": "interval_disjointness",
+              "description": "互斥区间：对于同一种类的线段，只有当它们的区间不重叠时才能同时被选中。这种互斥关系保证了选择的线段集合是合法的。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

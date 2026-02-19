@@ -1,0 +1,82 @@
+{
+  "problem_id": "P11970",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 3,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "connected": true,
+          "directed": false,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "从多边形的一条边进入，穿过若干个三角形后，从另一条边离开多边形的路径是唯一的"
+          },
+          {
+            "name": "orientation",
+            "description": "每个三角形的入边和出边的方向关系分为左转（L）和右转（R），且路径的方向序列唯一确定"
+          },
+          {
+            "name": "polygon_partition",
+            "description": "多边形被剖分为若干个三角形，且这些三角形互不相交重合"
+          },
+          {
+            "name": "shared_vertex",
+            "description": "所有三角形都有一个共同顶点（特殊性质）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "对于每个顶点，求从该顶点出发的所有路径中，左转和右转次数的加权和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在多边形的三角剖分中，路径的方向（L 或 R）决定了一个固定的拓扑顺序，使得从入边到出边的路径唯一且有序。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在遍历多边形的三角剖分时，从一个三角形转移到另一个三角形的过程中，路径的方向（L 或 R）保持一致，确保了状态转移的一致性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

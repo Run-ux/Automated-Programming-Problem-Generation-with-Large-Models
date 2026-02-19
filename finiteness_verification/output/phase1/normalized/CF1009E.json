@@ -1,0 +1,84 @@
+{
+  "problem_id": "CF1009E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "序列是非递减的（即对于所有 i ∈ [1, n - 1]，有 a_i ≤ a_{i + 1}）",
+            "formal": "∀ i ∈ [1, n - 1], a_i ≤ a_{i + 1}"
+          },
+          {
+            "name": "operation_limit",
+            "description": "在每个休息点之后，难度重新从 a_1 开始计算",
+            "formal": "若存在休息点在位置 k，则第 k+1 公里的难度为 a_1"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "计算期望值 p，并将其乘以 2^(n-1) 后取模 998244353",
+            "formal": "(p * 2^(n-1)) % 998244353"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_probability",
+        "description": "求路径上权值和的期望值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "难度序列的单调递增性质，保证了后续计算中的累积效应是有序且可预测的",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的解可以通过子问题的解来构建，每个子段的最优解可以组合成整个路径的最优解",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间和可以通过端点差值计算，适用于处理连续区间的累加难度",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

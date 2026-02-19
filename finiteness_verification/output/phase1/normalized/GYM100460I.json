@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -28,23 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "pairwise_exclusion",
-            "description": "在同一时间点，只能有一个英雄执行对抗魔法的操作"
+            "name": "operation_limit",
+            "description": "每个操作（对抗魔法）只能由一个角色执行，且执行期间该角色不能进行其他操作",
+            "formal": "对于每个时间点 t_i，只能选择 Desmond 或 Thorwald 进行操作，且在操作期间该角色不可用"
           },
           {
-            "name": "cyclic_path_length_constraint",
-            "description": "每个魔法必须在特定的时间窗口内被处理，否则会导致失败",
-            "formal": "对于每个魔法 i，必须在 t[i] 时刻开始处理，并且处理时间不能超过 a[i] 或 b[i]"
+            "name": "window_constraint",
+            "description": "每个操作（对抗魔法）必须在特定的时间窗口内开始，并持续一定时间",
+            "formal": "对于每个时间点 t_i，操作必须在 t_i 开始，并持续 a_i 或 b_i 秒"
           },
           {
-            "name": "continuous_path_constraint",
-            "description": "Thorwald 需要连续 c 秒来破坏球体，在这段时间内他不能参与对抗魔法",
-            "formal": "存在一个长度为 c 的连续时间区间 [t, t+c-1]，在此区间内 Thorwald 不能参与对抗魔法"
+            "name": "time_interval_availability",
+            "description": "Thorwald 需要连续 c 秒来破坏球体，在此期间他不能进行其他操作",
+            "formal": "存在一个长度为 c 的连续时间窗口，在此期间 Thorwald 不能进行任何对抗魔法的操作"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "每个魔法的处理时间区间不能重叠，即每个魔法的处理时间必须是独立的",
-            "formal": "对于所有魔法 i 和 j (i != j)，处理时间区间 [t[i], t[i] + a[i]) 和 [t[j], t[j] + b[j]) 不能有交集"
+            "name": "disjoint_intervals",
+            "description": "所有操作（对抗魔法）和破坏球体的时间段不能重叠",
+            "formal": "所有 [t_i, t_i + a_i] 和 [t_i, t_i + b_i] 区间以及 [t_start, t_start + c] 区间不能重叠"
           }
         ]
       }
@@ -55,7 +56,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
+        "type": "minimize_value",
         "description": "求满足条件的最小时间点"
       }
     }
@@ -65,9 +66,31 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个时间点的选择依赖于之前所有时间点的最佳决策。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每个时间点选择最优的英雄来应对当前的攻击，使得总的时间消耗最小。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：时间轴上的事件（如攻击时刻）是单调递增的，且处理这些事件的时间也是单调递增的。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每个时间点选择当前最优的英雄来应对攻击，以确保局部最优解能够逐步构建全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态到另一个状态的转移是基于当前最优决策的，确保状态转移的一致性和有效性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

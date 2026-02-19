@@ -1,0 +1,84 @@
+{
+  "problem_id": "CF1679E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 97,
+          "max": 113
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "palindrome",
+            "description": "计算所有可能字符串中回文子串的数量总和，每个问号可以被查询中的字符替换",
+            "formal": "sum(count_palindromic_substrings(s')) for all s' obtained by replacing '?' in s with characters from t"
+          },
+          {
+            "name": "alphabet_constraint",
+            "description": "字符串 s 中的字符必须是前 17 个小写字母或问号，且查询中的字符集必须是这些字母的子集",
+            "formal": "s ∈ {a, b, ..., q, ?}^n and t ⊆ {a, b, ..., q}"
+          },
+          {
+            "name": "distinctness",
+            "description": "每个查询中的字符集必须包含不同的字符",
+            "formal": "|t| = |{c1, c2, ..., cm}| where ci ∈ t and ci ≠ cj for i ≠ j"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求所有可能字符串中回文子串的数量总和，结果取模"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解组合得到，具体来说，字符串中每个位置的字符选择可以独立考虑，并且其贡献可以通过子问题的解来计算。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：回文子串的性质决定了其在字符串中的对称性。对于一个回文子串，其左右部分是镜像对称的，因此在处理时可以利用这种对称性来简化计算。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：在处理多个查询时，不同查询之间的结果可以通过合并区间信息来计算。例如，通过预处理某些区间的回文子串数量，可以在查询时快速合并这些信息。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

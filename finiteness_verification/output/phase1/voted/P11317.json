@@ -1,0 +1,146 @@
+{
+  "problem_id": "P11317",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_tree",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "选择的点集 V' 是 V 的子集，且 |V'| = k",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "路径并 E'(V') 是从根节点到 V' 中每个节点的最短路径的边集并",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "V' 的权值是路径并 E'(V') 中所有边的权重和",
+        "confidence": "1/1"
+      },
+      {
+        "name": "maximum_value_constraint",
+        "description": "f(u) 是在所有可能的 V' 中，V' 权值的最大值",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "选择的点集 V' 是 V 的子集，且 |V'| = k",
+              "formal": "|V'| = k 且 V' ⊆ V"
+            },
+            {
+              "name": "path_constraint",
+              "description": "路径并 E'(V') 是从根节点到 V' 中每个节点的最短路径的边集并",
+              "formal": "E'(V') = ∪_{u ∈ V'} path(root, u)"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "V' 的权值是路径并 E'(V') 中所有边的权重和",
+              "formal": "weight(V') = ∑_{(u, v, w) ∈ E'(V')} w"
+            },
+            {
+              "name": "maximum_value_constraint",
+              "description": "f(u) 是在所有可能的 V' 中，V' 权值的最大值",
+              "formal": "f(u) = max_{V' ⊆ V, |V'| = k} weight(V')"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "在给定的树中，对于每个节点作为根时，选择k个节点使得这些节点到根节点路径并的边权和最大"
+        }
+      }
+    ],
+    "description": "在给定的树中，对于每个节点作为根时，选择k个节点使得这些节点到根节点路径并的边权和最大"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在树上求解最大权值路径并时，可以将问题分解为子树上的子问题，并通过子问题的最优解来构建全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在树上进行动态规划时，状态转移的一致性保证了从根节点到任意节点的路径并权值计算是正确的。每个节点的状态依赖于其子节点的状态。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在树上求解最大权值路径并时，可以将问题分解为子树上的子问题，并通过子问题的最优解来构建全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在树上进行动态规划时，状态转移的一致性保证了从根节点到任意节点的路径并权值计算是正确的。每个节点的状态依赖于其子节点的状态。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

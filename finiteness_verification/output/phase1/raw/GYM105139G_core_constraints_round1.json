@@ -6,24 +6,28 @@
   "result": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "相邻节点取值不同（图着色约束）",
-        "formal": "|x1 - x2| + |y1 - y2| = 1 且 (x1, y1) 和 (x2, y2) 上的石子颜色不同"
+        "name": "adjacency_relation",
+        "description": "相邻节点定义为曼哈顿距离为1的节点（图中相邻节点的定义）"
       },
       {
-        "name": "group_liberties",
-        "description": "同一组石子的自由度等于该组所有石子自由度之和",
-        "formal": "liberties(group) = Σ liberties(stone) for stone in group"
+        "name": "grouping_constraint",
+        "description": "相同颜色的相邻节点属于同一组（图中的连通分量）"
       },
       {
-        "name": "dead_group_removal",
-        "description": "自由度为零的石子组必须被移除",
-        "formal": "if liberties(group) == 0 then remove(group)"
+        "name": "liberty_count",
+        "description": "每个节点的自由度等于其相邻且未被占据的节点数，每组节点的自由度是该组所有节点自由度之和"
+      },
+      {
+        "name": "removal_rule",
+        "description": "自由度为0的组必须从图中移除（死子移除规则）"
       },
       {
         "name": "priority_removal",
-        "description": "在每次移动后，优先移除对方颜色的死石子组，然后重新计算当前颜色石子的自由度",
-        "formal": "after move: remove(dead_opponent_stones), recalculate(current_color_liberties)"
+        "description": "黑方行动后优先移除白方死子，再重新计算黑方自由度；白方行动后优先移除黑方死子，再重新计算白方自由度"
+      },
+      {
+        "name": "alternating_turns",
+        "description": "黑方在奇数次移动，白方在偶数次移动（交替操作约束）"
       }
     ]
   },

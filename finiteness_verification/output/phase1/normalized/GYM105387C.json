@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 3,
           "max": 10000
@@ -29,13 +29,13 @@
         "constraints": [
           {
             "name": "bitwise_xor_operation",
-            "description": "存在一个整数 k，使得对所有元素 t_i 进行异或操作 r_i = t_i xor k 后，序列 r_1, r_2, ..., r_n 满足先非递减后非递增的性质。",
-            "formal": "∃k, ∀i, r_i = t_i ⊕ k 且 ∃p, ∀i < p, r_i ≤ r_{i+1} 且 ∀i ≥ p, r_i ≥ r_{i+1}"
+            "description": "通过位异或操作将序列转换为符合特定模式的序列",
+            "formal": "r_i = t_i xor k"
           },
           {
-            "name": "non_decreasing_sequence",
-            "description": "序列 r_1, r_2, ..., r_n 应该先非递减后非递增，并且非递减和非递增的区间长度至少为 2。",
-            "formal": "∃p, ∀i < p, r_i ≤ r_{i+1} 且 ∀i ≥ p, r_i ≥ r_{i+1} 且 |{i | r_i ≤ r_{i+1}}| ≥ 2 且 |{i | r_i ≥ r_{i+1}}| ≥ 2"
+            "name": "monotonicity",
+            "description": "转换后的序列应先非递减后非递增，且每个区间的长度至少为2",
+            "formal": "存在索引 i, j (1 <= i < j < n) 使得 r_1 <= r_2 <= ... <= r_i >= r_{i+1} >= ... >= r_n 且 j - i + 1 >= 2"
           }
         ]
       }
@@ -46,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足条件的整数k，使得对给定序列进行异或操作后，新序列先非递减再非递增"
+        "type": "feasibility",
+        "description": "判断是否存在一个整数k，使得对序列中的每个元素应用异或操作后，得到的序列先不降后不升，且非单调区间长度至少为2"
       }
     }
   ],
@@ -56,12 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "序列经过特定操作后，存在一个分界点，使得分界点左侧的子序列非递减，右侧的子序列非递增。这种性质在整个算法执行过程中保持不变。",
-        "properties": {
-          "left_monotonic": true,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "序列在某个位翻转后，存在一个分界点，使得前半部分非递减，后半部分非递增",
+            "properties": {}
+          },
+          {
+            "name": "bitwise_independence",
+            "description": "通过异或操作可以将原序列转换为满足单调性要求的序列",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

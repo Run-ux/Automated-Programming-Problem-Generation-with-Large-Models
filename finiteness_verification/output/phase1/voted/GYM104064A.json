@@ -2,14 +2,14 @@
   "problem_id": "GYM104064A",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 20
@@ -39,13 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "path_length_constraint",
-        "description": "字符串长度在 1 到 20 之间（包括字母和数字）",
+        "name": "distance_bound",
+        "description": "字符串长度在指定范围内（1到20个字符）",
         "confidence": "1/1"
       },
       {
-        "name": "alphabet_size_constraint",
-        "description": "字符串仅包含英文大小写字母和数字",
+        "name": "alphabet_constraint",
+        "description": "字符串由特定字符集组成（英文字母和数字）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "query_limit",
+        "description": "交互过程中询问次数有限制",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "path_length_constraint",
-              "description": "字符串长度在 1 到 20 之间（包括字母和数字）",
+              "name": "distance_bound",
+              "description": "字符串长度在指定范围内（1到20个字符）",
               "formal": "1 ≤ |password| ≤ 20"
             },
             {
-              "name": "alphabet_size_constraint",
-              "description": "字符串仅包含英文大小写字母和数字",
-              "formal": "password ∈ {A-Z, a-z, 0-9}*"
+              "name": "alphabet_constraint",
+              "description": "字符串由特定字符集组成（英文字母和数字）",
+              "formal": "password ∈ {A-Z, a-z, 0-9}"
+            },
+            {
+              "name": "query_limit",
+              "description": "交互过程中询问次数有限制",
+              "formal": "number of queries ≤ Q"
             }
           ]
         }
@@ -71,14 +81,14 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
+          "type": "feasibility",
           "description": "判断是否存在满足条件的密码"
         }
       }
@@ -86,23 +96,43 @@
     "description": "判断是否存在满足条件的密码"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "比较操作的单调性：每次比较操作的结果（成功或失败）决定了下一步的操作方向，从而保证了比较过程的单调性。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false,
+          "window_shrinkable": false
+        }
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "比较操作的次数随输入长度单调增加，每次比较结果提供确定性反馈",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": false,
-            "window_shrinkable": false
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "比较操作的单调性：每次比较操作的结果（成功或失败）决定了下一步的操作方向，从而保证了比较过程的单调性。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false,
+                "window_shrinkable": false
+              }
+            },
+            {
+              "name": "monotonicity",
+              "description": "二分搜索的区间单调缩小：通过每次比较操作，逐步缩小搜索区间，直到找到正确的密码。",
+              "properties": {
+                "search_interval_monotonic": true
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "比较操作的次数随输入长度单调增加，每次比较结果提供确定性反馈"
+    ]
   }
 }

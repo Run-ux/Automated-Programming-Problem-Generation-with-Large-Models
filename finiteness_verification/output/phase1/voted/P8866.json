@@ -1,0 +1,160 @@
+{
+  "problem_id": "P8866",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 2000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 600
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 600
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "exclusion",
+        "description": "相邻元素不能相同（栈底消去操作约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制在 m 到 2m 之间",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_type",
+        "description": "只能进行两种类型的操作：将牌堆顶卡牌放入栈顶或消去两个栈底相同的卡牌",
+        "confidence": "1/1"
+      },
+      {
+        "name": "frequency_bound",
+        "description": "每种图案的卡牌数量为偶数",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "exclusion",
+              "description": "相邻元素不能相同（栈底消去操作约束）",
+              "formal": "对于任意两个不同的栈 s1 和 s2，如果 s1 底部的元素和 s2 底部的元素相同，则可以消去这两张牌"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制在 m 到 2m 之间",
+              "formal": "m <= op <= 2 * m"
+            },
+            {
+              "name": "operation_type",
+              "description": "只能进行两种类型的操作：将牌堆顶卡牌放入栈顶或消去两个栈底相同的卡牌",
+              "formal": "操作类型为 {1, s} 或 {2, s1, s2}"
+            },
+            {
+              "name": "operation_limit",
+              "description": "选择的栈索引必须在 1 到 n 之间且不同",
+              "formal": "1 <= s, s1, s2 <= n 且 s1 != s2"
+            },
+            {
+              "name": "frequency_bound",
+              "description": "每种图案的卡牌数量为偶数",
+              "formal": "对于所有图案 i，count(a[i]) % 2 == 0"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造一个操作序列使得所有卡牌被消去"
+        }
+      }
+    ],
+    "description": "构造一个操作序列使得所有卡牌被消去"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每一步操作后，系统状态（牌堆和栈的状态）的合法性保持不变，且逐步向目标状态（所有卡牌消去）推进。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：整个问题的解可以通过解决一系列子问题（即每一步的操作）来构建，每个子问题的解都是局部最优的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：对于任意两个具有相同图案的卡牌，无论它们在哪个栈中，都可以通过操作将其消去，从而消除个体差异。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每一步操作后，系统状态（牌堆和栈的状态）的合法性保持不变，且逐步向目标状态（所有卡牌消去）推进。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：整个问题的解可以通过解决一系列子问题（即每一步的操作）来构建，每个子问题的解都是局部最优的。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：对于任意两个具有相同图案的卡牌，无论它们在哪个栈中，都可以通过操作将其消去，从而消除个体差异。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "problem_id": "CF1689D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 2,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distance_bound",
+            "description": "选择一个点，使得该点到所有黑点的曼哈顿距离的最大值最小化",
+            "formal": "minimize(max_{i=1}^{k}(|a-x_i|+|b-y_i|))"
+          },
+          {
+            "name": "binary_matrix_constraint",
+            "description": "矩阵中的每个单元格只能是黑色或白色",
+            "formal": "matrix[i][j] ∈ {'B', 'W'}"
+          },
+          {
+            "name": "coverage",
+            "description": "矩阵中至少存在一个黑色单元格",
+            "formal": "∃ (x, y) such that matrix[x][y] = 'B'"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "min_max",
+        "description": "最小化从选定单元格到所有黑色单元格的最大曼哈顿距离"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，选择一个使得到所有黑色单元格的最大曼哈顿距离最小的单元格，可以分解为在行和列上分别找到最优位置。",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解可以通过子问题的解合成。具体来说，通过分别处理行和列，将二维问题分解为一维问题，再将一维问题的解合并得到最终解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

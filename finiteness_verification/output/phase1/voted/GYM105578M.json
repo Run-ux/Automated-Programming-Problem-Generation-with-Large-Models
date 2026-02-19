@@ -1,0 +1,134 @@
+{
+  "problem_id": "GYM105578M",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 500000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500000
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "modular_arithmetic",
+        "description": "房间编号基于模 n 的同余关系进行分组，即 x 和 y 在同一层当且仅当 x ≡ y (mod n)。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation",
+        "description": "每个重定位指令 (a, b) 将同一层的所有房间编号加上 b，即 x' = x + b。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "reachability_constraint",
+        "description": "对于每个查询，需要判断从初始房间 x 出发，通过任意次重定位指令后，可达的房间编号集合是否为无限集。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "modular_arithmetic",
+              "description": "房间编号基于模 n 的同余关系进行分组，即 x 和 y 在同一层当且仅当 x ≡ y (mod n)。",
+              "formal": "x ≡ y (mod n)"
+            },
+            {
+              "name": "transformation",
+              "description": "每个重定位指令 (a, b) 将同一层的所有房间编号加上 b，即 x' = x + b。",
+              "formal": "x' = x + b"
+            },
+            {
+              "name": "reachability_constraint",
+              "description": "对于每个查询，需要判断从初始房间 x 出发，通过任意次重定位指令后，可达的房间编号集合是否为无限集。",
+              "formal": "∀ t, ∃ k 使得 |S_k| > t，其中 S_k 是最多经过 k 次指令后可达的房间编号集合。"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在无限多的可达房间编号"
+        }
+      }
+    ],
+    "description": "判断是否存在无限多的可达房间编号"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "modular_invariance",
+        "description": "模数不变性：对于任意房间号x，其在n个楼层中的分配仅依赖于x对n取模的结果。无论执行多少次重定位指令，房间号的模数属性保持不变。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "linear_combination_zero",
+        "description": "线性组合不变性：通过一系列重定位指令，房间号的变化可以表示为初始房间号与指令偏移量的线性组合。如果存在一组指令使得偏移量的线性组合能够生成无限多个不同的房间号，则该集合是无限的。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "modular_invariance",
+              "description": "模数不变性：对于任意房间号x，其在n个楼层中的分配仅依赖于x对n取模的结果。无论执行多少次重定位指令，房间号的模数属性保持不变。",
+              "properties": {}
+            },
+            {
+              "name": "linear_combination_zero",
+              "description": "线性组合不变性：通过一系列重定位指令，房间号的变化可以表示为初始房间号与指令偏移量的线性组合。如果存在一组指令使得偏移量的线性组合能够生成无限多个不同的房间号，则该集合是无限的。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

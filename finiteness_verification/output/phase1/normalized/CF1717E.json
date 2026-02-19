@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "integer",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1
@@ -26,17 +26,17 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_sum_constraint",
-            "description": "三元组 (a, b, c) 的元素和必须等于给定的整数 n",
+            "name": "sum_constraint",
+            "description": "三元组 (a, b, c) 的元素和为 n（即 a + b + c = n）",
             "formal": "a + b + c = n"
           },
           {
-            "name": "node_value_constraint",
-            "description": "三元组 (a, b, c) 的所有元素必须是正整数",
-            "formal": "a > 0, b > 0, c > 0"
+            "name": "divisibility",
+            "description": "计算表达式 lcm(c, gcd(a, b)) 的和，其中 a, b, c 为正整数且满足 a + b + c = n",
+            "formal": "∑ lcm(c, gcd(a, b)) for all (a, b, c) such that a + b + c = n"
           },
           {
-            "name": "modulo_expected_value_constraint",
+            "name": "modular_arithmetic",
             "description": "结果需要对 10^9 + 7 取模",
             "formal": "result % (10^9 + 7)"
           }
@@ -50,7 +50,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "最大化满足条件的三元组的函数值之和"
+        "description": "求所有满足条件的三元组 (a, b, c) 的 lcm(c, gcd(a, b)) 之和的最大值"
       }
     }
   ],
@@ -59,12 +59,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解可以通过子问题的解组合而成，满足动态规划的基本性质",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解组合得到，即对于给定的n，可以通过计算所有满足a + b + c = n的三元组(a, b, c)的lcm(c, gcd(a, b))的和来求解。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：在计算过程中，可以利用a, b, c之间的对称性减少重复计算。例如，gcd(a, b)和gcd(b, a)是相同的，因此可以减少计算量。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

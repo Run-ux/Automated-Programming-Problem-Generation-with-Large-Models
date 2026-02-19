@@ -1,0 +1,81 @@
+{
+  "problem_id": "GYM102219G",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "directed_graph",
+        "length": {
+          "min": 1,
+          "max": 20000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000
+        },
+        "properties": {
+          "weighted": true,
+          "acyclic": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "任务依赖图中不存在环"
+          },
+          {
+            "name": "concurrency",
+            "description": "任务可以并行执行，只要它们之间没有依赖关系"
+          },
+          {
+            "name": "operation_order",
+            "description": "任务必须在其所有依赖任务完成后才能开始执行"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "最终运行时间需要对 10^9 + 7 取模"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求有向无环图中从起点到终点的最长路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个任务的完成时间取决于其依赖任务的完成时间和自身运行时间，整个端点的完成时间是所有任务完成时间的最大值。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：任务之间的依赖关系构成有向无环图（DAG），可以按照拓扑序处理任务，确保在处理某个任务时其所有依赖任务已经处理完毕。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

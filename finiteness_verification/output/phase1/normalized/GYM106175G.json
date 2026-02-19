@@ -6,17 +6,16 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "weighted_undirected_graph",
+        "type": "two_dimensional_array",
         "length": {
-          "min": 4,
-          "max": 100
+          "min": 2,
+          "max": 10
         },
         "value_range": {
           "min": 0,
           "max": 9
         },
         "properties": {
-          "connected": true,
           "weighted": true
         }
       }
@@ -29,15 +28,15 @@
       "result": {
         "constraints": [
           {
-            "name": "cyclic_path_length_constraint",
-            "description": "图中存在一个哈密顿回路，即从起点出发，经过每个节点恰好一次后返回起点"
+            "name": "cycle_count_constraint",
+            "description": "图中存在一条哈密顿回路，即从起点出发，经过每个节点恰好一次后返回起点"
           },
           {
-            "name": "node_degree_constraint",
-            "description": "每个节点的度数固定为2，即每个节点恰好连接两条边"
+            "name": "degree_bound",
+            "description": "每个节点的度数为2，即每个模块连接到恰好两个相邻模块"
           },
           {
-            "name": "global_optimization_objective",
+            "name": "optimization_objective",
             "description": "路径总成本最小化，即选择的边的权重和最小"
           }
         ]
@@ -49,7 +48,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
+        "type": "minimize_value",
         "description": "求最小化路径上的权值和"
       }
     }
@@ -59,9 +58,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个模块的连接方式依赖于其相邻模块的最优连接方案",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，适用于动态规划求解路径问题",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：整个路径构成一个回路，每个模块恰好被访问一次，且最终回到起点",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

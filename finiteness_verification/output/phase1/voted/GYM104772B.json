@@ -2,14 +2,14 @@
   "problem_id": "GYM104772B",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1000
@@ -35,18 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "value_range_constraint",
-        "description": "表示数的基数范围必须在 2 到 n 之间（包含）",
+        "name": "alphabet_constraint",
+        "description": "整数 n 在不同基数 b 下的表示中，0 的数量最大化",
         "confidence": "1/1"
       },
       {
-        "name": "maximum_trailing_zeros",
-        "description": "需要找到表示数 n 在所有可能的基数下，含有最多零的基数，并且这些基数的数量",
-        "confidence": "1/1"
-      },
-      {
-        "name": "non_decreasing_sequence",
-        "description": "输出的基数必须按递增顺序排列",
+        "name": "distinctness",
+        "description": "找到所有使得 0 的数量最大化的基数 b，并按升序排列",
         "confidence": "1/1"
       }
     ],
@@ -57,16 +52,14 @@
         "result": {
           "constraints": [
             {
-              "name": "value_range_constraint",
-              "description": "表示数的基数范围必须在 2 到 n 之间（包含）"
+              "name": "alphabet_constraint",
+              "description": "整数 n 在不同基数 b 下的表示中，0 的数量最大化",
+              "formal": "maximize count(0 in base_b_representation(n))"
             },
             {
-              "name": "maximum_trailing_zeros",
-              "description": "需要找到表示数 n 在所有可能的基数下，含有最多零的基数，并且这些基数的数量"
-            },
-            {
-              "name": "non_decreasing_sequence",
-              "description": "输出的基数必须按递增顺序排列"
+              "name": "distinctness",
+              "description": "找到所有使得 0 的数量最大化的基数 b，并按升序排列",
+              "formal": "find all b such that count(0 in base_b_representation(n)) is maximized, and sort b in ascending order"
             }
           ]
         }
@@ -82,30 +75,52 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "求在所有可能的基数表示中，数字n包含的最大零的数量"
+          "description": "求在所有可能的基数中，表示给定整数时包含零的最大数量"
         }
       }
     ],
-    "description": "求在所有可能的基数表示中，数字n包含的最大零的数量"
+    "description": "求在所有可能的基数中，表示给定整数时包含零的最大数量"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "在遍历可能的基数时，零的数量变化具有单调性，即随着基数的增加，表示中的零数量先增后减。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的最优解可以通过子问题的最优解来构建，即在找到一个基数使得表示中零的数量最大时，可以利用该基数下的零分布特性来确定其他符合条件的基数。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "在搜索可能的基数时，随着基数的增加，表示中零的数量先增后减，存在一个峰值。因此，可以利用单调性来优化搜索过程。",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": false,
-            "window_shrinkable": false
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "在遍历可能的基数时，零的数量变化具有单调性，即随着基数的增加，表示中的零数量先增后减。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "问题的最优解可以通过子问题的最优解来构建，即在找到一个基数使得表示中零的数量最大时，可以利用该基数下的零分布特性来确定其他符合条件的基数。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "在搜索可能的基数时，随着基数的增加，表示中零的数量先增后减，存在一个峰值。因此，可以利用单调性来优化搜索过程。"
+    ]
   }
 }

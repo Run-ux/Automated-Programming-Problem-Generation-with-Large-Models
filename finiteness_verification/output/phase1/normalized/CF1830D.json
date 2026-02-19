@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "tree",
         "length": {
           "min": 1,
           "max": 200000
@@ -16,8 +16,7 @@
           "max": 200000
         },
         "properties": {
-          "connected": true,
-          "weighted": false
+          "connected": true
         }
       }
     }
@@ -29,16 +28,20 @@
       "result": {
         "constraints": [
           {
-            "name": "minimum_exclusion_constraint",
-            "description": "路径的值等于路径上节点颜色的 MEX（最小未出现的非负整数）"
+            "name": "coloring_constraint",
+            "description": "每个节点只能被染成 0 或 1 两种颜色之一"
           },
           {
-            "name": "weight_sum_constraint",
+            "name": "k_mex_constraint",
+            "description": "路径 (u, v) 的值等于从 u 到 v 的最短路径上所有节点颜色的 MEX 值"
+          },
+          {
+            "name": "sum_constraint",
             "description": "着色方案的值等于所有路径 (u, v) 的值之和，其中 1 ≤ u ≤ v ≤ n"
           },
           {
-            "name": "tree_structure",
-            "description": "输入数据构成一棵树"
+            "name": "connectivity",
+            "description": "给定的边构成一棵树"
           }
         ]
       }
@@ -59,9 +62,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过递归或迭代求解子树的最优解来构建整个树的最优解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：树的任意子树的最优解可以组合成整棵树的最优解，满足动态规划的分解性质",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：不同子树之间的颜色分配决策相互独立，互不影响",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

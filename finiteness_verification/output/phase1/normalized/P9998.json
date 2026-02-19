@@ -1,0 +1,84 @@
+{
+  "problem_id": "P9998",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 500000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacency_relation",
+            "description": "相邻元素取值不同（定义 f(i, j) 时，a_x 不等于 a_{x+1}）",
+            "formal": "∀ x ∈ [i, j-1], a_x ≠ a_{x+1}"
+          },
+          {
+            "name": "range_bound",
+            "description": "序列中的每个元素在 [1, n] 范围内",
+            "formal": "∀ i ∈ [1, n], 1 ≤ a_i ≤ n"
+          },
+          {
+            "name": "submatrix_transformation",
+            "description": "区间更新操作，将指定区间内的所有元素修改为同一个值",
+            "formal": "a[l:r] = x"
+          },
+          {
+            "name": "range_query_max",
+            "description": "区间查询操作，计算满足特定条件的子区间的 f(i, j) 的和",
+            "formal": "∑ f(i, j) for all l ≤ i < j ≤ r and a_i = a_j = x"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足条件的区间内所有符合条件的子区间中，不相等元素对的数量之和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：区间的贡献可以通过子区间的贡献合并得到，适用于线段树等数据结构",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：区间的贡献可以通过端点差值计算，适用于前缀和等技术",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

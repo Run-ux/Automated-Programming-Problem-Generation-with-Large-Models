@@ -2,14 +2,14 @@
   "problem_id": "CF1995E1",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 4000
@@ -18,9 +18,7 @@
             "min": 1,
             "max": 1000000000
           },
-          "properties": {
-            "ordered": false
-          }
+          "properties": {}
         }
       }
     ],
@@ -32,20 +30,18 @@
       "min": 1,
       "max": 1000000000
     },
-    "properties": {
-      "ordered": false
-    }
+    "properties": {}
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "最大化最小化差值不超过 D（即最小化最大对和与最小对和的差值）",
+        "name": "range_bound",
+        "description": "最大化最小化差值不超过 D（即最小化所有对的总和的最大值与最小值之差）",
         "confidence": "1/1"
       },
       {
-        "name": "pairwise_exclusion",
-        "description": "只能交换相对位置的元素（即只能同时交换 a_i 和 a_{i+n}）",
+        "name": "permutation_constraint",
+        "description": "只能交换对称位置的元素（即可以进行 a_i 与 a_{i+n} 的交换）",
         "confidence": "1/1"
       }
     ],
@@ -56,14 +52,14 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "最大化最小化差值不超过 D（即最小化最大对和与最小对和的差值）",
+              "name": "range_bound",
+              "description": "最大化最小化差值不超过 D（即最小化所有对的总和的最大值与最小值之差）",
               "formal": "minimize (max_{1 ≤ i ≤ n} (a_{2i-1} + a_{2i}) - min_{1 ≤ i ≤ n} (a_{2i-1} + a_{2i}))"
             },
             {
-              "name": "pairwise_exclusion",
-              "description": "只能交换相对位置的元素（即只能同时交换 a_i 和 a_{i+n}）",
-              "formal": "swap(a_i, a_{i+n}) for any 1 ≤ i ≤ n"
+              "name": "permutation_constraint",
+              "description": "只能交换对称位置的元素（即可以进行 a_i 与 a_{i+n} 的交换）",
+              "formal": "a_i := a_{i+n}, a_{i+n} := a_i for any 1 ≤ i ≤ n"
             }
           ]
         }
@@ -71,34 +67,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_difference",
+    "type": "min_max",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_difference",
-          "description": "最小化所有配对元素和的最大值与最小值之间的差"
+          "type": "min_max",
+          "description": "最小化所有对的总和的最大值与最小值之差"
         }
       }
     ],
-    "description": "最小化所有配对元素和的最大值与最小值之间的差"
+    "description": "最小化所有对的总和的最大值与最小值之差"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "symmetry",
+        "description": "对称性：通过交换对称位置的元素，可以调整配对组合而不改变整体结构",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即通过调整部分元素的位置来优化整体的目标函数值",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "symmetry",
+              "description": "对称性：通过交换对称位置的元素，可以调整配对组合而不改变整体结构",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即通过调整部分元素的位置来优化整体的目标函数值"
+    ]
   }
 }

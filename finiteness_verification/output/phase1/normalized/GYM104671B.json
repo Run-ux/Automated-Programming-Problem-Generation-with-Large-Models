@@ -1,0 +1,77 @@
+{
+  "problem_id": "GYM104671B",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 200000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "flow_constraint",
+            "description": "选取元素权重和不超过容量上限（健康值不能低于0）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "从起点到终点存在一条路径，使得路径上的节点满足特定条件（能够到达最后一个单元格且不饿死）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一条路径使得从起点到终点的过程中，任意时刻的健康值均非负"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "状态转移方向受限（仅向右），满足 DAG 上的最优子结构",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "当前状态的最优解由前一个状态的最优解决定，即到达每个单元格的最大健康值依赖于前一个单元格的状态",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，即每一步选择最大化当前健康值以确保能够到达终点",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

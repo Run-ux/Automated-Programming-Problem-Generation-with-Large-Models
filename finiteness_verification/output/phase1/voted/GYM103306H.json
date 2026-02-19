@@ -1,0 +1,164 @@
+{
+  "problem_id": "GYM103306H",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "permutation_constraint",
+        "description": "给定的序列是一个排列，即每个元素在1到N之间且唯一",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "每个鬼魂的状态（活跃或休息）根据其能量值和是否吓到人进行切换",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每个鬼魂在一个周期内只能活跃一次，然后需要休息一段时间才能再次活跃",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "所有人的到达时间是唯一的",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "人们按到达时间顺序依次访问房间",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "permutation_constraint",
+              "description": "给定的序列是一个排列，即每个元素在1到N之间且唯一"
+            },
+            {
+              "name": "state_transition",
+              "description": "每个鬼魂的状态（活跃或休息）根据其能量值和是否吓到人进行切换"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每个鬼魂在一个周期内只能活跃一次，然后需要休息一段时间才能再次活跃"
+            },
+            {
+              "name": "distinctness",
+              "description": "所有人的到达时间是唯一的"
+            },
+            {
+              "name": "ordering",
+              "description": "人们按到达时间顺序依次访问房间"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造每个到达时间对应的首次被吓到的房间编号和时间"
+        }
+      }
+    ],
+    "description": "构造每个到达时间对应的首次被吓到的房间编号和时间"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个房间的鬼魂在活跃和休息状态之间转换，且这种转换是基于时间的固定规则进行的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：人员到达时间序列是单调递增的，因此可以按顺序处理每个到达事件。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：鬼魂的能量值决定了其活跃和休息的时间段，这些时间段可以通过端点差值计算。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个房间的鬼魂在活跃和休息状态之间转换，且这种转换是基于时间的固定规则进行的。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：人员到达时间序列是单调递增的，因此可以按顺序处理每个到达事件。",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：鬼魂的能量值决定了其活跃和休息的时间段，这些时间段可以通过端点差值计算。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

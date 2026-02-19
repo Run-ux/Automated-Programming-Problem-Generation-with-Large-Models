@@ -1,0 +1,85 @@
+{
+  "problem_id": "P9527",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "modular_arithmetic",
+            "description": "元素值在操作后取模，即高度乘以 W 后对 L 取模",
+            "formal": "h' = (h * W) % L"
+          },
+          {
+            "name": "range_bound",
+            "description": "元素值有上限 L，超过 L 的部分会被截断",
+            "formal": "h' = h % L"
+          },
+          {
+            "name": "distance_bound",
+            "description": "操作影响的范围是距离不超过 D 的节点",
+            "formal": "distance(x, y) <= D"
+          },
+          {
+            "name": "connectivity",
+            "description": "图必须连通，任意两块土地间都可以通过道路互达",
+            "formal": "G is connected"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "对于每次查询，输出指定节点上值的计算结果"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次操作后，所有土地上的 JOI 谷高度根据洒水器的影响进行更新，并且断裂后的高度满足模 $L$ 的性质。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：在树结构中，可以通过子树信息合并得到父节点的信息，特别是在处理洒水器影响范围时，可以将子树的高度信息合并到当前节点。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

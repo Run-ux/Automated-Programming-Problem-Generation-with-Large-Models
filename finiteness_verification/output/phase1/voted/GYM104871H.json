@@ -2,14 +2,14 @@
   "problem_id": "GYM104871H",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 2,
             "max": 600
@@ -41,18 +41,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "tree_structure",
-        "description": "数据结构必须是树形结构，有一个根节点（CEO），每个节点最多有一个父节点",
+        "name": "acyclicity",
+        "description": "数据结构必须形成一棵树，有一个根节点（CEO），每个节点最多有一个父节点。",
         "confidence": "1/1"
       },
       {
-        "name": "string_length_bound",
-        "description": "编码字符串 B 的长度不得超过 2048 个字符",
+        "name": "reverse_ordering_constraint",
+        "description": "每个节点的子节点顺序必须保持不变，从最喜爱到最不喜爱。",
         "confidence": "1/1"
       },
       {
-        "name": "non_decreasing_sequence",
-        "description": "在解码输出中，每个节点必须出现在其父节点之后，且每个经理的直接下属顺序必须保持不变",
+        "name": "flow_constraint",
+        "description": "编码字符串 B 的长度不得超过 2048 个字符。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "员工名字必须是唯一的。",
         "confidence": "1/1"
       }
     ],
@@ -63,16 +68,24 @@
         "result": {
           "constraints": [
             {
-              "name": "tree_structure",
-              "description": "数据结构必须是树形结构，有一个根节点（CEO），每个节点最多有一个父节点"
+              "name": "acyclicity",
+              "description": "数据结构必须形成一棵树，有一个根节点（CEO），每个节点最多有一个父节点。",
+              "formal": "存在唯一根节点 r，对于所有节点 v，有且仅有一个父节点 p(v)，除了根节点 r 无父节点。"
             },
             {
-              "name": "string_length_bound",
-              "description": "编码字符串 B 的长度不得超过 2048 个字符"
+              "name": "reverse_ordering_constraint",
+              "description": "每个节点的子节点顺序必须保持不变，从最喜爱到最不喜爱。",
+              "formal": "对于每个节点 v，其子节点列表 S(v) 的顺序必须保持不变。"
             },
             {
-              "name": "non_decreasing_sequence",
-              "description": "在解码输出中，每个节点必须出现在其父节点之后，且每个经理的直接下属顺序必须保持不变"
+              "name": "flow_constraint",
+              "description": "编码字符串 B 的长度不得超过 2048 个字符。",
+              "formal": "|B| <= 2048"
+            },
+            {
+              "name": "distinctness",
+              "description": "员工名字必须是唯一的。",
+              "formal": "所有员工名字集合中的元素都是唯一的。"
             }
           ]
         }
@@ -80,14 +93,14 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
+          "type": "construction",
           "description": "构造一个满足给定条件的编码字符串和员工列表"
         }
       }
@@ -95,19 +108,39 @@
     "description": "构造一个满足给定条件的编码字符串和员工列表"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在编码和解码过程中，每个员工的输出顺序必须满足其管理结构的拓扑序，即每个员工在其直接下属之前被处理。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个经理及其直接下属构成一个独立的子问题，在编码和解码过程中可以独立处理。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：解法中每个节点的管理结构可以通过其子节点的管理结构组合而成，且整个问题的解由这些子问题的解组合而成。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在编码和解码过程中，每个员工的输出顺序必须满足其管理结构的拓扑序，即每个员工在其直接下属之前被处理。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个经理及其直接下属构成一个独立的子问题，在编码和解码过程中可以独立处理。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：解法中每个节点的管理结构可以通过其子节点的管理结构组合而成，且整个问题的解由这些子问题的解组合而成。"
+    ]
   }
 }

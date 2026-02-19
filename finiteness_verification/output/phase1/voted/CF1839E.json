@@ -1,0 +1,142 @@
+{
+  "problem_id": "CF1839E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 300
+          },
+          "value_range": {
+            "min": 1,
+            "max": 300
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300
+    },
+    "value_range": {
+      "min": 1,
+      "max": 300
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "turn_based",
+        "description": "游戏是回合制的，两名玩家轮流进行操作",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每轮操作必须选择一个有效的索引，否则视为失败并终止程序",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "每轮操作后，数组中的元素会根据选择的索引进行更新，且游戏状态会相应变化",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "turn_based",
+              "description": "游戏是回合制的，两名玩家轮流进行操作"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每轮操作必须选择一个有效的索引，否则视为失败并终止程序"
+            },
+            {
+              "name": "state_transition",
+              "description": "每轮操作后，数组中的元素会根据选择的索引进行更新，且游戏状态会相应变化"
+            },
+            {
+              "name": "operation_limit",
+              "description": "当某一方无法做出有效操作时，另一方获胜，游戏结束"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "game_outcome",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "game_outcome",
+          "description": "确定先手或后手玩家的胜利策略"
+        }
+      }
+    ],
+    "description": "确定先手或后手玩家的胜利策略"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每一步操作后，游戏的状态（数组a的值）会根据当前玩家的选择进行更新，并且这种更新是确定性的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：在每一步选择中，当前玩家的最优策略依赖于后续步骤的最优解。即，当前玩家的选择会影响后续的游戏状态，而后续状态的最优解决定了当前选择是否最优。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步中，玩家可以选择一个局部最优解（例如选择当前最大或最小的合法索引），并且这种局部最优选择能够导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每一步操作后，游戏的状态（数组a的值）会根据当前玩家的选择进行更新，并且这种更新是确定性的。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：在每一步选择中，当前玩家的最优策略依赖于后续步骤的最优解。即，当前玩家的选择会影响后续的游戏状态，而后续状态的最优解决定了当前选择是否最优。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步中，玩家可以选择一个局部最优解（例如选择当前最大或最小的合法索引），并且这种局部最优选择能够导致全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -58,19 +58,14 @@
       "result": {
         "constraints": [
           {
-            "name": "t_patch_coverage",
-            "description": "每个正方形的每条边必须恰好被一个T形补丁覆盖。",
-            "formal": "对于每个正方形，其四条边中的每一条都必须被且仅被一个T形补丁覆盖。"
+            "name": "coverage",
+            "description": "每个网格边必须被恰好一个T形补丁覆盖",
+            "formal": "∀ (i, j) ∈ [1, n] × [1, n], ∃! T-patch covering the edge between (i, j) and (i+1, j) or (i, j+1)"
           },
           {
-            "name": "t_patch_orientation",
-            "description": "T形补丁可以旋转成四个正交方向之一。",
-            "formal": "每个T形补丁可以是 'D', 'R', 'U', 'L' 中的一种，分别表示向下、向右、向上、向左。"
-          },
-          {
-            "name": "grid_size",
-            "description": "T恤的大小为 n x n 的网格。",
-            "formal": "T恤是一个 n x n 的网格。"
+            "name": "orientation",
+            "description": "T形补丁可以旋转成四个正交方向之一",
+            "formal": "Each T-patch can be oriented in one of four orthogonal directions: D, R, U, L"
           }
         ]
       }
@@ -81,16 +76,16 @@
       "result": {
         "constraints": [
           {
-            "name": "each_side_covered_once",
-            "description": "每个正方形的每条边必须恰好被一个T形补丁覆盖"
+            "name": "coverage",
+            "description": "每个网格边必须被恰好一个T形补丁覆盖"
           },
           {
-            "name": "t_patch_orientation",
-            "description": "每个T形补丁可以旋转成四个正交方向之一"
+            "name": "orientation",
+            "description": "T形补丁可以旋转成四个正交方向之一"
           },
           {
-            "name": "output_format",
-            "description": "如果存在解决方案，输出的设计应包含n+1行和n+1列字符，描述T形补丁的方向或空点"
+            "name": "range_bound",
+            "description": "T恤的大小为n×n，且n+1行和n+1列描述设计"
           }
         ]
       }
@@ -101,16 +96,16 @@
       "result": {
         "constraints": [
           {
-            "name": "each_side_covered_once",
-            "description": "每个正方形的每条边必须恰好被一个T形补丁覆盖"
+            "name": "coverage",
+            "description": "每个网格边必须被恰好一个T形补丁覆盖"
           },
           {
-            "name": "t_patch_orientation",
-            "description": "每个T形补丁可以旋转成四个正交方向之一（向下、向右、向上、向左）"
+            "name": "orientation",
+            "description": "T形补丁可以旋转成四个正交方向之一"
           },
           {
-            "name": "output_format",
-            "description": "如果存在符合条件的设计，输出n+1行n+1列的字符矩阵，描述设计。每个交叉点用D、R、U、L或.表示T形补丁的方向或空白点"
+            "name": "range_bound",
+            "description": "T恤的大小为n×n的网格，且n+1行和n+1列用于描述设计"
           }
         ]
       }
@@ -121,24 +116,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "decision",
-        "description": "判断给定大小的T恤是否可以由T形补丁拼接而成，如果可以则输出一种拼接方案"
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的方案"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "decision",
-        "description": "判断是否存在一种方式，可以使用T型补丁覆盖给定大小的T恤的所有边，并在存在时输出任意一种设计方案"
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的方案"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "decision",
-        "description": "判断是否存在一种方式，可以使用T型补丁覆盖给定大小的T恤的所有边"
+        "type": "feasibility",
+        "description": "判断是否存在满足条件的构造方案"
       }
     }
   ],
@@ -147,27 +142,59 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "解法中，大问题的解可以通过子问题的解组合而成。对于给定大小的T恤，其设计可以基于更小尺寸的设计方案进行扩展。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "symmetry",
+            "description": "对称性：T-shirt 的设计可以通过旋转和翻转 T-patch 来实现，且这种对称变换不改变问题结构",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "网格覆盖不变量：每个网格边必须被恰好一个 T-patch 覆盖，确保整个 T-shirt 的完整性",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "大问题的解由子问题的解组合而成，即T-shirt的设计可以通过解决更小规模的T-shirt设计问题来完成。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "symmetry",
+            "description": "对称性：T-shirt 的设计可以通过旋转和翻转保持不变，从而简化问题的求解",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：T-shirt 的每个子区域可以独立地进行 T-patch 的放置，并且这些子区域的最优解可以组合成整个 T-shirt 的最优解",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在放置 T-patch 时，当前状态（已放置的 T-patch）到下一个状态（放置新的 T-patch）的转换是确定的，并且满足一定的规则",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于其子问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "symmetry",
+            "description": "对称性：T-shirt 的设计可以通过旋转和翻转来保持不变，使得每个 T-patch 的放置方式在不同方向上具有一致性。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "网格覆盖不变量：每个网格边必须被恰好一个 T-patch 覆盖，且 T-patch 的放置方式满足网格的完整性和连通性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

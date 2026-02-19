@@ -1,0 +1,151 @@
+{
+  "problem_id": "P1070",
+  "source": "luogu",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 2,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "fixed_start_node",
+        "description": "环形路径上同时只能存在一个机器人",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每个机器人的行走次数不超过 p 次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_order",
+        "description": "购买机器人和机器人行走是两个独立的过程，机器人行走时不能购买机器人",
+        "confidence": "1/1"
+      },
+      {
+        "name": "cyclic_shift_constraint",
+        "description": "路径是环形的，第 n 个节点与第 1 个节点相连",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "fixed_start_node",
+              "description": "环形路径上同时只能存在一个机器人"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每个机器人的行走次数不超过 p 次"
+            },
+            {
+              "name": "operation_order",
+              "description": "购买机器人和机器人行走是两个独立的过程，机器人行走时不能购买机器人"
+            },
+            {
+              "name": "cyclic_shift_constraint",
+              "description": "路径是环形的，第 n 个节点与第 1 个节点相连"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化路径上的权值和，扣除固定成本后的最大收益"
+        }
+      }
+    ],
+    "description": "最大化路径上的权值和，扣除固定成本后的最大收益"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每个时间点选择购买机器人和设定行走次数的决策可以基于之前的时间段最优解来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个时间点到下一个时间点的状态转移是确定且一致的，当前状态仅依赖于前一时刻的状态及当前决策。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "cycle_invariant",
+        "description": "环不变量：由于马路是环形的，机器人的行走路径形成一个循环，因此在计算金币收集时需要考虑环形结构带来的周期性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每个时间点选择购买机器人和设定行走次数的决策可以基于之前的时间段最优解来确定。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个时间点到下一个时间点的状态转移是确定且一致的，当前状态仅依赖于前一时刻的状态及当前决策。",
+              "properties": {}
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "环不变量：由于马路是环形的，机器人的行走路径形成一个循环，因此在计算金币收集时需要考虑环形结构带来的周期性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

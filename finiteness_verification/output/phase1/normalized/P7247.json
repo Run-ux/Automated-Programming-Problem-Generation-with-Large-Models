@@ -1,0 +1,94 @@
+{
+  "problem_id": "P7247",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_tree",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 998244352
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "图结构为一棵树（无环连通无向图）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "每次操作选择的路径必须是树中的唯一简单路径"
+          },
+          {
+            "name": "coverage",
+            "description": "每个节点至少被访问一次"
+          },
+          {
+            "name": "operation_limit",
+            "description": "初始时从指定节点开始，每次操作后更新当前位置"
+          },
+          {
+            "name": "cost_constraint",
+            "description": "每次操作的代价是终点点权与路径边权之和的乘积"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "最终结果需要对给定模数取模"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_probability",
+        "description": "求在随机选择目标节点并移动过程中，每个节点至少被访问一次时的期望代价之和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即每个子树的代价和可以递归地计算并合并。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个节点到另一个节点的状态转移是基于路径上的边权和点权的乘积，且这种转移方式在整棵树上是一致的。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子树的代价计算是独立的，不会受到其他子树的影响。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

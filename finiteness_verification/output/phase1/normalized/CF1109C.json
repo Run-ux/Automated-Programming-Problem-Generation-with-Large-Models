@@ -28,19 +28,29 @@
       "result": {
         "constraints": [
           {
-            "name": "bottleneck_path",
-            "description": "选取元素权重和不超过容量上限（耐心值 v 不能为负）",
-            "formal": "v >= 0"
+            "name": "flow_constraint",
+            "description": "选取元素权重和不超过容量上限（耐心值不能为负）",
+            "formal": "v + ∫_l^r s(t) dt >= 0"
           },
           {
-            "name": "transformation_exclusion",
-            "description": "每个时间点最多有一个事件发生（同一秒内不会有多个事件）",
-            "formal": "∀t, |{events at time t}| ≤ 1"
+            "name": "operation_limit",
+            "description": "操作次数限制（查询数量有限制）",
+            "formal": "1 ≤ q ≤ 10^5"
           },
           {
-            "name": "adjacent_sum_constraint",
-            "description": "查询的时间区间必须有序（l ≤ r）",
-            "formal": "l ≤ r"
+            "name": "intersection",
+            "description": "时间区间内事件互斥（同一时刻不会有多个事件发生）",
+            "formal": "∀ t, |{s(t)}| ≤ 1"
+          },
+          {
+            "name": "exclusion",
+            "description": "事件删除约束（删除的事件必须存在）",
+            "formal": "∃ t, event(t) = true"
+          },
+          {
+            "name": "range_bound",
+            "description": "查询区间范围约束（查询的时间区间合法）",
+            "formal": "1 ≤ l ≤ r ≤ 10^9"
           }
         ]
       }
@@ -51,8 +61,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断在给定的时间段内，是否存在某个时刻使得累积值达到或超过给定阈值"
+        "type": "minimize_value",
+        "description": "求在给定时间段内，容器中的值首次达到或低于零的时间点"
       }
     }
   ],
@@ -61,12 +71,26 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence",
-        "description": "时间轴上的事件处理顺序单调递增，且事件的处理不会回溯",
-        "properties": {
-          "left_monotonic": false,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "时间轴上的事件处理顺序单调递增，确保事件按时间顺序处理",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "在指定的时间区间内，耐心的变化量可以通过区间端点的差值计算得出",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "系统状态（当前耐心量）根据事件的发生进行一致性的转移",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

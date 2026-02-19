@@ -2,14 +2,14 @@
   "problem_id": "CF1446C",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 200000
@@ -35,18 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
+        "name": "connectivity",
         "description": "图必须连通（所有节点可以通过边到达）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_simple_paths",
+        "name": "distinctness",
         "description": "序列中的元素必须是唯一的（无重复元素）",
-        "confidence": "1/1"
-      },
-      {
-        "name": "minimum_preference_requirement",
-        "description": "剩余序列中至少包含2个元素",
         "confidence": "1/1"
       }
     ],
@@ -57,16 +52,12 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
+              "name": "connectivity",
               "description": "图必须连通（所有节点可以通过边到达）"
             },
             {
-              "name": "distinct_simple_paths",
+              "name": "distinctness",
               "description": "序列中的元素必须是唯一的（无重复元素）"
-            },
-            {
-              "name": "minimum_preference_requirement",
-              "description": "剩余序列中至少包含2个元素"
             }
           ]
         }
@@ -74,34 +65,54 @@
     ]
   },
   "objective": {
-    "type": "min_cost",
+    "type": "minimize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "min_cost",
-          "description": "求最小化操作次数以满足特定条件"
+          "type": "minimize_count",
+          "description": "最小化需要移除的元素数量，使得剩余序列满足给定条件"
         }
       }
     ],
-    "description": "求最小化操作次数以满足特定条件"
+    "description": "最小化需要移除的元素数量，使得剩余序列满足给定条件"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过移除某些元素使得剩余序列满足条件的最小移除数可以由更小规模的子问题的最优解推导得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在求解过程中，各个子问题的解是相互独立的，一个子问题的解不会影响另一个子问题的解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过其子问题的最优解组合而成，即通过删除某些元素使得剩余序列满足题目要求的最小删除数可以由更小子序列的最优解推导得出。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过移除某些元素使得剩余序列满足条件的最小移除数可以由更小规模的子问题的最优解推导得出。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在求解过程中，各个子问题的解是相互独立的，一个子问题的解不会影响另一个子问题的解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过其子问题的最优解组合而成，即通过删除某些元素使得剩余序列满足题目要求的最小删除数可以由更小子序列的最优解推导得出。"
+    ]
   }
 }

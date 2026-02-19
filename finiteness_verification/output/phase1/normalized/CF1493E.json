@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1000000
@@ -28,16 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "选取的区间必须满足 l ≤ x ≤ y ≤ r"
+            "name": "range_bound",
+            "description": "给定的区间 [l, r] 必须满足 l ≤ r",
+            "formal": "l ≤ r"
           },
           {
-            "name": "adjacent_xor_constraint",
-            "description": "计算从 x 到 y 的所有整数的按位异或值（即 g(x, y) = x ⊕ (x+1) ⊕ ... ⊕ (y-1) ⊕ y）"
+            "name": "xor_sum_constraint",
+            "description": "计算从 x 到 y 的所有整数的按位异或和，其中 l ≤ x ≤ y ≤ r",
+            "formal": "g(x, y) = x ⊕ (x+1) ⊕ ... ⊕ (y-1) ⊕ y"
           },
           {
-            "name": "global_optimization_objective",
-            "description": "求解 f(l, r) 为所有满足 l ≤ x ≤ y ≤ r 的 g(x, y) 的最大值"
+            "name": "max_xor_constraint",
+            "description": "求在给定区间 [l, r] 内，所有可能的 g(x, y) 的最大值",
+            "formal": "f(l, r) = max(g(x, y)) for all l ≤ x ≤ y ≤ r"
           }
         ]
       }
@@ -58,11 +61,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间可合并性：通过端点差值计算区间异或和，满足区间信息可通过子区间合并的性质",
-        "properties": {
-          "prefix_xor": true
-        }
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过端点差值计算区间异或和",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最大异或和可以通过子区间的最优解合成",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

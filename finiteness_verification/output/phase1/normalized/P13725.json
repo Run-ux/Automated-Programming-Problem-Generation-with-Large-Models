@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 4096
@@ -28,12 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "subset_sum_constraint",
-            "description": "存在两个不同的子集，它们的元素和相等（包括数量和难度）"
+            "name": "subset_constraint",
+            "description": "选取的子集必须满足总难度和总拼图块数与给定值相同"
           },
           {
-            "name": "distinct_subset_selection",
-            "description": "两个子集必须是不同的，即至少有一个元素在其中一个子集中但不在另一个子集中"
+            "name": "distinctness",
+            "description": "两个礼物必须是不同的，即至少有一个拼图在其中一个礼物中而不在另一个礼物中"
           }
         ]
       }
@@ -44,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在两个不同的子集，使得它们的元素和与给定值相同"
+        "type": "feasibility",
+        "description": "判断是否存在两组不同的子集，使得它们的元素和与另一个给定属性的和相等"
       }
     }
   ],
@@ -54,9 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，具体表现为通过选择不同的子集来满足总和条件",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子集的选择不影响其他子集的可行性，即选择一个子集后，剩余元素仍可构成满足条件的子集",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：全局最优解可以通过组合子问题的最优解来获得，即如果两个子集具有相同的总难度和总拼图块数，则它们可以互换而不影响最终结果",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

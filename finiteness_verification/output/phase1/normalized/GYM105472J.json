@@ -1,0 +1,89 @@
+{
+  "problem_id": "GYM105472J",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "attribute_constraint",
+            "description": "每个节点必须分配一个唯一的值（每个孩子必须分配一个玩具）"
+          },
+          {
+            "name": "exclusion",
+            "description": "两个节点不能同时分配相同的值（两个孩子不能同时玩同一个玩具）"
+          },
+          {
+            "name": "priority_comparison",
+            "description": "如果节点 A 分配的值比节点 B 分配的值更优，则节点 A 不能分配节点 B 的值（如果孩子 A 更喜欢玩具 T 而不是当前玩具，那么孩子 A 不能玩孩子 B 正在玩的玩具 T）"
+          },
+          {
+            "name": "state_transition",
+            "description": "节点的状态变化只能在特定的时间点发生（孩子只能在特定时间开始或停止玩玩具）"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每个时间单位内，每个节点最多只能进行一次状态变化（每个微秒内，每个孩子最多只能切换一次玩具）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种分配方案，使得所有参与者都不会产生不满"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在分配玩具时，每个孩子的最优选择依赖于其他孩子已经做出的选择。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：通过局部最优选择（为每个孩子分配当前最合适的玩具）可以逐步构建全局最优解（所有孩子都不会哭泣）。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在分配过程中，每个孩子的状态（是否拥有玩具以及拥有哪个玩具）的变化是基于前一个状态和当前可用玩具的合法转移。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

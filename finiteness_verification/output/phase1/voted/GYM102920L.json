@@ -2,14 +2,14 @@
   "problem_id": "GYM102920L",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 1000000
@@ -35,8 +35,8 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_product_maximization",
-        "description": "在给定的序列中，选择两个不同的元素，使得它们的和与它们索引差的乘积最大化",
+        "name": "pairwise_product_difference_constraint",
+        "description": "选择两个不同位置的元素，使得它们的和与位置差的乘积最大化",
         "confidence": "1/1"
       }
     ],
@@ -47,8 +47,9 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_product_maximization",
-              "description": "在给定的序列中，选择两个不同的元素，使得它们的和与它们索引差的乘积最大化"
+              "name": "pairwise_product_difference_constraint",
+              "description": "选择两个不同位置的元素，使得它们的和与位置差的乘积最大化",
+              "formal": "maximize (h_i + h_j) * (j - i) for 1 ≤ i < j ≤ n"
             }
           ]
         }
@@ -64,26 +65,52 @@
         "status": "success",
         "result": {
           "type": "maximize_value",
-          "description": "最大化两个选定元素的和与它们索引差的乘积"
+          "description": "最大化两个索引之间的高度和与索引差的乘积"
         }
       }
     ],
-    "description": "最大化两个选定元素的和与它们索引差的乘积"
+    "description": "最大化两个索引之间的高度和与索引差的乘积"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即对于任意一对建筑物 i 和 j (i < j)，(h_i + h_j) * (j - i) 的最大值可以通过子问题的最优解组合得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在遍历过程中，通过维护一个单调递减的栈来确保每次选择的建筑物高度和距离的乘积最大化。具体来说，当遇到更高的建筑物时，可以更新当前的最大值，并且移除栈中不再有用的元素。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即最大值可以通过两个子区间内的最优解组合得到",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即对于任意一对建筑物 i 和 j (i < j)，(h_i + h_j) * (j - i) 的最大值可以通过子问题的最优解组合得到。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在遍历过程中，通过维护一个单调递减的栈来确保每次选择的建筑物高度和距离的乘积最大化。具体来说，当遇到更高的建筑物时，可以更新当前的最大值，并且移除栈中不再有用的元素。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即最大值可以通过两个子区间内的最优解组合得到"
+    ]
   }
 }

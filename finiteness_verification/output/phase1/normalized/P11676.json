@@ -1,0 +1,80 @@
+{
+  "problem_id": "P11676",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 750
+        },
+        "value_range": {
+          "min": -1000,
+          "max": 1000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "topological_ordering",
+            "description": "图的深度优先搜索（DFS）序必须为 [1, 2, ..., N]，即从节点 1 开始的 DFS 序列必须按顺序访问所有节点。",
+            "formal": "DFS(1) = [1, 2, ..., N]"
+          },
+          {
+            "name": "cost_constraint",
+            "description": "边的添加或移除有代价，且每条边的状态可以改变。具体来说，如果 a_{i,j} > 0，则边 (i, j) 不在图中，可以以代价 a_{i,j} 添加；如果 a_{i,j} < 0，则边 (i, j) 在图中，可以以代价 -a_{i,j} 移除。",
+            "formal": "cost(i, j) = |a_{i,j}|"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求使得给定序列成为可能的DFS序的最小总代价"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "DFS序生成过程中，节点访问顺序满足拓扑序不变量，即每个节点的访问时间严格早于其所有后代节点的访问时间。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "在DFS遍历过程中，节点的状态（未访问、已访问）按照一致的规则进行转移。一旦一个节点被标记为已访问，则该状态不会改变。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解组合得到。具体来说，使[1,2,...,N]成为可能的DFS序的最小代价问题可以分解为多个边添加或移除的子问题，每个子问题的最优解共同构成全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

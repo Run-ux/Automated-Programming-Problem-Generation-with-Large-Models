@@ -1,0 +1,133 @@
+{
+  "problem_id": "P14349",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 3,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "选择的蛋糕必须是不同的（即不能重复选择同一块蛋糕）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "circular_distance_constraint",
+        "description": "环形排列中，相邻元素的颜色深度之差的绝对值之和需要最小化",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "完整蛋糕的美丽值定义为所有选择的蛋糕价值之和减去相邻蛋糕颜色深度之差的绝对值之和",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "选择的蛋糕必须是不同的（即不能重复选择同一块蛋糕）"
+            },
+            {
+              "name": "circular_distance_constraint",
+              "description": "环形排列中，相邻元素的颜色深度之差的绝对值之和需要最小化",
+              "formal": "minimize(∑_{j=1}^{M} |C_{k_j} - C_{k_{j+1}}|) where k_{M+1} = k_1"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "完整蛋糕的美丽值定义为所有选择的蛋糕价值之和减去相邻蛋糕颜色深度之差的绝对值之和",
+              "formal": "maximize(∑_{j=1}^{M} V_{k_j} - ∑_{j=1}^{M} |C_{k_j} - C_{k_{j+1}}|)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化所选元素的权值和减去相邻元素属性差绝对值之和"
+        }
+      }
+    ],
+    "description": "最大化所选元素的权值和减去相邻元素属性差绝对值之和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解组合得到，即通过选择不同的蛋糕组合成环形，并计算其美丽值，可以分解为多个子问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "cycle_invariant",
+        "description": "在环形排列中，每两个相邻蛋糕颜色深度之差的绝对值之和是一个不变量，无论蛋糕如何排列，这个值只与所选蛋糕的颜色深度有关。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优解可以通过子问题的最优解组合得到，即通过选择不同的蛋糕组合成环形，并计算其美丽值，可以分解为多个子问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "在环形排列中，每两个相邻蛋糕颜色深度之差的绝对值之和是一个不变量，无论蛋糕如何排列，这个值只与所选蛋糕的颜色深度有关。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

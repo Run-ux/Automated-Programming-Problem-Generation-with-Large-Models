@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -28,12 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "maximum_lifetime_constraint",
-            "description": "每个元素的死亡时间取决于其初始状态和后续操作的影响（如攻击、防御等）"
+            "name": "time_axis_processing",
+            "description": "每个僵尸的死亡时间必须根据游戏规则计算得出"
           },
           {
-            "name": "non_decreasing_sequence",
-            "description": "每秒处理一次，所有元素的状态更新必须按顺序进行"
+            "name": "time_axis_processing",
+            "description": "每秒钟的游戏处理必须按照给定的规则进行"
           }
         ]
       }
@@ -44,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_time",
-        "description": "求每个元素被处理完成的时间"
+        "type": "minimize_value",
+        "description": "求每个元素的最小生存时间"
       }
     }
   ],
@@ -54,9 +54,25 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个僵尸的死亡时间可以通过其与植物的交互过程中的局部最优解来确定",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "时间轴上的事件处理顺序单调递增，即每秒处理的事件按照时间顺序依次进行。",
+            "properties": {
+              "time_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "每个僵尸的死亡时间可以通过子问题（即前一时刻的状态）来确定，满足最优子结构性质。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：僵尸和植物的状态在每秒内根据规则进行更新，且状态转移具有一致性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,139 @@
+{
+  "problem_id": "GYM103993H",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "coverage",
+        "description": "所有区间必须覆盖整个范围（1到m）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "Monocarp读取的页面必须是连续的",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "coverage",
+              "description": "所有区间必须覆盖整个范围（1到m）",
+              "formal": "∪[a_i, b_i] = [1, m]"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "Monocarp读取的页面必须是连续的",
+              "formal": "存在一个区间[l, r]，使得l <= r且r - l + 1为最小值"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足条件的最小区间长度"
+        }
+      }
+    ],
+    "description": "求满足条件的最小区间长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过端点差值计算区间覆盖情况，确保每一页都被至少一个学生阅读",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：处理每个学生的阅读区间时，区间的右端点单调递增，确保有效合并和更新未覆盖的页面",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：选择最小的未覆盖区间进行填补，以保证总阅读页数最少",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过端点差值计算区间覆盖情况，确保每一页都被至少一个学生阅读",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：处理每个学生的阅读区间时，区间的右端点单调递增，确保有效合并和更新未覆盖的页面",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：选择最小的未覆盖区间进行填补，以保证总阅读页数最少",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

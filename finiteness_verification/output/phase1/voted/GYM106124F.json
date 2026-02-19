@@ -1,0 +1,141 @@
+{
+  "problem_id": "GYM106124F",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": false,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": false,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "图必须连通（所有节点可以通过边互相到达）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个节点的入度和出度必须符合给定的值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "不允许自环（节点不能指向自己）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "图必须连通（所有节点可以通过边互相到达）",
+              "formal": "G is weakly connected"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个节点的入度和出度必须符合给定的值",
+              "formal": "deg_in(v) = b_v and deg_out(v) = a_v for all v in V"
+            },
+            {
+              "name": "exclusion",
+              "description": "不允许自环（节点不能指向自己）",
+              "formal": "for all (u, v) in E, u != v"
+            },
+            {
+              "name": "exclusion",
+              "description": "不允许重边（两个节点之间不能有多条边）",
+              "formal": "for all (u, v) in E, (u, v) appears at most once"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一种构造方案，使得每个节点的入度和出度满足给定条件"
+        }
+      }
+    ],
+    "description": "判断是否存在一种构造方案，使得每个节点的入度和出度满足给定条件"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "flow_conservation",
+        "description": "流守恒：每个节点的入度和出度必须匹配给定的跟随者数量和被跟随者数量",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在重建图的过程中，需要保证图的弱连通性，即从任意一个节点出发可以到达其他所有节点",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "flow_conservation",
+              "description": "流守恒：每个节点的入度和出度必须匹配给定的跟随者数量和被跟随者数量",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在重建图的过程中，需要保证图的弱连通性，即从任意一个节点出发可以到达其他所有节点",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

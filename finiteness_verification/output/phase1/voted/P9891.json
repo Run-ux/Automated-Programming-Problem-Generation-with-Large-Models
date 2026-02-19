@@ -1,0 +1,130 @@
+{
+  "problem_id": "P9891",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": 0,
+            "max": 2
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": 0,
+      "max": 2
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制为 m 次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "每次操作的区间 [l, r] 必须满足 1 ≤ l ≤ r ≤ n，且区间内的所有网格要么是 BaoBao 的图案，要么是空的",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "不同的操作序列被视为不同的方案，即使它们最终达到相同的结果",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制为 m 次",
+              "formal": "m"
+            },
+            {
+              "name": "range_bound",
+              "description": "每次操作的区间 [l, r] 必须满足 1 ≤ l ≤ r ≤ n，且区间内的所有网格要么是 BaoBao 的图案，要么是空的",
+              "formal": "∀i ∈ [l, r], a_i ∈ {0, 2}"
+            },
+            {
+              "name": "distinctness",
+              "description": "不同的操作序列被视为不同的方案，即使它们最终达到相同的结果",
+              "formal": "∃k ∈ [1, m], (a_k ≠ c_k) ∨ (b_k ≠ d_k)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足条件的操作序列数（模10^9+7）"
+        }
+      }
+    ],
+    "description": "求满足条件的操作序列数（模10^9+7）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，即通过多次操作将所有BaoBao的图案清除的方案数可以由更小规模的问题（较少的操作次数或较短的区间）的解组合而成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：在处理连续的BaoBao图案时，可以将相邻的合法操作区间合并为一个更大的区间进行处理，而不影响最终结果。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即通过多次操作将所有BaoBao的图案清除的方案数可以由更小规模的问题（较少的操作次数或较短的区间）的解组合而成。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：在处理连续的BaoBao图案时，可以将相邻的合法操作区间合并为一个更大的区间进行处理，而不影响最终结果。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

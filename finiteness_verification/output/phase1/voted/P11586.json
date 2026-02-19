@@ -1,0 +1,171 @@
+{
+  "problem_id": "P11586",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 500000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 500000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "decrease_only_constraint",
+        "description": "柱子的底部位置必须严格递增（即 D 数组严格递增）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "松鼠在每根柱子上的高度不能超过该柱子的高度",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_adjacency_constraint",
+        "description": "松鼠在飞行过程中不能碰到地面，即高度不能为负",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "松鼠必须依次经过所有柱子，从左到右",
+        "confidence": "1/1"
+      },
+      {
+        "name": "fixed_position_constraint",
+        "description": "松鼠的初始高度和最终高度分别固定在 L 和 R",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "decrease_only_constraint",
+              "description": "柱子的底部位置必须严格递增（即 D 数组严格递增）",
+              "formal": "D[i] < D[i+1] for all 1 ≤ i < N"
+            },
+            {
+              "name": "range_bound",
+              "description": "松鼠在每根柱子上的高度不能超过该柱子的高度",
+              "formal": "0 ≤ height[i] ≤ H[i] for all 1 ≤ i ≤ N"
+            },
+            {
+              "name": "non_adjacency_constraint",
+              "description": "松鼠在飞行过程中不能碰到地面，即高度不能为负",
+              "formal": "height[i] - (D[j] - D[i]) ≥ 0 for all 1 ≤ i < j ≤ N"
+            },
+            {
+              "name": "path_constraint",
+              "description": "松鼠必须依次经过所有柱子，从左到右",
+              "formal": "访问顺序为 1, 2, ..., N"
+            },
+            {
+              "name": "fixed_position_constraint",
+              "description": "松鼠的初始高度和最终高度分别固定在 L 和 R",
+              "formal": "height[1] = L, height[N] = R"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求从起点到终点的最小费用路径"
+        }
+      }
+    ],
+    "description": "求从起点到终点的最小费用路径"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，到达第 i 根柱子的最小费用可以通过到达前 i-1 根柱子的最小费用来计算。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：松鼠在每根柱子上的高度变化是单调递减或递增的。从一根柱子飞到另一根柱子时，高度会下降；在柱子上可以向上爬或向下滑，但不能超过柱子的高度。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：松鼠在每根柱子上的状态（高度）和费用可以通过前一根柱子的状态和费用来确定。状态转移的一致性保证了算法的正确性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，到达第 i 根柱子的最小费用可以通过到达前 i-1 根柱子的最小费用来计算。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：松鼠在每根柱子上的高度变化是单调递减或递增的。从一根柱子飞到另一根柱子时，高度会下降；在柱子上可以向上爬或向下滑，但不能超过柱子的高度。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：松鼠在每根柱子上的状态（高度）和费用可以通过前一根柱子的状态和费用来确定。状态转移的一致性保证了算法的正确性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

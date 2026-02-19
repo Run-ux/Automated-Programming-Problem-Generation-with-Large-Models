@@ -1,0 +1,91 @@
+{
+  "problem_id": "P9620",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false,
+          "directed": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "树结构的连通性约束，即所有节点通过边连接形成一棵树"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "现实联通体的子集约束，即对于树上任意两个现实事情，其在树上简单路径（包括端点）中的事情都属于现实联通体"
+          },
+          {
+            "name": "subset_size_minimum_constraint",
+            "description": "极小现实连通体的大小约束，即包含事情数最少的现实连通体"
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移约束，即每次操作后事情的状态从妄想变为现实或从现实变为妄想"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制，即每次变动后需要计算额外让几个事情变成妄想，才能使最小现实联通体中深度最小的事情的位置发生改变，或使当前头脑中不存在现实事情"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "求使最小现实连通体中深度最小的事情的位置发生改变或使当前不存在现实事情所需的最少操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次操作后，现实联通体的状态可以通过子问题的解进行更新。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最小现实连通体的解可以由其子树中的最优解组合而成。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在树结构中，深度较小的事情总是先于深度较大的事情被处理。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

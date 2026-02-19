@@ -1,0 +1,74 @@
+{
+  "problem_id": "P2647",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 3000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 200000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "accumulated_sum_constraint",
+            "description": "选择的每个元素会对其后选择的所有元素的收益产生累积减少的影响",
+            "formal": "对于选择的物品序列 i1, i2, ..., ik，总收益为 W[i1] + (W[i2] - R[i1]) + (W[i3] - R[i1] - R[i2]) + ... + (W[ik] - R[i1] - R[i2] - ... - R[i(k-1)])"
+          },
+          {
+            "name": "reverse_ordering_constraint",
+            "description": "选择物品的顺序影响最终收益，需要找到最优的选取顺序以最大化总收益",
+            "formal": "存在一个最优排列 P 使得 Σ(W[P[j]] - Σ(R[P[i]]) for i < j) 最大化"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化选择物品后的总收益"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，选择某个物品后的最大收益可以由剩余物品的最大收益加上当前物品的收益减去已选物品的总减少值来确定。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，总是选择当前情况下局部最优的物品（即收益减去减少值最大的物品），最终能够得到全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "problem_id": "GYM102001B",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "图的结构为树（无环连通图）"
+          },
+          {
+            "name": "cyclic_shift_constraint",
+            "description": "相邻节点旋转方向相反，且旋转角度相同"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作类型限制：取出、放回、旋转齿轮"
+          },
+          {
+            "name": "non_negative_pairwise_product",
+            "description": "能量计算规则：旋转齿轮所需能量为旋转齿轮数量乘以旋转角度"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "齿轮箭头的角度按360度取模"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化每次旋转操作所需能量，并计算所有齿轮最终箭头角度之和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：齿轮的旋转状态可以通过其相邻齿轮的状态推导，且这种状态转移满足树结构上的传递性。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：当两个相邻齿轮发生相对旋转时，它们的旋转方向相反但旋转角度相同，这保证了整个系统的能量守恒。",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在进行旋转操作时，每个齿轮的旋转角度总和为零（考虑方向），即流入和流出的旋转角度相等。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

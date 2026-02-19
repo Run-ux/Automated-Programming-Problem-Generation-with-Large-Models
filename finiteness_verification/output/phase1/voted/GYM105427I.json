@@ -1,0 +1,149 @@
+{
+  "problem_id": "GYM105427I",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distance_bound",
+        "description": "绳子的长度限制了其能够到达的最远距离，即绳子的末端不能超过给定的长度 d。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "绳子在旋转过程中只能被最近的支柱所阻挡，并且会绕着该支柱继续旋转。这意味着绳子的运动路径是连续的，并且每次旋转都会选择最近的支柱。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "绳子不能穿过任何支柱，一旦绳子碰到一个支柱，就会被该支柱捕获并绕其旋转。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distance_bound",
+              "description": "绳子的长度限制了其能够到达的最远距离，即绳子的末端不能超过给定的长度 d。",
+              "formal": "对于所有点 (x, y)，必须满足 sqrt(x^2 + y^2) <= d"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "绳子在旋转过程中只能被最近的支柱所阻挡，并且会绕着该支柱继续旋转。这意味着绳子的运动路径是连续的，并且每次旋转都会选择最近的支柱。",
+              "formal": "对于每个支柱 (x_i, y_i)，如果绳子的末端可以到达它，则绳子会被该支柱捕获并绕其旋转。"
+            },
+            {
+              "name": "exclusion",
+              "description": "绳子不能穿过任何支柱，一旦绳子碰到一个支柱，就会被该支柱捕获并绕其旋转。",
+              "formal": "对于所有支柱 (x_i, y_i)，绳子的路径不能穿过这些点。"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断绳子是否会缠绕在某个支柱上，并输出该支柱的索引，如果没有缠绕则输出-1"
+        }
+      }
+    ],
+    "description": "判断绳子是否会缠绕在某个支柱上，并输出该支柱的索引，如果没有缠绕则输出-1"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "绳子旋转半径单调递减，每次碰撞后新的旋转中心距离原点更近",
+        "confidence": "1/1",
+        "properties": {
+          "radius_decreasing": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "绳子的旋转中心从一个状态转移到另一个状态时，始终满足新的旋转中心是当前绳子能够到达的最近的支柱",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "绳子在旋转过程中遇到的支柱顺序具有拓扑序性质，即每个支柱仅被访问一次且按照绳子长度递减的顺序访问",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "绳子旋转半径单调递减，每次碰撞后新的旋转中心距离原点更近",
+              "properties": {
+                "radius_decreasing": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "绳子的旋转中心从一个状态转移到另一个状态时，始终满足新的旋转中心是当前绳子能够到达的最近的支柱",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "绳子在旋转过程中遇到的支柱顺序具有拓扑序性质，即每个支柱仅被访问一次且按照绳子长度递减的顺序访问",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

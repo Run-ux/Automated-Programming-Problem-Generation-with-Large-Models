@@ -2,14 +2,14 @@
   "problem_id": "GYM100151K",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_exclusion",
-        "description": "相邻的括号对不能构成合法的括号序列（即不能形成 '()'）",
+        "name": "exclusion",
+        "description": "相邻的括号对不能是直接相连的开闭括号对，即不允许出现 '()' 这种形式",
         "confidence": "1/1"
       },
       {
-        "name": "subset_inclusion",
-        "description": "只有在特定上下文中的括号才被视为有效（即不在合法括号序列中的括号才被视为有效）",
+        "name": "pattern_matching",
+        "description": "只有满足特定模式的括号才被认为是表情符号的一部分，具体模式为：括号之间必须有其他字符分隔",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +56,12 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_exclusion",
-              "description": "相邻的括号对不能构成合法的括号序列（即不能形成 '()'）"
+              "name": "exclusion",
+              "description": "相邻的括号对不能是直接相连的开闭括号对，即不允许出现 '()' 这种形式"
             },
             {
-              "name": "subset_inclusion",
-              "description": "只有在特定上下文中的括号才被视为有效（即不在合法括号序列中的括号才被视为有效）"
+              "name": "pattern_matching",
+              "description": "只有满足特定模式的括号才被认为是表情符号的一部分，具体模式为：括号之间必须有其他字符分隔"
             }
           ]
         }
@@ -77,28 +77,46 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "统计满足条件的括号数量"
+          "description": "求满足条件的括号数量"
         }
       }
     ],
-    "description": "统计满足条件的括号数量"
+    "description": "求满足条件的括号数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：通过遍历字符串，维护当前括号的匹配状态，确保每个括号是否属于表情符号的判断基于前一个字符的状态。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和或计数器的方式，记录并累加符合条件的括号数量，使得最终结果可以通过区间端点差值计算得出。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "当前状态仅依赖于有限的前序状态，通过遍历字符串并维护括号匹配状态来确定每个括号是否属于表情符号的一部分。",
-          "properties": {
-            "dependency_on_previous_states": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过遍历字符串，维护当前括号的匹配状态，确保每个括号是否属于表情符号的判断基于前一个字符的状态。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和或计数器的方式，记录并累加符合条件的括号数量，使得最终结果可以通过区间端点差值计算得出。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "当前状态仅依赖于有限的前序状态，通过遍历字符串并维护括号匹配状态来确定每个括号是否属于表情符号的一部分。"
+    ]
   }
 }

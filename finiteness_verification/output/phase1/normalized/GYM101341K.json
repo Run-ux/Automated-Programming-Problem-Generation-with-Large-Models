@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,14 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "pairwise_exclusion",
-            "description": "选择的区间不能重叠（活动选择约束）",
-            "formal": "对于所有选中的区间 i 和 j (i ≠ j)，有 b_i ≤ a_j 或 b_j ≤ a_i"
+            "name": "intersection",
+            "description": "选择的区间不能重叠（时间不冲突）"
           },
           {
-            "name": "global_optimization_objective",
-            "description": "在总效用最大化的前提下，使总时长最小化（多目标优化约束）",
-            "formal": "最大化 ∑c_i 的同时，最小化 ∑(b_i - a_i)"
+            "name": "fixed_start_node",
+            "description": "每个区间的开始时间必须小于结束时间"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "在总用处最大的情况下，总时长最小"
           }
         ]
       }
@@ -46,8 +48,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_value",
-        "description": "最大化选择的子集的权值和，同时在权值和相同的情况下最小化总时长"
+        "type": "multi_objective",
+        "description": "最大化一组不重叠区间的选择，使得这些区间的权值和最大且在权值和相同的情况下总长度最小"
       }
     }
   ],
@@ -56,12 +58,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，适用于动态规划方法解决该问题",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinability": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择参加哪些比赛时，当前最优解依赖于之前已解决的子问题的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，总是选择当前情况下最有用的比赛（或在有用性相同的情况下选择持续时间最短的比赛），这种局部最优选择最终能够导致全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：比赛的时间段可以看作是区间，区间的总长度（即总持续时间）可以通过各个区间的长度累加得到。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

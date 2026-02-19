@@ -1,0 +1,155 @@
+{
+  "problem_id": "P14992",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 3,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 18446744073709551615
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 18446744073709551615
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "modular_arithmetic",
+        "description": "所有加减乘运算结果都会自动对 2^64 取模",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "运算次数不超过 10^4 次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "fixed_position_constraint",
+        "description": "初始时 v_0 可以为 [0, C) 内任意值，v_1, v_2, ..., v_{n-1} 均为 0",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "modular_arithmetic",
+              "description": "所有加减乘运算结果都会自动对 2^64 取模",
+              "formal": "result = (a op b) % 2^64"
+            },
+            {
+              "name": "operation_limit",
+              "description": "运算次数不超过 10^4 次",
+              "formal": "number_of_operations <= 10^4"
+            },
+            {
+              "name": "fixed_position_constraint",
+              "description": "初始时 v_0 可以为 [0, C) 内任意值，v_1, v_2, ..., v_{n-1} 均为 0",
+              "formal": "v_0 ∈ [0, C), v_i = 0 for i in [1, n-1]"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "取模运算的除数必须是 M_1",
+              "formal": "A = B % M_1"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "M_1 和 M_2 必须是奇数",
+              "formal": "M_1 % 2 == 1 and M_2 % 2 == 1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造一系列运算步骤，使得初始值经过这些运算后对给定模数取模的结果正确"
+        }
+      }
+    ],
+    "description": "构造一系列运算步骤，使得初始值经过这些运算后对给定模数取模的结果正确"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "modular_invariance",
+        "description": "所有运算结果对 $2^{64}$ 取模，保证了数值范围的有限性和一致性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "每个存储单元的状态通过加法、减法、乘法和取模运算进行转移，且状态转移满足模数不变性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最终结果可以通过一系列子问题（即中间状态）的最优解组合得到，每个子问题的解都是在当前模数下的最优解",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "modular_invariance",
+              "description": "所有运算结果对 $2^{64}$ 取模，保证了数值范围的有限性和一致性",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "每个存储单元的状态通过加法、减法、乘法和取模运算进行转移，且状态转移满足模数不变性",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最终结果可以通过一系列子问题（即中间状态）的最优解组合得到，每个子问题的解都是在当前模数下的最优解",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

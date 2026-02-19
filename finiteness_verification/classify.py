@@ -81,6 +81,56 @@ def build_classification_prompt(
     
     labels_str = "\n".join([f"- {label}" for label in labels])
     
+    if dimension == "invariant":
+        system_prompt = f"""你是编程竞赛题目分类专家。
+
+你的任务是将题目归类到预定义的 {dim_name} 类别中。
+
+分类规则：
+1. 可以选择多个匹配的类别
+2. 如果没有合适的类别，选择 "OTHER"
+3. 输出严格的 JSON 格式：{{"categories": ["类别1", "类别2"], "confidence": "high/medium/low"}}
+4. 不要输出解释文字，只输出 JSON
+5. 分类时关注题目的算法本质，忽略具体情境包装（如角色名、物品名等），从算法/数据结构角度选择类别
+
+置信度标准：
+- high: 非常确定该类别
+- medium: 可能是该类别，但不完全确定
+- low: 勉强匹配或选择 OTHER
+"""
+
+        user_prompt = f"""请将以下题目归类到 {dim_name} 的候选类别中（可多选）。
+
+候选类别列表：
+{labels_str}
+- OTHER（如果上述类别都不合适）
+
+题目信息：
+标题：{problem.get('title', 'N/A')}
+
+题目描述：
+{problem.get('description', '')}
+
+输入格式：
+{problem.get('input', '')}
+
+输出格式：
+{problem.get('output', '')}
+
+约束条件：
+{problem.get('constraints', '')}
+
+---
+
+请输出 JSON：
+{{
+    "categories": ["从候选列表中选择的类别（可多个）或 OTHER"],
+    "confidence": "high | medium | low"
+}}
+"""
+
+        return system_prompt, user_prompt
+
     user_prompt = f"""请将以下题目归类到 {dim_name} 的候选类别中。
 
 候选类别列表：
@@ -133,8 +183,23 @@ def classify_single_problem(
     
     try:
         result = client.chat_json(system_prompt, user_prompt)
-        category = result.get("category", "OTHER")
         confidence = result.get("confidence", "low")
+        if dimension == "invariant":
+            categories = result.get("categories", [])
+            if isinstance(categories, str):
+                categories = [categories]
+            if not categories:
+                categories = ["OTHER"]
+            return {
+                "problem_id": problem["problem_id"],
+                "source": problem.get("source", "unknown"),
+                "dimension": dimension,
+                "categories": categories,
+                "confidence": confidence,
+                "status": "success",
+            }
+
+        category = result.get("category", "OTHER")
         
         return {
             "problem_id": problem["problem_id"],
@@ -205,11 +270,18 @@ def classify_all_problems(
                 client, problem, dim, labels, rate_limiter, logger
             )
             
-            classifications[dim] = {
-                "category": result["category"],
-                "confidence": result["confidence"],
-                "status": result["status"],
-            }
+            if dim == "invariant":
+                classifications[dim] = {
+                    "categories": result.get("categories", ["OTHER"]),
+                    "confidence": result["confidence"],
+                    "status": result["status"],
+                }
+            else:
+                classifications[dim] = {
+                    "category": result["category"],
+                    "confidence": result["confidence"],
+                    "status": result["status"],
+                }
             
             completed += 1
         

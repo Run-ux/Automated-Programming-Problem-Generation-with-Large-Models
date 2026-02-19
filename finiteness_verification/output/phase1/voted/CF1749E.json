@@ -2,16 +2,16 @@
   "problem_id": "CF1749E",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
-            "min": 4,
+            "min": 2,
             "max": 400000
           },
           "value_range": {
@@ -25,7 +25,7 @@
       }
     ],
     "length": {
-      "min": 4,
+      "min": 2,
       "max": 400000
     },
     "value_range": {
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_exclusion",
-        "description": "相邻节点不能同时取值（图着色约束）",
+        "name": "adjacency_relation",
+        "description": "相邻节点不能同时存在元素（图着色约束）",
         "confidence": "1/1"
       },
       {
-        "name": "edge_exclusion_constraint",
-        "description": "从图的顶部到底部不存在路径（连通性约束）",
+        "name": "path_constraint",
+        "description": "从顶行到底行不存在路径（连通性约束）",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_exclusion",
-              "description": "相邻节点不能同时取值（图着色约束）"
+              "name": "adjacency_relation",
+              "description": "相邻节点不能同时存在元素（图着色约束）",
+              "formal": "对于任意两个相邻节点 u 和 v，不能同时有 cactus(u) = 1 且 cactus(v) = 1"
             },
             {
-              "name": "edge_exclusion_constraint",
-              "description": "从图的顶部到底部不存在路径（连通性约束）"
+              "name": "path_constraint",
+              "description": "从顶行到底行不存在路径（连通性约束）",
+              "formal": "不存在从顶行到底行的路径 P，使得 P 上的所有节点都不包含 cactus"
             }
           ]
         }
@@ -69,34 +71,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "minimize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的方案，使得从顶部到底部没有路径，并且新增的障碍物数量最少"
+          "type": "minimize_count",
+          "description": "最小化在给定网格中添加障碍物的数量，以阻断从顶部到底部的路径"
         }
       }
     ],
-    "description": "构造一个满足条件的方案，使得从顶部到底部没有路径，并且新增的障碍物数量最少"
+    "description": "最小化在给定网格中添加障碍物的数量，以阻断从顶部到底部的路径"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，通过将问题分解为更小的子问题（例如，考虑每一行或每一列的最优放置），可以逐步构建整个问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：局部最优选择可以导致全局最优解。在本题中，每次选择一个位置放置新的仙人掌时，选择当前最优的位置（即最能阻止路径的位置）可以逐步构建出全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：状态机或动态规划中的状态转移具有一致性。在本题中，通过定义合适的状态（例如，某一行或某一列的仙人掌放置情况），可以确保状态之间的转移满足题目要求的条件。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即在构建最小数量的仙人掌墙时，每个局部区域的最优解可以组合成全局最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，通过将问题分解为更小的子问题（例如，考虑每一行或每一列的最优放置），可以逐步构建整个问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：局部最优选择可以导致全局最优解。在本题中，每次选择一个位置放置新的仙人掌时，选择当前最优的位置（即最能阻止路径的位置）可以逐步构建出全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：状态机或动态规划中的状态转移具有一致性。在本题中，通过定义合适的状态（例如，某一行或某一列的仙人掌放置情况），可以确保状态之间的转移满足题目要求的条件。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即在构建最小数量的仙人掌墙时，每个局部区域的最优解可以组合成全局最优解。"
+    ]
   }
 }

@@ -6,19 +6,29 @@
   "result": {
     "constraints": [
       {
-        "name": "path_inclusion_or_adjacency",
-        "description": "操作0中，所有在路径P(u, v)上或与路径P(u, v)上的结点相邻的结点w的绚丽度l_w将被赋值为k。",
-        "formal": "∀ w ∈ P(u, v) ∪ {x | ∃ y ∈ P(u, v), (x, y) ∈ E}, l_w = k"
+        "name": "path_constraint",
+        "description": "操作涉及树上从 u 到 v 的路径上的结点（含 u, v）构成的集合 P(u, v)。",
+        "formal": "P(u, v) = {w | w 在从 u 到 v 的路径上}"
       },
       {
-        "name": "sequence_construction",
-        "description": "操作1中，从u到v的路径上，每个结点w及其不在路径P(u, v)上的邻接点x的绚丽度l_w和l_x按顺序加入序列S。",
-        "formal": "S = [l_w, l_x1, l_x2, ...] where w ∈ P(u, v) and x1, x2, ... are neighbors of w not in P(u, v)"
+        "name": "adjacency_relation",
+        "description": "在操作 1 中，按标号从小到大枚举 w 的邻接点 x，若 x 不在 P(u, v) 中，则将 l_x 加入序列 S 的末尾。",
+        "formal": "对于 w ∈ P(u, v)，若 x 是 w 的邻接点且 x ∉ P(u, v)，则将 l_x 加入 S"
       },
       {
-        "name": "max_subarray_sum",
-        "description": "对于每次操作1，需要求出序列S的最大可空子段和。",
-        "formal": "max(∑ S[i:j]) for all 0 ≤ i ≤ j ≤ |S|, including the case where i = j (empty subarray)"
+        "name": "subsequence_constraint",
+        "description": "操作 1 中，需要求出序列 S 的最大可空子段和。",
+        "formal": "max(∑S[i:j] for i ≤ j)"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个结点的度数受树结构限制。",
+        "formal": "deg(w) ≤ n - 1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每次操作 0 将所有属于 P(u, v) 或其邻接点的结点的绚丽度赋值为 k。",
+        "formal": "对于 w ∈ P(u, v) 或存在邻接点 x ∈ P(u, v)，l_w = k"
       }
     ]
   },

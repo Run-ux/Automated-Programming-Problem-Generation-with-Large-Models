@@ -2,14 +2,14 @@
   "problem_id": "GYM103466D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 2,
             "max": 200
@@ -19,7 +19,8 @@
             "max": 1
           },
           "properties": {
-            "inferred": true
+            "ordered": false,
+            "connected": true
           }
         }
       }
@@ -33,29 +34,30 @@
       "max": 1
     },
     "properties": {
-      "inferred": true
+      "ordered": false,
+      "connected": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_positions",
-        "description": "所有洞的位置互不相同",
+        "name": "distinctness",
+        "description": "所有给定的洞的位置是唯一的",
         "confidence": "1/1"
       },
       {
-        "name": "coordinate_fixed_point",
-        "description": "初始位置不在任何洞上",
+        "name": "connectivity",
+        "description": "棋盘上的每个洞必须是可达的，否则输出 GG",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "每次移动到相邻的格子（共享一条边）",
+        "name": "adjacency_relation",
+        "description": "PRD 只能移动到相邻的单元格（共享一条边）",
         "confidence": "1/1"
       },
       {
-        "name": "path_length_constraint",
-        "description": "到达有洞的格子时停止移动",
+        "name": "exclusion",
+        "description": "PRD 的初始位置不在任何一个洞上",
         "confidence": "1/1"
       }
     ],
@@ -66,24 +68,20 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_positions",
-              "description": "所有洞的位置互不相同",
-              "formal": "∀i, j (1 ≤ i < j ≤ k), (x_i, y_i) ≠ (x_j, y_j)"
+              "name": "distinctness",
+              "description": "所有给定的洞的位置是唯一的"
             },
             {
-              "name": "coordinate_fixed_point",
-              "description": "初始位置不在任何洞上",
-              "formal": "(r, c) ∉ {(x_1, y_1), (x_2, y_2), ..., (x_k, y_k)}"
+              "name": "connectivity",
+              "description": "棋盘上的每个洞必须是可达的，否则输出 GG"
             },
             {
-              "name": "adjacent_difference",
-              "description": "每次移动到相邻的格子（共享一条边）",
-              "formal": "从 (x, y) 移动到 (x+1, y) 或 (x-1, y) 或 (x, y+1) 或 (x, y-1)"
+              "name": "adjacency_relation",
+              "description": "PRD 只能移动到相邻的单元格（共享一条边）"
             },
             {
-              "name": "path_length_constraint",
-              "description": "到达有洞的格子时停止移动",
-              "formal": "如果 (x, y) 是一个洞，则停止移动"
+              "name": "exclusion",
+              "description": "PRD 的初始位置不在任何一个洞上"
             }
           ]
         }
@@ -91,37 +89,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "maximize_probability",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求从起点到每个终点的期望最短路径长度"
+          "type": "maximize_probability",
+          "description": "求从给定点出发到达每个目标点的期望时间"
         }
       }
     ],
-    "description": "求从起点到每个终点的期望最短路径长度"
+    "description": "求从给定点出发到达每个目标点的期望时间"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构建，每个子问题的解是独立且最优的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移的一致性和合法性保持不变。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinability": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，每个子问题的解是独立且最优的。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移的一致性和合法性保持不变。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的"
+    ]
   }
 }

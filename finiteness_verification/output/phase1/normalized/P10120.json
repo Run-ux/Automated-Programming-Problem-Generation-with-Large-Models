@@ -1,0 +1,79 @@
+{
+  "problem_id": "P10120",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "submatrix_transformation",
+            "description": "区间内元素批量更新（操作1）",
+            "formal": "A[l:r] = A[l:r] + k, A[1:l-1] = A[1:l-1] + k, A[r+1:n] = A[r+1:n] + k"
+          },
+          {
+            "name": "maximum_destruction_count",
+            "description": "区间内连续相同值的元素批量删除（操作2）",
+            "formal": "if A[i:i+k-1] are all the same, remove A[i:i+k-1]"
+          },
+          {
+            "name": "distinctness",
+            "description": "查询存活元素数量（操作3）",
+            "formal": "count(A[i] != 0 for i in range(1, n+1))"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "动态维护并查询满足条件的元素个数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_mergeable",
+            "description": "区间信息可通过子区间合并，适用于线段树等数据结构维护区间操作和查询",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移一致性，每次操作后bot的状态（存活或被击毁）能够正确更新并保持一致",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

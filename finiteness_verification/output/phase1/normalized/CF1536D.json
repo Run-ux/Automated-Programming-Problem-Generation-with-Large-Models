@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -29,13 +29,8 @@
         "constraints": [
           {
             "name": "median_constraint",
-            "description": "给定数组 b 的每个元素 b_i 必须是某个数组 a 的前 2i-1 个元素的中位数",
-            "formal": "∀ i ∈ [1, n], b_i = median(a_1, a_2, ..., a_{2i-1})"
-          },
-          {
-            "name": "non_decreasing_median_constraint",
-            "description": "数组 b 的元素必须是非递减的，即 b_i ≤ b_{i+1} 对所有 i 成立",
-            "formal": "∀ i ∈ [1, n-1], b_i ≤ b_{i+1}"
+            "description": "数组 b 的每个元素 b_i 必须是某个数组 a 的前 2i-1 个元素的中位数",
+            "formal": "∀i, b_i = median(a_1, a_2, ..., a_{2i-1})"
           }
         ]
       }
@@ -46,8 +41,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在一个数组，使得给定的数组是其每个前缀的中位数序列"
+        "type": "feasibility",
+        "description": "判断是否存在一个数组，使得给定的数组是其所有奇数长度前缀的中位数序列"
       }
     }
   ],
@@ -56,9 +51,21 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：当前元素的合法性依赖于前序元素的合法性，且可以通过子问题的解组合而成",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "数组b的元素在构造原数组a的过程中，满足单调性。即对于任意i，b_i是a_1, a_2, ..., a_{2i-1}的中位数，且b_i的值不会超过其前驱和后继的范围。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解来构建。具体来说，如果b是一个有效的OmkArray，则对于每个b_i，存在一个a使得b_i是a_1, a_2, ..., a_{2i-1}的中位数，并且这个a可以由更小的子问题递归地构建。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

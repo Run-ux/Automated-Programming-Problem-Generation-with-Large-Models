@@ -1,0 +1,82 @@
+{
+  "problem_id": "P4719",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": -100,
+          "max": 100
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "independence",
+            "description": "选取的节点集合必须是独立集（即任意两个节点之间没有边相连）"
+          },
+          {
+            "name": "connectivity",
+            "description": "图必须是一棵树，即连通且无环"
+          },
+          {
+            "name": "state_transition",
+            "description": "每次操作后需要重新计算最大权独立集的权值大小"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求树的最大权独立集的权值和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：树的最大权独立集问题可以通过其子树的最大权独立集问题的解来构建，即每个节点的最优解依赖于其子节点的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在动态规划过程中，当前节点的状态（选择或不选择该节点）由其子节点的状态决定，并且这种状态转移关系在整个算法执行过程中保持一致。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在计算某个节点的最大权独立集时，其子树之间的最大权独立集问题是相互独立的，不会互相影响。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

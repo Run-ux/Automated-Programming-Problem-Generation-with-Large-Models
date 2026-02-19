@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 20
@@ -26,14 +26,12 @@
       "result": {
         "constraints": [
           {
-            "name": "value_range_constraint",
-            "description": "选取元素的值不超过给定上限 X",
-            "formal": "∀i, a_i ≤ X"
+            "name": "subset_constraint",
+            "description": "选取的数必须是给定集合的子集（即只能选择朋友的有趣数字及其倍数）"
           },
           {
-            "name": "distinct_element_count_constraint",
-            "description": "计算在给定范围内，能够满足至少一个条件的元素数量",
-            "formal": "|{a | ∃i, a ≡ a_i (mod k) for some k and 1 ≤ a ≤ X}|"
+            "name": "range_bound",
+            "description": "选取的数必须在给定的范围内（不超过 X）"
           }
         ]
       }
@@ -45,7 +43,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计在给定范围内满足条件的整数数量"
+        "description": "求满足条件的不同数的数量"
       }
     }
   ],
@@ -54,12 +52,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinability": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即每个子问题的解可以组合成原问题的解。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：各个子问题之间相互独立，一个子问题的解不影响其他子问题的解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

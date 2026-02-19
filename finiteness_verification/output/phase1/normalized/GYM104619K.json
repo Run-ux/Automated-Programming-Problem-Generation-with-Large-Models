@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 5000000
@@ -28,8 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "substring_frequency_optimization",
-            "description": "计算字符串中特定模式子串的数量（允许重叠）"
+            "name": "pattern_matching",
+            "description": "字符串中包含特定模式的子串（'kick'）",
+            "formal": "s[i:i+4] == 'kick'"
+          },
+          {
+            "name": "intersection",
+            "description": "允许子串重叠",
+            "formal": "i < j <= i + 3"
           }
         ]
       }
@@ -41,7 +47,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计满足条件的子串数量"
+        "description": "求满足条件的子串数量"
       }
     }
   ],
@@ -50,9 +56,20 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间可合并性：通过维护前缀和或类似结构，可以高效计算任意子区间的属性值（如'kick'出现次数），满足区间信息可通过端点差值计算的性质",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和计算任意子串的出现次数，满足区间和可通过端点差值计算",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在遍历字符串时，当前字符的状态（是否为 'k', 'i', 'c', 'k'）决定了下一个状态的转移，从而形成一个有限状态自动机",
+            "properties": {
+              "finite_state_automaton": true
+            }
+          }
+        ]
       }
     }
   ]

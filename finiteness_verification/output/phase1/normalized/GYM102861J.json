@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 4,
           "max": 200
@@ -26,16 +26,19 @@
       "result": {
         "constraints": [
           {
-            "name": "non_collinear_point_set",
-            "description": "所有点必须共线（即所有点在同一条直线上）"
+            "name": "linear_relation",
+            "description": "所有点必须共线（即所有点的斜率相同）",
+            "formal": "对于所有点 (x1, y1), (x2, y2), ..., (xn, yn)，(y2 - y1) / (x2 - x1) = (y3 - y1) / (x3 - x1) = ... = (yn - y1) / (xn - x1)"
           },
           {
-            "name": "pairwise_interaction_constraint",
-            "description": "每个整数必须使用恰好与其在输入中出现次数相同的次数"
+            "name": "frequency_bound",
+            "description": "每个值必须使用其在输入列表中出现的次数",
+            "formal": "对于每个值 I，I 在输出中的出现次数等于其在输入列表中的出现次数"
           },
           {
-            "name": "distinct_subset_selection",
-            "description": "两个数据集被认为是不同的，当且仅当存在一个点在一个数据集中出现的次数多于另一个数据集"
+            "name": "distinctness",
+            "description": "两个数据集不同当且仅当存在一个点在一个数据集中出现的次数与另一个数据集中不同",
+            "formal": "对于两个数据集 D1 和 D2，D1 ≠ D2 当且仅当存在一个点 P，使得 P 在 D1 中的出现次数不等于 P 在 D2 中的出现次数"
           }
         ]
       }
@@ -46,8 +49,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足条件的方案数量"
+        "type": "enumeration",
+        "description": "求满足条件的方案数（模10^9+7）"
       }
     }
   ],
@@ -56,12 +59,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解都是全局解的一部分",
-        "properties": {
-          "subproblem_independence": false,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即通过组合满足条件的点对来形成最终的解。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子问题（即每对点）的解是独立的，不受其他子问题的影响。",
+            "properties": {}
+          },
+          {
+            "name": "geometric_collinearity",
+            "description": "共线性约束：所有点必须共线，这是整个问题的核心约束条件。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

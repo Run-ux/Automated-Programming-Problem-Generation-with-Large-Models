@@ -1,0 +1,91 @@
+{
+  "problem_id": "GYM101639B",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subsequence_constraint",
+            "description": "给定的压缩序列必须能够扩展为长度为 d 的完整序列",
+            "formal": "s1, s2, ..., sq -> p1, p2, ..., pd"
+          },
+          {
+            "name": "range_bound",
+            "description": "每个元素在扩展后的序列中必须满足其对应的温度条件",
+            "formal": "∀i ∈ [1, d], t[j + i - 1] ≥ b[pi]"
+          },
+          {
+            "name": "operation_limit",
+            "description": "整个序列的种植过程必须在 m 天内完成",
+            "formal": "j + d - 1 ≤ m"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "相邻元素在扩展后的序列中可以相同，但不能违反温度条件",
+            "formal": "∀i ∈ [1, d-1], pi = pi+1 → t[j + i - 1] ≥ b[pi] ∧ t[j + i] ≥ b[pi]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足条件的最早开始时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "搜索区间单调缩小：通过二分查找确定最早可以开始种植的天数，每次迭代中搜索区间根据当前天数和草种耐寒性进行调整。",
+            "properties": {
+              "search_interval_monotonic": true
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：在给定的天气条件下，可以通过前缀和计算任意连续天数内的最低温度，从而判断该区间是否适合种植特定草种。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的最优解组合得到。具体来说，如果从某一天开始的d天内所有草种都能存活，则这一天是一个可行的起始日。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

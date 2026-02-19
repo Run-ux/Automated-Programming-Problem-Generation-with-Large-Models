@@ -1,0 +1,72 @@
+{
+  "problem_id": "P5435",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 5000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "modular_arithmetic",
+            "description": "所有计算结果需对 998,244,353 取模",
+            "formal": "A_i = (\\sum_{j=1}^{n} i^j \\cdot \\gcd(a_i, b_j)) \\mod 998244353"
+          },
+          {
+            "name": "linear_relation",
+            "description": "每个输出值是基于输入值的线性组合，具体为 $i$ 的幂次与最大公因数的乘积之和",
+            "formal": "A_i = \\sum_{j=1}^{n} i^j \\cdot \\gcd(a_i, b_j)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化每对元素的特定函数和，结果取模"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个 $A_i$ 的计算依赖于 $a_i$ 与所有 $b_j$ 的最大公因数的求和，且该求和过程可以通过预处理值域来优化。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：$A_i$ 的计算可以分解为多个区间的贡献之和，这些区间可以通过前缀和的方式进行快速计算。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

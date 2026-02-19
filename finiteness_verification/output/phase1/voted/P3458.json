@@ -1,0 +1,136 @@
+{
+  "problem_id": "P3458",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "weighted": true,
+            "inferred": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "weighted": true,
+      "inferred": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "bitwise_swap_operation",
+        "description": "每个点的坐标可以互换，以最小化围栏长度和移动石头的总重量",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimum_diameter_constraint",
+        "description": "围栏必须是矩形，且其边平行于花园的边，最小化围栏的周长",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimum_edge_count",
+        "description": "在满足最小化围栏长度的前提下，最小化需要移动的石头的总重量",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "bitwise_swap_operation",
+              "description": "每个点的坐标可以互换，以最小化围栏长度和移动石头的总重量",
+              "formal": "对于每个点 (x_i, y_i)，可以选择交换坐标 (y_i, x_i)"
+            },
+            {
+              "name": "minimum_diameter_constraint",
+              "description": "围栏必须是矩形，且其边平行于花园的边，最小化围栏的周长",
+              "formal": "找到一个矩形 R 使得所有点 (x_i, y_i) 或 (y_i, x_i) 都在 R 内，并且 R 的周长最小"
+            },
+            {
+              "name": "minimum_edge_count",
+              "description": "在满足最小化围栏长度的前提下，最小化需要移动的石头的总重量",
+              "formal": "在所有可能的坐标交换方案中，选择使移动石头的总重量最小的方案"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "multi_objective",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "multi_objective",
+          "description": "同时最小化矩形围栏的周长和需要移动的石头的总重量"
+        }
+      }
+    ],
+    "description": "同时最小化矩形围栏的周长和需要移动的石头的总重量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即通过考虑每个石头是否交换坐标来最小化围栏长度和移动石头的总重量。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：对于每个石头，决定是否交换其坐标以达到局部最优解，从而逐步构建全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即通过考虑每个石头是否交换坐标来最小化围栏长度和移动石头的总重量。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：对于每个石头，决定是否交换其坐标以达到局部最优解，从而逐步构建全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

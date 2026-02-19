@@ -1,0 +1,82 @@
+{
+  "problem_id": "CF1718D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": false,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "数组中的所有元素必须是两两不同的（纯数组）"
+          },
+          {
+            "name": "similarity_constraint",
+            "description": "两个纯数组在任意子区间内的最大值索引必须相同",
+            "formal": "对于所有 1 ≤ l ≤ r ≤ n，有 argmax([b_l, b_{l+1}, ..., b_r]) = argmax([c_l, c_{l+1}, ..., c_r])"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "缺失的元素必须从给定的集合 S 和一个额外的数 d 中选择，使得数组 a 成为纯数组且与 p 相似"
+          },
+          {
+            "name": "pairwise_exclusion",
+            "description": "数组 a 中的缺失元素不能重复"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种方式填充数组，使其满足特定条件"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即如果一个数组a是与给定的纯数组p相似的，则a中的每个子区间也必须满足相似性条件。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：对于任意两个满足相似性的子区间，它们合并后的区间仍然满足相似性条件。这保证了在填充缺失元素时，可以将数组划分为多个子区间分别处理，并且这些子区间的解决方案可以合并成整个数组的解决方案。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

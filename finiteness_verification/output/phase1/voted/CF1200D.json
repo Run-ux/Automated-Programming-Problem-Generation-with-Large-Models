@@ -2,14 +2,14 @@
   "problem_id": "CF1200D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 2000
@@ -18,9 +18,7 @@
             "min": 0,
             "max": 1
           },
-          "properties": {
-            "ordered": true
-          }
+          "properties": {}
         }
       }
     ],
@@ -32,25 +30,23 @@
       "min": 0,
       "max": 1
     },
-    "properties": {
-      "ordered": true
-    }
+    "properties": {}
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "weighted_graph",
-        "description": "选择一个矩形区域，将该区域内的所有元素变为同一值（白色）",
+        "name": "operation_limit",
+        "description": "操作次数限制为1次（只能使用一次橡皮擦工具）",
         "confidence": "1/1"
       },
       {
-        "name": "single_edge_operation",
-        "description": "只能进行一次操作",
+        "name": "subset_constraint",
+        "description": "操作影响的子矩阵大小固定为k×k（橡皮擦工具的大小为k，点击一个单元格后，该单元格及其右下角k-1行和k-1列的单元格都会变为白色）",
         "confidence": "1/1"
       },
       {
-        "name": "uniform_submatrix_values",
-        "description": "行或列中没有黑色元素时，该行或列为白色线",
+        "name": "coverage",
+        "description": "目标是最大化覆盖的白线数量（目标是使白线的数量最大化，白线是指没有黑色单元格的行或列）",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +57,17 @@
         "result": {
           "constraints": [
             {
-              "name": "weighted_graph",
-              "description": "选择一个矩形区域，将该区域内的所有元素变为同一值（白色）",
-              "formal": "For a chosen (i, j), set all cells (i', j') to white where i ≤ i' ≤ i + k - 1 and j ≤ j' ≤ j + k - 1"
+              "name": "operation_limit",
+              "description": "操作次数限制为1次（只能使用一次橡皮擦工具）"
             },
             {
-              "name": "single_edge_operation",
-              "description": "只能进行一次操作",
-              "formal": "Operation count = 1"
+              "name": "subset_constraint",
+              "description": "操作影响的子矩阵大小固定为k×k（橡皮擦工具的大小为k，点击一个单元格后，该单元格及其右下角k-1行和k-1列的单元格都会变为白色）",
+              "formal": "For a click at (i, j), all cells (i', j') where i ≤ i' ≤ i + k - 1 and j ≤ j' ≤ j + k - 1 become white."
             },
             {
-              "name": "uniform_submatrix_values",
-              "description": "行或列中没有黑色元素时，该行或列为白色线",
-              "formal": "A line is white if it contains no black cells"
+              "name": "coverage",
+              "description": "目标是最大化覆盖的白线数量（目标是使白线的数量最大化，白线是指没有黑色单元格的行或列）"
             }
           ]
         }
@@ -89,26 +83,46 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "最大化满足条件的行和列的数量"
+          "description": "最大化行和列中全为白色单元格的数量"
         }
       }
     ],
-    "description": "最大化满足条件的行和列的数量"
+    "description": "最大化行和列中全为白色单元格的数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：通过计算每个可能的擦除操作后的最大白线数量，可以找到全局最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：可以通过前缀和快速计算任意矩形区域内的黑色单元格数量",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：通过局部区域的最优解（即擦除后能产生的最大白线数）来构建全局问题的最优解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：通过计算每个可能的擦除操作后的最大白线数量，可以找到全局最优解",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：可以通过前缀和快速计算任意矩形区域内的黑色单元格数量",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：通过局部区域的最优解（即擦除后能产生的最大白线数）来构建全局问题的最优解"
+    ]
   }
 }

@@ -2,14 +2,14 @@
   "problem_id": "GYM101915E",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 2,
             "max": 6
@@ -39,18 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "每个空单元格的值表示其相邻的含有地雷的单元格数量，且该值不超过给定的最大值 M。",
+        "name": "adjacency_relation",
+        "description": "每个空单元格的值表示其相邻单元格中地雷的数量，且最多有8个相邻单元格。",
         "confidence": "1/1"
       },
       {
-        "name": "grid_dimension_constraint",
-        "description": "网格的行数和列数均在 2 到 6 之间。",
-        "confidence": "1/1"
-      },
-      {
-        "name": "value_range_constraint",
-        "description": "每个空单元格的最大值 M 在 1 到 8 之间。",
+        "name": "range_bound",
+        "description": "每个空单元格中的数字不能超过给定的最大值M。",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "每个空单元格的值表示其相邻的含有地雷的单元格数量，且该值不超过给定的最大值 M。",
-              "formal": "对于每个空单元格 (i, j)，sum(1 for (x, y) in neighbors(i, j) if grid[x][y] == '*') <= M"
+              "name": "adjacency_relation",
+              "description": "每个空单元格的值表示其相邻单元格中地雷的数量，且最多有8个相邻单元格。",
+              "formal": "对于每个空单元格 (i, j)，其值为相邻单元格中地雷的数量，且相邻单元格数量不超过8。"
             },
             {
-              "name": "grid_dimension_constraint",
-              "description": "网格的行数和列数均在 2 到 6 之间。",
-              "formal": "2 ≤ r ≤ 6, 2 ≤ c ≤ 6"
-            },
-            {
-              "name": "value_range_constraint",
-              "description": "每个空单元格的最大值 M 在 1 到 8 之间。",
-              "formal": "1 ≤ M ≤ 8"
+              "name": "range_bound",
+              "description": "每个空单元格中的数字不能超过给定的最大值M。",
+              "formal": "对于每个空单元格 (i, j)，其值 v 满足 0 ≤ v ≤ M。"
             }
           ]
         }
@@ -81,37 +71,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_value",
+    "type": "maximize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_value",
-          "description": "最大化网格中可以放置的地雷数量"
+          "type": "maximize_count",
+          "description": "最大化满足条件的网格中地雷的数量"
         }
       }
     ],
-    "description": "最大化网格中可以放置的地雷数量"
+    "description": "最大化满足条件的网格中地雷的数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，每个子问题的解都是独立且最优的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在求解过程中，各个子问题的解是相互独立的，一个子问题的解不影响其他子问题的解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题的最优解对整体最优解有贡献。",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，每个子问题的解都是独立且最优的。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在求解过程中，各个子问题的解是相互独立的，一个子问题的解不影响其他子问题的解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题的最优解对整体最优解有贡献。"
+    ]
   }
 }

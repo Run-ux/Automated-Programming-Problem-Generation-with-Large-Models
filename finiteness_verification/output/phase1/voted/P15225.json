@@ -1,0 +1,136 @@
+{
+  "problem_id": "P15225",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 26
+          },
+          "value_range": {
+            "min": 0,
+            "max": 25
+          },
+          "properties": {
+            "ordered": false,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 26
+    },
+    "value_range": {
+      "min": 0,
+      "max": 25
+    },
+    "properties": {
+      "ordered": false,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "pattern_matching",
+        "description": "如果在序列中出现模式 b，则必须在 b 之后的某个位置出现模式 e。每个 b 和 e 是由字符组成的非空序列，且 b 和 e 中的字符不重复。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "repetition",
+        "description": "如果序列中有多个 b 模式出现，则每个 b 模式都必须有一个对应的 e 模式在其之后出现。可以是同一个 e 模式，只要它出现在所有 b 模式之后。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "alphabet_constraint",
+        "description": "序列中的字符只能从给定的字符集合 S 中选取，且 S 中的字符不重复。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "pattern_matching",
+              "description": "如果在序列中出现模式 b，则必须在 b 之后的某个位置出现模式 e。每个 b 和 e 是由字符组成的非空序列，且 b 和 e 中的字符不重复。",
+              "formal": "∀b, e ∈ R, b ⊆ S, e ⊆ S, b ∩ e = ∅, b_i+1 紧跟 b_i, e_j+1 紮跟 e_j, 若 b ⊆ kabob, 则 ∃e ⊆ kabob 且 e 在 b 之后"
+            },
+            {
+              "name": "repetition",
+              "description": "如果序列中有多个 b 模式出现，则每个 b 模式都必须有一个对应的 e 模式在其之后出现。可以是同一个 e 模式，只要它出现在所有 b 模式之后。",
+              "formal": "∀b, e ∈ R, 若 kabob 包含多个 b, 则 ∃e ⊆ kabob 且 e 在所有 b 之后"
+            },
+            {
+              "name": "alphabet_constraint",
+              "description": "序列中的字符只能从给定的字符集合 S 中选取，且 S 中的字符不重复。",
+              "formal": "kabob ⊆ S, |S| = |distinct(S)|"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足给定规则的长度为K的序列数量"
+        }
+      }
+    ],
+    "description": "求满足给定规则的长度为K的序列数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合而成，满足动态规划的基本性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：当前状态可以由前一个或多个状态通过特定规则转移而来，确保状态机的一致性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解组合而成，满足动态规划的基本性质",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：当前状态可以由前一个或多个状态通过特定规则转移而来，确保状态机的一致性",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

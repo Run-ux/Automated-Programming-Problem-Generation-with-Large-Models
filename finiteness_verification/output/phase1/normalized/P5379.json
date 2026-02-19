@@ -1,0 +1,82 @@
+{
+  "problem_id": "P5379",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "modular_arithmetic",
+            "description": "序列中的每个元素在每轮操作后必须是给定质数 P 的倍数，Alice 才能胜利（模运算约束）",
+            "formal": "∀i, S_i ≡ 0 (mod P)"
+          },
+          {
+            "name": "cyclic_shift_constraint",
+            "description": "序列 T 在每轮操作中会进行循环移位，然后与 S 相加（循环移位约束）",
+            "formal": "S'_i = S_i + T_{(i+x) % N}"
+          },
+          {
+            "name": "operation_limit",
+            "description": "Alice 需要在有限步内必胜，即存在一个有限的轮数 x 使得 Alice 胜利（操作次数限制）",
+            "formal": "∃x, ∀i, S_i ≡ 0 (mod P) after x rounds"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求在满足特定条件下的最小操作轮数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "modular_invariance",
+            "description": "模数不变性：序列中的每个元素在每一轮操作后对给定质数 P 的模数保持一致的变换规律，使得最终可以达到所有元素均为 P 的倍数的状态。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每一轮操作后，序列 S 通过加法和模运算转换为新的序列 S'，这种转换方式保证了状态的一致性和可预测性。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：Alice 选择的每一轮操作 T 和 Bob 选择的 x 都是为了使序列 S 尽快达到所有元素均为 P 的倍数的状态，这依赖于每一步操作的最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

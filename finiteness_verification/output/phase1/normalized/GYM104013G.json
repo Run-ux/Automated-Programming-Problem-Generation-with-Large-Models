@@ -29,12 +29,12 @@
       "result": {
         "constraints": [
           {
-            "name": "path_length_constraint",
-            "description": "路径上的标签序列必须符合给定的文法规则（上下文无关文法）"
+            "name": "path_constraint",
+            "description": "路径上的标签序列必须符合给定的文法语言"
           },
           {
-            "name": "bottleneck_path",
-            "description": "如果存在符合条件的路径，输出最短路径的长度；否则输出 'NO'"
+            "name": "path_constraint",
+            "description": "找到符合条件的最短路径"
           }
         ]
       }
@@ -45,8 +45,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_distance",
-        "description": "求满足条件的最短路径长度"
+        "type": "minimize_value",
+        "description": "求满足特定条件的最短路径长度"
       }
     }
   ],
@@ -55,9 +55,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即从起点到终点的最短路径可以由一系列满足语法条件的子路径组成",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从起点到终点的最短路径可以通过子路径的最优解组合而成，满足动态规划的最优子结构性质",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在图中从一个顶点到另一个顶点的过程中，通过边上的标签进行非终结符到终结符或非终结符到非终结符的转换，保持语法生成的一致性",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在有向无环图（DAG）上，路径的顺序依赖于边的方向，确保路径的合法性",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -28,12 +28,20 @@
       "result": {
         "constraints": [
           {
-            "name": "graph_connectivity",
-            "description": "图必须连通（任意两个节点之间存在路径）"
+            "name": "connectivity",
+            "description": "图必须连通，即从任意节点到任意其他节点都存在路径"
           },
           {
-            "name": "bottleneck_path",
-            "description": "从起点到终点的每条路径中，至少有一条边是瓶颈边（即必须经过该边才能到达终点）"
+            "name": "degree_bound",
+            "description": "每个节点的度数至少为1，且没有自环和重边"
+          },
+          {
+            "name": "path_constraint",
+            "description": "从起点s到终点t的每条路径上必须包含至少一个关键边（放置boss的边）"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "需要最大化放置boss的数量，使得从任意起点s到任意终点t的路径上都必须经过这些关键边"
           }
         ]
       }
@@ -45,7 +53,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "求图中任意两点间必须经过的边的最大数量"
+        "description": "最大化在所有可能的起点和终点之间必须经过的边的数量"
       }
     }
   ],
@@ -54,12 +62,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，具体表现为在无向图中寻找割边（桥）的数量以最大化路径上的障碍数。",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinability": true
-        }
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "图的连通性：任意两个顶点之间存在路径，保证了从任意起点到任意终点的可达性。",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "桥识别：在无向图中，某些边是桥（即删除该边会使得图不连通），这些边是放置boss的关键位置。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "最大桥数：通过遍历所有可能的起点和终点对，计算出最多能放置的boss数量，即最多的桥的数量。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

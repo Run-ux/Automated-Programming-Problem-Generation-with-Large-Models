@@ -2,14 +2,14 @@
   "problem_id": "GYM104493F",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 1000
@@ -35,13 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_elements_per_row_constraint",
-        "description": "每行中的元素必须互不相同（排列约束）",
+        "name": "distinctness",
+        "description": "每个整数在网格中恰好出现 n 次（唯一性/去重约束）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_elements_per_column_constraint",
-        "description": "每列中的元素必须互不相同（排列约束）",
+        "name": "permutation_constraint",
+        "description": "每行和每列都是一个长度为 n 的排列（排列约束）",
         "confidence": "1/1"
       }
     ],
@@ -52,14 +52,14 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_elements_per_row_constraint",
-              "description": "每行中的元素必须互不相同（排列约束）",
-              "formal": "∀i, |distinct(a[i,1], a[i,2], ..., a[i,n])| = n"
+              "name": "distinctness",
+              "description": "每个整数在网格中恰好出现 n 次（唯一性/去重约束）",
+              "formal": "∀ i ∈ [1, n], count(i) = n"
             },
             {
-              "name": "distinct_elements_per_column_constraint",
-              "description": "每列中的元素必须互不相同（排列约束）",
-              "formal": "∀j, |distinct(a[1,j], a[2,j], ..., a[n,j])| = n"
+              "name": "permutation_constraint",
+              "description": "每行和每列都是一个长度为 n 的排列（排列约束）",
+              "formal": "∀ i, j ∈ [1, n], a[i][j] 是 1 到 n 的一个排列"
             }
           ]
         }
@@ -67,34 +67,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否可以通过有限次操作使网格满足特定条件"
+          "type": "feasibility",
+          "description": "判断是否可以通过有限次操作使给定的矩阵满足特定条件"
         }
       }
     ],
-    "description": "判断是否可以通过有限次操作使网格满足特定条件"
+    "description": "判断是否可以通过有限次操作使给定的矩阵满足特定条件"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过局部调整使得整个网格满足美丽条件。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "matroid_exchange",
+        "description": "拟阵交换性：在调整过程中，可以将某些元素进行交换以达到全局最优，且这种交换不会破坏已经满足的局部最优条件。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过局部调整可以达到全局最优状态",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过局部调整使得整个网格满足美丽条件。",
+              "properties": {}
+            },
+            {
+              "name": "matroid_exchange",
+              "description": "拟阵交换性：在调整过程中，可以将某些元素进行交换以达到全局最优，且这种交换不会破坏已经满足的局部最优条件。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过局部调整可以达到全局最优状态"
+    ]
   }
 }

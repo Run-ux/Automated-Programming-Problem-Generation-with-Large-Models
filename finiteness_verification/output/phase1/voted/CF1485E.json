@@ -2,14 +2,14 @@
   "problem_id": "CF1485E",
   "source": "codeforces",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 2,
             "max": 200000
@@ -41,23 +41,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "tree_structure",
-        "description": "图必须是树结构（连通无环）",
+        "name": "acyclicity",
+        "description": "给定的图是一个树结构，且所有叶子节点到根节点的距离相同",
         "confidence": "1/1"
       },
       {
-        "name": "tree_structure",
-        "description": "树必须有根节点，且所有叶子节点到根节点的距离相同",
+        "name": "operation_limit",
+        "description": "必须进行 d 次操作，每次操作包括三个步骤：移动红币、移动蓝币、交换红蓝币的位置",
         "confidence": "1/1"
       },
       {
-        "name": "path_weight_constraint",
-        "description": "必须进行 d 次移动，每次移动包括三个步骤：选择一个顶点 r 和 b，交换它们的位置，并计算得分 |a_r - a_b|",
+        "name": "adjacency_relation",
+        "description": "红币和蓝币在每次操作后可以位于同一个顶点",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "相邻节点取值不同（图着色约束）",
+        "name": "sum_constraint",
+        "description": "每次操作后获得的分数为 |a_r - a_b|，其中 r 和 b 分别是红币和蓝币所在的顶点",
         "confidence": "1/1"
       }
     ],
@@ -68,20 +68,20 @@
         "result": {
           "constraints": [
             {
-              "name": "tree_structure",
-              "description": "图必须是树结构（连通无环）"
+              "name": "acyclicity",
+              "description": "给定的图是一个树结构，且所有叶子节点到根节点的距离相同"
             },
             {
-              "name": "tree_structure",
-              "description": "树必须有根节点，且所有叶子节点到根节点的距离相同"
+              "name": "operation_limit",
+              "description": "必须进行 d 次操作，每次操作包括三个步骤：移动红币、移动蓝币、交换红蓝币的位置"
             },
             {
-              "name": "path_weight_constraint",
-              "description": "必须进行 d 次移动，每次移动包括三个步骤：选择一个顶点 r 和 b，交换它们的位置，并计算得分 |a_r - a_b|"
+              "name": "adjacency_relation",
+              "description": "红币和蓝币在每次操作后可以位于同一个顶点"
             },
             {
-              "name": "adjacent_difference",
-              "description": "相邻节点取值不同（图着色约束）"
+              "name": "sum_constraint",
+              "description": "每次操作后获得的分数为 |a_r - a_b|，其中 r 和 b 分别是红币和蓝币所在的顶点"
             }
           ]
         }
@@ -97,26 +97,46 @@
         "status": "success",
         "result": {
           "type": "maximize_value",
-          "description": "最大化路径上的权值差绝对值和"
+          "description": "最大化路径上的权值差绝对值之和"
         }
       }
     ],
-    "description": "最大化路径上的权值差绝对值和"
+    "description": "最大化路径上的权值差绝对值之和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，每一步移动的最大得分可以通过之前步骤的最优解来推导。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移的一致性保证了算法的正确性。在本题中，每次移动后红蓝硬币的位置和得分的变化遵循一致的规则。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即在每一步选择中，当前状态下的最优解依赖于其子状态的最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，每一步移动的最大得分可以通过之前步骤的最优解来推导。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移的一致性保证了算法的正确性。在本题中，每次移动后红蓝硬币的位置和得分的变化遵循一致的规则。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即在每一步选择中，当前状态下的最优解依赖于其子状态的最优解。"
+    ]
   }
 }

@@ -1,0 +1,142 @@
+{
+  "problem_id": "CF1220E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "路径中不能连续重复经过同一条边（即不能立即返回上一个节点）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "图是连通的，可以从任意节点到达任意其他节点",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "路径中不能连续重复经过同一条边（即不能立即返回上一个节点）",
+              "formal": "对于路径 P = (v1, v2, ..., vk)，对于所有 i (1 < i < k)，vi-1 ≠ vi+1"
+            },
+            {
+              "name": "distinctness",
+              "description": "每个节点的分数只计算一次，即使多次访问该节点",
+              "formal": "设 S 为访问过的节点集合，则总分为 ∑wi (i ∈ S)"
+            },
+            {
+              "name": "connectivity",
+              "description": "图是连通的，可以从任意节点到达任意其他节点",
+              "formal": "对于任意两个节点 u 和 v，存在一条路径从 u 到 v"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化路径上的权值和"
+        }
+      }
+    ],
+    "description": "最大化路径上的权值和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，每个城市的最大得分可以由其相邻城市的最大得分推导得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个城市到另一个城市的转移过程中，状态（即当前最大得分）的变化是基于前一状态的最优值进行更新的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在求解某个城市的最大得分时，该城市与其他城市的得分计算是相互独立的，即每个城市作为起点的最大得分可以独立计算。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，每个城市的最大得分可以由其相邻城市的最大得分推导得出。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个城市到另一个城市的转移过程中，状态（即当前最大得分）的变化是基于前一状态的最优值进行更新的。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在求解某个城市的最大得分时，该城市与其他城市的得分计算是相互独立的，即每个城市作为起点的最大得分可以独立计算。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

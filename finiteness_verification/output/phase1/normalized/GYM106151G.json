@@ -1,0 +1,83 @@
+{
+  "problem_id": "GYM106151G",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "所有窗口的 z 坐标互不相同（唯一性约束）"
+          },
+          {
+            "name": "ordering",
+            "description": "z 坐标较大的窗口在 z 坐标较小的窗口之上（有序性约束）"
+          },
+          {
+            "name": "coverage",
+            "description": "每个窗口只绘制其可见部分，即未被其他窗口遮挡的部分（覆盖约束）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "最小化需要绘制的线段数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "窗口的 z 坐标单调递增，决定了绘制顺序和可见性判断的单调性",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "场景复杂度可以通过子问题（每个窗口的边界贡献）的最优解来构建",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "不同窗口的边界段可以合并以计算总的边界段数",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

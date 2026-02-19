@@ -1,0 +1,77 @@
+{
+  "problem_id": "P3766",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 50000
+        },
+        "value_range": {
+          "min": 2,
+          "max": 1000000000000000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "sum_constraint",
+            "description": "求和约束，计算从2到n的函数g(i)/i的累加和",
+            "formal": "f(n) = Σ (g(i) / i) for i in [2, n]"
+          },
+          {
+            "name": "transformation",
+            "description": "定义函数g(n)，表示n能表示成几种不同的完全k次方数（k>1）",
+            "formal": "g(n) = |{k > 1 : ∃ x, x^k = n}|"
+          },
+          {
+            "name": "range_bound",
+            "description": "输出结果的精度要求，与标准答案的绝对误差不超过2e-14",
+            "formal": "|output - standard_answer| <= 2e-14"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求从2到n的函数g(i)/i的累加和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即 f(n) 可以通过 f(i) (i < n) 的值来计算。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：可以通过前缀和的方式高效计算区间的贡献，即 g(i) 的累积和可以用于计算 f(n)。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

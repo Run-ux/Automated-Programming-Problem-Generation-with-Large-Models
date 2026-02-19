@@ -1,0 +1,82 @@
+{
+  "problem_id": "P11417",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "multiplicative_property_constraint",
+            "description": "函数 f 是积性函数，满足 f(p^k) = p^(2k) + k（p 为素数）",
+            "formal": "f(p^k) = p^(2k) + k, 其中 p 是素数"
+          },
+          {
+            "name": "subset_product_modulo_constraint",
+            "description": "g(x) 定义为 x 的所有正因子的 f 值的乘积模 (10^9 + 7)",
+            "formal": "g(x) = (∏_{d|x} f(d)) mod (10^9 + 7)"
+          },
+          {
+            "name": "xor_subarray_sum_constraint",
+            "description": "计算 g(i) (1 ≤ i ≤ n) 的异或和",
+            "formal": "result = ⊕_{i=1}^n g(i)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求给定范围内所有数的特定函数值的异或和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：g(x) 的计算依赖于其因子的 f(d) 值，且这些值可以通过递归或迭代的方式从更小的子问题中获得",
+            "properties": {}
+          },
+          {
+            "name": "multiplicative_property",
+            "description": "积性函数性质：f(x) 为积性函数，满足 f(p^k) = p^(2k) + k，且对于互质的 a 和 b 有 f(ab) = f(a)f(b)",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：g(x) 可以通过其因子的 f(d) 值的乘积来计算，这些值可以通过前缀和或其他累积方法进行高效计算",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

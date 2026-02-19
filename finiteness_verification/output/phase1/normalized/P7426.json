@@ -1,0 +1,124 @@
+{
+  "problem_id": "P7426",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 50
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "range_bound",
+            "description": "体育课专项成绩在0到50之间"
+          },
+          {
+            "name": "range_bound",
+            "description": "长跑测试成绩根据时间分段，男生和女生有不同的评分标准"
+          },
+          {
+            "name": "range_bound",
+            "description": "阳光长跑的合法次数与分数之间的对应关系"
+          },
+          {
+            "name": "range_bound",
+            "description": "体质测试成绩为通过或不通过，通过得10分，否则得0分"
+          },
+          {
+            "name": "range_bound",
+            "description": "大一专项计划的期末检测成绩在0到5之间"
+          },
+          {
+            "name": "range_bound",
+            "description": "班级训练营的参加次数在0到100之间"
+          },
+          {
+            "name": "range_bound",
+            "description": "出勤得分与出勤次数之间的对应关系"
+          },
+          {
+            "name": "range_bound",
+            "description": "百分制成绩与等级、绩点之间的对应关系"
+          },
+          {
+            "name": "distance_bound",
+            "description": "阳光长跑的距离要求：男生长跑距离3000米以上（包含3000米），女生长跑距离1500米以上（包含1500米）"
+          },
+          {
+            "name": "velocity_range_constraint",
+            "description": "阳光长跑的平均速度不慢于2米/秒，且不快于5米/秒"
+          },
+          {
+            "name": "operation_limit",
+            "description": "阳光长跑的总暂停时间不得超过4分30秒"
+          },
+          {
+            "name": "step_size_modulo_constraint",
+            "description": "阳光长跑的平均步幅不超过1.5米"
+          },
+          {
+            "name": "range_bound",
+            "description": "阳光长跑的开始时间需与上条合法记录的结束时间间隔6小时以上（包含6小时）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造每个学生的体育总评成绩及等级"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和的方式计算每个学生的总评成绩，可以将各个部分的成绩累加得到最终成绩。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个学生各项成绩的计算是独立的，且每个部分的成绩计算可以分解为更小的子问题，最终通过合并子问题的结果得到总评成绩。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理「阳光长跑」数据时，合法记录的状态转移满足一定的规则，如时间间隔、速度限制等，这些规则保证了状态转移的一致性和合法性。",
+            "properties": {
+              "time_interval": true,
+              "speed_limit": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

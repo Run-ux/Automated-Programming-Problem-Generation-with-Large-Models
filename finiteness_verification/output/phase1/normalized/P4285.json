@@ -1,0 +1,89 @@
+{
+  "problem_id": "P4285",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 30
+        },
+        "value_range": {
+          "min": 1,
+          "max": 30
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "盘子在柱子上必须保持有序（大的在下面，小的在上面）",
+            "formal": "对于任意柱子 P，P[i] > P[j] 当 i < j"
+          },
+          {
+            "name": "state_transition",
+            "description": "每次操作只能移动一个盘子，并且只能从一根柱子的最上层移到另一根柱子的最上层",
+            "formal": "每次操作将 P1[top] 移动到 P2[top]"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每次操作所要移动的盘子不能是上一次操作所移动的那个盘子",
+            "formal": "如果上次操作移动了盘子 D，则本次操作不能移动 D"
+          },
+          {
+            "name": "ordering_constraint",
+            "description": "操作必须按照给定的优先级顺序进行，选择优先级最高的合法操作",
+            "formal": "操作 O1 优先于 O2 如果 O1 在优先级列表中排在 O2 之前"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "求完成任务所需的最少操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次操作后，系统从一个合法状态转移到另一个合法状态，且每个盘子始终在某个柱子上，不会出现悬空或重叠的情况。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：将 n 个盘子从一个柱子移动到另一个柱子的问题可以分解为两个子问题：先将 n-1 个盘子从起始柱子移动到辅助柱子，再将第 n 个盘子从起始柱子移动到目标柱子，最后将 n-1 个盘子从辅助柱子移动到目标柱子。整个过程的最优解由这些子问题的最优解组成。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择优先级最高的合法操作来移动盘子，并且不重复移动同一个盘子两次，这种局部最优选择最终能够保证全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

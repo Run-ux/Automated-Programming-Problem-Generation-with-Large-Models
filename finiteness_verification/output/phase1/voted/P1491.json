@@ -1,0 +1,138 @@
+{
+  "problem_id": "P1491",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 200
+          },
+          "value_range": {
+            "min": -500,
+            "max": 500
+          },
+          "properties": {
+            "connected": false,
+            "weighted": true,
+            "self_loops": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200
+    },
+    "value_range": {
+      "min": -500,
+      "max": 500
+    },
+    "properties": {
+      "connected": false,
+      "weighted": true,
+      "self_loops": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "路径长度为第二最短路径，且不重复经过同一个点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "图必须是连通的，即从起点到终点存在至少一条路径",
+        "confidence": "1/1"
+      },
+      {
+        "name": "revisiting_allowed",
+        "description": "图中可能包含自环",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "路径长度为第二最短路径，且不重复经过同一个点",
+              "formal": "对于任意路径 P，P 中的节点集合 V(P) 满足 |V(P)| = |P|"
+            },
+            {
+              "name": "connectivity",
+              "description": "图必须是连通的，即从起点到终点存在至少一条路径",
+              "formal": "存在路径 P 使得起点 s 和终点 t 连通"
+            },
+            {
+              "name": "revisiting_allowed",
+              "description": "图中可能包含自环",
+              "formal": "存在边 (u, u) ∈ E"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求两点间第二最短路径长度"
+        }
+      }
+    ],
+    "description": "求两点间第二最短路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，从起点到终点的第二最短路径可以通过从起点到中间点以及从中间点到终点的最短路径组合得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在求解过程中，每个子问题（如从某个点到另一个点的最短路径）的解是独立于其他子问题的解的。这保证了动态规划或图论算法的有效性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在本题中，从起点到终点的第二最短路径可以通过从起点到中间点以及从中间点到终点的最短路径组合得到。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在求解过程中，每个子问题（如从某个点到另一个点的最短路径）的解是独立于其他子问题的解的。这保证了动态规划或图论算法的有效性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

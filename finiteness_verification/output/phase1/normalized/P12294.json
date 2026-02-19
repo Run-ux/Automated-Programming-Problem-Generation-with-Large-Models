@@ -1,0 +1,89 @@
+{
+  "problem_id": "P12294",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制为 n 次，每次操作将三位连续的数字替换为所对应的运算值",
+            "formal": "num_operations = n"
+          },
+          {
+            "name": "ternary_operation",
+            "description": "每次操作必须选择三位连续的数字进行替换，替换后的值由给定的三目运算表决定",
+            "formal": "for each operation, select a substring of length 3 and replace it with the result of the ternary operation"
+          },
+          {
+            "name": "terminal_vertex_count_constraint",
+            "description": "最终结果必须为 1，否则无解",
+            "formal": "result == 1"
+          },
+          {
+            "name": "parentheses_invariance",
+            "description": "输出的括号表示运算顺序，从内到外，从左到右解析括号，确保每次运算时参与计算的运算数恰好为 3",
+            "formal": "parse parentheses from inner to outer, left to right, ensuring each operation involves exactly 3 operands"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种操作序列，使得给定的01串通过n次三目运算后结果为1"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过递归或迭代的方式解决子问题，并将子问题的解合并以得到原问题的解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理 01 串时，每次操作可以看作是从一个状态转移到另一个状态。每个状态的合法性及转移规则保持一致。",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解可以通过分解为若干个子问题的解来合成。具体来说，通过括号嵌套的方式逐步缩小问题规模，最终得到整个问题的解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

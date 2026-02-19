@@ -1,0 +1,78 @@
+{
+  "problem_id": "GYM103427A",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "x": {
+            "min": -100000,
+            "max": 100000
+          },
+          "r": {
+            "min": 1,
+            "max": 1000000
+          }
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "intersection",
+            "description": "圆盘之间可能存在重叠，计算总面积时需要考虑重叠部分的面积"
+          },
+          {
+            "name": "accumulated_sum_constraint",
+            "description": "每次放置一个新的圆盘后，需要更新并输出当前所有圆盘覆盖的总面积"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求逐步增加圆盘后，所有圆盘覆盖的总面积"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：每次放置新盘子后，总覆盖面积可以通过已知的前缀面积和当前盘子的面积增量计算得出",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个新盘子的放置导致的状态变化（即总覆盖面积的变化）仅依赖于当前盘子的位置和半径以及之前所有盘子的信息",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

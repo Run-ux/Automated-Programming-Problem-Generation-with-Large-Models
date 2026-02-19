@@ -6,14 +6,19 @@
   "result": {
     "constraints": [
       {
-        "name": "transformation_exclusion",
-        "description": "每对整数 (a, b) 只能进行一次变换，且不能反向变换（即 a 变换到 b 后不能再从 b 变换回 a）",
-        "formal": "对于每对 (a, b)，只能执行一次 a -> b 或 b -> a 的变换"
+        "name": "transformation_rule",
+        "description": "元素 a 可以通过乘以一个绝对值大于 1 的整数 x 转换为 b，且转换后不能再进行反向转换（a 和 b 之间的转换是单向的）",
+        "formal": "∃x (1 < |x|) ∧ (a · x = b ∨ b · x = a) → (a, b) ∈ T ∧ (b, a) ∉ T"
       },
       {
-        "name": "multiplicative_relationship",
-        "description": "整数 a 可以变换为整数 b 当且仅当存在一个绝对值大于 1 的整数 x 使得 a * x = b 或 b * x = a",
-        "formal": "∃x (|x| > 1) 使得 a * x = b 或 b * x = a"
+        "name": "score_increment",
+        "description": "每次成功转换后，得分增加 |x| 点，其中 x 是用于转换的整数",
+        "formal": "score += |x|"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每个转换操作只能执行一次，即每对 (a, b) 只能转换一次",
+        "formal": "(a, b) ∈ T → (a, b) ∉ T' for any subsequent transformation set T'"
       }
     ]
   },

@@ -1,0 +1,154 @@
+{
+  "problem_id": "CF1245E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 10,
+            "max": 10
+          },
+          "value_range": {
+            "min": 0,
+            "max": 9
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 10,
+      "max": 10
+    },
+    "value_range": {
+      "min": 0,
+      "max": 9
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "acyclicity",
+        "description": "图的结构为一个10x10的网格，每个节点可以向上爬梯子到指定行数的节点",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个节点最多有一个出边（即每个格子最多有一个梯子）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "从起点到终点的路径必须是有效的，且每次移动可以选择是否使用梯子",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "目标节点（终点）不能有梯子",
+        "confidence": "1/1"
+      },
+      {
+        "name": "fixed_start_node",
+        "description": "起始节点（起点）不能有梯子",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "acyclicity",
+              "description": "图的结构为一个10x10的网格，每个节点可以向上爬梯子到指定行数的节点",
+              "formal": "G = (V, E), V = {1, 2, ..., 100}, E = {(i, i - h_{ij}) | h_{ij} > 0}"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个节点最多有一个出边（即每个格子最多有一个梯子）",
+              "formal": "∀v ∈ V, |{(v, u) ∈ E}| ≤ 1"
+            },
+            {
+              "name": "path_constraint",
+              "description": "从起点到终点的路径必须是有效的，且每次移动可以选择是否使用梯子",
+              "formal": "∃ path from 1 to 100, where each step can either move to the next node or use a ladder"
+            },
+            {
+              "name": "connectivity",
+              "description": "目标节点（终点）不能有梯子",
+              "formal": "h_{10,1} = 0"
+            },
+            {
+              "name": "fixed_start_node",
+              "description": "起始节点（起点）不能有梯子",
+              "formal": "h_{1,1} = 0"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求从起点到终点的最小期望步数"
+        }
+      }
+    ],
+    "description": "求从起点到终点的最小期望步数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，每个状态的最小期望步数依赖于其前驱状态的最小期望步数。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移的一致性保证了算法的正确性。具体来说，当前状态的值由其前驱状态的值通过确定的转移规则计算得出。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，每个状态的最小期望步数依赖于其前驱状态的最小期望步数。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移的一致性保证了算法的正确性。具体来说，当前状态的值由其前驱状态的值通过确定的转移规则计算得出。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

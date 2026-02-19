@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 2,
           "max": 1000
@@ -26,16 +26,19 @@
       "result": {
         "constraints": [
           {
-            "name": "grid_dimension_constraint",
-            "description": "网格的大小为偶数"
+            "name": "modular_arithmetic",
+            "description": "通过每个节点与其相邻节点的异或和来重建整个网格的异或和",
+            "formal": "Given XOR-sums of neighbors, reconstruct the XOR-sum of the entire grid."
           },
           {
-            "name": "adjacent_xor_constraint",
-            "description": "每个单元格的值是其相邻单元格值的异或和"
+            "name": "rectangle_shape",
+            "description": "网格的大小必须是偶数",
+            "formal": "n % 2 == 0"
           },
           {
-            "name": "distinct_solution_constraint",
-            "description": "解是唯一的"
+            "name": "adjacency_relation",
+            "description": "相邻节点定义为共享一条边的节点",
+            "formal": "For cells (i, j) and (k, l), they are neighbors if |i - k| = 1 and j = l, or i = k and |j - l| = 1."
           }
         ]
       }
@@ -46,8 +49,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造并输出整个网格的异或和"
+        "type": "maximize_value",
+        "description": "计算整个网格的异或和"
       }
     }
   ],
@@ -56,11 +59,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "当前状态的值依赖于其邻居状态的异或和，满足局部依赖关系",
-        "properties": {
-          "local_dependency": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个格子的值可以通过其邻居格子的值进行推导，满足状态转移的一致性。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：整个网格的XOR和可以通过局部XOR和计算得出，满足区间操作的可加性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

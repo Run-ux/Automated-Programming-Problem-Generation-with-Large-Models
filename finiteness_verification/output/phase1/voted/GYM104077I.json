@@ -1,0 +1,145 @@
+{
+  "problem_id": "GYM104077I",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "从起点到终点的路径长度必须恰好为 t 步",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "每一步只能移动到相邻的格点（上、下、左、右）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distance_bound",
+        "description": "所有移动必须在网格范围内进行，即坐标不能超出 (0, 0) 到 (n, n) 的范围",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "从起点到终点的路径长度必须恰好为 t 步",
+              "formal": "length(path) = t"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "每一步只能移动到相邻的格点（上、下、左、右）",
+              "formal": "next_point in {up, down, left, right} of current_point"
+            },
+            {
+              "name": "distance_bound",
+              "description": "所有移动必须在网格范围内进行，即坐标不能超出 (0, 0) 到 (n, n) 的范围",
+              "formal": "0 <= x, y <= n for all points (x, y) in path"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求从一个点到另一个点恰好经过指定步数的路径数，并对结果取模"
+        }
+      }
+    ],
+    "description": "求从一个点到另一个点恰好经过指定步数的路径数，并对结果取模"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：从起点到终点的路径数可以通过子问题（从起点到中间点，以及从中间点到终点）的路径数来计算",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每一步移动可以看作是从一个状态转移到另一个状态，且状态转移具有确定性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：路径数可以通过前缀和的方式进行计算，即通过端点差值计算区间内的路径数",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：从起点到终点的路径数可以通过子问题（从起点到中间点，以及从中间点到终点）的路径数来计算",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每一步移动可以看作是从一个状态转移到另一个状态，且状态转移具有确定性",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：路径数可以通过前缀和的方式进行计算，即通过端点差值计算区间内的路径数",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

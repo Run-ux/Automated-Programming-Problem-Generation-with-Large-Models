@@ -1,0 +1,76 @@
+{
+  "problem_id": "GYM104022M",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "state_transition",
+            "description": "状态转移约束：每次击败怪物后，战士的攻击力可以更新为被击败怪物的攻击力"
+          },
+          {
+            "name": "ordering",
+            "description": "有序性约束：可以选择以任意顺序击败怪物，目标是使总伤害最小化"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "和约束：计算所有战斗中战士受到的总伤害之和"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求最小化总损失值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即击败每个怪物后剩余的生命值损失最小化可以由之前击败怪物的顺序决定。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，总是选择当前最优（即对后续步骤影响最小）的怪物进行攻击。具体来说，优先选择那些能够使后续战斗中受到伤害最少的怪物。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

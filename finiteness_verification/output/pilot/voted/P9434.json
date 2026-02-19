@@ -2,14 +2,14 @@
   "problem_id": "P9434",
   "source": "luogu",
   "input_structure": {
-    "type": "array",
+    "type": "matrix",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "array",
+          "type": "matrix",
           "length": {
             "min": 1,
             "max": 300000
@@ -20,7 +20,7 @@
           },
           "properties": {
             "ordered": false,
-            "unique_positions": true
+            "inferred": true
           }
         }
       },
@@ -28,7 +28,7 @@
         "round": 2,
         "status": "success",
         "result": {
-          "type": "array",
+          "type": "matrix",
           "length": {
             "min": 1,
             "max": 300000
@@ -38,14 +38,8 @@
             "max": 1000000000
           },
           "properties": {
-            "unique_positions": true,
-            "directions": [
-              "U",
-              "D",
-              "L",
-              "R"
-            ],
-            "inferred": false
+            "ordered": false,
+            "inferred": true
           }
         }
       },
@@ -53,7 +47,7 @@
         "round": 3,
         "status": "success",
         "result": {
-          "type": "array",
+          "type": "matrix",
           "length": {
             "min": 1,
             "max": 300000
@@ -63,14 +57,8 @@
             "max": 1000000000
           },
           "properties": {
-            "unique_positions": true,
-            "directions": [
-              "U",
-              "D",
-              "L",
-              "R"
-            ],
-            "inferred": false
+            "ordered": false,
+            "inferred": true
           }
         }
       }
@@ -85,25 +73,25 @@
     },
     "properties": {
       "ordered": false,
-      "unique_positions": true
+      "inferred": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_positions",
-        "description": "平面上的刺的位置互不相同",
+        "name": "distance_bound",
+        "description": "对于阴间刺 (s1, s2, s3)，s2 和 s1 的横坐标差值不超过 d。",
+        "confidence": "2/3"
+      },
+      {
+        "name": "orientation_constraint",
+        "description": "每个刺的朝向必须是上下左右中的一个，且朝下的刺在本题中没有意义。",
         "confidence": "3/3"
       },
       {
-        "name": "yinjianci_definition",
-        "description": "阴间刺定义为满足以下条件的有序刺对 (s1, s2, s3)：s1 朝右，s2 朝左，s3 朝上；x(s1) < x(s2) ≤ x(s3)；y(s2) > y(s1) > y(s3)；x(s2) - x(s1) ≤ d。",
-        "confidence": "2/3"
-      },
-      {
-        "name": "down_spikes_irrelevant",
-        "description": "朝下的刺在本题内是没有意义的",
-        "confidence": "2/3"
+        "name": "distinctness",
+        "description": "所有刺的位置互不相同。",
+        "confidence": "3/3"
       }
     ],
     "all_rounds": [
@@ -113,17 +101,29 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_positions",
-              "description": "平面上的刺的位置互不相同"
+              "name": "orientation_constraint",
+              "description": "每个刺的朝向必须是上下左右中的一个，且朝下的刺在本题中没有意义。",
+              "formal": "c ∈ {U, D, L, R} 且 c ≠ D"
             },
             {
-              "name": "yinjianci_definition",
-              "description": "阴间刺定义为满足以下条件的有序刺对 (s1, s2, s3)：s1 朝右，s2 朝左，s3 朝上；x(s1) < x(s2) ≤ x(s3)；y(s2) > y(s1) > y(s3)；x(s2) - x(s1) ≤ d。",
-              "formal": "s1.right && s2.left && s3.up && x(s1) < x(s2) <= x(s3) && y(s2) > y(s1) > y(s3) && x(s2) - x(s1) <= d"
+              "name": "distance_bound",
+              "description": "对于阴间刺 (s1, s2, s3)，s2 和 s1 的横坐标差值不超过 d。",
+              "formal": "x(s2) - x(s1) ≤ d"
             },
             {
-              "name": "down_spikes_irrelevant",
-              "description": "朝下的刺在本题内是没有意义的"
+              "name": "ordering",
+              "description": "对于阴间刺 (s1, s2, s3)，s1 的横坐标小于 s2 的横坐标，s2 的横坐标不大于 s3 的横坐标。",
+              "formal": "x(s1) < x(s2) ≤ x(s3)"
+            },
+            {
+              "name": "ordering",
+              "description": "对于阴间刺 (s1, s2, s3)，s2 的纵坐标大于 s1 的纵坐标，s1 的纵坐标大于 s3 的纵坐标。",
+              "formal": "y(s2) > y(s1) > y(s3)"
+            },
+            {
+              "name": "distinctness",
+              "description": "所有刺的位置互不相同。",
+              "formal": "(x(i), y(i)) ≠ (x(j), y(j)) 对于所有 i ≠ j"
             }
           ]
         }
@@ -134,13 +134,17 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_positions",
-              "description": "平面上的刺的位置互不相同"
+              "name": "orientation_constraint",
+              "description": "每个刺的朝向必须是上下左右之一（图中节点的方向约束）"
             },
             {
-              "name": "yinjianci_conditions",
-              "description": "阴间刺的定义：(s1, s2, s3) 为有序刺对，满足以下条件：s1 朝右，s2 朝左，s3 朝上；x(s1) < x(s2) <= x(s3)；y(s2) > y(s1) > y(s3)；x(s2) - x(s1) <= d。",
-              "formal": "s1.right && s2.left && s3.up && x(s1) < x(s2) <= x(s3) && y(s2) > y(s1) > y(s3) && x(s2) - x(s1) <= d"
+              "name": "distinctness",
+              "description": "所有刺的位置互不相同（图中节点坐标唯一性约束）"
+            },
+            {
+              "name": "pattern_matching",
+              "description": "存在一个有序三元组 (s1, s2, s3)，满足以下条件：s1 朝右，s2 朝左，s3 朝上；x(s1) < x(s2) ≤ x(s3)；y(s2) > y(s1) > y(s3)；x(s2) - x(s1) ≤ d（特定三元组模式约束）",
+              "formal": "∃ (s1, s2, s3) such that: orientation(s1) = R, orientation(s2) = L, orientation(s3) = U; x(s1) < x(s2) ≤ x(s3); y(s2) > y(s1) > y(s3); x(s2) - x(s1) ≤ d"
             }
           ]
         }
@@ -151,17 +155,29 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_positions",
-              "description": "平面上的刺的位置互不相同"
+              "name": "orientation_constraint",
+              "description": "每个刺有固定的朝向，且朝向只能是上下左右四种之一。",
+              "formal": "c ∈ {U, D, L, R}"
             },
             {
-              "name": "yinjianci_definition",
-              "description": "阴间刺定义为满足以下条件的有序刺对 (s1, s2, s3)：s1 朝右，s2 朝左，s3 朝上；x(s1) < x(s2) ≤ x(s3)；y(s2) > y(s1) > y(s3)；x(s2) - x(s1) ≤ d。",
-              "formal": "s1.right && s2.left && s3.up && x(s1) < x(s2) <= x(s3) && y(s2) > y(s1) > y(s3) && x(s2) - x(s1) <= d"
+              "name": "distinctness",
+              "description": "所有刺的位置互不相同。",
+              "formal": "∀ (x1, y1) ≠ (x2, y2)"
             },
             {
-              "name": "down_spikes_irrelevant",
-              "description": "朝下的刺在本题内是没有意义的"
+              "name": "pattern_matching",
+              "description": "定义一个【阴间刺】为满足特定条件的有序刺对 (s1, s2, s3)，其中 s1 朝右，s2 朝左，s3 朝上。",
+              "formal": "(s1, s2, s3) 满足 c(s1) = R, c(s2) = L, c(s3) = U"
+            },
+            {
+              "name": "linear_relation",
+              "description": "对于【阴间刺】(s1, s2, s3)，坐标关系必须满足 x(s1) < x(s2) ≤ x(s3)，y(s2) > y(s1) > y(s3)。",
+              "formal": "x(s1) < x(s2) ≤ x(s3) ∧ y(s2) > y(s1) > y(s3)"
+            },
+            {
+              "name": "distance_bound",
+              "description": "对于【阴间刺】(s1, s2, s3)，s1 和 s2 的横坐标差值不超过 d。",
+              "formal": "x(s2) - x(s1) ≤ d"
             }
           ]
         }
@@ -169,77 +185,144 @@
     ]
   },
   "objective": {
-    "type": "count",
+    "type": "maximize_count",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计满足条件的阴间刺的数量"
+          "type": "maximize_count",
+          "description": "求满足特定条件的三元组数量"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计满足条件的阴间刺的数量"
+          "type": "maximize_count",
+          "description": "求满足特定条件的三元组数量"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计满足条件的阴间刺的数量"
+          "type": "maximize_count",
+          "description": "求满足特定条件的三元组数量"
         }
       }
     ],
-    "description": "统计满足条件的阴间刺的数量"
+    "description": "求满足特定条件的三元组数量"
   },
   "invariant": {
-    "name": "monotonicity",
-    "confidence": "3/3",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，通过动态规划或分治法求解",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间和可通过端点差值计算，适用于前缀和优化",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "双指针左右端点单调前进，用于维护满足条件的刺对",
+        "confidence": "3/3",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonicity",
-          "description": "在处理每个刺时，通过维护满足条件的刺对 (s1, s2) 的集合，可以确保对于每个新的 s3，只需检查当前集合中的 s2 是否满足条件，从而保证了算法的高效性。",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针左右端点单调前进，用于维护满足条件的刺对",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，通过动态规划或分治法求解",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间和可通过端点差值计算，适用于前缀和优化",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间信息可通过子区间合并，适用于线段树等数据结构",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "monotonicity",
-          "description": "双指针左右端点单调前进，通过维护满足条件的刺对来计算阴间刺的数量",
-          "properties": {
-            "left_monotonic": true,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针左右端点单调前进，通过维护两个指针来确保满足条件的刺对被正确计数",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，通过分解问题为更小的子问题并合并结果来求解",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间和可通过端点差值计算，通过前缀和等方法快速计算满足条件的刺对数量",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "monotonicity",
-          "description": "双指针左右端点单调前进，区间合法性可单调维护",
-          "properties": {
-            "left_monotonic": true,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针左右端点单调前进，用于维护满足条件的刺对",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，通过分解为子问题来求解阴间刺的数量",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间和可通过端点差值计算，用于快速计算满足条件的刺对数量",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "在处理每个刺时，通过维护满足条件的刺对 (s1, s2) 的集合，可以确保对于每个新的 s3，只需检查当前集合中的 s2 是否满足条件，从而保证了算法的高效性。"
+    ]
   }
 }

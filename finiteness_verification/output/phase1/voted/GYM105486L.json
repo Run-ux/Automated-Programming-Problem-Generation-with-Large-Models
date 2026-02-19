@@ -1,0 +1,141 @@
+{
+  "problem_id": "GYM105486L",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 3,
+            "max": 3
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 3
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "quantile_distribution_constraint",
+        "description": "数据集中恰好有 50% 的元素小于等于 P50 值，95% 的元素小于等于 P95 值，99% 的元素小于等于 P99 值。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "P50 值必须小于 P95 值，P95 值必须小于 P99 值。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "quantile_distribution_constraint",
+              "description": "数据集中恰好有 50% 的元素小于等于 P50 值，95% 的元素小于等于 P95 值，99% 的元素小于等于 P99 值。",
+              "formal": "P50: |{x | x <= a}| = n * 0.5, P95: |{x | x <= b}| = n * 0.95, P99: |{x | x <= c}| = n * 0.99"
+            },
+            {
+              "name": "ordering",
+              "description": "P50 值必须小于 P95 值，P95 值必须小于 P99 值。",
+              "formal": "a < b < c"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造一个满足给定百分位数条件的数据集"
+        }
+      }
+    ],
+    "description": "构造一个满足给定百分位数条件的数据集"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "数据集中的元素按照特定百分位值的顺序排列，满足单调性条件",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "通过前缀和的方式计算区间内的元素数量，确保满足给定的百分位条件",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "构造的数据集满足最优子结构，即每个子区间内的元素分布能够满足对应的百分位要求",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "数据集中的元素按照特定百分位值的顺序排列，满足单调性条件",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "通过前缀和的方式计算区间内的元素数量，确保满足给定的百分位条件",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "构造的数据集满足最优子结构，即每个子区间内的元素分布能够满足对应的百分位要求",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

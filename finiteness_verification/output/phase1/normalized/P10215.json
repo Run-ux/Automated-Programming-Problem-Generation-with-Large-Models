@@ -1,0 +1,85 @@
+{
+  "problem_id": "P10215",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 97,
+          "max": 122
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "prefix_suffix_elimination",
+            "description": "每次操作可以选择并删除字符串的一个非空前缀，并获得该前缀在字符串中的出现次数作为分数"
+          },
+          {
+            "name": "alternating_pattern_constraint",
+            "description": "两名玩家轮流进行操作，先手玩家为小 P，后手玩家为小 B"
+          },
+          {
+            "name": "operation_limit",
+            "description": "当字符串变为空时，游戏结束"
+          },
+          {
+            "name": "minimize_max_min_difference",
+            "description": "小 P 希望最大化得分差（小 P 的得分减去小 B 的得分），而小 B 帞希望最小化这个值"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "game_outcome",
+        "description": "在双方都采用最优策略的情况下，计算先手玩家最终得分与后手玩家最终得分之差"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：当前状态的最优解可以通过子问题的最优解来构建，即每个前缀的选择都基于剩余字符串的最优策略。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次操作后，字符串的状态（剩余部分）和分数的变化遵循固定的规则，且新的状态仍然满足游戏规则。",
+            "properties": {}
+          },
+          {
+            "name": "prefix_decomposability",
+            "description": "前缀可分解性：字符串可以被分解为多个前缀，每个前缀的选择和删除操作独立于其他前缀，且前缀的选择不影响后续前缀的处理。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

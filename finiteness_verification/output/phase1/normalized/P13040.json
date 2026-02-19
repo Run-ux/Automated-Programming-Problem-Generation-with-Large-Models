@@ -1,0 +1,84 @@
+{
+  "problem_id": "P13040",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 0,
+          "max": 100
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每行和每列中特定类型的对角线数量必须满足给定的约束条件（图论中的度数约束）",
+            "formal": "对于每行 i，∑(d[i][j] == '/') = S_i；对于每列 j，∑(d[i][j] == '/') = D_j"
+          },
+          {
+            "name": "subgraph_exclusion",
+            "description": "矩阵中不能形成任何由对角线构成的正方形子图（图论中的子图排除约束）",
+            "formal": "不存在四个顶点 (i1, j1), (i2, j2), (i3, j3), (i4, j4) 使得 d[i1][j1] == d[i2][j2] == d[i3][j3] == d[i4][j4] 且这四个顶点形成一个正方形"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在满足给定行和列约束的无平方矩阵"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即每个子矩阵的解可以组合成整个矩阵的解。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在构建解的过程中，每个子问题的解是独立的，不会相互影响。",
+            "properties": {}
+          },
+          {
+            "name": "constraint_satisfaction",
+            "description": "约束满足不变量：在每一步构建过程中，当前部分解必须满足行和列的前向斜线数量约束。",
+            "properties": {}
+          },
+          {
+            "name": "square_free_property",
+            "description": "无平方不变量：在每一步构建过程中，当前部分解必须保证没有形成任何大小的正方形。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

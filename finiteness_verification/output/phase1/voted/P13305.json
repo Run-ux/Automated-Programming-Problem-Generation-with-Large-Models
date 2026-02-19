@@ -1,0 +1,140 @@
+{
+  "problem_id": "P13305",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "区间内每个子集至少包含 k 个指定元素中的一个",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "找到最长的满足上述条件的区间",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "如果存在多个长度相同的区间，选择起始索引最小的区间",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "区间内每个子集至少包含 k 个指定元素中的一个",
+              "formal": "∀ l, r, ∃ S ⊆ {1, 2, ..., k}, ∀ i ∈ [l, r], A[i] ∩ S ≠ ∅"
+            },
+            {
+              "name": "range_bound",
+              "description": "找到最长的满足上述条件的区间",
+              "formal": "max(r - l + 1) s.t. ∀ l, r, ∃ S ⊆ {1, 2, ..., k}, ∀ i ∈ [l, r], A[i] ∩ S ≠ ∅"
+            },
+            {
+              "name": "ordering",
+              "description": "如果存在多个长度相同的区间，选择起始索引最小的区间",
+              "formal": "if multiple intervals have the same length, choose the one with the smallest starting index"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求满足条件的最长子数组长度"
+        }
+      }
+    ],
+    "description": "求满足条件的最长子数组长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "双指针左右端点单调前进，区间合法性可单调维护",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间信息可通过子区间合并，满足区间可合并性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针左右端点单调前进，区间合法性可单调维护",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间信息可通过子区间合并，满足区间可合并性",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

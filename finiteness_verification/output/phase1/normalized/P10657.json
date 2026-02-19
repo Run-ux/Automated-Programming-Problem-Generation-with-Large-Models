@@ -1,0 +1,82 @@
+{
+  "problem_id": "P10657",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 300000
+        },
+        "properties": {
+          "connected": false,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通，即两个节点属于同一个联盟当且仅当存在两条没有公共边的路径连接它们"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数可以动态增加，但每次只增加一条边"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制为 p 次，每次操作是添加一条新的边"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断两个节点是否属于同一个连通分量，并在满足条件时输出该连通分量的节点数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：随着新隧道的建设，星球间的连通性状态按顺序更新，每次更新仅依赖于前一状态和当前操作。",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：在处理新隧道时，可以将问题分解为子问题（判断两个星球是否属于同一联盟），并通过合并子问题的结果来解决原问题。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在处理每条新隧道时，每个子问题（判断两个星球是否属于同一联盟）的解决过程是独立的，不会受到其他子问题的影响。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

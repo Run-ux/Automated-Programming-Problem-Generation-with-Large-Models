@@ -1,0 +1,168 @@
+{
+  "problem_id": "P10685",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "non_negative_prefix_sum_constraint",
+        "description": "每个节点的能量在每一步操作中减少1，当能量为0时停止操作",
+        "confidence": "1/1"
+      },
+      {
+        "name": "budget_uniformity_constraint",
+        "description": "节点可以在特定位置通过消耗资源来增加能量，资源的消耗量和能量的增加量相等",
+        "confidence": "1/1"
+      },
+      {
+        "name": "cost_constraint",
+        "description": "资源在被消耗后会减少相应的数量，且资源可以被多次消耗直到耗尽",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数受限于所有节点的能量耗尽的时间",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "non_negative_prefix_sum_constraint",
+              "description": "每个节点的能量在每一步操作中减少1，当能量为0时停止操作"
+            },
+            {
+              "name": "budget_uniformity_constraint",
+              "description": "节点可以在特定位置通过消耗资源来增加能量，资源的消耗量和能量的增加量相等"
+            },
+            {
+              "name": "cost_constraint",
+              "description": "资源在被消耗后会减少相应的数量，且资源可以被多次消耗直到耗尽"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数受限于所有节点的能量耗尽的时间"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化所有兔子在最优策略下的总跳跃时间"
+        }
+      }
+    ],
+    "description": "最大化所有兔子在最优策略下的总跳跃时间"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "兔子跳跃的时间单调递增，每只兔子的能量随时间单调递减",
+        "confidence": "1/1",
+        "properties": {
+          "time_monotonic": true,
+          "energy_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，即在每个时刻，兔子选择吃胡萝卜的策略是基于当前状态的最优选择",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "局部最优选择导致全局最优，即在每个时刻，兔子选择吃胡萝卜的数量最大化其能量恢复，从而延长跳跃时间",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量，即兔子的状态（位置和能量）根据规则进行转移，且转移规则一致",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "兔子跳跃的时间单调递增，每只兔子的能量随时间单调递减",
+              "properties": {
+                "time_monotonic": true,
+                "energy_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，即在每个时刻，兔子选择吃胡萝卜的策略是基于当前状态的最优选择",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "局部最优选择导致全局最优，即在每个时刻，兔子选择吃胡萝卜的数量最大化其能量恢复，从而延长跳跃时间",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量，即兔子的状态（位置和能量）根据规则进行转移，且转移规则一致",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

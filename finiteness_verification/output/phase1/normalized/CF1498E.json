@@ -1,0 +1,93 @@
+{
+  "problem_id": "CF1498E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "directed_graph",
+        "length": {
+          "min": 3,
+          "max": 500
+        },
+        "value_range": {
+          "min": 0,
+          "max": 499
+        },
+        "properties": {
+          "connected": false,
+          "weighted": false,
+          "directed": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "reachability",
+            "description": "存在两个节点 A 和 B，使得 A 可以到达 B 且 B 可以到达 A（双向可达）"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "在所有双向可达的节点对 (A, B) 中，选择一个使得 |k_A - k_B| 最大化，其中 k_i 表示节点 i 的入度"
+          },
+          {
+            "name": "query_limit",
+            "description": "可以询问任意多个查询，但一旦某个查询得到肯定回答（Yes），则不能再进行更多查询，并必须输出最终答案"
+          },
+          {
+            "name": "query_limit",
+            "description": "不能重复相同的查询"
+          },
+          {
+            "name": "operation_limit",
+            "description": "输出最终答案后程序必须立即终止"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "在所有双向可达的房屋对中，找到使得两房屋入度差绝对值最大的一对"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "可达性不变量：在查询过程中，如果从A到B可达，则后续查询中A到B始终可达",
+            "properties": {}
+          },
+          {
+            "name": "query_limit",
+            "description": "查询终止条件：一旦某个查询返回“是”，则不再进行新的查询并输出最终答案",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "最大差值优化：在所有双向可达的房屋对中，选择具有最大入度差值的房屋对",
+            "properties": {
+              "optimization_criterion": "max_difference"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

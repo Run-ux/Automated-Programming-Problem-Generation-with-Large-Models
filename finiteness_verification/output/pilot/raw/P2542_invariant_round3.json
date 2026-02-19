@@ -4,11 +4,30 @@
   "dimension": "invariant",
   "round": 3,
   "result": {
-    "name": "state_dependency",
-    "description": "当前状态只依赖于有限的前序状态，即每次航线被破坏或查询关键航线时，仅需考虑当前图的状态和上一次操作后的状态变化。",
-    "properties": {
-      "dependency_on_previous_state": true
-    }
+    "invariants": [
+      {
+        "name": "connectivity",
+        "description": "图的连通性：在任意时刻，图中所有节点都是连通的",
+        "properties": {}
+      },
+      {
+        "name": "bridge_detection",
+        "description": "桥检测不变量：关键航线（桥）的数量可以通过对图进行深度优先搜索并维护时间戳和低链值来确定",
+        "properties": {
+          "dfs_tree_structure": true,
+          "timestamp_maintenance": true,
+          "low_link_value": true
+        }
+      },
+      {
+        "name": "dynamic_connectivity",
+        "description": "动态连通性不变量：随着边的删除，图的连通性可以动态维护，并且能够快速查询两个节点之间的连通性",
+        "properties": {
+          "edge_deletion": true,
+          "connectivity_query": true
+        }
+      }
+    ]
   },
   "status": "success"
 }

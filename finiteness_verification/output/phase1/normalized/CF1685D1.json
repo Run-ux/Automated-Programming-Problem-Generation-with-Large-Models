@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 200
@@ -28,14 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "pairwise_exclusion",
-            "description": "输出的序列必须是1到n的一个排列（即每个元素在1到n之间且互不相同）",
-            "formal": "∀i, 1 ≤ q_i ≤ n 且 ∀i ≠ j, q_i ≠ q_j"
+            "name": "permutation_constraint",
+            "description": "输出的序列必须是1到n的一个排列（即所有元素互不相同且在1到n之间）",
+            "formal": "∀i, 1 ≤ q_i ≤ n 且 q_i 互不相同"
           },
           {
-            "name": "adjacent_difference",
-            "description": "目标是最小化排列q的权重，权重定义为相邻元素差值的绝对值之和，包括首尾元素之间的差值",
-            "formal": "minimize Σ |q_i - p_{q_{(i+1) mod n}}| for i = 1 to n"
+            "name": "sum_constraint",
+            "description": "目标是找到一个排列，使得其权重最小化。权重定义为相邻元素之间的绝对差值之和，包括首尾元素之间的差值。",
+            "formal": "minimize ∑_{i=1}^{n-1} |q_i - p_{q_{i+1}}| + |q_n - p_{q_1}|"
           }
         ]
       }
@@ -46,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求一个排列，使得给定的代价函数值最小"
+        "type": "minimize_value",
+        "description": "求使得给定函数值最小的排列"
       }
     }
   ],
@@ -56,9 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过局部最优解构造全局最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最小权重排列可以通过局部最优排列组合而成。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，选择当前最优（即局部最优）的排列元素，最终可以得到全局最优解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

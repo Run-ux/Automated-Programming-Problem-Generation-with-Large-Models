@@ -2,14 +2,14 @@
   "problem_id": "GYM106161C",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -39,33 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "edge_weight_decrease",
-        "description": "每次只能运送一个乘客",
+        "name": "flow_constraint",
+        "description": "每次操作只能处理一个元素（船每次只能载一名乘客）",
         "confidence": "1/1"
       },
       {
-        "name": "time_ordering_constraint",
-        "description": "乘客必须在其到达时间或之后才能上船",
+        "name": "ordering",
+        "description": "操作顺序必须满足时间先后关系（乘客只能在到达时间或之后上船，且上船时间必须严格递增）",
         "confidence": "1/1"
       },
       {
-        "name": "time_limit_per_resource",
-        "description": "每次过河需要固定的时间 k 单位",
-        "confidence": "1/1"
-      },
-      {
-        "name": "priority_based_selection",
-        "description": "所有乘客的上船时间必须按时间顺序排列",
-        "confidence": "1/1"
-      },
-      {
-        "name": "cooldown_period_constraint",
-        "description": "连续两次上船的时间间隔至少为 k 单位，如果从同一岸出发则至少为 2k 单位",
-        "confidence": "1/1"
-      },
-      {
-        "name": "path_completion_constraint",
-        "description": "所有乘客必须成功过河并到达对岸",
+        "name": "time_interval_constraint",
+        "description": "相邻操作之间的时间间隔至少为 k（两次上船时间间隔至少为 k 单位时间）",
         "confidence": "1/1"
       }
     ],
@@ -76,28 +61,23 @@
         "result": {
           "constraints": [
             {
-              "name": "edge_weight_decrease",
-              "description": "每次只能运送一个乘客"
+              "name": "flow_constraint",
+              "description": "每次操作只能处理一个元素（船每次只能载一名乘客）"
             },
             {
-              "name": "time_ordering_constraint",
-              "description": "乘客必须在其到达时间或之后才能上船"
+              "name": "ordering",
+              "description": "操作顺序必须满足时间先后关系（乘客只能在到达时间或之后上船，且上船时间必须严格递增）",
+              "formal": "t_i < t_{i+1} 且 t_i >= a_{id_i} 或 t_i >= b_{id_i}"
             },
             {
-              "name": "time_limit_per_resource",
-              "description": "每次过河需要固定的时间 k 单位"
+              "name": "time_interval_constraint",
+              "description": "相邻操作之间的时间间隔至少为 k（两次上船时间间隔至少为 k 单位时间）",
+              "formal": "t_i - t_{i-1} >= k"
             },
             {
-              "name": "priority_based_selection",
-              "description": "所有乘客的上船时间必须按时间顺序排列"
-            },
-            {
-              "name": "cooldown_period_constraint",
-              "description": "连续两次上船的时间间隔至少为 k 单位，如果从同一岸出发则至少为 2k 单位"
-            },
-            {
-              "name": "path_completion_constraint",
-              "description": "所有乘客必须成功过河并到达对岸"
+              "name": "time_interval_constraint",
+              "description": "从同一侧连续上船的时间间隔至少为 2k（从同一侧连续上船的时间间隔至少为 2k 单位时间）",
+              "formal": "如果 tp_i = tp_{i-1}，则 t_i - t_{i-1} >= 2k"
             }
           ]
         }
@@ -105,37 +85,69 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求所有乘客到达对岸的最短总时间"
+          "type": "minimize_value",
+          "description": "最小化所有乘客到达对岸的最大时间"
         }
       }
     ],
-    "description": "求所有乘客到达对岸的最短总时间"
+    "description": "最小化所有乘客到达对岸的最大时间"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "时间轴上的事件（乘客登船）按时间顺序单调递增，且每次登船的时间间隔至少为k或2k",
+        "confidence": "1/1",
+        "properties": {
+          "time_monotonic": true
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "在每个决策点选择最早可登船的乘客以最小化总完成时间",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移过程中，每次登船操作后更新当前时间和待处理乘客列表，确保始终满足时间约束和乘客到达条件",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "双指针左右端点单调前进，确保每次选择的乘客都是当前可选乘客中最早到达的，从而保证时间上的最优性。",
-          "properties": {
-            "left_monotonic": true,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "时间轴上的事件（乘客登船）按时间顺序单调递增，且每次登船的时间间隔至少为k或2k",
+              "properties": {
+                "time_monotonic": true
+              }
+            },
+            {
+              "name": "greedy_choice",
+              "description": "在每个决策点选择最早可登船的乘客以最小化总完成时间",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移过程中，每次登船操作后更新当前时间和待处理乘客列表，确保始终满足时间约束和乘客到达条件",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "双指针左右端点单调前进，确保每次选择的乘客都是当前可选乘客中最早到达的，从而保证时间上的最优性。"
+    ]
   }
 }

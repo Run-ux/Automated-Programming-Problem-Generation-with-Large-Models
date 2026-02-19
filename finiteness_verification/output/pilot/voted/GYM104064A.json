@@ -19,7 +19,7 @@
             "max": 122
           },
           "properties": {
-            "charset": "A-Za-z0-9"
+            "ordered": false
           }
         }
       },
@@ -37,7 +37,7 @@
             "max": 122
           },
           "properties": {
-            "charset": "English letters, upper or lower case, and digits"
+            "ordered": false
           }
         }
       },
@@ -55,7 +55,7 @@
             "max": 122
           },
           "properties": {
-            "charset": "a-zA-Z0-9"
+            "ordered": false
           }
         }
       }
@@ -69,19 +69,19 @@
       "max": 122
     },
     "properties": {
-      "charset": "A-Za-z0-9"
+      "ordered": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "interactive_protocol",
-        "description": "这是一个交互式问题，提交的程序需要与交互器进行特定协议的通信",
+        "name": "distance_bound",
+        "description": "字符串长度在 1 到 20 之间（包含字母和数字）",
         "confidence": "3/3"
       },
       {
-        "name": "password_length",
-        "description": "密码长度在1到20个字符之间，包括英文大小写字母和数字",
+        "name": "query_limit",
+        "description": "交互过程中，查询次数有限制",
         "confidence": "3/3"
       }
     ],
@@ -92,12 +92,14 @@
         "result": {
           "constraints": [
             {
-              "name": "password_length",
-              "description": "密码长度在1到20个字符之间，包括英文大小写字母和数字"
+              "name": "distance_bound",
+              "description": "字符串长度在 1 到 20 之间（包含字母和数字）",
+              "formal": "1 ≤ |password| ≤ 20"
             },
             {
-              "name": "interactive_protocol",
-              "description": "这是一个交互式问题，提交的程序需要与交互器进行特定协议的通信"
+              "name": "query_limit",
+              "description": "交互过程中，查询次数有限制",
+              "formal": "queries ≤ T (T 为题目规定的最大查询次数)"
             }
           ]
         }
@@ -108,12 +110,16 @@
         "result": {
           "constraints": [
             {
-              "name": "password_length",
-              "description": "密码长度在1到20个字符之间，包括英文大小写字母和数字"
+              "name": "distance_bound",
+              "description": "字符串长度在 1 到 20 之间（包含字母和数字）"
             },
             {
-              "name": "interactive_protocol",
-              "description": "这是一个交互式问题，提交的程序需要与交互器进行特定协议的交互"
+              "name": "query_limit",
+              "description": "交互过程中，查询次数有限制"
+            },
+            {
+              "name": "alphabet_constraint",
+              "description": "字符串仅包含英文大小写字母和数字"
             }
           ]
         }
@@ -124,12 +130,12 @@
         "result": {
           "constraints": [
             {
-              "name": "password_length",
-              "description": "密码长度在1到20个字符之间，包括英文大小写字母和数字"
+              "name": "distance_bound",
+              "description": "字符串长度在 1 到 20 之间（包含字母和数字）"
             },
             {
-              "name": "interactive_protocol",
-              "description": "这是一个交互式问题，提交的程序需要与交互器进行特定协议的通信"
+              "name": "query_limit",
+              "description": "交互过程中，查询次数有限制"
             }
           ]
         }
@@ -137,68 +143,119 @@
     ]
   },
   "objective": {
-    "type": "decision",
+    "type": "feasibility",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "decision",
-          "description": "判断是否能通过交互式查询成功猜测出密码"
+          "type": "feasibility",
+          "description": "判断是否存在满足条件的密码"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "decision",
-          "description": "判断是否能通过交互式查询猜出正确的密码"
+          "type": "feasibility",
+          "description": "判断是否存在满足条件的密码"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "decision",
-          "description": "判断是否能通过交互式查询猜出正确的密码"
+          "type": "feasibility",
+          "description": "判断是否存在满足条件的密码"
         }
       }
     ],
-    "description": "判断是否能通过交互式查询成功猜测出密码"
+    "description": "判断是否存在满足条件的密码"
   },
   "invariant": {
-    "name": "greedy_choice",
-    "confidence": "3/3",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "比较操作的单调性：每次比较失败后，下一次比较的位置不会回退，确保了时间复杂度的线性增长。",
+        "confidence": "3/3",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每次字符比较后，根据结果决定是否继续比较下一个字符，状态转移是确定性的。",
+        "confidence": "3/3",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "greedy_choice",
-          "description": "通过逐步猜测密码字符，每次选择局部最优解（即最可能的字符），最终达到全局最优解（破解整个密码）。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "比较操作的单调性：每次比较失败后，下一次比较的位置不会回退，确保了时间复杂度的线性增长。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次字符比较后，根据结果决定是否继续比较下一个字符，状态转移是确定性的。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "greedy_choice",
-          "description": "每次尝试一个字符，根据反馈调整下一次猜测，局部最优选择导致全局最优解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "比较操作的次数随匹配字符数单调增加，即每次比较失败时，比较次数会增加",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次输入后，根据反馈调整下一个猜测的状态，确保逐步逼近正确密码",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "greedy_choice",
-          "description": "通过逐步猜测密码字符，每次选择最有可能的字符进行尝试，以期在最少的尝试次数内找到正确的密码。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "比较操作的次数随输入长度单调增加，每次比较的时间复杂度是固定的",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false,
+                "window_shrinkable": false
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次字符比较后，根据结果决定是否继续比较下一个字符，状态转移具有确定性",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "通过逐步猜测密码字符，每次选择局部最优解（即最可能的字符），最终达到全局最优解（破解整个密码）。"
+    ]
   }
 }

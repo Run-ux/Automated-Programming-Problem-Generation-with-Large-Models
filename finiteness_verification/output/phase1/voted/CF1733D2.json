@@ -2,14 +2,14 @@
   "problem_id": "CF1733D2",
   "source": "codeforces",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 5,
             "max": 5000
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "binary_string_constraint",
-        "description": "将一个二进制字符串转换为另一个二进制字符串，每次操作可以改变一个字符（0变1或1变0），目标是使两个字符串相等",
+        "name": "transformation",
+        "description": "通过一系列操作将字符串 a 转换为字符串 b，每次操作可以改变一个字符（0 变 1 或 1 变 0）",
         "confidence": "1/1"
       },
       {
-        "name": "global_optimization_objective",
-        "description": "在进行字符串转换时，需要最小化总的操作成本，每个字符的转换成本由给定的x和y决定",
+        "name": "optimization_objective",
+        "description": "每个操作的代价不同，从 0 变 1 的代价为 x，从 1 变 0 的代价为 y",
         "confidence": "1/1"
       },
       {
-        "name": "global_optimization_objective",
-        "description": "如果无法通过任何操作使两个字符串相等，则输出-1",
+        "name": "existence_requirement",
+        "description": "如果无法通过操作将字符串 a 转换为字符串 b，则输出 -1",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "binary_string_constraint",
-              "description": "将一个二进制字符串转换为另一个二进制字符串，每次操作可以改变一个字符（0变1或1变0），目标是使两个字符串相等"
+              "name": "transformation",
+              "description": "通过一系列操作将字符串 a 转换为字符串 b，每次操作可以改变一个字符（0 变 1 或 1 变 0）",
+              "formal": "a[i] -> b[i] for all i in [0, n-1]"
             },
             {
-              "name": "global_optimization_objective",
-              "description": "在进行字符串转换时，需要最小化总的操作成本，每个字符的转换成本由给定的x和y决定"
+              "name": "optimization_objective",
+              "description": "每个操作的代价不同，从 0 变 1 的代价为 x，从 1 变 0 的代价为 y",
+              "formal": "cost(0 -> 1) = x, cost(1 -> 0) = y"
             },
             {
-              "name": "global_optimization_objective",
-              "description": "如果无法通过任何操作使两个字符串相等，则输出-1"
+              "name": "existence_requirement",
+              "description": "如果无法通过操作将字符串 a 转换为字符串 b，则输出 -1",
+              "formal": "if not possible to transform a to b, output -1"
             }
           ]
         }
@@ -78,14 +81,14 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
+          "type": "minimize_value",
           "description": "求将一个字符串转换为另一个字符串所需的最小代价"
         }
       }
@@ -93,19 +96,39 @@
     "description": "求将一个字符串转换为另一个字符串所需的最小代价"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，每个位置的转换成本依赖于其前一个位置的状态",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步操作中，选择当前最小成本的操作可以逐步构建全局最优解",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个位置的转换成本独立计算并累加得到全局最小成本",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，每个位置的转换成本依赖于其前一个位置的状态",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步操作中，选择当前最小成本的操作可以逐步构建全局最优解",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个位置的转换成本独立计算并累加得到全局最小成本"
+    ]
   }
 }

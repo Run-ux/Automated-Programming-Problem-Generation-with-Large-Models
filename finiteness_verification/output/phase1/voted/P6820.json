@@ -2,14 +2,14 @@
   "problem_id": "P6820",
   "source": "luogu",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1000000
@@ -39,8 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "sequential_batch_processing",
-        "description": "两个序列中的相同元素不能同时被处理（两只手不能同时写同一个数）",
+        "name": "exclusion",
+        "description": "两个操作不能同时作用于同一个元素（两只手不能同时写同一个数）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "permutation_constraint",
+        "description": "输入的序列是排列（每个数在1到n之间且不重复）",
         "confidence": "1/1"
       }
     ],
@@ -51,8 +56,12 @@
         "result": {
           "constraints": [
             {
-              "name": "sequential_batch_processing",
-              "description": "两个序列中的相同元素不能同时被处理（两只手不能同时写同一个数）"
+              "name": "exclusion",
+              "description": "两个操作不能同时作用于同一个元素（两只手不能同时写同一个数）"
+            },
+            {
+              "name": "permutation_constraint",
+              "description": "输入的序列是排列（每个数在1到n之间且不重复）"
             }
           ]
         }
@@ -60,37 +69,71 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求完成两个序列的最短时间"
+          "type": "minimize_value",
+          "description": "求完成任务所需的最短时间"
         }
       }
     ],
-    "description": "求完成两个序列的最短时间"
+    "description": "求完成任务所需的最短时间"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "双指针左右端点单调前进，分别指向两个排列的当前写入位置，确保不会同时写同一个数",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，即在每一步选择中，局部最优解可以累积成全局最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "分治或 DP 中子问题相互独立，每个子问题的解不影响其他子问题的解",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "双指针左右端点单调前进，确保每一步操作后指针位置不回退",
-          "properties": {
-            "left_monotonic": true,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针左右端点单调前进，分别指向两个排列的当前写入位置，确保不会同时写同一个数",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，即在每一步选择中，局部最优解可以累积成全局最优解",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "分治或 DP 中子问题相互独立，每个子问题的解不影响其他子问题的解",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "双指针左右端点单调前进，确保每一步操作后指针位置不回退"
+    ]
   }
 }

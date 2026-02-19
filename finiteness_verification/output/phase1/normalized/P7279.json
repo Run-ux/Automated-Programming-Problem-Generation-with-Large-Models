@@ -1,0 +1,79 @@
+{
+  "problem_id": "P7279",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 97,
+          "max": 122
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subsequence_constraint",
+            "description": "字符串 S 中存在两个不同的子串 (S[l1...r1], S[l2...r2])，这两个子串本质相同（即内容相同）",
+            "formal": "S[l1:r1] == S[l2:r2] 且 l1 != l2"
+          },
+          {
+            "name": "range_bound",
+            "description": "对于两个本质相同的子串 (S[l1...r1], S[l2...r2])，满足 L ≤ (a[r1] ⊕ a[r2]) + (r1 - l1 + 1) ≤ R",
+            "formal": "L ≤ (a[r1] ⊕ a[r2]) + (r1 - l1 + 1) ≤ R"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "子串对是无序的，(S[l1...r1], S[l2...r2]) 和 (S[l2...r2], S[l1...r1]) 视为同一个子串对",
+            "formal": "(S[l1...r1], S[l2...r2]) ≡ (S[l2...r2], S[l1...r1])"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足特定条件的子串对数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和计算子串的长度和异或值，满足区间信息可通过端点差值计算",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：子串对之间的光芒存在性可以通过子问题的解来确定，即子串对的合法性可以分解为更小子串对的合法性",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

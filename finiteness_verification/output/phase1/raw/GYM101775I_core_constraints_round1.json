@@ -6,20 +6,24 @@
   "result": {
     "constraints": [
       {
+        "name": "distance_bound",
+        "description": "玩家从初始位置到最终安全区域的距离必须在给定时间内可到达（基于速度和时间）",
+        "formal": "distance((x0, y0), (x2, y2)) <= v * t2"
+      },
+      {
+        "name": "time_window",
+        "description": "玩家必须在两个特定时间点之间进入较小的安全区域，否则会受到不同的持续伤害",
+        "formal": "t1 < t < t2"
+      },
+      {
+        "name": "damage_accumulation",
+        "description": "玩家在安全区域外的时间内会累积伤害，伤害率在不同时间段内可能不同",
+        "formal": "damage = d1 * (t1 - t0) + d2 * (t2 - t1)"
+      },
+      {
         "name": "region_inclusion",
-        "description": "初始区域 C1 必须完全包含最终区域 C2"
-      },
-      {
-        "name": "constant_velocity",
-        "description": "玩家的移动速度是恒定的"
-      },
-      {
-        "name": "damage_transition",
-        "description": "在 t2 时刻，玩家受到的持续伤害从 d1 瞬间变为 d2"
-      },
-      {
-        "name": "optimal_path",
-        "description": "玩家必须选择最优路径以最小化受到的总伤害"
+        "description": "玩家必须在某个时刻进入一个不断缩小的圆形区域内部以避免伤害",
+        "formal": "(x, y) ∈ C1 and (x, y) ∈ C2 at t2"
       }
     ]
   },

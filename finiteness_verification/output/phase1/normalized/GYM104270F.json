@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 5000
@@ -29,11 +29,11 @@
         "constraints": [
           {
             "name": "pairwise_exclusion",
-            "description": "每对骑士在每一轮中只能对决一次"
+            "description": "每对骑士在每一轮中只能进行一次对决，且不能与自己对决"
           },
           {
-            "name": "maximize_lexicographical_order",
-            "description": "如果有多个有效安排，输出字典序最小的答案"
+            "name": "lexicographical_ordering",
+            "description": "如果有多个有效的安排方案，输出字典序最小的方案"
           }
         ]
       }
@@ -44,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足条件的对弈安排方案"
+        "type": "construction",
+        "description": "构造满足给定条件的最优方案，若无解则输出特定字符串"
       }
     }
   ],
@@ -54,9 +54,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：每一轮的安排依赖于前一轮的结果，且每一轮的最优解可以由前一轮的最优解推导得出",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每一轮的安排依赖于前一轮的结果，且当前轮次的最优解包含前一轮次的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：在每一轮中，骑士之间的对决是双向的，即如果骑士A与骑士B对决，则骑士B也与骑士A对决。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每一轮的安排可以独立于其他轮次进行考虑，只要满足每一轮的规则即可。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

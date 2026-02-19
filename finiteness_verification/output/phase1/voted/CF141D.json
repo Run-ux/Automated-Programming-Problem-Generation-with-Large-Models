@@ -1,0 +1,164 @@
+{
+  "problem_id": "CF141D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 0,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 0,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "只能在正方向上移动，不能越过起点（负半轴）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "orientation",
+        "description": "从跳台起飞只能朝正方向跳跃",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "跳跃后必须落在指定位置，不能越过终点线",
+        "confidence": "1/1"
+      },
+      {
+        "name": "inclusion",
+        "description": "可以选择使用或不使用某个跳台",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_order",
+        "description": "可以自由选择跳台的使用顺序",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "只能在正方向上移动，不能越过起点（负半轴）"
+            },
+            {
+              "name": "orientation",
+              "description": "从跳台起飞只能朝正方向跳跃"
+            },
+            {
+              "name": "state_transition",
+              "description": "跳跃后必须落在指定位置，不能越过终点线"
+            },
+            {
+              "name": "inclusion",
+              "description": "可以选择使用或不使用某个跳台"
+            },
+            {
+              "name": "operation_order",
+              "description": "可以自由选择跳台的使用顺序"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求从起点到终点的最短路径长度"
+        }
+      }
+    ],
+    "description": "求从起点到终点的最短路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从起点到终点的最短时间可以由到达每个点的最短时间递推得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：Vasya 的位置随时间单调递增，且在使用跳台时，跳跃的距离和时间也是单调增加的。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：Vasya 从一个位置到另一个位置的时间和路径选择是基于当前状态和可用的跳台信息进行转移的，这种转移保持一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从起点到终点的最短时间可以由到达每个点的最短时间递推得出。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：Vasya 的位置随时间单调递增，且在使用跳台时，跳跃的距离和时间也是单调增加的。",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：Vasya 从一个位置到另一个位置的时间和路径选择是基于当前状态和可用的跳台信息进行转移的，这种转移保持一致性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

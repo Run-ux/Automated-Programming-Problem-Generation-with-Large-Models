@@ -1,0 +1,86 @@
+{
+  "problem_id": "CF1823E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 3,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "connected": false,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数为 2（图中所有节点的度数均为 2）"
+          },
+          {
+            "name": "connectivity",
+            "description": "每次操作必须选择一个连通子图（选择的 k 个顶点必须形成一个连通子图）"
+          },
+          {
+            "name": "range_bound",
+            "description": "每次选择的顶点数量在给定范围内（l ≤ k ≤ r）"
+          },
+          {
+            "name": "optimal_play",
+            "description": "双方玩家都采取最优策略进行游戏（Alice 和 Bob 都以最优策略进行游戏）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "game_outcome",
+        "description": "确定在给定规则下，先手玩家是否能赢得游戏"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：图中的每个连通分量都是一个简单环，且在每一步操作中，选择的顶点集必须形成一个连通子图。每次移除顶点后，剩余的图仍然由若干个简单环组成。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：游戏的胜负状态可以通过其子问题（即较小规模的环）的胜负状态来确定。如果对于所有可能的子问题，当前玩家都能找到一种方式使得对手处于必败状态，则当前玩家获胜。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：不同的连通分量（环）之间是相互独立的，对一个环的操作不会影响到其他环的状态。因此，可以分别考虑每个环的胜负情况，并将结果合并以决定整个图的胜负。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1000
@@ -15,9 +15,7 @@
           "min": 1,
           "max": 1000
         },
-        "properties": {
-          "ordered": false
-        }
+        "properties": {}
       }
     }
   ],
@@ -28,12 +26,16 @@
       "result": {
         "constraints": [
           {
-            "name": "turn_based_operation",
-            "description": "正在进行的操作（记忆或书写）在噪声期间会被中断，需要重新开始或部分重新开始"
+            "name": "operation_limit",
+            "description": "每个学生最多可以发起一次噪声干扰"
           },
           {
-            "name": "single_edge_operation",
-            "description": "每个学生只能发起一次噪声"
+            "name": "state_transition",
+            "description": "在记忆句子过程中受到干扰时，需要重新开始记忆该句子"
+          },
+          {
+            "name": "state_transition",
+            "description": "在书写句子过程中受到干扰时，需要重新记忆并书写剩余部分"
           }
         ]
       }
@@ -45,7 +47,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "最大化干扰导致的总延迟时间"
+        "description": "最大化路径上的额外时间"
       }
     }
   ],
@@ -54,9 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个句子的处理时间和噪声影响可以独立计算并累加得到总的最大延迟时间。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个句子的最大延迟时间可以由其前一个句子的最大延迟时间推导得出。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：对于每个学生发起的噪声，选择在当前句子记忆或书写过程中插入噪声，以最大化总延迟时间。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 200000
@@ -16,8 +16,7 @@
           "max": 200000
         },
         "properties": {
-          "ordered": false,
-          "distinct": true
+          "ordered": false
         }
       }
     }
@@ -29,12 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference_sum_minimization",
-            "description": "排列的逆序对数量必须恰好为1"
+            "name": "permutation_constraint",
+            "description": "输入是一个长度为 n 的排列，包含从 1 到 n 的所有整数且每个整数恰好出现一次"
           },
           {
-            "name": "distinct_transformation_cost",
-            "description": "输入数组是一个有效的排列（即包含从1到n的所有整数，且每个整数恰好出现一次）"
+            "name": "inversion_count_constraint",
+            "description": "目标是通过最少的交换操作使排列中恰好有一个逆序对"
           }
         ]
       }
@@ -45,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_cost",
-        "description": "求将排列转换为恰好有一个逆序对所需的最少操作次数"
+        "type": "minimize_count",
+        "description": "求将排列调整为恰好有一个逆序对所需的最少操作次数"
       }
     }
   ],
@@ -55,9 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过局部调整达到全局最优状态",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过局部调整达到全局最优",
+            "properties": {}
+          },
+          {
+            "name": "exchange_argument",
+            "description": "交换论证：通过邻项交换来逐步减少或增加逆序对的数量，最终达到目标状态",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

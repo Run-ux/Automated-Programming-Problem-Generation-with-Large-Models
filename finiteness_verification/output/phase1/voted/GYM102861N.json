@@ -41,23 +41,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "bipartite_graph",
-        "description": "图是二分多重图，M-节点和N-节点之间可以有多条边，但M-节点之间和N-节点之间没有边",
+        "name": "bipartiteness",
+        "description": "图是二部图，M-节点和N-节点之间有边，但M-节点之间和N-节点之间没有边",
         "confidence": "1/1"
       },
       {
-        "name": "node_degree_constraint",
-        "description": "所有节点（M-节点和N-节点）的度至少为1",
+        "name": "degree_bound",
+        "description": "每个节点的度数至少为1",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_modulo_values",
-        "description": "每个M-节点标记的素数是唯一的，并且按顺序排列",
+        "name": "product_constraint",
+        "description": "每个N-节点的标签是与其直接相连的所有M-节点的标签的乘积，且每个M-节点的标签被乘以其与该N-节点之间的边的数量次",
         "confidence": "1/1"
       },
       {
-        "name": "weight_adjustment",
-        "description": "每个N-节点的标签是与其直接相连的所有M-节点的素数乘积，每个M-节点的素数根据连接的边数重复乘积",
+        "name": "distinctness",
+        "description": "每个M-节点的标签是唯一的质数，并且这些质数按顺序排列",
         "confidence": "1/1"
       }
     ],
@@ -68,20 +68,20 @@
         "result": {
           "constraints": [
             {
-              "name": "bipartite_graph",
-              "description": "图是二分多重图，M-节点和N-节点之间可以有多条边，但M-节点之间和N-节点之间没有边"
+              "name": "bipartiteness",
+              "description": "图是二部图，M-节点和N-节点之间有边，但M-节点之间和N-节点之间没有边"
             },
             {
-              "name": "node_degree_constraint",
-              "description": "所有节点（M-节点和N-节点）的度至少为1"
+              "name": "degree_bound",
+              "description": "每个节点的度数至少为1"
             },
             {
-              "name": "distinct_modulo_values",
-              "description": "每个M-节点标记的素数是唯一的，并且按顺序排列"
+              "name": "product_constraint",
+              "description": "每个N-节点的标签是与其直接相连的所有M-节点的标签的乘积，且每个M-节点的标签被乘以其与该N-节点之间的边的数量次"
             },
             {
-              "name": "weight_adjustment",
-              "description": "每个N-节点的标签是与其直接相连的所有M-节点的素数乘积，每个M-节点的素数根据连接的边数重复乘积"
+              "name": "distinctness",
+              "description": "每个M-节点的标签是唯一的质数，并且这些质数按顺序排列"
             }
           ]
         }
@@ -89,34 +89,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的有序序列"
+          "type": "construction",
+          "description": "构造满足给定条件的有序序列"
         }
       }
     ],
-    "description": "构造一个满足条件的有序序列"
+    "description": "构造满足给定条件的有序序列"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "factorization_invariance",
+        "description": "每个N-节点的标签可以唯一分解为其连接的M-节点的质数乘积，且每个质数的幂次对应于边的数量",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "prime_factorization_ordering",
+        "description": "M-节点上的质数是有序且唯一的，即如果i < j，则p_i < p_j",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过分解和合并子问题的解来构建全局最优解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "factorization_invariance",
+              "description": "每个N-节点的标签可以唯一分解为其连接的M-节点的质数乘积，且每个质数的幂次对应于边的数量",
+              "properties": {}
+            },
+            {
+              "name": "prime_factorization_ordering",
+              "description": "M-节点上的质数是有序且唯一的，即如果i < j，则p_i < p_j",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过分解和合并子问题的解来构建全局最优解"
+    ]
   }
 }

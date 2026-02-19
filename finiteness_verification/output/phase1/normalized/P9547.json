@@ -1,0 +1,84 @@
+{
+  "problem_id": "P9547",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 600
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "mean_difference",
+            "description": "山羊的平均高度必须大于绵羊的平均高度加一个小常数（10^-9）",
+            "formal": "\\bar{u} > \\bar{v} + 10^{-9}"
+          },
+          {
+            "name": "coefficient_bound",
+            "description": "傅里叶级数系数的绝对值必须在指定范围内（10^-9 到 10^9）",
+            "formal": "10^{-9} \\leq \\max_{i=1}^k\\{|a_i|, |b_i|\\} \\leq 10^9"
+          },
+          {
+            "name": "cost_minimization",
+            "description": "构造的函数 f(x) 必须使得代价函数 cost(f) 尽可能小，且满足特定容错度条件",
+            "formal": "\\operatorname{cost}(f) < \\max(\\epsilon + \\operatorname{cost}(f^*), (1 + \\epsilon) \\operatorname{cost}(f^*))"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化给定函数的代价，该代价由山羊和绵羊高度方差的加权平方根组成"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过最小化山羊和绵羊高度方差来构造函数f(x)。",
+            "properties": {}
+          },
+          {
+            "name": "convexity",
+            "description": "凸性不变量：代价函数关于傅里叶系数是凸的，因此局部最优解即为全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：傅里叶级数中的正弦和余弦项在某些变换下保持不变，可以利用这种对称性简化问题。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

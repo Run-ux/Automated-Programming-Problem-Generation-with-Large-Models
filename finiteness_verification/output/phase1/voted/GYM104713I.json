@@ -1,0 +1,145 @@
+{
+  "problem_id": "GYM104713I",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 400
+          },
+          "value_range": {
+            "min": 1,
+            "max": 400
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 400
+    },
+    "value_range": {
+      "min": 1,
+      "max": 400
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "capacity_constraint",
+        "description": "选取元素权重和不超过容量上限",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "计算满足条件的子集数量",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "结果取模运算",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "capacity_constraint",
+              "description": "选取元素权重和不超过容量上限",
+              "formal": "Σw_i ≤ K"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "计算满足条件的子集数量",
+              "formal": "count(subsets S | Σw_i ∈ S ≤ K and w_j ∉ S)"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "结果取模运算",
+              "formal": "result % 167772161"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足条件的子集数量（模167772161）"
+        }
+      }
+    ],
+    "description": "求满足条件的子集数量（模167772161）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前存储的物品集合的最优解可以通过其子集的最优解来构建，即每个状态的解依赖于之前的子问题的解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态到另一个状态的转移是确定且一致的。在本题中，当一个新的物品加入时，如果总重量超过限制，则会清空存储并重新开始，否则继续添加。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和的方式可以计算任意区间的总重量，从而判断是否满足存储条件。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：当前存储的物品集合的最优解可以通过其子集的最优解来构建，即每个状态的解依赖于之前的子问题的解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态到另一个状态的转移是确定且一致的。在本题中，当一个新的物品加入时，如果总重量超过限制，则会清空存储并重新开始，否则继续添加。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和的方式可以计算任意区间的总重量，从而判断是否满足存储条件。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

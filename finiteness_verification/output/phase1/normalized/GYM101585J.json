@@ -1,0 +1,79 @@
+{
+  "problem_id": "GYM101585J",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 18
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000
+        },
+        "properties": {
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_constraint",
+            "description": "每个魔法可以作用于一个特定的子集，且该子集内的元素不重复",
+            "formal": "对于每个魔法 i，存在一个子集 S_i ⊆ {1, 2, ..., n}，且 |S_i| = k_i，S_i 中的元素互不相同"
+          },
+          {
+            "name": "coverage",
+            "description": "所有魔法的并集必须覆盖整个集合，即所有的敌人都必须被至少一个魔法影响",
+            "formal": "∪_{i=1}^m S_i = {1, 2, ..., n}"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "需要找到一组魔法，使得它们的能量消耗总和最小，并且能够覆盖所有敌人",
+            "formal": "minimize ∑_{i ∈ I} v_i, 其中 I 是满足 ∪_{i ∈ I} S_i = {1, 2, ..., n} 的索引集合"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足条件的最小代价"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过选择不同的子集来覆盖所有敌人的最小能量消耗可以由更小子集的最优解组合而成。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子问题（选择一个特定的咒语集合）的解决不依赖于其他子问题的具体解决方案，只需要考虑当前子问题的最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -28,14 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "graph_connectivity",
-            "description": "相邻节点颜色相同则属于同一个连通分量（连通性约束）",
-            "formal": "对于所有 i, j 满足 c_i = c_j 且对于所有 k (i < k < j) 有 c_i = c_k，则 i 和 j 属于同一个连通分量"
+            "name": "connectivity",
+            "description": "相邻节点颜色相同则属于同一个连通分量（图的连通性约束）",
+            "formal": "对于所有 i, j (1 ≤ i < j ≤ n)，如果 c_i = c_j 且 对于所有 k (i < k < j) 有 c_i = c_k，则 i 和 j 属于同一个连通分量"
           },
           {
-            "name": "bottleneck_path",
-            "description": "将整个序列变为单一颜色所需的最小操作次数（目标状态约束）",
-            "formal": "找到最小的 t，使得通过 t 次操作后，所有 c_i 相同"
+            "name": "coloring_constraint",
+            "description": "每次操作可以将一个连通分量的颜色改变为任意其他颜色（操作规则约束）",
+            "formal": "在一次操作中，可以选择一个连通分量，并将其所有节点的颜色改为任意一种颜色"
           }
         ]
       }
@@ -46,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_operations",
-        "description": "求将序列变为单一值所需的最少操作次数"
+        "type": "minimize_value",
+        "description": "求将整个序列变为单一颜色所需的最小操作次数"
       }
     }
   ],
@@ -56,9 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即整个线段的最少操作次数可以由其子线段的最少操作次数推导得出。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：整个线段的最小操作次数可以通过其子线段的最小操作次数来计算",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：通过合并相邻相同颜色的区间，可以简化问题规模，并且合并后的区间信息可以从子区间信息推导出来",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

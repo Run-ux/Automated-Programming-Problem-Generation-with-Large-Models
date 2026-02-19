@@ -2,14 +2,14 @@
   "problem_id": "GYM105677G",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1000
@@ -39,18 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "edge_exclusion_constraint",
-        "description": "元素的移动范围受限于边界，超出边界时停止移动（边界约束）",
+        "name": "circular_boundary_constraint",
+        "description": "元素的移动范围受限，不能超出边界（即 X 坐标不能小于 0 或大于 R）",
         "confidence": "1/1"
       },
       {
-        "name": "periodic_encounter_constraint",
-        "description": "所有元素在每个步骤中执行相同的移动操作（同步约束）",
-        "confidence": "1/1"
-      },
-      {
-        "name": "uniform_movement",
-        "description": "最终所有元素必须在同一位置对齐（对齐约束）",
+        "name": "adjacency_relation",
+        "description": "所有元素在最终位置上必须对齐（即所有元素的 X 坐标相同）",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "edge_exclusion_constraint",
-              "description": "元素的移动范围受限于边界，超出边界时停止移动（边界约束）"
+              "name": "circular_boundary_constraint",
+              "description": "元素的移动范围受限，不能超出边界（即 X 坐标不能小于 0 或大于 R）",
+              "formal": "0 <= X_i + d_j <= R, for all i, j"
             },
             {
-              "name": "periodic_encounter_constraint",
-              "description": "所有元素在每个步骤中执行相同的移动操作（同步约束）"
-            },
-            {
-              "name": "uniform_movement",
-              "description": "最终所有元素必须在同一位置对齐（对齐约束）"
+              "name": "adjacency_relation",
+              "description": "所有元素在最终位置上必须对齐（即所有元素的 X 坐标相同）",
+              "formal": "X_1 = X_2 = ... = X_n at the end of the sequence"
             }
           ]
         }
@@ -78,37 +71,71 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否存在一个最终位置使得所有舞者在执行完一系列移动后都处于该位置"
+          "type": "feasibility",
+          "description": "判断是否存在一个最终位置，使得所有舞者在执行完一系列移动后都处于该位置"
         }
       }
     ],
-    "description": "判断是否存在一个最终位置使得所有舞者在执行完一系列移动后都处于该位置"
+    "description": "判断是否存在一个最终位置，使得所有舞者在执行完一系列移动后都处于该位置"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "每个舞者的X坐标在每一步移动中单调变化，且受边界限制。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "所有舞者的X坐标变化可以通过前缀和计算得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "boundary_condition",
+        "description": "舞者的X坐标始终在给定的边界范围内，超出边界的移动会被截断。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "移动过程中，所有舞者的X坐标变化是单调的，且受边界限制。每个舞者在每一步中的相对位置关系保持不变。",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": false
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "每个舞者的X坐标在每一步移动中单调变化，且受边界限制。",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "所有舞者的X坐标变化可以通过前缀和计算得出。",
+              "properties": {}
+            },
+            {
+              "name": "boundary_condition",
+              "description": "舞者的X坐标始终在给定的边界范围内，超出边界的移动会被截断。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "移动过程中，所有舞者的X坐标变化是单调的，且受边界限制。每个舞者在每一步中的相对位置关系保持不变。"
+    ]
   }
 }

@@ -1,0 +1,96 @@
+{
+  "problem_id": "P10037",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 300000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false,
+          "rooted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "flow_constraint",
+            "description": "每个节点的能量可以转移给其子节点，且每次转移后该节点不能再进行其他能量转移操作。",
+            "formal": "对于边 (u, v)，若 u 为父亲节点，选定整数 h ∈ [0, a_u] 执行 a_u ← a_u - h, a_v ← a_v + h，之后该时刻内形如 (v, w) 且 v 为父亲的边不能操作。"
+          },
+          {
+            "name": "coloring_constraint",
+            "description": "如果一个节点及其子树中的所有节点的能量加上累计能量 b 小于 0，则这些节点会被染成黑色。",
+            "formal": "若 a_i + b < 0，则将 i 及其子树中的所有节点染成黑色。"
+          },
+          {
+            "name": "accumulated_sum_constraint",
+            "description": "累计能量 b 在每个时刻会增加或减少，且必须保证在每个时刻结束时，所有节点的能量加上累计能量 b 不小于 0。",
+            "formal": "b ← b + v_t，且需保证 ∀i, a_i + b ≥ 0。"
+          },
+          {
+            "name": "sequence_pattern_constraint",
+            "description": "序列 {v_t} 合法当且仅当 ∀i ∈ [1, t], |v_i| ∈ [0, m]。",
+            "formal": "∀i ∈ [1, t], |v_i| ≤ m。"
+          },
+          {
+            "name": "maximize_singleton_partition_size",
+            "description": "执行最优操作以最大化第 t 时刻后的白点个数。",
+            "formal": "最大化满足 a_i + b ≥ 0 的节点数量。"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求所有合法序列的权值之和对给定模数取模后的结果"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在每个时刻，通过选择最优的能量传递策略，使得最终白点个数最大化。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个节点的能量和累计能量在每个时刻的状态转移是确定的，并且满足树的层次结构。每个节点的能量变化只依赖于其父节点的能量传递。",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在整个过程中，总能量（初始能量加上所有时刻的累计能量）是守恒的。能量在树中的传递不会改变总能量。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

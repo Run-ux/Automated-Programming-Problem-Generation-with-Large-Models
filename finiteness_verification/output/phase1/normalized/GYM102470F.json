@@ -1,0 +1,90 @@
+{
+  "problem_id": "GYM102470F",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 30
+        },
+        "value_range": {
+          "min": -10000,
+          "max": 10000
+        },
+        "properties": {
+          "weighted": true,
+          "directed": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "movement_constraint",
+            "description": "在网格中只能向北、东、南、西四个方向移动"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "不能通过包含障碍物（如墓碑）的单元格"
+          },
+          {
+            "name": "jump_operation_constraint",
+            "description": "进入传送门后会传送到另一个指定位置，并且时间上也会有变化"
+          },
+          {
+            "name": "cycle_count_constraint",
+            "description": "如果存在一个时间旅行循环，使得可以无限次回到过去，则输出 Never"
+          },
+          {
+            "name": "connectivity",
+            "description": "如果从起点到终点没有可行路径，则输出 Impossible"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求从起点到终点的最短时间，如果存在无限循环则输出特定值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态到另一个状态的转换规则保持一致，且每个状态仅依赖于前一状态或特定的输入条件。",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：在图中存在负权环时，可以通过不断循环该环来无限减少时间，从而实现无限回溯。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在有向无环图（DAG）上，节点的访问顺序满足拓扑排序的性质，即只有当所有前置节点都被访问过后，当前节点才能被访问。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "problem_id": "GYM106063C",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_constraint",
+            "description": "选取的子集必须满足每个颜色的元素数量至少为3，才能构成多边形的一条边",
+            "formal": "∀ color ∈ colors, count(color) ≥ 3"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "选取的子集的颜色数量总和必须大于等于3，才能构成多边形",
+            "formal": "∑ count(color) ≥ 3"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制，前Q1次操作明确给出，后Q2次操作通过随机生成器生成",
+            "formal": "Q1 + Q2 次操作"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "每次操作后，计算当前盒子中所有颜色的频次，并据此判断能否构成多边形",
+            "formal": "∀ color ∈ colors, freq(color) ≥ 3"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足条件的最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，通过维护每种颜色的棒子数量，可以动态计算出当前状态下能构建的最大周长的多边形。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和或类似的数据结构，可以在常数时间内计算任意区间的棒子数量总和，从而快速判断是否满足构建多边形的条件。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次操作后，系统状态（即每种颜色棒子的数量）会根据操作类型进行更新，并且这种更新是确定性的，保证了状态的一致性和正确性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

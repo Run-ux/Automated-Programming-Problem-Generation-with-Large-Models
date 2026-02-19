@@ -2,14 +2,14 @@
   "problem_id": "CF1344C",
   "source": "codeforces",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 2,
             "max": 200000
@@ -41,18 +41,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_interaction_constraint",
-        "description": "所有不等式必须同时满足（逻辑与约束）",
+        "name": "ordering",
+        "description": "变量之间存在严格的顺序关系，即某些变量必须小于其他变量",
         "confidence": "1/1"
       },
       {
-        "name": "source_node_fixed",
-        "description": "变量的出现顺序固定，不能改变（顺序约束）",
-        "confidence": "1/1"
-      },
-      {
-        "name": "global_optimization_objective",
-        "description": "在保证公式为真的前提下，最大化全称量词的数量（优化目标约束）",
+        "name": "labeling_constraint",
+        "description": "每个变量必须被分配一个全称量词或存在量词，并且全称量词的数量应尽可能多",
         "confidence": "1/1"
       }
     ],
@@ -63,16 +58,19 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_interaction_constraint",
-              "description": "所有不等式必须同时满足（逻辑与约束）"
+              "name": "ordering",
+              "description": "变量之间存在严格的顺序关系，即某些变量必须小于其他变量",
+              "formal": "对于所有 (j_i, k_i)，有 x_{j_i} < x_{k_i}"
             },
             {
-              "name": "source_node_fixed",
-              "description": "变量的出现顺序固定，不能改变（顺序约束）"
+              "name": "labeling_constraint",
+              "description": "每个变量必须被分配一个全称量词或存在量词，并且全称量词的数量应尽可能多",
+              "formal": "对于每个 x_i，Q_i ∈ {∀, ∃} 且最大化 |{i | Q_i = ∀}|"
             },
             {
-              "name": "global_optimization_objective",
-              "description": "在保证公式为真的前提下，最大化全称量词的数量（优化目标约束）"
+              "name": "ordering",
+              "description": "变量的顺序是固定的，不能改变变量在公式中的位置",
+              "formal": "变量 x_1, x_2, ..., x_n 的顺序固定，不能重新排列"
             }
           ]
         }
@@ -88,26 +86,46 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "最大化满足条件的通用量词数量"
+          "description": "最大化满足给定条件的全称量词数量"
         }
       }
     ],
-    "description": "最大化满足条件的通用量词数量"
+    "description": "最大化满足给定条件的全称量词数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：变量间的不等关系形成有向无环图（DAG），存在一个拓扑排序使得所有不等关系满足",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：对于每个变量，其量化类型的选择依赖于其在DAG中的位置及与其它变量的关系，整体最优解由局部最优解构成",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个变量的量化类型选择依赖于其在不等式中的位置和与其他变量的关系。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：变量间的不等关系形成有向无环图（DAG），存在一个拓扑排序使得所有不等关系满足",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：对于每个变量，其量化类型的选择依赖于其在DAG中的位置及与其它变量的关系，整体最优解由局部最优解构成",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个变量的量化类型选择依赖于其在不等式中的位置和与其他变量的关系。"
+    ]
   }
 }

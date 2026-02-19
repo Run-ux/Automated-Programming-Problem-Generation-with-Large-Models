@@ -1,0 +1,139 @@
+{
+  "problem_id": "GYM105578K",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 3,
+            "max": 6
+          },
+          "value_range": {
+            "min": -100,
+            "max": 100
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 6
+    },
+    "value_range": {
+      "min": -100,
+      "max": 100
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制，每个边最多激活一次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_order",
+        "description": "如果小球同时在两个边上，不能同时激活这两个边，但可以依次激活",
+        "confidence": "1/1"
+      },
+      {
+        "name": "convexity",
+        "description": "多边形是凸的",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制，每个边最多激活一次",
+              "formal": "每个边的激活次数 ≤ 1"
+            },
+            {
+              "name": "operation_limit",
+              "description": "反射次数限制，小球最多反射 k 次",
+              "formal": "反射次数 ≤ k"
+            },
+            {
+              "name": "operation_order",
+              "description": "如果小球同时在两个边上，不能同时激活这两个边，但可以依次激活",
+              "formal": "如果小球在边 e1 和 e2 上，不能同时激活 e1 和 e2，但可以依次激活"
+            },
+            {
+              "name": "convexity",
+              "description": "多边形是凸的",
+              "formal": "多边形是凸的"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求在给定反射次数限制下的最大路径长度"
+        }
+      }
+    ],
+    "description": "求在给定反射次数限制下的最大路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即对于每个反射次数k，其最大距离可以由更少反射次数k-1的最大距离加上新的反射路径长度得到",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "convexity",
+        "description": "凸性不变量：由于多边形是凸的，反射点和反射方向满足一定的几何性质，使得每次反射后的路径仍然是最短路径的一部分",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即对于每个反射次数k，其最大距离可以由更少反射次数k-1的最大距离加上新的反射路径长度得到",
+              "properties": {}
+            },
+            {
+              "name": "convexity",
+              "description": "凸性不变量：由于多边形是凸的，反射点和反射方向满足一定的几何性质，使得每次反射后的路径仍然是最短路径的一部分",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

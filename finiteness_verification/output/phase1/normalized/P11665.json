@@ -1,0 +1,89 @@
+{
+  "problem_id": "P11665",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 5000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 21
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "连续两次不回应会导致失败（操作次数限制）",
+            "formal": "连续两次选择不回应观众，演出失败"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "每个元素的更新频率不超过一次（频次约束）",
+            "formal": "对于每个 j (1 ≤ j ≤ k)，B_j 的更新次数不超过 1 次"
+          },
+          {
+            "name": "range_bound",
+            "description": "更新后的值必须大于等于当前值（值域约束）",
+            "formal": "如果选择回应，则 B_j ≤ A_i 且 B_j' = A_i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足条件的最小整数值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "状态转移方向受限（仅递增），满足序列的单调性",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，每次选择最小的未使用的B_j进行更新",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态机DP中的转移一致性，确保每一步的状态转移都是有效的",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间和可通过端点差值计算，适用于前缀和的维护",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

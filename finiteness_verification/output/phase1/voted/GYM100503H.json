@@ -1,0 +1,140 @@
+{
+  "problem_id": "GYM100503H",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 3,
+            "max": 3
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 3
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "accumulated_sum_constraint",
+        "description": "每月支付金额固定（等额本息还款）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "decrease_only_constraint",
+        "description": "每月支付的金额分为利息和本金两部分，且每月剩余债务减少",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "总支付金额为每月支付金额乘以月数",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "accumulated_sum_constraint",
+              "description": "每月支付金额固定（等额本息还款）",
+              "formal": "x = fixed monthly payment"
+            },
+            {
+              "name": "decrease_only_constraint",
+              "description": "每月支付的金额分为利息和本金两部分，且每月剩余债务减少",
+              "formal": "a_i = remaining_debt * p / 100, b_i = x - a_i, remaining_debt = remaining_debt - b_i"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "总支付金额为每月支付金额乘以月数",
+              "formal": "total_payment = m * x"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造满足条件的固定月付款金额"
+        }
+      }
+    ],
+    "description": "构造满足条件的固定月付款金额"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每月还款金额 x 由贷款总额 s、月数 m 和利率 p 决定，且满足整个还款周期的总支付等于各月支付之和。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着还款月份的增加，剩余贷款本金逐渐减少，利息部分也相应减少，而本金偿还部分逐渐增加。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每月还款金额 x 由贷款总额 s、月数 m 和利率 p 决定，且满足整个还款周期的总支付等于各月支付之和。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着还款月份的增加，剩余贷款本金逐渐减少，利息部分也相应减少，而本金偿还部分逐渐增加。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

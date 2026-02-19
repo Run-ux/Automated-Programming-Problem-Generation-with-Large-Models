@@ -1,0 +1,91 @@
+{
+  "problem_id": "GYM106084J",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_tree",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（题目中的道路网络是一个树结构）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "任意两个节点之间的最短路径是唯一的"
+          },
+          {
+            "name": "distance_bound",
+            "description": "在任意路径上，相邻的加油站之间的最大距离不超过 d"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "选择 k 个节点作为加油站"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足条件的最小值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最小燃料容量d可以通过子树中的最优解计算得出。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，优先考虑放置加油站的位置以最大化覆盖范围，从而确保全局最优。",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解可以通过递归地解决子树问题并合并结果来获得，即通过递归处理每个子树，并将结果合并以找到全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在树结构中，节点的处理顺序遵循拓扑排序，即从叶子节点向根节点逐步处理，确保每个节点的处理都基于其子节点的已知最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -2,14 +2,14 @@
   "problem_id": "CF1965D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 3,
             "max": 1000
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "palindromic_path",
-        "description": "数组必须是回文数组（即对于所有 1 ≤ i ≤ n，有 a[i] = a[n + 1 - i]）",
+        "name": "palindrome",
+        "description": "数组必须是回文数组（即对称数组）",
         "confidence": "1/1"
       },
       {
-        "name": "substring_deletion_constraint",
-        "description": "给定的子数组和集合中缺少一个子数组的和，需要恢复出一个满足条件的回文数组",
+        "name": "subsequence_constraint",
+        "description": "给定的子数组和集合中缺少一个子数组和",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "palindromic_path",
-              "description": "数组必须是回文数组（即对于所有 1 ≤ i ≤ n，有 a[i] = a[n + 1 - i]）"
+              "name": "palindrome",
+              "description": "数组必须是回文数组（即对称数组）",
+              "formal": "∀ 1 ≤ i ≤ n, a_i = a_{n + 1 - i}"
             },
             {
-              "name": "substring_deletion_constraint",
-              "description": "给定的子数组和集合中缺少一个子数组的和，需要恢复出一个满足条件的回文数组"
+              "name": "subsequence_constraint",
+              "description": "给定的子数组和集合中缺少一个子数组和",
+              "formal": "Given S = {s_1, s_2, ..., s_{(n(n+1)/2)-1}}, there exists one subarray sum s' such that s' ∉ S"
             }
           ]
         }
@@ -69,34 +71,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的回文数组"
+          "type": "construction",
+          "description": "构造一个满足给定子数组和条件的回文数组"
         }
       }
     ],
-    "description": "构造一个满足条件的回文数组"
+    "description": "构造一个满足给定子数组和条件的回文数组"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "symmetry",
+        "description": "对称性：数组是回文的，因此对于所有1 ≤ i ≤ n，有a[i] = a[n + 1 - i]。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：子数组和可以通过端点差值计算，即任意子数组和可以表示为前缀和的差。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "prefix_decomposability",
+        "description": "子数组和唯一性：除了一个缺失的子数组和外，其他所有子数组和都是唯一的，并且这些和可以用来恢复原数组。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过子数组和的性质推导出原数组的值",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "symmetry",
+              "description": "对称性：数组是回文的，因此对于所有1 ≤ i ≤ n，有a[i] = a[n + 1 - i]。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：子数组和可以通过端点差值计算，即任意子数组和可以表示为前缀和的差。",
+              "properties": {}
+            },
+            {
+              "name": "prefix_decomposability",
+              "description": "子数组和唯一性：除了一个缺失的子数组和外，其他所有子数组和都是唯一的，并且这些和可以用来恢复原数组。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过子数组和的性质推导出原数组的值"
+    ]
   }
 }

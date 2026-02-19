@@ -2,14 +2,14 @@
   "problem_id": "GYM105383D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 100
@@ -41,23 +41,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "相邻节点（边相邻）的未感染节点需要进行 d1 天的隔离",
+        "name": "adjacency_relation",
+        "description": "相邻节点的感染状态影响其隔离天数（图着色约束）",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "对角相邻的未感染节点需要进行 d2 天的隔离",
+        "name": "independence",
+        "description": "不确定感染状态的乘客独立地以 1/2 概率被感染",
         "confidence": "1/1"
       },
       {
-        "name": "parallel_operation",
-        "description": "每个未知状态的节点有 1/2 的概率被感染，且独立于其他节点",
+        "name": "probability_distribution",
+        "description": "计算期望值时需要考虑所有可能的感染状态组合",
         "confidence": "1/1"
       },
       {
-        "name": "modulo_expected_value_constraint",
-        "description": "期望值结果需要对 10^9 + 7 取模，并计算乘法逆元",
+        "name": "modular_arithmetic",
+        "description": "结果需要取模 10^9 + 7",
         "confidence": "1/1"
       }
     ],
@@ -68,20 +68,24 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "相邻节点（边相邻）的未感染节点需要进行 d1 天的隔离"
+              "name": "adjacency_relation",
+              "description": "相邻节点的感染状态影响其隔离天数（图着色约束）",
+              "formal": "对于每个节点 i，如果 i 被感染，则其所有邻接节点 j 的隔离天数为 d1；如果 i 未被感染但与感染节点 k 角相邻，则 j 的隔离天数为 d2"
             },
             {
-              "name": "adjacent_difference",
-              "description": "对角相邻的未感染节点需要进行 d2 天的隔离"
+              "name": "independence",
+              "description": "不确定感染状态的乘客独立地以 1/2 概率被感染",
+              "formal": "P(infected) = 0.5, P(not infected) = 0.5, 独立于其他乘客"
             },
             {
-              "name": "parallel_operation",
-              "description": "每个未知状态的节点有 1/2 的概率被感染，且独立于其他节点"
+              "name": "probability_distribution",
+              "description": "计算期望值时需要考虑所有可能的感染状态组合",
+              "formal": "E[total_days] = Σ (probability * total_days)"
             },
             {
-              "name": "modulo_expected_value_constraint",
-              "description": "期望值结果需要对 10^9 + 7 取模，并计算乘法逆元"
+              "name": "modular_arithmetic",
+              "description": "结果需要取模 10^9 + 7",
+              "formal": "result ≡ p * q^(-1) (mod 10^9 + 7)"
             }
           ]
         }
@@ -89,34 +93,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_expected_value",
+    "type": "maximize_probability",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_expected_value",
-          "description": "求期望值，即在给定条件下所有可能情况的加权平均值"
+          "type": "maximize_probability",
+          "description": "最大化期望值，即求所有乘客需要被隔离的总天数的期望值"
         }
       }
     ],
-    "description": "求期望值，即在给定条件下所有可能情况的加权平均值"
+    "description": "最大化期望值，即求所有乘客需要被隔离的总天数的期望值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，即每个乘客的隔离天数可以基于其相邻乘客的状态独立计算。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "expectation_linearity",
+        "description": "期望值线性性：整个系统的期望隔离天数等于每个乘客期望隔离天数之和。对于状态未知的乘客，其对总期望值的贡献是确定的（通过概率加权）。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个乘客的状态（感染或未感染）对总期望天数的影响可以独立计算并累加。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，即每个乘客的隔离天数可以基于其相邻乘客的状态独立计算。",
+              "properties": {}
+            },
+            {
+              "name": "expectation_linearity",
+              "description": "期望值线性性：整个系统的期望隔离天数等于每个乘客期望隔离天数之和。对于状态未知的乘客，其对总期望值的贡献是确定的（通过概率加权）。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个乘客的状态（感染或未感染）对总期望天数的影响可以独立计算并累加。"
+    ]
   }
 }

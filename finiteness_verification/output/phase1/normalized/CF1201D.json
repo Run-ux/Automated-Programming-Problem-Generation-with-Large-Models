@@ -1,0 +1,88 @@
+{
+  "problem_id": "CF1201D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "orientation",
+            "description": "只能向上、左、右移动，不能向下移动（图的边有方向性）"
+          },
+          {
+            "name": "rectangle_shape",
+            "description": "只能在特定列上向上移动（图中某些节点具有特殊属性）",
+            "formal": "对于每个安全列 b_i, 只能从 (r, b_i) 移动到 (r+1, b_i)"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "初始位置固定在 (1, 1)（起点约束）"
+          },
+          {
+            "name": "coverage",
+            "description": "必须收集所有宝藏（覆盖约束）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求从起点到收集所有目标点的最短路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从起点到每个宝藏点的最短路径可以由更小规模的子路径组合而成。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前位置的状态（行、列）和是否已经访问过某些安全列决定了下一步可选的动作。状态转移满足一致性，即从一个状态转移到另一个状态的过程是确定且唯一的。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：在寻找最短路径的过程中，行号随时间单调递增，因为只能向上或向右移动，不能向下移动。",
+            "properties": {
+              "right_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

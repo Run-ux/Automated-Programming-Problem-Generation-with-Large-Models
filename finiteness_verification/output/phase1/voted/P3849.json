@@ -1,0 +1,155 @@
+{
+  "problem_id": "P3849",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 10000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "复式投注的注数必须不超过最大注数 U",
+        "confidence": "1/1"
+      },
+      {
+        "name": "probability_distribution",
+        "description": "每场比赛的结果概率和购买概率必须满足概率分布约束，即 p(i, 0) + p(i, 1) + p(i, 2) = 1 且 q(i, 0) + q(i, 1) + q(i, 2) = 1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "independence",
+        "description": "各场比赛的结果概率和购买概率相互独立，即 p(i, r) 和 p(j, r') 互不影响，q(i, r) 和 q(j, r') 互不影响",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "必须猜中全部 n 场比赛的结果才能获奖",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "复式投注的注数必须不超过最大注数 U",
+              "formal": "|R| <= U"
+            },
+            {
+              "name": "probability_distribution",
+              "description": "每场比赛的结果概率和购买概率必须满足概率分布约束，即 p(i, 0) + p(i, 1) + p(i, 2) = 1 且 q(i, 0) + q(i, 1) + q(i, 2) = 1",
+              "formal": "∀i, Σ_{r=0}^2 p(i, r) = 1 且 Σ_{r=0}^2 q(i, r) = 1"
+            },
+            {
+              "name": "independence",
+              "description": "各场比赛的结果概率和购买概率相互独立，即 p(i, r) 和 p(j, r') 互不影响，q(i, r) 和 q(j, r') 互不影响",
+              "formal": "p(i, r) ⊥ p(j, r'), q(i, r) ⊥ q(j, r')"
+            },
+            {
+              "name": "coverage",
+              "description": "必须猜中全部 n 场比赛的结果才能获奖",
+              "formal": "∀R_i ∈ R, ∀j, r_{ij} 必须正确"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化复式投注方案的奖金期望值的自然对数"
+        }
+      }
+    ],
+    "description": "最大化复式投注方案的奖金期望值的自然对数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即复式投注的最大期望奖金可以通过单个投注的期望奖金组合得到",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，选择当前期望收益最大的投注方案，最终可以得到全局最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：通过动态规划的状态转移方程，从较小规模的问题逐步推导出较大规模问题的解，状态转移的一致性保证了算法的正确性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即复式投注的最大期望奖金可以通过单个投注的期望奖金组合得到",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，选择当前期望收益最大的投注方案，最终可以得到全局最优解",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过动态规划的状态转移方程，从较小规模的问题逐步推导出较大规模问题的解，状态转移的一致性保证了算法的正确性",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

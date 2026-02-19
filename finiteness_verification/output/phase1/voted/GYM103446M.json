@@ -2,14 +2,14 @@
   "problem_id": "GYM103446M",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "integer",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "integer",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1
@@ -35,13 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "equal_partition_constraint",
-        "description": "将整个区域划分为 n 个面积相等的部分（每个部分的面积为 1/n）",
+        "name": "partition",
+        "description": "将整个区域划分为 n 个等面积的部分",
         "confidence": "1/1"
       },
       {
-        "name": "maximum_minimum_area_constraint",
-        "description": "在所有可能的划分方案中，找到一种分配方式使得每个部落能够收获的最小面积最大化",
+        "name": "range_bound",
+        "description": "最大化每个部落能够收获的最小面积",
         "confidence": "1/1"
       }
     ],
@@ -52,14 +52,14 @@
         "result": {
           "constraints": [
             {
-              "name": "equal_partition_constraint",
-              "description": "将整个区域划分为 n 个面积相等的部分（每个部分的面积为 1/n）",
+              "name": "partition",
+              "description": "将整个区域划分为 n 个等面积的部分",
               "formal": "|S_1| = |S_2| = ... = |S_n| = |A_1| = |A_2| = ... = |A_n| = 1/n"
             },
             {
-              "name": "maximum_minimum_area_constraint",
-              "description": "在所有可能的划分方案中，找到一种分配方式使得每个部落能够收获的最小面积最大化",
-              "formal": "min_{S, A} { max_{p} { min_{i=1}^{n} { |S_i ∩ A_{p_i}| } } }"
+              "name": "range_bound",
+              "description": "最大化每个部落能够收获的最小面积",
+              "formal": "maximize(min(|S_i ∩ A_{p_i}|) for all permutations p of {1, 2, ..., n})"
             }
           ]
         }
@@ -67,34 +67,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "max_min",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求在所有可能划分方案下的最小保证收获面积"
+          "type": "max_min",
+          "description": "最大化最小值，即在所有可能的分配方案中，找到一种方案使得每个部落能够收获的最小面积尽可能大"
         }
       }
     ],
-    "description": "求在所有可能划分方案下的最小保证收获面积"
+    "description": "最大化最小值，即在所有可能的分配方案中，找到一种方案使得每个部落能够收获的最小面积尽可能大"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个部落收获的最小面积可以通过分配方案的最优解来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：无论春天和秋天如何划分土地，每个部落最终能够收获的最小面积是相同的，因为所有部落的地位是对等的。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过求解每个子问题的最优解来得到整个问题的最优解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个部落收获的最小面积可以通过分配方案的最优解来确定。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：无论春天和秋天如何划分土地，每个部落最终能够收获的最小面积是相同的，因为所有部落的地位是对等的。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过求解每个子问题的最优解来得到整个问题的最优解"
+    ]
   }
 }

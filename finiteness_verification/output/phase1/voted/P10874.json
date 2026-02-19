@@ -1,0 +1,154 @@
+{
+  "problem_id": "P10874",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 25000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 5000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false,
+            "directed": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 25000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 5000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": false,
+      "directed": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "图必须连通",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "最大化从起点到终点的最短路径长度（路径长度定义为路径经过的节点个数）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "图必须连通"
+            },
+            {
+              "name": "path_constraint",
+              "description": "最大化从起点到终点的最短路径长度（路径长度定义为路径经过的节点个数）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "在连通的前提下，最大化指定两点间最短路径长度"
+        }
+      }
+    ],
+    "description": "在连通的前提下，最大化指定两点间最短路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解构造得到，即在网格图中从 (A, B) 到 (C, D) 的最短路径长度可以通过其子路径的最短路径长度来计算。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在构建网格图的过程中，边的存在与否决定了路径长度的变化趋势。通过调整边的存在，可以使得从 (A, B) 到 (C, D) 的最短路径长度单调增加或减少。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步决策中，选择当前局部最优的边存在状态，以期望达到全局最优的最短路径长度。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在构建网格图时，每个节点的状态（是否可达）和路径长度可以通过前驱节点的状态和路径长度进行转移。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解构造得到，即在网格图中从 (A, B) 到 (C, D) 的最短路径长度可以通过其子路径的最短路径长度来计算。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在构建网格图的过程中，边的存在与否决定了路径长度的变化趋势。通过调整边的存在，可以使得从 (A, B) 到 (C, D) 的最短路径长度单调增加或减少。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false
+              }
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步决策中，选择当前局部最优的边存在状态，以期望达到全局最优的最短路径长度。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在构建网格图时，每个节点的状态（是否可达）和路径长度可以通过前驱节点的状态和路径长度进行转移。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

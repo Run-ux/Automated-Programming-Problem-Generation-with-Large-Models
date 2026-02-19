@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 5000000
@@ -28,14 +28,13 @@
       "result": {
         "constraints": [
           {
-            "name": "modulo_equation_solution",
+            "name": "modular_arithmetic",
             "description": "求解模方程 a^x ≡ b (mod p) 的最小自然数解 x",
-            "formal": "Find the smallest natural number x such that a^x ≡ b (mod p)"
+            "formal": "a^x ≡ b (mod p)"
           },
           {
-            "name": "no_solution_constraint",
-            "description": "如果无解，输出特定字符串 'No Solution'",
-            "formal": "If no solution exists, output 'No Solution'"
+            "name": "operation_limit",
+            "description": "当输入为 a=p=b=0 时，表示测试数据读入结束"
           }
         ]
       }
@@ -46,8 +45,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在满足给定同余方程的最小自然数解"
+        "type": "minimize_value",
+        "description": "求满足同余方程的最小自然数解"
       }
     }
   ],
@@ -56,9 +55,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，即大问题的解依赖于其子问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "divide_conquer",
+            "description": "大问题的解由子问题解合成，通过将原问题分解为更小规模的子问题来求解",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量，在扩展 BSGS 算法中，通过特定的状态转移规则保证算法的正确性",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

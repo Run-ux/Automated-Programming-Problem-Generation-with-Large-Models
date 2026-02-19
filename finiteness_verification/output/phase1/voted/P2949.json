@@ -1,0 +1,124 @@
+{
+  "problem_id": "P2949",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "选取元素的时间区间不重叠（每个时间单位最多选择一个任务）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每个任务必须在给定的截止时间之前完成",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "选取元素的时间区间不重叠（每个时间单位最多选择一个任务）",
+              "formal": "对于任意两个任务 i 和 j，如果选择了这两个任务，则它们的完成时间不能相同"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每个任务必须在给定的截止时间之前完成",
+              "formal": "对于每个任务 i，其完成时间 t 必须满足 t <= D_i"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化在给定时间限制内的总收益"
+        }
+      }
+    ],
+    "description": "最大化在给定时间限制内的总收益"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在某个时间点之前完成的任务集合的最优利润可以由更早时间点的任务集合的最优利润推导得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：通过优先选择截止时间早且利润高的任务，可以逐步构建出全局最优解。每个局部最优的选择（即每次选择当前可选任务中截止时间最早且利润最高的任务）最终导致全局最优。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在某个时间点之前完成的任务集合的最优利润可以由更早时间点的任务集合的最优利润推导得出。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：通过优先选择截止时间早且利润高的任务，可以逐步构建出全局最优解。每个局部最优的选择（即每次选择当前可选任务中截止时间最早且利润最高的任务）最终导致全局最优。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

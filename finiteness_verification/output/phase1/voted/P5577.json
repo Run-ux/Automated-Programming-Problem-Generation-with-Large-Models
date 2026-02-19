@@ -1,0 +1,155 @@
+{
+  "problem_id": "P5577",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 77759999
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 77759999
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subsequence_constraint",
+        "description": "考虑所有可能的子序列（包括空子序列）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "addition_without_carry",
+        "description": "加法不进位，即每一位独立相加后对 k 取模",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "每个数的值域在 [0, k^m) 之间",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "结果对 998244353 取模",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subsequence_constraint",
+              "description": "考虑所有可能的子序列（包括空子序列）",
+              "formal": "R ⊆ S, R can be empty"
+            },
+            {
+              "name": "addition_without_carry",
+              "description": "加法不进位，即每一位独立相加后对 k 取模",
+              "formal": "W(R) = (Σr_i) % k, for each r_i in R"
+            },
+            {
+              "name": "range_bound",
+              "description": "每个数的值域在 [0, k^m) 之间",
+              "formal": "0 ≤ s_i < k^m, for each s_i in S"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "结果对 998244353 取模",
+              "formal": "Ans[t] % 998244353"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求每个可能的和值的子序列方案数"
+        }
+      }
+    ],
+    "description": "求每个可能的和值的子序列方案数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，即每个子序列的权值和可以通过其子序列的权值和来计算。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：在不进位加法下，区间的和可以通过端点差值计算，即子序列的权值和可以通过其元素的 k 进制不进位加法直接得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：不同子序列的权值和计算是相互独立的，一个子序列的权值和不会影响另一个子序列的权值和。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，即每个子序列的权值和可以通过其子序列的权值和来计算。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：在不进位加法下，区间的和可以通过端点差值计算，即子序列的权值和可以通过其元素的 k 进制不进位加法直接得到。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：不同子序列的权值和计算是相互独立的，一个子序列的权值和不会影响另一个子序列的权值和。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

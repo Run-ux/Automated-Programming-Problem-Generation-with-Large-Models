@@ -1,0 +1,169 @@
+{
+  "problem_id": "P11735",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "linear_relation",
+        "description": "数列满足线性递推关系 25a_i + 20a_{i-1} = 12a_{i-2}，其中 i > 1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "negative_value_constraint",
+        "description": "数列中的所有元素非负 a_i >= 0, 对于任意 i >= 0",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "表格的长度为 n，操作个数为 m，且 1 <= l <= r <= n",
+        "confidence": "1/1"
+      },
+      {
+        "name": "xor_transformation",
+        "description": "输入中的 l 和 r 需要异或 lastans 来得到实际的 l 和 r，lastans 初始为 0",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "询问操作需要计算表格中某一段连续格子中的数的和，并输出结果模 10^9 + 9 的值",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "linear_relation",
+              "description": "数列满足线性递推关系 25a_i + 20a_{i-1} = 12a_{i-2}，其中 i > 1",
+              "formal": "25a_i + 20a_{i-1} = 12a_{i-2}, for i > 1"
+            },
+            {
+              "name": "negative_value_constraint",
+              "description": "数列中的所有元素非负 a_i >= 0, 对于任意 i >= 0",
+              "formal": "a_i >= 0, for all i >= 0"
+            },
+            {
+              "name": "range_bound",
+              "description": "表格的长度为 n，操作个数为 m，且 1 <= l <= r <= n",
+              "formal": "1 <= l <= r <= n"
+            },
+            {
+              "name": "xor_transformation",
+              "description": "输入中的 l 和 r 需要异或 lastans 来得到实际的 l 和 r，lastans 初始为 0",
+              "formal": "l' = l ^ lastans, r' = r ^ lastans, where lastans is the answer of the last query (initially 0)"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "询问操作需要计算表格中某一段连续格子中的数的和，并输出结果模 10^9 + 9 的值",
+              "formal": "sum(A[l:r]) % (10^9 + 9)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求区间内数的和"
+        }
+      }
+    ],
+    "description": "求区间内数的和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过端点差值计算区间和，适用于前缀和等结构",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：区间信息可通过子区间合并，适用于线段树等数据结构",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：数列的递推关系保持不变，满足特定的线性递推方程",
+        "confidence": "1/1",
+        "properties": {
+          "recurrence_relation": "25 * a_i + 20 * a_{i-1} = 12 * a_{i-2}"
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过端点差值计算区间和，适用于前缀和等结构",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：区间信息可通过子区间合并，适用于线段树等数据结构",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：数列的递推关系保持不变，满足特定的线性递推方程",
+              "properties": {
+                "recurrence_relation": "25 * a_i + 20 * a_{i-1} = 12 * a_{i-2}"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

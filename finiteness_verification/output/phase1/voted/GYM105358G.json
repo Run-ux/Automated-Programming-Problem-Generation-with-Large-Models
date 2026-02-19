@@ -1,0 +1,155 @@
+{
+  "problem_id": "GYM105358G",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "decrease_only_constraint",
+        "description": "每轮操作后，双方的筹码数均不会增加",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "当赢家的筹码数不少于输家时，游戏结束",
+        "confidence": "1/1"
+      },
+      {
+        "name": "probability_distribution",
+        "description": "每轮游戏中，Alice 赢的概率为 p0，Bob 赢的概率为 p1，平局的概率为 1 - p0 - p1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "negative_value_constraint",
+        "description": "如果赢家的筹码数少于输家，则输家失去与赢家当前筹码数相等的筹码",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "decrease_only_constraint",
+              "description": "每轮操作后，双方的筹码数均不会增加"
+            },
+            {
+              "name": "operation_limit",
+              "description": "当赢家的筹码数不少于输家时，游戏结束"
+            },
+            {
+              "name": "probability_distribution",
+              "description": "每轮游戏中，Alice 赢的概率为 p0，Bob 赢的概率为 p1，平局的概率为 1 - p0 - p1"
+            },
+            {
+              "name": "negative_value_constraint",
+              "description": "如果赢家的筹码数少于输家，则输家失去与赢家当前筹码数相等的筹码"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_probability",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_probability",
+          "description": "求一个参与者在多轮博弈中最终获胜的概率"
+        }
+      }
+    ],
+    "description": "求一个参与者在多轮博弈中最终获胜的概率"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：当前状态的最优解可以通过子问题的最优解来计算，即Alice和Bob在每一轮游戏中的胜率可以由他们各自拥有的筹码数决定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：游戏的状态（Alice和Bob的筹码数）根据每轮的结果进行更新，且更新规则保持一致。如果某一方赢得该轮，则其筹码数不变，另一方筹码数减少；若平局则双方筹码数均不变。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着游戏的进行，任意一方的筹码数量不会增加，只会减少或保持不变，直到游戏结束。",
+        "confidence": "1/1",
+        "properties": {
+          "non_increasing": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：当前状态的最优解可以通过子问题的最优解来计算，即Alice和Bob在每一轮游戏中的胜率可以由他们各自拥有的筹码数决定。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：游戏的状态（Alice和Bob的筹码数）根据每轮的结果进行更新，且更新规则保持一致。如果某一方赢得该轮，则其筹码数不变，另一方筹码数减少；若平局则双方筹码数均不变。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着游戏的进行，任意一方的筹码数量不会增加，只会减少或保持不变，直到游戏结束。",
+              "properties": {
+                "non_increasing": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "problem_id": "GYM105584D",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 100
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacency_relation",
+            "description": "路径中不能经过障碍物（图中的某些节点不可达）"
+          },
+          {
+            "name": "operation_type",
+            "description": "按照特定规则移动，遇到障碍物时转向（状态转移约束）",
+            "formal": "if (next_position in obstacles) then turn and move to next available position"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "初始位置在整点坐标上（起点约束）"
+          },
+          {
+            "name": "distinctness",
+            "description": "障碍物位置互不相同（唯一性约束）"
+          },
+          {
+            "name": "existence_requirement",
+            "description": "保证可以移动指定距离（可达性约束）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造满足给定移动规则和障碍物约束的最终位置坐标"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：虫子在网格上的移动遵循确定的状态转移规则，遇到障碍时转向下一个方向。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：虫子的移动距离是单调递增的，直到达到给定的距离d。",
+            "properties": {
+              "distance_monotonic": true
+            }
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：虫子的移动路径可以视为一个有向无环图（DAG），每个节点表示一个位置，边表示可能的移动方向。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

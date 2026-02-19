@@ -2,14 +2,14 @@
   "problem_id": "P14163",
   "source": "luogu",
   "input_structure": {
-    "type": "array",
+    "type": "matrix",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "array",
+          "type": "matrix",
           "length": {
             "min": 1,
             "max": 1000
@@ -27,7 +27,7 @@
         "round": 2,
         "status": "success",
         "result": {
-          "type": "array",
+          "type": "matrix",
           "length": {
             "min": 1,
             "max": 1000
@@ -45,7 +45,7 @@
         "round": 3,
         "status": "success",
         "result": {
-          "type": "array",
+          "type": "matrix",
           "length": {
             "min": 1,
             "max": 1000
@@ -75,19 +75,24 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "heap_structure",
-        "description": "排列 P 是堆序列，当且仅当存在一个排列 Q 满足 P = HEAPIFY(Q)",
+        "name": "permutation_constraint",
+        "description": "排列必须是从 1 到 (n-1) 的整数加上一个额外的 NaN 元素",
         "confidence": "3/3"
       },
       {
-        "name": "valid_values",
-        "description": "NaN 与任何浮点数 x 进行比较时，结果均为 False（除了不等于操作）",
+        "name": "ordering",
+        "description": "序列必须满足小根堆的性质，即每个节点的值不大于其子节点的值",
         "confidence": "3/3"
       },
       {
-        "name": "output_precision",
-        "description": "输出答案为整数 (pq^{-1} mod M)，其中 M = 10^9 + 7，q^{-1} 是满足 qq^{-1} ≡ 1 (mod M) 的整数",
-        "confidence": "2/3"
+        "name": "modular_arithmetic",
+        "description": "答案需要进行模运算，具体为 (pq^{-1} mod M)，其中 M = 10^9 + 7",
+        "confidence": "3/3"
+      },
+      {
+        "name": "distinctness",
+        "description": "NaN 与任何浮点数比较时，结果总是 False（除了不等于）",
+        "confidence": "3/3"
       }
     ],
     "all_rounds": [
@@ -97,24 +102,20 @@
         "result": {
           "constraints": [
             {
-              "name": "valid_values",
-              "description": "NaN 与任何浮点数 x 进行比较时，结果均为 False（除了不等于操作）",
-              "formal": "∀x, NaN ≥ x = False, NaN ≤ x = False, NaN > x = False, NaN < x = False, NaN = x = False, NaN ≠ x = True"
+              "name": "ordering",
+              "description": "序列必须满足小根堆的性质，即每个节点的值不大于其子节点的值"
             },
             {
-              "name": "heap_structure",
-              "description": "排列 P 是堆序列，当且仅当存在一个排列 Q 满足 P = HEAPIFY(Q)",
-              "formal": "P 是堆序列 ⇔ ∃Q, P = HEAPIFY(Q)"
+              "name": "distinctness",
+              "description": "NaN 与任何浮点数比较时，结果总是 False（除了不等于）"
             },
             {
-              "name": "equal_probability_of_packs",
-              "description": "从 n 个元素的所有排列中等概率随机选取一个排列，求被选中的排列是堆序列的概率",
-              "formal": "P(堆序列) = (堆序列的数量) / n!"
+              "name": "permutation_constraint",
+              "description": "排列必须是从 1 到 (n-1) 的整数加上一个额外的 NaN 元素"
             },
             {
-              "name": "output_precision",
-              "description": "输出答案为整数 (pq^{-1} mod M)，其中 M = 10^9 + 7，q^{-1} 是满足 qq^{-1} ≡ 1 (mod M) 的整数",
-              "formal": "输出 (pq^{-1} mod M), 其中 M = 10^9 + 7, q^{-1} 满足 qq^{-1} ≡ 1 (mod M)"
+              "name": "modular_arithmetic",
+              "description": "答案需要进行模运算，具体为 (pq^{-1} mod M)，其中 M = 10^9 + 7"
             }
           ]
         }
@@ -125,16 +126,21 @@
         "result": {
           "constraints": [
             {
-              "name": "valid_values",
-              "description": "NaN 与任何浮点数 x 进行比较时，结果均为 False（除了不等于运算）"
+              "name": "ordering",
+              "description": "序列必须满足小根堆的性质，即每个节点的值不大于其子节点的值"
             },
             {
-              "name": "heap_structure",
-              "description": "堆序列 P 必须满足存在一个排列 Q 使得 P = HEAPIFY(Q)，其中 Q 是从 1 到 (n-1) 的整数加上一个额外的 NaN 元素的排列"
+              "name": "distinctness",
+              "description": "NaN 与任何浮点数比较时，结果均为 False（除了不等于操作）",
+              "formal": "∀x, (NaN > x) = (NaN < x) = (NaN = x) = False, (NaN ≠ x) = True"
             },
             {
-              "name": "probability_range",
-              "description": "求被选中的排列是堆序列的概率，并输出为 (pq^{-1} mod M) 形式的整数，其中 M = 10^9 + 7，q^{-1} 是 q 在模 M 下的乘法逆元"
+              "name": "permutation_constraint",
+              "description": "排列必须包含从 1 到 (n-1) 的所有整数和一个额外的 NaN 元素"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "输出结果需要进行模运算，模数为 10^9 + 7"
             }
           ]
         }
@@ -145,24 +151,20 @@
         "result": {
           "constraints": [
             {
-              "name": "valid_values",
-              "description": "NaN 与任何浮点数 x 进行比较时，结果均为 False（除了不等于运算）",
-              "formal": "∀x, NaN ≥ x = False, NaN ≤ x = False, NaN > x = False, NaN < x = False, NaN = x = False, NaN ≠ x = True"
+              "name": "ordering",
+              "description": "序列必须满足小根堆的性质，即每个节点的值不大于其子节点的值"
             },
             {
-              "name": "heap_structure",
-              "description": "堆的性质：对于任意节点 i，其父节点 j/2 满足 h[j/2] ≤ h[i]",
-              "formal": "∀i, h[j/2] ≤ h[i], 其中 j/2 是满足 2x ≤ j 的最大整数 x"
+              "name": "distinctness",
+              "description": "NaN 与任何浮点数比较时，结果总是 False（除了不等于）"
             },
             {
-              "name": "heap_structure",
-              "description": "一个排列 P 是“堆序列”，当且仅当存在一个排列 Q 使得 P = HEAPIFY(Q)",
-              "formal": "P 是堆序列 ⇔ ∃Q, P = HEAPIFY(Q)"
+              "name": "permutation_constraint",
+              "description": "排列必须是从 1 到 (n-1) 的整数加上一个 NaN 组成的"
             },
             {
-              "name": "output_precision",
-              "description": "输出的答案是一个有理数 p/q，需要输出 (pq^{-1} mod M)，其中 M = 10^9 + 7，q^{-1} 是 q 在模 M 下的乘法逆元",
-              "formal": "输出 (pq^{-1} mod M), 其中 M = 10^9 + 7, q^{-1} 满足 qq^{-1} ≡ 1 (mod M)"
+              "name": "modular_arithmetic",
+              "description": "输出结果需要进行模 M 运算，其中 M = 10^9 + 7"
             }
           ]
         }
@@ -170,68 +172,127 @@
     ]
   },
   "objective": {
-    "type": "count",
+    "type": "maximize_probability",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "计算给定n个元素的所有排列中，满足堆序列条件的排列数量，并输出这些排列占总排列数的比例"
+          "type": "maximize_probability",
+          "description": "求特定排列出现的概率"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "求满足条件的堆序列的数量，即从n个元素的所有排列中等概率随机选取一个排列是堆序列的概率"
+          "type": "maximize_probability",
+          "description": "求特定排列出现的概率"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "计算给定n个元素的所有排列中，满足堆序列条件的排列数量，并输出该数量与总排列数之比的概率值"
+          "type": "maximize_probability",
+          "description": "求满足条件的排列的概率"
         }
       }
     ],
-    "description": "计算给定n个元素的所有排列中，满足堆序列条件的排列数量，并输出这些排列占总排列数的比例"
+    "description": "求特定排列出现的概率"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "3/3",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：堆序列的生成可以通过子问题的最优解组合而成，即通过HEAPIFY操作将子堆合并成大堆。",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在HEAPIFY过程中，每个节点的状态（位置）根据其子节点的状态进行调整，确保满足堆的性质。",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：NaN元素在堆中的位置不影响其他元素的相对顺序，可以视为一种对称变换。",
+        "confidence": "3/3",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的解可以通过子问题的解组合而成，即堆序列的概率可以通过计算更小规模的问题来得到。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：堆序列的生成可以通过子问题的最优解组合而成，即通过HEAPIFY操作将子堆合并成大堆。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在HEAPIFY过程中，每个节点的状态（位置）根据其子节点的状态进行调整，确保满足堆的性质。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：NaN元素在堆中的位置不影响其他元素的相对顺序，可以视为一种对称变换。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的解可以通过子问题的解组合而成，即堆序列的概率可以通过计算更小规模问题的概率来推导。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：堆序列的性质可以通过其子序列的性质递归定义，即一个序列是堆序列当且仅当其左右子序列也是堆序列。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在构建堆的过程中，每个节点的状态（是否满足堆的性质）只依赖于其子节点的状态。通过调整节点位置，可以确保整个序列满足堆的性质。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：NaN 与其他元素的比较结果始终为 False 或 True，不影响堆的结构。因此，NaN 可以被视为一个特殊的元素，其位置不影响堆的合法性。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的解可以通过子问题的解组合而成，即堆序列的概率可以通过计算更小规模问题的概率来得到。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：堆序列的生成可以通过子问题的最优解组合得到，即通过调整子树满足堆性质来构建整个堆。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在堆化过程中，每个节点的状态（值）调整后，其子树仍然保持堆的性质。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：NaN 与任何浮点数比较的结果都是 False，因此在堆中可以被视为一个特殊的元素，不影响其他元素的相对顺序。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "问题的解可以通过子问题的解组合而成，即堆序列的概率可以通过计算更小规模的问题来得到。"
+    ]
   }
 }

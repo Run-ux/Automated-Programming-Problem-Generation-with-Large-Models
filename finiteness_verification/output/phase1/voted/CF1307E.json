@@ -2,14 +2,14 @@
   "problem_id": "CF1307E",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 5000
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_exclusion",
-        "description": "选取的元素不能重复（每头牛只能被选择一次）",
+        "name": "subset_constraint",
+        "description": "选择两个不相交的子集，分别位于序列的左侧和右侧",
         "confidence": "1/1"
       },
       {
-        "name": "subset_sum_imbalance",
-        "description": "将集合划分为两个不相交的子集（左侧和右侧的牛群）",
+        "name": "flow_constraint",
+        "description": "每个元素（草）只能被一个子集中的元素（牛）消费一次",
         "confidence": "1/1"
       },
       {
-        "name": "bottleneck_path",
-        "description": "选取元素权重和不超过容量上限（每头牛的饥饿值不能超过其喜欢的草的甜度总和）",
+        "name": "exclusion",
+        "description": "每个子集中的元素（牛）不能有相同的属性组合（最喜欢的甜度和饥饿值）",
         "confidence": "1/1"
       }
     ],
@@ -61,17 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_exclusion",
-              "description": "选取的元素不能重复（每头牛只能被选择一次）"
+              "name": "subset_constraint",
+              "description": "选择两个不相交的子集，分别位于序列的左侧和右侧"
             },
             {
-              "name": "subset_sum_imbalance",
-              "description": "将集合划分为两个不相交的子集（左侧和右侧的牛群）"
+              "name": "flow_constraint",
+              "description": "每个元素（草）只能被一个子集中的元素（牛）消费一次"
             },
             {
-              "name": "bottleneck_path",
-              "description": "选取元素权重和不超过容量上限（每头牛的饥饿值不能超过其喜欢的草的甜度总和）",
-              "formal": "对于每个牛 i，∑(s_j) ≤ h_i，其中 s_j 是满足 f_i = s_j 的草的甜度"
+              "name": "exclusion",
+              "description": "每个子集中的元素（牛）不能有相同的属性组合（最喜欢的甜度和饥饿值）"
             }
           ]
         }
@@ -87,28 +86,46 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "最大化满足条件的元素数量，并计算达到该最大值的方案数"
+          "description": "最大化满足条件的子集大小，并计算满足该最大值的方案数（模10^9+7）"
         }
       }
     ],
-    "description": "最大化满足条件的元素数量，并计算达到该最大值的方案数"
+    "description": "最大化满足条件的子集大小，并计算满足该最大值的方案数（模10^9+7）"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择左右两侧的牛时，每侧的选择都基于该侧的最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：左侧和右侧的牛的选择是相互独立的，一侧的选择不影响另一侧的最优解",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过动态规划方法求解最大值和方案数",
-          "properties": {
-            "state_dependency": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择左右两侧的牛时，每侧的选择都基于该侧的最优解",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：左侧和右侧的牛的选择是相互独立的，一侧的选择不影响另一侧的最优解",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过动态规划方法求解最大值和方案数"
+    ]
   }
 }

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "matrix",
         "length": {
           "min": 2,
           "max": 100
@@ -24,7 +24,7 @@
       "round": 2,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "matrix",
         "length": {
           "min": 2,
           "max": 100
@@ -34,7 +34,7 @@
           "max": 100
         },
         "properties": {
-          "ordered": false
+          "ordered": true
         }
       }
     },
@@ -42,7 +42,7 @@
       "round": 3,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "matrix",
         "length": {
           "min": 2,
           "max": 100
@@ -64,14 +64,12 @@
       "result": {
         "constraints": [
           {
-            "name": "matrix_chain_multiplication",
-            "description": "矩阵链乘积的运算次数取决于矩阵的结合顺序，但不满足交换律。需要找到一种结合顺序使得总的运算次数最少。",
-            "formal": "minimize Σ_{i=1}^{n-1} (w_i * w_{i+1} * w_{i+2}) for all possible parenthesizations of M_1 × M_2 × ... × M_n"
+            "name": "ordering",
+            "description": "矩阵的乘法顺序不能改变，必须按照给定的顺序进行链乘积"
           },
           {
-            "name": "matrix_dimensions_consistency",
-            "description": "第 i 个矩阵 M_i 的大小为 w_i 行 w_{i+1} 列，即每个矩阵的列数必须与下一个矩阵的行数相匹配。",
-            "formal": "∀ i ∈ [1, n-1], M_i 的列数 = M_{i+1} 的行数"
+            "name": "range_bound",
+            "description": "相邻矩阵的维度必须兼容，即第 i 个矩阵的列数必须等于第 i+1 个矩阵的行数"
           }
         ]
       }
@@ -82,13 +80,12 @@
       "result": {
         "constraints": [
           {
-            "name": "matrix_chain_multiplication",
-            "description": "矩阵链乘积的运算次数取决于矩阵的结合顺序，但不改变矩阵的顺序。"
+            "name": "ordering",
+            "description": "矩阵链乘积的顺序不能改变，只能通过调整结合顺序来减少运算次数（结合律约束）"
           },
           {
-            "name": "matrix_dimensions_compatibility",
-            "description": "第 i 个矩阵 M_i 的大小为 w_i 行 w_{i+1} 列，相邻矩阵的列数和行数必须匹配才能进行乘法运算。",
-            "formal": "对于所有 1 ≤ i < n, w_{i+1} 必须等于 w_{i+2} 的行数。"
+            "name": "range_bound",
+            "description": "相邻矩阵的维度必须兼容，即第 i 个矩阵的列数等于第 i+1 个矩阵的行数（矩阵乘法约束）"
           }
         ]
       }
@@ -99,14 +96,12 @@
       "result": {
         "constraints": [
           {
-            "name": "matrix_chain_multiplication",
-            "description": "矩阵链乘积的运算次数取决于矩阵的结合顺序，但不满足交换律。需要通过合理安排结合顺序来减少运算次数。",
-            "formal": "minimize(∑_{i=1}^{n-1} w_i * w_{i+1} * w_{i+2})"
+            "name": "ordering",
+            "description": "矩阵链乘积的顺序不能改变，只能通过调整结合顺序来减少运算次数（结合律约束）"
           },
           {
-            "name": "matrix_dimensions",
-            "description": "第 i 个矩阵 M_i 的大小为 w_i 行 w_{i+1} 列，且矩阵乘法要求前一个矩阵的列数等于后一个矩阵的行数。",
-            "formal": "M_i ∈ R^{w_i × w_{i+1}}"
+            "name": "range_bound",
+            "description": "相邻矩阵的维度必须兼容，即第 i 个矩阵的列数等于第 i+1 个矩阵的行数（矩阵乘法约束）"
           }
         ]
       }
@@ -117,24 +112,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_cost",
-        "description": "求将给定的n个矩阵进行链乘积所需的最少运算次数"
+        "type": "minimize_value",
+        "description": "求矩阵链乘法的最小运算次数"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "min_cost",
-        "description": "求将给定的n个矩阵进行链乘积所需的最少运算次数"
+        "type": "minimize_value",
+        "description": "求矩阵链乘的最小运算次数"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "min_cost",
-        "description": "求将给定的n个矩阵进行链乘积所需的最少运算次数"
+        "type": "minimize_value",
+        "description": "求矩阵链乘法的最小运算次数"
       }
     }
   ],
@@ -143,27 +138,54 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优解可以通过子问题的最优解组合而成，即矩阵链乘法问题的最小运算次数可以由其子链的最小运算次数决定。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即矩阵链乘积的最小运算次数可以通过其子链的最小运算次数计算得出。",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解可以由子问题的解合成。对于任意一个矩阵链乘积问题，可以通过将其分解为两个子链乘积问题来求解，并将子问题的解合并以得到原问题的解。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的最优解可以通过子问题的最优解组合而成，即矩阵链乘法问题中，整个链乘积的最小运算次数可以由其任意分割点两侧子链乘积的最小运算次数决定。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即矩阵链乘积的最小运算次数可以由其子链的最小运算次数递归计算得出。",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解可以通过分解为较小规模的子问题来求解，每个子问题的解再合并以形成原问题的解。在本题中，通过将矩阵链分成两部分，分别求解这两部分的最小运算次数，然后合并结果。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优解可以通过子问题的最优解组合而成，即大问题的最小运算次数可以由其子链乘积的最小运算次数决定。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即矩阵链乘积的最小运算次数可以由其子链的最小运算次数决定。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在计算某个子链的最优解时，该子链内部的矩阵乘法顺序不影响其他子链的最优解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,89 @@
+{
+  "problem_id": "P7825",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 4,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "xor_subarray_sum_constraint",
+            "description": "长度为2的子串的异或和均为1（VS 串定义）",
+            "formal": "∀ i, (a[i] ⊕ a[i+1]) = 1"
+          },
+          {
+            "name": "interval_operation_constraint",
+            "description": "区间操作，包括填充0、填充1、取反",
+            "formal": "op ∈ {0, 1, 2} 且 l ≤ r"
+          },
+          {
+            "name": "subsequence_constraint",
+            "description": "查询区间内长度为k的子串中满足特定条件（VS 串）的数量",
+            "formal": "count(substrings of length k in [l, r] that are VS strings)"
+          },
+          {
+            "name": "longest_increasing_subsequence_constraint",
+            "description": "查询区间内最长的满足特定条件（VS 串）的子串长度",
+            "formal": "max(length of VS substring in [l, r])"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足条件的最长子数组长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_mergeable",
+            "description": "区间信息可通过子区间合并，适用于线段树等数据结构进行区间操作和查询",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间和可通过端点差值计算，适用于前缀和等技术处理区间性质",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移一致性，每个操作后区间的VS串性质能够通过定义的状态转移规则确定",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

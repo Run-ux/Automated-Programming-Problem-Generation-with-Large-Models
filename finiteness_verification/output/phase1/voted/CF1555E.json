@@ -1,0 +1,123 @@
+{
+  "problem_id": "CF1555E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "所选子集必须保证从点1到点m的连通性（图连通约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "所选子集中最大值与最小值之差应尽可能小（最大值减最小值约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "所选子集必须保证从点1到点m的连通性（图连通约束）"
+            },
+            {
+              "name": "range_bound",
+              "description": "所选子集中最大值与最小值之差应尽可能小（最大值减最小值约束）",
+              "formal": "min(max(w) - min(w)) for all w in selected subset"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "min_max",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "min_max",
+          "description": "最小化所选子集内最大值与最小值之差，同时保证子集满足连通性条件"
+        }
+      }
+    ],
+    "description": "最小化所选子集内最大值与最小值之差，同时保证子集满足连通性条件"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即选择一个最小成本的好子集可以通过选择覆盖特定点的最小成本子集来实现",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：通过合并子区间的信息（如最小值和最大值）来计算整个区间的最优解，适用于线段树或类似的区间数据结构",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即选择一个最小成本的好子集可以通过选择覆盖特定点的最小成本子集来实现",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：通过合并子区间的信息（如最小值和最大值）来计算整个区间的最优解，适用于线段树或类似的区间数据结构",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -4,11 +4,26 @@
   "dimension": "invariant",
   "round": 1,
   "result": {
-    "name": "state_dependency",
-    "description": "当前状态只依赖有限的前序状态，具体表现为栈顶元素决定下一步操作的可能性",
-    "properties": {
-      "stack_top_influence": true
-    }
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：栈中元素的顺序和当前处理位置满足特定的转移规则，确保能够按照目标顺序输出。",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：Sol 和 Codie 的处理顺序是单调递增的，且栈的操作（入栈和出栈）也保持了这种单调性。",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个问题的处理（从 Sol 获取解决方案并传递给 Codie）可以视为独立的子问题，不影响其他问题的处理。",
+        "properties": {}
+      }
+    ]
   },
   "status": "success"
 }

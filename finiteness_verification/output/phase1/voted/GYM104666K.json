@@ -2,14 +2,14 @@
   "problem_id": "GYM104666K",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "polygon",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "polygon",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 4,
             "max": 400
@@ -41,23 +41,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "path_in_polygon_region",
-        "description": "路径必须在多边形内部或边界上",
+        "name": "path_constraint",
+        "description": "路径必须在给定的多边形边界内，如果路径离开边界，则通过直线飞行连接到另一侧边界继续行走。",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "相邻节点的高度差固定（屋顶坡度相同）",
+        "name": "connectivity",
+        "description": "多边形必须是简单多边形，即其边界不自交且闭合。",
         "confidence": "1/1"
       },
       {
-        "name": "path_boundary_crossing",
-        "description": "路径离开多边形边界时，需沿直线飞行至另一边界点继续行走",
-        "confidence": "1/1"
-      },
-      {
-        "name": "source_node_fixed",
-        "description": "起点和终点固定",
+        "name": "distance_bound",
+        "description": "计算路径长度时，路径必须精确到绝对或相对误差小于 10^-7。",
         "confidence": "1/1"
       }
     ],
@@ -68,20 +63,19 @@
         "result": {
           "constraints": [
             {
-              "name": "path_in_polygon_region",
-              "description": "路径必须在多边形内部或边界上"
+              "name": "path_constraint",
+              "description": "路径必须在给定的多边形边界内，如果路径离开边界，则通过直线飞行连接到另一侧边界继续行走。",
+              "formal": "对于路径 P，若 P 离开多边形 Z 的边界，则存在一条直线 L 连接离开点和进入点，使得 P 在 Z 内部的部分和 L 组成完整路径。"
             },
             {
-              "name": "adjacent_difference",
-              "description": "相邻节点的高度差固定（屋顶坡度相同）"
+              "name": "connectivity",
+              "description": "多边形必须是简单多边形，即其边界不自交且闭合。",
+              "formal": "Z 是一个简单多边形，其边界是一个闭合曲线，不与自身相交。"
             },
             {
-              "name": "path_boundary_crossing",
-              "description": "路径离开多边形边界时，需沿直线飞行至另一边界点继续行走"
-            },
-            {
-              "name": "source_node_fixed",
-              "description": "起点和终点固定"
+              "name": "distance_bound",
+              "description": "计算路径长度时，路径必须精确到绝对或相对误差小于 10^-7。",
+              "formal": "路径长度 L 的计算结果满足 |L - L_true| / L_true < 10^-7 或 |L - L_true| < 10^-7。"
             }
           ]
         }
@@ -89,14 +83,14 @@
     ]
   },
   "objective": {
-    "type": "minimize_distance",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_distance",
+          "type": "minimize_value",
           "description": "求两点间最短路径长度"
         }
       }
@@ -104,23 +98,73 @@
     "description": "求两点间最短路径长度"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "路径长度的计算过程中，路径方向始终朝向目标点，且路径长度单调增加",
+        "confidence": "1/1",
+        "properties": {
+          "direction_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "从起点到终点的最短路径可以通过子路径的最优解组合而成",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移过程中，当前位置的状态仅依赖于前一个位置的状态和当前操作",
+        "confidence": "1/1",
+        "properties": {
+          "transition_consistency": true
+        }
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "路径在不同区域（如屋顶和平面）的信息可以合并以计算总路径长度",
+        "confidence": "1/1",
+        "properties": {
+          "mergeable_intervals": true
+        }
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "路径长度计算过程中，从起点到终点的移动方向始终保持一致，且路径上的每一步都朝着目标点前进，不会出现回退的情况。",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": false,
-            "window_shrinkable": false
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "路径长度的计算过程中，路径方向始终朝向目标点，且路径长度单调增加",
+              "properties": {
+                "direction_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "从起点到终点的最短路径可以通过子路径的最优解组合而成",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移过程中，当前位置的状态仅依赖于前一个位置的状态和当前操作",
+              "properties": {
+                "transition_consistency": true
+              }
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "路径在不同区域（如屋顶和平面）的信息可以合并以计算总路径长度",
+              "properties": {
+                "mergeable_intervals": true
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "路径长度计算过程中，从起点到终点的移动方向始终保持一致，且路径上的每一步都朝着目标点前进，不会出现回退的情况。"
+    ]
   }
 }

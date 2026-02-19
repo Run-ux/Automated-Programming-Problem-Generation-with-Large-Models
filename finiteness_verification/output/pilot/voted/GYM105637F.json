@@ -67,18 +67,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "corner_heights",
-        "description": "子区域的四个角的高度必须高于该子区域内的其他所有单元格的高度",
+        "name": "range_bound",
+        "description": "子矩阵的四个角的高度必须大于该子矩阵内的其他所有单元格的高度",
         "confidence": "3/3"
       },
       {
-        "name": "distinct_heights",
-        "description": "每个单元格的高度是唯一的，且在1到nm之间（包括1和nm）",
-        "confidence": "3/3"
-      },
-      {
-        "name": "sub_area_size",
-        "description": "子区域的宽度和高度至少为2",
+        "name": "distinctness",
+        "description": "所有单元格的高度是唯一的",
         "confidence": "3/3"
       }
     ],
@@ -89,19 +84,19 @@
         "result": {
           "constraints": [
             {
-              "name": "sub_area_size",
-              "description": "子区域的宽度和高度至少为2",
-              "formal": "width >= 2 and height >= 2"
+              "name": "range_bound",
+              "description": "子矩阵的四个角的高度必须大于该子矩阵内的其他所有单元格的高度",
+              "formal": "对于任意 2x2 或更大的子矩阵 S，S 的四个角的高度 > S 内其他所有单元格的高度"
             },
             {
-              "name": "corner_heights",
-              "description": "子区域的四个角的高度必须高于该子区域内的其他所有单元格的高度",
-              "formal": "for all (i, j) in sub-area, if (i, j) is not a corner then height[i][j] < min(height[corners]) where corners = {(0, 0), (0, width-1), (height-1, 0), (height-1, width-1)}"
+              "name": "distinctness",
+              "description": "所有单元格的高度是唯一的",
+              "formal": "heights[i][j] 是唯一的，其中 1 ≤ i ≤ n, 1 ≤ j ≤ m"
             },
             {
-              "name": "distinct_heights",
-              "description": "每个单元格的高度是唯一的，且在1到nm之间（包括1和nm）",
-              "formal": "1 <= height[i][j] <= n*m and all heights are distinct"
+              "name": "range_bound",
+              "description": "子矩阵的宽度和高度至少为 2",
+              "formal": "对于任意子矩阵 S，width(S) ≥ 2 且 height(S) ≥ 2"
             }
           ]
         }
@@ -112,19 +107,16 @@
         "result": {
           "constraints": [
             {
-              "name": "sub_area_size",
-              "description": "子区域的宽度和高度至少为2",
-              "formal": "width >= 2 and height >= 2"
+              "name": "range_bound",
+              "description": "矩形子区域的四个角的高度必须大于该子区域内的其他所有单元格的高度"
             },
             {
-              "name": "corner_heights",
-              "description": "子区域的四个角的高度必须高于该子区域内的其他所有单元格的高度",
-              "formal": "for all (i, j) in sub-area, if (i, j) is not a corner, then height[i][j] < min(height[corners]) where corners are the four corners of the sub-area"
+              "name": "range_bound",
+              "description": "矩形子区域的宽度和高度都至少为2"
             },
             {
-              "name": "distinct_heights",
-              "description": "每个单元格的高度是唯一的",
-              "formal": "all cell heights are distinct"
+              "name": "distinctness",
+              "description": "所有单元格的高度都是唯一的"
             }
           ]
         }
@@ -135,19 +127,19 @@
         "result": {
           "constraints": [
             {
-              "name": "sub_area_size",
-              "description": "子区域的宽度和高度至少为2",
-              "formal": "width >= 2 and height >= 2"
+              "name": "range_bound",
+              "description": "矩形子区域的四个角的高度必须大于该子区域内的其他所有单元格的高度",
+              "formal": "对于任意 2x2 及以上的子矩形 R，R 的四个角的高度 h1, h2, h3, h4 必须满足 h1 > h, h2 > h, h3 > h, h4 > h，其中 h 是 R 内除四个角外的任意单元格的高度"
             },
             {
-              "name": "corner_heights",
-              "description": "子区域的四个角的高度必须高于该子区域内的其他所有单元格的高度",
-              "formal": "for all (i, j) in sub-area, if (i, j) is not a corner, then height[i][j] < min(height[corners]) where corners are the four corners of the sub-area"
+              "name": "distinctness",
+              "description": "所有单元格的高度是唯一的",
+              "formal": "cell_heights[i][j] ≠ cell_heights[p][q] 对于所有 (i, j) ≠ (p, q)"
             },
             {
-              "name": "distinct_heights",
-              "description": "每个单元格的高度是唯一的，且在1到nm之间（包括1和nm）",
-              "formal": "heights are distinct and 1 <= height[i][j] <= n * m for all (i, j)"
+              "name": "range_bound",
+              "description": "矩形子区域的宽度和高度至少为 2",
+              "formal": "对于任意子矩形 R，其宽度 w 和高度 h 满足 w ≥ 2 且 h ≥ 2"
             }
           ]
         }
@@ -155,68 +147,117 @@
     ]
   },
   "objective": {
-    "type": "count",
+    "type": "enumeration",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计满足条件的子区域数量，这些子区域的四个角的高度都高于该子区域内的其他单元格高度"
+          "type": "enumeration",
+          "description": "求满足条件的子矩形数量"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计满足条件的矩形子区域数量，这些子区域的四个角的高度大于其余所有单元格的高度"
+          "type": "enumeration",
+          "description": "求满足条件的子矩形数量"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计满足条件的矩形子区域数量，这些子区域的四个角的高度都高于该子区域内其他所有单元格的高度"
+          "type": "enumeration",
+          "description": "求满足条件的子矩形数量"
         }
       }
     ],
-    "description": "统计满足条件的子区域数量，这些子区域的四个角的高度都高于该子区域内的其他单元格高度"
+    "description": "求满足条件的子矩形数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "3/3",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，即一个矩形区域的有效性可以由其子矩形区域的有效性推导得出。",
+        "confidence": "3/3",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于其子问题的最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，即一个矩形区域的有效性可以由其子矩形区域的有效性推导得出。",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：大问题的解可以通过分解为更小的子问题的解来合成。在本题中，通过将矩阵划分为更小的部分，分别计算每个部分的有效子矩形数量，然后合并结果。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的解可以通过子问题的解组合而成，即一个矩形区域的有效性可以由其子矩形区域的有效性推导出来。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构建，即一个矩形区域的有效性可以通过其子矩形区域的有效性来判断。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在寻找符合条件的矩形区域时，矩形的边界可以单调扩展或收缩，以确保四个角的高度始终大于内部其他点的高度。",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：通过合并较小的子矩形区域的信息，可以有效地计算较大矩形区域的合法性。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于其子区域的解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，即一个矩形区域的有效性可以由其子矩形区域的有效性推导得出。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在寻找符合条件的矩形区域时，随着矩形区域的扩展或收缩，某些性质（如角点高度）保持单调变化。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false,
+                "window_shrinkable": true
+              }
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：通过合并较小的子矩形区域的信息，可以得到较大矩形区域的信息。例如，通过合并四个小矩形的信息来判断一个大矩形是否满足条件。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于其子问题的最优解。"
+    ]
   }
 }

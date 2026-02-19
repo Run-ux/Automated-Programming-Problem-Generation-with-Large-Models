@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 1,
           "max": 500
@@ -26,9 +26,14 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_modulo_values",
+            "name": "distinctness",
             "description": "矩阵中不同元素的数量不超过 K",
-            "formal": "|distinct(A)| <= K"
+            "formal": "|distinct(A)| <= k"
+          },
+          {
+            "name": "range_bound",
+            "description": "矩阵是 n x n 的方阵",
+            "formal": "A is an n x n matrix"
           }
         ]
       }
@@ -39,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_cost",
-        "description": "求将矩阵中的不同整数数量调整为目标值所需的最少操作次数"
+        "type": "minimize_count",
+        "description": "求最小操作次数以使矩阵中恰好包含指定数量的不同整数"
       }
     }
   ],
@@ -49,9 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过选择保留或修改某些元素来达到目标数量的最小操作次数",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过选择保留或修改某些元素来达到目标数量的最小操作次数",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，优先选择当前情况下对最终结果贡献最大的操作，如优先保留出现频率较高的元素，以减少总的操作次数",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

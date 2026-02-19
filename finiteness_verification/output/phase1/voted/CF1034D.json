@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "interval_union",
-        "description": "区间并的总长度（定义为从第 l 个到第 r 个区间的并集的总长度）",
+        "name": "subset_constraint",
+        "description": "选择的子区间数量不超过 K",
         "confidence": "1/1"
       },
       {
-        "name": "k_selection",
-        "description": "选择恰好 k 个不同的区间组合，使得这些区间组合的值之和最大",
+        "name": "sum_constraint",
+        "description": "所选子区间的并集长度之和最大化",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "interval_union",
-              "description": "区间并的总长度（定义为从第 l 个到第 r 个区间的并集的总长度）"
+              "name": "subset_constraint",
+              "description": "选择的子区间数量不超过 K",
+              "formal": "|S| = k, S ⊆ {1, 2, ..., n}"
             },
             {
-              "name": "k_selection",
-              "description": "选择恰好 k 个不同的区间组合，使得这些区间组合的值之和最大"
+              "name": "sum_constraint",
+              "description": "所选子区间的并集长度之和最大化",
+              "formal": "maximize Σ_{[l, r] ∈ S} (length(∪_{i=l}^r [a_i, b_i]))"
             }
           ]
         }
@@ -69,37 +71,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_sum",
+    "type": "maximize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_sum",
-          "description": "最大化选取的区间集合的权值和"
+          "type": "maximize_value",
+          "description": "最大化选取的k个区间集合的并集长度总和"
         }
       }
     ],
-    "description": "最大化选取的区间集合的权值和"
+    "description": "最大化选取的k个区间集合的并集长度总和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即选择k个区间段的最大值可以由更小子区间的最大值组合而成",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：任意两个不相交区间的并集长度等于这两个区间长度之和；对于有重叠部分的区间，其并集长度可通过端点差值计算",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：多个区间的并集信息可以通过这些区间的子区间信息合并得到，适用于处理区间覆盖与合并的问题",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过动态规划求解区间合并的最大值",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即选择k个区间段的最大值可以由更小子区间的最大值组合而成",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：任意两个不相交区间的并集长度等于这两个区间长度之和；对于有重叠部分的区间，其并集长度可通过端点差值计算",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：多个区间的并集信息可以通过这些区间的子区间信息合并得到，适用于处理区间覆盖与合并的问题",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过动态规划求解区间合并的最大值"
+    ]
   }
 }

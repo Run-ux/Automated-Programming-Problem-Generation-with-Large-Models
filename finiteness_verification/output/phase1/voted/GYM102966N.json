@@ -1,0 +1,151 @@
+{
+  "problem_id": "GYM102966N",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100
+          },
+          "properties": {
+            "connected": false,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100
+    },
+    "properties": {
+      "connected": false,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "选取路径的权重和不超过容量上限（车辆的最大载油量）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "每个仓库只能接收一个包裹，且每个包裹必须送到不同的仓库",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "只能在已知路径上移动，即只能在已测量燃料消耗的仓库对之间移动",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "可以在有加油泵的仓库多次加油，但每次加油量不能超过该仓库的加油上限",
+        "confidence": "1/1"
+      },
+      {
+        "name": "cyclic_shift_constraint",
+        "description": "必须从起点出发并返回起点",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "选取路径的权重和不超过容量上限（车辆的最大载油量）"
+            },
+            {
+              "name": "distinctness",
+              "description": "每个仓库只能接收一个包裹，且每个包裹必须送到不同的仓库"
+            },
+            {
+              "name": "path_constraint",
+              "description": "只能在已知路径上移动，即只能在已测量燃料消耗的仓库对之间移动"
+            },
+            {
+              "name": "operation_limit",
+              "description": "可以在有加油泵的仓库多次加油，但每次加油量不能超过该仓库的加油上限"
+            },
+            {
+              "name": "cyclic_shift_constraint",
+              "description": "必须从起点出发并返回起点"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足条件的最小初始值"
+        }
+      }
+    ],
+    "description": "求满足条件的最小初始值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过动态规划方法求解时，当前状态的最优解依赖于之前状态的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "flow_conservation",
+        "description": "流守恒：在路径选择过程中，从起点出发到终点返回的过程中，车辆的燃料总量（包括初始装载和途中加油）必须满足每段路径的消耗需求，且最终回到起点时燃料量非负。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过动态规划方法求解时，当前状态的最优解依赖于之前状态的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "flow_conservation",
+              "description": "流守恒：在路径选择过程中，从起点出发到终点返回的过程中，车辆的燃料总量（包括初始装载和途中加油）必须满足每段路径的消耗需求，且最终回到起点时燃料量非负。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -2,14 +2,14 @@
   "problem_id": "GYM101955L",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 5000
@@ -19,7 +19,7 @@
             "max": 1000
           },
           "properties": {
-            "inferred": true
+            "ordered": false
           }
         }
       }
@@ -33,19 +33,19 @@
       "max": 1000
     },
     "properties": {
-      "inferred": true
+      "ordered": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_exclusion",
-        "description": "所有影响区域互不相交（圆与圆之间没有重叠部分）",
+        "name": "intersection_constraint",
+        "description": "所有机械臂的影响区域互不相交且没有一个区域包含整个原始模具（几何约束：互斥）",
         "confidence": "1/1"
       },
       {
-        "name": "subset_inclusion",
-        "description": "没有任何一个影响区域包含整个原始模具（即每个圆的半径小于原始圆的半径）",
+        "name": "distance_bound",
+        "description": "剩余区域的直径是该区域内任意两点间距离的最大值（几何约束：距离约束）",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_exclusion",
-              "description": "所有影响区域互不相交（圆与圆之间没有重叠部分）"
+              "name": "intersection_constraint",
+              "description": "所有机械臂的影响区域互不相交且没有一个区域包含整个原始模具（几何约束：互斥）",
+              "formal": "∀ i, j (i ≠ j) : circle(x_i, y_i, r_i) ∩ circle(x_j, y_j, r_j) = ∅ 且 ∀ i: circle(x_i, y_i, r_i) ⊄ circle(0, 0, R)"
             },
             {
-              "name": "subset_inclusion",
-              "description": "没有任何一个影响区域包含整个原始模具（即每个圆的半径小于原始圆的半径）"
+              "name": "distance_bound",
+              "description": "剩余区域的直径是该区域内任意两点间距离的最大值（几何约束：距离约束）",
+              "formal": "diameter(S) = sup { d(p, q) | p, q ∈ S }"
             }
           ]
         }
@@ -84,19 +86,39 @@
     "description": "求剩余区域的最大直径"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "convexity",
+        "description": "凸性不变量：剩余区域的边界始终为凸多边形，确保直径计算基于最远点对",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个机械臂切割后的剩余部分可以独立处理，不影响其他部分的计算",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：剩余区域的直径可以通过子问题（每个机械臂切割后的区域）的解组合而成",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "convexity",
+              "description": "凸性不变量：剩余区域的边界始终为凸多边形，确保直径计算基于最远点对",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个机械臂切割后的剩余部分可以独立处理，不影响其他部分的计算",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：剩余区域的直径可以通过子问题（每个机械臂切割后的区域）的解组合而成"
+    ]
   }
 }

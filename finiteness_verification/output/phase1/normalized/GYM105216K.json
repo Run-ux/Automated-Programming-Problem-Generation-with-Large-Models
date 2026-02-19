@@ -6,10 +6,10 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
-          "max": 2
+          "max": 1000000
         },
         "value_range": {
           "min": 1,
@@ -28,14 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_modulo_values",
-            "description": "区间内不同元素数量不超过 K",
-            "formal": "|distinct(A[l:r])| <= K"
+            "name": "distinctness",
+            "description": "区间内不同元素数量不超过 K（即 Jose 拥有的每台电脑的名字必须唯一）",
+            "formal": "|distinct(A[1:k])| <= k"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "选取的元素不能重复（集合中无相同元素）",
-            "formal": "∀i, j ∈ A, i ≠ j → A[i] ≠ A[j]"
+            "name": "frequency_bound",
+            "description": "每个元素的出现频次不超过 1（即每台电脑的名字在当前拥有的电脑中只能出现一次）",
+            "formal": "freq(x) <= 1 for all x in A[1:k]"
           }
         ]
       }
@@ -46,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_expected_value",
-        "description": "求期望值"
+        "type": "maximize_probability",
+        "description": "求期望值，即最大化事件发生的期望周数"
       }
     }
   ],
@@ -56,12 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，当前状态的期望值依赖于前序状态的期望值",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：系统从一个状态转移到另一个状态的过程中，状态的合法性保持不变。具体表现为新购入的计算机名称与已有计算机名称不重复时，系统状态合法。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建。在本题中，期望值的计算可以分解为更小规模的问题，即当前拥有i台计算机时的期望值可以通过已知的拥有i-1台计算机时的期望值来递推得到。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

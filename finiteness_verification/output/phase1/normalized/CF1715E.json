@@ -1,0 +1,85 @@
+{
+  "problem_id": "CF1715E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "connected": false,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制（最多可以进行 k 次特定操作）",
+            "formal": "operations <= k"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "流量/容量约束（每条边的权重和路径选择受到限制）",
+            "formal": "sum(w(u, v)) for all (u, v) in path"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径约束（从起点到每个终点的最短路径，考虑特定操作次数限制）",
+            "formal": "min_time(path) with at most k operations"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求从起点到各点的最短路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从起点到任意城市的最短路径可以通过其前驱城市的最短路径加上到达该城市的代价来计算",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前状态（城市）的最优解依赖于前一状态（前驱城市）的最优解，且转移过程中的代价是确定的",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解由子问题解合成，通过限制飞行次数将问题分解为多个子问题，每个子问题的解可以合并得到最终解",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

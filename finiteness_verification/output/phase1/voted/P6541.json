@@ -1,0 +1,158 @@
+{
+  "problem_id": "P6541",
+  "source": "luogu",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 2,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 300000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false,
+            "directed": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 300000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": false,
+      "directed": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "探索操作的次数不能超过 T 次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "图必须是连通的树形结构",
+        "confidence": "1/1"
+      },
+      {
+        "name": "existence_requirement",
+        "description": "每次探索操作时，选择的起始结点必须是已知的",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "每次探索操作时，选择的两个结点必须不同",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "游戏的目标是通过至多 T 次探索操作，使所有结点的状态都成为已知的",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "探索操作的次数不能超过 T 次",
+              "formal": "explore_calls <= T"
+            },
+            {
+              "name": "connectivity",
+              "description": "图必须是连通的树形结构",
+              "formal": "G is a connected tree with n nodes and n-1 edges"
+            },
+            {
+              "name": "existence_requirement",
+              "description": "每次探索操作时，选择的起始结点必须是已知的",
+              "formal": "x in known_nodes"
+            },
+            {
+              "name": "distinctness",
+              "description": "每次探索操作时，选择的两个结点必须不同",
+              "formal": "x != y"
+            },
+            {
+              "name": "coverage",
+              "description": "游戏的目标是通过至多 T 次探索操作，使所有结点的状态都成为已知的",
+              "formal": "all nodes must be known after at most T explore calls"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否能在给定的操作次数限制内，使所有结点状态变为已知"
+        }
+      }
+    ],
+    "description": "判断是否能在给定的操作次数限制内，使所有结点状态变为已知"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每次探索操作后，已知结点集合单调增加，且新的已知结点是通过已知结点和任意结点的最短路径上的第二个结点获得的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在树形结构中，从根节点开始逐步扩展已知结点，确保每个新发现的结点都是通过已知结点的直接邻居获得的，从而保证了探索过程中的顺序依赖。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次探索操作后，已知结点集合单调增加，且新的已知结点是通过已知结点和任意结点的最短路径上的第二个结点获得的。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在树形结构中，从根节点开始逐步扩展已知结点，确保每个新发现的结点都是通过已知结点的直接邻居获得的，从而保证了探索过程中的顺序依赖。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

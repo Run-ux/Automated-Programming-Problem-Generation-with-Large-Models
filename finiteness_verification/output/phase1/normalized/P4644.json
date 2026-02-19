@@ -1,0 +1,86 @@
+{
+  "problem_id": "P4644",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 86399
+        },
+        "properties": {
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "coverage",
+            "description": "时间区间 [M, E] 必须被完全覆盖（覆盖约束）",
+            "formal": "∀ t ∈ [M, E], ∃ i, T1[i] ≤ t ≤ T2[i]"
+          },
+          {
+            "name": "intersection",
+            "description": "每个工作时间段 [T1, T2] 必须在 [M, E] 内（区间重叠约束）",
+            "formal": "∀ i, M ≤ T1[i] ≤ T2[i] ≤ E"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "选择的奶牛总费用最小化（成本最小化约束）",
+            "formal": "minimize(∑ S[i]) where i is in the selected set of cows"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足覆盖区间条件的最小总费用"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在某个时间点之前的最优解可以用于构建整个时间段的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间覆盖不变量：通过选择若干个区间来完全覆盖目标区间，且这些区间的并集等于目标区间。",
+            "properties": {
+              "full_coverage": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择当前最优（如费用最低）的区间来覆盖未覆盖的部分，局部最优选择导致全局最优。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

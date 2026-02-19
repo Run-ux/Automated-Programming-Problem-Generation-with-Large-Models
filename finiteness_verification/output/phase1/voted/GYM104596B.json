@@ -2,14 +2,14 @@
   "problem_id": "GYM104596B",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "weighted_directed_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "weighted_directed_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 2,
             "max": 1000
@@ -43,23 +43,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "orientation_constraint",
-        "description": "节点之间的转向角度受限，不能超过给定的最大角度",
+        "name": "geometric_angle_constraint",
+        "description": "在每个节点处，从一条边进入后，只能转向特定角度范围内的其他边（例如，只能转90度或更小的角度）",
         "confidence": "1/1"
       },
       {
-        "name": "vertex_repetition_permissible",
-        "description": "不允许在节点处进行180度转弯（U-turn）",
+        "name": "distance_cost_constraint",
+        "description": "每条边的旅行时间可能因方向不同而不同",
         "confidence": "1/1"
       },
       {
-        "name": "edge_weight_asymmetry",
-        "description": "图中的边可能具有不对称的旅行时间，即双向边的时间可能不同",
+        "name": "reverse_ordering_constraint",
+        "description": "不允许在任何节点进行180度转弯（即U-turn）",
         "confidence": "1/1"
       },
       {
-        "name": "cyclic_path_length_constraint",
-        "description": "起点和终点必须是同一个节点",
+        "name": "fixed_start_node",
+        "description": "起点和终点必须是同一个节点（即生物站）",
         "confidence": "1/1"
       }
     ],
@@ -70,24 +70,20 @@
         "result": {
           "constraints": [
             {
-              "name": "orientation_constraint",
-              "description": "节点之间的转向角度受限，不能超过给定的最大角度",
-              "formal": "对于任意两个相邻边 (u, v) 和 (v, w)，转向角度 |angle(u, v, w)| ≤ α"
+              "name": "geometric_angle_constraint",
+              "description": "在每个节点处，从一条边进入后，只能转向特定角度范围内的其他边（例如，只能转90度或更小的角度）"
             },
             {
-              "name": "vertex_repetition_permissible",
-              "description": "不允许在节点处进行180度转弯（U-turn）",
-              "formal": "对于任意边 (u, v)，不允许从 u 到 v 再直接返回 u"
+              "name": "distance_cost_constraint",
+              "description": "每条边的旅行时间可能因方向不同而不同"
             },
             {
-              "name": "edge_weight_asymmetry",
-              "description": "图中的边可能具有不对称的旅行时间，即双向边的时间可能不同",
-              "formal": "对于任意边 (u, v)，可能存在 t(u, v) ≠ t(v, u)"
+              "name": "reverse_ordering_constraint",
+              "description": "不允许在任何节点进行180度转弯（即U-turn）"
             },
             {
-              "name": "cyclic_path_length_constraint",
-              "description": "起点和终点必须是同一个节点",
-              "formal": "路径必须从节点 1 开始并回到节点 1"
+              "name": "fixed_start_node",
+              "description": "起点和终点必须是同一个节点（即生物站）"
             }
           ]
         }
@@ -95,34 +91,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求从起点到指定点再返回起点的最小代价路径"
+          "type": "minimize_value",
+          "description": "求从起点出发到达指定点再返回起点的最短路径长度"
         }
       }
     ],
-    "description": "求从起点到指定点再返回起点的最小代价路径"
+    "description": "求从起点出发到达指定点再返回起点的最短路径长度"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，适用于动态规划方法求解最短路径问题。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态到另一个状态的转移是基于当前状态和允许的转向角度限制，确保了状态机的一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "flow_conservation",
+        "description": "流守恒：在每个节点（除了起点和终点），流入的流量等于流出的流量，保证了路径的连通性和合法性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，适用于动态规划求解最短路径问题。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，适用于动态规划方法求解最短路径问题。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态到另一个状态的转移是基于当前状态和允许的转向角度限制，确保了状态机的一致性。",
+              "properties": {}
+            },
+            {
+              "name": "flow_conservation",
+              "description": "流守恒：在每个节点（除了起点和终点），流入的流量等于流出的流量，保证了路径的连通性和合法性。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，适用于动态规划求解最短路径问题。"
+    ]
   }
 }

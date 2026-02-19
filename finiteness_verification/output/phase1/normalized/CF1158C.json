@@ -1,0 +1,87 @@
+{
+  "problem_id": "CF1158C",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": -1,
+          "max": 500001
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "permutation_constraint",
+            "description": "给定的序列是一个排列，即包含从 1 到 n 的所有整数且每个整数恰好出现一次"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "对于每个位置 i，next_i 表示最小的 j (i < j ≤ n)，使得 p_j > p_i；如果不存在这样的 j，则 next_i = n + 1"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "如果 next_i 的值丢失，则 next_i = -1"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "生成的排列必须满足所有未丢失的 next_i 值正确"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一个满足给定条件的排列"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "在构建排列的过程中，下一个更大元素的索引是单调递增的，即对于所有已知的 next_i 值，满足 i < j 时 next_i <= next_j。",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的解可以通过子问题的最优解来构造。具体来说，每个位置的排列值可以基于其右侧的排列值来确定，从而保证了整体排列的正确性。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移过程中，当前状态的排列值依赖于其右侧已确定的状态值，并且这种依赖关系保持一致。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

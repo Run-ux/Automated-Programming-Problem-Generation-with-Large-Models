@@ -2,14 +2,14 @@
   "problem_id": "CF1163D",
   "source": "codeforces",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1000
@@ -39,18 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "substring_frequency_optimization",
-        "description": "最大化目标子串出现次数，同时最小化非目标子串出现次数（即最大化 f(c', s) - f(c', t)）",
+        "name": "pattern_matching",
+        "description": "字符串 c' 中 s 的出现次数应尽可能多，t 的出现次数应尽可能少",
         "confidence": "1/1"
       },
       {
-        "name": "pattern_matching_substitution",
-        "description": "通配符替换约束：每个通配符 '*' 可以被任意小写字母替换",
-        "confidence": "1/1"
-      },
-      {
-        "name": "substring_distinctness_constraint",
-        "description": "不同子串约束：s 和 t 是不同的字符串",
+        "name": "operation_limit",
+        "description": "字符串 c 中的每个星号 '*' 可以被任意小写字母替换",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +56,12 @@
         "result": {
           "constraints": [
             {
-              "name": "substring_frequency_optimization",
-              "description": "最大化目标子串出现次数，同时最小化非目标子串出现次数（即最大化 f(c', s) - f(c', t)）"
+              "name": "pattern_matching",
+              "description": "字符串 c' 中 s 的出现次数应尽可能多，t 的出现次数应尽可能少"
             },
             {
-              "name": "pattern_matching_substitution",
-              "description": "通配符替换约束：每个通配符 '*' 可以被任意小写字母替换"
-            },
-            {
-              "name": "substring_distinctness_constraint",
-              "description": "不同子串约束：s 和 t 是不同的字符串"
+              "name": "operation_limit",
+              "description": "字符串 c 中的每个星号 '*' 可以被任意小写字母替换"
             }
           ]
         }
@@ -93,22 +84,39 @@
     "description": "最大化字符串中特定子串出现次数的差值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过替换每个星号为特定字符来最大化目标函数值的过程可以分解为一系列子问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步替换星号时，选择当前局部最优（即对目标函数贡献最大的字符）能够逐步构建全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过动态规划方法求解最大值",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过替换每个星号为特定字符来最大化目标函数值的过程可以分解为一系列子问题的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步替换星号时，选择当前局部最优（即对目标函数贡献最大的字符）能够逐步构建全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过动态规划方法求解最大值"
+    ]
   }
 }

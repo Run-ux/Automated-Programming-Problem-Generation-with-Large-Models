@@ -1,0 +1,120 @@
+{
+  "problem_id": "CF1012C",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 5000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 5000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "local_maximum_count_constraint",
+        "description": "序列中严格大于相邻元素的元素个数至少为 k",
+        "confidence": "1/1"
+      },
+      {
+        "name": "decrease_only_constraint",
+        "description": "只能通过减少元素值来调整序列，不能增加",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "local_maximum_count_constraint",
+              "description": "序列中严格大于相邻元素的元素个数至少为 k",
+              "formal": "count(i: 1 < i < n and a[i-1] < a[i] > a[i+1]) >= k"
+            },
+            {
+              "name": "decrease_only_constraint",
+              "description": "只能通过减少元素值来调整序列，不能增加",
+              "formal": "a[i]' <= a[i] for all i"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求将序列调整为至少包含指定数量的严格局部最大值所需的最小操作次数"
+        }
+      }
+    ],
+    "description": "求将序列调整为至少包含指定数量的严格局部最大值所需的最小操作次数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构建，即在调整每个山的高度时，可以基于之前已经调整好的山的高度来决定当前山的高度调整策略。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择局部最优解（即每次选择一个山进行高度调整，使得当前能够满足条件的山的数量最大化），最终可以得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构建，即在调整每个山的高度时，可以基于之前已经调整好的山的高度来决定当前山的高度调整策略。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择局部最优解（即每次选择一个山进行高度调整，使得当前能够满足条件的山的数量最大化），最终可以得到全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "problem_id": "P2877",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 50000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 40000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "所有分数比值互不相同（即每个 T_i / P_i 值唯一）",
+            "formal": "∀ i, j (i ≠ j) → (T_i / P_i) ≠ (T_j / P_j)"
+          },
+          {
+            "name": "non_negative_prefix_sum",
+            "description": "得分非负且不超过满分（即 0 ≤ T_i ≤ P_i）",
+            "formal": "∀ i, 0 ≤ T_i ≤ P_i"
+          },
+          {
+            "name": "maximum_value_constraint",
+            "description": "删除 D 次考试后，最终成绩最大化（即选择删除哪些考试以使剩余成绩的平均分最大）",
+            "formal": "maximize (Σ(T_i) / Σ(P_i)) for remaining exams after deleting D exams"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在某些删除次数D，使得删除得分比最小的D场考试后得到的成绩不是最优的"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即删除得分比最小的D场考试后剩余成绩的最优性可以由更小规模的子问题递推得出。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择得分比最小的考试进行删除，这种局部最优的选择最终能导致全局最优的结果。但题目要求找出不满足此性质的情况，因此需要验证是否存在反例。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

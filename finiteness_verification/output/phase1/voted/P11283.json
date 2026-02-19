@@ -1,0 +1,151 @@
+{
+  "problem_id": "P11283",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 3,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false,
+            "distinct": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 3,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false,
+      "distinct": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "permutation_constraint",
+        "description": "输入序列是一个排列，即每个元素在 1 到 n 之间且互不相同",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subsequence_constraint",
+        "description": "对于每次询问的子序列 [p_l, p_{l+1}, ..., p_r]，需要计算其“肿胃数”（nediam）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "mean_median_constraint",
+        "description": "当子序列长度为 3 时，肿胃数为其三个元素的中位数；当子序列长度大于 3 时，肿胃数为所有可能删除一个中位数后的子序列肿胃数的最大值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "query_limit",
+        "description": "每次查询的 (l, r) 通过特定的随机生成算法生成，确保 |l - r| >= 2 并且 l <= r",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_xor_constraint",
+        "description": "输出结果是所有查询答案的按位异或值，即 (1 * ans_1) ⊕ (2 * ans_2) ⊕ ... ⊕ (m * ans_m)",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "permutation_constraint",
+              "description": "输入序列是一个排列，即每个元素在 1 到 n 之间且互不相同"
+            },
+            {
+              "name": "subsequence_constraint",
+              "description": "对于每次询问的子序列 [p_l, p_{l+1}, ..., p_r]，需要计算其“肿胃数”（nediam）"
+            },
+            {
+              "name": "mean_median_constraint",
+              "description": "当子序列长度为 3 时，肿胃数为其三个元素的中位数；当子序列长度大于 3 时，肿胃数为所有可能删除一个中位数后的子序列肿胃数的最大值"
+            },
+            {
+              "name": "query_limit",
+              "description": "每次查询的 (l, r) 通过特定的随机生成算法生成，确保 |l - r| >= 2 并且 l <= r"
+            },
+            {
+              "name": "path_xor_constraint",
+              "description": "输出结果是所有查询答案的按位异或值，即 (1 * ans_1) ⊕ (2 * ans_2) ⊕ ... ⊕ (m * ans_m)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求给定子数组删除特定元素后的最大中位数值"
+        }
+      }
+    ],
+    "description": "求给定子数组删除特定元素后的最大中位数值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解来构造。对于长度大于3的序列，通过删除任意一个长度为3的子段的中位数后，剩余序列的肿胃数是所有可能剩余序列肿胃数的最大值。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "divide_conquer",
+        "description": "分治不变量：大问题的解可以通过分解成多个子问题的解来合成。在计算肿胃数时，可以将序列分解成多个子段，分别计算每个子段的肿胃数，再通过这些子段的肿胃数来确定整个序列的肿胃数。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的最优解来构造。对于长度大于3的序列，通过删除任意一个长度为3的子段的中位数后，剩余序列的肿胃数是所有可能剩余序列肿胃数的最大值。",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：大问题的解可以通过分解成多个子问题的解来合成。在计算肿胃数时，可以将序列分解成多个子段，分别计算每个子段的肿胃数，再通过这些子段的肿胃数来确定整个序列的肿胃数。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

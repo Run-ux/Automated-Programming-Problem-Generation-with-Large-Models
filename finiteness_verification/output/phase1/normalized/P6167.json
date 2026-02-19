@@ -1,0 +1,89 @@
+{
+  "problem_id": "P6167",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "主干线上的车站之间存在一条路径，且路径长度为给定的距离",
+            "formal": "∀i ∈ [0, n-2], ∃ path(i, i+1) with length l_i"
+          },
+          {
+            "name": "degree_bound",
+            "description": "主干线上每个车站最多只能有一条支线",
+            "formal": "∀i ∈ [0, n-1], degree(i) ≤ 1"
+          },
+          {
+            "name": "edge_length_fixed",
+            "description": "新添加的快速干线长度固定为 c 厘米",
+            "formal": "∃ edge(u, v) with length c, u ≠ v"
+          },
+          {
+            "name": "minimum_diameter_constraint",
+            "description": "目标是使铁路网络的直径最小化",
+            "formal": "minimize max_distance(u, v) for all pairs (u, v)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化图的直径"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，即通过计算每个可能的快速干线连接点对整个铁路网络直径的影响来找到全局最优解",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "大问题的解由子问题解合成，通过将主干线分成多个部分，分别计算每个部分的最优解，再合并得到全局最优解",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间和可通过端点差值计算，用于计算任意两个车站之间的距离",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

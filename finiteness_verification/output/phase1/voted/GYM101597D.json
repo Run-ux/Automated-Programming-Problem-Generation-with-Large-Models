@@ -2,14 +2,14 @@
   "problem_id": "GYM101597D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 1,
             "max": 5000
@@ -41,13 +41,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图必须连通（所有节点之间存在路径）",
+        "name": "connectivity",
+        "description": "图必须连通，即从任意一个节点出发可以到达其他所有节点",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_subset_selection",
-        "description": "选择一个非空子集，使得该子集内的所有边都被包含",
+        "name": "subset_constraint",
+        "description": "需要选择一个非空子集作为推广星球",
+        "confidence": "1/1"
+      },
+      {
+        "name": "spanning_constraint",
+        "description": "选定的推广星球之间必须包含所有的链接（自由链接）",
         "confidence": "1/1"
       }
     ],
@@ -58,12 +63,16 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "图必须连通（所有节点之间存在路径）"
+              "name": "connectivity",
+              "description": "图必须连通，即从任意一个节点出发可以到达其他所有节点"
             },
             {
-              "name": "distinct_subset_selection",
-              "description": "选择一个非空子集，使得该子集内的所有边都被包含"
+              "name": "subset_constraint",
+              "description": "需要选择一个非空子集作为推广星球"
+            },
+            {
+              "name": "spanning_constraint",
+              "description": "选定的推广星球之间必须包含所有的链接（自由链接）"
             }
           ]
         }
@@ -71,34 +80,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的子集"
+          "type": "feasibility",
+          "description": "判断是否存在满足条件的非空子集，并在存在时输出一个满足条件的子集"
         }
       }
     ],
-    "description": "构造一个满足条件的子集"
+    "description": "判断是否存在满足条件的非空子集，并在存在时输出一个满足条件的子集"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "flow_conservation",
+        "description": "所选子集内的节点必须保持连通性，即任意两个节点之间存在路径",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "选择的子图（子集）与原图中其他部分独立，不影响整体连通性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，满足图上的连通性条件",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "flow_conservation",
+              "description": "所选子集内的节点必须保持连通性，即任意两个节点之间存在路径",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "选择的子图（子集）与原图中其他部分独立，不影响整体连通性",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，满足图上的连通性条件"
+    ]
   }
 }

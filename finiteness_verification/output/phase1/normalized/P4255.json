@@ -1,0 +1,90 @@
+{
+  "problem_id": "P4255",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 400000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 2147483647
+        },
+        "properties": {
+          "connected": false,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图的连通性可能在操作过程中发生变化，需要动态维护"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个城市（节点）的度数可能因道路（边）的切断而变化"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "从某个城市出发可以到达的所有城市中选择特定数量的人，且这些人的信仰必须相同"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "每个城市中具有特定信仰的人数不超过10"
+          },
+          {
+            "name": "operation_limit",
+            "description": "系统操作包括添加人类、切断道路和询问概率，每种操作的次数由输入数据决定"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_probability",
+        "description": "最大化从指定城市出发可到达的所有城市中选择指定数量且具有相同信仰的人的概率"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "在处理城市和道路的连通性时，拓扑序不变量保证了在切断道路后，仍然可以基于当前图结构进行有效的连通性查询。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "在处理信仰人数统计时，区间可合并性保证了可以通过子区间的信仰人数信息合并得到整个区间的信仰人数信息。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量保证了在添加人类、切断道路和询问概率的过程中，系统状态的一致性和正确性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

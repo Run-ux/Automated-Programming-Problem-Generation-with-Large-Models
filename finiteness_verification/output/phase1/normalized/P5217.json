@@ -1,0 +1,99 @@
+{
+  "problem_id": "P5217",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 97,
+          "max": 122
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "区间内不同元素的数量（字母种类数）",
+            "formal": "|distinct(S[l:r])|"
+          },
+          {
+            "name": "interval_insertion_constraint",
+            "description": "在指定位置插入一个字符",
+            "formal": "S.insert(x, c)"
+          },
+          {
+            "name": "operation_type",
+            "description": "删除指定位置的字符",
+            "formal": "S.delete(x)"
+          },
+          {
+            "name": "reverse_ordering_constraint",
+            "description": "反转指定区间的字符",
+            "formal": "S.reverse(x, y)"
+          },
+          {
+            "name": "query_limit",
+            "description": "查询初始文本中某个字符在当前文本中的位置",
+            "formal": "find_position(initial_S[x], S)"
+          },
+          {
+            "name": "query_limit",
+            "description": "查询当前文本中某个位置的字符",
+            "formal": "S[x]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求区间内不同字符的种类数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每种操作（插入、删除、反转）后，文本的状态能够通过确定的规则更新，并且这些更新规则保持一致性。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：对于查询操作Q x y，可以通过维护区间内字母种类数的前缀和来快速计算任意区间的字母种类数。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：反转操作R x y使得区间[x, y]内的字符顺序颠倒，但不影响整个文本中字母种类数的统计。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

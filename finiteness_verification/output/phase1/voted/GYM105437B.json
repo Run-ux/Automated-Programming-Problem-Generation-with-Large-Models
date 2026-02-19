@@ -2,14 +2,14 @@
   "problem_id": "GYM105437B",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "parallel_operation",
-        "description": "每次操作只能在两个序列中的一个上进行，不能同时对两个序列进行操作",
+        "name": "operation_limit",
+        "description": "操作次数限制，每秒只能进行一次操作（在两个屏幕中的一个上添加一个字符）",
         "confidence": "1/1"
       },
       {
-        "name": "continuous_path_constraint",
-        "description": "每个序列必须从空状态逐步构建到目标序列，不能跳过中间状态",
+        "name": "sequence_pattern_constraint",
+        "description": "最终状态约束，第一个屏幕必须显示序列 s，第二个屏幕必须显示序列 t",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +56,14 @@
         "result": {
           "constraints": [
             {
-              "name": "parallel_operation",
-              "description": "每次操作只能在两个序列中的一个上进行，不能同时对两个序列进行操作"
+              "name": "operation_limit",
+              "description": "操作次数限制，每秒只能进行一次操作（在两个屏幕中的一个上添加一个字符）",
+              "formal": "每秒最多执行一次操作"
             },
             {
-              "name": "continuous_path_constraint",
-              "description": "每个序列必须从空状态逐步构建到目标序列，不能跳过中间状态"
+              "name": "sequence_pattern_constraint",
+              "description": "最终状态约束，第一个屏幕必须显示序列 s，第二个屏幕必须显示序列 t",
+              "formal": "最终状态：screen1 = s 且 screen2 = t"
             }
           ]
         }
@@ -69,34 +71,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求完成指定操作序列的最小代价"
+          "type": "minimize_value",
+          "description": "求完成指定任务所需的最少操作次数"
         }
       }
     ],
-    "description": "求完成指定操作序列的最小代价"
+    "description": "求完成指定任务所需的最少操作次数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即构建两个屏幕显示字符串的最小时间可以分解为更小规模问题的最优解之和。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在计算两个屏幕分别显示特定字符所需的时间时，每个字符的处理是独立的，不受其他字符处理的影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个字符的添加或删除操作独立且不影响其他字符的操作顺序",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即构建两个屏幕显示字符串的最小时间可以分解为更小规模问题的最优解之和。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在计算两个屏幕分别显示特定字符所需的时间时，每个字符的处理是独立的，不受其他字符处理的影响。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个字符的添加或删除操作独立且不影响其他字符的操作顺序"
+    ]
   }
 }

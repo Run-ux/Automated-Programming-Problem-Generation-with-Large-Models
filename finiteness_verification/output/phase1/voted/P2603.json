@@ -1,0 +1,134 @@
+{
+  "problem_id": "P2603",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": -10000,
+            "max": 10000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": -10000,
+      "max": 10000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subsequence_constraint",
+        "description": "点列 P 的一个子列 [u, v] 被称为点列 Q 在 P 中的一次出现，当且仅当 Q 经过有限次的平移、旋转、翻转、放缩之后得到 Q' 满足 ∀ 1 ≤ k ≤ v - u + 1，Q'_k = P_{u + k - 1}",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation",
+        "description": "对点列进行的操作包括平移、旋转、翻转和放缩。这些操作可以组合使用，但必须保持点列的相对位置关系不变。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "输入中的每条轨迹中任意相邻两点不会相同。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subsequence_constraint",
+              "description": "点列 P 的一个子列 [u, v] 被称为点列 Q 在 P 中的一次出现，当且仅当 Q 经过有限次的平移、旋转、翻转、放缩之后得到 Q' 满足 ∀ 1 ≤ k ≤ v - u + 1，Q'_k = P_{u + k - 1}",
+              "formal": "∃ transformation T: Q' = T(Q) 使得 ∀ 1 ≤ k ≤ v - u + 1, Q'_k = P_{u + k - 1}"
+            },
+            {
+              "name": "transformation",
+              "description": "对点列进行的操作包括平移、旋转、翻转和放缩。这些操作可以组合使用，但必须保持点列的相对位置关系不变。",
+              "formal": "T ∈ {平移, 旋转, 翻转, 放缩} 且 T(Q) 保持 Q 的相对位置关系"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "输入中的每条轨迹中任意相邻两点不会相同。",
+              "formal": "∀ i, P_i ≠ P_{i+1}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求每个给定子序列在主序列中的出现次数"
+        }
+      }
+    ],
+    "description": "求每个给定子序列在主序列中的出现次数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "symmetry",
+        "description": "对称性：轨迹片断的平移、旋转、翻转、放缩操作不改变其本质结构，使得匹配过程中的变换等价于原问题",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个轨迹片断的匹配是独立的，一个片断的匹配结果不影响其他片断的匹配",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "symmetry",
+              "description": "对称性：轨迹片断的平移、旋转、翻转、放缩操作不改变其本质结构，使得匹配过程中的变换等价于原问题",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个轨迹片断的匹配是独立的，一个片断的匹配结果不影响其他片断的匹配",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

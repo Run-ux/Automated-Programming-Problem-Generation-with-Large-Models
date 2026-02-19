@@ -1,0 +1,149 @@
+{
+  "problem_id": "P8251",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 500000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 500000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 500000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "stack_sortable_constraint",
+        "description": "向栈中加入元素时，先不断弹出栈顶元素直至栈空或栈顶元素满足特定条件（a_i ≠ a_j 且 b_i < b_j），然后再将其加入栈中。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "terminal_vertex_count_constraint",
+        "description": "如果一个二元组入栈后栈内只有这一个元素，则称该二元组是“成功的”。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "independence",
+        "description": "每个询问之间相互独立。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "stack_sortable_constraint",
+              "description": "向栈中加入元素时，先不断弹出栈顶元素直至栈空或栈顶元素满足特定条件（a_i ≠ a_j 且 b_i < b_j），然后再将其加入栈中。",
+              "formal": "while S is not empty and (a_i == a_top or b_i >= b_top): S.pop()"
+            },
+            {
+              "name": "terminal_vertex_count_constraint",
+              "description": "如果一个二元组入栈后栈内只有这一个元素，则称该二元组是“成功的”。",
+              "formal": "if len(S) == 1: successful += 1"
+            },
+            {
+              "name": "independence",
+              "description": "每个询问之间相互独立。",
+              "formal": "for each query [l_i, r_i]: process independently"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求满足条件的二元组数量"
+        }
+      }
+    ],
+    "description": "求满足条件的二元组数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "栈顶元素的 b 值单调递增，且 a 值不相等时才入栈，保证了栈内元素的有序性",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "state_transition",
+        "description": "每次入栈操作后，栈的状态满足特定条件：新元素入栈前会弹出所有不满足条件的栈顶元素，确保栈内元素满足 a 值不相等且 b 值严格递增",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "每个询问区间 [l, r] 的成功二元组数量可以通过前缀和的方式计算，即通过维护前缀信息来快速回答区间查询",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "栈顶元素的 b 值单调递增，且 a 值不相等时才入栈，保证了栈内元素的有序性",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "state_transition",
+              "description": "每次入栈操作后，栈的状态满足特定条件：新元素入栈前会弹出所有不满足条件的栈顶元素，确保栈内元素满足 a 值不相等且 b 值严格递增",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "每个询问区间 [l, r] 的成功二元组数量可以通过前缀和的方式计算，即通过维护前缀信息来快速回答区间查询",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

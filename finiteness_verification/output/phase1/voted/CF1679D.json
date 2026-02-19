@@ -1,0 +1,147 @@
+{
+  "problem_id": "CF1679D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "directed_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "directed_graph",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "weighted": false,
+            "connected": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "weighted": false,
+      "connected": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制（必须进行 k-1 次操作）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "最大化值的最小化（使记录的最大值尽可能小）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "acyclicity",
+        "description": "有向图约束（图是有向的，且无自环和重边）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制（必须进行 k-1 次操作）",
+              "formal": "k - 1"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "最大化值的最小化（使记录的最大值尽可能小）",
+              "formal": "min(max(a_i)) for all i in path"
+            },
+            {
+              "name": "acyclicity",
+              "description": "有向图约束（图是有向的，且无自环和重边）",
+              "formal": "G = (V, E) where E ⊆ V × V and (u, u) ∉ E, (u, v) ≠ (v, u)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "min_max",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "min_max",
+          "description": "在满足操作次数的路径上，最小化经过节点的最大权值"
+        }
+      }
+    ],
+    "description": "在满足操作次数的路径上，最小化经过节点的最大权值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在这个问题中，最小化最大值的问题可以分解为在每个节点上选择最优路径的问题。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步操作中，选择当前情况下最优的选择（即移动到具有最小值的相邻节点），以确保最终结果的最优性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个节点转移到另一个节点的过程中，状态的转移是确定且一致的，即每次移动都遵循图中的有向边。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。在这个问题中，最小化最大值的问题可以分解为在每个节点上选择最优路径的问题。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步操作中，选择当前情况下最优的选择（即移动到具有最小值的相邻节点），以确保最终结果的最优性。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个节点转移到另一个节点的过程中，状态的转移是确定且一致的，即每次移动都遵循图中的有向边。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

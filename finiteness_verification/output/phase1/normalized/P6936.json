@@ -1,0 +1,81 @@
+{
+  "problem_id": "P6936",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "interval_operation_constraint",
+            "description": "区间调度约束，每个任务有一个开始时间和结束时间，且任务之间不能重叠",
+            "formal": "对于所有任务 i 和 j (i ≠ j)，如果 [a_i, b_i] 和 [a_j, b_j] 有重叠，则无法同时完成"
+          },
+          {
+            "name": "window_constraint",
+            "description": "每个任务必须在给定的时间窗口内完成，且任务的持续时间固定",
+            "formal": "对于每个任务 i，a_i + t ≤ b_i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种时间安排方案，使得所有任务都能在给定的时间窗口内完成"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "时间窗口的右端点单调递增，确保每个任务在最早可能的时间开始",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择（按最早结束时间排序并依次处理）导致全局最优解（尽可能早地完成所有任务）",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "通过计算每个任务的时间区间和拍摄时间，可以确定任务是否可以在给定时间内完成",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

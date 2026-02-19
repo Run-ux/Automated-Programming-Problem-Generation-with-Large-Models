@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 3,
           "max": 12
@@ -28,20 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_subset_selection",
-            "description": "从集合中选择 k 个元素，其中 k 个元素中的一个被隐藏"
+            "name": "subset_constraint",
+            "description": "选取的 k 个元素必须是 n 个元素的一个子集",
+            "formal": "S ⊆ N, |S| = k"
           },
           {
-            "name": "distinct_permutation",
-            "description": "剩余的 k-1 个元素可以进行排列以传递信息"
+            "name": "permutation_constraint",
+            "description": "k-1 个元素的排列方式必须能够传递信息",
+            "formal": "P(k-1) -> info"
           },
           {
-            "name": "edge_exclusion_constraint",
-            "description": "每个元素可以被 m 种不同的标记方法之一标记，且每种标记方法的数量已知"
+            "name": "partition",
+            "description": "n 个元素被分成 m 个互不相交的子集，每个子集有特定的标记方法",
+            "formal": "N = ∪_{i=1}^m N_i, N_i ∩ N_j = ∅ (i ≠ j)"
           },
           {
-            "name": "global_optimization_objective",
-            "description": "需要执行最优策略来最大化猜测成功的概率"
+            "name": "inclusion",
+            "description": "第 k 个元素必须属于某个标记子集",
+            "formal": "k-th element ∈ N_i for some i"
           }
         ]
       }
@@ -52,7 +56,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_value",
+        "type": "maximize_probability",
         "description": "最大化正确猜测第k张牌的概率"
       }
     }
@@ -62,9 +66,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过标记方法和排列方式传递信息，使得猜测第k张牌的问题可以分解为更小规模的子问题",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过标记方法和排列方式传递信息以达到最优猜测概率。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：在选择隐藏卡片和排列其他卡片时，不同的排列方式和隐藏卡片的选择可以看作是对称的操作，这些操作不会改变问题的本质结构。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

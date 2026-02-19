@@ -6,29 +6,29 @@
   "result": {
     "constraints": [
       {
-        "name": "capacity_constraint",
-        "description": "选取元素的总厚度不超过容量上限（书架宽度）",
-        "formal": "sum(t_i for i in upright_books) + sum(t_j for j in stacked_books) <= W"
+        "name": "ordering",
+        "description": "堆叠的书必须按脊高非递增顺序排列（图着色约束）",
+        "formal": "对于堆叠的书，h[i] >= h[j] 对于所有 i < j"
       },
       {
-        "name": "height_limit",
-        "description": "每个元素的高度不超过高度限制（书架高度）",
-        "formal": "h_i <= H for all i in upright_books"
+        "name": "sum_constraint",
+        "description": "堆叠书的总厚度不能超过书架的高度",
+        "formal": "Σt[stacked_books] <= H"
       },
       {
-        "name": "nonincreasing_order",
-        "description": "堆叠元素按非递增顺序排列（书脊高度）",
-        "formal": "h_i >= h_{i+1} for all i in stacked_books"
+        "name": "sum_constraint",
+        "description": "竖立书的总厚度加上堆叠书的总宽度不能超过书架的宽度",
+        "formal": "Σt[upright_books] + Σw[stacked_books] <= W"
       },
       {
-        "name": "stack_height_limit",
-        "description": "堆叠元素的总厚度不超过高度限制（书架高度）",
-        "formal": "sum(h_i for i in stacked_books) <= H"
+        "name": "inclusion",
+        "description": "至少有一本书竖立放置",
+        "formal": "|upright_books| >= 1"
       },
       {
-        "name": "at_least_one_element",
-        "description": "至少有一个元素在竖直放置集合中，且至少有一个元素在堆叠集合中",
-        "formal": "len(upright_books) >= 1 and len(stacked_books) >= 1"
+        "name": "inclusion",
+        "description": "至少有一本书堆叠放置",
+        "formal": "|stacked_books| >= 1"
       }
     ]
   },

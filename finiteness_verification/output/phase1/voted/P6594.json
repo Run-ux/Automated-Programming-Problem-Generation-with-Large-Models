@@ -1,0 +1,158 @@
+{
+  "problem_id": "P6594",
+  "source": "luogu",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 2,
+            "max": 800
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 800
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "maximum_to_minimum_ratio_constraint",
+        "description": "每个连通块内的最大差异值减去最小差异值不超过某个值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "从一个节点到另一个节点的路径上被关闭的道路数量不超过某个值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "在所有道路开启的前提下，图是连通的",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "maximum_to_minimum_ratio_constraint",
+              "description": "每个连通块内的最大差异值减去最小差异值不超过某个值",
+              "formal": "∀ 连通块 C, max(h[i] for i in C) - min(h[i] for i in C) ≤ D"
+            },
+            {
+              "name": "path_constraint",
+              "description": "从一个节点到另一个节点的路径上被关闭的道路数量不超过某个值",
+              "formal": "∀ 路径 P 从 x 到 y, 关闭的道路数量 ≤ K"
+            },
+            {
+              "name": "connectivity",
+              "description": "在所有道路开启的前提下，图是连通的",
+              "formal": "图 G 在所有边都开启时是连通的"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "min_max",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "min_max",
+          "description": "最小化所有连通块内差异值最大值与最小值之差的最大值"
+        }
+      }
+    ],
+    "description": "最小化所有连通块内差异值最大值与最小值之差的最大值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，每个连通块的不满意值可以通过其子连通块的不满意值来计算。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "divide_conquer",
+        "description": "分治不变量：大问题的解可以通过分解为多个子问题的解来合成。具体来说，通过关闭某些边将树分成多个子树，并分别求解这些子树的最小不满意值。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "flow_conservation",
+        "description": "流守恒：在路径上的流量（即关闭的道路数量）是守恒的，即从一个节点到另一个节点的路径上关闭的道路数量总和是固定的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在树结构中，节点之间的访问顺序满足拓扑序，即从根节点到叶子节点的遍历顺序。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，每个连通块的不满意值可以通过其子连通块的不满意值来计算。",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：大问题的解可以通过分解为多个子问题的解来合成。具体来说，通过关闭某些边将树分成多个子树，并分别求解这些子树的最小不满意值。",
+              "properties": {}
+            },
+            {
+              "name": "flow_conservation",
+              "description": "流守恒：在路径上的流量（即关闭的道路数量）是守恒的，即从一个节点到另一个节点的路径上关闭的道路数量总和是固定的。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在树结构中，节点之间的访问顺序满足拓扑序，即从根节点到叶子节点的遍历顺序。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

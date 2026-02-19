@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 3,
           "max": 5000
@@ -28,22 +28,25 @@
       "result": {
         "constraints": [
           {
-            "name": "equal_segment_length",
-            "description": "两个节点必须保持相同的高度（路径上的高度差为0）"
+            "name": "constant_value_constraint",
+            "description": "两人必须保持相同的高度（即路径上的高度值相同）"
           },
           {
-            "name": "path_weight_constraint",
-            "description": "路径的努力程度是路径上高度绝对差值的总和",
-            "formal": "effort = |h2 - h1| + |h3 - h2| + ... + |hP - h(P-1)|"
+            "name": "cost_constraint",
+            "description": "路径的努力程度是路径上高度绝对差值的总和"
           },
           {
-            "name": "endpoint_node_constraint",
-            "description": "路径起点和终点的高度必须为0"
+            "name": "fixed_position_constraint",
+            "description": "路径从高度 0 开始并在高度 0 结束"
           },
           {
-            "name": "distinct_vertex_values",
-            "description": "所有内部高度互不相同（子任务1的附加限制）",
-            "formal": "∀i, j (1 < i, j < N), hi ≠ hj"
+            "name": "non_negative_value_constraint",
+            "description": "内部高度为严格正数"
+          },
+          {
+            "name": "distinctness",
+            "description": "所有内部高度互不相同（仅在子任务 1 中有效）",
+            "formal": "∀ i, j (1 < i < j < N), h[i] ≠ h[j]"
           }
         ]
       }
@@ -54,8 +57,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求两点间路径上的最小权值和"
+        "type": "minimize_value",
+        "description": "求两点间路径上的最小代价"
       }
     }
   ],
@@ -64,9 +67,26 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优解可以通过子问题的最优解组合而成，即大问题的解由子问题的解组合而成",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在任意高度相遇时，两人分别从起点到该高度的努力程度之和最小。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着两人向山脉内部移动，他们之间的高度差值总和呈现单调变化趋势。当两人从两端向中间移动时，高度差值总和先减后增。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：两人从山脉两端开始攀登，最终在某一点相遇。由于两人必须保持相同高度，因此可以将问题转化为一个对称的问题，即两人的路径是对称的。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

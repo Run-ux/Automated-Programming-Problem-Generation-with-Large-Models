@@ -1,0 +1,182 @@
+{
+  "problem_id": "P8175",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 500000
+          },
+          "value_range": {
+            "min": -1,
+            "max": 10000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500000
+    },
+    "value_range": {
+      "min": -1,
+      "max": 10000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "capacity_constraint",
+        "description": "Tom 每个时刻只能携带最多一颗糖果（容量约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "Tom 只能在 Wilco 到达之前购买糖果（操作时机限制）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "Tom 拿到糖果后必须将其带走直到交给小孩（状态转移约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "Wilco 从第一个地点走到最后一个，顺序访问所有地点（有序性约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "商店街上的地点要么是商店要么是空地（子集约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "capacity_constraint",
+              "description": "Tom 每个时刻只能携带最多一颗糖果（容量约束）",
+              "formal": "capacity(Tom) = 1"
+            },
+            {
+              "name": "operation_limit",
+              "description": "Tom 只能在 Wilco 到达之前购买糖果（操作时机限制）",
+              "formal": "Tom's action must occur before Wilco's arrival at each location"
+            },
+            {
+              "name": "state_transition",
+              "description": "Tom 拿到糖果后必须将其带走直到交给小孩（状态转移约束）",
+              "formal": "if Tom picks up a candy, it must be delivered to a child before picking up another"
+            },
+            {
+              "name": "ordering",
+              "description": "Wilco 从第一个地点走到最后一个，顺序访问所有地点（有序性约束）",
+              "formal": "Wilco visits locations in the order from 1 to N"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "商店街上的地点要么是商店要么是空地（子集约束）",
+              "formal": "locations are either shops or empty spaces"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "最小化路径上的权值和"
+        }
+      }
+    ],
+    "description": "最小化路径上的权值和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "双指针左右端点单调前进，Tom 和 Wilco 的位置随时间单调变化",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的最优解可以通过子问题的最优解组合得到，即在每个商店处的决策依赖于之前的状态",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "局部最优选择导致全局最优，Tom 在每一步选择带走一颗糖果以最小化 Wilco 能拿到的糖果数量",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量，Tom 和 Wilco 的状态转移是基于当前状态和下一步动作的一致性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针左右端点单调前进，Tom 和 Wilco 的位置随时间单调变化",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "问题的最优解可以通过子问题的最优解组合得到，即在每个商店处的决策依赖于之前的状态",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "局部最优选择导致全局最优，Tom 在每一步选择带走一颗糖果以最小化 Wilco 能拿到的糖果数量",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量，Tom 和 Wilco 的状态转移是基于当前状态和下一步动作的一致性",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

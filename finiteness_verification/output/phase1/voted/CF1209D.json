@@ -20,8 +20,7 @@
           },
           "properties": {
             "directed": false,
-            "weighted": false,
-            "bipartite": true
+            "weighted": false
           }
         }
       }
@@ -36,20 +35,19 @@
     },
     "properties": {
       "directed": false,
-      "weighted": false,
-      "bipartite": true
+      "weighted": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
         "name": "pairwise_exclusion",
-        "description": "每个元素最多只能与一个其他元素配对（每种零食最多只能满足一个客人的需求）",
+        "description": "每个元素最多被一个匹配对选中（每种零食只能被一个客人选择）",
         "confidence": "1/1"
       },
       {
-        "name": "bipartite_matching",
-        "description": "问题可以转化为二分图的最大匹配问题（将客人和零食看作二分图的两个部分，寻找最大匹配数）",
+        "name": "matching_constraint",
+        "description": "每个节点（客人）有且仅有两条边（两种喜欢的零食），需要找到最大匹配数以最小化未匹配节点数（使尽量少的客人失望）",
         "confidence": "1/1"
       }
     ],
@@ -61,11 +59,11 @@
           "constraints": [
             {
               "name": "pairwise_exclusion",
-              "description": "每个元素最多只能与一个其他元素配对（每种零食最多只能满足一个客人的需求）"
+              "description": "每个元素最多被一个匹配对选中（每种零食只能被一个客人选择）"
             },
             {
-              "name": "bipartite_matching",
-              "description": "问题可以转化为二分图的最大匹配问题（将客人和零食看作二分图的两个部分，寻找最大匹配数）"
+              "name": "matching_constraint",
+              "description": "每个节点（客人）有且仅有两条边（两种喜欢的零食），需要找到最大匹配数以最小化未匹配节点数（使尽量少的客人失望）"
             }
           ]
         }
@@ -73,14 +71,14 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
+          "type": "minimize_count",
           "description": "最小化不满足条件的元素数量"
         }
       }
@@ -88,19 +86,39 @@
     "description": "最小化不满足条件的元素数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即通过选择每个客人的两个喜好零食之一，使得总的不开心客人数量最少。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，总是优先满足当前能够使更多客人满意的零食分配方案，这种局部最优的选择可以导致全局最优的结果。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题的解对整体问题的解有贡献。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即通过选择每个客人的两个喜好零食之一，使得总的不开心客人数量最少。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，总是优先满足当前能够使更多客人满意的零食分配方案，这种局部最优的选择可以导致全局最优的结果。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题的解对整体问题的解有贡献。"
+    ]
   }
 }

@@ -1,0 +1,90 @@
+{
+  "problem_id": "GYM104596K",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 150
+        },
+        "value_range": {
+          "min": 0,
+          "max": 100
+        },
+        "properties": {
+          "ordered": true,
+          "inferred": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "consecutive_selection",
+            "description": "每个公司的存储单元必须是连续的（即，属于同一公司的所有存储单元在数组中必须是连续的一段）",
+            "formal": "对于每个公司 c，其存储单元的索引集合 S_c 必须满足：S_c = {i, i+1, ..., j} 且 i < j"
+          },
+          {
+            "name": "transformation",
+            "description": "重新排列存储单元的成本等于移动的存储单元中的物品数量之和",
+            "formal": "cost = Σ (items[i]) for all moved bins i"
+          },
+          {
+            "name": "operation_type",
+            "description": "删除的存储单元必须是非空的，并且不能重复删除同一个存储单元",
+            "formal": "对于每个删除操作 d_i，对应的 bin[d_i] ≠ 0 且 d_i 不重复"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "新增的存储单元请求必须能够被满足，且新增的存储单元必须是连续的",
+            "formal": "对于每个新增请求 r_j，必须存在一个连续的空闲区间来满足该请求"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足条件的最小代价"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解可以通过子问题的最优解组合得到，即在处理每个公司的存储需求变化时，可以将问题分解为更小的子问题，并通过这些子问题的最优解来构建全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间信息可以通过子区间的合并来维护，即在调整公司存储区间时，可以通过合并相邻的子区间来保持每个公司存储区间的连续性。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移的一致性，即在处理每个公司的存储需求变化时，从一个状态转移到另一个状态的过程中，状态转移规则是确定且一致的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

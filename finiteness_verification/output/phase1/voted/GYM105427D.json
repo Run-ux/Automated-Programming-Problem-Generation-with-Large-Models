@@ -2,14 +2,14 @@
   "problem_id": "GYM105427D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 3,
             "max": 3
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "uniform_probability_distribution",
-        "description": "选择的元素（骰子）必须满足在某种策略下，获胜概率至少为 1/2",
+        "name": "probability_distribution",
+        "description": "选择的元素（骰子）必须保证在某种策略下获胜的概率至少为 1/2",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_element_count_constraint",
-        "description": "如果两个元素（骰子）的结果相同，则重新选择直到结果不同",
+        "name": "pairwise_exclusion",
+        "description": "两个元素（骰子）的值相同时，需要重新选择直到不同",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_solution_constraint",
-        "description": "如果不存在满足条件的元素（骰子），则不输出任何赢家",
+        "name": "maximum_value_constraint",
+        "description": "比较两个元素（骰子）的值，较大者获胜",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "uniform_probability_distribution",
-              "description": "选择的元素（骰子）必须满足在某种策略下，获胜概率至少为 1/2",
-              "formal": "P(win | chosen_die) >= 1/2"
+              "name": "probability_distribution",
+              "description": "选择的元素（骰子）必须保证在某种策略下获胜的概率至少为 1/2"
             },
             {
-              "name": "distinct_element_count_constraint",
-              "description": "如果两个元素（骰子）的结果相同，则重新选择直到结果不同",
-              "formal": "if (result_A == result_B) then re-roll until (result_A != result_B)"
+              "name": "pairwise_exclusion",
+              "description": "两个元素（骰子）的值相同时，需要重新选择直到不同"
             },
             {
-              "name": "distinct_solution_constraint",
-              "description": "如果不存在满足条件的元素（骰子），则不输出任何赢家",
-              "formal": "if (no die satisfies P(win | chosen_die) >= 1/2) then output 'No dice'"
+              "name": "maximum_value_constraint",
+              "description": "比较两个元素（骰子）的值，较大者获胜"
             }
           ]
         }
@@ -81,34 +78,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否存在一个选择，使得在给定条件下获胜概率不低于阈值"
+          "type": "feasibility",
+          "description": "判断是否存在一个选项，使得选择该选项后满足给定的概率条件"
         }
       }
     ],
-    "description": "判断是否存在一个选择，使得在给定条件下获胜概率不低于阈值"
+    "description": "判断是否存在一个选项，使得选择该选项后满足给定的概率条件"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：选择一个骰子的最优策略可以通过比较每个骰子与其他两个骰子的胜率来确定，且该策略可以分解为更小的子问题。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，选择当前情况下胜率最高的骰子作为局部最优解，最终能够保证全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，选择一个骰子后，其获胜概率可以由与其他两个骰子的比较结果决定",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：选择一个骰子的最优策略可以通过比较每个骰子与其他两个骰子的胜率来确定，且该策略可以分解为更小的子问题。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，选择当前情况下胜率最高的骰子作为局部最优解，最终能够保证全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，选择一个骰子后，其获胜概率可以由与其他两个骰子的比较结果决定"
+    ]
   }
 }

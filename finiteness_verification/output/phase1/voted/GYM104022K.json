@@ -1,0 +1,124 @@
+{
+  "problem_id": "GYM104022K",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 50000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 50
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 50000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 50
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "prefix_coverage",
+        "description": "每个字符串必须被至少一个前缀覆盖，以确保数据不泄露",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "所有给定的 URL 都是唯一的，且没有一个 URL 是另一个 URL 的前缀",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "prefix_coverage",
+              "description": "每个字符串必须被至少一个前缀覆盖，以确保数据不泄露",
+              "formal": "对于每个 URL u，存在至少一个确认前缀 p 使得 p 是 u 的前缀"
+            },
+            {
+              "name": "distinctness",
+              "description": "所有给定的 URL 都是唯一的，且没有一个 URL 是另一个 URL 的前缀",
+              "formal": "对于任意两个不同的 URL u1 和 u2，u1 不是 u2 的前缀，且 u2 不是 u1 的前缀"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求满足条件的最小前缀数量"
+        }
+      }
+    ],
+    "description": "求满足条件的最小前缀数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "prefix_decomposability",
+        "description": "前缀可分解性：每个URL的前缀可以被分解为多个确认前缀，以确保数据不泄露。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：在第i天时，所需的最小确认前缀数量可以通过前i-1天的最优解来推导。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "prefix_decomposability",
+              "description": "前缀可分解性：每个URL的前缀可以被分解为多个确认前缀，以确保数据不泄露。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：在第i天时，所需的最小确认前缀数量可以通过前i-1天的最优解来推导。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

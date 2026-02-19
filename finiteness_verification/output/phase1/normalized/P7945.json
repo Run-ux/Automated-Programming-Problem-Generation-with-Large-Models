@@ -1,0 +1,86 @@
+{
+  "problem_id": "P7945",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 4,
+          "max": 8000000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 8000000
+        },
+        "properties": {
+          "connected": true,
+          "bipartite": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "bipartiteness",
+            "description": "图是二分图（节点可以分为两个独立的集合，每个集合内的节点互不相连）"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过 3n-1"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "选择的蓝色节点数量为 2n"
+          },
+          {
+            "name": "matching_constraint",
+            "description": "每轮选择一个蓝色节点和一个红色节点，如果它们相连，则计一分"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化满足条件的匹配数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每个选择步骤中，Daiyousei选择的节点与Cirno选择的节点之间的连接关系决定了当前轮次的得分情况，而整个游戏的得分是各轮次得分的总和。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每一轮中，Daiyousei选择一个红点以最大化本轮得分。这种局部最优的选择策略能够保证全局最优，因为每一轮的选择都是独立的，并且每一轮的目标都是最大化得分。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在每一轮游戏中，从当前状态（已选择的蓝点和红点）转移到下一个状态（新增一对蓝点和红点）的过程中，状态转移的一致性保持不变。即每次选择都基于当前状态进行，且新的状态只依赖于上一个状态。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

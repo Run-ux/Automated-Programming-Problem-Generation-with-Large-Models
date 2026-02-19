@@ -6,14 +6,14 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
-          "max": 100000
+          "max": 100
         },
         "value_range": {
           "min": 1,
-          "max": 100000
+          "max": 1000
         },
         "properties": {}
       }
@@ -26,9 +26,9 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_positions",
-            "description": "不能连续选择两个相邻的元素进行特殊操作（如：不能在两个连续的讲座前冥想）",
-            "formal": "∀i, s[i] = M → s[i+1] ≠ M"
+            "name": "adjacency_relation",
+            "description": "相邻节点不能同时选择（不能在两个连续的讲座前冥想）",
+            "formal": "s[i] = M -> s[i+1] != M"
           }
         ]
       }
@@ -49,12 +49,25 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题的解都是独立且最优的",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinability": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每个位置选择是否冥想的决策基于之前所有位置的最优决策。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前状态（冥想或不冥想）的选择依赖于前一个状态，并且状态转移的一致性保证了算法的正确性。",
+            "properties": {
+              "transition_consistency": true
+            }
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子问题的最优解是独立计算的，不受其他子问题的影响，这使得动态规划方法可以有效地求解整个问题。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -2,14 +2,14 @@
   "problem_id": "GYM100151E",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 15
@@ -19,8 +19,7 @@
             "max": 4
           },
           "properties": {
-            "ordered": false,
-            "connected": true
+            "ordered": false
           }
         }
       }
@@ -34,35 +33,34 @@
       "max": 4
     },
     "properties": {
-      "ordered": false,
-      "connected": true
+      "ordered": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
-        "description": "相邻节点取值不同（图着色约束）",
+        "name": "distance_bound",
+        "description": "棋子的移动方式受限，不能跳跃（除了骑士），且不能移动到被对方棋子攻击的位置",
         "confidence": "1/1"
       },
       {
-        "name": "node_degree_constraint",
-        "description": "每个节点的度数不超过 8（棋盘上每个位置最多有 8 个相邻位置）",
+        "name": "matching_constraint",
+        "description": "白王可以捕获黑棋，但不能移动到会被黑棋捕获的位置",
         "confidence": "1/1"
       },
       {
-        "name": "path_length_constraint",
-        "description": "路径长度不超过 n * m - 1（最坏情况下需要访问所有节点）",
+        "name": "terminal_vertex",
+        "description": "目标是通过最少的步数捕获所有黑棋",
         "confidence": "1/1"
       },
       {
-        "name": "pairwise_exclusion",
-        "description": "选择的元素不能重复（每个黑棋只能被吃一次）",
+        "name": "fixed_start_node",
+        "description": "初始状态下，白王不在任何黑棋的攻击范围内",
         "confidence": "1/1"
       },
       {
-        "name": "graph_connectivity",
-        "description": "从初始位置出发能够到达所有目标节点（白王能到达所有黑棋的位置）",
+        "name": "operation_limit",
+        "description": "棋盘上的棋子总数不超过15个",
         "confidence": "1/1"
       }
     ],
@@ -73,29 +71,24 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
-              "description": "相邻节点取值不同（图着色约束）",
-              "formal": "对于任意两个相邻节点 u 和 v，color(u) ≠ color(v)"
+              "name": "distance_bound",
+              "description": "棋子的移动方式受限，不能跳跃（除了骑士），且不能移动到被对方棋子攻击的位置"
             },
             {
-              "name": "node_degree_constraint",
-              "description": "每个节点的度数不超过 8（棋盘上每个位置最多有 8 个相邻位置）",
-              "formal": "对于任意节点 u，deg(u) ≤ 8"
+              "name": "matching_constraint",
+              "description": "白王可以捕获黑棋，但不能移动到会被黑棋捕获的位置"
             },
             {
-              "name": "path_length_constraint",
-              "description": "路径长度不超过 n * m - 1（最坏情况下需要访问所有节点）",
-              "formal": "len(path) ≤ n * m - 1"
+              "name": "terminal_vertex",
+              "description": "目标是通过最少的步数捕获所有黑棋"
             },
             {
-              "name": "pairwise_exclusion",
-              "description": "选择的元素不能重复（每个黑棋只能被吃一次）",
-              "formal": "对于任意两个不同的黑棋 b1 和 b2，b1 被吃后不能再被吃"
+              "name": "fixed_start_node",
+              "description": "初始状态下，白王不在任何黑棋的攻击范围内"
             },
             {
-              "name": "graph_connectivity",
-              "description": "从初始位置出发能够到达所有目标节点（白王能到达所有黑棋的位置）",
-              "formal": "存在一条路径从初始位置 s 到达所有目标节点 t1, t2, ..., tk"
+              "name": "operation_limit",
+              "description": "棋盘上的棋子总数不超过15个"
             }
           ]
         }
@@ -103,34 +96,76 @@
     ]
   },
   "objective": {
-    "type": "min_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "min_cost",
-          "description": "求从初始状态到目标状态的最少操作次数"
+          "type": "minimize_value",
+          "description": "求从初始位置到捕获所有目标点的最短路径长度"
         }
       }
     ],
-    "description": "求从初始状态到目标状态的最少操作次数"
+    "description": "求从初始位置到捕获所有目标点的最短路径长度"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即通过逐步捕获黑棋来达到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态到另一个状态的转移是确定且一致的，每个状态表示白王在棋盘上的位置及剩余未被捕获的黑棋集合。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在无环有向图（DAG）上，白王的移动顺序满足拓扑排序，即每次移动都是基于当前状态的合法移动。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在求解过程中，每个子问题的解法是独立的，即白王在不同位置时，其后续移动策略互不影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的最优解可以递归地构建出全局最优解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即通过逐步捕获黑棋来达到全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态到另一个状态的转移是确定且一致的，每个状态表示白王在棋盘上的位置及剩余未被捕获的黑棋集合。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在无环有向图（DAG）上，白王的移动顺序满足拓扑排序，即每次移动都是基于当前状态的合法移动。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在求解过程中，每个子问题的解法是独立的，即白王在不同位置时，其后续移动策略互不影响。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的最优解可以递归地构建出全局最优解"
+    ]
   }
 }

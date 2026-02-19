@@ -2,21 +2,21 @@
   "problem_id": "GYM103427F",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1000
           },
           "value_range": {
-            "min": 97,
-            "max": 116
+            "min": "a",
+            "max": "t"
           },
           "properties": {}
         }
@@ -27,25 +27,25 @@
       "max": 1000
     },
     "value_range": {
-      "min": 97,
-      "max": 116
+      "min": "a",
+      "max": "t"
     },
     "properties": {}
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "maximize_lexicographical_order",
-        "description": "在所有前缀的编码字符串中，找到字典序最大的一个",
+        "name": "lexicographical_maximization",
+        "description": "在所有编码后的字符串中，选择字典序最大的一个",
         "confidence": "1/1"
       },
       {
-        "name": "prefix_sum_constraint",
-        "description": "对给定字符串的所有非空前缀进行编码",
+        "name": "prefix_sum",
+        "description": "对输入字符串的所有非空前缀进行编码",
         "confidence": "1/1"
       },
       {
-        "name": "alphabet_size_constraint",
+        "name": "alphabet_constraint",
         "description": "输入字符串仅由前20个小写字母组成（a到t）",
         "confidence": "1/1"
       }
@@ -57,15 +57,15 @@
         "result": {
           "constraints": [
             {
-              "name": "maximize_lexicographical_order",
-              "description": "在所有前缀的编码字符串中，找到字典序最大的一个"
+              "name": "lexicographical_maximization",
+              "description": "在所有编码后的字符串中，选择字典序最大的一个"
             },
             {
-              "name": "prefix_sum_constraint",
-              "description": "对给定字符串的所有非空前缀进行编码"
+              "name": "prefix_sum",
+              "description": "对输入字符串的所有非空前缀进行编码"
             },
             {
-              "name": "alphabet_size_constraint",
+              "name": "alphabet_constraint",
               "description": "输入字符串仅由前20个小写字母组成（a到t）"
             }
           ]
@@ -74,14 +74,14 @@
     ]
   },
   "objective": {
-    "type": "maximize_value",
+    "type": "lexicographic_optimize",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_value",
+          "type": "lexicographic_optimize",
           "description": "求所有编码字符串中字典序最大的字符串"
         }
       }
@@ -89,19 +89,39 @@
     "description": "求所有编码字符串中字典序最大的字符串"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过其子问题的最优解来构造，即最大字典序编码字符串可通过比较各前缀编码字符串的最大值来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "prefix_decomposability",
+        "description": "前缀可分解性：每个非空前缀可以独立地进行编码，并且这些编码结果可以用于构建最终的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即最大字典序编码字符串可通过比较各前缀编码字符串的最大值获得",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过其子问题的最优解来构造，即最大字典序编码字符串可通过比较各前缀编码字符串的最大值来确定。",
+              "properties": {}
+            },
+            {
+              "name": "prefix_decomposability",
+              "description": "前缀可分解性：每个非空前缀可以独立地进行编码，并且这些编码结果可以用于构建最终的最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即最大字典序编码字符串可通过比较各前缀编码字符串的最大值获得"
+    ]
   }
 }

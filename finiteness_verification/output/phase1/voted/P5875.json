@@ -1,0 +1,157 @@
+{
+  "problem_id": "P5875",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "matching_constraint",
+        "description": "选取的元素不能互为朋友（图着色约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个节点的朋友数量由加入网络的方式决定",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "样本是从网络中选择的一组人",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "样本的可信度总和最大",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "matching_constraint",
+              "description": "选取的元素不能互为朋友（图着色约束）",
+              "formal": "对于任意两个选中的节点 u 和 v，(u, v) 不在边集中"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个节点的朋友数量由加入网络的方式决定",
+              "formal": "对于每个节点 i，其度数 d(i) 由 IAmYourFriend、MyFriendsAreYourFriends 和 WeAreYourFriends 的操作决定"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "样本是从网络中选择的一组人",
+              "formal": "样本 S 是节点集合 V 的一个子集，S ⊆ V"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "样本的可信度总和最大",
+              "formal": "最大化 ∑_{i ∈ S} confidence[i]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化选取的节点权值和，使得选取的节点之间没有直接边相连"
+        }
+      }
+    ],
+    "description": "最大化选取的节点权值和，使得选取的节点之间没有直接边相连"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在构建社交网络的过程中，每个阶段的最优样本可以基于前一阶段的最优样本进行更新。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在每个阶段，根据当前主持人和加入方式的不同，新加入的人与已有成员的关系（朋友关系）会按照固定的规则变化。这种变化是确定且可预测的，从而保证了状态转移的一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在构建社交网络的过程中，每个阶段的处理仅依赖于该阶段的输入（主持人、加入方式等），而不直接依赖于其他阶段的具体实现细节。这意味着不同阶段的处理可以视为相互独立的子问题。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在构建社交网络的过程中，每个阶段的最优样本可以基于前一阶段的最优样本进行更新。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在每个阶段，根据当前主持人和加入方式的不同，新加入的人与已有成员的关系（朋友关系）会按照固定的规则变化。这种变化是确定且可预测的，从而保证了状态转移的一致性。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在构建社交网络的过程中，每个阶段的处理仅依赖于该阶段的输入（主持人、加入方式等），而不直接依赖于其他阶段的具体实现细节。这意味着不同阶段的处理可以视为相互独立的子问题。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

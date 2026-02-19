@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1000
@@ -16,7 +16,7 @@
           "max": 122
         },
         "properties": {
-          "ordered": true
+          "ordered": false
         }
       }
     }
@@ -28,8 +28,9 @@
       "result": {
         "constraints": [
           {
-            "name": "substring_frequency_optimization",
-            "description": "字符串中特定子串的出现次数影响最终得分"
+            "name": "substring_count_constraint",
+            "description": "字符串中特定子串的出现次数影响最终结果（情感得分）",
+            "formal": "score = f(occurrences(substring1, S), occurrences(substring2, S), occurrences(substring3, S))"
           }
         ]
       }
@@ -40,8 +41,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计特定子串在给定字符串中的出现次数"
+        "type": "maximize_value",
+        "description": "求字符串中特定子串出现次数的加权和"
       }
     }
   ],
@@ -50,11 +51,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：整个字符串的情感得分可以通过其子串的情感得分组合而成，满足动态规划的最优子结构性质",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过计算特定子串的出现次数，可以将整个字符串的情绪得分分解为多个子区间的得分之和",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：整个字符串的情绪得分可以通过其子串的情绪得分进行递归地定义与计算",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -2,14 +2,14 @@
   "problem_id": "GYM102788B",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "integer",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "integer",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1
@@ -35,13 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "minimum_maximum_constraint",
-        "description": "内部节点数量与外部节点数量的比值必须为 n:1（n 为给定整数）",
+        "name": "geometric_ratio_constraint",
+        "description": "内部单元格数量与外部单元格数量的比值必须为 n:1",
         "confidence": "1/1"
       },
       {
-        "name": "non_decreasing_sequence",
-        "description": "输出结果按较小边长升序排列",
+        "name": "ordering",
+        "description": "输出的矩形尺寸按较小边长升序排列",
         "confidence": "1/1"
       }
     ],
@@ -52,14 +52,12 @@
         "result": {
           "constraints": [
             {
-              "name": "minimum_maximum_constraint",
-              "description": "内部节点数量与外部节点数量的比值必须为 n:1（n 为给定整数）",
-              "formal": "internal_cells / external_cells = n"
+              "name": "geometric_ratio_constraint",
+              "description": "内部单元格数量与外部单元格数量的比值必须为 n:1"
             },
             {
-              "name": "non_decreasing_sequence",
-              "description": "输出结果按较小边长升序排列",
-              "formal": "for all i < j, (a_i, b_i) and (a_j, b_j), a_i <= a_j"
+              "name": "ordering",
+              "description": "输出的矩形尺寸按较小边长升序排列"
             }
           ]
         }
@@ -67,37 +65,60 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的矩形数量"
+          "type": "enumeration",
+          "description": "求满足条件的矩形数量及其尺寸"
         }
       }
     ],
-    "description": "统计满足条件的矩形数量"
+    "description": "求满足条件的矩形数量及其尺寸"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，即满足动态规划的基本性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在搜索或枚举过程中，某些参数（如矩形的边长）具有单调递增或递减的性质",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优解可以通过子问题的最优解组合而成，满足动态规划的最优子结构性质",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，即满足动态规划的基本性质",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在搜索或枚举过程中，某些参数（如矩形的边长）具有单调递增或递减的性质",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "最优解可以通过子问题的最优解组合而成，满足动态规划的最优子结构性质"
+    ]
   }
 }

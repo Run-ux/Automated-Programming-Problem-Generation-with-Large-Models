@@ -2,14 +2,14 @@
   "problem_id": "GYM103993K",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 4,
             "max": 4
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "bottleneck_path",
-        "description": "选取元素权重和不超过容量上限（每次射击的总功率减去护盾值后，不能超过敌方飞船的耐久度）",
+        "name": "flow_constraint",
+        "description": "选取元素的权重和不超过容量上限（每次射击造成的伤害不超过敌方飞船的耐久度）",
         "confidence": "1/1"
       },
       {
-        "name": "pairwise_exclusion",
-        "description": "选择的元素不能重复（同一时间只能选择一个激光器或同时选择两个激光器进行射击）",
+        "name": "exclusion",
+        "description": "选择的元素不能重复（每次只能选择一个激光器或同时选择两个激光器进行射击，但不能重复选择同一个激光器）",
         "confidence": "1/1"
       },
       {
-        "name": "non_negative_values",
-        "description": "容量非负（敌方飞船的耐久度在任何时刻都不能为负数）",
+        "name": "state_transition",
+        "description": "状态转移约束（激光器的充电状态随时间变化，且每次射击后需要重新充电）",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "bottleneck_path",
-              "description": "选取元素权重和不超过容量上限（每次射击的总功率减去护盾值后，不能超过敌方飞船的耐久度）",
+              "name": "flow_constraint",
+              "description": "选取元素的权重和不超过容量上限（每次射击造成的伤害不超过敌方飞船的耐久度）",
               "formal": "P - s <= h"
             },
             {
-              "name": "pairwise_exclusion",
-              "description": "选择的元素不能重复（同一时间只能选择一个激光器或同时选择两个激光器进行射击）",
-              "formal": "shoot(laser_i) XOR shoot(laser_1 AND laser_2)"
+              "name": "exclusion",
+              "description": "选择的元素不能重复（每次只能选择一个激光器或同时选择两个激光器进行射击，但不能重复选择同一个激光器）",
+              "formal": "shoot(laser_i) or shoot(laser_1, laser_2)"
             },
             {
-              "name": "non_negative_values",
-              "description": "容量非负（敌方飞船的耐久度在任何时刻都不能为负数）",
-              "formal": "h >= 0"
+              "name": "state_transition",
+              "description": "状态转移约束（激光器的充电状态随时间变化，且每次射击后需要重新充电）",
+              "formal": "charge_time(laser_i) = t_i"
             }
           ]
         }
@@ -81,34 +81,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求完成任务所需的最短时间"
+          "type": "minimize_value",
+          "description": "求满足条件的最小时间"
         }
       }
     ],
-    "description": "求完成任务所需的最短时间"
+    "description": "求满足条件的最小时间"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "时间单调递增：每次操作后，总时间严格增加，直到达到目标状态",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：在任意时刻，选择当前最优的射击策略（单个激光或双激光同时），可以保证最终结果是最优的",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择当前可执行的最佳操作（即对敌方飞船造成最大伤害的操作）能够确保整体最优解",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "局部最优选择导致全局最优：每次选择当前可执行的最优操作（单个激光或两个激光同时发射）以达到最小化总时间的目标。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "时间单调递增：每次操作后，总时间严格增加，直到达到目标状态",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：在任意时刻，选择当前最优的射击策略（单个激光或双激光同时），可以保证最终结果是最优的",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择当前可执行的最佳操作（即对敌方飞船造成最大伤害的操作）能够确保整体最优解",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "局部最优选择导致全局最优：每次选择当前可执行的最优操作（单个激光或两个激光同时发射）以达到最小化总时间的目标。"
+    ]
   }
 }

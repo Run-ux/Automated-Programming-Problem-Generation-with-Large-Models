@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 2000
@@ -29,19 +29,29 @@
       "result": {
         "constraints": [
           {
-            "name": "query_count_constraint",
-            "description": "查询次数不超过 40n 次",
-            "formal": "number_of_queries <= 40 * n"
+            "name": "query_limit",
+            "description": "查询次数限制，不超过 40n 次查询",
+            "formal": "queries <= 40 * n"
           },
           {
-            "name": "distinct_permutation",
-            "description": "排列中的元素必须是 1 到 n 的一个排列，且所有元素互不相同",
-            "formal": "a_1, a_2, ..., a_n 是 1 到 n 的一个排列，且 a_i ≠ a_j 对于所有 i ≠ j"
+            "name": "permutation_constraint",
+            "description": "输入是一个长度为 n 的排列，包含 1 到 n 的所有整数且每个整数恰好出现一次",
+            "formal": "a_1, a_2, ..., a_n 是一个排列，1 ≤ a_i ≤ n 且所有 a_i 互不相同"
           },
           {
-            "name": "value_distribution_rule",
-            "description": "输出的排列必须是一个长度为 n 的数组，且所有元素互不相同",
-            "formal": "输出 ! a_1 a_2 ... a_n，其中 1 ≤ a_i ≤ n 且 a_i ≠ a_j 对于所有 i ≠ j"
+            "name": "operation_type",
+            "description": "每次查询的形式为 ? i，其中 1 ≤ i ≤ n，查询结果为当前 x 和 a_i 的比较结果",
+            "formal": "query: ? i, 1 ≤ i ≤ n, response: -1, 0, 或 1"
+          },
+          {
+            "name": "state_transition",
+            "description": "根据查询结果更新 x 的值：-1 表示 x < a_i，0 表示 x = a_i，1 表示 x > a_i",
+            "formal": "if response == -1 then x < a_i; if response == 0 then x = a_i; if response == 1 then x > a_i"
+          },
+          {
+            "name": "operation_limit",
+            "description": "如果查询次数超过 40n 或者查询无效，则返回 -1 并终止程序",
+            "formal": "if queries > 40 * n or invalid_query then return -1 and terminate"
           }
         ]
       }
@@ -52,8 +62,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足条件的排列"
+        "type": "construction",
+        "description": "构造出隐藏的排列"
       }
     }
   ],
@@ -62,11 +72,20 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence",
-        "description": "查询过程中，通过比较结果逐步缩小可能的解空间，搜索区间单调缩小",
-        "properties": {
-          "search_interval_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解可以通过子问题的解合成，通过递归查询逐步缩小问题规模",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "二分搜索不变量：搜索区间单调缩小，每次查询后根据反馈调整搜索范围",
+            "properties": {
+              "search_range_monotonic": true
+            }
+          }
+        ]
       }
     }
   ]

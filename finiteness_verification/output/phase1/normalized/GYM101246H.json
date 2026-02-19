@@ -1,0 +1,82 @@
+{
+  "problem_id": "GYM101246H",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": -1000000,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "orientation",
+            "description": "移动方向约束（只能向北和向东移动）",
+            "formal": "对于任意两个城市 i 和 j，如果从 i 移动到 j，则 x_j >= x_i 且 y_j >= y_i"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径长度最大化约束（访问尽可能多的城市）",
+            "formal": "找到一条路径，使得路径上城市的数量最大"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造两个满足条件的点集，一个包含所有可能访问的城市，另一个包含必须访问的城市"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "在路径选择过程中，移动方向始终满足单调性（仅向北和向东）",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优路径的子路径也是最优的，即路径上的每个子段都是从起点到该点的最优路径",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "城市之间的访问顺序满足拓扑序，即每个城市只能在其所有可达前驱城市被访问后才能被访问",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

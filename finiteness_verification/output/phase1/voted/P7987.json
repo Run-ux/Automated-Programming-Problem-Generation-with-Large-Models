@@ -1,0 +1,163 @@
+{
+  "problem_id": "P7987",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": {
+              "x": 0,
+              "y": 1
+            },
+            "max": {
+              "x": 1000000000,
+              "y": 10000
+            }
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": {
+        "x": 0,
+        "y": 1
+      },
+      "max": {
+        "x": 1000000000,
+        "y": 10000
+      }
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "exclusion",
+        "description": "每一对包含位置相差不超过 K 的两头不同的元素 a 和 b；也就是说，|x_a - x_b| ≤ K。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "matching_constraint",
+        "description": "配对是极大的；也就是说，没有两头未配对的元素可以组成对。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "injective_mapping",
+        "description": "每一头元素要么包含在恰好一对中，要么不属于任何一对。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "exclusion",
+              "description": "每一对包含位置相差不超过 K 的两头不同的元素 a 和 b；也就是说，|x_a - x_b| ≤ K。",
+              "formal": "|x_a - x_b| ≤ K"
+            },
+            {
+              "name": "matching_constraint",
+              "description": "配对是极大的；也就是说，没有两头未配对的元素可以组成对。",
+              "formal": "不存在未配对的 a 和 b 使得 |x_a - x_b| ≤ K"
+            },
+            {
+              "name": "injective_mapping",
+              "description": "每一头元素要么包含在恰好一对中，要么不属于任何一对。",
+              "formal": "每个元素最多属于一个对"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求未配对元素的最小权值和"
+        }
+      }
+    ],
+    "description": "求未配对元素的最小权值和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "双指针左右端点单调前进，用于维护配对区间合法性",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的最优解可以通过子问题的最优解组合得到，适用于动态规划求解未配对奶牛的最小或最大重量和",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "局部最优选择（尽可能配对距离最近的奶牛）导致全局最优解，适用于贪心算法求解极大配对方案",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "双指针左右端点单调前进，用于维护配对区间合法性",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "问题的最优解可以通过子问题的最优解组合得到，适用于动态规划求解未配对奶牛的最小或最大重量和",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "局部最优选择（尽可能配对距离最近的奶牛）导致全局最优解，适用于贪心算法求解极大配对方案",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

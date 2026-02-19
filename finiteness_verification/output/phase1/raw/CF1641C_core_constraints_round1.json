@@ -6,19 +6,19 @@
   "result": {
     "constraints": [
       {
-        "name": "interval_sick_status",
-        "description": "在给定区间内，至少存在一个病患或没有病患（区间查询约束）",
-        "formal": "对于每个查询 (l, r, x)，如果 x = 1，则 [l, r] 区间内至少有一个病患；如果 x = 0，则 [l, r] 区间内没有病患"
-      },
-      {
-        "name": "consistent_queries",
-        "description": "所有查询必须一致，即存在一种队列状态使得所有查询结果都成立（一致性约束）",
-        "formal": "存在一个长度为 n 的二进制数组 A，使得对于每个查询 (l, r, x)，A[l:r] 中的元素满足 x 的条件"
+        "name": "range_query",
+        "description": "区间查询，对于给定的区间 [l, r]，判断该区间内是否存在至少一个特定元素（如病患）",
+        "formal": "query(l, r, x) where x = 0 or 1"
       },
       {
         "name": "deterministic_status",
-        "description": "根据已有的查询信息，能够确定某个位置的状态（确定性约束）",
-        "formal": "对于每个查询 j，根据之前的查询 (l, r, x) 能够确定 A[j] 的值为 0 或 1，或者无法确定"
+        "description": "确定性状态查询，根据已有的区间查询结果，确定某个位置 j 的元素是否为特定值（如是否为病患）",
+        "formal": "status(j) -> 'NO', 'YES', or 'N/A'"
+      },
+      {
+        "name": "consistent_queries",
+        "description": "查询一致性约束，所有区间查询结果必须与某种可能的序列一致",
+        "formal": "∃ sequence S such that all queries are consistent with S"
       }
     ]
   },

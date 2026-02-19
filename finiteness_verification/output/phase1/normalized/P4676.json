@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 1,
           "max": 100
@@ -28,13 +28,13 @@
       "result": {
         "constraints": [
           {
-            "name": "subarray_partition_constraint",
-            "description": "查询矩形区域内的元素和（模 10^9+7）",
+            "name": "submatrix_sum_constraint",
+            "description": "计算矩形区域内的元素和（模 10^9+7）",
             "formal": "sum(A[x1:y1, x2:y2]) % (10^9 + 7)"
           },
           {
-            "name": "coordinate_fixed_point",
-            "description": "查询矩形的坐标范围在网格内",
+            "name": "distance_bound",
+            "description": "查询的矩形区域坐标必须在网格范围内",
             "formal": "-n <= x1 <= x2 <= n, -n <= y1 <= y2 <= n"
           }
         ]
@@ -46,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_value",
-        "description": "求矩形区域内的数值和"
+        "type": "enumeration",
+        "description": "求给定矩形区域内的数值和（取模）"
       }
     }
   ],
@@ -56,11 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间可合并性：通过端点差值计算区间和，满足前缀和性质",
-        "properties": {
-          "prefix_sum": true
-        }
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和计算任意子区间的和",
+            "properties": {}
+          },
+          {
+            "name": "prefix_decomposability",
+            "description": "前缀可分解性：利用前缀和的性质，将矩形区域的和分解为四个前缀和的组合",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

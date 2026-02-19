@@ -1,0 +1,89 @@
+{
+  "problem_id": "P14861",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 99999
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_size_minimum_constraint",
+            "description": "每个子集的节点数必须是偶数",
+            "formal": "|V_i| % 2 == 0"
+          },
+          {
+            "name": "connectivity",
+            "description": "每个子集诱导的子图必须是连通的",
+            "formal": "对于任意 V_i，所有节点在 V_i 中是可达的"
+          },
+          {
+            "name": "partition",
+            "description": "子集的并集必须覆盖所有节点且互不相交",
+            "formal": "V_1 ∪ ... ∪ V_k = V 且 V_i ∩ V_j = ∅ (i ≠ j)"
+          },
+          {
+            "name": "inclusion",
+            "description": "不存在进一步的划分使得每个子集仍然满足上述条件",
+            "formal": "对于任意 V_i，不存在 U_1 和 U_2 使得 U_1 ∪ U_2 = V_i 且 U_1 和 U_2 满足上述条件"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一个满足条件的图的划分方案"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子图的划分不影响其他子图的划分，满足分治或 DP 中子问题相互独立的性质",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：整个图的最优划分可以由其子图的最优划分组合而成，满足动态规划中的最优子结构特性",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "连通性保持：在每次划分过程中，每个子图都保持连通性，确保最终结果中每个子图都是连通的",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "problem_id": "P15164",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 4,
+          "max": 100
+        },
+        "value_range": {
+          "min": -1000000,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "turn_based",
+            "description": "操作按回合进行，每次选择一个顶点并移除由其两个相邻边确定的三角形"
+          },
+          {
+            "name": "operation_limit",
+            "description": "总操作次数限制为 n-2 次，每轮操作后剩余多边形的顶点数减少1"
+          },
+          {
+            "name": "distinctness",
+            "description": "每个顶点只能被选择一次，不能重复选择"
+          },
+          {
+            "name": "convexity",
+            "description": "初始多边形是严格凸的，且顶点按逆时针顺序给出"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "最终目标是使某一方吃到的面积不超过总面积的一半"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "min_max",
+        "description": "最小化玩家吃掉的披萨面积的最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：在每一步选择中，当前玩家的选择基于剩余部分的最优解，确保最终结果为全局最优",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择局部最优解（即选择当前能吃到最小面积的三角形），以确保最终结果为全局最优",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次选择一个顶点后，剩余部分的状态是确定的，并且新的状态仍然满足严格凸多边形的性质",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

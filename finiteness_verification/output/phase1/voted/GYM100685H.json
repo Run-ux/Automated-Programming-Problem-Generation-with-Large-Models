@@ -1,0 +1,162 @@
+{
+  "problem_id": "GYM100685H",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 1,
+            "max": 4000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 4000
+          },
+          "properties": {
+            "connected": true,
+            "rooted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 4000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 4000
+    },
+    "properties": {
+      "connected": true,
+      "rooted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "degree_bound",
+        "description": "每个节点的出度为1，入度不超过1（图中每个房间只有一个出口，最多一个入口）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "图可能不连通（存在无法直接到达的房间）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "需要最小化操作次数（最小化使用传送的次数）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "indegree_constraint",
+        "description": "可以从外部进入任意节点（可以从迷宫外传送到任意房间）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "部分边信息未知（某些房间的出口信息不可读）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "degree_bound",
+              "description": "每个节点的出度为1，入度不超过1（图中每个房间只有一个出口，最多一个入口）"
+            },
+            {
+              "name": "connectivity",
+              "description": "图可能不连通（存在无法直接到达的房间）"
+            },
+            {
+              "name": "operation_limit",
+              "description": "需要最小化操作次数（最小化使用传送的次数）"
+            },
+            {
+              "name": "indegree_constraint",
+              "description": "可以从外部进入任意节点（可以从迷宫外传送到任意房间）"
+            },
+            {
+              "name": "exclusion",
+              "description": "部分边信息未知（某些房间的出口信息不可读）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_probability",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_probability",
+          "description": "最小化在所有可能配置下，遍历所有节点并返回起点的期望代价"
+        }
+      }
+    ],
+    "description": "最小化在所有可能配置下，遍历所有节点并返回起点的期望代价"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。对于每个房间，其最小访问成本可以由其可达房间的最小访问成本推导得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个房间到另一个房间的移动遵循确定的状态转移规则。当前房间的状态（是否已访问）决定了下一步的决策。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在计算某个房间的最小访问成本时，其他房间的访问情况不会影响该房间的局部最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。对于每个房间，其最小访问成本可以由其可达房间的最小访问成本推导得出。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个房间到另一个房间的移动遵循确定的状态转移规则。当前房间的状态（是否已访问）决定了下一步的决策。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在计算某个房间的最小访问成本时，其他房间的访问情况不会影响该房间的局部最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "problem_id": "P11394",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 800
+        },
+        "value_range": {
+          "min": 0,
+          "max": 100000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacency_relation",
+            "description": "相邻节点的感染状态影响当前节点的感染状态（图着色约束）"
+          },
+          {
+            "name": "state_transition",
+            "description": "节点状态在满足条件后会发生变化（状态转移约束）"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每个时间段内风向固定，且风向周期性重复（操作次数限制）"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "初始被感染的节点不能是抵抗力为0的节点（初始选择约束）"
+          },
+          {
+            "name": "revisiting_allowed",
+            "description": "一旦节点被感染，其感染状态会持续到实验结束（持久性约束）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "求在给定条件下，最少被感染的个体数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个时间段内，动物的状态（被感染或未被感染）根据风向和相邻动物的状态进行更新，且这种更新方式在整个实验过程中保持一致。",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：由于风向是周期性的，经过一定数量的时间段后，风向会重复出现。因此，动物的感染状态也会在多个时间段后进入一个稳定的循环模式。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个动物的感染状态只依赖于其相邻动物的状态和当前时间段的风向，而不受其他不相邻动物的影响。这使得可以独立处理每个动物的感染过程。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

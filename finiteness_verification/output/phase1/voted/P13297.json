@@ -2,14 +2,14 @@
   "problem_id": "P13297",
   "source": "luogu",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100
@@ -19,7 +19,7 @@
             "max": 1000
           },
           "properties": {
-            "inferred": true
+            "ordered": false
           }
         }
       }
@@ -33,24 +33,29 @@
       "max": 1000
     },
     "properties": {
-      "inferred": true
+      "ordered": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "cyclic_permutation",
-        "description": "元素必须按照固定的循环顺序访问（图的遍历约束）",
+        "name": "cyclic_shift_constraint",
+        "description": "元素必须按照固定的循环顺序访问（如：团队中的玩家按固定顺序击球）",
         "confidence": "1/1"
       },
       {
-        "name": "reflection_limit",
-        "description": "当元素到达边界时，如果特定条件满足则反弹，否则失败（图的边界条件约束）",
+        "name": "reflection_constraint",
+        "description": "当元素到达边界时，如果特定条件满足则反弹，否则失败（如：球到达垂直边界时，如果对应的玩家在该位置则反弹，否则失败）",
         "confidence": "1/1"
       },
       {
-        "name": "global_optimization_objective",
-        "description": "所有参与者都以最优策略进行操作（博弈论中的最优策略约束）",
+        "name": "optimal_play",
+        "description": "所有参与者都采取最优策略（如：所有玩家都以最优方式移动和击球）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "fixed_start_node",
+        "description": "初始位置可以自由选择（如：玩家可以根据球的初始位置自由选择自己的初始位置）",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +66,24 @@
         "result": {
           "constraints": [
             {
-              "name": "cyclic_permutation",
-              "description": "元素必须按照固定的循环顺序访问（图的遍历约束）"
+              "name": "cyclic_shift_constraint",
+              "description": "元素必须按照固定的循环顺序访问（如：团队中的玩家按固定顺序击球）"
             },
             {
-              "name": "reflection_limit",
-              "description": "当元素到达边界时，如果特定条件满足则反弹，否则失败（图的边界条件约束）"
+              "name": "reflection_constraint",
+              "description": "当元素到达边界时，如果特定条件满足则反弹，否则失败（如：球到达垂直边界时，如果对应的玩家在该位置则反弹，否则失败）"
             },
             {
-              "name": "global_optimization_objective",
-              "description": "所有参与者都以最优策略进行操作（博弈论中的最优策略约束）"
+              "name": "optimal_play",
+              "description": "所有参与者都采取最优策略（如：所有玩家都以最优方式移动和击球）"
+            },
+            {
+              "name": "fixed_start_node",
+              "description": "初始位置可以自由选择（如：玩家可以根据球的初始位置自由选择自己的初始位置）"
+            },
+            {
+              "name": "reflection_constraint",
+              "description": "反射角度等于入射角度（如：球碰到水平边界时，反射角度等于入射角度）"
             }
           ]
         }
@@ -78,38 +91,82 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断哪一方会赢得比赛，并输出对方最多能反弹球的次数"
+          "type": "feasibility",
+          "description": "判定是否存在一个策略使得某一方能够获胜，并在能获胜的情况下，求出对方最多能反弹球的次数"
         }
       }
     ],
-    "description": "判断哪一方会赢得比赛，并输出对方最多能反弹球的次数"
+    "description": "判定是否存在一个策略使得某一方能够获胜，并在能获胜的情况下，求出对方最多能反弹球的次数"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "球的运动方向和速度在每次碰撞后保持不变，仅改变方向。球在水平方向上的移动是单调的。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的最优解可以通过子问题的最优解来构建。每个玩家在最优策略下选择最佳位置以确保球能够被反弹。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移的一致性。球的位置和速度在每次碰撞后按照固定的规则进行更新。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "cycle_invariant",
+        "description": "球员的击球顺序是固定的循环序列。每个团队的球员按照固定的顺序依次击球。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "球的运动轨迹在水平方向上单调前进，每次碰撞后改变垂直方向的速度但不改变水平方向的速度。玩家的策略是基于球的当前位置和速度来决定最优的拍子位置，以确保能够接住球。",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": false,
-            "window_shrinkable": false
-          }
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "球的运动方向和速度在每次碰撞后保持不变，仅改变方向。球在水平方向上的移动是单调的。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "问题的最优解可以通过子问题的最优解来构建。每个玩家在最优策略下选择最佳位置以确保球能够被反弹。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移的一致性。球的位置和速度在每次碰撞后按照固定的规则进行更新。",
+              "properties": {}
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "球员的击球顺序是固定的循环序列。每个团队的球员按照固定的顺序依次击球。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "球的运动轨迹在水平方向上单调前进，每次碰撞后改变垂直方向的速度但不改变水平方向的速度。玩家的策略是基于球的当前位置和速度来决定最优的拍子位置，以确保能够接住球。"
+    ]
   }
 }

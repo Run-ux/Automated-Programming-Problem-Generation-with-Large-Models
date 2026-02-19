@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1000
@@ -28,12 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "turn_based_operation",
-            "description": "每个投票事件必须在其对应的提案事件之后发生（拓扑排序约束）"
+            "name": "state_transition",
+            "description": "状态转移约束：每个投票事件（Vote）必须在相应的提案事件（Add）之后发生"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "同一时间只能有一个提案或投票事件发生（互斥约束）"
+            "name": "ordering",
+            "description": "有序性约束：事件序列必须满足时间顺序，即每个提案事件（Add）和投票事件（Vote）的顺序不能颠倒"
           }
         ]
       }
@@ -44,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断给定的事件序列是否满足某种合法顺序"
+        "type": "feasibility",
+        "description": "判断是否存在一种合法的事件顺序，使得给定的事件序列能够满足预设的规则"
       }
     }
   ],
@@ -54,11 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "当前状态合法性仅依赖于有限的前序状态，具体表现为每个投票事件的有效性仅取决于之前是否有对应的提案事件",
-        "properties": {
-          "dependency_on_finite_previous_states": true
-        }
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "栈的入栈和出栈操作保持了事件的合法顺序，即每个投票事件前必须有对应的提案事件。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "事件序列满足拓扑序不变量，即对于每个投票事件，其对应的提案事件必定在其之前发生。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

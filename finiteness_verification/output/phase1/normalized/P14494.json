@@ -1,0 +1,110 @@
+{
+  "problem_id": "P14494",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "connected": true,
+          "directed": false,
+          "binary": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "每个结点最多只有一个父结点、一个左儿子和一个右儿子（二叉树结构约束）"
+          },
+          {
+            "name": "level_uniformity_constraint",
+            "description": "所有结点的深度不能超过 maxdep（深度约束）",
+            "formal": "depth(node) <= maxdep"
+          },
+          {
+            "name": "operation_limit",
+            "description": "move 函数的总调用次数不能超过 2 * 10^6 次，并且在每次事件中 move 函数的调用次数不能超过 maxcnt（操作次数限制）",
+            "formal": "total_move_calls <= 2 * 10^6, event_move_calls <= maxcnt"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "手下只能移动到相邻的结点或保持不动（相邻关系约束）",
+            "formal": "new_position in {current_position, adjacent_nodes}"
+          },
+          {
+            "name": "state_transition",
+            "description": "修改某个结点的儿子后，该结点的所有祖先结点（包括自己）都会变为枯萎状态（状态转移约束）",
+            "formal": "if modify_child(node), then set_withered(ancestors(node))"
+          },
+          {
+            "name": "inclusion",
+            "description": "合并后的二叉树中序遍历序列应为原两棵树中序遍历序列的拼接（包含/必选约束）",
+            "formal": "inorder(new_tree) = inorder(tree_x) + inorder(tree_y)"
+          },
+          {
+            "name": "partition",
+            "description": "分离后的两棵二叉树中序遍历序列应分别为原树中序遍历序列的前 k 个结点和剩余结点（划分约束）",
+            "formal": "inorder(tree_1) = inorder(tree_x)[1:k], inorder(tree_2) = inorder(tree_x)[k+1:n]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造满足条件的二叉树结构并调整其形态"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：二叉树的合并和分裂操作保持中序遍历序列的一致性，且每个结点的状态（正常/枯萎）在操作后满足题目要求",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：二叉树的合并操作可以通过子树的中序遍历序列合并来实现，且合并后的中序遍历序列是连续的",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：二叉树的分裂操作可以通过子树的中序遍历序列分割来实现，且分裂后的中序遍历序列是原序列的子序列",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每次操作只影响当前处理的二叉树，不影响其他二叉树的状态和结构",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

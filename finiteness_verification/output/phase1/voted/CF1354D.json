@@ -1,0 +1,145 @@
+{
+  "problem_id": "CF1354D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "window_constraint",
+        "description": "查询第 k 个顺序统计量，即在排序后的多重集合中找到第 k 个小的元素",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_type",
+        "description": "插入一个元素到多重集合中",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "多重集合在所有操作后必须非空，否则输出 0",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "window_constraint",
+              "description": "查询第 k 个顺序统计量，即在排序后的多重集合中找到第 k 个小的元素",
+              "formal": "find the k-th smallest element in the sorted multiset"
+            },
+            {
+              "name": "operation_type",
+              "description": "插入一个元素到多重集合中",
+              "formal": "insert an element into the multiset"
+            },
+            {
+              "name": "operation_type",
+              "description": "删除多重集合中的第 k 个顺序统计量，即删除排序后第 k 个小的元素",
+              "formal": "remove the k-th smallest element from the multiset"
+            },
+            {
+              "name": "distinctness",
+              "description": "多重集合在所有操作后必须非空，否则输出 0",
+              "formal": "if the multiset is empty after all operations, output 0"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造并输出任意一个属于最终多重集的元素"
+        }
+      }
+    ],
+    "description": "构造并输出任意一个属于最终多重集的元素"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：通过子区间的合并来维护整个区间的统计信息，支持高效查询和更新操作",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：插入和删除操作保持元素的有序性，使得查询第 k 小元素时可以利用二分查找等方法",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：通过子区间的合并来维护整个区间的统计信息，支持高效查询和更新操作",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：插入和删除操作保持元素的有序性，使得查询第 k 小元素时可以利用二分查找等方法",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "directed_acyclic_graph",
+        "type": "directed_tree",
         "length": {
           "min": 2,
           "max": 200000
@@ -29,16 +29,16 @@
       "result": {
         "constraints": [
           {
-            "name": "tree_structure",
-            "description": "图是一个有向树，根节点为1，所有节点均可从根节点到达"
+            "name": "acyclicity",
+            "description": "图结构为树，且存在一个根节点（主广场），所有节点均可从根节点到达"
           },
           {
-            "name": "tree_structure",
-            "description": "只有在叶子节点上，强盗才能捕获市民"
+            "name": "acyclicity",
+            "description": "树的所有边均为有向边，方向从根节点指向叶子节点"
           },
           {
-            "name": "global_optimization_objective",
-            "description": "强盗和市民都采取最优策略以最大化或最小化被捕人数"
+            "name": "optimal_play",
+            "description": "双方（市民和强盗）均采取最优策略，市民尽量减少被抓住的数量，强盗尽量增加抓住的数量"
           }
         ]
       }
@@ -49,8 +49,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_value",
-        "description": "最大化在最优策略下被捕捉的节点权值和"
+        "type": "min_max",
+        "description": "在双方都采取最优策略的情况下，求一方能最大化的目标值（即最小化另一方的最大收益）"
       }
     }
   ],
@@ -59,9 +59,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的最优解可以递归地构建出全局最优解",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到。在本题中，每个节点的最优解取决于其子节点的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：图中的节点按照拓扑序进行处理，确保每个节点在其所有前驱节点处理完毕后才被处理。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

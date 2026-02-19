@@ -1,0 +1,141 @@
+{
+  "problem_id": "P8302",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 2000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 30000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 30000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "divisibility",
+        "description": "对于任意 m ≥ m0，均有 f^(m)(n) 整除 f^(m+k)(n)",
+        "confidence": "1/1"
+      },
+      {
+        "name": "existence_requirement",
+        "description": "如果不存在满足条件的 m0，则令 m0 = -1",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "divisibility",
+              "description": "对于任意 m ≥ m0，均有 f^(m)(n) 整除 f^(m+k)(n)",
+              "formal": "∀ m ≥ m0, f^(m)(n) | f^(m+k)(n)"
+            },
+            {
+              "name": "existence_requirement",
+              "description": "如果不存在满足条件的 m0，则令 m0 = -1",
+              "formal": "if ∄ m0 such that ∀ m ≥ m0, f^(m)(n) | f^(m+k)(n), then m0 = -1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足条件的最小自然数"
+        }
+      }
+    ],
+    "description": "求满足条件的最小自然数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "函数 f(n) 的迭代结果单调递增，即对于任意 m ≥ 0，有 f^(m+1)(n) ≥ f^(m)(n)",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的最优解可以通过子问题的最优解来构造，即 f^(m+k)(n) % f^(m)(n) = 0 的最小 m_0 可以通过较小的 k 和 n 的子问题来确定",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移的一致性，即 f^(m+1)(n) = f(f^(m)(n))，保证了状态的连续性和一致性",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "函数 f(n) 的迭代结果单调递增，即对于任意 m ≥ 0，有 f^(m+1)(n) ≥ f^(m)(n)",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "问题的最优解可以通过子问题的最优解来构造，即 f^(m+k)(n) % f^(m)(n) = 0 的最小 m_0 可以通过较小的 k 和 n 的子问题来确定",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移的一致性，即 f^(m+1)(n) = f(f^(m)(n))，保证了状态的连续性和一致性",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

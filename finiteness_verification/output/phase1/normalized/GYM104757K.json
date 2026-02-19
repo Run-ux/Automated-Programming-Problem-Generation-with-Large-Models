@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 1500
@@ -28,14 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "每对单词必须在恰好两个连续的位置上不同",
-            "formal": "对于每对单词 (w1, w2)，存在且仅存在两个连续的索引 i 和 i+1，使得 w1[i] ≠ w2[i] 且 w1[i+1] ≠ w2[i+1]"
+            "name": "adjacency_relation",
+            "description": "两个字符串在恰好两个相邻位置上不同",
+            "formal": "∃i, s1[i] ≠ s2[i] ∧ s1[i+1] ≠ s2[i+1] ∧ ∀j ≠ i, i+1, s1[j] = s2[j]"
           },
           {
-            "name": "distinct_elements",
-            "description": "每对单词必须是唯一的解，即没有其他单词对可以满足相同的字母差异条件",
-            "formal": "对于每对单词 (w1, w2)，不存在另一对单词 (w3, w4) 满足 w1 和 w2 在相同位置上的字母差异"
+            "name": "distinctness",
+            "description": "每对字符串是唯一的，即没有其他字符串对满足相同的条件",
+            "formal": "∀s3, s4 ∈ words, (s3, s4) ≠ (s1, s2) ∧ (s3, s4) 满足 adjacency_difference 的条件 → 不存在"
           }
         ]
       }
@@ -47,7 +47,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计满足条件的单词对数量"
+        "description": "求满足特定条件的单词对数量"
       }
     }
   ],
@@ -56,9 +56,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "pairwise_distinctness",
+            "description": "每对单词必须在恰好两个连续位置上不同，并且是唯一满足该条件的单词对",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的解可以通过子问题的解来构造，即通过检查每个单词与其他单词之间的差异来确定是否形成有效的单词对",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

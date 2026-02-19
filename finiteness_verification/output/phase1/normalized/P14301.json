@@ -1,0 +1,79 @@
+{
+  "problem_id": "P14301",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "monotonicity",
+            "description": "在西风或东风的影响下，只有满足特定单调性的区域海拔才会减少。具体来说，对于西风，从西数起的 x 个区域中，所有满足西侧不存在比自身海拔更高的区域的海拔会减少；对于东风，从东数起的 x 个区域中，所有满足东侧不存在比自身海拔更高的区域的海拔会减少。",
+            "formal": "For west wind: ∀i ∈ [1, x], if ∀k < i, A_k ≤ A_i, then A_i -= 1. For east wind: ∀i ∈ [N - x + 1, N], if ∀k > i, A_k ≤ A_i, then A_i -= 1."
+          },
+          {
+            "name": "non_negative_value_constraint",
+            "description": "任意区域的海拔不会变为负数。",
+            "formal": "∀i, A_i ≥ 0"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造并输出指定区域在经历一系列操作后的海拔值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "在处理西风和东风时，受影响区域的海拔变化是单调递减的，且每次只减少1米。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "每个区域的海拔状态仅依赖于其相邻区域的海拔高度。当一个区域的海拔发生变化时，其相邻区域的状态可能受到影响。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "可以通过维护前缀和来计算任意区间内的海拔总和，从而快速判断某个区域内是否存在比当前区域更高的海拔。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

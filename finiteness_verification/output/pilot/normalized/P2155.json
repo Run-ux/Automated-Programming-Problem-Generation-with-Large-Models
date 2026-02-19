@@ -6,17 +6,17 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "matrix",
         "length": {
           "min": 1,
           "max": 10000
         },
         "value_range": {
           "min": 1,
-          "max": 100000000
+          "max": 10000000
         },
         "properties": {
-          "inferred": true
+          "ordered": false
         }
       }
     },
@@ -24,7 +24,7 @@
       "round": 2,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "matrix",
         "length": {
           "min": 1,
           "max": 10000
@@ -34,7 +34,7 @@
           "max": 10000000
         },
         "properties": {
-          "inferred": true
+          "ordered": false
         }
       }
     },
@@ -42,7 +42,7 @@
       "round": 3,
       "status": "success",
       "result": {
-        "type": "array",
+        "type": "matrix",
         "length": {
           "min": 1,
           "max": 10000
@@ -52,7 +52,7 @@
           "max": 10000000
         },
         "properties": {
-          "inferred": true
+          "ordered": false
         }
       }
     }
@@ -64,13 +64,13 @@
       "result": {
         "constraints": [
           {
-            "name": "coprime_with_m_factorial",
-            "description": "钞票编号必须与 M! 互质",
-            "formal": "gcd(number, M!) == 1"
+            "name": "pairwise_exclusion",
+            "description": "计算区间 [1, N!] 中与 M! 互质的数的数量",
+            "formal": "count(i in [1, N!] | gcd(i, M!) == 1)"
           },
           {
-            "name": "result_modulo_r",
-            "description": "结果需要对 R 取模",
+            "name": "modular_arithmetic",
+            "description": "结果对 R 取模",
             "formal": "result % R"
           }
         ]
@@ -82,13 +82,13 @@
       "result": {
         "constraints": [
           {
-            "name": "coprime_with_m_factorial",
-            "description": "钞票编号必须与 M! 互质",
-            "formal": "gcd(number, M!) == 1"
+            "name": "pairwise_exclusion",
+            "description": "计算在给定范围内与特定数互质的数的数量",
+            "formal": "count(i in [1, N!] | gcd(i, M!) == 1) % R"
           },
           {
-            "name": "result_modulo_r",
-            "description": "结果需要对 R 取模",
+            "name": "modular_arithmetic",
+            "description": "结果需要对给定模数取模",
             "formal": "result % R"
           }
         ]
@@ -100,13 +100,13 @@
       "result": {
         "constraints": [
           {
-            "name": "coprime_with_m_factorial",
-            "description": "钞票编号必须与 M! 互质",
-            "formal": "gcd(x, M!) == 1 for x in [1, N!]"
+            "name": "pairwise_exclusion",
+            "description": "计算区间 [1, N!] 中与 M! 互质的数的数量",
+            "formal": "count(i in [1, N!] | gcd(i, M!) == 1)"
           },
           {
-            "name": "result_modulo_r",
-            "description": "结果需要对 R 取模",
+            "name": "modular_arithmetic",
+            "description": "结果对 R 取模",
             "formal": "result % R"
           }
         ]
@@ -118,24 +118,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算在1到N!范围内与M!互质的数的数量，并对R取模后的结果"
+        "type": "enumeration",
+        "description": "求在给定范围内与特定值互质的数的数量，并对结果取模"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算在1到N!范围内与M!互质的数的数量，并对R取模后的结果"
+        "type": "enumeration",
+        "description": "求在给定范围内与特定数互质的数的数量，并对结果取模"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "count",
-        "description": "计算在1到N!范围内与M!互质的数的数量，并对R取模后的结果"
+        "type": "enumeration",
+        "description": "求在给定范围内与特定数互质的数的数量，并对结果取模"
       }
     }
   ],
@@ -144,27 +144,54 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于其子问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即计算与 M! 互质的数的数量可以分解为更小规模的问题。",
+            "properties": {}
+          },
+          {
+            "name": "modular_invariant",
+            "description": "模运算不变量：所有计算结果均在给定模数 R 下进行，确保数值不会溢出且结果一致。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的解组合而成，即大问题的解依赖于其子问题的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即计算与M!互质的数的数量可以分解为更小规模的问题。",
+            "properties": {}
+          },
+          {
+            "name": "modular_invariant",
+            "description": "模运算不变量：所有计算结果均在给定模数R下进行，确保结果不会溢出且符合题目要求。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "问题的解可以通过子问题的解组合而成，即求解[1, N!]中与M!互质的数的数量可以分解为更小规模的问题来解决。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即计算与 M! 互质的数的数量可以分解为更小规模的问题。",
+            "properties": {}
+          },
+          {
+            "name": "modular_invariant",
+            "description": "模运算不变量：所有计算结果均在给定的模 R 下进行，确保不会溢出且保持一致性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

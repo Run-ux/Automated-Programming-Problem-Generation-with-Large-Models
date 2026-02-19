@@ -2,14 +2,14 @@
   "problem_id": "CF1748E",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 200000
@@ -35,13 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "leftmost_maximum_index",
-        "description": "在区间 [l, r] 内，最左侧的最大值位置是满足 l ≤ i ≤ r 且 x_i = max(x_l, x_{l+1}, ..., x_r) 的最小整数 i。",
+        "name": "maximum_tiling_count",
+        "description": "数组 b 中每个子段 [l, r] 的左端最大值位置必须与数组 a 中对应子段 [l, r] 的左端最大值位置相同",
         "confidence": "1/1"
       },
       {
-        "name": "array_value_range",
-        "description": "数组 b 必须满足特定条件（题目未明确具体条件，但暗示与数组 a 和区间 [l, r] 的最左侧最大值位置有关）。",
+        "name": "range_bound",
+        "description": "数组 b 中的每个元素取值范围在 1 到 m 之间",
         "confidence": "1/1"
       }
     ],
@@ -52,14 +52,14 @@
         "result": {
           "constraints": [
             {
-              "name": "leftmost_maximum_index",
-              "description": "在区间 [l, r] 内，最左侧的最大值位置是满足 l ≤ i ≤ r 且 x_i = max(x_l, x_{l+1}, ..., x_r) 的最小整数 i。",
-              "formal": "i = argmin{j | l ≤ j ≤ r ∧ x_j = max(x_l, x_{l+1}, ..., x_r)}"
+              "name": "maximum_tiling_count",
+              "description": "数组 b 中每个子段 [l, r] 的左端最大值位置必须与数组 a 中对应子段 [l, r] 的左端最大值位置相同",
+              "formal": "∀ l, r (1 ≤ l ≤ r ≤ n), max_element_position(b[l:r]) = max_element_position(a[l:r])"
             },
             {
-              "name": "array_value_range",
-              "description": "数组 b 必须满足特定条件（题目未明确具体条件，但暗示与数组 a 和区间 [l, r] 的最左侧最大值位置有关）。",
-              "formal": "b 满足某些与 a 和 leftmost_max_position 相关的条件"
+              "name": "range_bound",
+              "description": "数组 b 中的每个元素取值范围在 1 到 m 之间",
+              "formal": "∀ i (1 ≤ i ≤ n), 1 ≤ b_i ≤ m"
             }
           ]
         }
@@ -67,37 +67,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的数组数量"
+          "type": "enumeration",
+          "description": "求满足条件的数组数量（结果需取模）"
         }
       }
     ],
-    "description": "统计满足条件的数组数量"
+    "description": "求满足条件的数组数量（结果需取模）"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的最优解来构建，满足动态规划的核心性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：区间的值可以通过端点差值计算，适用于前缀和等技术",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，满足动态规划的基本性质",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的最优解来构建，满足动态规划的核心性质",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：区间的值可以通过端点差值计算，适用于前缀和等技术",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，满足动态规划的基本性质"
+    ]
   }
 }

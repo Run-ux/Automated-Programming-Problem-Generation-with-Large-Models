@@ -1,0 +1,165 @@
+{
+  "problem_id": "P11535",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "图必须连通（所有区域两两可达）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "进入每个节点时，高度不低于该节点的高度限制",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每分钟可以跨过一条航线或不移动，并同时使飞机的高度上升1、下降1或保持不变",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "图必须连通（所有区域两两可达）"
+            },
+            {
+              "name": "range_bound",
+              "description": "进入每个节点时，高度不低于该节点的高度限制",
+              "formal": "h[i] >= a[i] for all i in [1, n]"
+            },
+            {
+              "name": "range_bound",
+              "description": "起点和终点的高度均为0",
+              "formal": "h[1] = 0 and h[n] = 0"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每分钟可以跨过一条航线或不移动，并同时使飞机的高度上升1、下降1或保持不变"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求从起点到终点的最短路径长度"
+        }
+      }
+    ],
+    "description": "求从起点到终点的最短路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从起点到终点的最短时间可以由经过每个节点的最短时间组合而成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在每一步决策中，当前状态（位置和高度）可以转移到下一个状态（新的位置和高度），且转移规则一致。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在飞行过程中，飞机的高度变化是单调递增或递减的，即每次只能上升、下降或保持不变。",
+        "confidence": "1/1",
+        "properties": {
+          "height_monotonic": true
+        }
+      },
+      {
+        "name": "flow_conservation",
+        "description": "流守恒：在飞行路径上，进入一个区域的总流量等于离开该区域的总流量，即每个区域的进出平衡。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从起点到终点的最短时间可以由经过每个节点的最短时间组合而成。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在每一步决策中，当前状态（位置和高度）可以转移到下一个状态（新的位置和高度），且转移规则一致。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在飞行过程中，飞机的高度变化是单调递增或递减的，即每次只能上升、下降或保持不变。",
+              "properties": {
+                "height_monotonic": true
+              }
+            },
+            {
+              "name": "flow_conservation",
+              "description": "流守恒：在飞行路径上，进入一个区域的总流量等于离开该区域的总流量，即每个区域的进出平衡。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

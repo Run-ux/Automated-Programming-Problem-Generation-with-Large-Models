@@ -1,0 +1,202 @@
+{
+  "problem_id": "GYM103466G",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 52
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 52
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "state_transition",
+        "description": "玩家的状态（是否被淘汰）在每一轮结束后根据其当前的筹码数量进行更新。如果筹码数量为零，则该玩家被淘汰，不再参与后续轮次。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每个玩家在每一轮中只能进行一次操作（弃牌或跟注）。如果所有其他玩家都弃牌，则剩余的玩家自动赢得这一轮。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "flow_constraint",
+        "description": "玩家在每一轮中的投注金额受到其当前筹码数量的限制。如果筹码不足15个，则必须全押或弃牌。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "在同一轮中，不同玩家的操作是互斥的。即，一个玩家的操作不会影响其他玩家的操作决策。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "玩家的行动顺序是固定的，从第一个未被淘汰的玩家开始依次进行。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "每一轮中使用的牌是从一副标准的52张扑克牌中抽取的子集。每一轮使用的牌数可能少于15张，因为有些玩家可能已经被淘汰。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "inclusion",
+        "description": "每一轮中，玩家必须使用自己的两张底牌和五张公共牌来组成最好的手牌。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "state_transition",
+              "description": "玩家的状态（是否被淘汰）在每一轮结束后根据其当前的筹码数量进行更新。如果筹码数量为零，则该玩家被淘汰，不再参与后续轮次。",
+              "formal": "if (player.pots == 0) player.disqualified = true"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每个玩家在每一轮中只能进行一次操作（弃牌或跟注）。如果所有其他玩家都弃牌，则剩余的玩家自动赢得这一轮。",
+              "formal": "for each round: if (all other players fold) remaining player wins the round"
+            },
+            {
+              "name": "flow_constraint",
+              "description": "玩家在每一轮中的投注金额受到其当前筹码数量的限制。如果筹码不足15个，则必须全押或弃牌。",
+              "formal": "if (player.pots < 15) player must all-in or fold"
+            },
+            {
+              "name": "exclusion",
+              "description": "在同一轮中，不同玩家的操作是互斥的。即，一个玩家的操作不会影响其他玩家的操作决策。",
+              "formal": "players' actions in a round are independent of each other"
+            },
+            {
+              "name": "ordering",
+              "description": "玩家的行动顺序是固定的，从第一个未被淘汰的玩家开始依次进行。",
+              "formal": "players act in a fixed order, starting from the first non-disqualified player"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "每一轮中使用的牌是从一副标准的52张扑克牌中抽取的子集。每一轮使用的牌数可能少于15张，因为有些玩家可能已经被淘汰。",
+              "formal": "cards used in each round is a subset of a standard 52-card deck, and may be less than 15 cards due to disqualification"
+            },
+            {
+              "name": "inclusion",
+              "description": "每一轮中，玩家必须使用自己的两张底牌和五张公共牌来组成最好的手牌。",
+              "formal": "each player must use their two hole cards and five community cards to form the best hand"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化每个玩家在多轮博弈后的最终收益"
+        }
+      }
+    ],
+    "description": "最大化每个玩家在多轮博弈后的最终收益"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个玩家的策略决定了他们在每一轮中的行为，从而影响他们的筹码数量。这些策略是基于当前手牌和公共牌的状态进行决策的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：在每一轮中，玩家的最优策略依赖于他们当前的手牌和公共牌组合。每轮的最优决策构成了整个游戏过程中的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着游戏的进行，玩家的筹码数量会逐渐减少（除非赢得更多的筹码），并且一旦某个玩家的筹码数量为零，该玩家将被永久淘汰。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每一轮的游戏可以视为一个独立的子问题，每个子问题的解决不影响其他子问题的解决方式。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个玩家的策略决定了他们在每一轮中的行为，从而影响他们的筹码数量。这些策略是基于当前手牌和公共牌的状态进行决策的。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：在每一轮中，玩家的最优策略依赖于他们当前的手牌和公共牌组合。每轮的最优决策构成了整个游戏过程中的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着游戏的进行，玩家的筹码数量会逐渐减少（除非赢得更多的筹码），并且一旦某个玩家的筹码数量为零，该玩家将被永久淘汰。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每一轮的游戏可以视为一个独立的子问题，每个子问题的解决不影响其他子问题的解决方式。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -2,14 +2,14 @@
   "problem_id": "CF747E",
   "source": "codeforces",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 1,
             "max": 1000000
@@ -41,23 +41,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "tree_structure",
+        "name": "acyclicity",
         "description": "数据结构为树形结构，每个节点（评论）最多有一个父节点",
         "confidence": "1/1"
       },
       {
-        "name": "non_empty_subset",
-        "description": "每个节点的值（评论内容）为非空字符串，由大小写字母组成",
+        "name": "coverage",
+        "description": "每个节点（评论）的值为非空字符串，由大写和小写字母组成",
         "confidence": "1/1"
       },
       {
-        "name": "node_degree_constraint",
-        "description": "每个节点的子节点数量为整数，且不包含前导零",
-        "confidence": "1/1"
-      },
-      {
-        "name": "tree_structure",
-        "description": "给定的树结构是有效的，即没有环且每个节点的子节点数量正确",
+        "name": "degree_bound",
+        "description": "每个节点（评论）的子节点数量为整数，且不包含前导零",
         "confidence": "1/1"
       }
     ],
@@ -68,20 +63,20 @@
         "result": {
           "constraints": [
             {
-              "name": "tree_structure",
+              "name": "acyclicity",
               "description": "数据结构为树形结构，每个节点（评论）最多有一个父节点"
             },
             {
-              "name": "non_empty_subset",
-              "description": "每个节点的值（评论内容）为非空字符串，由大小写字母组成"
+              "name": "coverage",
+              "description": "每个节点（评论）的值为非空字符串，由大写和小写字母组成"
             },
             {
-              "name": "node_degree_constraint",
-              "description": "每个节点的子节点数量为整数，且不包含前导零"
+              "name": "degree_bound",
+              "description": "每个节点（评论）的子节点数量为整数，且不包含前导零"
             },
             {
-              "name": "tree_structure",
-              "description": "给定的树结构是有效的，即没有环且每个节点的子节点数量正确"
+              "name": "acyclicity",
+              "description": "输入的树形结构是有效的，即没有环且每个节点的子节点数量正确"
             }
           ]
         }
@@ -89,36 +84,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足给定格式的树形结构输出"
+          "type": "construction",
+          "description": "构造并输出给定树结构的特定格式表示"
         }
       }
     ],
-    "description": "构造一个满足给定格式的树形结构输出"
+    "description": "构造并输出给定树结构的特定格式表示"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个评论节点的状态（内容和子评论数量）在解析过程中保持一致，且根据父节点信息递归构建子树。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：评论的输出顺序遵循从根到叶的层次遍历，确保每个节点在所有其子节点之前被处理。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "当前状态仅依赖于有限的前序状态，具体表现为每个评论节点的状态由其父节点和自身信息决定",
-          "properties": {
-            "parent_dependency": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个评论节点的状态（内容和子评论数量）在解析过程中保持一致，且根据父节点信息递归构建子树。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：评论的输出顺序遵循从根到叶的层次遍历，确保每个节点在所有其子节点之前被处理。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "当前状态仅依赖于有限的前序状态，具体表现为每个评论节点的状态由其父节点和自身信息决定"
+    ]
   }
 }

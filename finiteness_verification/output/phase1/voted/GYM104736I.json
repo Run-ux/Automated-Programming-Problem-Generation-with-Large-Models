@@ -2,14 +2,14 @@
   "problem_id": "GYM104736I",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -39,12 +39,12 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_inversion_count",
-        "description": "计算字符串中逆序对的数量（逆序对定义为索引 i < j 且 S[i] > S[j] 的一对字符）",
+        "name": "inversion_count_constraint",
+        "description": "计算字符串中的逆序对数量（即满足 i < j 且 S[i] > S[j] 的 (i, j) 对数）",
         "confidence": "1/1"
       },
       {
-        "name": "repeated_substring_inversion",
+        "name": "repetition_constraint",
         "description": "计算重复 N 次后的字符串中的逆序对数量，并对结果取模 10^9 + 7",
         "confidence": "1/1"
       }
@@ -56,11 +56,11 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_inversion_count",
-              "description": "计算字符串中逆序对的数量（逆序对定义为索引 i < j 且 S[i] > S[j] 的一对字符）"
+              "name": "inversion_count_constraint",
+              "description": "计算字符串中的逆序对数量（即满足 i < j 且 S[i] > S[j] 的 (i, j) 对数）"
             },
             {
-              "name": "repeated_substring_inversion",
+              "name": "repetition_constraint",
               "description": "计算重复 N 次后的字符串中的逆序对数量，并对结果取模 10^9 + 7"
             }
           ]
@@ -69,34 +69,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "计算给定序列重复N次后的逆序对数量"
+          "type": "enumeration",
+          "description": "求字符串重复N次后的逆序对数量（结果取模）"
         }
       }
     ],
-    "description": "计算给定序列重复N次后的逆序对数量"
+    "description": "求字符串重复N次后的逆序对数量（结果取模）"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：原问题的解可以通过子问题的解组合得到，即字符串S的重复N次后的逆序对数可以通过S自身及其重复次数的逆序对数计算得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和的思想，可以将整个长字符串看作是由多个S拼接而成，每个S内部以及不同S之间的逆序对数可以分别计算后相加。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过计算重复字符串中的逆序对数来推导整个字符串的逆序对数。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：原问题的解可以通过子问题的解组合得到，即字符串S的重复N次后的逆序对数可以通过S自身及其重复次数的逆序对数计算得出。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和的思想，可以将整个长字符串看作是由多个S拼接而成，每个S内部以及不同S之间的逆序对数可以分别计算后相加。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过计算重复字符串中的逆序对数来推导整个字符串的逆序对数。"
+    ]
   }
 }

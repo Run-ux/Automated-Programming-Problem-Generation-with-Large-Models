@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100
@@ -28,14 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "pairwise_exclusion",
-            "description": "区间之间不能重叠（互斥约束）",
-            "formal": "对于任意两个区间 [l1, r1] 和 [l2, r2]，必须满足 r1 < l2 或 r2 < l1"
+            "name": "ordering",
+            "description": "序列必须非递减（高度约束）",
+            "formal": "A[i] <= A[i+1] for all 0 <= i < n-1"
           },
           {
-            "name": "non_decreasing_sequence",
-            "description": "区间必须按左端点非递减顺序排列（有序约束）",
-            "formal": "对于所有区间 [l1, r1], [l2, r2], ..., [ln, rn]，必须满足 l1 <= l2 <= ... <= ln"
+            "name": "sum_constraint",
+            "description": "选取元素的高度和不超过给定的总高度上限",
+            "formal": "sum(A[i]) <= H for all selected i"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "每个高度值出现的次数不超过给定的最大频次",
+            "formal": "count(A[i]) <= F for all 0 <= i < n"
           }
         ]
       }
@@ -47,7 +52,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "最大化建筑物的高度总和"
+        "description": "最大化满足条件的子数组和"
       }
     }
   ],
@@ -56,12 +61,26 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "双指针左右端点单调前进，区间合法性可单调维护",
-        "properties": {
-          "left_monotonic": true,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，区间合法性可单调维护",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，满足动态规划的最优子结构性质",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间和可通过端点差值计算，前缀和的区间可加性",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

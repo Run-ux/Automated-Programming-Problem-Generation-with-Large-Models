@@ -1,0 +1,79 @@
+{
+  "problem_id": "GYM101638C",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 300000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "range_bound",
+            "description": "每个乘客的上车站点和下车站点必须满足 s_j < f_j",
+            "formal": "s_j < f_j, ∀ j ∈ [1, m]"
+          },
+          {
+            "name": "path_constraint",
+            "description": "乘客可以选择步行或乘坐保留的站点和终点站之间的路径，路径长度为 |r - s_j| + |f_j - n|",
+            "formal": "path_length = |r - s_j| + |f_j - n|"
+          },
+          {
+            "name": "pairwise_comparison",
+            "description": "如果步行路径长度小于等于乘坐路径长度，则乘客选择步行",
+            "formal": "if (f_j - s_j) <= (|r - s_j| + |f_j - n|), then walk"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "对于每个给定的点，计算满足特定条件的路径数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过端点差值计算区间和，适用于前缀和的计算",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，适用于动态规划求解",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

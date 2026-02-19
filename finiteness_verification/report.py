@@ -95,11 +95,23 @@ def calculate_coverage(classifications: List[Dict[str, Any]], logger: logging.Lo
         
         for problem in classifications:
             if dim in problem:
-                category = problem[dim].get("category", "OTHER")
-                categories[category] += 1
-                total += 1
-                if category == "OTHER":
-                    other_count += 1
+                if dim == "invariant":
+                    selected = problem[dim].get("categories", ["OTHER"])
+                    if not isinstance(selected, list):
+                        selected = [selected]
+                    if not selected:
+                        selected = ["OTHER"]
+                    for category in selected:
+                        categories[category] += 1
+                        if category == "OTHER":
+                            other_count += 1
+                    total += len(selected)
+                else:
+                    category = problem[dim].get("category", "OTHER")
+                    categories[category] += 1
+                    total += 1
+                    if category == "OTHER":
+                        other_count += 1
         
         if total > 0:
             coverage_rate = (total - other_count) / total
@@ -136,10 +148,19 @@ def generate_other_convergence_curve(
     
     for idx, problem in enumerate(classifications, start=1):
         if dimension in problem:
-            category = problem[dimension].get("category", "OTHER")
-            total_count += 1
-            if category == "OTHER":
-                other_count += 1
+            if dimension == "invariant":
+                selected = problem[dimension].get("categories", ["OTHER"])
+                if not isinstance(selected, list):
+                    selected = [selected]
+                if not selected:
+                    selected = ["OTHER"]
+                total_count += len(selected)
+                other_count += sum(1 for c in selected if c == "OTHER")
+            else:
+                category = problem[dimension].get("category", "OTHER")
+                total_count += 1
+                if category == "OTHER":
+                    other_count += 1
         
         if total_count > 0 and idx % 50 == 0:
             other_rates.append(other_count / total_count)

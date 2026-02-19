@@ -1,0 +1,159 @@
+{
+  "problem_id": "P8968",
+  "source": "luogu",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 2,
+            "max": 1000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000000
+          },
+          "properties": {
+            "rooted": true,
+            "binary": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 1000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000000
+    },
+    "properties": {
+      "rooted": true,
+      "binary": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "每个节点容纳的球数不超过其容量",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "球下落过程中，节点状态（容纳的球数）会根据规则更新",
+        "confidence": "1/1"
+      },
+      {
+        "name": "logical_inference_constraint",
+        "description": "当左右子树电荷代数和相等时，球的下落方向由神明决定",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "每个节点容纳的球数不超过其容量"
+            },
+            {
+              "name": "flow_constraint",
+              "description": "球只能从父节点流向未充满的子节点，且流向由电荷代数和决定"
+            },
+            {
+              "name": "state_transition",
+              "description": "球下落过程中，节点状态（容纳的球数）会根据规则更新"
+            },
+            {
+              "name": "logical_inference_constraint",
+              "description": "当左右子树电荷代数和相等时，球的下落方向由神明决定"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "min_max",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "min_max",
+          "description": "对于每个目标点，求在双方最优策略下的最小最大游戏回合数"
+        }
+      }
+    ],
+    "description": "对于每个目标点，求在双方最优策略下的最小最大游戏回合数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个节点的最优解可以通过其子节点的最优解来计算",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：球在树上的下落过程可以看作是从根到叶子的状态转移，且每次转移都遵循一定的规则",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每个节点处，根据当前电荷代数和决定球的下落方向，以达到局部最优解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个节点的处理仅依赖于其直接子节点的状态，不依赖于其他兄弟节点或祖先节点的状态",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个节点的最优解可以通过其子节点的最优解来计算",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：球在树上的下落过程可以看作是从根到叶子的状态转移，且每次转移都遵循一定的规则",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每个节点处，根据当前电荷代数和决定球的下落方向，以达到局部最优解",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个节点的处理仅依赖于其直接子节点的状态，不依赖于其他兄弟节点或祖先节点的状态",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

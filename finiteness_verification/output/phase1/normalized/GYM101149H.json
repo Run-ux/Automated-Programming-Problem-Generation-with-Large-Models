@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 500000
@@ -28,19 +28,16 @@
       "result": {
         "constraints": [
           {
-            "name": "substring_balance_constraint",
-            "description": "字符串必须是平衡括号序列，即每个左括号都有一个对应的右括号，并且左右括号匹配。",
-            "formal": "对于所有 i, j (1 ≤ i < j ≤ n)，如果 s[i] 是 '(', 则存在唯一的 k (i < k ≤ j) 使得 s[k] 是 ')'。"
+            "name": "parentheses_invariance",
+            "description": "字符串中的括号必须是平衡的（即每个左括号都有一个对应的右括号，且嵌套正确）"
           },
           {
-            "name": "pattern_matching_substitution",
-            "description": "问号 '?' 可以被替换成 '(' 或 ')'，但替换后的字符串必须仍然是平衡括号序列。",
-            "formal": "对于所有 i (1 ≤ i ≤ n)，如果 s[i] 是 '?'，则可以将其替换成 '(' 或 ')'，使得替换后的字符串满足 balanced_parentheses 约束。"
+            "name": "transformation",
+            "description": "对于每个问号字符，可以替换为左括号或右括号，使得最终字符串满足平衡括号的条件"
           },
           {
-            "name": "initial_state_connectivity",
-            "description": "初始和最终状态的括号计数必须为零，即整个字符串的括号必须完全匹配。",
-            "formal": "sum(1 if s[i] == '(' else -1 for i in range(n)) == 0"
+            "name": "revisiting_allowed",
+            "description": "初始和最终状态必须为空（即整个字符串的括号匹配数为0）"
           }
         ]
       }
@@ -51,8 +48,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足括号匹配条件的字符串"
+        "type": "feasibility",
+        "description": "判断是否存在一个合法的括号序列，使得所有不确定位置均可被替换为左或右括号"
       }
     }
   ],
@@ -61,11 +58,21 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "当前状态只依赖于前一状态，通过维护一个平衡计数器来确保括号序列的合法性",
-        "properties": {
-          "balance_counter": true
-        }
+        "invariants": [
+          {
+            "name": "partition_balance",
+            "description": "括号序列的平衡性：任意前缀中左括号的数量不少于右括号的数量，且整个序列左括号和右括号数量相等",
+            "properties": {
+              "prefix_balance": true,
+              "total_balance": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在不确定位置优先选择能够保持当前平衡性的括号类型",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

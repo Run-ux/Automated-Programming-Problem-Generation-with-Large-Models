@@ -1,0 +1,87 @@
+{
+  "problem_id": "P6611",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "adjacency_relation",
+            "description": "相邻节点定义为满足特定条件的节点对，即对于每个节点 x，其相邻节点包括在 x 之前且值不小于 a_x 的最大索引 i 和在 x 之后且值大于 a_x 的最小索引 j。",
+            "formal": "For 1 ≤ x ≤ n, adjacent(x) = {i, j} where i = max{0 ≤ k < x | a_k ≥ a_x} and j = min{x < k ≤ n+1 | a_k > a_x}"
+          },
+          {
+            "name": "cycle_count_constraint",
+            "description": "六元环定义为六个互不相同的节点 b_1, b_2, b_3, b_4, b_5, b_6，其中每个节点与其相邻节点相连，且 b_1 和 b_6 也相连。六元环的顺序不影响其定义。",
+            "formal": "A 6-cycle is a set {b_1, b_2, b_3, b_4, b_5, b_6} where b_i and b_{i+1} are adjacent for all 1 ≤ i ≤ 5, and b_1 and b_6 are adjacent. All b_i are distinct."
+          },
+          {
+            "name": "operation_update",
+            "description": "序列 a 在每次修改操作后更新，每次修改操作将 a_x 改为 a_x + y，并要求在每次修改后重新计算六元环的数量。",
+            "formal": "After each update (x, y), a_x = a_x + y. The number of 6-cycles must be recomputed after each update."
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足条件的六元环个数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "序列中的相邻关系满足单调性，即对于每个元素 x，其相邻的元素在序列中是单调递增或递减的。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "六元环的计数可以通过合并区间信息来维护，即通过线段树或其他数据结构来高效地处理区间操作和查询。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "每次修改操作后，状态转移的一致性保证了六元环的个数可以正确更新。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

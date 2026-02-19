@@ -1,0 +1,124 @@
+{
+  "problem_id": "P10322",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "divisibility",
+        "description": "对于每个整数 i，如果存在正整数 k 使得 i^k 是 d 的整数倍，则 v(i) 为最小的这样的 k；否则 v(i) 为 0。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "所有箭在强化后的攻击力之和需要对 998244353 取模。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "divisibility",
+              "description": "对于每个整数 i，如果存在正整数 k 使得 i^k 是 d 的整数倍，则 v(i) 为最小的这样的 k；否则 v(i) 为 0。",
+              "formal": "v(i) = min{k | i^k % d == 0} if exists, otherwise v(i) = 0"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "所有箭在强化后的攻击力之和需要对 998244353 取模。",
+              "formal": "(∑_{i=1}^{n} i^{v(i)+1}) % 998244353"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求所有元素在经过特定变换后的值之和"
+        }
+      }
+    ],
+    "description": "求所有元素在经过特定变换后的值之和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个箭的强化攻击力可以独立计算，最终结果是所有箭的强化攻击力之和。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：箭的原始攻击力和强化后的攻击力可以通过前缀和的方式进行计算，从而优化求和过程。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个箭的强化攻击力可以独立计算，最终结果是所有箭的强化攻击力之和。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：箭的原始攻击力和强化后的攻击力可以通过前缀和的方式进行计算，从而优化求和过程。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

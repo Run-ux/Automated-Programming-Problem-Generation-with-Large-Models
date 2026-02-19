@@ -2,14 +2,14 @@
   "problem_id": "GYM103577A",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "weighted_directed_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "weighted_directed_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 2,
             "max": 500
@@ -19,8 +19,7 @@
             "max": 500
           },
           "properties": {
-            "weighted": true,
-            "directed": true
+            "weighted": true
           }
         }
       }
@@ -34,20 +33,19 @@
       "max": 500
     },
     "properties": {
-      "weighted": true,
-      "directed": true
+      "weighted": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "node_wait_time_constraint",
-        "description": "在每个节点上等待 x 秒后才能移动到下一个节点（包括终点）",
+        "name": "path_constraint",
+        "description": "从起点到终点的路径必须存在且唯一，如果不存在则输出 -1",
         "confidence": "1/1"
       },
       {
-        "name": "path_existence",
-        "description": "从起点 u 到终点 v 必须存在一条路径，否则输出 -1",
+        "name": "time_interval_inclusion",
+        "description": "在每个节点上必须等待 x 秒后才能移动到下一个节点，包括最后一个节点",
         "confidence": "1/1"
       }
     ],
@@ -58,14 +56,12 @@
         "result": {
           "constraints": [
             {
-              "name": "node_wait_time_constraint",
-              "description": "在每个节点上等待 x 秒后才能移动到下一个节点（包括终点）",
-              "formal": "对于路径上的每个节点 v，等待时间为 x 秒"
+              "name": "path_constraint",
+              "description": "从起点到终点的路径必须存在且唯一，如果不存在则输出 -1"
             },
             {
-              "name": "path_existence",
-              "description": "从起点 u 到终点 v 必须存在一条路径，否则输出 -1",
-              "formal": "如果不存在从 u 到 v 的路径，则输出 -1"
+              "name": "time_interval_inclusion",
+              "description": "在每个节点上必须等待 x 秒后才能移动到下一个节点，包括最后一个节点"
             }
           ]
         }
@@ -73,14 +69,14 @@
     ]
   },
   "objective": {
-    "type": "minimize_distance",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_distance",
+          "type": "minimize_value",
           "description": "求两点间最短路径长度，考虑每个节点的等待时间"
         }
       }
@@ -88,19 +84,39 @@
     "description": "求两点间最短路径长度，考虑每个节点的等待时间"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：从起点到终点的最短路径可以通过子路径的最短路径组合而成，满足动态规划的最优子结构性质。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在计算从一个点到另一个点的最短路径时，状态转移方程保持一致，即当前状态的最优解依赖于前驱状态的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：从一个点到另一个点的最短路径可以通过组合中间点的最短路径来获得，满足DAG上的最优子结构",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：从起点到终点的最短路径可以通过子路径的最短路径组合而成，满足动态规划的最优子结构性质。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在计算从一个点到另一个点的最短路径时，状态转移方程保持一致，即当前状态的最优解依赖于前驱状态的最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：从一个点到另一个点的最短路径可以通过组合中间点的最短路径来获得，满足DAG上的最优子结构"
+    ]
   }
 }

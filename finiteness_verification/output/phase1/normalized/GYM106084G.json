@@ -1,0 +1,90 @@
+{
+  "problem_id": "GYM106084G",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 2,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 500000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（树结构）"
+          },
+          {
+            "name": "spanning_constraint",
+            "description": "遍历路径必须覆盖所有顶点至少一次"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个顶点的度数不超过 n-1（树的性质）"
+          },
+          {
+            "name": "uniform_edge_weight",
+            "description": "所有边的权重均为 1"
+          },
+          {
+            "name": "teleportation_constraint",
+            "description": "特殊边（传送门）的权重为 0，可以无限次使用"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求访问所有顶点至少一次的最小总代价"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过计算包含或不包含特殊边（portal）的子树的最小成本来构建整个树的最小成本。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理每个节点时，根据其子节点的状态来更新当前节点的状态。具体来说，每个节点的状态取决于其子节点是否使用了特殊边（portal），以及使用特殊边后的最小成本。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个子树的最小成本计算是独立的，不受其他子树的影响。这样可以确保在合并子树结果时，不会出现重复计算或相互干扰的情况。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

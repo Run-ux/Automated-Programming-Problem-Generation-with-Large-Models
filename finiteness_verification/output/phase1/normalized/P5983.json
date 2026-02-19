@@ -1,0 +1,84 @@
+{
+  "problem_id": "P5983",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1048575
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "路径必须从起点 (0,0) 到终点 (n-1,m-1)，且经过恰好 n+m-1 个格子，每一步只能向右或向下移动。",
+            "formal": "路径 P 从 (0,0) 到 (n-1,m-1)，|P| = n + m - 1，每步 (x,y) -> (x+1,y) 或 (x,y+1)"
+          },
+          {
+            "name": "connectivity",
+            "description": "在每次操作后，如果将某个格子变成障碍格后仍然存在合法路径，则该格子可以变成障碍格。",
+            "formal": "对于每个操作 (r, c, z)，如果 (x, y) 变成障碍格后仍存在路径 P 满足 path_constraint，则 (x, y) 可以变成障碍格"
+          },
+          {
+            "name": "exclusion",
+            "description": "如果将某个格子变成障碍格后不存在合法路径，则该格子不能变成障碍格，并输出 TAK。",
+            "formal": "对于每个操作 (r, c, z)，如果 (x, y) 变成障碍格后不存在路径 P 满足 path_constraint，则输出 TAK 并更新 v"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断每次操作后是否存在从起点到终点的合法路径"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即路径的存在性可以通过子路径的存在性来判断",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过动态规划或类似方法维护从起点到每个点的可达性状态，状态转移满足一致性",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在网格中，从左上到右下的路径可以看作是DAG上的路径，路径的方向性保证了拓扑序的正确性",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

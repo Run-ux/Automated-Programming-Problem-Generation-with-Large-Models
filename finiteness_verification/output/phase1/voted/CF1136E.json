@@ -1,0 +1,140 @@
+{
+  "problem_id": "CF1136E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 100000
+          },
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "相邻元素满足特定关系（对于所有 1 ≤ i ≤ n-1，有 a_i + k_i ≤ a_{i+1}）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "数组 a 的元素在更新后仍需满足相邻元素的关系约束",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subsequence_constraint",
+        "description": "查询区间 [l, r] 内的子数组和",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "相邻元素满足特定关系（对于所有 1 ≤ i ≤ n-1，有 a_i + k_i ≤ a_{i+1}）",
+              "formal": "∀ 1 ≤ i ≤ n-1, a_i + k_i ≤ a_{i+1}"
+            },
+            {
+              "name": "range_bound",
+              "description": "数组 a 的元素在更新后仍需满足相邻元素的关系约束",
+              "formal": "After each update, ∀ 1 ≤ i ≤ n-1, a_i + k_i ≤ a_{i+1}"
+            },
+            {
+              "name": "subsequence_constraint",
+              "description": "查询区间 [l, r] 内的子数组和",
+              "formal": "For each query (l, r), compute sum(a[l:r])"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求指定子数组的元素和"
+        }
+      }
+    ],
+    "description": "求指定子数组的元素和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：区间和可以通过端点差值计算，适用于前缀和的快速查询",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：数组 a 的相邻元素差值满足 a[i] + k[i] <= a[i+1]，保证了在更新操作后仍能保持该性质",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：区间和可以通过端点差值计算，适用于前缀和的快速查询",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：数组 a 的相邻元素差值满足 a[i] + k[i] <= a[i+1]，保证了在更新操作后仍能保持该性质",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

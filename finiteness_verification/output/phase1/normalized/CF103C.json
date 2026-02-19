@@ -13,7 +13,7 @@
         },
         "value_range": {
           "min": 1,
-          "max": 18446744073709551615
+          "max": 1000000000000000000
         },
         "properties": {
           "ordered": false
@@ -28,16 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "lexicographic_minimization",
-            "description": "在所有满足条件的配置中，选择字典序最小的配置"
+            "name": "subset_constraint",
+            "description": "选取的子弹槽数量必须等于 k",
+            "formal": "|S| = k"
           },
           {
-            "name": "fixed_size_constraint",
-            "description": "选取元素的数量固定为 k 个"
+            "name": "ordering",
+            "description": "在所有满足条件的子弹槽配置中，选择字典序最小的一个",
+            "formal": "minimize S lexicographically"
           },
           {
-            "name": "cyclic_permutation_invariance",
-            "description": "配置在循环移位后保持不变（即每个位置被选中的概率相同）"
+            "name": "optimization_objective",
+            "description": "选择子弹槽的位置以最小化第一个射击者被击中的概率",
+            "formal": "minimize P(shoot on first turn)"
           }
         ]
       }
@@ -48,8 +51,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个满足条件的序列"
+        "type": "minimize_probability",
+        "description": "最小化第一个玩家失败的概率，并在所有方案中选择字典序最小的方案"
       }
     }
   ],
@@ -58,9 +61,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即在选择子弹位置时，每一步的选择都基于当前已确定的最优配置。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即在选择子弹位置时，每一步的选择都基于当前状态下的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，选择当前状态下最优的子弹位置，以确保最终结果是最优且字典序最小的。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

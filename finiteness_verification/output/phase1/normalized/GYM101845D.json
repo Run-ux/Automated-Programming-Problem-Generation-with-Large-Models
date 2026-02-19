@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "polygon",
+        "type": "weighted_undirected_graph",
         "length": {
           "min": 3,
           "max": 100000
@@ -29,16 +29,16 @@
       "result": {
         "constraints": [
           {
-            "name": "polygon_convexity_constraint",
+            "name": "convexity",
             "description": "多边形必须是凸的（任意两点之间的线段都在多边形内部）"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "选择的点对不能重复"
+            "name": "exclusion",
+            "description": "每对顶点只能选择一次进行分割"
           },
           {
-            "name": "non_collinear_point_set",
-            "description": "多边形的顶点中没有三点共线"
+            "name": "partition",
+            "description": "分割后的两个部分中，较大的部分归一方所有"
           }
         ]
       }
@@ -50,7 +50,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "最大化分割后的子区域面积"
+        "description": "最大化分割后得到的较小部分的面积"
       }
     }
   ],
@@ -59,9 +59,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过计算每个分割线两侧的面积来确定最大面积",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "convexity",
+            "description": "凸性不变量：土地的边界构成一个凸多边形，确保任意两点之间的连线都在多边形内部。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最大面积分割问题可以通过考虑所有可能的分割线来解决，每条分割线将多边形分成两个部分，每个部分的面积可以独立计算。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -6,25 +6,29 @@
   "result": {
     "constraints": [
       {
-        "name": "directed_edges",
-        "description": "边是有向的，只能从低楼层到高楼层（图中的边有方向性）"
+        "name": "path_constraint",
+        "description": "路径必须从起点 (1, 1) 到达终点 (n, m)，且路径上可以使用单向边（梯子）",
+        "formal": "存在一条从 (1, 1) 到 (n, m) 的路径，路径上的边可以是水平移动或使用梯子"
       },
       {
-        "name": "adjacent_cost",
-        "description": "相邻节点之间的移动成本与楼层相关（在同层内移动时，损失的健康点数与移动距离成正比）",
-        "formal": "cost(i, j, k) = |j - k| * x_i"
+        "name": "adjacency_relation",
+        "description": "在同一层内，相邻房间之间的移动代价为 |j - k| * x_i",
+        "formal": "cost((i, j), (i, k)) = |j - k| * x_i"
       },
       {
-        "name": "start_end_fixed",
-        "description": "起点和终点固定（必须从 (1, 1) 到达 (n, m)）"
-      },
-      {
-        "name": "unique_ladders",
-        "description": "任意两个房间之间最多只有一条梯子（图中任意两个节点之间最多只有一条边）"
+        "name": "edge_directionality",
+        "description": "梯子只能从低楼层到高楼层单向使用",
+        "formal": "对于每个梯子 (a_i, b_i) -> (c_i, d_i)，有 a_i < c_i"
       },
       {
         "name": "health_gain",
-        "description": "使用梯子可以增加健康点数（通过某些边可以增加权重）"
+        "description": "使用梯子时可以获得一定的健康点数 h_i",
+        "formal": "使用梯子 (a_i, b_i) -> (c_i, d_i) 时，获得 h_i 健康点数"
+      },
+      {
+        "name": "no_escape_condition",
+        "description": "如果不存在从 (1, 1) 到 (n, m) 的路径，则输出 'NO ESCAPE'",
+        "formal": "如果不存在从 (1, 1) 到 (n, m) 的路径，则输出 'NO ESCAPE'"
       }
     ]
   },

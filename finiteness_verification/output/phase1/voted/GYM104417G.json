@@ -2,14 +2,14 @@
   "problem_id": "GYM104417G",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 100000
@@ -18,7 +18,9 @@
             "min": -1000000000,
             "max": 1000000000
           },
-          "properties": {}
+          "properties": {
+            "ordered": false
+          }
         }
       }
     ],
@@ -30,23 +32,25 @@
       "min": -1000000000,
       "max": 1000000000
     },
-    "properties": {}
+    "properties": {
+      "ordered": false
+    }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_exclusion",
-        "description": "选取的边集合中任意两条边没有公共顶点（匹配约束）",
+        "name": "matching_constraint",
+        "description": "选择的边集构成一个匹配，即任意两条边没有公共顶点",
         "confidence": "1/1"
       },
       {
-        "name": "path_weight_constraint",
-        "description": "选取的边集合的权重和最大化（最大权匹配）",
+        "name": "optimization_objective",
+        "description": "选择的边集权重和最大化",
         "confidence": "1/1"
       },
       {
-        "name": "edge_exclusion_constraint",
-        "description": "存在边 (i, j) 当且仅当 i - j = a_i - a_j（图的边生成条件）",
+        "name": "existence_requirement",
+        "description": "存在边 (i, j) 当且仅当 i - j = a_i - a_j",
         "confidence": "1/1"
       }
     ],
@@ -57,16 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_exclusion",
-              "description": "选取的边集合中任意两条边没有公共顶点（匹配约束）"
+              "name": "matching_constraint",
+              "description": "选择的边集构成一个匹配，即任意两条边没有公共顶点"
             },
             {
-              "name": "path_weight_constraint",
-              "description": "选取的边集合的权重和最大化（最大权匹配）"
+              "name": "optimization_objective",
+              "description": "选择的边集权重和最大化"
             },
             {
-              "name": "edge_exclusion_constraint",
-              "description": "存在边 (i, j) 当且仅当 i - j = a_i - a_j（图的边生成条件）"
+              "name": "existence_requirement",
+              "description": "存在边 (i, j) 当且仅当 i - j = a_i - a_j"
             }
           ]
         }
@@ -89,19 +93,39 @@
     "description": "最大化匹配边的权值和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最大权匹配问题的解可以通过子问题的最优解组合得到，满足动态规划或贪心算法中的最优子结构性质",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择当前最优（权重最大）的边加入匹配，最终可以得到全局最优解",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，适用于动态规划求解最大权匹配问题",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最大权匹配问题的解可以通过子问题的最优解组合得到，满足动态规划或贪心算法中的最优子结构性质",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择当前最优（权重最大）的边加入匹配，最终可以得到全局最优解",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，适用于动态规划求解最大权匹配问题"
+    ]
   }
 }

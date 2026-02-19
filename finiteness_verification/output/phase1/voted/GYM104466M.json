@@ -2,14 +2,14 @@
   "problem_id": "GYM104466M",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "integer",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "integer",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1
@@ -35,18 +35,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "pairwise_exclusion",
-        "description": "所有选取的元素必须互不相同（包括目标值 d 和三个操作数 a, b, c）",
+        "name": "distinctness",
+        "description": "所有选择的数必须互不相同（即 a, b, c 和 d 两两不同）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_operation_types_constraint",
-        "description": "每个操作数只能使用一次，且必须使用加、减、乘、除四种运算符之一进行组合",
+        "name": "operation_limit",
+        "description": "每个数最多使用一次，且只能使用加、减、乘、除四种运算符",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_solution_constraint",
-        "description": "不存在任何一种运算组合使得结果等于目标值 d",
+        "name": "syntax_validity",
+        "description": "通过组合 a, b, c 并使用括号，最终表达式的计算结果必须等于 d",
         "confidence": "1/1"
       }
     ],
@@ -57,16 +57,16 @@
         "result": {
           "constraints": [
             {
-              "name": "pairwise_exclusion",
-              "description": "所有选取的元素必须互不相同（包括目标值 d 和三个操作数 a, b, c）"
+              "name": "distinctness",
+              "description": "所有选择的数必须互不相同（即 a, b, c 和 d 两两不同）"
             },
             {
-              "name": "distinct_operation_types_constraint",
-              "description": "每个操作数只能使用一次，且必须使用加、减、乘、除四种运算符之一进行组合"
+              "name": "operation_limit",
+              "description": "每个数最多使用一次，且只能使用加、减、乘、除四种运算符"
             },
             {
-              "name": "distinct_solution_constraint",
-              "description": "不存在任何一种运算组合使得结果等于目标值 d"
+              "name": "syntax_validity",
+              "description": "通过组合 a, b, c 并使用括号，最终表达式的计算结果必须等于 d"
             }
           ]
         }
@@ -74,34 +74,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一组满足条件的数，使得不存在一个算术表达式使用这些数和给定的目标数得到目标结果"
+          "type": "feasibility",
+          "description": "判断是否存在三个数使得无法通过四则运算和括号得到给定的目标值"
         }
       }
     ],
-    "description": "构造一组满足条件的数，使得不存在一个算术表达式使用这些数和给定的目标数得到目标结果"
+    "description": "判断是否存在三个数使得无法通过四则运算和括号得到给定的目标值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：通过枚举所有可能的算术表达式，找到满足条件的解。每个表达式的计算结果依赖于其子表达式的计算结果。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在枚举所有可能的算术表达式时，每个表达式的计算是独立的，不受其他表达式的影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，且子问题之间相互独立",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：通过枚举所有可能的算术表达式，找到满足条件的解。每个表达式的计算结果依赖于其子表达式的计算结果。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在枚举所有可能的算术表达式时，每个表达式的计算是独立的，不受其他表达式的影响。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，且子问题之间相互独立"
+    ]
   }
 }

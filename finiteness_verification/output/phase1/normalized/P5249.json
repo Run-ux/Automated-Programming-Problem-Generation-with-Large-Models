@@ -1,0 +1,90 @@
+{
+  "problem_id": "P5249",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 3,
+          "max": 3
+        },
+        "value_range": {
+          "min": [
+            0,
+            1,
+            1
+          ],
+          "max": [
+            1,
+            10000,
+            10000
+          ]
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "cyclic_shift_constraint",
+            "description": "参与者按照编号顺序从小到大进行游戏，绕着圆桌不断循环（环形排列）"
+          },
+          {
+            "name": "operation_limit",
+            "description": "游戏在场上仅剩下最后一只长脖子鹿时结束（单个幸存者终止条件）"
+          },
+          {
+            "name": "probability_distribution",
+            "description": "每个人在每一回合中枪的概率是完全相同的 P0（均匀概率分布）",
+            "formal": "P(i) = P0, ∀i ∈ [1, n]"
+          },
+          {
+            "name": "special_property_a_constraint",
+            "description": "如果 P0=0，则胜者为 1 号（特殊概率值处理）",
+            "formal": "if P0 = 0, then winner = 1"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_probability",
+        "description": "求特定个体在随机过程中成为唯一幸存者的概率"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：在每一轮游戏中，参与者的顺序和状态在循环中保持一致，且每次循环的起始点是固定的。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个参与者在每轮游戏中的存活概率可以通过前一轮所有参与者的存活概率计算得出，满足状态转移的一致性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

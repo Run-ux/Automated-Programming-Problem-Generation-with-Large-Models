@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 2
@@ -26,12 +26,24 @@
       "result": {
         "constraints": [
           {
-            "name": "manhattan_distance_constraint",
-            "description": "两点之间的曼哈顿距离（即在网格上的最短路径长度）"
+            "name": "distance_bound",
+            "description": "两点之间的曼哈顿距离不超过矩形的对角线长度",
+            "formal": "d(x1, y1, x2, y2) = |x1 - x2| + |y1 - y2| <= A + B"
           },
           {
-            "name": "uniform_submatrix_values",
-            "description": "起点和终点在矩形区域内均匀随机分布"
+            "name": "distance_bound",
+            "description": "移动方向仅限于四个正交方向（上下左右）",
+            "formal": "direction ∈ {up, down, left, right}"
+          },
+          {
+            "name": "distance_bound",
+            "description": "移动速度恒定为每秒一单位长度",
+            "formal": "speed = 1 unit/second"
+          },
+          {
+            "name": "independence",
+            "description": "起点和终点的选择是独立且均匀分布的",
+            "formal": "P(start) = P(end) = 1 / (A * B)"
           }
         ]
       }
@@ -42,8 +54,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_distance",
-        "description": "求两点间最短路径长度的期望值"
+        "type": "minimize_probability",
+        "description": "最小化从一个随机点到另一个随机点的期望最短路径长度"
       }
     }
   ],
@@ -52,9 +64,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，即从起点到终点的最短时间可以由任意两个点之间的最短时间累加得到。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从起点到终点的最短路径可以分解为若干段最短路径的和。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：由于矩形的对称性，任意两点之间的最短路径时间与它们在矩形中的相对位置有关，而与具体坐标无关。通过对称变换，可以将问题简化。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

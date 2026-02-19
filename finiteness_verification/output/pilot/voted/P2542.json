@@ -2,14 +2,14 @@
   "problem_id": "P2542",
   "source": "luogu",
   "input_structure": {
-    "type": "graph",
+    "type": "weighted_undirected_graph",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 1,
             "max": 30000
@@ -28,7 +28,7 @@
         "round": 2,
         "status": "success",
         "result": {
-          "type": "graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 1,
             "max": 30000
@@ -47,7 +47,7 @@
         "round": 3,
         "status": "success",
         "result": {
-          "type": "graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 1,
             "max": 30000
@@ -79,18 +79,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_is_tree",
-        "description": "无论航线如何被破坏，任意时刻任意两个星球都能够相互到达。",
+        "name": "connectivity",
+        "description": "图必须始终保持连通",
         "confidence": "3/3"
       },
       {
-        "name": "each_side_covered_once",
-        "description": "在整个数据中，任意两个星球之间最多只可能存在一条直接的航线。",
+        "name": "degree_bound",
+        "description": "任意两个节点之间最多只可能存在一条直接的边",
         "confidence": "3/3"
       },
       {
-        "name": "valid_operation_types",
-        "description": "对于 op = 0 的操作，保证操作前航线 u ↔ v 存在。",
+        "name": "operation_limit",
+        "description": "操作次数（询问与破坏航线）不超过 40000 次",
         "confidence": "3/3"
       }
     ],
@@ -101,19 +101,20 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_is_tree",
-              "description": "无论航线如何被破坏，任意时刻任意两个星球都能够相互到达。",
-              "formal": "∀t, ∀u, v ∈ [1, n], ∃路径从 u 到 v"
+              "name": "connectivity",
+              "description": "图必须始终保持连通"
             },
             {
-              "name": "each_side_covered_once",
-              "description": "在整个数据中，任意两个星球之间最多只可能存在一条直接的航线。",
-              "formal": "∀u, v ∈ [1, n], 直接航线 (u, v) 最多存在一条"
+              "name": "degree_bound",
+              "description": "任意两个节点之间最多只可能存在一条直接的边"
             },
             {
-              "name": "valid_operation_types",
-              "description": "对于 op = 0 的操作，保证操作前航线 u ↔ v 存在。",
-              "formal": "op = 0 时, 航线 (u, v) 必须存在"
+              "name": "operation_limit",
+              "description": "操作次数（询问与破坏航线）不超过 40000 次"
+            },
+            {
+              "name": "exclusion",
+              "description": "删除的边在操作前必须存在"
             }
           ]
         }
@@ -124,19 +125,20 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_is_tree",
-              "description": "无论航线如何被破坏，任意时刻任意两个星球都能够相互到达。",
-              "formal": "对于任意时刻的图 G，G 是连通的。"
+              "name": "connectivity",
+              "description": "图必须始终保持连通，即任意时刻任意两个节点之间都存在路径"
             },
             {
-              "name": "each_side_covered_once",
-              "description": "在整个数据中，任意两个星球之间最多只可能存在一条直接的航线。",
-              "formal": "对于任意 u, v (1 ≤ u, v ≤ n)，存在至多一条边 (u, v)。"
+              "name": "degree_bound",
+              "description": "任意两个节点之间最多只可能存在一条直接的边"
             },
             {
-              "name": "valid_operation_types",
-              "description": "对于 op = 0 的操作，保证操作前航线 u ↔ v 存在。",
-              "formal": "如果 op = 0 且输入为 (u, v)，则边 (u, v) 在当前图中存在。"
+              "name": "operation_limit",
+              "description": "操作次数（询问与破坏航线）不超过 40000 次"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "在进行删除操作时，保证要删除的边在操作前是存在的"
             }
           ]
         }
@@ -147,19 +149,20 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_is_tree",
-              "description": "无论航线如何被破坏，任意时刻任意两个星球都能够相互到达。",
-              "formal": "∀t, ∀u, v ∈ V, ∃路径 P 使得 u 可达 v"
+              "name": "connectivity",
+              "description": "图必须始终保持连通，即任意时刻任意两个节点之间都存在路径"
             },
             {
-              "name": "each_side_covered_once",
-              "description": "在整个数据中，任意两个星球之间最多只可能存在一条直接的航线。",
-              "formal": "∀u, v ∈ V, |{e ∈ E | e = (u, v) 或 e = (v, u)}| ≤ 1"
+              "name": "degree_bound",
+              "description": "任意两个节点之间最多只可能存在一条直接的边"
             },
             {
-              "name": "valid_operation_types",
-              "description": "对于 op = 0 的操作，保证操作前航线 u ↔ v 存在。",
-              "formal": "op = 0 → (u, v) ∈ E 或 (v, u) ∈ E"
+              "name": "operation_limit",
+              "description": "操作次数（询问与破坏航线）不超过 40000 次"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "对于删除操作，保证操作前对应的边存在"
             }
           ]
         }
@@ -167,72 +170,123 @@
     ]
   },
   "objective": {
-    "type": "count",
+    "type": "maximize_count",
     "confidence": "3/3",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计两个星球之间的关键航线数目"
+          "type": "maximize_count",
+          "description": "求两个节点间的关键边数量"
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计两个星球之间关键航线的数量"
+          "type": "maximize_count",
+          "description": "求两个节点间的关键边数量"
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "type": "count",
-          "description": "统计两个星球之间的关键航线数目"
+          "type": "maximize_count",
+          "description": "求两个节点间的关键边数量"
         }
       }
     ],
-    "description": "统计两个星球之间的关键航线数目"
+    "description": "求两个节点间的关键边数量"
   },
   "invariant": {
-    "name": "state_dependency",
-    "confidence": "2/3",
+    "invariants": [
+      {
+        "name": "cycle_invariant",
+        "description": "关键航线（桥）检测：在无向图中，某些边的移除会导致图的连通分量数量增加，这些边即为关键航线。",
+        "confidence": "3/3",
+        "properties": {}
+      },
+      {
+        "name": "dynamic_connectivity",
+        "description": "图的连通性：无论航线如何被破坏，任意时刻任意两个星球都能够相互到达。",
+        "confidence": "3/3",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "问题的解可以通过子问题的解组合而成，即在求解两个星球之间的关键航线数目时，可以将问题分解为更小规模的问题来解决。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "dynamic_connectivity",
+              "description": "图的连通性：无论航线如何被破坏，任意时刻任意两个星球都能够相互到达。",
+              "properties": {}
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "关键航线（桥）检测：在无向图中，某些边的移除会导致图的连通分量数量增加，这些边即为关键航线。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 2,
         "status": "success",
         "result": {
-          "name": "state_dependency",
-          "description": "当前状态只依赖于前一状态，即每次航线的破坏或询问操作仅基于当前图的状态进行更新或查询。",
-          "properties": {
-            "current_state_depend_on_previous": true
-          }
+          "invariants": [
+            {
+              "name": "dynamic_connectivity",
+              "description": "图的连通性：在任意时刻，所有节点之间都存在路径可达。",
+              "properties": {}
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "桥检测不变量：关键航线（桥）的数量可以通过 Tarjan 算法或 DFS 检测到，并且在每次操作后更新。",
+              "properties": {}
+            },
+            {
+              "name": "dynamic_connectivity",
+              "description": "动态连通性不变量：随着边的删除，图的连通分量会变化，但始终保证每个连通分量内部的节点是连通的。",
+              "properties": {}
+            }
+          ]
         }
       },
       {
         "round": 3,
         "status": "success",
         "result": {
-          "name": "state_dependency",
-          "description": "当前状态只依赖于有限的前序状态，即每次航线被破坏或查询关键航线时，仅需考虑当前图的状态和上一次操作后的状态变化。",
-          "properties": {
-            "dependency_on_previous_state": true
-          }
+          "invariants": [
+            {
+              "name": "dynamic_connectivity",
+              "description": "图的连通性：在任意时刻，图中所有节点都是连通的",
+              "properties": {}
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "桥检测不变量：关键航线（桥）的数量可以通过对图进行深度优先搜索并维护时间戳和低链值来确定",
+              "properties": {
+                "dfs_tree_structure": true,
+                "timestamp_maintenance": true,
+                "low_link_value": true
+              }
+            },
+            {
+              "name": "dynamic_connectivity",
+              "description": "动态连通性不变量：随着边的删除，图的连通性可以动态维护，并且能够快速查询两个节点之间的连通性",
+              "properties": {
+                "edge_deletion": true,
+                "connectivity_query": true
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "当前状态只依赖于前一状态，即每次航线的破坏或询问操作仅基于当前图的状态进行更新或查询。"
+    ]
   }
 }

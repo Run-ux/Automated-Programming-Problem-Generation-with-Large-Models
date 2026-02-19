@@ -41,23 +41,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "maximize_lexicographical_order",
-        "description": "路径选择策略为字典序最大，即在每一步选择中优先选择当前步数下钻石数量最多的走廊",
+        "name": "path_constraint",
+        "description": "路径长度固定为 K，且路径可以重复经过节点和边",
         "confidence": "1/1"
       },
       {
-        "name": "path_length_constraint",
-        "description": "路径长度固定为 K，即必须通过恰好 K 条走廊",
+        "name": "lexicographical_maximization",
+        "description": "路径选择策略是字典序最大化，即每次选择当前可选的最大值",
         "confidence": "1/1"
       },
       {
-        "name": "node_degree_constraint",
-        "description": "每个节点的出度至少为 1，即每个大厅至少有一条走廊通向其他大厅或自身",
+        "name": "degree_bound",
+        "description": "每个节点至少有一个出边",
         "confidence": "1/1"
       },
       {
-        "name": "edge_repetition_permissible",
-        "description": "允许重复经过同一个节点和边，即可以多次经过同一个大厅和走廊",
+        "name": "constant_edge_weight",
+        "description": "每条边的权重在多次通过时保持不变",
         "confidence": "1/1"
       }
     ],
@@ -68,20 +68,24 @@
         "result": {
           "constraints": [
             {
-              "name": "maximize_lexicographical_order",
-              "description": "路径选择策略为字典序最大，即在每一步选择中优先选择当前步数下钻石数量最多的走廊"
+              "name": "path_constraint",
+              "description": "路径长度固定为 K，且路径可以重复经过节点和边",
+              "formal": "len(path) = K, path[i] ∈ V, (path[i], path[i+1]) ∈ E"
             },
             {
-              "name": "path_length_constraint",
-              "description": "路径长度固定为 K，即必须通过恰好 K 条走廊"
+              "name": "lexicographical_maximization",
+              "description": "路径选择策略是字典序最大化，即每次选择当前可选的最大值",
+              "formal": "path[i] = argmax(d[path[i-1], u]) for all u ∈ V and (path[i-1], u) ∈ E"
             },
             {
-              "name": "node_degree_constraint",
-              "description": "每个节点的出度至少为 1，即每个大厅至少有一条走廊通向其他大厅或自身"
+              "name": "degree_bound",
+              "description": "每个节点至少有一个出边",
+              "formal": "∀v ∈ V, ∃u ∈ V such that (v, u) ∈ E"
             },
             {
-              "name": "edge_repetition_permissible",
-              "description": "允许重复经过同一个节点和边，即可以多次经过同一个大厅和走廊"
+              "name": "constant_edge_weight",
+              "description": "每条边的权重在多次通过时保持不变",
+              "formal": "d[u, v] is constant for all (u, v) ∈ E"
             }
           ]
         }
@@ -89,34 +93,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_value",
+    "type": "lexicographic_optimize",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_value",
-          "description": "最大化路径上的权值和"
+          "type": "lexicographic_optimize",
+          "description": "求在给定步数内，按照字典序最大的路径上的权值和"
         }
       }
     ],
-    "description": "最大化路径上的权值和"
+    "description": "求在给定步数内，按照字典序最大的路径上的权值和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，总是选择当前最优的走廊以最大化钻石数量。这种局部最优选择最终导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：由于存在有向边且每个节点至少有一条出边，可以构建一个拓扑排序。在这个排序下，路径的选择始终遵循从高到低的顺序。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态转移到另一个状态时，通过选择当前最优的走廊来更新状态。这种状态转移的一致性保证了算法的正确性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "局部最优选择导致全局最优：每一步选择当前可选路径中钻石数量最大的走廊，确保最终路径的钻石总数最大",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，总是选择当前最优的走廊以最大化钻石数量。这种局部最优选择最终导致全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：由于存在有向边且每个节点至少有一条出边，可以构建一个拓扑排序。在这个排序下，路径的选择始终遵循从高到低的顺序。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态转移到另一个状态时，通过选择当前最优的走廊来更新状态。这种状态转移的一致性保证了算法的正确性。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "局部最优选择导致全局最优：每一步选择当前可选路径中钻石数量最大的走廊，确保最终路径的钻石总数最大"
+    ]
   }
 }

@@ -1,0 +1,90 @@
+{
+  "problem_id": "CF1762D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 20000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 19999
+        },
+        "properties": {
+          "ordered": false,
+          "permutation": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "query_limit",
+            "description": "查询次数限制为 2n 次",
+            "formal": "queries <= 2 * n"
+          },
+          {
+            "name": "distinctness",
+            "description": "数组 p 是 [0, 1, ..., n-1] 的一个排列，即所有元素互不相同",
+            "formal": "p is a permutation of [0, 1, ..., n-1]"
+          },
+          {
+            "name": "gcd_constraint",
+            "description": "每次查询返回两个索引 i 和 j 对应的元素的最大公约数 gcd(p_i, p_j)",
+            "formal": "query(i, j) -> gcd(p_i, p_j)"
+          },
+          {
+            "name": "zero_diagonal_constraint",
+            "description": "需要找到两个索引 x 和 y，使得 p_x = 0 或 p_y = 0",
+            "formal": "find x, y such that p_x = 0 or p_y = 0"
+          },
+          {
+            "name": "non_self_intersecting_constraint",
+            "description": "查询时不能选择相同的索引，即 i ≠ j",
+            "formal": "i ≠ j in each query"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在两个索引，使得其中一个索引对应的值为0"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：通过查询gcd(p_i, p_j)的结果，可以逐步缩小包含0的可能位置范围，最终找到p_x=0或p_y=0的索引。",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：每次查询将问题分解为更小的子问题，并通过子问题的解来构建原问题的解。通过gcd查询逐步缩小搜索范围。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

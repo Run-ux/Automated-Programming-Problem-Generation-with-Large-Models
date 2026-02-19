@@ -1,0 +1,94 @@
+{
+  "problem_id": "P6752",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 10240,
+          "max": 10240
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "在最坏情况下，所有操作的总内存访问次数（bit_set 和 bit_get）不得超过 20 次。",
+            "formal": "maxA + maxB <= 20"
+          },
+          {
+            "name": "state_transition",
+            "description": "remember 操作只能调用 bit_set，compare 操作只能调用 bit_get。",
+            "formal": "remember(a) -> bit_set(address); compare(b) -> bit_get(address)"
+          },
+          {
+            "name": "range_bound",
+            "description": "输入参数 a 和 b 的值必须在 [0, 4095] 范围内。",
+            "formal": "0 <= a, b <= 4095"
+          },
+          {
+            "name": "range_bound",
+            "description": "bit_set 和 bit_get 操作的地址必须在 [1, 10240] 范围内。",
+            "formal": "1 <= address <= 10240"
+          },
+          {
+            "name": "pairwise_difference_constraint",
+            "description": "compare 操作必须正确返回 -1, 0 或 1，分别表示 b < a, b = a, b > a。",
+            "formal": "compare(b) -> -1 if b < a; 0 if b = a; 1 if b > a"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化在最坏情况下执行remember和compare操作时的总内存访问次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：通过设置和读取特定位置的位来表示和比较整数，状态转移一致性保证了remember和compare操作的正确性",
+            "properties": {}
+          },
+          {
+            "name": "bitwise_independence",
+            "description": "位表示不变量：整数a和b通过二进制位在内存中的表示方式保持一致，使得compare操作能够准确比较两个整数",
+            "properties": {}
+          },
+          {
+            "name": "query_independence",
+            "description": "内存访问优化不变量：通过最小化bit_set和bit_get调用次数，确保在最坏情况下总内存访问次数不超过20次",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

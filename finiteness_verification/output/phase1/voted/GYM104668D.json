@@ -2,14 +2,14 @@
   "problem_id": "GYM104668D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 6,
             "max": 6
@@ -35,23 +35,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "non_decreasing_sequence",
-        "description": "事件的时间顺序约束（投掷飞盘时间必须早于释放狗的时间）",
+        "name": "range_bound",
+        "description": "狗的释放时间必须晚于飞盘的投掷时间（T_d > T_f）",
         "confidence": "1/1"
       },
       {
-        "name": "non_decreasing_sequence",
-        "description": "高度顺序约束（狗的跳跃高度必须低于飞盘的初始高度）",
+        "name": "consistency_constraint",
+        "description": "狗在跳跃过程中水平速度不变，且可以瞬间改变或反转方向",
         "confidence": "1/1"
       },
       {
-        "name": "uniform_movement",
-        "description": "瞬时速度变化约束（狗可以瞬间改变水平速度，且在空中也可以改变方向）",
+        "name": "pairwise_acceleration_difference",
+        "description": "狗和飞盘的垂直加速度不同（狗的加速度为 3 mm/ms^2，飞盘的加速度为 1 mm/ms^2）",
         "confidence": "1/1"
       },
       {
-        "name": "global_optimization_objective",
-        "description": "最小化时间约束（狗会采取最优路径以最短时间返回）",
+        "name": "optimization_objective",
+        "description": "狗会采取最优路径以最小化往返时间",
         "confidence": "1/1"
       }
     ],
@@ -62,24 +62,29 @@
         "result": {
           "constraints": [
             {
-              "name": "non_decreasing_sequence",
-              "description": "事件的时间顺序约束（投掷飞盘时间必须早于释放狗的时间）",
-              "formal": "T_f < T_d"
+              "name": "range_bound",
+              "description": "狗的释放时间必须晚于飞盘的投掷时间（T_d > T_f）",
+              "formal": "T_d > T_f"
             },
             {
-              "name": "non_decreasing_sequence",
-              "description": "高度顺序约束（狗的跳跃高度必须低于飞盘的初始高度）",
+              "name": "range_bound",
+              "description": "狗的最大跳跃高度必须小于飞盘的初始高度（H_d < H_f）",
               "formal": "H_d < H_f"
             },
             {
-              "name": "uniform_movement",
-              "description": "瞬时速度变化约束（狗可以瞬间改变水平速度，且在空中也可以改变方向）",
-              "formal": "dog can change V_d instantly, even in the air"
+              "name": "consistency_constraint",
+              "description": "狗在跳跃过程中水平速度不变，且可以瞬间改变或反转方向",
+              "formal": "v_horizontal = constant during jump, and can change or reverse instantly"
             },
             {
-              "name": "global_optimization_objective",
-              "description": "最小化时间约束（狗会采取最优路径以最短时间返回）",
-              "formal": "dog minimizes total time to catch frisbee and return"
+              "name": "pairwise_acceleration_difference",
+              "description": "狗和飞盘的垂直加速度不同（狗的加速度为 3 mm/ms^2，飞盘的加速度为 1 mm/ms^2）",
+              "formal": "a_dog = 3 mm/ms^2, a_frisbee = 1 mm/ms^2"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "狗会采取最优路径以最小化往返时间",
+              "formal": "minimize total time for dog to catch frisbee and return"
             }
           ]
         }
@@ -87,34 +92,80 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求从起点出发，经过一个中间点再返回起点的最短时间"
+          "type": "minimize_value",
+          "description": "求从起点出发并返回的最短时间"
         }
       }
     ],
-    "description": "求从起点出发，经过一个中间点再返回起点的最短时间"
+    "description": "求从起点出发并返回的最短时间"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "时间单调递增：从开始到结束，所有事件的时间戳严格递增",
+        "confidence": "1/1",
+        "properties": {
+          "time_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：狗的最短路径可以通过分解为子问题（如到达飞盘位置和返回起点）来求解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：狗在每个时刻选择当前最优的速度和方向以最小化总时间",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：狗的状态（位置、速度）在每个时间点根据物理运动方程进行一致的更新",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过计算每个子问题的最优解来构建整个问题的最优解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "时间单调递增：从开始到结束，所有事件的时间戳严格递增",
+              "properties": {
+                "time_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：狗的最短路径可以通过分解为子问题（如到达飞盘位置和返回起点）来求解",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：狗在每个时刻选择当前最优的速度和方向以最小化总时间",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：狗的状态（位置、速度）在每个时间点根据物理运动方程进行一致的更新",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过计算每个子问题的最优解来构建整个问题的最优解"
+    ]
   }
 }

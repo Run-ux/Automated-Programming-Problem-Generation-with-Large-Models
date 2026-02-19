@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 2
@@ -28,17 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "value_distribution_rule",
-            "description": "取整约束：k1 和 k2 分别是 p1 * n 和 p2 * n 四舍五入后的结果",
-            "formal": "k1 = round(p1 * n), k2 = round(p2 * n)"
+            "name": "linear_relation",
+            "description": "存在线性关系，使得 k1 = round(n/3) 且 k2 = round(n/2)",
+            "formal": "k1 = round(n/3) 且 k2 = round(n/2)"
           },
           {
-            "name": "non_decreasing_sequence",
-            "description": "输出的 n 值必须按升序排列"
-          },
-          {
-            "name": "query_range_validity",
-            "description": "如果不存在满足条件的 n，则输出 0"
+            "name": "ordering",
+            "description": "k1 和 k2 的值满足 k1 ≤ k2",
+            "formal": "k1 ≤ k2"
           }
         ]
       }
@@ -49,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在满足给定条件的整数解"
+        "type": "feasibility",
+        "description": "判断是否存在满足给定条件的整数n"
       }
     }
   ],
@@ -59,12 +56,21 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "monotonic_sequence_property",
-        "description": "双指针左右端点单调前进，区间合法性可单调维护",
-        "properties": {
-          "left_monotonic": true,
-          "right_monotonic": true
-        }
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针或滑动窗口的左右端点单调前进，通过调整区间来寻找满足条件的n值",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "通过前缀和计算区间内的块数，利用区间可加性来验证k1和k2是否符合给定的p值",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

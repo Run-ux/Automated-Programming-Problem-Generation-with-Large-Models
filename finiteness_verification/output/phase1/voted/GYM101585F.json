@@ -2,14 +2,14 @@
   "problem_id": "GYM101585F",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "integer",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "integer",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 1
@@ -35,13 +35,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference_constraint",
-        "description": "相邻节点必须满足一个整除另一个的条件（图着色约束）",
+        "name": "adjacency_relation",
+        "description": "相邻节点必须满足整除关系（一个数能被另一个数整除）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_permutation",
-        "description": "输出的序列必须是1到n的一个排列，即每个数恰好出现一次",
+        "name": "permutation_constraint",
+        "description": "输出的序列是 1 到 n 的一个排列",
         "confidence": "1/1"
       }
     ],
@@ -52,12 +52,12 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference_constraint",
-              "description": "相邻节点必须满足一个整除另一个的条件（图着色约束）"
+              "name": "adjacency_relation",
+              "description": "相邻节点必须满足整除关系（一个数能被另一个数整除）"
             },
             {
-              "name": "distinct_permutation",
-              "description": "输出的序列必须是1到n的一个排列，即每个数恰好出现一次"
+              "name": "permutation_constraint",
+              "description": "输出的序列是 1 到 n 的一个排列"
             }
           ]
         }
@@ -65,34 +65,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的排列"
+          "type": "construction",
+          "description": "构造一个满足相邻元素具有整除关系的排列，或判定不存在这样的排列"
         }
       }
     ],
-    "description": "构造一个满足条件的排列"
+    "description": "构造一个满足相邻元素具有整除关系的排列，或判定不存在这样的排列"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次选择当前可选的最优解（即与前一个数相邻且满足朋友关系的数），最终可以得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个数到下一个数的状态转移是基于朋友关系，确保每一步都满足题目要求的条件。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，即如果存在一个有效的排列，则该排列中的每个子序列也必须满足相邻元素为朋友数的条件。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次选择当前可选的最优解（即与前一个数相邻且满足朋友关系的数），最终可以得到全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个数到下一个数的状态转移是基于朋友关系，确保每一步都满足题目要求的条件。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，即如果存在一个有效的排列，则该排列中的每个子序列也必须满足相邻元素为朋友数的条件。"
+    ]
   }
 }

@@ -1,0 +1,140 @@
+{
+  "problem_id": "P11079",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 500
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subsequence_constraint",
+        "description": "子序列必须满足山峦的定义，即可以拆分成至少两个连续的子序列，每个子序列都是山峰，且从左到右山峰的高度严格单调递增。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "每个山峰子序列在前半部分严格单调递增，在后半部分严格单调递减。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "即使子序列的元素相同，只要子序列的元素在原序列中的位置不同，仍算作不同的子序列。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subsequence_constraint",
+              "description": "子序列必须满足山峦的定义，即可以拆分成至少两个连续的子序列，每个子序列都是山峰，且从左到右山峰的高度严格单调递增。",
+              "formal": "对于子序列 b，存在 k 个子序列 b1, b2, ..., bk，使得每个 bi 是山峰，并且高度 hi 严格单调递增。"
+            },
+            {
+              "name": "ordering",
+              "description": "每个山峰子序列在前半部分严格单调递增，在后半部分严格单调递减。",
+              "formal": "对于山峰子序列 a，存在 x (2 ≤ x ≤ m-1)，使得 a[1] < a[2] < ... < a[x] 且 a[x] > a[x+1] > ... > a[m]。"
+            },
+            {
+              "name": "distinctness",
+              "description": "即使子序列的元素相同，只要子序列的元素在原序列中的位置不同，仍算作不同的子序列。",
+              "formal": "对于子序列 b 和 c，如果 b 和 c 的元素相同但位置不同，则 b 和 c 算作不同的子序列。"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足条件的子序列数量（对给定模数取余）"
+        }
+      }
+    ],
+    "description": "求满足条件的子序列数量（对给定模数取余）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：山峦的定义基于其子序列（山峰）的最优解。一个序列是山峦当且仅当它可以被拆分成至少两个连续的子序列，每个子序列都是山峰，并且这些山峰的高度严格单调递增。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在山峰和山峦的定义中，高度的严格单调递增性质保证了子序列的合法性。对于山峰，存在一个点使得左侧严格递增，右侧严格递减；对于山峦，各个山峰的高度严格递增。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": false
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：山峦的定义基于其子序列（山峰）的最优解。一个序列是山峦当且仅当它可以被拆分成至少两个连续的子序列，每个子序列都是山峰，并且这些山峰的高度严格单调递增。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在山峰和山峦的定义中，高度的严格单调递增性质保证了子序列的合法性。对于山峰，存在一个点使得左侧严格递增，右侧严格递减；对于山峦，各个山峰的高度严格递增。",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": false
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

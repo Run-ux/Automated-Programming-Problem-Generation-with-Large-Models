@@ -1,0 +1,86 @@
+{
+  "problem_id": "GYM105979G",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": -1000000000,
+          "max": 1000000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "convexity",
+            "description": "选择三个点形成一个三角形，使得给定点完全位于三角形内部（不能在边界上）",
+            "formal": "对于点 P 和三点 A, B, C，P 必须满足 P 在 △ABC 内部"
+          },
+          {
+            "name": "range_bound",
+            "description": "选取的点的高度必须大于等于当前海平面高度",
+            "formal": "z_i >= h"
+          },
+          {
+            "name": "distinctness",
+            "description": "如果两个点有相同的 x 和 y 坐标，则它们的高度 z 必须不同",
+            "formal": "如果 (x_i, y_i) = (x_j, y_j)，则 z_i ≠ z_j"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求最小化时间使得满足特定条件"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "随着牛奶海高度的均匀下降，可用岛屿的数量单调增加",
+            "properties": {
+              "height_decrease_monotonic": true
+            }
+          },
+          {
+            "name": "convexity",
+            "description": "在任意时刻，所有高于当前牛奶海高度的岛屿构成的凸壳结构保持不变",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，即在某一时刻找到的三个岛屿形成的三角形包含金饼干的问题可以分解为更小的时间段内的子问题",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

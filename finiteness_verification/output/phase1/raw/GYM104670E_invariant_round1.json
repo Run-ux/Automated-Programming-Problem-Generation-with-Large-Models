@@ -4,9 +4,26 @@
   "dimension": "invariant",
   "round": 1,
   "result": {
-    "name": "optimal_substructure",
-    "description": "最优解包含子问题的最优解，通过动态规划方法求解最小时间使得最多两个消息被暴露",
-    "properties": {}
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在某个时间点之前发送的消息集合的最优解可以用于构造整个问题的最优解。",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着消息发送时间的推进，已发送消息的数量和总时间均单调增加，且在任意时刻，选择更早的时间开始发送不会导致更差的结果。",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：在任意给定的时间段内，所有在此时间段内完全发送的消息的总时间可以通过该时间段的端点计算得出。",
+        "properties": {}
+      }
+    ]
   },
   "status": "success"
 }

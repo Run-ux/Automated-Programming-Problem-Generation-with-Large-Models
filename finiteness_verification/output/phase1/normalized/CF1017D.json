@@ -1,0 +1,79 @@
+{
+  "problem_id": "CF1017D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "sum_constraint",
+            "description": "选取元素权重和不超过给定上限（即 'Wu' 值不大于 k）",
+            "formal": "∑(w_i * (s_i == t_i)) <= k"
+          },
+          {
+            "name": "range_bound",
+            "description": "二进制字符串长度固定为 n",
+            "formal": "length(s) == n && length(t) == n"
+          },
+          {
+            "name": "alphabet_constraint",
+            "description": "字符串只包含字符 '0' 和 '1'",
+            "formal": "∀i, s_i ∈ {'0', '1'} && ∀i, t_i ∈ {'0', '1'}"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足条件的字符串数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个查询的答案可以通过子问题的解来构建，即通过计算每个字符串与查询字符串的“Wu”值并判断是否满足条件来确定答案。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：对于每个查询字符串和多集中的每个字符串，其“Wu”值可以通过逐位比较并累加对应的权重来计算。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

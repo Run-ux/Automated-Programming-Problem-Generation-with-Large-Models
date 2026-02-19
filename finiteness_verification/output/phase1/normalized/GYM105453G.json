@@ -1,0 +1,76 @@
+{
+  "problem_id": "GYM105453G",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "interval_constraint",
+            "description": "相邻操作之间的时间间隔必须大于等于 T（时间单位）",
+            "formal": "t[i+1] - t[i] >= T"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每个元素只能选择一次进行操作（即每个航班只能选择按时起飞或推迟）",
+            "formal": "每个航班 i 只能选择 b_i 或 c_i 中的一个"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化在给定约束条件下的总收益"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即当前最大利润取决于之前航班的选择情况",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：考虑每个航班时，其起飞时间是严格递增的，且在选择是否让该航班按时起飞时，需要满足与前一个起飞航班的时间间隔要求",
+            "properties": {
+              "right_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

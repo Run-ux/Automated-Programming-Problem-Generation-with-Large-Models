@@ -2,14 +2,14 @@
   "problem_id": "GYM104736L",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "expression_validity_constraint",
-        "description": "字符串必须是符合给定文法规则的有效表达式",
+        "name": "syntax_validity",
+        "description": "字符串的子串必须符合预定义的文法规则，即为有效的表达式",
         "confidence": "1/1"
       },
       {
-        "name": "substring_frequency_optimization",
-        "description": "计算所有子串中有效表达式的数量，两个子串如果起始或结束位置不同，则视为不同的子串",
+        "name": "subsequence_count",
+        "description": "计算所有不同的有效表达式子串的数量，不同子串定义为起始或结束位置不同",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +56,12 @@
         "result": {
           "constraints": [
             {
-              "name": "expression_validity_constraint",
-              "description": "字符串必须是符合给定文法规则的有效表达式"
+              "name": "syntax_validity",
+              "description": "字符串的子串必须符合预定义的文法规则，即为有效的表达式"
             },
             {
-              "name": "substring_frequency_optimization",
-              "description": "计算所有子串中有效表达式的数量，两个子串如果起始或结束位置不同，则视为不同的子串"
+              "name": "subsequence_count",
+              "description": "计算所有不同的有效表达式子串的数量，不同子串定义为起始或结束位置不同"
             }
           ]
         }
@@ -69,37 +69,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计字符串中所有满足条件的子串数量"
+          "type": "enumeration",
+          "description": "计算字符串中所有满足给定规则的子串数量"
         }
       }
     ],
-    "description": "统计字符串中所有满足条件的子串数量"
+    "description": "计算字符串中所有满足给定规则的子串数量"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：有效表达式的计数可以通过其子表达式的有效性来确定，即一个表达式是有效的当且仅当它的所有子表达式都是有效的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：通过维护当前字符的状态（如是否在括号内、操作符前后等），可以递归地判断和更新整个字符串的有效性。每个字符的处理都依赖于前一个字符的状态。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：有效表达式的子串可以被合并以形成更大的有效表达式。例如，两个相邻的有效表达式可以通过适当的运算符连接成一个新的有效表达式。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过递归或动态规划的方式解决",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinability": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：有效表达式的计数可以通过其子表达式的有效性来确定，即一个表达式是有效的当且仅当它的所有子表达式都是有效的。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：通过维护当前字符的状态（如是否在括号内、操作符前后等），可以递归地判断和更新整个字符串的有效性。每个字符的处理都依赖于前一个字符的状态。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：有效表达式的子串可以被合并以形成更大的有效表达式。例如，两个相邻的有效表达式可以通过适当的运算符连接成一个新的有效表达式。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过递归或动态规划的方式解决"
+    ]
   }
 }

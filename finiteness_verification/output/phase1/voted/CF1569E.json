@@ -2,33 +2,33 @@
   "problem_id": "CF1569E",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 3,
             "max": 3
           },
           "value_range": {
-            "k": {
-              "min": 1,
-              "max": 5
-            },
-            "A": {
-              "min": 100,
-              "max": 100000000
-            },
-            "h": {
-              "min": 0,
-              "max": 998244352
-            }
+            "min": [
+              1,
+              100,
+              0
+            ],
+            "max": [
+              5,
+              100000000,
+              998244352
+            ]
           },
-          "properties": {}
+          "properties": {
+            "ordered": true
+          }
         }
       }
     ],
@@ -37,41 +37,41 @@
       "max": 3
     },
     "value_range": {
-      "k": {
-        "min": 1,
-        "max": 5
-      },
-      "A": {
-        "min": 100,
-        "max": 100000000
-      },
-      "h": {
-        "min": 0,
-        "max": 998244352
-      }
+      "min": [
+        1,
+        100,
+        0
+      ],
+      "max": [
+        5,
+        100000000,
+        998244352
+      ]
     },
-    "properties": {}
+    "properties": {
+      "ordered": true
+    }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "tree_structure",
+        "name": "acyclicity",
         "description": "比赛结构为完全二叉树，每一轮比赛的胜者进入下一轮，直到决出冠军",
         "confidence": "1/1"
       },
       {
-        "name": "turn_based_operation",
-        "description": "每场比赛淘汰一个队伍，且每轮比赛后剩余队伍数量减半",
+        "name": "operation_order",
+        "description": "每个队伍在被淘汰时被分配一个名次，名次根据淘汰轮次确定",
         "confidence": "1/1"
       },
       {
-        "name": "source_node_fixed",
-        "description": "队伍的最终排名由其被淘汰的轮次决定，越早被淘汰排名越低",
+        "name": "modular_arithmetic",
+        "description": "所有队伍的名次通过给定的哈希公式计算出的哈希值必须与给定的哈希值一致",
         "confidence": "1/1"
       },
       {
-        "name": "value_distribution_rule",
-        "description": "恢复的队伍排名必须与给定的哈希值一致",
+        "name": "matching_constraint",
+        "description": "初始配对是固定的，例如队伍1和队伍2总是首先对阵",
         "confidence": "1/1"
       }
     ],
@@ -82,20 +82,20 @@
         "result": {
           "constraints": [
             {
-              "name": "tree_structure",
+              "name": "acyclicity",
               "description": "比赛结构为完全二叉树，每一轮比赛的胜者进入下一轮，直到决出冠军"
             },
             {
-              "name": "turn_based_operation",
-              "description": "每场比赛淘汰一个队伍，且每轮比赛后剩余队伍数量减半"
+              "name": "operation_order",
+              "description": "每个队伍在被淘汰时被分配一个名次，名次根据淘汰轮次确定"
             },
             {
-              "name": "source_node_fixed",
-              "description": "队伍的最终排名由其被淘汰的轮次决定，越早被淘汰排名越低"
+              "name": "modular_arithmetic",
+              "description": "所有队伍的名次通过给定的哈希公式计算出的哈希值必须与给定的哈希值一致"
             },
             {
-              "name": "value_distribution_rule",
-              "description": "恢复的队伍排名必须与给定的哈希值一致"
+              "name": "matching_constraint",
+              "description": "初始配对是固定的，例如队伍1和队伍2总是首先对阵"
             }
           ]
         }
@@ -103,34 +103,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足给定哈希值的队伍排名序列"
+          "type": "feasibility",
+          "description": "判断是否存在一种方案使得给定的哈希值与某种排列方式一致"
         }
       }
     ],
-    "description": "构造一个满足给定哈希值的队伍排名序列"
+    "description": "判断是否存在一种方案使得给定的哈希值与某种排列方式一致"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "divide_conquer",
+        "description": "大问题的解由子问题解合成，每一轮比赛的结果决定了下一轮的参赛队伍，最终结果由所有轮次的比赛结果决定",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，每个阶段的比赛结果决定了后续阶段的参赛队伍和最终排名",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量，每场比赛后，队伍的状态（胜者/败者）发生确定性变化，且这种变化是可预测的",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个阶段的比赛结果决定了后续比赛的对阵情况和最终排名",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "divide_conquer",
+              "description": "大问题的解由子问题解合成，每一轮比赛的结果决定了下一轮的参赛队伍，最终结果由所有轮次的比赛结果决定",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，每个阶段的比赛结果决定了后续阶段的参赛队伍和最终排名",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量，每场比赛后，队伍的状态（胜者/败者）发生确定性变化，且这种变化是可预测的",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个阶段的比赛结果决定了后续比赛的对阵情况和最终排名"
+    ]
   }
 }

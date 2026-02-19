@@ -1,0 +1,159 @@
+{
+  "problem_id": "P13479",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 10006
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 10006
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "modular_arithmetic",
+        "description": "序列中的每个元素是若干个选定的数之和对10007取模的结果",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "每个 C_k 的值在 0 到 10006 之间（包括边界）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_breaking_sequence",
+        "description": "给定的序列 S 是连续的，但不知道从哪个位置开始",
+        "confidence": "1/1"
+      },
+      {
+        "name": "undefined_value_constraint",
+        "description": "如果无法确定下一个元素，则输出 UNKNOWN",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "modular_arithmetic",
+              "description": "序列中的每个元素是若干个选定的数之和对10007取模的结果",
+              "formal": "S_n = (Σ C_k) % 10007, 其中 k 是 n 的二进制表示中为1的位"
+            },
+            {
+              "name": "range_bound",
+              "description": "每个 C_k 的值在 0 到 10006 之间（包括边界）",
+              "formal": "0 ≤ C_k ≤ 10006"
+            },
+            {
+              "name": "non_breaking_sequence",
+              "description": "给定的序列 S 是连续的，但不知道从哪个位置开始",
+              "formal": "S_i, S_{i+1}, ..., S_{i+N-1} 是已知的，但 i 未知"
+            },
+            {
+              "name": "undefined_value_constraint",
+              "description": "如果无法确定下一个元素，则输出 UNKNOWN",
+              "formal": "如果无法唯一确定 S_{i+N}，则输出 UNKNOWN"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在确定的下一个序列值"
+        }
+      }
+    ],
+    "description": "判断是否存在确定的下一个序列值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：序列中的每个元素可以通过特定的区间和计算得到，满足区间可加性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "modular_invariance",
+        "description": "模运算不变量：所有操作都在模10007下进行，保证了结果的一致性和周期性",
+        "confidence": "1/1",
+        "properties": {
+          "modulus": 10007
+        }
+      },
+      {
+        "name": "bitwise_independence",
+        "description": "位独立性：每个二进制位的选择是独立的，且对最终结果的影响是线性的",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：序列中的每个元素可以通过特定的区间和计算得到，满足区间可加性",
+              "properties": {}
+            },
+            {
+              "name": "modular_invariance",
+              "description": "模运算不变量：所有操作都在模10007下进行，保证了结果的一致性和周期性",
+              "properties": {
+                "modulus": 10007
+              }
+            },
+            {
+              "name": "bitwise_independence",
+              "description": "位独立性：每个二进制位的选择是独立的，且对最终结果的影响是线性的",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

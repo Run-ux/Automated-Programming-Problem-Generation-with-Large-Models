@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 6,
           "max": 6
@@ -28,15 +28,15 @@
       "result": {
         "constraints": [
           {
-            "name": "continuous_function_constraint",
-            "description": "被积函数在积分区间内连续且分母不为0"
+            "name": "convergence_constraint",
+            "description": "积分必须收敛"
           },
           {
-            "name": "integration_convergence_constraint",
-            "description": "积分能够收敛"
+            "name": "division_by_zero_constraint",
+            "description": "计算过程中分母不为0"
           },
           {
-            "name": "floating_point_accuracy_constraint",
+            "name": "range_bound",
             "description": "结果保留至小数点后6位"
           }
         ]
@@ -48,8 +48,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造并输出给定函数在指定区间上的积分值"
+        "type": "numerical_approximation",
+        "description": "计算给定函数在指定区间上的积分值"
       }
     }
   ],
@@ -58,9 +58,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：积分区间的解可以通过其子区间解的组合来获得，满足分治法或递归求解的基本性质",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解由子问题解合成，通过递归地将积分区间分成更小的子区间进行计算",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：积分区间的和可以通过子区间的积分值相加得到",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

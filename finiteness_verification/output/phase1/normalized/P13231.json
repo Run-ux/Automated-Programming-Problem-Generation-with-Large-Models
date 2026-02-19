@@ -1,0 +1,84 @@
+{
+  "problem_id": "P13231",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 50
+        },
+        "value_range": {
+          "min": -1000,
+          "max": 1000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_constraint",
+            "description": "给定的集合 S' 是原集合 S 的幂集元素和的集合，且 S' 中的每个元素是 S 的某个子集的元素和。",
+            "formal": "S' = {sum(T) | T ⊆ S}"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "S' 中的每个元素 E_i 出现的次数 F_i 必须与 S 的幂集中对应子集的个数一致。",
+            "formal": "F_i = |{T | T ⊆ S, sum(T) = E_i}|"
+          },
+          {
+            "name": "ordering",
+            "description": "输出的原集合 S 必须按非递减顺序排列。",
+            "formal": "S[0] ≤ S[1] ≤ ... ≤ S[N-1]"
+          },
+          {
+            "name": "distinctness",
+            "description": "如果存在多个可能的原集合 S，输出其中字典序最小的一个。",
+            "formal": "S1 < S2 if and only if the first differing element in S1 is smaller than the corresponding element in S2"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一个满足给定条件的集合"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：原集合S的每个元素可以通过其幂集和对应的和值集合S'的子问题来确定，且这些子问题的解可以组合成原问题的解。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：S'中的每个元素是S中某些元素的和，因此可以通过前缀和的思想来处理子集和的问题。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

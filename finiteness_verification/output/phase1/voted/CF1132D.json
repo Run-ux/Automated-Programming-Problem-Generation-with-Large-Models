@@ -1,0 +1,161 @@
+{
+  "problem_id": "CF1132D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "non_negative_constraint",
+        "description": "充电器的功率输出必须是非负整数",
+        "confidence": "1/1"
+      },
+      {
+        "name": "resource_limitation",
+        "description": "同一时间只能有一个设备使用充电器",
+        "confidence": "1/1"
+      },
+      {
+        "name": "value_modification",
+        "description": "充电器接入后，设备的电量变化率为原消耗率减去充电器功率输出",
+        "confidence": "1/1"
+      },
+      {
+        "name": "time_interval_constraint",
+        "description": "比赛持续时间为 k 分钟，在这段时间内所有设备必须保持电量非负",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "non_negative_constraint",
+              "description": "充电器的功率输出必须是非负整数"
+            },
+            {
+              "name": "resource_limitation",
+              "description": "同一时间只能有一个设备使用充电器"
+            },
+            {
+              "name": "non_negative_constraint",
+              "description": "每个设备在任何时刻的电量不能为负（允许为零）"
+            },
+            {
+              "name": "value_modification",
+              "description": "充电器接入后，设备的电量变化率为原消耗率减去充电器功率输出"
+            },
+            {
+              "name": "time_interval_constraint",
+              "description": "比赛持续时间为 k 分钟，在这段时间内所有设备必须保持电量非负"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足条件的最小值"
+        }
+      }
+    ],
+    "description": "求满足条件的最小值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "充电器的功率输出在每分钟内对每个学生的影响是单调递增或递减的，即增加充电器功率可以提高电池电量减少的速度。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解来构建。具体来说，如果一个充电器功率能够使得所有学生成功完成比赛，则该功率对于每个学生的子问题也是最优的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "在每一步选择中，优先为当前电量最低的学生提供充电，以确保所有学生都能顺利完成比赛。这种局部最优选择最终导致全局最优。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "充电器的功率输出在每分钟内对每个学生的影响是单调递增或递减的，即增加充电器功率可以提高电池电量减少的速度。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解可以通过子问题的最优解来构建。具体来说，如果一个充电器功率能够使得所有学生成功完成比赛，则该功率对于每个学生的子问题也是最优的。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "在每一步选择中，优先为当前电量最低的学生提供充电，以确保所有学生都能顺利完成比赛。这种局部最优选择最终导致全局最优。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

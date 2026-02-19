@@ -4,13 +4,34 @@
   "dimension": "invariant",
   "round": 1,
   "result": {
-    "name": "monotonicity",
-    "description": "路径长度计算过程中，从起点到终点的移动方向始终保持一致，且路径上的每一步都朝着目标点前进，不会出现回退的情况。",
-    "properties": {
-      "left_monotonic": false,
-      "right_monotonic": false,
-      "window_shrinkable": false
-    }
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "路径长度的计算过程中，路径方向始终朝向目标点，且路径长度单调增加",
+        "properties": {
+          "direction_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "从起点到终点的最短路径可以通过子路径的最优解组合而成",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移过程中，当前位置的状态仅依赖于前一个位置的状态和当前操作",
+        "properties": {
+          "transition_consistency": true
+        }
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "路径在不同区域（如屋顶和平面）的信息可以合并以计算总路径长度",
+        "properties": {
+          "mergeable_intervals": true
+        }
+      }
+    ]
   },
   "status": "success"
 }

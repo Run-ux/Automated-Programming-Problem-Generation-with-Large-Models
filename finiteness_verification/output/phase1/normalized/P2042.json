@@ -1,0 +1,94 @@
+{
+  "problem_id": "P2042",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": -1000,
+          "max": 1000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制（每个操作类型的操作次数有限制）",
+            "formal": "M <= 2 * 10^4"
+          },
+          {
+            "name": "range_bound",
+            "description": "数列中元素的值域约束（所有元素在 [-10^3, 10^3] 内）",
+            "formal": "∀x ∈ 数列, -10^3 ≤ x ≤ 10^3"
+          },
+          {
+            "name": "range_bound",
+            "description": "数列的最大长度约束（任何时刻数列中最多含有 5 * 10^5 个数）",
+            "formal": "len(数列) ≤ 5 * 10^5"
+          },
+          {
+            "name": "non_empty_query",
+            "description": "数列非空约束（任何时刻数列中至少有 1 个数）",
+            "formal": "len(数列) ≥ 1"
+          },
+          {
+            "name": "unrestricted_position",
+            "description": "操作位置合法性约束（指定位置的数在数列中一定存在）",
+            "formal": "posi < len(数列)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求最大子数组和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：通过子区间的合并来维护和更新整个区间的属性，如求和、最大子列和等。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次操作后数列的状态能够通过一系列确定的步骤从旧状态转移到新状态，并且这些步骤是可逆的。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：区间的和可以通过其子区间的和计算得出，支持快速求和操作。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

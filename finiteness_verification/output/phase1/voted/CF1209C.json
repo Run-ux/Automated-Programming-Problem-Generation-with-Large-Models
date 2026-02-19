@@ -1,0 +1,141 @@
+{
+  "problem_id": "CF1209C",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 9
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 9
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "non_decreasing_subsequence",
+        "description": "每个颜色的子序列必须是非递减的（即，相同颜色的数字组成的子序列必须是非递减的）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coloring_constraint",
+        "description": "每个数字必须被涂成两种颜色之一（1 或 2），且允许某种颜色不使用",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "non_decreasing_subsequence",
+              "description": "每个颜色的子序列必须是非递减的（即，相同颜色的数字组成的子序列必须是非递减的）",
+              "formal": "对于所有颜色 c，子序列 S_c = {d_i | t_i = c} 必须满足 S_c 是非递减的"
+            },
+            {
+              "name": "coloring_constraint",
+              "description": "每个数字必须被涂成两种颜色之一（1 或 2），且允许某种颜色不使用",
+              "formal": "对于所有 i (1 ≤ i ≤ n)，t_i ∈ {1, 2}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一种将序列中的元素分成两组的方案，使得每组内的元素按顺序排列后是非递减的"
+        }
+      }
+    ],
+    "description": "判断是否存在一种将序列中的元素分成两组的方案，使得每组内的元素按顺序排列后是非递减的"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "在处理序列时，通过颜色划分的子序列各自保持非递减性质",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优解可以通过子问题的最优解组合得到，即每个子序列的非递减性质保证了整体序列的合法性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "局部最优选择（尽可能将相邻且满足非递减条件的数字划分为同一颜色）能够导致全局最优解",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "在处理序列时，通过颜色划分的子序列各自保持非递减性质",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": false
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优解可以通过子问题的最优解组合得到，即每个子序列的非递减性质保证了整体序列的合法性",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "局部最优选择（尽可能将相邻且满足非递减条件的数字划分为同一颜色）能够导致全局最优解",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

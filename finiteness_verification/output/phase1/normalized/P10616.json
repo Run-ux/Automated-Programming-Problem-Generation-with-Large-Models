@@ -1,0 +1,84 @@
+{
+  "problem_id": "P10616",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 2
+        },
+        "value_range": {
+          "min": 0,
+          "max": 99
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "optimization_objective",
+            "description": "最大化期望收益（在给定的退款比例和胜率下，计算最优策略下的最大期望收益）",
+            "formal": "maximize E[profit] given x and p"
+          },
+          {
+            "name": "reconstruction_constraint",
+            "description": "损失退款约束（如果最终亏损，则可以退还一定比例的损失）",
+            "formal": "refund = x * loss if loss > 0, otherwise refund = 0"
+          },
+          {
+            "name": "probability_distribution",
+            "description": "单次赌注结果概率约束（每次赌注赢的概率为 p，输的概率为 1 - p）",
+            "formal": "P(win) = p, P(lose) = 1 - p"
+          },
+          {
+            "name": "cost_constraint",
+            "description": "赌注赔付比率约束（每次赌注成本为 1 美元，赢了则获得 2 美元）",
+            "formal": "cost = 1, payout = 2"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化期望收益"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即最大期望收益可以由更小规模的赌博策略的最优解递推得出。",
+            "properties": {}
+          },
+          {
+            "name": "expectation_linearity",
+            "description": "期望值一致性：在给定的概率和退款比例下，每个赌注的期望收益是固定的，整个策略的期望收益是各个独立赌注期望收益的线性组合。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

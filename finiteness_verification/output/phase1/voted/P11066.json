@@ -1,0 +1,155 @@
+{
+  "problem_id": "P11066",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 2000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 50000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 50000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "任何时刻不存在两个静止的电梯位于同一楼层（唯一性约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "总操作次数不超过给定的评分参数 o（操作次数限制）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "执行操作 x 时，x 层不存在静止的电梯且距离 x 层最近的静止电梯存在且唯一（相邻关系约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "电梯在执行操作后会从静止状态变为运动状态，并在一定时间后到达目标楼层并再次变为静止状态（状态转移约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "任何时刻不存在两个静止的电梯位于同一楼层（唯一性约束）"
+            },
+            {
+              "name": "operation_limit",
+              "description": "总操作次数不超过给定的评分参数 o（操作次数限制）"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "执行操作 x 时，x 层不存在静止的电梯且距离 x 层最近的静止电梯存在且唯一（相邻关系约束）"
+            },
+            {
+              "name": "state_transition",
+              "description": "电梯在执行操作后会从静止状态变为运动状态，并在一定时间后到达目标楼层并再次变为静止状态（状态转移约束）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造一个满足条件的操作序列，使得电梯能够从初始位置移动到目标位置，并且总操作次数不超过给定的评分参数"
+        }
+      }
+    ],
+    "description": "构造一个满足条件的操作序列，使得电梯能够从初始位置移动到目标位置，并且总操作次数不超过给定的评分参数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：电梯的状态（静止或运动）和位置在每个操作后按照规则进行更新，确保任何时刻不存在两个静止的电梯位于同一楼层。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：时间向后推进时，电梯的位置和状态变化是单调的，即一旦电梯开始移动，它会一直移动直到到达目标楼层并停止。",
+        "confidence": "1/1",
+        "properties": {
+          "time_monotonic": true
+        }
+      },
+      {
+        "name": "unique_color_selection",
+        "description": "唯一性分配不变量：每部电梯最终只能停在一个特定的目标楼层，且每个目标楼层只能被一部电梯占据。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：电梯的状态（静止或运动）和位置在每个操作后按照规则进行更新，确保任何时刻不存在两个静止的电梯位于同一楼层。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：时间向后推进时，电梯的位置和状态变化是单调的，即一旦电梯开始移动，它会一直移动直到到达目标楼层并停止。",
+              "properties": {
+                "time_monotonic": true
+              }
+            },
+            {
+              "name": "unique_color_selection",
+              "description": "唯一性分配不变量：每部电梯最终只能停在一个特定的目标楼层，且每个目标楼层只能被一部电梯占据。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

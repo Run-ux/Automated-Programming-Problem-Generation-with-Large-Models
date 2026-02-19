@@ -29,20 +29,16 @@
       "result": {
         "constraints": [
           {
-            "name": "maximum_value_and_frequency",
-            "description": "路径必须包含至少一条之前未访问过的边（或其部分）"
+            "name": "distinctness",
+            "description": "每次选择的路径必须包含至少一条之前未使用过的街道（或其部分）"
           },
           {
-            "name": "path_length_constraint",
-            "description": "路径长度必须在指定的最小值和最大值之间"
+            "name": "path_constraint",
+            "description": "路径必须从起点出发并返回起点，且路径长度在指定范围内"
           },
           {
-            "name": "cyclic_path_length_constraint",
-            "description": "路径必须从指定的起点开始并返回该起点"
-          },
-          {
-            "name": "distinct_edges",
-            "description": "每条边只能被计入一次作为新的路径的一部分"
+            "name": "acyclicity",
+            "description": "路径中不允许出现重复的街道（即使部分重叠也不行）"
           }
         ]
       }
@@ -53,7 +49,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_value",
+        "type": "maximize_count",
         "description": "求满足条件的最长子序列长度"
       }
     }
@@ -63,9 +59,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，即每次选择一条未访问过的街道作为当前路径的一部分，可以确保最终得到的路径序列长度最大。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即Pheobe在每一天选择的路径是基于之前所有天数的最优路径选择。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每天选择一条未跑过的街道作为路径的一部分，以确保每次跑步都是有趣的。这种局部最优的选择最终能导致全局最优的结果，即最长的连续有趣跑步天数。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态（已经跑过的街道集合）转移到另一个状态（新增一条未跑过的街道）的过程中，保持了状态的一致性和有效性。新的状态总是基于旧的状态通过添加一条新街道来构建。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

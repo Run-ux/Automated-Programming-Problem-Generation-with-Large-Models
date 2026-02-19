@@ -2,14 +2,14 @@
   "problem_id": "CF1659D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 200000
@@ -39,18 +39,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "binary_edge_weight",
-        "description": "数组元素只能取 0 或 1",
+        "name": "alphabet_constraint",
+        "description": "数组中的每个元素只能是 0 或 1",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_sum_constraint",
-        "description": "每个前缀排序后的数组的元素和必须等于给定的 C 数组",
+        "name": "ordering",
+        "description": "对数组的前 k 个元素进行非递减排序，生成新的数组 B_k",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_solution_constraint",
-        "description": "保证存在一个二进制数组 A，使得经过上述操作后得到的 C 数组与输入一致",
+        "name": "sum_constraint",
+        "description": "将所有部分排序后的数组 B_1, B_2, ..., B_n 按位相加，得到数组 C",
+        "confidence": "1/1"
+      },
+      {
+        "name": "reconstruction_constraint",
+        "description": "给定数组 C，需要找到一个二进制数组 A，使得通过上述过程可以生成 C",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +66,20 @@
         "result": {
           "constraints": [
             {
-              "name": "binary_edge_weight",
-              "description": "数组元素只能取 0 或 1"
+              "name": "alphabet_constraint",
+              "description": "数组中的每个元素只能是 0 或 1"
             },
             {
-              "name": "adjacent_sum_constraint",
-              "description": "每个前缀排序后的数组的元素和必须等于给定的 C 数组"
+              "name": "ordering",
+              "description": "对数组的前 k 个元素进行非递减排序，生成新的数组 B_k"
             },
             {
-              "name": "distinct_solution_constraint",
-              "description": "保证存在一个二进制数组 A，使得经过上述操作后得到的 C 数组与输入一致"
+              "name": "sum_constraint",
+              "description": "将所有部分排序后的数组 B_1, B_2, ..., B_n 按位相加，得到数组 C"
+            },
+            {
+              "name": "reconstruction_constraint",
+              "description": "给定数组 C，需要找到一个二进制数组 A，使得通过上述过程可以生成 C"
             }
           ]
         }
@@ -78,14 +87,14 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
+          "type": "construction",
           "description": "构造一个满足给定条件的二进制数组"
         }
       }
@@ -93,19 +102,56 @@
     "description": "构造一个满足给定条件的二进制数组"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和计算区间和，可以将多个区间的贡献累加得到最终结果",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：在生成数组B的过程中，随着k的增加，排序后的前k个元素的非递减顺序保持不变",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": true,
+          "right_monotonic": false
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个子问题（即每一步生成的B数组）的解可以通过前一个子问题的解加上新的元素来构造",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和计算区间和，可以将多个区间的贡献累加得到最终结果",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：在生成数组B的过程中，随着k的增加，排序后的前k个元素的非递减顺序保持不变",
+              "properties": {
+                "left_monotonic": true,
+                "right_monotonic": false
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个子问题（即每一步生成的B数组）的解可以通过前一个子问题的解加上新的元素来构造",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的"
+    ]
   }
 }

@@ -1,0 +1,155 @@
+{
+  "problem_id": "P14484",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "connected": true,
+            "weighted": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "connected": true,
+      "weighted": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "图必须连通，否则输出-1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "spanning_constraint",
+        "description": "生成树的边数为 n-1，其中 n 为节点数",
+        "confidence": "1/1"
+      },
+      {
+        "name": "statistical_variance_constraint",
+        "description": "生成树的方差定义为其所有边权值的方差，计算公式为 σ^2 = Σ(x_i - μ)^2 / (n-1)，其中 x_i 为边权值，μ 为平均值，N=n-1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "scaling_constraint",
+        "description": "输出结果需要将方差乘以 N^2 后输出，可以证明这是一个整数",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "图必须连通，否则输出-1"
+            },
+            {
+              "name": "spanning_constraint",
+              "description": "生成树的边数为 n-1，其中 n 为节点数"
+            },
+            {
+              "name": "statistical_variance_constraint",
+              "description": "生成树的方差定义为其所有边权值的方差，计算公式为 σ^2 = Σ(x_i - μ)^2 / (n-1)，其中 x_i 为边权值，μ 为平均值，N=n-1",
+              "formal": "σ^2 = Σ(x_i - μ)^2 / (n-1), N = n-1"
+            },
+            {
+              "name": "scaling_constraint",
+              "description": "输出结果需要将方差乘以 N^2 后输出，可以证明这是一个整数",
+              "formal": "output = σ^2 * N^2"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求生成树的边权方差最小值"
+        }
+      }
+    ],
+    "description": "求生成树的边权方差最小值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：生成树的方差可以通过其子树的方差和边权值计算得到，满足动态规划中的最优子结构性质。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "matroid_exchange",
+        "description": "拟阵交换性：在生成树中，通过交换边来保持生成树的连通性和最小方差性质，满足拟阵的独立集交换性质。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：删除某条边后，剩余图的最小方差生成树可以独立于其他边进行计算，满足分治或动态规划中的子问题独立性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：生成树的方差可以通过其子树的方差和边权值计算得到，满足动态规划中的最优子结构性质。",
+              "properties": {}
+            },
+            {
+              "name": "matroid_exchange",
+              "description": "拟阵交换性：在生成树中，通过交换边来保持生成树的连通性和最小方差性质，满足拟阵的独立集交换性质。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：删除某条边后，剩余图的最小方差生成树可以独立于其他边进行计算，满足分治或动态规划中的子问题独立性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

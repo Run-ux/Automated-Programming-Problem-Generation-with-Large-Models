@@ -1,0 +1,79 @@
+{
+  "problem_id": "P3328",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 2000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "range_bound",
+            "description": "区间内元素的值在修改后仍需满足严格大于总的修改次数加一",
+            "formal": "∀i, A_i > total_modifications + 1"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每次操作只能对指定区间的元素进行统一的增加或减少",
+            "formal": "A[L:R] += 1 或 A[L:R] -= 1"
+          },
+          {
+            "name": "query_limit",
+            "description": "查询操作需要计算特定区间的音质性能评分",
+            "formal": "score = ∑_{L<i<R} F[A_{i-1}+1] * F[A_{i+1}-1] mod (10^9 + 7)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求给定区间内特定评分函数的最大值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：区间的音质性能评分可以通过子区间的评分合并计算得出，支持高效的区间修改和查询操作。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：F数列的递推关系定义了状态之间的转移规则，保证了在任何时刻，当前状态可以由前两个状态唯一确定。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "problem_id": "CF2023D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "expected_value_constraint",
+            "description": "每个游戏的期望收益上限约束（即 w_i * p_i ≤ 2 * 10^5）",
+            "formal": "∀i, w_i * p_i ≤ 2 * 10^5"
+          },
+          {
+            "name": "probability_distribution",
+            "description": "选择的游戏集合的概率乘积约束（即 ∏(p_i / 100)）",
+            "formal": "P = ∏(p_i / 100)"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "选择的游戏集合的收益总和约束（即 ∑w_i）",
+            "formal": "W = ∑w_i"
+          },
+          {
+            "name": "expected_value_constraint",
+            "description": "选择的游戏集合的期望收益约束（即 P * W）",
+            "formal": "E = P * W"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化所选子集的期望收益"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即选择或不选择某个游戏的决策基于剩余游戏的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，选择当前期望收益最大的游戏加入集合，可以逐步构建全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

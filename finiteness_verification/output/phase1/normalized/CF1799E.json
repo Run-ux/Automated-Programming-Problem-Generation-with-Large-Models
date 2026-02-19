@@ -1,0 +1,86 @@
+{
+  "problem_id": "CF1799E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 3,
+          "max": 2500
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "connected": true,
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（所有填充的单元格形成一个连通分量）"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "相邻节点必须通过边连接（填充的单元格只能通过相邻的填充单元格移动）"
+          },
+          {
+            "name": "range_bound",
+            "description": "初始状态下，图中恰好有两个连通分量（两个城市）"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "最小化填充单元格的数量（在满足其他约束条件下，添加最少的填充单元格）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "最小化添加的填充单元格数量，以满足给定条件"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在连接两个城市的过程中，每一步添加的最少填充单元格数可以由更小规模的子问题的最优解推导得出。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择当前情况下能够使得两个城市之间距离最短的空格进行填充，这种局部最优的选择最终将导致全局最优解，即最小化总填充单元格数量。",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "连通性维护：在整个过程中，保证任意时刻两个城市的连通性，即通过逐步添加新的填充单元格来保持或建立两个城市之间的路径连通。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "problem_id": "P12462",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "子树必须连通"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "选取的顶点集合 S 必须是给定区间 [L, R] 的子集"
+          },
+          {
+            "name": "range_bound",
+            "description": "选取的顶点集合 S 的大小必须为 k"
+          },
+          {
+            "name": "spanning_constraint",
+            "description": "求解 S 的最小 Steiner 树权值"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "在所有满足条件的 S 中，最大化其最小 Steiner 树权值"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足条件的子集的最大权值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即对于任意节点集合S的Steiner树，其权值可以由更小子集的Steiner树权值组合而成。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在动态规划过程中，从一个状态到另一个状态的转移是基于已解决的子问题，并且这种转移方式保持一致性。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：对于给定的区间[L, R]，可以通过将区间分解为更小的子区间并合并这些子区间的解来获得整个区间的解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

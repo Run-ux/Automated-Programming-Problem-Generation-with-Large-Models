@@ -2,14 +2,14 @@
   "problem_id": "GYM104757C",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 3,
             "max": 50
@@ -39,23 +39,23 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "polygon_convexity_constraint",
-        "description": "给定的点集构成一个凸多边形（凸包）",
+        "name": "convexity",
+        "description": "输入的点集必须构成一个凸多边形",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_positions",
-        "description": "所有顶点坐标是唯一的，没有重复点",
+        "name": "distinctness",
+        "description": "所有顶点坐标必须唯一，没有重复",
         "confidence": "1/1"
       },
       {
-        "name": "non_collinear_point_set",
+        "name": "acyclicity",
         "description": "任意三点不共线",
         "confidence": "1/1"
       },
       {
-        "name": "orientation_constraint",
-        "description": "顶点按逆时针顺序给出",
+        "name": "counter_clockwise_orientation",
+        "description": "顶点按逆时针顺序排列",
         "confidence": "1/1"
       }
     ],
@@ -66,20 +66,20 @@
         "result": {
           "constraints": [
             {
-              "name": "polygon_convexity_constraint",
-              "description": "给定的点集构成一个凸多边形（凸包）"
+              "name": "convexity",
+              "description": "输入的点集必须构成一个凸多边形"
             },
             {
-              "name": "distinct_positions",
-              "description": "所有顶点坐标是唯一的，没有重复点"
+              "name": "distinctness",
+              "description": "所有顶点坐标必须唯一，没有重复"
             },
             {
-              "name": "non_collinear_point_set",
+              "name": "acyclicity",
               "description": "任意三点不共线"
             },
             {
-              "name": "orientation_constraint",
-              "description": "顶点按逆时针顺序给出"
+              "name": "counter_clockwise_orientation",
+              "description": "顶点按逆时针顺序排列"
             }
           ]
         }
@@ -87,37 +87,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的扩展点数量"
+          "type": "enumeration",
+          "description": "求满足条件的扩展点数量"
         }
       }
     ],
-    "description": "统计满足条件的扩展点数量"
+    "description": "求满足条件的扩展点数量"
   },
   "invariant": {
-    "name": "monotonic_sequence_property",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "convexity",
+        "description": "凸性不变量：扩展点必须保持凸包的凸性，即对于任意两点，连接这两点的线段完全位于多边形内部或边界上。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：输入点按逆时针顺序给出，确保了凸包顶点的有序性，从而保证了扩展点的正确判断。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "monotonic_sequence_property",
-          "description": "凸包扩展点的判定条件满足单调性，即对于给定的凸包边界，扩展点的合法性可以通过边界上的点按顺序检查来确定，且这种检查过程是单调的。",
-          "properties": {
-            "left_monotonic": false,
-            "right_monotonic": true
-          }
+          "invariants": [
+            {
+              "name": "convexity",
+              "description": "凸性不变量：扩展点必须保持凸包的凸性，即对于任意两点，连接这两点的线段完全位于多边形内部或边界上。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：输入点按逆时针顺序给出，确保了凸包顶点的有序性，从而保证了扩展点的正确判断。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "凸包扩展点的判定条件满足单调性，即对于给定的凸包边界，扩展点的合法性可以通过边界上的点按顺序检查来确定，且这种检查过程是单调的。"
+    ]
   }
 }

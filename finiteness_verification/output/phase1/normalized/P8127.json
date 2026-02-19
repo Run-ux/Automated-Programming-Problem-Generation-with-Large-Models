@@ -1,0 +1,86 @@
+{
+  "problem_id": "P8127",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 3,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "binary_matrix_constraint",
+            "description": "每个节点的点权只能是 0 或 1"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "切换操作会影响当前节点及其直接相连的节点"
+          },
+          {
+            "name": "connectivity",
+            "description": "给定的图是一棵树，即连通且无环"
+          },
+          {
+            "name": "degree_bound",
+            "description": "在某些子任务中，一个节点最多与 3 个节点相连"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "求最少操作次数使得所有点的权值变为0"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个节点的状态（0 或 1）可以通过其子节点的状态和操作次数来确定，满足树上状态转移的一致性。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在树的每个子树中，解决子树的问题不会影响其他子树的状态，子问题之间相互独立。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：从叶子节点开始逐步向上处理，每次选择最优的操作（切换或不切换），局部最优选择导致全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "problem_id": "P10150",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 500000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 500000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 500000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "序列中不存在四个相同元素的子序列（即任意四个位置的元素不完全相同）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每次操作包含一次翻转和一次查询，且翻转范围在前 x 个元素内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "frequency_bound",
+        "description": "查询区间 [1, x] 和 [x+1, n] 中相同元素的数量",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "序列中不存在四个相同元素的子序列（即任意四个位置的元素不完全相同）",
+              "formal": "∀ 1 ≤ i < j < k < l ≤ n, a_i ≠ a_j ∨ a_i ≠ a_k ∨ a_i ≠ a_l"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每次操作包含一次翻转和一次查询，且翻转范围在前 x 个元素内",
+              "formal": "flip(a[1:x]) and query(a, x)"
+            },
+            {
+              "name": "frequency_bound",
+              "description": "查询区间 [1, x] 和 [x+1, n] 中相同元素的数量",
+              "formal": "|{k | ∃ 1 ≤ i ≤ x, x < j ≤ n, a_i = a_j = k}|"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求满足条件的不同元素个数"
+        }
+      }
+    ],
+    "description": "求满足条件的不同元素个数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每次操作后，序列的前缀部分被翻转，但整体元素的相对位置关系保持一致，查询结果仅依赖于当前状态下的元素分布。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：通过维护区间的某些属性（如不同元素的计数），可以将多个子区间的信息合并以得到整个区间的信息。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次操作后，序列的前缀部分被翻转，但整体元素的相对位置关系保持一致，查询结果仅依赖于当前状态下的元素分布。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：通过维护区间的某些属性（如不同元素的计数），可以将多个子区间的信息合并以得到整个区间的信息。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "problem_id": "P6399",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 4,
+          "max": 1000000000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false,
+          "directed": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "从起点到终点的路径必须经过尽可能少的节点（数字）",
+            "formal": "minimize |P| where P is a path from 1 to n"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "相邻节点之间如果没有墙则可以互相到达，否则不能直接到达",
+            "formal": "u and v are adjacent if there is no wall between them"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数受倒塌的墙的影响，某些节点可能有多个新的邻接节点",
+            "formal": "deg(v) = number of adjacent nodes after walls collapse"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求两点间最短路径长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即从起点到终点的最短路径可以通过从起点到中间点的最短路径和从中间点到终点的最短路径组合得到。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在状态机或动态规划中，状态之间的转移是确定且一致的。当前状态可以由前一个状态通过特定的规则转移而来。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

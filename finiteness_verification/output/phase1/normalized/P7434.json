@@ -1,0 +1,90 @@
+{
+  "problem_id": "P7434",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 500000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 2000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "给定的图是一棵有根树，根节点为 1，深度为 0。每个节点的纵坐标与其深度相关。",
+            "formal": "T = (V, E), root = 1, depth(1) = 0, y-coordinate(v) = n - depth(v) + 1"
+          },
+          {
+            "name": "ordering",
+            "description": "对于一个节点的所有子节点，从左到右按照编号升序排列。",
+            "formal": "children(v) = [c1, c2, ..., ck] where c1 < c2 < ... < ck"
+          },
+          {
+            "name": "intersection",
+            "description": "任意两条线段或射线只在树的节点处相交。",
+            "formal": "∀ segments/lines L1, L2, L1 ∩ L2 ∈ V"
+          },
+          {
+            "name": "path_constraint",
+            "description": "从点 u 移动到点 v 时，不能经过除 u 和 v 以外的任何一个点。",
+            "formal": "path(u, v) = {u, v} and no other nodes in between"
+          },
+          {
+            "name": "accumulated_sum_constraint",
+            "description": "每经过一条线段或射线会产生其对应的权值的代价，目标是求出移动过程产生的最小代价。",
+            "formal": "min_cost(path(u, v)) = Σ weight(segment/line) on path(u, v)"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求两点间路径上的最小权值和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，从节点 u 到节点 v 的最小代价路径可以通过 u 和 v 之间的 LCA（最近公共祖先）来分解为两个子问题。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在树上进行路径查询时，通过 LCA 将路径分解为两段，每一段的代价可以独立计算，并且这两段路径的代价之和即为总代价。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

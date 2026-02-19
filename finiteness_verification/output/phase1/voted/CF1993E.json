@@ -2,14 +2,14 @@
   "problem_id": "CF1993E",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 15
@@ -35,18 +35,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "adjacent_difference",
+        "name": "adjacency_relation",
         "description": "相邻节点取值不同（图着色约束）",
         "confidence": "1/1"
       },
       {
-        "name": "operation_independence",
-        "description": "操作独立性（对任意行或列的操作不影响其他行或列的计算结果）",
+        "name": "operation_limit",
+        "description": "操作次数不限制，可以进行任意次操作",
         "confidence": "1/1"
       },
       {
-        "name": "beauty_minimization",
-        "description": "最小化目标函数（通过操作使矩阵的 beauty 值最小）",
+        "name": "transformation",
+        "description": "对行或列进行异或操作，改变该行或列的所有元素",
         "confidence": "1/1"
       }
     ],
@@ -57,19 +57,19 @@
         "result": {
           "constraints": [
             {
-              "name": "adjacent_difference",
+              "name": "adjacency_relation",
               "description": "相邻节点取值不同（图着色约束）",
-              "formal": "对于所有相邻的 (x, y) 和 (r, c)，|a_{x,y} - a_{r,c}|"
+              "formal": "对于所有相邻的单元格 (x, y) 和 (r, c)，|a_{x,y} - a_{r,c}|"
             },
             {
-              "name": "operation_independence",
-              "description": "操作独立性（对任意行或列的操作不影响其他行或列的计算结果）",
-              "formal": "f(i) = XOR(a_{i,1}, a_{i,2}, ..., a_{i,m})\ng(j) = XOR(a_{1,j}, a_{2,j}, ..., a_{n,j})"
+              "name": "operation_limit",
+              "description": "操作次数不限制，可以进行任意次操作",
+              "formal": "操作次数无限制"
             },
             {
-              "name": "beauty_minimization",
-              "description": "最小化目标函数（通过操作使矩阵的 beauty 值最小）",
-              "formal": "minimize beauty(a) = Σ |a_{x,y} - a_{r,c}| for all adjacent (x, y) and (r, c)"
+              "name": "transformation",
+              "description": "对行或列进行异或操作，改变该行或列的所有元素",
+              "formal": "f(i) = XOR(a_{i,1}, a_{i,2}, ..., a_{i,m}) 或 g(j) = XOR(a_{1,j}, a_{2,j}, ..., a_{n,j})"
             }
           ]
         }
@@ -77,34 +77,65 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求矩阵相邻单元格绝对差值和的最小值"
+          "type": "minimize_value",
+          "description": "最小化矩阵中所有相邻单元格之间绝对差值的总和"
         }
       }
     ],
-    "description": "求矩阵相邻单元格绝对差值和的最小值"
+    "description": "最小化矩阵中所有相邻单元格之间绝对差值的总和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。通过对矩阵的行和列进行操作，可以将大问题分解为更小的子问题，并通过这些子问题的最优解来构建最终的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在对矩阵的行或列进行操作时，每个操作后的矩阵状态可以通过前一个状态和当前操作唯一确定。这种状态转移的一致性保证了算法的正确性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：对矩阵的行或列进行相同的操作（XOR 操作）不会改变问题的本质结构。这种对称性使得我们可以简化问题的处理方式。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即矩阵的最小 beauty 可以通过局部操作（行或列的 XOR 操作）的最优解来构造。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。通过对矩阵的行和列进行操作，可以将大问题分解为更小的子问题，并通过这些子问题的最优解来构建最终的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在对矩阵的行或列进行操作时，每个操作后的矩阵状态可以通过前一个状态和当前操作唯一确定。这种状态转移的一致性保证了算法的正确性。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：对矩阵的行或列进行相同的操作（XOR 操作）不会改变问题的本质结构。这种对称性使得我们可以简化问题的处理方式。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即矩阵的最小 beauty 可以通过局部操作（行或列的 XOR 操作）的最优解来构造。"
+    ]
   }
 }

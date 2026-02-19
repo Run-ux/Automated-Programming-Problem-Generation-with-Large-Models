@@ -1,0 +1,93 @@
+{
+  "problem_id": "GYM105383E",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 2000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "non_intersecting_segments",
+            "description": "区间不重叠（任意两个区间之间至少有 d 个空闲位置）"
+          },
+          {
+            "name": "distance_bound",
+            "description": "区间之间的距离约束（任意两个区间之间至少有 d 个空闲位置）"
+          },
+          {
+            "name": "non_intersecting_segments",
+            "description": "重新排列后仍需保持区间不重叠（在重新排列过程中，最终结果中任意两个区间之间至少有 d 个空闲位置）"
+          },
+          {
+            "name": "unrestricted_position",
+            "description": "新区间放置约束（新加入的区间必须能够放置在花园中，且满足所有其他约束条件）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足条件的最小操作次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，区间合法性可单调维护",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，通过动态规划求解最小移动时间",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间和可通过端点差值计算，用于计算移动时间和空闲区域",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间信息可通过子区间合并，用于处理多个石板的移动和放置",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

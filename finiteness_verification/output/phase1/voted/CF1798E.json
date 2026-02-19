@@ -2,14 +2,14 @@
   "problem_id": "CF1798E",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 300000
@@ -35,18 +35,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "prefix_sum_constraint",
-        "description": "数组的第一个元素必须等于剩余元素个数减一",
+        "name": "prefix_suffix_elimination",
+        "description": "数组的第一个元素必须等于剩余元素的个数减一（即 b1 = m - 1）",
         "confidence": "1/1"
       },
       {
-        "name": "subarray_partition_constraint",
-        "description": "从第二个元素开始的子数组可以被划分为若干个非空子数组，每个子数组满足前缀条件",
+        "name": "partition",
+        "description": "数组 b2, b3, ..., bm 可以被分割成 b1 个非空子数组，每个子数组都是一个测试（满足 b1 = m - 1 的条件）",
         "confidence": "1/1"
       },
       {
-        "name": "minimum_operation_count_constraint",
-        "description": "需要进行的最小操作次数，使得数组变成一个多重测试（multitest）",
+        "name": "operation_limit",
+        "description": "函数 f 定义为将数组 b1, b2, ..., bm 转换为多测试所需的最小操作次数，每次操作可以将任意 bi 替换为任意非负整数 x",
         "confidence": "1/1"
       }
     ],
@@ -57,16 +57,19 @@
         "result": {
           "constraints": [
             {
-              "name": "prefix_sum_constraint",
-              "description": "数组的第一个元素必须等于剩余元素个数减一"
+              "name": "prefix_suffix_elimination",
+              "description": "数组的第一个元素必须等于剩余元素的个数减一（即 b1 = m - 1）",
+              "formal": "b[0] == len(b) - 1"
             },
             {
-              "name": "subarray_partition_constraint",
-              "description": "从第二个元素开始的子数组可以被划分为若干个非空子数组，每个子数组满足前缀条件"
+              "name": "partition",
+              "description": "数组 b2, b3, ..., bm 可以被分割成 b1 个非空子数组，每个子数组都是一个测试（满足 b1 = m - 1 的条件）",
+              "formal": "b[1:] can be partitioned into b[0] non-empty subarrays, each satisfying the test condition"
             },
             {
-              "name": "minimum_operation_count_constraint",
-              "description": "需要进行的最小操作次数，使得数组变成一个多重测试（multitest）"
+              "name": "operation_limit",
+              "description": "函数 f 定义为将数组 b1, b2, ..., bm 转换为多测试所需的最小操作次数，每次操作可以将任意 bi 替换为任意非负整数 x",
+              "formal": "f(b) = min number of operations to make b a multitest, where each operation is replacing any b[i] with any non-negative integer x"
             }
           ]
         }
@@ -74,34 +77,58 @@
     ]
   },
   "objective": {
-    "type": "min_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "min_cost",
-          "description": "求将数组转换为满足特定条件的数组所需的最少操作次数"
+          "type": "minimize_value",
+          "description": "求将数组转换为特定结构所需的最小操作次数"
         }
       }
     ],
-    "description": "求将数组转换为满足特定条件的数组所需的最少操作次数"
+    "description": "求将数组转换为特定结构所需的最小操作次数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即对于任意一个子数组，其最小操作数可以通过其子数组的最小操作数来计算。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着子数组的扩展，所需的最小操作数不会减少。即对于任意两个子数组，如果一个包含另一个，则包含更多的子数组的最小操作数不会小于被包含的子数组的最小操作数。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题的最优解是独立且可合并的。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即对于任意一个子数组，其最小操作数可以通过其子数组的最小操作数来计算。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着子数组的扩展，所需的最小操作数不会减少。即对于任意两个子数组，如果一个包含另一个，则包含更多的子数组的最小操作数不会小于被包含的子数组的最小操作数。",
+              "properties": {
+                "right_monotonic": true
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，每个子问题的最优解是独立且可合并的。"
+    ]
   }
 }

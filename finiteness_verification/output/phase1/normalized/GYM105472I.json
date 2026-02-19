@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "two_dimensional_array",
         "length": {
           "min": 1,
           "max": 5000
@@ -28,9 +28,9 @@
       "result": {
         "constraints": [
           {
-            "name": "maximum_path_length_constraint",
-            "description": "在任意时刻，右侧已处理节点（awesome legends）中输给左侧未处理节点（pathetic nobodies）的边数不超过 k",
-            "formal": "∀t, |{(u, v) | u ∈ L(t), v ∈ R(t), u < v, A[u][v] = 0}| ≤ k"
+            "name": "maximum_destruction_count",
+            "description": "在任意时刻，右侧已处理节点（awesome legends）中输给左侧未处理节点（pathetic nobodies）的数量不超过 k",
+            "formal": "∀ t, |{ (i, j) | i < j, i ∈ L(t), j ∈ R(t), A[i][j] = 0 }| ≤ k"
           }
         ]
       }
@@ -41,8 +41,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求满足条件的最小值"
+        "type": "minimize_value",
+        "description": "最小化在任意时刻，右侧已获胜选手输给左侧未获胜选手的比赛数量的最大值"
       }
     }
   ],
@@ -51,9 +51,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个选手被授予证书的顺序可以看作是基于之前所有选手状态的一个决策过程，其中每一步的最优解依赖于前一步的最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，通过动态规划解决该问题时，每个状态的最优解依赖于其子问题的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量，从一个状态转移到另一个状态的过程中，状态转移的一致性保证了算法的正确性。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

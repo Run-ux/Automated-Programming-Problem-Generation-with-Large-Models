@@ -1,0 +1,84 @@
+{
+  "problem_id": "CF1394D",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "connectivity",
+            "description": "图必须连通（所有节点通过边连接）"
+          },
+          {
+            "name": "ordering",
+            "description": "路径上的节点高度非递减（路径上相邻节点的高度满足 h_i ≤ h_{i+1}）",
+            "formal": "对于路径 M，有 ∀i (1 ≤ i < |M|), h_{M_i} ≤ h_{M_{i+1}}"
+          },
+          {
+            "name": "partition",
+            "description": "所有边必须被划分到若干条路径中（每条边恰好属于一条路径）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化所有路径上节点权值和的总和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个挑战路径的最小累加疲劳值可以由其子路径的最小累加疲劳值推导出来。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：在构造挑战路径时，路径上的山的高度是非递减的，这保证了路径的合法性。",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：不同的挑战路径之间是相互独立的，一个路径的选择不会影响其他路径的最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

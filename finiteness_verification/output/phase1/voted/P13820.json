@@ -1,0 +1,149 @@
+{
+  "problem_id": "P13820",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 10000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 100000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "coverage",
+        "description": "所有节点必须被一个圆覆盖（信号基站覆盖所有村庄）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "选取的圆的成本最小化（修建成本最小）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "geometric_area_constraint",
+        "description": "区域权重由多个圆形区域决定，取最大值（修建难度由多个圆形区域的最大权值决定）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "coverage",
+              "description": "所有节点必须被一个圆覆盖（信号基站覆盖所有村庄）",
+              "formal": "∀ (x, y) ∈ villages, ∃ (a, b, R) 使得 (x-a)^2 + (y-b)^2 ≤ R^2"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "选取的圆的成本最小化（修建成本最小）",
+              "formal": "minimize R * w(a, b)"
+            },
+            {
+              "name": "geometric_area_constraint",
+              "description": "区域权重由多个圆形区域决定，取最大值（修建难度由多个圆形区域的最大权值决定）",
+              "formal": "w(a, b) = max(v_i) for all circles (x_i, y_i, r_i, v_i) such that (a, b) 在圆内"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "最小化覆盖所有点的圆的成本"
+        }
+      }
+    ],
+    "description": "最小化覆盖所有点的圆的成本"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：全局最优解可以通过局部最优解组合得到，即在确定基站位置和信号强度时，可以将问题分解为子问题并求解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "convexity",
+        "description": "凸性不变量：在二维平面上，所有村庄的覆盖区域构成一个凸集，且最优解位于该凸集的边界上",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着基站信号强度的增加，能够覆盖的村庄数量单调不减，成本函数关于信号强度具有单调性",
+        "confidence": "1/1",
+        "properties": {
+          "signal_strength_monotonic": true
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：全局最优解可以通过局部最优解组合得到，即在确定基站位置和信号强度时，可以将问题分解为子问题并求解",
+              "properties": {}
+            },
+            {
+              "name": "convexity",
+              "description": "凸性不变量：在二维平面上，所有村庄的覆盖区域构成一个凸集，且最优解位于该凸集的边界上",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着基站信号强度的增加，能够覆盖的村庄数量单调不减，成本函数关于信号强度具有单调性",
+              "properties": {
+                "signal_strength_monotonic": true
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

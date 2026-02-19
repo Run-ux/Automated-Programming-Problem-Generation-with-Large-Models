@@ -1,0 +1,72 @@
+{
+  "problem_id": "P6967",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "frequency_bound",
+            "description": "在每个长度为 k 的子区间内，特定元素（如 'S' 和 'E'）的出现次数分别至少为 m_s 和 m_e",
+            "formal": "∀ i ∈ [0, n-k], count(S[i:i+k]) ≥ m_s ∧ count(E[i:i+k]) ≥ m_e"
+          },
+          {
+            "name": "exclusion",
+            "description": "每个小时只能选择一个动作（睡眠或进食），不能同时进行两个动作",
+            "formal": "∀ i ∈ [1, n], (A[i] = 'S' ⊕ A[i] = 'E')"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化满足条件的路径上的权值和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每个时间点选择睡觉或吃饭的动作，使得总愉悦值最大，并且满足每k个连续时间段内至少ms小时睡觉和me小时吃饭的约束。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前状态（即前i个小时的选择）可以由前一个状态（即前i-1个小时的选择）通过添加一个新的动作（睡觉或吃饭）来确定，同时保持满足每k个连续时间段内的约束。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

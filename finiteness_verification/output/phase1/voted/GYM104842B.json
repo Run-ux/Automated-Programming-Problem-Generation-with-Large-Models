@@ -1,0 +1,144 @@
+{
+  "problem_id": "GYM104842B",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 80
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 80
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "每个团队在任何时刻都有一个固定的子集（5名球员）在场上，其余子集（5名球员）在替补席上。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "球员可以在场上和替补席之间进行无限次的替换，每次替换只能替换一名球员。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "value_increment",
+        "description": "每当某队得分时，该队当前在场上的球员得分增加相应的分数，对方球队在场上的球员得分减少相应的分数。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "输出结果应按照输入中首次出现的顺序列出所有曾经在场上的球员。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "每个团队在任何时刻都有一个固定的子集（5名球员）在场上，其余子集（5名球员）在替补席上。",
+              "formal": "For each team, |on_court| = 5 and |in_reserve| = 5, where on_court ∪ in_reserve = all_players and on_court ∩ in_reserve = ∅"
+            },
+            {
+              "name": "state_transition",
+              "description": "球员可以在场上和替补席之间进行无限次的替换，每次替换只能替换一名球员。",
+              "formal": "Substitution: (on_court - {y}) ∪ {z} → new_on_court, where y ∈ on_court and z ∈ in_reserve"
+            },
+            {
+              "name": "value_increment",
+              "description": "每当某队得分时，该队当前在场上的球员得分增加相应的分数，对方球队在场上的球员得分减少相应的分数。",
+              "formal": "For a scoring event of x points by Team A: score_A[i] += x for all i in on_court_A, score_B[j] -= x for all j in on_court_B"
+            },
+            {
+              "name": "ordering",
+              "description": "输出结果应按照输入中首次出现的顺序列出所有曾经在场上的球员。",
+              "formal": "Output players in the order they first appear in the input."
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "根据给定的事件序列，计算并输出每个参与比赛球员的个人得分"
+        }
+      }
+    ],
+    "description": "根据给定的事件序列，计算并输出每个参与比赛球员的个人得分"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个事件（得分或换人）都会导致场上球员的状态（得分）发生确定性的变化，且这种变化是基于当前状态的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：在任意时刻，某队得分或失分时，该队当前在场上的所有球员的得分会同步增加或减少相同的值，满足区间和可通过端点差值计算的性质。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个事件（得分或换人）都会导致场上球员的状态（得分）发生确定性的变化，且这种变化是基于当前状态的。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：在任意时刻，某队得分或失分时，该队当前在场上的所有球员的得分会同步增加或减少相同的值，满足区间和可通过端点差值计算的性质。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "problem_id": "P14329",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 2,
+            "max": 400000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 400000
+          },
+          "properties": {
+            "connected": false,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 400000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 400000
+    },
+    "properties": {
+      "connected": false,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "路径只能经过特定节点集合（属于起点或终点所在州的城市）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "每个州内的城市必须通过该州的道路和城市连通",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "路径只能经过特定节点集合（属于起点或终点所在州的城市）",
+              "formal": "∀ k, path(A_k, B_k) ⊆ {j | S_j ∈ {S_{A_k}, S_{B_k}}}"
+            },
+            {
+              "name": "connectivity",
+              "description": "每个州内的城市必须通过该州的道路和城市连通",
+              "formal": "∀ l, ∀ j1, j2 ∈ {j | S_j = l}, ∃ path(j1, j2) ⊆ {j | S_j = l}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在满足条件的路径"
+        }
+      }
+    ],
+    "description": "判断是否存在满足条件的路径"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在图中进行深度优先搜索或广度优先搜索时，从一个城市到另一个城市的可达性状态可以通过访问相邻城市的状态来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每次交易的路径查找可以视为独立的子问题，不同交易之间的路径查找互不影响。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在处理每个州内部的城市连通性时，可以利用拓扑排序来确保只考虑合法的路径。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在图中进行深度优先搜索或广度优先搜索时，从一个城市到另一个城市的可达性状态可以通过访问相邻城市的状态来确定。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每次交易的路径查找可以视为独立的子问题，不同交易之间的路径查找互不影响。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在处理每个州内部的城市连通性时，可以利用拓扑排序来确保只考虑合法的路径。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

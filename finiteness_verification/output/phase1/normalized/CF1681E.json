@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "two_dimensional_array",
         "length": {
           "min": 2,
           "max": 100000
@@ -16,9 +16,7 @@
           "max": 100000
         },
         "properties": {
-          "connected": true,
-          "weighted": false,
-          "directed": false
+          "connected": true
         }
       }
     }
@@ -30,14 +28,20 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
-            "description": "每个层（除了第 n 层）有且仅有两个门，分别位于该层的顶部和右侧。这些门允许在相邻层之间移动。",
-            "formal": "对于每一层 i (1 ≤ i < n)，存在两个门 d1 和 d2，d1 位于顶部，d2 位于右侧。"
+            "name": "connectivity",
+            "description": "图必须连通，即从任意一个单元格可以到达其他任意一个单元格"
           },
           {
-            "name": "path_length_constraint",
-            "description": "只能在当前层内或通过门移动到相邻层。不能穿过没有门的墙。",
-            "formal": "从一个单元格 (x, y) 移动到另一个单元格 (x', y') 只能在同一层内进行，或者通过门移动到相邻层。"
+            "name": "adjacency_relation",
+            "description": "只能移动到相邻的单元格（上下左右），且不能跨层移动除非有门连接"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个层（除了第 n 层）有两个门，分别位于该层的顶部和右侧"
+          },
+          {
+            "name": "path_constraint",
+            "description": "需要找到从起点到终点的最短路径"
           }
         ]
       }
@@ -48,7 +52,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
+        "type": "minimize_value",
         "description": "求两点间最短路径长度"
       }
     }
@@ -58,9 +62,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：从一个层到另一个层的最短路径可以通过分解为通过门的子路径来求解，每个子路径也是最优的。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：从一个层到另一个层的最短路径可以通过子问题的最优解组合得到",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从当前层到下一层的状态转移是确定且一致的，通过门的位置进行状态转移",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：层与层之间的依赖关系形成一个有向无环图（DAG），可以按照拓扑序处理",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

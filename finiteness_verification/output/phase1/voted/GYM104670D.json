@@ -2,14 +2,14 @@
   "problem_id": "GYM104670D",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 3,
             "max": 1000
@@ -19,8 +19,8 @@
             "max": 2
           },
           "properties": {
-            "connected": true,
-            "inferred": true
+            "ordered": true,
+            "connected": false
           }
         }
       }
@@ -34,34 +34,24 @@
       "max": 2
     },
     "properties": {
-      "connected": true,
-      "inferred": true
+      "ordered": true,
+      "connected": false
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "character_transformation_rule",
+        "name": "orientation_constraint",
         "description": "每个方向指令被独立替换为其他三个方向之一",
         "confidence": "1/1"
       },
       {
-        "name": "source_node_fixed",
-        "description": "地图中仅有一个起始点",
+        "name": "connectivity",
+        "description": "地图边界由障碍物组成，且地图中仅有一个起点",
         "confidence": "1/1"
       },
       {
-        "name": "edge_exclusion_constraint",
-        "description": "地图边界由障碍物组成",
-        "confidence": "1/1"
-      },
-      {
-        "name": "valid_cell_only_constraint",
-        "description": "可行走区域由特定符号表示，障碍物和起始点由不同符号表示",
-        "confidence": "1/1"
-      },
-      {
-        "name": "valid_position_count",
+        "name": "existence_requirement",
         "description": "存在至少一个可能的宝藏位置",
         "confidence": "1/1"
       }
@@ -73,23 +63,15 @@
         "result": {
           "constraints": [
             {
-              "name": "character_transformation_rule",
+              "name": "orientation_constraint",
               "description": "每个方向指令被独立替换为其他三个方向之一"
             },
             {
-              "name": "source_node_fixed",
-              "description": "地图中仅有一个起始点"
+              "name": "connectivity",
+              "description": "地图边界由障碍物组成，且地图中仅有一个起点"
             },
             {
-              "name": "edge_exclusion_constraint",
-              "description": "地图边界由障碍物组成"
-            },
-            {
-              "name": "valid_cell_only_constraint",
-              "description": "可行走区域由特定符号表示，障碍物和起始点由不同符号表示"
-            },
-            {
-              "name": "valid_position_count",
+              "name": "existence_requirement",
               "description": "存在至少一个可能的宝藏位置"
             }
           ]
@@ -98,36 +80,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "construction",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "构造一个满足条件的网格，标记所有可能的目标位置"
+          "type": "construction",
+          "description": "构造所有满足条件的目标位置"
         }
       }
     ],
-    "description": "构造一个满足条件的网格，标记所有可能的目标位置"
+    "description": "构造所有满足条件的目标位置"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个位置的状态（是否可达）仅依赖于其相邻位置的状态，满足网格上的状态转移一致性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在计算某个位置的可达性时，该位置的可达性仅取决于其相邻位置的可达性，与其他位置无关",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "当前状态只依赖于有限的前序状态，通过遍历所有可能的方向变化来确定最终位置集合",
-          "properties": {
-            "finite_dependency": true
-          }
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个位置的状态（是否可达）仅依赖于其相邻位置的状态，满足网格上的状态转移一致性",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在计算某个位置的可达性时，该位置的可达性仅取决于其相邻位置的可达性，与其他位置无关",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "当前状态只依赖于有限的前序状态，通过遍历所有可能的方向变化来确定最终位置集合"
+    ]
   }
 }

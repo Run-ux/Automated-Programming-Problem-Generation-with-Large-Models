@@ -1,0 +1,74 @@
+{
+  "problem_id": "P2463",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 40,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 2,
+          "max": 101
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subsequence_constraint",
+            "description": "存在一个长度为 k 的子序列，使得这 N 个序列中每个序列都包含该子序列的某个平移版本",
+            "formal": "∃ subseq of length k, ∀ seq in N, ∃ offset s.t. subseq + offset ⊆ seq"
+          },
+          {
+            "name": "distinctness",
+            "description": "每个序列中的元素是唯一的（即没有重复元素）",
+            "formal": "∀ i, |distinct(seq_i)| = M_i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足条件的最长公共子串长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，即可以通过计算每对卡片之间的最长公共子串来确定整体的最大可兑换等级。",
+            "properties": {}
+          },
+          {
+            "name": "prefix_decomposability",
+            "description": "前缀结构可用于分解和匹配，通过KMP或类似算法可以高效地找到两个序列之间的最长公共子串。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

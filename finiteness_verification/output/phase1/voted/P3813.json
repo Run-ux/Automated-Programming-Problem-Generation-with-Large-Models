@@ -1,0 +1,135 @@
+{
+  "problem_id": "P3813",
+  "source": "luogu",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 10000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 10000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 10000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "submatrix_max_value_constraint",
+        "description": "每个指定子矩阵的最大值必须等于给定的值 v",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "每个格子填入的数值必须在 1 到 m 之间",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "submatrix_max_value_constraint",
+              "description": "每个指定子矩阵的最大值必须等于给定的值 v",
+              "formal": "∀ (x1, y1, x2, y2, v) ∈ submatrices, max(A[x1:x2][y1:y2]) = v"
+            },
+            {
+              "name": "range_bound",
+              "description": "每个格子填入的数值必须在 1 到 m 之间",
+              "formal": "∀ (i, j), 1 ≤ A[i][j] ≤ m"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足给定子矩阵最大值限制的填数方案数，并对结果取模"
+        }
+      }
+    ],
+    "description": "求满足给定子矩阵最大值限制的填数方案数，并对结果取模"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解来构造，即每个子矩阵的最大值限制可以独立处理，并且最终方案是所有子矩阵限制满足情况下的组合。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在动态规划过程中，从一个状态转移到另一个状态时，状态转移方程保持一致性。具体来说，当前格子的填数方案依赖于其左侧和上侧格子的填数方案。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：对于每个子矩阵的最大值限制，可以通过合并子区间的限制来计算整个子矩阵的限制。这种性质使得我们可以使用类似线段树的数据结构来高效地处理这些限制。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解来构造，即每个子矩阵的最大值限制可以独立处理，并且最终方案是所有子矩阵限制满足情况下的组合。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在动态规划过程中，从一个状态转移到另一个状态时，状态转移方程保持一致性。具体来说，当前格子的填数方案依赖于其左侧和上侧格子的填数方案。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：对于每个子矩阵的最大值限制，可以通过合并子区间的限制来计算整个子矩阵的限制。这种性质使得我们可以使用类似线段树的数据结构来高效地处理这些限制。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

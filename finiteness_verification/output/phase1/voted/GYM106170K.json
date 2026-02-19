@@ -1,0 +1,145 @@
+{
+  "problem_id": "GYM106170K",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "range_bound",
+        "description": "每个GPU的负载调整后必须在非负范围内，且调整量不超过k",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "每个公司使用的GPU范围内的总负载必须在指定的上下界之间",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每个GPU的负载调整量必须在-k到k之间",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "range_bound",
+              "description": "每个GPU的负载调整后必须在非负范围内，且调整量不超过k",
+              "formal": "1 ≤ a_i + Δ_i ≤ a_i + k"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "每个公司使用的GPU范围内的总负载必须在指定的上下界之间",
+              "formal": "A_j ≤ (a_{L_j} + Δ_{L_j}) + (a_{L_j+1} + Δ_{L_j+1}) + ... + (a_{R_j} + Δ_{R_j}) ≤ B_j"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每个GPU的负载调整量必须在-k到k之间",
+              "formal": "-k ≤ Δ_i ≤ k"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足所有区间和约束条件的最小调整值"
+        }
+      }
+    ],
+    "description": "求满足所有区间和约束条件的最小调整值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过调整每个GPU的负载，可以计算出任意区间的总负载，并且可以通过端点差值进行计算。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构建。具体来说，找到满足所有公司要求的最小k值可以通过解决更小规模的问题来实现。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在调整每个GPU的负载时，确保每个GPU的负载变化在允许范围内，并且满足所有公司的负载要求。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过调整每个GPU的负载，可以计算出任意区间的总负载，并且可以通过端点差值进行计算。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构建。具体来说，找到满足所有公司要求的最小k值可以通过解决更小规模的问题来实现。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在调整每个GPU的负载时，确保每个GPU的负载变化在允许范围内，并且满足所有公司的负载要求。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

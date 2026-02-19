@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 3,
           "max": 200001
@@ -28,8 +28,8 @@
       "result": {
         "constraints": [
           {
-            "name": "modulo_constraint",
-            "description": "所有运算结果必须对给定的模数取模（模数为 10^9 + 7）",
+            "name": "modular_arithmetic",
+            "description": "所有运算结果需对给定模数取模（模数为 10^9 + 7）",
             "formal": "result = (x ? y) % (10^9 + 7)"
           }
         ]
@@ -41,8 +41,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造两个大整数在给定运算符下的模运算结果"
+        "type": "modular_arithmetic",
+        "description": "计算两个大数在给定模数下的加法、减法、乘法或幂运算结果"
       }
     }
   ],
@@ -51,11 +51,33 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "当前状态只依赖于有限的前序状态，满足马尔可夫性质",
-        "properties": {
-          "markov_property": true
-        }
+        "invariants": [
+          {
+            "name": "modular_arithmetic",
+            "description": "模运算不变量：所有中间结果和最终结果都保持在模数范围内，确保计算过程中的数值不会溢出",
+            "properties": {
+              "modulus": 1000000007
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：对于加法和减法操作，可以通过对每个部分分别取模后再进行加减操作，结果与直接对整个表达式取模一致",
+            "properties": {}
+          },
+          {
+            "name": "associative_property",
+            "description": "乘法结合律：对于乘法操作，可以将大数分解为多个小数的乘积，每一步都取模，最终结果与直接对整个乘积取模一致",
+            "properties": {}
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "快速幂算法：通过平方和取模的方式高效计算大指数的幂，每次迭代中保持中间结果在模数范围内",
+            "properties": {
+              "base_modulus": true,
+              "exponent_reduction": true
+            }
+          }
+        ]
       }
     }
   ]

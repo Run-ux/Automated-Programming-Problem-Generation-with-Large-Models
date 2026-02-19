@@ -1,0 +1,81 @@
+{
+  "problem_id": "CF1789E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 10000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "linear_relation",
+            "description": "每个元素 s_i 可以表示为 p_i * floor(s_n / x) + q_i * ceil(s_n / x)，其中 p_i 和 q_i 是非负整数",
+            "formal": "s_i = p_i * floor(s_n / x) + q_i * ceil(s_n / x), 0 <= p_i, q_i"
+          },
+          {
+            "name": "ordering",
+            "description": "输入的整数序列 s_1, s_2, ..., s_n 是严格递增的",
+            "formal": "s_1 < s_2 < ... < s_n"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "计算结果需要对 998244353 取模",
+            "formal": "result % 998244353"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足特定条件的x值与其对应的f(x)乘积之和，并对结果取模"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "随着 x 的增加，满足条件的 s_i 的数量 f(x) 具有单调性。具体来说，当 x 增大时，f(x) 会减少或保持不变。",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "对于给定的 x，可以通过计算区间 [1, s_n] 内的 x * f(x) 的和来得到最终结果。这个和可以通过前缀和的方式高效计算。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -2,21 +2,21 @@
   "problem_id": "GYM104857J",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 2,
             "max": 300000
           },
           "value_range": {
             "min": 1,
-            "max": 1000000
+            "max": 1000000000
           },
           "properties": {
             "connected": true,
@@ -31,7 +31,7 @@
     },
     "value_range": {
       "min": 1,
-      "max": 1000000
+      "max": 1000000000
     },
     "properties": {
       "connected": true,
@@ -41,13 +41,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "path_length_constraint",
-        "description": "路径长度定义为路径中两个最大权重边的权重之和。如果路径只有一条边，则路径长度为该边的权重。",
+        "name": "path_constraint",
+        "description": "路径长度定义为路径上两个最大权重边的权重和，如果路径只有一条边，则路径长度为该边的权重",
         "confidence": "1/1"
       },
       {
-        "name": "graph_connectivity",
-        "description": "图是连通的。",
+        "name": "connectivity",
+        "description": "图是连通的",
         "confidence": "1/1"
       }
     ],
@@ -58,14 +58,12 @@
         "result": {
           "constraints": [
             {
-              "name": "path_length_constraint",
-              "description": "路径长度定义为路径中两个最大权重边的权重之和。如果路径只有一条边，则路径长度为该边的权重。",
-              "formal": "length(path) = w1 + w2, where w1 and w2 are the two largest edge weights in path. If |path| = 1, length(path) = w1."
+              "name": "path_constraint",
+              "description": "路径长度定义为路径上两个最大权重边的权重和，如果路径只有一条边，则路径长度为该边的权重"
             },
             {
-              "name": "graph_connectivity",
-              "description": "图是连通的。",
-              "formal": "The graph is connected."
+              "name": "connectivity",
+              "description": "图是连通的"
             }
           ]
         }
@@ -73,34 +71,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求两点间路径的最小代价，其中路径代价定义为路径上最大两个边权之和"
+          "type": "minimize_value",
+          "description": "求两点间路径的特定定义下的最小长度"
         }
       }
     ],
-    "description": "求两点间路径的最小代价，其中路径代价定义为路径上最大两个边权之和"
+    "description": "求两点间路径的特定定义下的最小长度"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，从起点到终点的最短路径可以由经过某个中间节点的两条边的最优组合构成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择中，总是选择当前情况下最优的选择。具体来说，在构建路径时，总是选择当前路径上两个最大权值的边进行更新。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，路径长度由路径上边的拥塞级别决定",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，从起点到终点的最短路径可以由经过某个中间节点的两条边的最优组合构成。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择中，总是选择当前情况下最优的选择。具体来说，在构建路径时，总是选择当前路径上两个最大权值的边进行更新。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，路径长度由路径上边的拥塞级别决定"
+    ]
   }
 }

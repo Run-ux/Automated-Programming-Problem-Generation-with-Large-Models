@@ -1,0 +1,36 @@
+{
+  "problem_id": "CF1557E",
+  "source": "codeforces",
+  "dimension": "core_constraints",
+  "round": 1,
+  "result": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制，最多进行130次移动",
+        "formal": "num_moves <= 130"
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移约束，每次移动后棋盘状态必须合法（国王不能移动到与皇后同一行、列或对角线）",
+        "formal": "forall (x, y) in king_moves: (x, y) not in queen_attack_set"
+      },
+      {
+        "name": "turn_based",
+        "description": "回合制约束，国王先移动，然后皇后移动，交替进行",
+        "formal": "king_turn -> queen_turn -> king_turn -> ... (up to 130 moves)"
+      },
+      {
+        "name": "valid_move_constraint",
+        "description": "有效移动约束，皇后和国王的移动必须在棋盘范围内且符合规则",
+        "formal": "queen_move in valid_queen_moves and king_move in valid_king_moves"
+      },
+      {
+        "name": "win_condition",
+        "description": "胜利条件约束，如果国王没有有效的移动，则游戏结束，皇后获胜",
+        "formal": "if no_valid_king_moves: win = true"
+      }
+    ]
+  },
+  "status": "success"
+}

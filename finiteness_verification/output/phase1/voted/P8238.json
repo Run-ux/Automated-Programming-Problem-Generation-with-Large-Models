@@ -1,0 +1,161 @@
+{
+  "problem_id": "P8238",
+  "source": "luogu",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "connected": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "connected": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "图必须连通（所有建筑通过道路相连）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个节点的度数不超过 2（每栋建筑最多连接两条道路）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "从任意节点到根节点（避难所）存在唯一路径（树结构）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "边的状态可以改变（通畅或封堵），且每次事件后需要更新状态",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "计算能够到达根节点的所有节点的难民数量和",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "图必须连通（所有建筑通过道路相连）"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个节点的度数不超过 2（每栋建筑最多连接两条道路）",
+              "formal": "∀v ∈ V, deg(v) ≤ 2"
+            },
+            {
+              "name": "path_constraint",
+              "description": "从任意节点到根节点（避难所）存在唯一路径（树结构）"
+            },
+            {
+              "name": "state_transition",
+              "description": "边的状态可以改变（通畅或封堵），且每次事件后需要更新状态"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "计算能够到达根节点的所有节点的难民数量和"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求在给定条件下，能够到达根节点的节点权值总和"
+        }
+      }
+    ],
+    "description": "求在给定条件下，能够到达根节点的节点权值总和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个节点的状态（通畅或封堵）和难民数量的变化可以通过树的结构进行有效传递和更新。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在处理每个事件时，可以将问题分解为独立的子问题，每个子问题只涉及受影响的子树。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过维护从根到每个节点的路径上的难民数量，可以快速计算出能够到达避难所的难民总数。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个节点的状态（通畅或封堵）和难民数量的变化可以通过树的结构进行有效传递和更新。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在处理每个事件时，可以将问题分解为独立的子问题，每个子问题只涉及受影响的子树。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过维护从根到每个节点的路径上的难民数量，可以快速计算出能够到达避难所的难民总数。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

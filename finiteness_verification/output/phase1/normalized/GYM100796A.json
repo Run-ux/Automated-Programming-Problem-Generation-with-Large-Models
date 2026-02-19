@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 10
@@ -28,16 +28,19 @@
       "result": {
         "constraints": [
           {
-            "name": "equal_segment_length",
-            "description": "两个输入整数具有相同的位数"
+            "name": "transformation",
+            "description": "每个位置的数字通过绝对值差运算得到结果",
+            "formal": "result[i] = |A[i] - B[i]|"
           },
           {
-            "name": "non_negative_values",
-            "description": "输入的两个整数是非负整数"
+            "name": "range_bound",
+            "description": "输入的两个整数具有相同的位数",
+            "formal": "len(A) == len(B)"
           },
           {
-            "name": "element_wise_operation",
-            "description": "结果的每一位是两个输入整数对应位的绝对差值"
+            "name": "range_bound",
+            "description": "输入的两个整数是非负整数",
+            "formal": "0 <= A, B <= 10^9"
           }
         ]
       }
@@ -48,8 +51,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "构造一个整数，其每一位是两个输入整数对应位的差的绝对值"
+        "type": "construction",
+        "description": "构造并输出两个等长整数对应位差的绝对值组成的整数"
       }
     }
   ],
@@ -58,11 +61,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间可合并性：通过计算两个数对应位的差值，可以将结果视为多个独立区间的合并，每个区间的结果仅依赖于该区间的输入值。",
-        "properties": {
-          "merge_by_difference": true
-        }
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：结果的每一位可以通过两个输入数字对应位的差值绝对值计算得到，且这些差值可以独立计算并组合成最终结果。",
+            "properties": {}
+          },
+          {
+            "name": "bitwise_independence",
+            "description": "数位独立性：每个数位的计算仅依赖于对应位置的两个输入数字，与其他数位无关。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

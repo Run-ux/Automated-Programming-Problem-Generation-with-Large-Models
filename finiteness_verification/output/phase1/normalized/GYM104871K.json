@@ -1,0 +1,81 @@
+{
+  "problem_id": "GYM104871K",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 99999
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "选取的元素必须唯一，不能重复（Alice 和 Bob 不能同时拥有同一个钥匙）"
+          },
+          {
+            "name": "path_constraint",
+            "description": "存在从起点到终点的路径（Alice 可以从房间 0 到达房间 1，Bob 可以从房间 1 返回房间 0）"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制（最多可以打印 4 * 10^5 条指令）"
+          },
+          {
+            "name": "exclusion",
+            "description": "禁止在特定位置进行某些操作（Alice 不能在房间 1 丢弃钥匙）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种分配钥匙和路径规划方案，使得Alice可以从房间0到达房间1，Bob可以从房间1返回房间0"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在有向无环图（DAG）中，存在一种节点的线性排序，使得对于每一条有向边 (u, v)，节点 u 在排序中都出现在节点 v 之前。",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在网络流中，每个节点的流入量等于流出量，除了源点和汇点。在这个问题中，钥匙的传递可以看作是一种流，确保每个房间的钥匙数量在传递过程中保持平衡。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

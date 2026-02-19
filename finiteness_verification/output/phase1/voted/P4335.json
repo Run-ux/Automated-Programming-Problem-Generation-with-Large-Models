@@ -1,0 +1,151 @@
+{
+  "problem_id": "P4335",
+  "source": "luogu",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 2001
+          },
+          "value_range": {
+            "min": -1,
+            "max": 1
+          },
+          "properties": {
+            "connected": true,
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2001
+    },
+    "value_range": {
+      "min": -1,
+      "max": 1
+    },
+    "properties": {
+      "connected": true,
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "从每个节点到起点 (0, 0) 的最短路径长度不超过 S 步",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "路径不能经过障碍物所在的单元格",
+        "confidence": "1/1"
+      },
+      {
+        "name": "alternating_pattern_constraint",
+        "description": "每一步移动后，节点的状态在两个状态之间交替变化",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "从每个节点到起点 (0, 0) 的最短路径长度不超过 S 步",
+              "formal": "∀(x, y), shortest_path((x, y), (0, 0)) ≤ S"
+            },
+            {
+              "name": "exclusion",
+              "description": "路径不能经过障碍物所在的单元格",
+              "formal": "∀(x, y) ∈ obstacles, (x, y) ∉ path"
+            },
+            {
+              "name": "alternating_pattern_constraint",
+              "description": "每一步移动后，节点的状态在两个状态之间交替变化",
+              "formal": "state(x, y, t) = state(x, y, t-1) ⊕ 1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求在给定步数限制内，从起点出发能够到达的所有点的数量，并按某种属性分类计数"
+        }
+      }
+    ],
+    "description": "求在给定步数限制内，从起点出发能够到达的所有点的数量，并按某种属性分类计数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：从任意点到起点的最短路径可以通过其相邻点的最短路径推导得出，满足DAG上的最优子结构特性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个节点的状态（即到达该节点所需的步数）仅依赖于其直接前驱节点的状态，并且这种依赖关系在整个搜索过程中保持一致。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着搜索范围的扩大，可达节点的数量非递减，搜索过程中的边界单调扩展。",
+        "confidence": "1/1",
+        "properties": {
+          "window_shrinkable": false
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：从任意点到起点的最短路径可以通过其相邻点的最短路径推导得出，满足DAG上的最优子结构特性。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个节点的状态（即到达该节点所需的步数）仅依赖于其直接前驱节点的状态，并且这种依赖关系在整个搜索过程中保持一致。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着搜索范围的扩大，可达节点的数量非递减，搜索过程中的边界单调扩展。",
+              "properties": {
+                "window_shrinkable": false
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

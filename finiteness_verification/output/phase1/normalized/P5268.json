@@ -1,0 +1,79 @@
+{
+  "problem_id": "P5268",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 50000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 50000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "frequency_bound",
+            "description": "区间内每个元素的出现次数需要计算并用于后续操作",
+            "formal": "get(l, r, x) = count(x in a[l:r])"
+          },
+          {
+            "name": "subsequence_constraint",
+            "description": "每次询问涉及两个子序列，分别由 [l1, r1] 和 [l2, r2] 定义",
+            "formal": "a[l1:r1], a[l2:r2]"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "最终结果是两个子序列中相同元素出现次数的乘积之和",
+            "formal": "result = Σ (get(l1, r1, x) * get(l2, r2, x)) for all x"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求两个区间内相同元素出现次数的乘积之和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：区间和可以通过端点差值计算，适用于前缀和的计算",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：区间信息可以通过子区间合并，适用于线段树或分块等数据结构",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

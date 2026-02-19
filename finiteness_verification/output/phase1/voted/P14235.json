@@ -1,0 +1,159 @@
+{
+  "problem_id": "P14235",
+  "source": "luogu",
+  "input_structure": {
+    "type": "directed_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "directed_graph",
+          "length": {
+            "min": 1,
+            "max": 2450
+          },
+          "value_range": {
+            "min": 1,
+            "max": 50
+          },
+          "properties": {
+            "weighted": false,
+            "connected": false,
+            "directed": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2450
+    },
+    "value_range": {
+      "min": 1,
+      "max": 50
+    },
+    "properties": {
+      "weighted": false,
+      "connected": false,
+      "directed": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "stack_sortable_constraint",
+        "description": "在通过特定类型的道路时，必须执行相应的栈操作（装载或卸载货物）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "path_constraint",
+        "description": "从起点到终点的路径长度不超过 K 公里",
+        "confidence": "1/1"
+      },
+      {
+        "name": "matching_constraint",
+        "description": "装载和卸载的货物类型必须匹配（即卸载的货物必须是之前装载的同类型货物）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "卡车的状态（装载的货物）在通过每条道路后必须符合规则",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "stack_sortable_constraint",
+              "description": "在通过特定类型的道路时，必须执行相应的栈操作（装载或卸载货物）",
+              "formal": "对于每条道路 (u, v)：\n- 如果是装载类型 C 的道路，则 push(C)\n- 如果是卸载类型 c 的道路，则 pop(c)"
+            },
+            {
+              "name": "path_constraint",
+              "description": "从起点到终点的路径长度不超过 K 公里",
+              "formal": "len(path) <= K"
+            },
+            {
+              "name": "matching_constraint",
+              "description": "装载和卸载的货物类型必须匹配（即卸载的货物必须是之前装载的同类型货物）",
+              "formal": "对于每个卸载操作 pop(c)，存在一个之前的装载操作 push(C)，且 C = c"
+            },
+            {
+              "name": "state_transition",
+              "description": "卡车的状态（装载的货物）在通过每条道路后必须符合规则",
+              "formal": "卡车状态 S 在通过每条道路后必须满足规则：\n- 装载：S' = S + {C}\n- 卸载：S' = S - {c}\n- 自由通行：S' = S"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "求满足条件的路径数量（模10007）"
+        }
+      }
+    ],
+    "description": "求满足条件的路径数量（模10007）"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个城市到另一个城市的路径选择过程中，货物的装载和卸载状态遵循特定规则进行转移。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在有向图中，路径的选择受到拓扑顺序的限制，即必须按照道路的方向前进。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：到达目标城市的合法路径数量可以通过子问题（从其他城市到达目标城市）的解来构建。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个城市到另一个城市的路径选择过程中，货物的装载和卸载状态遵循特定规则进行转移。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在有向图中，路径的选择受到拓扑顺序的限制，即必须按照道路的方向前进。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：到达目标城市的合法路径数量可以通过子问题（从其他城市到达目标城市）的解来构建。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

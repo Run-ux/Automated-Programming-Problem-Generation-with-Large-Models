@@ -1,0 +1,90 @@
+{
+  "problem_id": "P1084",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_tree",
+        "length": {
+          "min": 2,
+          "max": 50000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "spanning_constraint",
+            "description": "从根节点到所有叶子节点的路径上至少有一个检查点，且根节点不能建立检查点"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个城市（除根节点外）可以建立一个检查点"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每支军队只能在一个城市建立检查点"
+          },
+          {
+            "name": "path_constraint",
+            "description": "一支军队经过一条道路从一个城市移动到另一个城市所需要的时间等于道路的长度"
+          },
+          {
+            "name": "concurrency",
+            "description": "不同的军队可以同时移动"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足条件的最小时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个子树的最优解可以合并成整棵树的最优解",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从根节点到叶子节点的路径上，每个节点的状态（是否需要检查点）由其子节点的状态决定，并且这种状态转移是自底向上的",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每个子树中，选择最近的军队来建立检查点是最优的选择，因为这样可以最小化控制疫情的时间",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

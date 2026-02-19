@@ -1,0 +1,160 @@
+{
+  "problem_id": "P13114",
+  "source": "luogu",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 50
+          },
+          "value_range": {
+            "min": 1,
+            "max": 50
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 50
+    },
+    "value_range": {
+      "min": 1,
+      "max": 50
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "相邻节点的扩展规则（细菌在放置后会尝试向特定方向扩展，直到遇到障碍或已占用的节点）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "互斥约束（如果扩展过程中遇到放射性材料，该操作失败并导致玩家失败）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移约束（每个空节点只能被一个细菌占据，且一旦占据则不可再改变）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制（当没有空节点时，当前玩家失败）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "turn_based",
+        "description": "回合制约束（两名玩家轮流进行操作，直到一方失败）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "adjacency_relation",
+              "description": "相邻节点的扩展规则（细菌在放置后会尝试向特定方向扩展，直到遇到障碍或已占用的节点）"
+            },
+            {
+              "name": "exclusion",
+              "description": "互斥约束（如果扩展过程中遇到放射性材料，该操作失败并导致玩家失败）"
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移约束（每个空节点只能被一个细菌占据，且一旦占据则不可再改变）"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制（当没有空节点时，当前玩家失败）"
+            },
+            {
+              "name": "turn_based",
+              "description": "回合制约束（两名玩家轮流进行操作，直到一方失败）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一个玩家的策略使得该玩家获胜"
+        }
+      }
+    ],
+    "description": "判断是否存在一个玩家的策略使得该玩家获胜"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：游戏状态的转移遵循固定的规则，且每个状态的合法性可以通过前一个状态推导得出。每一步操作后，新的状态是基于当前状态和操作类型（H或V）确定的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：在博弈过程中，每个玩家的最优策略依赖于后续所有可能状态的最优解。即，当前局面下的最优决策可以由其子问题（后续局面）的最优解组合而成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在计算某个状态的最优解时，不同分支（选择放置H或V）所导致的子问题之间相互独立，互不影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：游戏状态的转移遵循固定的规则，且每个状态的合法性可以通过前一个状态推导得出。每一步操作后，新的状态是基于当前状态和操作类型（H或V）确定的。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：在博弈过程中，每个玩家的最优策略依赖于后续所有可能状态的最优解。即，当前局面下的最优决策可以由其子问题（后续局面）的最优解组合而成。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在计算某个状态的最优解时，不同分支（选择放置H或V）所导致的子问题之间相互独立，互不影响。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

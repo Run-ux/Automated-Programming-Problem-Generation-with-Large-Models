@@ -1,0 +1,86 @@
+{
+  "problem_id": "P3571",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "connected": true,
+          "rooted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "程序结构为树形，每个节点有零个、一个或多个子节点"
+          },
+          {
+            "name": "parent_child_dependency",
+            "description": "节点的执行依赖于其父节点已执行完毕"
+          },
+          {
+            "name": "concurrency",
+            "description": "在满足依赖关系的前提下，可以并行执行多个节点"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每次操作最多访问 K 个未访问的节点"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求在给定处理单元数下，完成所有任务所需的最少时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个节点的最小执行时间依赖于其子节点的最小执行时间，满足树形DP的最优子结构性质",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：大问题的解可以通过子问题的解合成，具体表现为树的根节点的最小执行时间由其所有子树的最小执行时间决定",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在处理每个节点时，其状态（即最小执行时间）通过其子节点的状态进行转移，并且这种转移是确定性的",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -2,14 +2,14 @@
   "problem_id": "GYM105394C",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 2000
@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "uniform_labeling",
-        "description": "变量重命名必须一致，即同一个变量的所有出现都必须重命名为同一个新变量，不同变量不能重命名为同一个新变量",
+        "name": "labeling_constraint",
+        "description": "变量重命名必须一致，即同一个变量在不同位置的重命名结果相同，且不同变量不能重命名为相同的变量（匹配约束）",
         "confidence": "1/1"
       },
       {
-        "name": "continuous_subsequence",
-        "description": "查询代码必须是参考代码的一个连续子序列",
+        "name": "subsequence_constraint",
+        "description": "查询代码必须是参考代码的一个连续子序列（子序列约束）",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +56,12 @@
         "result": {
           "constraints": [
             {
-              "name": "uniform_labeling",
-              "description": "变量重命名必须一致，即同一个变量的所有出现都必须重命名为同一个新变量，不同变量不能重命名为同一个新变量"
+              "name": "labeling_constraint",
+              "description": "变量重命名必须一致，即同一个变量在不同位置的重命名结果相同，且不同变量不能重命名为相同的变量（匹配约束）"
             },
             {
-              "name": "continuous_subsequence",
-              "description": "查询代码必须是参考代码的一个连续子序列"
+              "name": "subsequence_constraint",
+              "description": "查询代码必须是参考代码的一个连续子序列（子序列约束）"
             }
           ]
         }
@@ -69,37 +69,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否存在满足条件的子序列"
+          "type": "feasibility",
+          "description": "判断每个查询是否可以通过从参考代码中选择一个连续的子序列并一致地重命名变量来获得"
         }
       }
     ],
-    "description": "判断是否存在满足条件的子序列"
+    "description": "判断每个查询是否可以通过从参考代码中选择一个连续的子序列并一致地重命名变量来获得"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：查询字符串的匹配问题可以通过其子串的匹配结果来解决，即如果一个查询字符串可以由参考字符串的一部分通过变量重命名得到，则其任意子串也应满足相同条件。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "label_permutation_invariance",
+        "description": "一致重命名：在比较过程中，对于每个变量的重命名必须保持一致，即同一个变量的所有出现都必须被映射到同一个新变量，不同变量不能映射到同一个新变量。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：查询字符串是否可以通过参考字符串的某个连续子串一致重命名变量得到，可以分解为更小规模的子问题来解决",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：查询字符串的匹配问题可以通过其子串的匹配结果来解决，即如果一个查询字符串可以由参考字符串的一部分通过变量重命名得到，则其任意子串也应满足相同条件。",
+              "properties": {}
+            },
+            {
+              "name": "label_permutation_invariance",
+              "description": "一致重命名：在比较过程中，对于每个变量的重命名必须保持一致，即同一个变量的所有出现都必须被映射到同一个新变量，不同变量不能映射到同一个新变量。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：查询字符串是否可以通过参考字符串的某个连续子串一致重命名变量得到，可以分解为更小规模的子问题来解决"
+    ]
   }
 }

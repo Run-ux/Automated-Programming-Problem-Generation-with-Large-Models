@@ -1,0 +1,79 @@
+{
+  "problem_id": "P13194",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 1,
+          "max": 26
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "pairwise_sum_constraint",
+            "description": "每个伪造的话题必须由已存在的两个话题中的第一个词和第二个词组合而成，且组合后的话题不能已经存在于列表中。",
+            "formal": "对于所有话题 (a, b) 和 (c, d)，伪造话题 (a, d) 必须满足 (a, d) 不在话题列表中"
+          },
+          {
+            "name": "revisiting_allowed",
+            "description": "伪造的话题只能使用已存在的话题中的词，不能引入新的词。",
+            "formal": "对于所有伪造话题 (a, d)，a 和 d 必须分别出现在某个已存在的话题的第一个词和第二个词中"
+          },
+          {
+            "name": "pairwise_exclusion",
+            "description": "伪造的话题不能将一个已存在的词同时用作第一个词和第二个词（除非该词已经在列表中作为另一个词出现）。",
+            "formal": "对于所有伪造话题 (a, d)，如果 a 已经作为某个话题的第二个词出现，则 d 不能是 a；反之亦然"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "最大化可以由已有单词组合而成的新话题数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过分析每个单词作为首词和尾词出现的次数来确定最大可能的伪造话题数。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步中选择当前情况下能够最大化伪造话题数量的选择，即优先考虑使用出现频率最高的首词和尾词组合。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

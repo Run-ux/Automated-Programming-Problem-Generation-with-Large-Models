@@ -1,0 +1,83 @@
+{
+  "problem_id": "CF1567E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "数组必须非递减",
+            "formal": "a[i] <= a[i+1] for all 1 <= i < n"
+          },
+          {
+            "name": "transformation",
+            "description": "更新操作后，数组仍需保持非递减",
+            "formal": "After updating a[x] to y, a[i] <= a[i+1] for all 1 <= i < n"
+          },
+          {
+            "name": "window_constraint",
+            "description": "查询操作要求返回区间内的最小值",
+            "formal": "For each query (l, r), return min(a[l:r])"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求满足非递减条件的最长子数组长度"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "区间合法性可单调维护，即在处理查询时，可以通过维护区间的非递减性质来高效回答查询。",
+            "properties": {
+              "window_shrinkable": false,
+              "left_monotonic": false,
+              "right_monotonic": false
+            }
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间信息可通过子区间合并。在处理更新和查询操作时，可以利用线段树等数据结构将区间信息进行合并，以支持高效的区间查询。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

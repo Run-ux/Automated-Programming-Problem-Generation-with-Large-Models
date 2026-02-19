@@ -1,0 +1,84 @@
+{
+  "problem_id": "GYM102056K",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "merge_order_constraint",
+            "description": "相邻节点可以合并为更高一级的节点，直到达到最大级别 m",
+            "formal": "对于任意 k < m，如果存在两个相邻的 k 级节点，可以将其合并为一个 (k+1) 级节点"
+          },
+          {
+            "name": "revisiting_allowed",
+            "description": "可以移除任意节点，但不影响其他节点的顺序",
+            "formal": "可以移除电路中的任意节点 A[i]，剩余节点的相对顺序不变"
+          },
+          {
+            "name": "level_uniformity_constraint",
+            "description": "子段 [x, y] 可以通过合并和移除操作变成一个 k 级节点",
+            "formal": "对于给定的子段 [x, y]，可以通过合并和移除操作使其成为一个 k 级节点"
+          },
+          {
+            "name": "level_uniformity_constraint",
+            "description": "子段 [x, y] 必须恰好变成 k 级节点，不能是更高或更低级别",
+            "formal": "子段 [x, y] 通过合并和移除操作后必须恰好变成 k 级节点"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_count",
+        "description": "求满足条件的子区间数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：通过子区间的合并来维护和查询整个区间的信息，适用于线段树等数据结构",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，适用于动态规划方法",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

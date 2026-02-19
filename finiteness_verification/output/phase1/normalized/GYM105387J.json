@@ -1,0 +1,95 @@
+{
+  "problem_id": "GYM105387J",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 1,
+          "max": 1000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distance_bound",
+            "description": "移动过程中不能超出矩阵边界"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "移动过程中遇到障碍物（标记为 '#' 的单元格）时停止移动"
+          },
+          {
+            "name": "fixed_start_node",
+            "description": "初始位置固定在左下角 (1, 1)"
+          },
+          {
+            "name": "orientation",
+            "description": "只能按照指定的四个方向（上、下、左、右）进行移动"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造并输出按照给定指令移动后的最终位置坐标"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "状态转移方向受限（仅向上/下/左/右），满足网格上的单调性",
+            "properties": {
+              "directions": [
+                "U",
+                "D",
+                "L",
+                "R"
+              ]
+            }
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移一致性：从一个状态到另一个状态的转移规则固定且唯一",
+            "properties": {}
+          },
+          {
+            "name": "filling_invariant",
+            "description": "边界条件不变量：当遇到障碍物或边界时，状态不再改变",
+            "properties": {
+              "obstacle": "#",
+              "boundary": "grid_edges"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

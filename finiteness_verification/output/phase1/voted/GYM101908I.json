@@ -1,0 +1,131 @@
+{
+  "problem_id": "GYM101908I",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "state_transition",
+        "description": "每个开关操作会改变与其关联的灯泡的状态（从亮到灭或从灭到亮）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数有限制，如果无法通过给定策略使所有灯泡同时熄灭，则输出 -1",
+        "confidence": "1/1"
+      },
+      {
+        "name": "subset_constraint",
+        "description": "每个开关关联的是一组灯泡的子集，且这些子集内的元素是唯一的",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "state_transition",
+              "description": "每个开关操作会改变与其关联的灯泡的状态（从亮到灭或从灭到亮）"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数有限制，如果无法通过给定策略使所有灯泡同时熄灭，则输出 -1"
+            },
+            {
+              "name": "subset_constraint",
+              "description": "每个开关关联的是一组灯泡的子集，且这些子集内的元素是唯一的"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一种操作序列使得所有灯泡最终都熄灭，并输出所需的操作次数，若不存在则输出-1"
+        }
+      }
+    ],
+    "description": "判断是否存在一种操作序列使得所有灯泡最终都熄灭，并输出所需的操作次数，若不存在则输出-1"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "cycle_invariant",
+        "description": "环不变量：通过重复触发开关序列，系统状态会在有限次操作后进入一个循环。如果所有灯泡在某个时刻全部熄灭，则该状态会在循环中出现；否则，系统将无限循环而不会达到全熄灭状态。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每次按下开关时，系统的状态（即哪些灯泡是亮的）会根据当前状态和开关对应的灯泡集合进行确定性的转换。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "cycle_invariant",
+              "description": "环不变量：通过重复触发开关序列，系统状态会在有限次操作后进入一个循环。如果所有灯泡在某个时刻全部熄灭，则该状态会在循环中出现；否则，系统将无限循环而不会达到全熄灭状态。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每次按下开关时，系统的状态（即哪些灯泡是亮的）会根据当前状态和开关对应的灯泡集合进行确定性的转换。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -4,12 +4,22 @@
   "dimension": "invariant",
   "round": 1,
   "result": {
-    "name": "optimal_substructure",
-    "description": "最优子结构：通过将整数A_i编码为两个二进制数组s_i和t_i，使得通过riffle shuffle得到的数组u_i能够唯一解码回A_i。每一轮的解码过程独立且仅依赖于当前轮次的输入。",
-    "properties": {
-      "independent_rounds": true,
-      "unique_decoding": true
-    }
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：通过特定的编码和解码方式，确保信息在传递过程中能够被正确恢复",
+        "properties": {
+          "encoding_decoding_consistency": true
+        }
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：通过 riffle shuffle 操作，可以将两个数组合并成一个数组，并且可以通过逆操作从合并后的数组中恢复原始数组",
+        "properties": {
+          "merge_recoverability": true
+        }
+      }
+    ]
   },
   "status": "success"
 }

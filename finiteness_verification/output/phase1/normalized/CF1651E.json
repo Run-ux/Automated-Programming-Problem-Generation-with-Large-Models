@@ -18,7 +18,7 @@
         "properties": {
           "directed": false,
           "weighted": false,
-          "connected": true,
+          "connected": false,
           "bipartite": true
         }
       }
@@ -31,21 +31,20 @@
       "result": {
         "constraints": [
           {
-            "name": "node_degree_constraint",
-            "description": "每个节点的度数不超过 2"
+            "name": "bipartiteness",
+            "description": "图是二部图，顶点分为两个部分，每个部分的顶点编号分别为 1 到 n 和 n+1 到 2n"
           },
           {
-            "name": "bipartite_matching",
-            "description": "图是二分图，顶点分为两部分，每部分有 n 个顶点"
+            "name": "degree_bound",
+            "description": "每个顶点的度数为 2"
           },
           {
-            "name": "spanning_tree",
-            "description": "子图 G'(l, r, L, R) 由原图中属于区间 [l, r] 和 [L, R] 的顶点及其边组成",
-            "formal": "G'(l, r, L, R) = (V', E') where V' = {v | l ≤ v ≤ r or L ≤ v ≤ R} and E' = {e | e ∈ E and both endpoints of e are in V'}"
+            "name": "subset_constraint",
+            "description": "子图 G'(l, r, L, R) 包含所有在区间 [l, r] 或 [L, R] 内的顶点及其相关边"
           },
           {
-            "name": "coordinate_fixed_point",
-            "description": "四元组 (l, r, L, R) 满足 1 ≤ l ≤ r ≤ n 和 n+1 ≤ L ≤ R ≤ 2n"
+            "name": "matching_constraint",
+            "description": "计算子图 G'(l, r, L, R) 的最大匹配大小，并对所有满足条件的 (l, r, L, R) 求和"
           }
         ]
       }
@@ -57,7 +56,7 @@
       "status": "success",
       "result": {
         "type": "maximize_value",
-        "description": "求所有子图的最大匹配数之和"
+        "description": "求所有子图最大匹配数之和"
       }
     }
   ],
@@ -66,9 +65,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个子图的最大匹配可以通过其子图的最大匹配来计算",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最大匹配问题的解可以通过子图的最大匹配解合成",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：子图的最大匹配信息可以通过子区间的最大匹配信息合并得到",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

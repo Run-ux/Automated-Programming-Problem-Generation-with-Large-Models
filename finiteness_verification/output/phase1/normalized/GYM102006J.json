@@ -1,0 +1,92 @@
+{
+  "problem_id": "GYM102006J",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "operation_limit",
+            "description": "每分钟最多进行一次操作（回答一个澄清）",
+            "formal": "∀t, |{i | t_i = t}| ≤ 1"
+          },
+          {
+            "name": "acyclicity",
+            "description": "Hasan 只能在 KAN 回答了某种类型的第一个澄清后才能回答该类型的所有澄清",
+            "formal": "∀p, ∃x, ∀y > x, H(y, p) → K(x, p)"
+          },
+          {
+            "name": "ordering",
+            "description": "KAN 可以在澄清发送的同一分钟内回答该澄清，但 Hasan 必须在 KAN 回答后的下一分钟或之后才能回答",
+            "formal": "∀p, ∃x, ∀y, K(x, p) ∧ H(y, p) → y ≥ x + 1"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求完成所有任务所需的最短时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "时间轴上的处理顺序单调递增，每个澄清请求的处理时间不会早于其发送时间。",
+            "properties": {
+              "left_monotonic": false,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，即在任意时刻，已处理的澄清请求集合的最优安排是整体最优解的一部分。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，KAN 优先处理每种类型的第一个澄清请求，Hasan 在 KAN 处理完该类型后才开始处理。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量，KAN 和 Hasan 的处理状态根据当前时间和已处理的澄清请求类型进行一致性的转移。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "problem_id": "P11252",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 3,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 199999
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过3，即每个区域最多连接三条道路。",
+            "formal": "∀v ∈ V, deg(v) ≤ 3"
+          },
+          {
+            "name": "spanning_constraint",
+            "description": "每棵树必须是生成树，即包含所有节点且无环。",
+            "formal": "T1, T2 are spanning trees of the graph"
+          },
+          {
+            "name": "forest_structure",
+            "description": "两棵树的道路集合互不相交，即没有共享边。",
+            "formal": "T1 ∩ T2 = ∅"
+          },
+          {
+            "name": "geometric_shape_constraint",
+            "description": "新区域只能在已有的三个直接相连的区域之间形成，并且这三个区域形成的三角形内心处建立一个新区域。",
+            "formal": "For a, b, c ∈ V, if (a, b), (b, c), (c, a) ∈ E, then add_vertex(a, b, c) creates a new vertex d and adds edges (a, d), (b, d), (c, d)"
+          },
+          {
+            "name": "distinctness",
+            "description": "对于相同的三个区域，不能进行多次区域建设，即每次建设使用的区域集合 {a, b, c} 必须不同。",
+            "formal": "Each set {a, b, c} can be used at most once in add_vertex(a, b, c)"
+          },
+          {
+            "name": "operation_limit",
+            "description": "调用 `add_vertex` 函数的次数不超过 N 次。",
+            "formal": "Number of calls to add_vertex ≤ N"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "最小化区域建设次数以构建不共享道路的两棵树"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在构建两棵树的过程中，新区域的添加顺序满足拓扑序，即每次添加的新区域依赖于已存在的区域。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每次添加新区域时，新生成的子问题（即新的三角形）与之前的子问题是独立的，不会影响之前已经构建好的树结构。",
+            "properties": {}
+          },
+          {
+            "name": "divide_conquer",
+            "description": "分治不变量：通过逐步添加新区域，将大问题分解为多个小问题，并最终合并成两棵不相交的树。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

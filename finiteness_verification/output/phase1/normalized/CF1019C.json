@@ -1,0 +1,79 @@
+{
+  "problem_id": "CF1019C",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "directed_graph",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "loop_free": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "independence",
+            "description": "选取的顶点集合中任意两个顶点之间没有边相连（独立集约束）"
+          },
+          {
+            "name": "connectivity",
+            "description": "从选取的顶点集合中的某个顶点出发，可以在最多两步内到达图中的任意其他顶点（可达性约束）",
+            "formal": "对于所有 z ∉ Q, 存在 x ∈ Q 使得存在路径 x -> z 或 x -> y -> z"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一个满足条件的顶点集合，使得集合内任意两点不直接相连且从集合中任一点出发可到达图中其他所有点最多经过两条边"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构造，即选择的顶点集Q满足条件可以由更小规模的子图的解组合而成。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在求解过程中，不同子问题的解互不影响，每个子问题可以独立求解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "可达性约束：从选定的顶点集合Q出发，所有不在Q中的顶点都可以在最多两步内到达。这种约束确保了所选顶点集的有效性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

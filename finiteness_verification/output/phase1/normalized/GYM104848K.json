@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "undirected_graph",
+        "type": "weighted_undirected_graph",
         "length": {
           "min": 3,
           "max": 300
@@ -29,20 +29,24 @@
       "result": {
         "constraints": [
           {
-            "name": "node_degree_constraint",
-            "description": "每个节点的度数不超过其邻居节点的数量"
+            "name": "connectivity",
+            "description": "图必须连通，即从任意一个节点到另一个节点都存在路径"
           },
           {
-            "name": "graph_connectivity",
-            "description": "图必须连通，即从任意一个节点可以到达其他所有节点"
+            "name": "degree_bound",
+            "description": "每个节点的度数有限制，具体为每个节点最多与 n-1 个其他节点直接相连"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "选择的节点不能直接相邻（即不能有直接连接的边）"
+            "name": "path_constraint",
+            "description": "存在一条从节点 1 到节点 n 的路径，且这条路径上不能有直接连接的边"
           },
           {
-            "name": "distinct_subset_selection",
-            "description": "选择的节点集合必须满足特定条件（如最小化某个目标函数）"
+            "name": "subset_constraint",
+            "description": "选择的节点集合必须是所有节点的一个子集，并且不包含节点 1 和节点 n"
+          },
+          {
+            "name": "coverage",
+            "description": "所选节点及其相邻节点必须覆盖从节点 1 到节点 n 的所有路径"
           }
         ]
       }
@@ -53,8 +57,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "最小化覆盖路径上所有节点的代价"
+        "type": "minimize_count",
+        "description": "最小化满足条件的节点数"
       }
     }
   ],
@@ -63,9 +67,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过选择在某些城市设立秘密警察部门来最小化知道秘密的城市数量",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择某些城市建立秘密警察部门时，每个子问题（子图）的最优解可以组合成整个问题的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在选择某些城市建立秘密警察部门时，不同子问题（子图）之间的选择是相互独立的，一个子问题的解不会影响另一个子问题的解。",
+            "properties": {}
+          },
+          {
+            "name": "flow_conservation",
+            "description": "流守恒：在选择某些城市建立秘密警察部门时，信息传播的过程满足流守恒性质，即进入某个节点的信息量等于离开该节点的信息量。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

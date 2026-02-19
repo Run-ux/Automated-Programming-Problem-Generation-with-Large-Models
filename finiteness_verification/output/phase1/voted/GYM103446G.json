@@ -2,14 +2,14 @@
   "problem_id": "GYM103446G",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 3,
             "max": 100000
@@ -39,23 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图必须连通",
+        "name": "degree_bound",
+        "description": "每个节点的度数为1或2（树结构）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_vertex_count_constraint",
-        "description": "顶点数量为奇数",
+        "name": "partition",
+        "description": "将所有边划分成若干组，每组恰好包含两条边",
         "confidence": "1/1"
       },
       {
-        "name": "complementary_edge_set",
-        "description": "所有边必须被分成 (n-1)/2 个组，每组恰好包含两条边",
-        "confidence": "1/1"
-      },
-      {
-        "name": "distinct_subset_selection",
-        "description": "两个分组方案不同当且仅当存在两条边在其中一个方案中属于同一组而在另一个方案中不属于同一组",
+        "name": "connectivity",
+        "description": "图必须是连通的",
         "confidence": "1/1"
       }
     ],
@@ -66,22 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "图必须连通"
+              "name": "degree_bound",
+              "description": "每个节点的度数为1或2（树结构）"
             },
             {
-              "name": "distinct_vertex_count_constraint",
-              "description": "顶点数量为奇数"
+              "name": "partition",
+              "description": "将所有边划分成若干组，每组恰好包含两条边"
             },
             {
-              "name": "complementary_edge_set",
-              "description": "所有边必须被分成 (n-1)/2 个组，每组恰好包含两条边",
-              "formal": "将 n-1 条边分成 (n-1)/2 组，每组恰好包含两条边"
-            },
-            {
-              "name": "distinct_subset_selection",
-              "description": "两个分组方案不同当且仅当存在两条边在其中一个方案中属于同一组而在另一个方案中不属于同一组",
-              "formal": "对于任意两个分组方案 S1 和 S2，如果存在边 e1 和 e2 使得 e1 和 e2 在 S1 中属于同一组而在 S2 中不属于同一组，则 S1 和 S2 是不同的方案"
+              "name": "connectivity",
+              "description": "图必须是连通的"
             }
           ]
         }
@@ -89,34 +78,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "enumeration",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "统计满足条件的划分方案数量"
+          "type": "enumeration",
+          "description": "求满足条件的划分方案数（模998244353）"
         }
       }
     ],
-    "description": "统计满足条件的划分方案数量"
+    "description": "求满足条件的划分方案数（模998244353）"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合得到，即整个图的划分方案数可以由其子树的划分方案数递归计算得出。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个子树的划分方案数是独立于其他子树的，可以分别计算后再合并。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的解是独立且最优的",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解组合得到，即整个图的划分方案数可以由其子树的划分方案数递归计算得出。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个子树的划分方案数是独立于其他子树的，可以分别计算后再合并。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的解是独立且最优的"
+    ]
   }
 }

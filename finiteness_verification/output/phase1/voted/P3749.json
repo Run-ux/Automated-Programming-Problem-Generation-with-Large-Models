@@ -1,0 +1,145 @@
+{
+  "problem_id": "P3749",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": -500,
+            "max": 500
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": -500,
+      "max": 500
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subsequence_constraint",
+        "description": "选取的子序列必须是连续的（即每次取走的寿司必须是按顺序连续的一段）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "每种代号的寿司只能被计费一次，无论其出现多少次",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "总美味度和总花费的差值最大化",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subsequence_constraint",
+              "description": "选取的子序列必须是连续的（即每次取走的寿司必须是按顺序连续的一段）",
+              "formal": "对于每次选取的子序列 A[l:r]，l 和 r 必须满足 l < r 且 A[l:r] 是连续的"
+            },
+            {
+              "name": "distinctness",
+              "description": "每种代号的寿司只能被计费一次，无论其出现多少次",
+              "formal": "对于每个代号 x，其费用只计算一次，即使它在多个子序列中出现"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "总美味度和总花费的差值最大化",
+              "formal": "maximize (total_deliciousness - total_cost)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "最大化总美味度减去总花费的值"
+        }
+      }
+    ],
+    "description": "最大化总美味度减去总花费的值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优解包含子问题的最优解，即通过解决较小规模的问题来构建最终问题的解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间和可通过端点差值计算，即综合美味度可以通过累加区间内的美味度得到。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题相互独立，即不同区间的美味度和花费可以分别计算后合并。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优解包含子问题的最优解，即通过解决较小规模的问题来构建最终问题的解。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间和可通过端点差值计算，即综合美味度可以通过累加区间内的美味度得到。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题相互独立，即不同区间的美味度和花费可以分别计算后合并。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

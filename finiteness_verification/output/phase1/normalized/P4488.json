@@ -1,0 +1,89 @@
+{
+  "problem_id": "P4488",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 3,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "inferred": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "连续方格中的数字不能重复（无论是横向还是纵向）",
+            "formal": "∀i, j, l, r, A[i][j] ≠ A[i][l] 且 A[j][i] ≠ A[l][i]，其中 j ≠ l"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "被斜线分开的方格中，右上角的数字等于其右侧邻接之连续方格中数字之和，左下角的数字等于其下方邻接之连续方格中数字之和",
+            "formal": "S = Σ(A[i][j]) for i in [x1, x2] or S = Σ(A[j][i]) for j in [y1, y2]"
+          },
+          {
+            "name": "range_bound",
+            "description": "方形空格中填入1 ~ k 的整数",
+            "formal": "1 ≤ A[i][j] ≤ k"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "每个空格的候选数集合为行限制下的候选数和列限制下的候选数的交集",
+            "formal": "C[i][j] = R[i][j] ∩ C[i][j]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "求所有空格的候选数个数之和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个空格的候选数集合由其所在行和列的线索限制下的候选数集合的交集决定，整体问题的解可以由子问题的解组合而成。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：每个线索对应的连续方格中的数字之和可以通过区间内的数字累加得到。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个空格的候选数集合仅依赖于其所在的行和列的线索，不同空格之间的候选数集合计算是独立的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

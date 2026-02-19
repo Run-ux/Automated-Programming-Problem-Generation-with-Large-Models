@@ -1,0 +1,130 @@
+{
+  "problem_id": "GYM101931A",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 5,
+            "max": 100
+          },
+          "value_range": {
+            "min": -20,
+            "max": 20
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 5,
+      "max": 100
+    },
+    "value_range": {
+      "min": -20,
+      "max": 20
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subsequence_constraint",
+        "description": "存在一个长度为 5 的子序列，其所有元素均不大于 8",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "满足条件的子序列起始位置必须在第 6 天或之后",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subsequence_constraint",
+              "description": "存在一个长度为 5 的子序列，其所有元素均不大于 8",
+              "formal": "∃ i, ∀ j ∈ [i, i+4], t_j ≤ 8"
+            },
+            {
+              "name": "range_bound",
+              "description": "满足条件的子序列起始位置必须在第 6 天或之后",
+              "formal": "i ≥ 6"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在连续五个元素的子数组，其所有元素均不大于给定阈值，并输出满足条件的第一个子数组起始位置加六"
+        }
+      }
+    ],
+    "description": "判断是否存在连续五个元素的子数组，其所有元素均不大于给定阈值，并输出满足条件的第一个子数组起始位置加六"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "滑动窗口右端点单调递增，窗口大小固定为5天",
+        "confidence": "1/1",
+        "properties": {
+          "window_shrinkable": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间和可通过端点差值计算，用于判断连续5天的平均温度是否满足条件",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "滑动窗口右端点单调递增，窗口大小固定为5天",
+              "properties": {
+                "window_shrinkable": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间和可通过端点差值计算，用于判断连续5天的平均温度是否满足条件",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

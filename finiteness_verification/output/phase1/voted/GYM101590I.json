@@ -2,14 +2,14 @@
   "problem_id": "GYM101590I",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 3,
             "max": 3
@@ -19,6 +19,7 @@
             "max": 2
           },
           "properties": {
+            "ordered": false,
             "inferred": true
           }
         }
@@ -33,29 +34,30 @@
       "max": 2
     },
     "properties": {
+      "ordered": false,
       "inferred": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_bomb_locations",
-        "description": "每个位置只能放置一次符号（图着色约束）",
+        "name": "turn_based",
+        "description": "玩家轮流进行操作，每次只能执行一个操作",
         "confidence": "1/1"
       },
       {
-        "name": "adjacent_difference",
-        "description": "相邻节点取值不同（图着色约束）",
+        "name": "adjacency_relation",
+        "description": "在3x3的网格中，三个相同符号在行、列或对角线上连成一线则获胜",
         "confidence": "1/1"
       },
       {
-        "name": "global_optimization_objective",
-        "description": "当且仅当存在三个连续相同符号时，游戏结束（连通性约束）",
+        "name": "distinctness",
+        "description": "每个位置只能放置一次符号，且不能重复放置",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_solution_constraint",
-        "description": "当所有位置都被占据且没有满足胜利条件时，游戏为平局（完全填充约束）",
+        "name": "operation_limit",
+        "description": "游戏在所有位置都被填满或有一方获胜时结束",
         "confidence": "1/1"
       }
     ],
@@ -66,20 +68,20 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_bomb_locations",
-              "description": "每个位置只能放置一次符号（图着色约束）"
+              "name": "turn_based",
+              "description": "玩家轮流进行操作，每次只能执行一个操作"
             },
             {
-              "name": "adjacent_difference",
-              "description": "相邻节点取值不同（图着色约束）"
+              "name": "adjacency_relation",
+              "description": "在3x3的网格中，三个相同符号在行、列或对角线上连成一线则获胜"
             },
             {
-              "name": "global_optimization_objective",
-              "description": "当且仅当存在三个连续相同符号时，游戏结束（连通性约束）"
+              "name": "distinctness",
+              "description": "每个位置只能放置一次符号，且不能重复放置"
             },
             {
-              "name": "distinct_solution_constraint",
-              "description": "当所有位置都被占据且没有满足胜利条件时，游戏为平局（完全填充约束）"
+              "name": "operation_limit",
+              "description": "游戏在所有位置都被填满或有一方获胜时结束"
             }
           ]
         }
@@ -87,34 +89,65 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "game_outcome",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否存在一个策略使得玩家不输"
+          "type": "game_outcome",
+          "description": "在博弈中获得最优结果（胜利或平局）"
         }
       }
     ],
-    "description": "判断是否存在一个策略使得玩家不输"
+    "description": "在博弈中获得最优结果（胜利或平局）"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每一步操作后，游戏状态从一个合法状态转移到另一个合法状态，且所有可能的状态都是有限的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：游戏状态的转移遵循严格的顺序依赖关系，即每个状态只能由其前驱状态通过合法操作到达。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在每个状态下，玩家的选择仅依赖于当前的游戏局面，而不受之前选择的具体路径影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：游戏的最终结果由每一步的最优决策累积而成，每一步的选择都基于当前局面的最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每一步操作后，游戏状态从一个合法状态转移到另一个合法状态，且所有可能的状态都是有限的。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：游戏状态的转移遵循严格的顺序依赖关系，即每个状态只能由其前驱状态通过合法操作到达。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在每个状态下，玩家的选择仅依赖于当前的游戏局面，而不受之前选择的具体路径影响。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：游戏的最终结果由每一步的最优决策累积而成，每一步的选择都基于当前局面的最优解。"
+    ]
   }
 }

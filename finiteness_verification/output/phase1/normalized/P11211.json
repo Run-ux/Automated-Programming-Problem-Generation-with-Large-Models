@@ -1,0 +1,89 @@
+{
+  "problem_id": "P11211",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 5
+        },
+        "value_range": {
+          "min": 0,
+          "max": 2000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "query_limit",
+            "description": "询问次数限制，最多 5 次询问后必须得到唯一解"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "随机数生成基于模运算，生成的随机数是 s^x % p 或 x^s % p"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "模数 p 是一个素数"
+          },
+          {
+            "name": "operation_type",
+            "description": "操作类型限制，只能进行两种操作：调用随机数生成器和报告种子值"
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移约束，每次调用随机数生成器时，生成的随机数是连续的"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "最小化调用随机数生成器的次数以确定随机种子值"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "modular_invariance",
+            "description": "模数运算的一致性：在给定的模数 p 下，随机数生成器的输出始终满足特定的模数运算规则，保证了生成序列的唯一性和可预测性。",
+            "properties": {}
+          },
+          {
+            "name": "modular_invariance",
+            "description": "有限域结构：由于 p 是素数，生成器的输出构成了一个有限域。在这个有限域中，每个元素都有唯一的逆元，且运算结果封闭。",
+            "properties": {}
+          },
+          {
+            "name": "modular_invariance",
+            "description": "离散对数的唯一性：对于给定的生成器类型 t 和输出值 r，存在唯一的 s 使得 r = s^x mod p 或 r = x^s mod p 成立。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

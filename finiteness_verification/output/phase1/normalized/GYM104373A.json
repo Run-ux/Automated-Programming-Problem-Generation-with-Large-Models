@@ -1,0 +1,80 @@
+{
+  "problem_id": "GYM104373A",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 2,
+          "max": 64
+        },
+        "value_range": {
+          "min": 1,
+          "max": 4096
+        },
+        "properties": {
+          "permutation": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "hamiltonian_cycle",
+            "description": "路径必须经过每个节点恰好一次（哈密顿路径）"
+          },
+          {
+            "name": "adjacency_relation",
+            "description": "每次只能移动到相邻的节点（共享边的相邻单元格）"
+          },
+          {
+            "name": "balance_constraint",
+            "description": "上升次数不超过下降次数（爬升次数平衡约束）"
+          },
+          {
+            "name": "permutation_constraint",
+            "description": "高度值是1到n^2的一个排列（排列约束）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造一个满足条件的路径，使得路径上高度上升次数不超过下降次数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的全局最优解可以通过子问题的最优解组合得到，即路径中每个局部段落的上下坡次数差值最小化可以保证整体路径满足题目要求。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：在构建路径时，对于任意两个高度不同的相邻格子，选择从高到低或从低到高的方向不会影响最终结果的正确性，因为目标是控制总的上坡次数不超过下坡次数，而不是具体的方向。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

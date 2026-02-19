@@ -1,0 +1,144 @@
+{
+  "problem_id": "P4810",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 300000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 300000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_type",
+        "description": "操作类型限制（加入、删除或统计）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "stack_sortable_constraint",
+        "description": "删除操作必须在非空栈上进行",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "操作所涉及的栈编号必须在有效范围内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "统计操作需要计算两个栈中不同元素的数量",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_type",
+              "description": "操作类型限制（加入、删除或统计）",
+              "formal": "op ∈ {add, remove, count}"
+            },
+            {
+              "name": "stack_sortable_constraint",
+              "description": "删除操作必须在非空栈上进行",
+              "formal": "if op == remove then stack[i] ≠ ∅"
+            },
+            {
+              "name": "range_bound",
+              "description": "操作所涉及的栈编号必须在有效范围内",
+              "formal": "v, w ∈ [0, i-1]"
+            },
+            {
+              "name": "distinctness",
+              "description": "统计操作需要计算两个栈中不同元素的数量",
+              "formal": "count_distinct(stack[i], stack[w])"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造并输出每个删除或统计操作的结果"
+        }
+      }
+    ],
+    "description": "构造并输出每个删除或统计操作的结果"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个操作后的栈状态可以由前一个状态通过确定的操作（加入、删除或统计）得到，且这些操作满足一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个新创建的栈的状态仅依赖于其直接父栈的状态和当前操作，与其他栈的状态无关。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个操作后的栈状态可以由前一个状态通过确定的操作（加入、删除或统计）得到，且这些操作满足一致性。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个新创建的栈的状态仅依赖于其直接父栈的状态和当前操作，与其他栈的状态无关。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 131072
@@ -26,19 +26,19 @@
       "result": {
         "constraints": [
           {
-            "name": "sequence_generation_constraint",
-            "description": "数组可以通过特定步骤生成，且生成的数组满足给定条件",
-            "formal": "存在 x 使得 a[i] = (i + x) % 2^17, 对于所有 i ∈ [l, r]"
-          },
-          {
-            "name": "value_range_constraint",
-            "description": "数组元素的值在指定范围内",
+            "name": "range_bound",
+            "description": "数组元素的值域约束（0 ≤ a_i < 2^17）",
             "formal": "0 ≤ a_i < 2^17"
           },
           {
-            "name": "interval_size_constraint",
-            "description": "区间长度有上限",
-            "formal": "r - l + 1 ≤ 2^17"
+            "name": "subsequence_constraint",
+            "description": "子序列长度约束（r - l + 1）",
+            "formal": "length(a) = r - l + 1"
+          },
+          {
+            "name": "distinctness",
+            "description": "区间内不同元素数量的约束（由生成过程隐含）",
+            "formal": "|distinct(a)| <= r - l + 1"
           }
         ]
       }
@@ -49,7 +49,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
+        "type": "construction",
         "description": "构造一个满足给定条件的整数"
       }
     }
@@ -59,9 +59,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个子问题的解是独立且最优的",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过端点差值计算区间和，适用于数组元素的累加操作",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最终解可以通过子区间的最优解组合得到，适用于动态规划或分治法求解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

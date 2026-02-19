@@ -1,0 +1,135 @@
+{
+  "problem_id": "GYM106017D",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 400000
+          },
+          "properties": {
+            "ordered": false,
+            "distinct_x": true,
+            "distinct_y": true,
+            "no_three_colinear": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 400000
+    },
+    "properties": {
+      "ordered": false,
+      "distinct_x": true,
+      "distinct_y": true,
+      "no_three_colinear": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distinctness",
+        "description": "所有 x 坐标值互不相同",
+        "confidence": "1/1"
+      },
+      {
+        "name": "acyclicity",
+        "description": "任意三点不共线",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distinctness",
+              "description": "所有 x 坐标值互不相同",
+              "formal": "∀ i, j (1 ≤ i < j ≤ N), x_i ≠ x_j"
+            },
+            {
+              "name": "distinctness",
+              "description": "所有 y 坐标值互不相同",
+              "formal": "∀ i, j (1 ≤ i < j ≤ N), y_i ≠ y_j"
+            },
+            {
+              "name": "acyclicity",
+              "description": "任意三点不共线",
+              "formal": "∀ i, j, k (1 ≤ i < j < k ≤ N), (y_j - y_i) * (x_k - x_i) ≠ (y_k - y_i) * (x_j - x_i)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求满足条件的区间数量"
+        }
+      }
+    ],
+    "description": "求满足条件的区间数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：通过处理所有信号塔对，可以将整个实数轴划分为若干段，每段的干扰值相同。这些段可以通过子区间的合并来确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：在处理每一对信号塔时，根据它们之间的连线和扫描线的交点，更新干扰函数f(x)的状态。这种状态转移是基于信号塔对的处理顺序的一致性。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：通过处理所有信号塔对，可以将整个实数轴划分为若干段，每段的干扰值相同。这些段可以通过子区间的合并来确定。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：在处理每一对信号塔时，根据它们之间的连线和扫描线的交点，更新干扰函数f(x)的状态。这种状态转移是基于信号塔对的处理顺序的一致性。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

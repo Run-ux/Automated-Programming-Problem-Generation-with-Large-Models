@@ -2,14 +2,14 @@
   "problem_id": "GYM104417M",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 3,
             "max": 100000
@@ -39,33 +39,33 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "order_statistics_constraint",
-        "description": "选择的三个顶点 a, b, c 必须按逆时针顺序排列",
+        "name": "convexity",
+        "description": "多边形必须是凸的",
         "confidence": "1/1"
       },
       {
-        "name": "edge_count",
-        "description": "从顶点 b 到顶点 c 之间必须恰好有 k 条边（不包括 b 和 c）",
+        "name": "subset_constraint",
+        "description": "选择的三个顶点 a, b, c 必须是多边形 P 的子集，并且按逆时针顺序排列",
         "confidence": "1/1"
       },
       {
-        "name": "submatrix_transformation",
+        "name": "degree_bound",
+        "description": "从顶点 b 到顶点 c 之间必须有恰好 k 条边（不包括 a 作为端点）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "partition",
         "description": "通过线段 ab 和 ac 切割多边形 P，形成的新多边形 Q 包含 ab, ac 和 b 到 c 之间的 k 条边",
         "confidence": "1/1"
       },
       {
-        "name": "polygon_convexity_constraint",
-        "description": "输入的多边形 P 是凸多边形",
+        "name": "distinctness",
+        "description": "多边形 P 的顶点坐标必须唯一，没有两个顶点具有相同的坐标",
         "confidence": "1/1"
       },
       {
-        "name": "vertex_repetition_permissible",
-        "description": "多边形 P 的顶点坐标各不相同",
-        "confidence": "1/1"
-      },
-      {
-        "name": "polygon_convexity_constraint",
-        "description": "多边形 P 的面积为正",
+        "name": "collinearity_constraint",
+        "description": "允许三个顶点在同一条直线上",
         "confidence": "1/1"
       }
     ],
@@ -76,28 +76,28 @@
         "result": {
           "constraints": [
             {
-              "name": "order_statistics_constraint",
-              "description": "选择的三个顶点 a, b, c 必须按逆时针顺序排列"
+              "name": "convexity",
+              "description": "多边形必须是凸的"
             },
             {
-              "name": "edge_count",
-              "description": "从顶点 b 到顶点 c 之间必须恰好有 k 条边（不包括 b 和 c）"
+              "name": "subset_constraint",
+              "description": "选择的三个顶点 a, b, c 必须是多边形 P 的子集，并且按逆时针顺序排列"
             },
             {
-              "name": "submatrix_transformation",
+              "name": "degree_bound",
+              "description": "从顶点 b 到顶点 c 之间必须有恰好 k 条边（不包括 a 作为端点）"
+            },
+            {
+              "name": "partition",
               "description": "通过线段 ab 和 ac 切割多边形 P，形成的新多边形 Q 包含 ab, ac 和 b 到 c 之间的 k 条边"
             },
             {
-              "name": "polygon_convexity_constraint",
-              "description": "输入的多边形 P 是凸多边形"
+              "name": "distinctness",
+              "description": "多边形 P 的顶点坐标必须唯一，没有两个顶点具有相同的坐标"
             },
             {
-              "name": "vertex_repetition_permissible",
-              "description": "多边形 P 的顶点坐标各不相同"
-            },
-            {
-              "name": "polygon_convexity_constraint",
-              "description": "多边形 P 的面积为正"
+              "name": "collinearity_constraint",
+              "description": "允许三个顶点在同一条直线上"
             }
           ]
         }
@@ -113,26 +113,46 @@
         "status": "success",
         "result": {
           "type": "maximize_value",
-          "description": "最大化多边形Q的面积"
+          "description": "最大化由给定条件确定的多边形面积"
         }
       }
     ],
-    "description": "最大化多边形Q的面积"
+    "description": "最大化由给定条件确定的多边形面积"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "convexity",
+        "description": "凸性不变量：在凸多边形中，任意三点构成的三角形面积具有凸性性质，即局部最优解可以通过组合得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，最大可能面积的多边形Q可以通过选择合适的顶点a, b, c来构造，这些顶点的选择依赖于子问题的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，通过选择不同的顶点a, b, c来划分多边形P，使得子多边形Q的面积最大化",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "convexity",
+              "description": "凸性不变量：在凸多边形中，任意三点构成的三角形面积具有凸性性质，即局部最优解可以通过组合得到全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造。具体来说，最大可能面积的多边形Q可以通过选择合适的顶点a, b, c来构造，这些顶点的选择依赖于子问题的最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，通过选择不同的顶点a, b, c来划分多边形P，使得子多边形Q的面积最大化"
+    ]
   }
 }

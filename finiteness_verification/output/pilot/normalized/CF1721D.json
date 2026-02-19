@@ -15,9 +15,7 @@
           "min": 0,
           "max": 1073741823
         },
-        "properties": {
-          "ordered": false
-        }
+        "properties": {}
       }
     },
     {
@@ -33,9 +31,7 @@
           "min": 0,
           "max": 1073741823
         },
-        "properties": {
-          "ordered": false
-        }
+        "properties": {}
       }
     },
     {
@@ -51,9 +47,7 @@
           "min": 0,
           "max": 1073741823
         },
-        "properties": {
-          "ordered": false
-        }
+        "properties": {}
       }
     }
   ],
@@ -64,8 +58,8 @@
       "result": {
         "constraints": [
           {
-            "name": "reorder_b",
-            "description": "可以任意重排数组 b 的顺序，以最大化函数 f(a, b) 的值"
+            "name": "permutation_constraint",
+            "description": "数组 b 可以任意重排（包括保持原顺序）"
           }
         ]
       }
@@ -76,8 +70,12 @@
       "result": {
         "constraints": [
           {
-            "name": "reorder_b",
-            "description": "可以任意重排数组 b 的顺序以最大化函数 f(a, b) 的值"
+            "name": "permutation_constraint",
+            "description": "数组 b 可以任意重排（包括保持原顺序）"
+          },
+          {
+            "name": "bitwise_operation",
+            "description": "计算两个数组对应位置元素的按位与操作的结果"
           }
         ]
       }
@@ -88,8 +86,8 @@
       "result": {
         "constraints": [
           {
-            "name": "reorder_b",
-            "description": "可以任意重排数组 b 的顺序以最大化函数 f(a, b) 的值"
+            "name": "permutation_constraint",
+            "description": "数组 b 可以任意重排（排列约束）"
           }
         ]
       }
@@ -100,24 +98,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "max_value",
-        "description": "求在可以任意重排数组b的情况下，函数f(a, b)的最大值"
+        "type": "maximize_value",
+        "description": "最大化两个数组对应位置元素按位与操作的结果之和"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "max_value",
-        "description": "求在可以任意重排数组b的情况下，函数f(a, b)的最大值"
+        "type": "maximize_value",
+        "description": "最大化两个数组对应位置元素按位与操作后的总和"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "max_value",
-        "description": "求在可以任意重排数组b的情况下，函数f(a, b)的最大值"
+        "type": "maximize_value",
+        "description": "最大化两个数组对应位置元素按位与操作后的总和"
       }
     }
   ],
@@ -126,27 +124,54 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "greedy_choice",
-        "description": "通过选择当前最优的配对来最大化AND结果，每一步的选择都是基于当前信息做出的最佳决策，且不需要回溯。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：通过将问题分解为子问题，每个子问题的最优解可以组合成原问题的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，选择当前情况下最优的选择，最终能够得到全局最优解。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "greedy_choice",
-        "description": "通过局部最优选择（即对于每个a[i]，选择b中与其AND结果最大的元素）来达到全局最优解。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过选择合适的b数组元素与a数组元素进行按位与操作，可以构造出最大值。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，总是选择当前情况下能够提供最大贡献的b数组中的元素与a数组中的元素进行按位与操作，以期达到全局最优。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "greedy_choice",
-        "description": "通过选择当前最优的配对来最大化 AND 结果，每一步的选择都是基于当前信息做出的最佳决策，无需回溯。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：通过将问题分解为更小的子问题，每个子问题的最优解可以组合成原问题的最优解",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，选择当前情况下最优的选择，最终能够得到全局最优解",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

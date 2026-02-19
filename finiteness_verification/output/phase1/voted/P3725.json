@@ -1,0 +1,146 @@
+{
+  "problem_id": "P3725",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": -10000,
+            "max": 10000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": -10000,
+      "max": 10000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "路径必须从起点 (0,0) 到达终点 (p,q)，且不能穿过任何火焰吐息射线。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "路径不能经过被火焰吐息覆盖的区域，但可以经过未被其他火焰吐息覆盖的机关坐标。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "path_constraint",
+              "description": "路径必须从起点 (0,0) 到达终点 (p,q)，且不能穿过任何火焰吐息射线。",
+              "formal": "存在一条从 (0,0) 到 (p,q) 的路径，路径上的点不与任何火焰吐息射线相交。"
+            },
+            {
+              "name": "path_constraint",
+              "description": "路径在 x 正方向上的投影必须为正，即路径的方向向量在 x 轴上的分量必须大于 0。",
+              "formal": "对于路径上的每一段 (x1, y1) 到 (x2, y2)，有 (x2 - x1) > 0。"
+            },
+            {
+              "name": "exclusion",
+              "description": "路径不能经过被火焰吐息覆盖的区域，但可以经过未被其他火焰吐息覆盖的机关坐标。",
+              "formal": "路径上的点不在任何火焰吐息射线上，但可以经过机关坐标 (xi, yi)。"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求两点间最短路径长度"
+        }
+      }
+    ],
+    "description": "求两点间最短路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "在路径搜索过程中，x 坐标单调递增，确保移动方向始终向 x 正方向前进。",
+        "confidence": "1/1",
+        "properties": {
+          "left_monotonic": false,
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "从起点到终点的最短路径可以通过子路径的最优解组合而成，即当前点到终点的最短路径依赖于其前驱点到终点的最短路径。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移过程中，每个状态的更新都基于前一个状态的最优解，且状态转移的方向受限于火焰吐息机关的位置和方向。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "在路径搜索过程中，x 坐标单调递增，确保移动方向始终向 x 正方向前进。",
+              "properties": {
+                "left_monotonic": false,
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "从起点到终点的最短路径可以通过子路径的最优解组合而成，即当前点到终点的最短路径依赖于其前驱点到终点的最短路径。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移过程中，每个状态的更新都基于前一个状态的最优解，且状态转移的方向受限于火焰吐息机关的位置和方向。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

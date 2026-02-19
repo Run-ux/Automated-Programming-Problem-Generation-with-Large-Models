@@ -2,14 +2,14 @@
   "problem_id": "CF1767E",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 300000
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "从起点到终点必须存在一条路径，且路径上的所有节点都必须被激活",
+        "name": "path_constraint",
+        "description": "从起点到终点的路径必须经过激活的平台，且每次跳跃只能跳到下一个或下下个平台",
         "confidence": "1/1"
       },
       {
-        "name": "weight_sum_constraint",
-        "description": "激活每个颜色的所有节点需要支付一定的费用",
+        "name": "cost_constraint",
+        "description": "激活所有同色平台需要支付固定费用，目标是使总费用最小化",
         "confidence": "1/1"
       },
       {
-        "name": "path_length_constraint",
-        "description": "每次跳跃只能跳到下一个或下下个节点",
+        "name": "fixed_start_node",
+        "description": "起点和终点平台必须被激活",
         "confidence": "1/1"
       }
     ],
@@ -61,16 +61,16 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "从起点到终点必须存在一条路径，且路径上的所有节点都必须被激活"
+              "name": "path_constraint",
+              "description": "从起点到终点的路径必须经过激活的平台，且每次跳跃只能跳到下一个或下下个平台"
             },
             {
-              "name": "weight_sum_constraint",
-              "description": "激活每个颜色的所有节点需要支付一定的费用"
+              "name": "cost_constraint",
+              "description": "激活所有同色平台需要支付固定费用，目标是使总费用最小化"
             },
             {
-              "name": "path_length_constraint",
-              "description": "每次跳跃只能跳到下一个或下下个节点"
+              "name": "fixed_start_node",
+              "description": "起点和终点平台必须被激活"
             }
           ]
         }
@@ -78,37 +78,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求从起点到终点的最小激活成本"
+          "type": "minimize_value",
+          "description": "求满足条件的最小代价"
         }
       }
     ],
-    "description": "求从起点到终点的最小激活成本"
+    "description": "求满足条件的最小代价"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即激活平台的最小花费可以由更小子区间的最小花费递推得出",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：从一个状态到另一个状态的转移规则保持一致，当前状态的最小花费基于前一个或前两个状态的最小花费计算",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，满足动态规划的基本性质",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinable": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即激活平台的最小花费可以由更小子区间的最小花费递推得出",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：从一个状态到另一个状态的转移规则保持一致，当前状态的最小花费基于前一个或前两个状态的最小花费计算",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，满足动态规划的基本性质"
+    ]
   }
 }

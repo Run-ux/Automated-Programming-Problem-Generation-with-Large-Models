@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,14 +28,14 @@
       "result": {
         "constraints": [
           {
-            "name": "adjacent_difference",
+            "name": "adjacency_relation",
             "description": "相邻节点不能同时为特定类型（图着色约束）",
-            "formal": "∀ i, (liar[i] ∧ liar[i+1]) = false"
+            "formal": "∀i, (liar[i] ∧ liar[i+1]) = false"
           },
           {
-            "name": "prefix_sum_constraint",
-            "description": "前缀和必须与声明一致（区间和约束）",
-            "formal": "∀ i, sum(liar[1:i-1]) == a_i if honest[i]"
+            "name": "frequency_bound",
+            "description": "每个节点的前缀频次不超过其索引值",
+            "formal": "∀i, a_i ≤ i"
           }
         ]
       }
@@ -46,8 +46,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足条件的配置数量"
+        "type": "enumeration",
+        "description": "求满足条件的方案数（常取模）"
       }
     }
   ],
@@ -56,11 +56,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，每个同学的状态（诚实或撒谎）依赖于其左侧同学的状态。",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，且子问题之间存在重叠。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：当前状态的合法性及值依赖于前一个或多个状态的值和性质。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在某些约束下，子问题的解可以独立计算，但最终解需要考虑全局约束。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -39,13 +39,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "ordering_constraint",
-        "description": "序列必须是1到n的全排列，即包含所有整数从1到n且每个整数恰好出现一次",
+        "name": "permutation_constraint",
+        "description": "序列必须是1到n的排列，即包含所有整数从1到n且每个整数恰好出现一次",
         "confidence": "1/1"
       },
       {
-        "name": "subsequence_optimization",
-        "description": "需要找到一个排列，使得最长递增子序列（LIS）和最长递减子序列（LDS）的长度之和最小",
+        "name": "sum_constraint",
+        "description": "目标是最小化最长递增子序列（LIS）和最长递减子序列（LDS）长度之和",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +56,12 @@
         "result": {
           "constraints": [
             {
-              "name": "ordering_constraint",
-              "description": "序列必须是1到n的全排列，即包含所有整数从1到n且每个整数恰好出现一次"
+              "name": "permutation_constraint",
+              "description": "序列必须是1到n的排列，即包含所有整数从1到n且每个整数恰好出现一次"
             },
             {
-              "name": "subsequence_optimization",
-              "description": "需要找到一个排列，使得最长递增子序列（LIS）和最长递减子序列（LDS）的长度之和最小"
+              "name": "sum_constraint",
+              "description": "目标是最小化最长递增子序列（LIS）和最长递减子序列（LDS）长度之和"
             }
           ]
         }
@@ -69,34 +69,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_sum",
+    "type": "minimize_value",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_sum",
-          "description": "构造一个排列，使得最长递增子序列和最长递减子序列的长度之和最小"
+          "type": "minimize_value",
+          "description": "求一个排列，使得最长上升子序列和最长下降子序列的长度之和最小"
         }
       }
     ],
-    "description": "构造一个排列，使得最长递增子序列和最长递减子序列的长度之和最小"
+    "description": "求一个排列，使得最长上升子序列和最长下降子序列的长度之和最小"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过找到长度为n的排列中LIS和LDS的最小和，可以基于更小规模的问题（如n-1）的解来构建。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在构造满足条件的排列时，局部最优的选择（例如交替放置较大和较小的数以平衡LIS和LDS的长度）将导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过求解每个子序列的最长递增子序列和最长递减子序列来构建整个序列的最优解。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过找到长度为n的排列中LIS和LDS的最小和，可以基于更小规模的问题（如n-1）的解来构建。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在构造满足条件的排列时，局部最优的选择（例如交替放置较大和较小的数以平衡LIS和LDS的长度）将导致全局最优解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，即通过求解每个子序列的最长递增子序列和最长递减子序列来构建整个序列的最优解。"
+    ]
   }
 }

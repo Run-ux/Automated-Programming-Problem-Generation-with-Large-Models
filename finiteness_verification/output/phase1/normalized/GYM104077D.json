@@ -1,0 +1,74 @@
+{
+  "problem_id": "GYM104077D",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 2,
+          "max": 100005
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100005
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "存在一个长度为 l+1 的序列 b，使得 b_1 = x, b_{l+1} = y，并且对于所有 1 ≤ i ≤ l，b_i 在至少一个竞赛中的排名小于 b_{i+1}",
+            "formal": "∃ sequence b of length l+1: b_1 = x, b_{l+1} = y, ∀ 1 ≤ i ≤ l, ∃ contest k: rank(b_i) < rank(b_{i+1}) in contest k"
+          },
+          {
+            "name": "permutation_constraint",
+            "description": "每个竞赛的排名列表是一个从 1 到 n 的排列",
+            "formal": "∀ 1 ≤ k ≤ m, a_k is a permutation of {1, 2, ..., n}"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足条件的最小正整数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的最优解组合得到，即如果存在一个序列使得x在l步内强于y，则该序列的每一段也满足前一个元素在至少一个比赛中排名优于后一个元素。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个选手到另一个选手的强度关系可以被分解为一系列的状态转移，每个状态转移都保证了当前选手在至少一个比赛中排名优于下一个选手。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

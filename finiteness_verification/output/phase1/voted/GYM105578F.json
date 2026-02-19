@@ -1,0 +1,134 @@
+{
+  "problem_id": "GYM105578F",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 2,
+            "max": 20
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 10000
+    },
+    "value_range": {
+      "min": 2,
+      "max": 20
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "state_transition",
+        "description": "每个操作会改变某些顶点的状态（从开到关或从关到开），且每个操作有特定的成本。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "需要找到一个操作序列，使得无论初始状态如何，最终所有顶点的灯都处于开启状态。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "cost_minimization",
+        "description": "目标是找到总成本最小的操作序列。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "state_transition",
+              "description": "每个操作会改变某些顶点的状态（从开到关或从关到开），且每个操作有特定的成本。",
+              "formal": "对于操作 i (0 ≤ i < 2^n)，其影响的顶点集合为 S_i，成本为 a_i。执行操作 i 后，所有顶点 v ∈ S_i 的状态翻转。"
+            },
+            {
+              "name": "operation_limit",
+              "description": "需要找到一个操作序列，使得无论初始状态如何，最终所有顶点的灯都处于开启状态。",
+              "formal": "存在一个操作序列 O = [o_1, o_2, ..., o_k]，使得对于任意初始状态 S，执行 O 后所有顶点的灯都处于开启状态。"
+            },
+            {
+              "name": "cost_minimization",
+              "description": "目标是找到总成本最小的操作序列。",
+              "formal": "求解操作序列 O 的最小总成本 Σ_{i=1}^k a_{o_i}，并取模 998,244,353。"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足条件的最小总代价"
+        }
+      }
+    ],
+    "description": "求满足条件的最小总代价"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，每个维度上的操作可以独立考虑并合并结果。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：不同维度上的操作互不影响，可以分别处理后再合并结果。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，每个维度上的操作可以独立考虑并合并结果。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：不同维度上的操作互不影响，可以分别处理后再合并结果。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

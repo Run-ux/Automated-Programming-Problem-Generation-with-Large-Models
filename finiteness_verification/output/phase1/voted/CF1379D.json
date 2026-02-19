@@ -1,0 +1,159 @@
+{
+  "problem_id": "CF1379D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "intersection",
+        "description": "在每个时间窗口内，不允许有货运列车出发（时间窗口由乘客电车的登车时间和发车时间定义）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "repetition",
+        "description": "乘客电车按照固定的半小时间隔发车，每天的第一个电车发车时间是 0 小时 t 分钟，其中 0 ≤ t < m/2",
+        "confidence": "1/1"
+      },
+      {
+        "name": "time_bound",
+        "description": "乘客电车发车前 k 分钟开始登车，在这段时间内不允许有货运列车出发",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "如果第一个乘客电车发车时间 t < k，则最后 k - t 分钟内不允许有货运列车出发",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "intersection",
+              "description": "在每个时间窗口内，不允许有货运列车出发（时间窗口由乘客电车的登车时间和发车时间定义）",
+              "formal": "For each tram departure at time t, no freight train can depart in the interval [t - k, t)"
+            },
+            {
+              "name": "repetition",
+              "description": "乘客电车按照固定的半小时间隔发车，每天的第一个电车发车时间是 0 小时 t 分钟，其中 0 ≤ t < m/2",
+              "formal": "Trams depart at times t, t + m/2, t + m, ... where 0 ≤ t < m/2"
+            },
+            {
+              "name": "time_bound",
+              "description": "乘客电车发车前 k 分钟开始登车，在这段时间内不允许有货运列车出发",
+              "formal": "No freight train can depart in the interval [t - k, t) for each tram departure at time t"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "如果第一个乘客电车发车时间 t < k，则最后 k - t 分钟内不允许有货运列车出发",
+              "formal": "If t < k, no freight train can depart in the interval [h * m - (k - t), h * m)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "最小化需要取消的货运列车数量"
+        }
+      }
+    ],
+    "description": "最小化需要取消的货运列车数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "时间窗口的右端点单调递增，确保每次检查的时间段不会回退",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "interval_additivity",
+        "description": "通过前缀和计算任意时间段内的冲突次数，利用区间可加性快速求解",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "选择最优的t值使得取消的列车数量最少，基于当前已知信息做出局部最优选择以达到全局最优",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "时间窗口的右端点单调递增，确保每次检查的时间段不会回退",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "interval_additivity",
+              "description": "通过前缀和计算任意时间段内的冲突次数，利用区间可加性快速求解",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "选择最优的t值使得取消的列车数量最少，基于当前已知信息做出局部最优选择以达到全局最优",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

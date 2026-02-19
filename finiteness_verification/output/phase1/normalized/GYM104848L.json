@@ -1,0 +1,84 @@
+{
+  "problem_id": "GYM104848L",
+  "source": "icpc_gym",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 500
+        },
+        "value_range": {
+          "min": -10000,
+          "max": 10000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distance_bound",
+            "description": "每个节点（暗店）到目标点（订单）的距离限制，步行不超过 a 米，驾车不超过 b 米",
+            "formal": "对于每个暗店 (x_i, y_i) 和订单 (x'_j, y'_j)，如果使用步行，则 sqrt((x_i - x'_j)^2 + (y_i - y'_j)^2) <= a；如果使用驾车，则 sqrt((x_i - x'_j)^2 + (y_i - y'_j)^2) <= b"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点（暗店）的总出度（总配送次数）不超过 c，且其中驾车配送次数不超过 d",
+            "formal": "对于每个暗店 i，其总配送次数 sum(deliveries[i]) <= c 且 其中驾车配送次数 sum(car_deliveries[i]) <= d"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "每个节点（暗店）的配送能力有限，需要在满足所有订单的前提下尽量不使用超级仓库",
+            "formal": "对于每个暗店 i，其配送次数和方式需满足上述距离和数量限制，并且尽可能避免使用超级仓库"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求满足条件的最小索引，使得在该索引之前的所有订单无法仅通过暗店完成配送"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的最优解组合得到，每个订单的处理依赖于之前订单的最优分配方案。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步决策中，优先使用距离最近且未达到配送限制的暗店进行配送，以尽可能推迟使用超级仓库的时间。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，每个暗店的剩余配送能力（包括步行和汽车配送）以及是否需要使用超级仓库的状态保持一致性和可预测性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

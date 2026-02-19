@@ -1,0 +1,149 @@
+{
+  "problem_id": "GYM103960E",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 500000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "non_increasing_sequence",
+        "description": "箭在穿过气球后高度递减（每次穿过一个气球，高度减少1）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "每个气球的位置是唯一的，且从左到右编号",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimum_edge_count",
+        "description": "需要找到最少的箭数来射穿所有气球",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "non_increasing_sequence",
+              "description": "箭在穿过气球后高度递减（每次穿过一个气球，高度减少1）",
+              "formal": "H' = H - 1, where H is the current height and H' is the new height after popping a balloon"
+            },
+            {
+              "name": "distinctness",
+              "description": "每个气球的位置是唯一的，且从左到右编号",
+              "formal": "position(i) != position(j) for all i != j"
+            },
+            {
+              "name": "minimum_edge_count",
+              "description": "需要找到最少的箭数来射穿所有气球",
+              "formal": "minimize |arrows| such that all balloons are popped"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_count",
+          "description": "求最小化操作次数以满足条件"
+        }
+      }
+    ],
+    "description": "求最小化操作次数以满足条件"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "箭的射击高度单调递减，每射中一个气球后高度减少1",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的最优解可以通过子问题的最优解组合得到，即通过最少的箭数射爆所有气球可以分解为多个子问题",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "局部最优选择（每次选择当前高度最高的未射爆气球）能够导致全局最优解（使用最少的箭数射爆所有气球）",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "箭的射击高度单调递减，每射中一个气球后高度减少1",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "问题的最优解可以通过子问题的最优解组合得到，即通过最少的箭数射爆所有气球可以分解为多个子问题",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "局部最优选择（每次选择当前高度最高的未射爆气球）能够导致全局最优解（使用最少的箭数射爆所有气球）",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

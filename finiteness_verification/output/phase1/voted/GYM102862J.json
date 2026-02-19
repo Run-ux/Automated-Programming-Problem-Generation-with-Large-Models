@@ -15,18 +15,13 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "mex_constraint",
-        "description": "矩阵 C 的每一行的 mex 值必须等于数组 a 中对应位置的值，即对于所有 1 ≤ i ≤ n，有 mex(C[i, :]) = a[i]。",
+        "name": "distinctness",
+        "description": "矩阵 C 中的每个整数在 [0, n * m - 1] 范围内且唯一出现一次（去重约束）",
         "confidence": "1/1"
       },
       {
-        "name": "mex_constraint_col",
-        "description": "矩阵 C 的每一列的 mex 值必须等于数组 b 中对应位置的值，即对于所有 1 ≤ j ≤ m，有 mex(C[:, j]) = b[j]。",
-        "confidence": "1/1"
-      },
-      {
-        "name": "distinct_elements",
-        "description": "矩阵 C 中的所有元素必须是区间 [0, n * m - 1] 内的整数，并且每个整数恰好出现一次。",
+        "name": "k_mex_constraint",
+        "description": "对于每一行 i，mex(C[i]) = a[i]；对于每一列 j，mex(C[:,j]) = b[j]（最小排除值约束）",
         "confidence": "1/1"
       }
     ],
@@ -37,19 +32,14 @@
         "result": {
           "constraints": [
             {
-              "name": "mex_constraint",
-              "description": "矩阵 C 的每一行的 mex 值必须等于数组 a 中对应位置的值，即对于所有 1 ≤ i ≤ n，有 mex(C[i, :]) = a[i]。",
-              "formal": "∀i ∈ [1, n], mex(C[i, :]) = a[i]"
+              "name": "distinctness",
+              "description": "矩阵 C 中的每个整数在 [0, n * m - 1] 范围内且唯一出现一次（去重约束）",
+              "formal": "∀ i, j, C[i][j] ∈ [0, n * m - 1] 且 ∀ i1, j1, i2, j2, (i1, j1) ≠ (i2, j2) → C[i1][j1] ≠ C[i2][j2]"
             },
             {
-              "name": "mex_constraint_col",
-              "description": "矩阵 C 的每一列的 mex 值必须等于数组 b 中对应位置的值，即对于所有 1 ≤ j ≤ m，有 mex(C[:, j]) = b[j]。",
-              "formal": "∀j ∈ [1, m], mex(C[:, j]) = b[j]"
-            },
-            {
-              "name": "distinct_elements",
-              "description": "矩阵 C 中的所有元素必须是区间 [0, n * m - 1] 内的整数，并且每个整数恰好出现一次。",
-              "formal": "C contains all integers from 0 to n * m - 1 exactly once"
+              "name": "k_mex_constraint",
+              "description": "对于每一行 i，mex(C[i]) = a[i]；对于每一列 j，mex(C[:,j]) = b[j]（最小排除值约束）",
+              "formal": "∀ i, mex(C[i]) = a[i] 且 ∀ j, mex(C[:,j]) = b[j]"
             }
           ]
         }
@@ -57,14 +47,14 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
+          "type": "feasibility",
           "description": "判断是否存在满足条件的矩阵"
         }
       }
@@ -72,22 +62,50 @@
     "description": "判断是否存在满足条件的矩阵"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：矩阵 C 的构造可以通过子问题的最优解来合成，每个子问题的解是独立且最优的。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：在构造矩阵 C 时，每个位置 (i, j) 的值可以独立地确定，不受其他位置的影响。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和或其他区间操作，可以有效地计算和验证矩阵 C 中的元素是否满足 mex 条件。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：矩阵C的构造依赖于子问题的最优解，每个子问题的解可以组合成整个问题的解",
-          "properties": {
-            "subproblem_independence": true,
-            "solution_combinability": true
-          }
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：矩阵 C 的构造可以通过子问题的最优解来合成，每个子问题的解是独立且最优的。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：在构造矩阵 C 时，每个位置 (i, j) 的值可以独立地确定，不受其他位置的影响。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和或其他区间操作，可以有效地计算和验证矩阵 C 中的元素是否满足 mex 条件。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：矩阵C的构造依赖于子问题的最优解，每个子问题的解可以组合成整个问题的解"
+    ]
   }
 }

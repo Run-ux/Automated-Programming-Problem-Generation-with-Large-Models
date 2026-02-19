@@ -1,0 +1,124 @@
+{
+  "problem_id": "GYM102056F",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distance_bound",
+        "description": "计算从起点到终点的最短路径，路径不能穿过障碍物（球体）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "路径必须避开障碍物（球体），不能进入球体内部",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "distance_bound",
+              "description": "计算从起点到终点的最短路径，路径不能穿过障碍物（球体）",
+              "formal": "min_distance(s, t) subject to s, t not inside the sphere and path does not intersect the sphere"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "路径必须避开障碍物（球体），不能进入球体内部",
+              "formal": "path(s, t) ∩ sphere = ∅"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求两点间避开障碍物的最短路径长度"
+        }
+      }
+    ],
+    "description": "求两点间避开障碍物的最短路径长度"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "shortest_path_in_weighted_graph",
+        "description": "几何最短路径：在三维空间中，从起点到终点的最短路径不会进入障碍物内部，并且会沿着障碍物表面或直接直线连接",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "convexity",
+        "description": "凸性不变量：球体作为障碍物具有凸性，使得最短路径可以通过考虑球体表面的切点来计算",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "shortest_path_in_weighted_graph",
+              "description": "几何最短路径：在三维空间中，从起点到终点的最短路径不会进入障碍物内部，并且会沿着障碍物表面或直接直线连接",
+              "properties": {}
+            },
+            {
+              "name": "convexity",
+              "description": "凸性不变量：球体作为障碍物具有凸性，使得最短路径可以通过考虑球体表面的切点来计算",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

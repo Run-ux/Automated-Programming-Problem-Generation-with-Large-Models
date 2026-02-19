@@ -1,0 +1,144 @@
+{
+  "problem_id": "P15116",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 4
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 4
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "time_limit",
+        "description": "总时间必须小于给定的阈值 T（完成所有关卡的时间和必须小于 T）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimal_play",
+        "description": "每个关卡有且仅有一个策略被选择（二选一）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "如果当前累计时间达到或超过 T，则可以立即重启游戏（从头开始）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "minimize_expected_time",
+        "description": "最小化期望总游戏时间（包括所有失败尝试的时间和最终成功的时间）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "time_limit",
+              "description": "总时间必须小于给定的阈值 T（完成所有关卡的时间和必须小于 T）",
+              "formal": "sum(time_of_levels) < T"
+            },
+            {
+              "name": "optimal_play",
+              "description": "每个关卡有且仅有一个策略被选择（二选一）",
+              "formal": "∀i ∈ [1, N], choose exactly one of the two strategies for level i"
+            },
+            {
+              "name": "operation_limit",
+              "description": "如果当前累计时间达到或超过 T，则可以立即重启游戏（从头开始）",
+              "formal": "if (current_total_time >= T), restart the game from the beginning"
+            },
+            {
+              "name": "minimize_expected_time",
+              "description": "最小化期望总游戏时间（包括所有失败尝试的时间和最终成功的时间）",
+              "formal": "minimize E[total_play_time]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "最小化期望总游戏时间直到打破记录"
+        }
+      }
+    ],
+    "description": "最小化期望总游戏时间直到打破记录"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构建。每个级别的最优策略选择依赖于后续级别的最优期望时间。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "expectation_linearity",
+        "description": "期望值一致性：在每个决策点，选择期望总时间最小的策略，以确保整体期望时间最小化。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构建。每个级别的最优策略选择依赖于后续级别的最优期望时间。",
+              "properties": {}
+            },
+            {
+              "name": "expectation_linearity",
+              "description": "期望值一致性：在每个决策点，选择期望总时间最小的策略，以确保整体期望时间最小化。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

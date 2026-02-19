@@ -69,11 +69,11 @@ python -m finiteness_verification.extract \
 
 ### Step 2: 归一化（normalize.py）
 
-使用 LLM 进行归一化（模型：qwen-flash），每题每维仅调用 1 次，
-基于当前已知标签列表进行逐步聚类归一化：
+归一化采用“embedding 相似度 + LLM 兜底”的双阶段策略（模型：qwen-flash），
+每题每维仅调用 1 次 LLM，embedding 用于先行归并相近标签：
 
 ```bash
-python -m finiteness_verification.normalize --input finiteness_verification/output/pilot/raw/ --output finiteness_verification/output/pilot/normalized/
+python -m finiteness_verification.normalize --input finiteness_verification/output/pilot/raw/ --output finiteness_verification/output/pilot/normalized/ --embedding-threshold 0.85
 ```
 
 **输出**：
@@ -88,14 +88,12 @@ python -m finiteness_verification.normalize --input finiteness_verification/outp
 多数投票选出最终结果：
 
 ```bash
-python -m finiteness_verification.vote \
-    --input finiteness_verification/output/pilot/normalized/ \
-    --output finiteness_verification/output/pilot/voted/
+python -m finiteness_verification.vote --input finiteness_verification/output/pilot/normalized/ --output finiteness_verification/output/pilot/voted/
 ```
 
 **输出**：
 
-- `finiteness_verification/output/pilot/voted/` — 最终结果（50 个 JSON 文件，每题包含投票结果 + 置信度）
+- `finiteness_verification/output/pilot/voted/` — 最终结果（50 个 JSON 文件，invariant 为多条不变量 + 置信度）
 
 ---
 
@@ -107,8 +105,8 @@ python -m finiteness_verification.vote \
 # 检查 voted/ 目录下文件数量（应为 50）
 python -c "import os; files = os.listdir(r'finiteness_verification/output/pilot/voted/'); print(f'Voted files: {len(files)}'); assert len(files) == 50, f'Expected 50, got {len(files)}'"
 
-# 检查单个文件结构
-python -c "import json; d = json.load(open(r'finiteness_verification/output/pilot/voted/P5070.json', encoding='utf-8')); assert all(k in d for k in ['input_structure', 'core_constraints', 'objective', 'invariant']), f'Missing dimensions: {d.keys()}'"
+# 检查单个文件结构（invariant 现在是 invariants 数组）
+python -c "import json; d = json.load(open(r'finiteness_verification/output/pilot/voted/P5070.json', encoding='utf-8')); assert all(k in d for k in ['input_structure', 'core_constraints', 'objective', 'invariant']), f'Missing dimensions: {d.keys()}'; assert 'invariants' in d['invariant'], 'Missing invariant.invariants'"
 ```
 
 ### 查看置信度统计
@@ -126,10 +124,12 @@ for f in voted_dir.glob('*.json'):
     data = json.load(f.open(encoding='utf-8'))
     confidences['I'].append(data['input_structure'].get('confidence', '0/3'))
     confidences['O'].append(data['objective'].get('confidence', '0/3'))
-    confidences['V'].append(data['invariant'].get('confidence', '0/3'))
+    for inv in data.get('invariant', {}).get('invariants', []):
+        confidences['V'].append(inv.get('confidence', '0/3'))
 
-for dim in ['I', 'O', 'V']:
+for dim in ['I', 'O']:
     print(f'{dim} 维度置信度分布: {Counter(confidences[dim])}')
+print(f"V 维度不变量条目置信度分布: {Counter(confidences['V'])}")
 "
 ```
 

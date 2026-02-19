@@ -2,14 +2,14 @@
   "problem_id": "CF126C",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 2000
@@ -35,13 +35,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "substring_deletion_constraint",
-        "description": "执行命令 (x, y) 时，所有属于至少一个段 (x, x) 到 (x, y) 或 (y, y) 到 (x, y) 的像素颜色反转（包括端点）",
+        "name": "transformation",
+        "description": "每个命令 (x, y) 会反转从 (x, x) 到 (x, y) 和从 (y, y) 到 (x, y) 的所有像素的颜色。",
         "confidence": "1/1"
       },
       {
-        "name": "source_node_fixed",
-        "description": "初始状态下，所有像素均为白色",
+        "name": "state_transition",
+        "description": "初始状态下，所有像素均为白色。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "需要计算最少的命令数来达到目标图像。",
         "confidence": "1/1"
       }
     ],
@@ -52,12 +57,19 @@
         "result": {
           "constraints": [
             {
-              "name": "substring_deletion_constraint",
-              "description": "执行命令 (x, y) 时，所有属于至少一个段 (x, x) 到 (x, y) 或 (y, y) 到 (x, y) 的像素颜色反转（包括端点）"
+              "name": "transformation",
+              "description": "每个命令 (x, y) 会反转从 (x, x) 到 (x, y) 和从 (y, y) 到 (x, y) 的所有像素的颜色。",
+              "formal": "对于每个命令 (x, y)，反转所有满足 (i, j) ∈ [(x, x), (x, y)] ∪ [(y, y), (x, y)] 的像素 (i, j) 的颜色。"
             },
             {
-              "name": "source_node_fixed",
-              "description": "初始状态下，所有像素均为白色"
+              "name": "state_transition",
+              "description": "初始状态下，所有像素均为白色。",
+              "formal": "初始状态 S0: 所有像素 (i, j) 的颜色为白色。"
+            },
+            {
+              "name": "operation_limit",
+              "description": "需要计算最少的命令数来达到目标图像。",
+              "formal": "求最小的命令集合 C，使得执行 C 后，显示的目标图像与给定图像一致。"
             }
           ]
         }
@@ -65,34 +77,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "minimize_count",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "求将初始状态转换为目标状态所需的最少操作次数"
+          "type": "minimize_count",
+          "description": "求最小化操作次数以达到目标状态"
         }
       }
     ],
-    "description": "求将初始状态转换为目标状态所需的最少操作次数"
+    "description": "求最小化操作次数以达到目标状态"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：每个命令执行后，像素的颜色变化可以由前一个状态和当前命令唯一确定。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：整个显示的最小命令数可以通过解决其子问题（即每个像素的最小命令数）来构造。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个像素的颜色变化依赖于其所在行和列的命令序列",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：每个命令执行后，像素的颜色变化可以由前一个状态和当前命令唯一确定。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：整个显示的最小命令数可以通过解决其子问题（即每个像素的最小命令数）来构造。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个像素的颜色变化依赖于其所在行和列的命令序列"
+    ]
   }
 }

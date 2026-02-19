@@ -1,0 +1,85 @@
+{
+  "problem_id": "CF1685D2",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 200
+        },
+        "value_range": {
+          "min": 1,
+          "max": 200
+        },
+        "properties": {
+          "ordered": false,
+          "distinct": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "permutation_constraint",
+            "description": "给定的序列是一个排列，即包含从1到n的所有整数且每个整数恰好出现一次",
+            "formal": "p 是一个排列，即 p[i] ∈ [1, n] 且所有 p[i] 互不相同"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "目标是找到一个排列 q，使得其权重最小。权重定义为 |q_1 - p_{q_2}| + |q_2 - p_{q_3}| + ... + |q_{n-1} - p_{q_n}| + |q_n - p_{q_1}| 的和最小",
+            "formal": "minimize Σ |q_i - p_{q_{i+1}}| for i = 1 to n-1 and |q_n - p_{q_1}|"
+          },
+          {
+            "name": "ordering",
+            "description": "在所有具有最小权重的排列中，选择字典序最小的排列",
+            "formal": "among all permutations with minimum weight, choose the lexicographically smallest one"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "lexicographic_optimize",
+        "description": "求具有最小权重的字典序最小的排列"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过求解每个子问题的最小权重来构造全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，选择当前局部最优解（即最小化当前步骤的权重），最终能够得到全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "lexicographic_invariance",
+            "description": "字典序不变量：在保证权重最小的前提下，选择字典序最小的排列。当存在多个满足条件的排列时，优先选择字典序较小的排列。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

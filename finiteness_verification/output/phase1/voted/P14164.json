@@ -2,14 +2,14 @@
   "problem_id": "P14164",
   "source": "luogu",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "weighted_undirected_graph",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "weighted_undirected_graph",
           "length": {
             "min": 1,
             "max": 250000
@@ -41,13 +41,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "graph_connectivity",
-        "description": "图必须保持连通（删除两条边后图至少有两个连通块）",
+        "name": "connectivity",
+        "description": "图必须连通（初始图和每次加入边后的图）",
         "confidence": "1/1"
       },
       {
-        "name": "distinct_edge_characters",
-        "description": "选择的两条边不能重复（先选择 e 再选择 f 和先选择 f 再选择 e 被认为是同一种方案）",
+        "name": "pairwise_selection",
+        "description": "选择两条边 e 和 f，使得删除这两条边后图变得不连通",
+        "confidence": "1/1"
+      },
+      {
+        "name": "symmetric_structure_constraint",
+        "description": "选择 (e, f) 和 (f, e) 被视为同一种方案",
         "confidence": "1/1"
       }
     ],
@@ -58,12 +63,16 @@
         "result": {
           "constraints": [
             {
-              "name": "graph_connectivity",
-              "description": "图必须保持连通（删除两条边后图至少有两个连通块）"
+              "name": "connectivity",
+              "description": "图必须连通（初始图和每次加入边后的图）"
             },
             {
-              "name": "distinct_edge_characters",
-              "description": "选择的两条边不能重复（先选择 e 再选择 f 和先选择 f 再选择 e 被认为是同一种方案）"
+              "name": "pairwise_selection",
+              "description": "选择两条边 e 和 f，使得删除这两条边后图变得不连通"
+            },
+            {
+              "name": "symmetric_structure_constraint",
+              "description": "选择 (e, f) 和 (f, e) 被视为同一种方案"
             }
           ]
         }
@@ -79,26 +88,46 @@
         "status": "success",
         "result": {
           "type": "maximize_count",
-          "description": "统计满足条件的边对数量"
+          "description": "最大化满足特定条件的边对数"
         }
       }
     ],
-    "description": "统计满足条件的边对数量"
+    "description": "最大化满足特定条件的边对数"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：在每次加入新边后，当前图的连通性状态可以由之前的状态推导得出，且每一步的最优解（即满足条件的边对数）依赖于前一步的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：随着额外边的逐步添加，图的连通性状态会发生变化。每次添加一条边时，新的连通性状态可以通过已有的连通性信息和新增边的信息进行更新。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优解可以通过子问题的解组合而成，即每次加入一条边后的问题可以基于之前的状态进行更新。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：在每次加入新边后，当前图的连通性状态可以由之前的状态推导得出，且每一步的最优解（即满足条件的边对数）依赖于前一步的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：随着额外边的逐步添加，图的连通性状态会发生变化。每次添加一条边时，新的连通性状态可以通过已有的连通性信息和新增边的信息进行更新。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优解可以通过子问题的解组合而成，即每次加入一条边后的问题可以基于之前的状态进行更新。"
+    ]
   }
 }

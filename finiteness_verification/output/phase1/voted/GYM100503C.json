@@ -41,18 +41,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "directed_acyclic_graph",
-        "description": "最终形成的图必须是无环的（即不能形成任何简单路径上的环）",
+        "name": "acyclicity",
+        "description": "焊接过程中不能形成环路，即焊接后的图必须是无环的",
         "confidence": "1/1"
       },
       {
-        "name": "minimum_preference_requirement",
-        "description": "如果形成环，则删除环中可靠性最低的边，如果有多个可靠性相同的边，则删除最早添加的边",
+        "name": "degree_bound",
+        "description": "每个节点可以连接多条边，但最终形成的图中每个节点的度数不超过其实际连接的边数",
         "confidence": "1/1"
       },
       {
-        "name": "maximum_value_and_frequency",
-        "description": "选择的边的总成本最大化",
+        "name": "optimization_objective",
+        "description": "如果焊接过程中形成环路，则环路中最不可靠的边会被烧断（即从图中移除）",
         "confidence": "1/1"
       }
     ],
@@ -63,16 +63,20 @@
         "result": {
           "constraints": [
             {
-              "name": "directed_acyclic_graph",
-              "description": "最终形成的图必须是无环的（即不能形成任何简单路径上的环）"
+              "name": "acyclicity",
+              "description": "焊接过程中不能形成环路，即焊接后的图必须是无环的"
             },
             {
-              "name": "minimum_preference_requirement",
-              "description": "如果形成环，则删除环中可靠性最低的边，如果有多个可靠性相同的边，则删除最早添加的边"
+              "name": "degree_bound",
+              "description": "每个节点可以连接多条边，但最终形成的图中每个节点的度数不超过其实际连接的边数"
             },
             {
-              "name": "maximum_value_and_frequency",
-              "description": "选择的边的总成本最大化"
+              "name": "optimization_objective",
+              "description": "如果焊接过程中形成环路，则环路中最不可靠的边会被烧断（即从图中移除）"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "焊接顺序需要使得最终形成的图的总成本最大"
             }
           ]
         }
@@ -88,26 +92,57 @@
         "status": "success",
         "result": {
           "type": "maximize_value",
-          "description": "最大化无环图中边的权值和"
+          "description": "最大化无环图中边的总权值"
         }
       }
     ],
-    "description": "最大化无环图中边的权值和"
+    "description": "最大化无环图中边的总权值"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择焊接顺序时，每一步的选择都基于当前已焊接线缆形成的子图的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步选择焊接线缆时，总是选择当前情况下能最大化总成本的线缆进行焊接，且这种局部最优选择最终能够导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "cycle_invariant",
+        "description": "环不变量：在焊接过程中，如果形成了环，则会烧断环中可靠性最低的线缆。这一过程保证了最终形成的图是无环的，并且每次烧断操作后，剩余的图仍然保持无环性质。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的最优解可以合并成全局最优解",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在选择焊接顺序时，每一步的选择都基于当前已焊接线缆形成的子图的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步选择焊接线缆时，总是选择当前情况下能最大化总成本的线缆进行焊接，且这种局部最优选择最终能够导致全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "cycle_invariant",
+              "description": "环不变量：在焊接过程中，如果形成了环，则会烧断环中可靠性最低的线缆。这一过程保证了最终形成的图是无环的，并且每次烧断操作后，剩余的图仍然保持无环性质。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的最优解可以合并成全局最优解"
+    ]
   }
 }

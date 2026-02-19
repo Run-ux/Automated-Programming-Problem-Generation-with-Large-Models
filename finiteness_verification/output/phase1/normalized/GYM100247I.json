@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,21 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "non_decreasing_sequence",
-            "description": "输入的时间点按非递减顺序排列"
+            "name": "ordering",
+            "description": "输入的时间序列是严格递增的（时间戳有序）",
+            "formal": "t[i] < t[i+1] for all 0 <= i < n-1"
           },
           {
-            "name": "pairwise_exclusion",
-            "description": "所有时间点互不相同"
+            "name": "distinctness",
+            "description": "所有时间点 t_i 是互不相同的（无重复时间戳）",
+            "formal": "t[i] != t[j] for all 0 <= i < j < n"
           },
           {
-            "name": "bottleneck_path",
-            "description": "选取元素权重和不超过容量上限（即在任意时刻，累积的伤害值不能超过当前护盾的能量）",
-            "formal": "∀t, ∑(d_i | t_i ≤ t) ≤ t"
+            "name": "flow_constraint",
+            "description": "在任意时刻，力场的能量不能低于当前撞击的陨石的伤害值，否则会受到伤害（能量约束）",
+            "formal": "shield_power >= d[i] at time t[i]"
           },
           {
-            "name": "minimum_operation_count_constraint",
-            "description": "最小化操作次数（即尽可能少地射击以避免任何伤害）"
+            "name": "operation_limit",
+            "description": "需要尽可能少地使用炮弹击毁陨石以避免受到任何伤害（操作次数最小化）",
+            "formal": "minimize number of shots such that shield_power >= d[i] at time t[i] for all i"
           }
         ]
       }
@@ -53,8 +56,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "min_cost",
-        "description": "求最小操作次数以满足特定条件"
+        "type": "minimize_count",
+        "description": "求满足条件的最小操作次数"
       }
     }
   ],
@@ -63,9 +66,30 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "局部最优选择导致全局最优：在每个决策点，选择当前最优的策略（即是否射击）可以保证最终结果是最优的，不需要回溯之前的决策。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "时间戳 t_i 严格递增，确保事件按时间顺序处理",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，即在每个时间点选择是否射击以最小化总射击次数",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，即在每个时间点选择是否射击以避免当前及后续时间点的伤害",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移一致性，即根据当前时间和盾牌能量决定是否射击以及盾牌能量的变化",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

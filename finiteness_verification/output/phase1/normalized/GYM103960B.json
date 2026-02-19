@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 6,
           "max": 6
@@ -26,24 +26,24 @@
       "result": {
         "constraints": [
           {
-            "name": "turn_based_operation",
-            "description": "两名玩家轮流进行操作，每次操作必须选择一个非空的堆并移除其中的一个或多个元素"
+            "name": "optimal_play",
+            "description": "双方玩家都采用最优策略进行游戏"
           },
           {
-            "name": "global_optimization_objective",
-            "description": "双方都以最优策略进行游戏"
+            "name": "turn_based",
+            "description": "游戏是回合制的，两名玩家轮流进行操作"
           },
           {
-            "name": "global_optimization_objective",
-            "description": "最后移除最后一个元素的玩家获胜"
+            "name": "decrease_only_constraint",
+            "description": "每次操作必须从一个非空堆中移除至少一个石子"
           },
           {
-            "name": "uniform_submatrix",
-            "description": "每个堆中的元素数量在给定范围内均匀分布"
+            "name": "terminal_vertex",
+            "description": "移除最后一个石子的玩家获胜"
           },
           {
-            "name": "modular_inverse",
-            "description": "结果需要表示为模逆元的形式，即 p * q^(-1) (mod 10^9+7)"
+            "name": "modular_arithmetic",
+            "description": "输出的概率结果需要对 10^9+7 取模"
           }
         ]
       }
@@ -54,8 +54,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断先手玩家在最优策略下获胜的概率"
+        "type": "maximize_probability",
+        "description": "求在给定条件下，先手玩家获胜的概率"
       }
     }
   ],
@@ -64,12 +64,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，满足动态规划的基本性质",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：当前状态的最优解可以通过子问题的最优解来构建，即游戏的最终结果依赖于每个子堆石子数目的最优策略。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在博弈过程中，从一个状态到另一个状态的转移是确定且一致的，基于当前玩家的选择和剩余石子的数量。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100000
@@ -28,12 +28,13 @@
       "result": {
         "constraints": [
           {
-            "name": "transformation_exclusion",
-            "description": "字符串中不能包含特定子序列（hard）"
+            "name": "subsequence_constraint",
+            "description": "字符串中不能包含子序列 'hard'（子序列约束）"
           },
           {
-            "name": "bottleneck_path",
-            "description": "删除字符的总代价最小化"
+            "name": "sum_constraint",
+            "description": "删除字符的代价之和最小化（和约束）",
+            "formal": "minimize Σa_i for all i in the set of removed characters"
           }
         ]
       }
@@ -45,7 +46,7 @@
       "status": "success",
       "result": {
         "type": "minimize_value",
-        "description": "求删除某些字符使得字符串不包含特定子序列的最小代价"
+        "description": "求在满足特定条件下的最小代价"
       }
     }
   ],
@@ -54,9 +55,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合而成，每个子问题的解都是独立且最优的。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即删除字符以避免形成'hard'子序列的问题可以分解为更小规模的子问题，并且这些子问题的最优解可以用来构造原问题的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在求解过程中，每个子问题的解是独立于其他子问题的，即删除某些字符以避免形成'hard'子序列的过程中，每个子问题的解不会受到其他子问题的影响。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,155 @@
+{
+  "problem_id": "GYM105387I",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 1
+          },
+          "value_range": {
+            "min": 1,
+            "max": 50
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1
+    },
+    "value_range": {
+      "min": 1,
+      "max": 50
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "range_bound",
+        "description": "每个操作的参数必须在指定范围内（1 ≤ p_i ≤ 10^6）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation",
+        "description": "每个操作将球从当前洞移动到下一个洞，移动距离由公式 i + ⌊p_i / x⌋ 决定",
+        "confidence": "1/1"
+      },
+      {
+        "name": "target_reachability",
+        "description": "所有球必须最终到达目标洞 n",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "每次操作后，球必须落在有效的洞中（0 ≤ next_hole ≤ n）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "range_bound",
+              "description": "每个操作的参数必须在指定范围内（1 ≤ p_i ≤ 10^6）",
+              "formal": "1 ≤ p_i ≤ 10^6"
+            },
+            {
+              "name": "transformation",
+              "description": "每个操作将球从当前洞移动到下一个洞，移动距离由公式 i + ⌊p_i / x⌋ 决定",
+              "formal": "next_hole = i + ⌊p_i / x⌋"
+            },
+            {
+              "name": "target_reachability",
+              "description": "所有球必须最终到达目标洞 n",
+              "formal": "final_hole = n"
+            },
+            {
+              "name": "state_transition",
+              "description": "每次操作后，球必须落在有效的洞中（0 ≤ next_hole ≤ n）",
+              "formal": "0 ≤ i + ⌊p_i / x⌋ ≤ n"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "construction",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "construction",
+          "description": "构造一组满足条件的参数值"
+        }
+      }
+    ],
+    "description": "构造一组满足条件的参数值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "状态转移方向受限（仅向右），满足 DAG 上的最优子结构",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "问题的解可以通过子问题的解来构建，每个子问题的解是独立且最优的",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态机的状态转移一致性，确保从一个状态到另一个状态的转换规则始终有效",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "状态转移方向受限（仅向右），满足 DAG 上的最优子结构",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "问题的解可以通过子问题的解来构建，每个子问题的解是独立且最优的",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态机的状态转移一致性，确保从一个状态到另一个状态的转换规则始终有效",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

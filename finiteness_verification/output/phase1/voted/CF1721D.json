@@ -2,14 +2,14 @@
   "problem_id": "CF1721D",
   "source": "codeforces",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 100000
@@ -35,7 +35,7 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "permutation_allowed",
+        "name": "permutation_constraint",
         "description": "数组 b 可以任意重排（包括保持原顺序）",
         "confidence": "1/1"
       }
@@ -47,8 +47,9 @@
         "result": {
           "constraints": [
             {
-              "name": "permutation_allowed",
-              "description": "数组 b 可以任意重排（包括保持原顺序）"
+              "name": "permutation_constraint",
+              "description": "数组 b 可以任意重排（包括保持原顺序）",
+              "formal": "b' is a permutation of b"
             }
           ]
         }
@@ -64,26 +65,46 @@
         "status": "success",
         "result": {
           "type": "maximize_value",
-          "description": "求两个数组在任意重排其中一个数组后，按位与操作的最大值"
+          "description": "最大化两个数组对应位置元素按位与操作后的总和"
         }
       }
     ],
-    "description": "求两个数组在任意重排其中一个数组后，按位与操作的最大值"
+    "description": "最大化两个数组对应位置元素按位与操作后的总和"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：通过选择每个元素的最佳配对，可以构造出整体的最大值。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "bitwise_independence",
+        "description": "位独立性：每个二进制位的贡献可以独立计算，最终结果是各二进制位贡献的组合。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：通过重新排列数组b，可以将问题分解为子问题，并且大问题的解可以通过子问题的最优解组合而成",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：通过选择每个元素的最佳配对，可以构造出整体的最大值。",
+              "properties": {}
+            },
+            {
+              "name": "bitwise_independence",
+              "description": "位独立性：每个二进制位的贡献可以独立计算，最终结果是各二进制位贡献的组合。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：通过重新排列数组b，可以将问题分解为子问题，并且大问题的解可以通过子问题的最优解组合而成"
+    ]
   }
 }

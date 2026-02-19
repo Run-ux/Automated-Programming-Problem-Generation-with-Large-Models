@@ -1,0 +1,80 @@
+{
+  "problem_id": "CF1253E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 80
+        },
+        "value_range": {
+          "min": 0,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "coverage",
+            "description": "所有整数位置从 1 到 m 必须被至少一个天线覆盖（区间覆盖约束）"
+          },
+          {
+            "name": "distinctness",
+            "description": "每个位置最多有一个天线（唯一性约束）"
+          },
+          {
+            "name": "range_bound",
+            "description": "每个天线的初始覆盖范围在 [x_i - s_i, x_i + s_i] 内（值域约束）"
+          },
+          {
+            "name": "operation_limit",
+            "description": "可以任意多次增加天线的覆盖范围，每次操作花费 1 个硬币（操作次数限制）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求最小化覆盖所有指定位置所需的代价"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解来构建，即覆盖某个区间的最小花费可以通过覆盖其子区间的最小花费来计算。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：通过合并相邻区间的覆盖信息，可以得到更大区间的覆盖情况。这种性质允许我们使用类似线段树的数据结构来高效地处理区间覆盖问题。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

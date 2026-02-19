@@ -1,0 +1,144 @@
+{
+  "problem_id": "CF1628D2",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制，Bob 必须在 n 次操作中至少选择 m 次加法操作",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "选取元素的值域约束，Alice 选择的数必须在 [0, k] 范围内",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimal_play",
+        "description": "最优策略约束，Alice 和 Bob 都会采取最优策略来最大化或最小化最终得分",
+        "confidence": "1/1"
+      },
+      {
+        "name": "turn_based",
+        "description": "回合制约束，游戏由 n 个回合组成，每个回合 Alice 选择一个数，Bob 决定加或减",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制，Bob 必须在 n 次操作中至少选择 m 次加法操作",
+              "formal": "m ≤ number_of_add_operations ≤ n"
+            },
+            {
+              "name": "range_bound",
+              "description": "选取元素的值域约束，Alice 选择的数必须在 [0, k] 范围内",
+              "formal": "0 ≤ chosen_number ≤ k"
+            },
+            {
+              "name": "optimal_play",
+              "description": "最优策略约束，Alice 和 Bob 都会采取最优策略来最大化或最小化最终得分",
+              "formal": "Alice and Bob play optimally to maximize or minimize the final score"
+            },
+            {
+              "name": "turn_based",
+              "description": "回合制约束，游戏由 n 个回合组成，每个回合 Alice 选择一个数，Bob 决定加或减",
+              "formal": "game consists of n turns, each turn Alice picks a number and Bob decides to add or subtract it"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "min_max",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "min_max",
+          "description": "在博弈过程中，一方最大化最终得分而另一方最小化最终得分的情况下，求最终得分的极小化极大值"
+        }
+      }
+    ],
+    "description": "在博弈过程中，一方最大化最终得分而另一方最小化最终得分的情况下，求最终得分的极小化极大值"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：游戏的最终得分可以通过每个回合的最优决策累积得到，每一步的决策都基于当前状态和剩余回合数的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：游戏的状态（当前得分、剩余回合数、Bob已选择加法的次数）在每一步根据Alice和Bob的选择进行确定性转移。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：游戏的最终得分可以通过每个回合的最优决策累积得到，每一步的决策都基于当前状态和剩余回合数的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：游戏的状态（当前得分、剩余回合数、Bob已选择加法的次数）在每一步根据Alice和Bob的选择进行确定性转移。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

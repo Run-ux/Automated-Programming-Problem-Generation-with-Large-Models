@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,9 +28,9 @@
       "result": {
         "constraints": [
           {
-            "name": "palindromic_substring_exclusion",
-            "description": "两个字符串拼接后形成回文串（幸运票的定义）",
-            "formal": "s_i + s_j 是回文串"
+            "name": "palindrome",
+            "description": "字符串拼接结果必须是回文串（即 s_i + s_j 是回文串）",
+            "formal": "s_i + s_j = (s_i + s_j)^R"
           }
         ]
       }
@@ -42,7 +42,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计满足条件的字符串对数量"
+        "description": "求满足特定条件的字符串对的数量"
       }
     }
   ],
@@ -51,11 +51,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的解组合而成，即两个票段的拼接结果是否为幸运票可以由各自票段的性质决定",
-        "properties": {
-          "subproblem_independence": true
-        }
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和计算任意两个字符串拼接后的数字和，从而判断是否为幸运票",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：对于任意两个字符串拼接的结果，其对称性可以简化问题的处理，即s_i + s_j 和 s_j + s_i 的结果相同",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

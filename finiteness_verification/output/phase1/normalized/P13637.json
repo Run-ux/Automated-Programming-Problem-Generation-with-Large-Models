@@ -1,0 +1,91 @@
+{
+  "problem_id": "P13637",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "velocity_range_constraint",
+            "description": "Julia 的移动速度不能超过给定的最大速度 V",
+            "formal": "0 <= speed_julia <= V"
+          },
+          {
+            "name": "intersection_constraint",
+            "description": "Julia 和 Jane 只有在同一点时才能相遇",
+            "formal": "position_julia == position_jane => meeting"
+          },
+          {
+            "name": "random_velocity_constraint",
+            "description": "Jane 从给定的速度列表中随机选择一个速度，且每个速度被选中的概率相等",
+            "formal": "P(v_i) = 1/n for all i in [1, n]"
+          },
+          {
+            "name": "minimize_expected_time",
+            "description": "Julia 需要采取策略最小化她与 Jane 相遇并返回家的期望时间",
+            "formal": "minimize E[t]"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_probability",
+        "description": "最小化完成任务的期望时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即Julia在每个时间点的最优策略依赖于之前时间点的最优策略。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着Jane的速度增加，Julia的期望最短相遇时间是单调递增的。这是因为Jane的速度越快，Julia需要更早地采取行动以最小化相遇时间。",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每个时间点，Julia选择当前最优的移动方向和速度，这种局部最优选择最终导致全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

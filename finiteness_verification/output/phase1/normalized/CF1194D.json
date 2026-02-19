@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 100
@@ -28,24 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "parallel_operation",
-            "description": "每次移动可以选择固定数量的步数（1, 2 或 k）",
+            "name": "operation_type",
+            "description": "每次操作可以选择的移动步数为 1, 2 或 k（k 为给定常数）",
             "formal": "move ∈ {1, 2, k}"
           },
           {
-            "name": "edge_exclusion_constraint",
-            "description": "移动不能超出边界，即芯片不能移出纸条范围",
-            "formal": "0 ≤ i - move < n"
+            "name": "distance_bound",
+            "description": "芯片不能移出纸条边界，即移动后的索引必须在 [0, n] 范围内",
+            "formal": "0 ≤ i - move ≤ n"
           },
           {
-            "name": "pairwise_interaction_constraint",
+            "name": "turn_based",
             "description": "游戏是回合制的，两名玩家轮流进行操作",
             "formal": "player = (turn % 2 == 0) ? Bob : Alice"
           },
           {
-            "name": "global_optimization_objective",
-            "description": "无法进行有效移动的玩家输掉游戏",
-            "formal": "if no valid move, player loses"
+            "name": "optimal_play",
+            "description": "双方都采取最优策略进行游戏",
+            "formal": "players play optimally"
           }
         ]
       }
@@ -56,8 +56,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断在给定条件下是否存在一个先手必胜策略"
+        "type": "game_outcome",
+        "description": "确定在给定规则下的博弈结果，输出先手胜或后手胜"
       }
     }
   ],
@@ -66,11 +66,29 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：当前状态的最优解可以通过前序状态的最优解推导得出，满足动态规划的核心性质",
-        "properties": {
-          "state_dependency": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：当前状态的最优解依赖于其子问题的最优解，通过递归或迭代求解子问题来确定最终结果。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态到另一个状态的转移规则是固定的，且每个状态的转移只依赖于前几个状态。",
+            "properties": {
+              "transition_rules": [
+                "i-1",
+                "i-2",
+                "i-k"
+              ]
+            }
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：在解决当前问题时，各个子问题的解互不影响，可以独立求解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

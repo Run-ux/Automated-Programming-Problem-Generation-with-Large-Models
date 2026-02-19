@@ -1,0 +1,90 @@
+{
+  "problem_id": "CF1334E",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000000000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "divisibility",
+            "description": "图中的边仅存在于两个节点之间，当且仅当一个节点是另一个节点的因数，并且它们之间的商为质数。",
+            "formal": "存在边 (u, v) 当且仅当 u | v 且 v / u 是质数"
+          },
+          {
+            "name": "distance_bound",
+            "description": "边的权重定义为较大节点的因数个数减去较小节点的因数个数。",
+            "formal": "weight(u, v) = |divisors(v)| - |divisors(u)|, 其中 u | v 且 v / u 是质数"
+          },
+          {
+            "name": "distance_bound",
+            "description": "路径的长度定义为路径上所有边的权重之和。",
+            "formal": "length(path) = Σ weight(e), 对于路径上的每条边 e"
+          },
+          {
+            "name": "path_constraint",
+            "description": "最短路径是指路径长度最小的路径。",
+            "formal": "shortest_path(u, v) = min(length(path)), 对于所有从 u 到 v 的路径 path"
+          },
+          {
+            "name": "path_constraint",
+            "description": "两条路径不同当且仅当它们包含的边的数量不同或至少有一条边不同。",
+            "formal": "path a ≠ path b 当且仅当 |a| ≠ |b| 或 ∃i, a_i ≠ b_i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求两点间最短路径的数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：最短路径问题的解可以通过子路径的最优解组合得到，满足动态规划的最优子结构性质",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个节点到另一个节点的最短路径状态可以由前驱节点的状态转移而来，且转移规则一致",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

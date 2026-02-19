@@ -2,14 +2,14 @@
   "problem_id": "GYM103081K",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "string",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "string",
+          "type": "array",
           "length": {
             "min": 1,
             "max": 300000
@@ -39,13 +39,8 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_substring_constraint",
-        "description": "找到一个最短的子串，该子串在输入字符串中只出现一次",
-        "confidence": "1/1"
-      },
-      {
-        "name": "first_occurrence_constraint",
-        "description": "如果有多个长度相同的最短子串，输出第一个出现的子串",
+        "name": "distinctness",
+        "description": "找到一个最短的子序列，该子序列在输入字符串中仅出现一次",
         "confidence": "1/1"
       }
     ],
@@ -56,12 +51,14 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_substring_constraint",
-              "description": "找到一个最短的子串，该子串在输入字符串中只出现一次"
+              "name": "distinctness",
+              "description": "找到一个最短的子序列，该子序列在输入字符串中仅出现一次",
+              "formal": "∃ subseq ∈ S, |subseq| is minimal and count(subseq, S) = 1"
             },
             {
-              "name": "first_occurrence_constraint",
-              "description": "如果有多个长度相同的最短子串，输出第一个出现的子串"
+              "name": "distinctness",
+              "description": "如果有多个长度相同的最短唯一子序列，输出第一个出现的子序列",
+              "formal": "if multiple subseqs with |subseq| = min, output the one with the smallest starting index"
             }
           ]
         }
@@ -77,29 +74,52 @@
         "status": "success",
         "result": {
           "type": "minimize_value",
-          "description": "求满足条件的最短子串长度，该子串在输入字符串中仅出现一次"
+          "description": "求满足条件的最短子串长度"
         }
       }
     ],
-    "description": "求满足条件的最短子串长度，该子串在输入字符串中仅出现一次"
+    "description": "求满足条件的最短子串长度"
   },
   "invariant": {
-    "name": "interval_mergeable",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过前缀和计算任意子区间的哈希值，从而判断子串的唯一性",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：滑动窗口的右端点单调递增，左端点根据当前窗口内的子串唯一性进行调整",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true,
+          "window_shrinkable": true
+        }
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "interval_mergeable",
-          "description": "区间可合并性：通过端点差值计算区间信息，适用于前缀和或哈希等技术来识别唯一子串",
-          "properties": {
-            "prefix_computable": true,
-            "hashable": true
-          }
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过前缀和计算任意子区间的哈希值，从而判断子串的唯一性",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：滑动窗口的右端点单调递增，左端点根据当前窗口内的子串唯一性进行调整",
+              "properties": {
+                "right_monotonic": true,
+                "window_shrinkable": true
+              }
+            }
+          ]
         }
       }
-    ],
-    "description": "区间可合并性：通过端点差值计算区间信息，适用于前缀和或哈希等技术来识别唯一子串"
+    ]
   }
 }

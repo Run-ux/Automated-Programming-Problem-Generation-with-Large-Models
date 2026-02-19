@@ -1,0 +1,85 @@
+{
+  "problem_id": "P13377",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "weighted_undirected_graph",
+        "length": {
+          "min": 2,
+          "max": 100
+        },
+        "value_range": {
+          "min": 0,
+          "max": 99
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数没有限制，但需要考虑其连接的节点数量来确定威胁范围"
+          },
+          {
+            "name": "path_constraint",
+            "description": "从起始节点（你的家）到目标节点（A.I.的家）的路径必须通过最少数量的中间节点"
+          },
+          {
+            "name": "maximize_threat_level",
+            "description": "在满足路径约束的前提下，最终威胁的节点数量应最大化"
+          },
+          {
+            "name": "state_transition",
+            "description": "一旦威胁到目标节点，不能再进行任何征服操作"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_count",
+        "description": "最小化需要征服的行星数量以威胁到敌方基地"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即征服最少数量的星球并威胁最多数量的星球的问题可以分解为更小规模的子问题",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步选择中，总是选择当前能征服的最小数量的星球，并且最终能够达到全局最优解，即威胁到AI的家星球时征服的星球数最少且威胁的星球数最多",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在征服星球的过程中，星球之间的征服顺序满足有向无环图（DAG）的拓扑排序，即每个被征服的星球都是在其所有前驱星球被征服之后才被征服",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

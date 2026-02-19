@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 300000
@@ -26,14 +26,14 @@
       "result": {
         "constraints": [
           {
-            "name": "substring_frequency_optimization",
+            "name": "frequency_bound",
             "description": "每个子序列中，任意元素出现的次数不超过该子序列长度的一半向上取整",
-            "formal": "对于每个子序列 S，如果其长度为 x，则 ∀v ∈ S, count(v) ≤ ⌈x/2⌉"
+            "formal": "对于每个子序列 b，如果其长度为 x，则 ∀v ∈ b, count(b, v) ≤ ⌈x/2⌉"
           },
           {
-            "name": "subset_sum_imbalance",
-            "description": "将给定区间内的元素划分为若干子序列，使得每个子序列满足频率约束",
-            "formal": "将区间 [l, r] 划分为若干子序列 S1, S2, ..., Sk，使得每个 Si 满足频率约束"
+            "name": "subsequence_constraint",
+            "description": "将给定区间内的元素划分为多个子序列，使得每个子序列满足频率约束",
+            "formal": "将 a[l:r] 划分为若干个子序列 {b1, b2, ..., bk}，使得每个 bi 满足频率约束"
           }
         ]
       }
@@ -44,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求满足条件的最小划分数量"
+        "type": "minimize_count",
+        "description": "求满足条件的最少子序列数量"
       }
     }
   ],
@@ -54,12 +54,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每个子问题的解都是局部最优的，并且这些局部最优解可以合并成全局最优解。",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个子区间的最优分割方案可以合并成整个区间的最优分割方案。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：通过将小区间的结果合并，可以得到大区间的结果。具体来说，可以通过线段树或其他区间数据结构来维护和合并区间信息。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

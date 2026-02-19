@@ -1,0 +1,74 @@
+{
+  "problem_id": "CF1251E2",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_constraint",
+            "description": "每个元素的条件依赖于其他元素的集合大小（即，某个元素的投票取决于已有投票者的数量）",
+            "formal": "对于每个 i, 如果 |S| >= m_i，则 i ∈ S"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "选取元素的成本总和最小化（即，花费的金币总数最小）",
+            "formal": "minimize ∑ p_i for all i in the selected subset"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求最小化总代价以满足所有节点的条件"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即通过选择最小花费使得当前选民投票，并且该选择不影响后续选民投票策略的最优性。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：在每一步决策中，总是选择当前情况下最有利的选项（即花费最少的选民），这种局部最优的选择最终能够导致全局最优解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "problem_id": "P14143",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 30000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 30000000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "state_transition",
+            "description": "状态转移约束：每个节点的状态（美好或不好）会影响日记本的记录和标记过程。",
+            "formal": "对于每个节点 i，根据其状态 (+ 或 -) 更新日记本记录，并在满足条件时标记为【完美的节点】。"
+          },
+          {
+            "name": "operation_limit",
+            "description": "操作次数限制：日记本被清空的次数是有限制的，且每次回到 1 号节点时日记本会被清空。",
+            "formal": "每次回到 1 号节点时，日记本被清空一次。"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "平衡约束：当日记本上美好的回忆和不好的回忆的节点数相等时，标记该节点为【完美的节点】。",
+            "formal": "如果 |count(+) - count(-)| = 0，则标记该节点为【完美的节点】。"
+          },
+          {
+            "name": "existence_requirement",
+            "description": "完成条件：所有节点都被标记为【完美的节点】时，计算日记本被清空的次数。",
+            "formal": "当所有节点都被标记为【完美的节点】时，计算日记本被清空的次数 f_S。"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求所有状态下的特定值的k次幂之和，对给定模数取模"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每个节点的状态（是否为【完美的节点】）仅依赖于当前日记本上的记录情况，且状态转移具有确定性。",
+            "properties": {}
+          },
+          {
+            "name": "cycle_invariant",
+            "description": "环不变量：在环上绕圈的过程中，节点的状态变化和日记本的清空次数形成一个周期性的结构。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：对于每个状态 $S$，其回忆轮数 $f_S$ 可以通过子问题的解来计算，即通过较小规模的问题的解来构建当前问题的解。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

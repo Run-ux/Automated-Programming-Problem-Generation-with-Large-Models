@@ -1,0 +1,80 @@
+{
+  "problem_id": "P6854",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 1000000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "subset_constraint",
+            "description": "照片中的楼房高度集合必须是连续的整数集合（即对于任意的 i < j < k，如果高度为 i 和 k 的楼房都在照片中出现过，那么高度为 j 的楼房也在照片中出现过）"
+          },
+          {
+            "name": "frequency_bound",
+            "description": "每个高度的楼房在照片中要么不出现，要么恰好出现其高度值次（即高度为 i 的楼房要么不出现在照片中，要么在照片中出现恰好 i 次）"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "enumeration",
+        "description": "求满足特定条件的子数组数量"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和计算任意子区间的楼房高度总和，满足区间和可通过端点差值计算",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：在遍历过程中，左右指针的移动是单调的，确保了区间合法性的维护",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即美丽照片的数量可以通过子区间的状态来确定",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

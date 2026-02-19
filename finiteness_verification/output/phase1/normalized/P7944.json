@@ -1,0 +1,98 @@
+{
+  "problem_id": "P7944",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "two_dimensional_array",
+        "length": {
+          "min": 4,
+          "max": 100
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1
+        },
+        "properties": {
+          "ordered": false,
+          "connected": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "path_constraint",
+            "description": "路径约束：从起点到终点的路径只能向下或向右移动"
+          },
+          {
+            "name": "exclusion",
+            "description": "配对互斥：四个削弱点被路径分成两组，每组恰好有两个削弱点"
+          },
+          {
+            "name": "query_limit",
+            "description": "查询次数限制：只能查询白色未标记的点"
+          },
+          {
+            "name": "path_constraint",
+            "description": "路径构造：在找到第 k 个削弱点且 k 为偶数时，必须构造一条从 (k-1) 个削弱点到第 k 个削弱点的简单路径，该路径必须经过所有蓝色标记的点"
+          },
+          {
+            "name": "operation_limit",
+            "description": "终止条件：找到第四个削弱点并完成路径构造后立即退出程序"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造满足条件的路径"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "查询路径上的点是单调递增的，即每次查询的点坐标不会回退。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "从第 (k-1) 个削弱点到第 k 个削弱点的路径构造问题可以分解为子问题，每个子问题的最优解组合成全局最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "在找到第 k 个削弱点后，状态从寻找削弱点转移到构造路径，且该转移过程保持一致性。",
+            "properties": {}
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "已标记的蓝色点（即已查询过的点）可以通过合并形成一个完整的路径。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

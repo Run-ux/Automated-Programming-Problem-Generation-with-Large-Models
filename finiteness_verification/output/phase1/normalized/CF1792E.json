@@ -6,24 +6,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 10
         },
         "value_range": {
-          "min": {
-            "n": 1,
-            "m1": 1,
-            "m2": 1
-          },
-          "max": {
-            "n": 1000000000,
-            "m1": 1000000000,
-            "m2": 1000000000
-          }
+          "min": 1,
+          "max": 1000000000
         },
-        "properties": {}
+        "properties": {
+          "ordered": false
+        }
       }
     }
   ],
@@ -34,12 +28,12 @@
       "result": {
         "constraints": [
           {
-            "name": "divisor_frequency_constraint",
-            "description": "每个因数在乘法表中至少出现一次，如果出现则记录最小行号"
+            "name": "frequency_bound",
+            "description": "每个因数 d 在 n×n 乘法表中至少出现一次，且记录其最小行索引"
           },
           {
-            "name": "xor_sum_constraint",
-            "description": "所有因数的最小行号进行异或操作得到最终结果"
+            "name": "modular_arithmetic",
+            "description": "所有符合条件的因数的最小行索引进行异或操作"
           }
         ]
       }
@@ -50,8 +44,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足条件的元素数量"
+        "type": "enumeration",
+        "description": "求给定整数的所有因子中，出现在指定大小的乘法表中的因子数量及其在表中出现的最小行索引的异或值"
       }
     }
   ],
@@ -60,9 +54,26 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：每个因子的最小行索引可以通过其因子分解的子问题解组合而成",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，用于遍历所有可能的乘积对 (i, j) 以检查是否为 m 的因子",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个因子 d 的最小行索引可以通过其因子分解的最优解组合得出",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和或类似方法快速计算特定范围内的乘积和，以判断因子的存在性",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

@@ -1,0 +1,124 @@
+{
+  "problem_id": "CF1687C",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "accumulated_sum_constraint",
+        "description": "操作前后数组元素和不变（即每次操作后，数组的总和必须保持不变）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation",
+        "description": "只能在指定的区间内进行复制粘贴操作（即只能选择给定的区间 [l, r] 进行操作）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "accumulated_sum_constraint",
+              "description": "操作前后数组元素和不变（即每次操作后，数组的总和必须保持不变）",
+              "formal": "sum(a) == sum(b)"
+            },
+            {
+              "name": "transformation",
+              "description": "只能在指定的区间内进行复制粘贴操作（即只能选择给定的区间 [l, r] 进行操作）",
+              "formal": "a[i] = b[i] for all i in [l, r]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一种操作序列，使得一个数组可以通过特定的子数组替换操作转换成另一个数组，同时保持数组元素总和不变"
+        }
+      }
+    ],
+    "description": "判断是否存在一种操作序列，使得一个数组可以通过特定的子数组替换操作转换成另一个数组，同时保持数组元素总和不变"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：在进行区间替换操作时，区间的和保持不变，从而保证整个数组的和不变。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个区间的替换操作是独立的，不影响其他区间的替换决策。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：在进行区间替换操作时，区间的和保持不变，从而保证整个数组的和不变。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个区间的替换操作是独立的，不影响其他区间的替换决策。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

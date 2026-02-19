@@ -1,0 +1,89 @@
+{
+  "problem_id": "CF1264C",
+  "source": "codeforces",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "probability_distribution",
+            "description": "每个节点的取值概率分布是固定的（即每个镜子回答“美丽”的概率是固定的）",
+            "formal": "P(i) = p_i / 100, for all 1 ≤ i ≤ n"
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移约束：每次询问后，根据当前节点的状态决定下一个节点的状态（是否为检查点）",
+            "formal": "If mirror i is a checkpoint, next state depends on the result of the query."
+          },
+          {
+            "name": "query_limit",
+            "description": "查询次数限制：每次查询只能改变一个节点的状态（是否为检查点）",
+            "formal": "Each query changes the state of exactly one node (mirror)."
+          },
+          {
+            "name": "probability_distribution",
+            "description": "计算期望值：需要计算在给定状态下的期望天数，直到满足某个条件（Creatnx变得快乐）",
+            "formal": "E(days until happy) = ∑(days * P(days))"
+          },
+          {
+            "name": "modular_arithmetic",
+            "description": "结果需要对大质数取模（998244353），并且结果应表示为模意义下的逆元形式",
+            "formal": "Result = (p * q^(-1)) % M, where M = 998244353"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_probability",
+        "description": "最小化达到目标状态的期望步数"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：当前状态的期望值可以通过前一个状态的期望值和当前状态的概率计算得出，满足动态规划中的最优子结构特性",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态转移到另一个状态的过程中，状态转移方程保持一致性，即每个状态的期望值依赖于其前驱状态的期望值和当前状态的概率",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

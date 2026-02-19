@@ -1,0 +1,138 @@
+{
+  "problem_id": "GYM101972I",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "subset_constraint",
+        "description": "每个学生持有的钥匙集合必须是所有锁的子集，且这些子集的并集必须覆盖所有锁。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "coverage",
+        "description": "至少 m 个学生在场时，他们的钥匙集合必须能够覆盖所有的锁。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "需要找到最小的锁数量 x 和每个学生持有的钥匙数量 y，使得满足上述覆盖条件。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "subset_constraint",
+              "description": "每个学生持有的钥匙集合必须是所有锁的子集，且这些子集的并集必须覆盖所有锁。",
+              "formal": "∪(S_i) = {1, 2, ..., x}，其中 S_i 是第 i 个学生持有的钥匙集合"
+            },
+            {
+              "name": "coverage",
+              "description": "至少 m 个学生在场时，他们的钥匙集合必须能够覆盖所有的锁。",
+              "formal": "对于任意大小为 m 的学生子集 S ⊆ {1, 2, ..., n}，有 ∪(S_i) = {1, 2, ..., x}"
+            },
+            {
+              "name": "operation_limit",
+              "description": "需要找到最小的锁数量 x 和每个学生持有的钥匙数量 y，使得满足上述覆盖条件。",
+              "formal": "min(x, y) 使得上述覆盖条件成立"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求满足条件的最小锁数和每个学生携带的最小钥匙数"
+        }
+      }
+    ],
+    "description": "求满足条件的最小锁数和每个学生携带的最小钥匙数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "counting_invariance",
+        "description": "组合约束：解法中选择的锁和钥匙数量满足组合数学中的约束条件，确保只有当m或更多学生在场时才能打开柜子",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "modular_invariance",
+        "description": "模运算不变量：所有计算结果均需对10^9+7取模，保证结果在大数情况下的一致性和正确性",
+        "confidence": "1/1",
+        "properties": {
+          "modulus": 1000000007
+        }
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "counting_invariance",
+              "description": "组合约束：解法中选择的锁和钥匙数量满足组合数学中的约束条件，确保只有当m或更多学生在场时才能打开柜子",
+              "properties": {}
+            },
+            {
+              "name": "modular_invariance",
+              "description": "模运算不变量：所有计算结果均需对10^9+7取模，保证结果在大数情况下的一致性和正确性",
+              "properties": {
+                "modulus": 1000000007
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

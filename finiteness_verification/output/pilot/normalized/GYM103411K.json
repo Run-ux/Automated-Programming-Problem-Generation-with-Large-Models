@@ -64,24 +64,16 @@
       "result": {
         "constraints": [
           {
-            "name": "single_squid_movement",
-            "description": "在每个时刻，最多只有一个鱿鱼可以移动。",
-            "formal": "∀t, |{i | squid_i moves at time t}| ≤ 1"
+            "name": "operation_limit",
+            "description": "每秒只能对一个元素进行操作（移动）"
           },
           {
-            "name": "shark_eats_squid",
-            "description": "如果在某一时刻鲨鱼和鱿鱼处于同一位置，则鲨鱼会吃掉鱿鱼。",
-            "formal": "∀t, ∀i, if position(shark) = position(squid_i) at time t, then squid_i is eaten"
+            "name": "exclusion",
+            "description": "两个特定元素不能同时处于同一位置（避免被吃掉）"
           },
           {
-            "name": "squid_safe_in_shelter",
-            "description": "如果鱿鱼到达避难所且避难所上没有鲨鱼，则该鱿鱼安全。",
-            "formal": "∀i, if position(squid_i) = z and position(shark) ≠ z, then squid_i is safe"
-          },
-          {
-            "name": "initial_positions",
-            "description": "初始时，没有任何鱿鱼位于避难所或与鲨鱼在同一位置。",
-            "formal": "∀i, x_i ≠ y and x_i ≠ z"
+            "name": "connectivity",
+            "description": "目标元素必须在不被特定元素拦截的情况下到达指定位置（避难所）"
           }
         ]
       }
@@ -92,24 +84,16 @@
       "result": {
         "constraints": [
           {
-            "name": "single_squid_movement",
-            "description": "在每个时刻，最多只有一个鱿鱼可以移动。",
-            "formal": "At any time t, at most one squid can move."
+            "name": "operation_limit",
+            "description": "每秒只能对一个元素进行操作（移动）"
           },
           {
-            "name": "shark_eats_squid",
-            "description": "如果在某一时刻鲨鱼和鱿鱼处于同一位置，则鲨鱼会吃掉鱿鱼。",
-            "formal": "If at any time t, the position of a squid is equal to the position of the shark, the squid is eaten by the shark."
+            "name": "exclusion",
+            "description": "两个特定元素不能同时处于同一位置（互斥约束）"
           },
           {
-            "name": "safe_shelter",
-            "description": "鱿鱼到达避难所且避难所上方没有鲨鱼时，鱿鱼就安全了，不再受到威胁。",
-            "formal": "A squid is safe if it reaches the shelter and the shark is not at the shelter's position."
-          },
-          {
-            "name": "no_initial_overlap",
-            "description": "初始时，没有任何鱿鱼与鲨鱼或避难所在同一位置。",
-            "formal": "Initially, no squid is at the same position as the shark or the shelter (x_i ≠ y and x_i ≠ z for all i)."
+            "name": "state_transition",
+            "description": "一旦某个元素到达目标位置且不与特定元素冲突，则该元素状态变为安全，不再参与后续操作"
           }
         ]
       }
@@ -120,24 +104,16 @@
       "result": {
         "constraints": [
           {
-            "name": "single_squid_movement",
-            "description": "在每个时刻，最多只有一个鱿鱼可以移动。",
-            "formal": "∀t, |{i | squid_i moves at time t}| ≤ 1"
+            "name": "operation_limit",
+            "description": "每秒只能对一个元素进行操作（移动）"
           },
           {
-            "name": "shark_eats_squid",
-            "description": "如果在某一时刻鲨鱼和鱿鱼处于同一位置，则鲨鱼会吃掉鱿鱼。",
-            "formal": "∀t, ∀i, if position(shark) = position(squid_i) at time t, then squid_i is eaten"
+            "name": "exclusion",
+            "description": "两个特定元素不能同时处于同一位置（避免被吃掉）"
           },
           {
-            "name": "squid_safe_in_shelter",
-            "description": "如果鱿鱼到达避难所且避难所上没有鲨鱼，则该鱿鱼安全。",
-            "formal": "∀i, if position(squid_i) = z and position(shark) ≠ z, then squid_i is safe"
-          },
-          {
-            "name": "initial_positions",
-            "description": "初始时，没有任何鱿鱼位于避难所或与鲨鱼在同一位置。",
-            "formal": "∀i, x_i ≠ y and x_i ≠ z"
+            "name": "connectivity",
+            "description": "目标元素必须在不被特定元素拦截的情况下到达指定位置（安全点）"
           }
         ]
       }
@@ -148,24 +124,24 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "max_value",
-        "description": "求能够保证救出的最大数量的鱿鱼"
+        "type": "maximize_count",
+        "description": "最大化在给定条件下能够成功到达安全位置的个体数量"
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "type": "max_value",
-        "description": "求能够保证拯救的最大数量的鱿鱼"
+        "type": "maximize_count",
+        "description": "最大化在给定条件下能够成功到达安全位置的实体数量"
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "type": "max_value",
-        "description": "求能够保证救出的最大数量的鱿鱼"
+        "type": "maximize_count",
+        "description": "最大化在给定条件下能够成功到达安全位置的实体数量"
       }
     }
   ],
@@ -174,27 +150,78 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "greedy_choice",
-        "description": "局部最优选择导致全局最优，每次选择最接近避难所且不会被鲨鱼追上的鱿鱼移动，确保尽可能多的鱿鱼能够安全到达避难所。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，确保在每一步操作中，被考虑的子问题范围是逐步缩小或扩展的",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，通过解决较小规模的问题来构建最终解",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，每次选择当前情况下最有利的决策以达到整体最优",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 2,
       "status": "success",
       "result": {
-        "name": "greedy_choice",
-        "description": "局部最优选择导致全局最优，每次选择最接近避难所且不会被鲨鱼追上的鱿鱼移动，确保尽可能多的鱿鱼能够安全到达避难所。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，确保在每一步操作中，左侧指针和右侧指针的移动方向是固定的，从而保证了搜索空间的有序性。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，通过将问题分解为更小的子问题，并且每个子问题的最优解可以组合成原问题的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，每次选择当前情况下最优的决策，最终能够达到全局最优解。",
+            "properties": {}
+          }
+        ]
       }
     },
     {
       "round": 3,
       "status": "success",
       "result": {
-        "name": "greedy_choice",
-        "description": "局部最优选择导致全局最优，每次选择最接近避难所且未被鲨鱼追上的鱿鱼移动，确保尽可能多的鱿鱼能够安全到达避难所。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "双指针左右端点单调前进，确保在每一步操作中，处理的区间是逐步缩小的",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解来构造，即通过考虑每个子区间的最优解来确定整体的最优解",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "局部最优选择导致全局最优，每次选择当前最优的移动策略以最大化最终结果",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

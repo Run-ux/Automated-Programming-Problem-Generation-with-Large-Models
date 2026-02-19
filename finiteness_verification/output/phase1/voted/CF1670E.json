@@ -2,14 +2,14 @@
   "problem_id": "CF1670E",
   "source": "codeforces",
   "input_structure": {
-    "type": "undirected_graph",
+    "type": "tree",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "undirected_graph",
+          "type": "tree",
           "length": {
             "min": 2,
             "max": 131072
@@ -39,18 +39,18 @@
   "core_constraints": {
     "constraints": [
       {
-        "name": "distinct_modulo_values",
-        "description": "所有节点和边的值必须是唯一的，且在 [1, 2n-1] 范围内",
+        "name": "distinctness",
+        "description": "所有节点和边的值必须是唯一的（无重复）",
         "confidence": "1/1"
       },
       {
-        "name": "bottleneck_path",
-        "description": "选择一个根节点，使得从该根节点出发到任何节点或边的简单路径的最大成本最小化",
+        "name": "range_bound",
+        "description": "所有节点和边的值必须在 [1, 2n-1] 范围内",
         "confidence": "1/1"
       },
       {
-        "name": "path_weight_constraint",
-        "description": "路径的成本定义为路径上所有节点和边的值的异或和",
+        "name": "optimization_objective",
+        "description": "选择一个根节点，使得从该根节点到任何节点或边的简单路径的最大异或成本最小化",
         "confidence": "1/1"
       }
     ],
@@ -61,19 +61,19 @@
         "result": {
           "constraints": [
             {
-              "name": "distinct_modulo_values",
-              "description": "所有节点和边的值必须是唯一的，且在 [1, 2n-1] 范围内",
-              "formal": "∀ i, j ∈ {nodes ∪ edges}, value(i) ≠ value(j) ∧ 1 ≤ value(i) ≤ 2n-1"
+              "name": "distinctness",
+              "description": "所有节点和边的值必须是唯一的（无重复）",
+              "formal": "∀ i, j ∈ [1, 2n-1], i ≠ j → value(i) ≠ value(j)"
             },
             {
-              "name": "bottleneck_path",
-              "description": "选择一个根节点，使得从该根节点出发到任何节点或边的简单路径的最大成本最小化",
-              "formal": "minimize(max(cost(root, v)) for all v in nodes ∪ edges)"
+              "name": "range_bound",
+              "description": "所有节点和边的值必须在 [1, 2n-1] 范围内",
+              "formal": "∀ i ∈ [1, n] ∪ [1, n-1], 1 ≤ value(i) ≤ 2n-1"
             },
             {
-              "name": "path_weight_constraint",
-              "description": "路径的成本定义为路径上所有节点和边的值的异或和",
-              "formal": "cost(u, v) = XOR(value(x) for all x in path(u, v))"
+              "name": "optimization_objective",
+              "description": "选择一个根节点，使得从该根节点到任何节点或边的简单路径的最大异或成本最小化",
+              "formal": "minimize(max(cost(root, u) for all nodes u and edges e))"
             }
           ]
         }
@@ -81,34 +81,54 @@
     ]
   },
   "objective": {
-    "type": "minimize_cost",
+    "type": "min_max",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "minimize_cost",
-          "description": "最小化从根节点出发到任意节点或边的简单路径的最大代价，其中代价定义为路径上所有节点和边的值的异或和"
+          "type": "min_max",
+          "description": "选择根节点并分配节点和边的值，使得从根节点出发到任意节点或边的简单路径的最大成本最小化"
         }
       }
     ],
-    "description": "最小化从根节点出发到任意节点或边的简单路径的最大代价，其中代价定义为路径上所有节点和边的值的异或和"
+    "description": "选择根节点并分配节点和边的值，使得从根节点出发到任意节点或边的简单路径的最大成本最小化"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过其子问题的最优解来构造，即树中任意节点作为根时，其子树的最优解可以用于构建整个树的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：在树结构中，通过交换某些节点或边的值，可以保持整体路径成本的不变性。这种对称性允许我们通过对部分节点或边进行操作来优化全局解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，具体表现为树上路径的代价可以通过节点和边的值进行递归计算。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过其子问题的最优解来构造，即树中任意节点作为根时，其子树的最优解可以用于构建整个树的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：在树结构中，通过交换某些节点或边的值，可以保持整体路径成本的不变性。这种对称性允许我们通过对部分节点或边进行操作来优化全局解。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，具体表现为树上路径的代价可以通过节点和边的值进行递归计算。"
+    ]
   }
 }

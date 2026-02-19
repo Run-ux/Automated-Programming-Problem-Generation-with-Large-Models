@@ -1,0 +1,92 @@
+{
+  "problem_id": "P12033",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 20000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "linear_relation",
+            "description": "元素位置按等差数列分布（公差为 M）",
+            "formal": "positions = {L, L + M, L + 2M, ..., R} where R - L is a multiple of M"
+          },
+          {
+            "name": "range_bound",
+            "description": "区间内元素数量是固定的，由区间长度和公差决定",
+            "formal": "number_of_elements = (R - L) / M + 1"
+          },
+          {
+            "name": "distance_bound",
+            "description": "每个元素移动的距离不超过其与目标位置的绝对差值",
+            "formal": "distance = |current_position - target_position|"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每秒只能对一个元素进行一次移动操作",
+            "formal": "operations_per_second = 1"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求所有点被访问的最短时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个子区间内的最小时间可以组合成整个区间的最小时间。",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过计算每个子区间的最小时间，可以累加得到整个区间的最小时间。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：在处理每个子区间时，左右端点的位置是单调前进的，不会回退。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "problem_id": "CF1369E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "bipartite_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "bipartite_graph",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {
+            "directed": false,
+            "weighted": false,
+            "bipartite": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 100000
+    },
+    "properties": {
+      "directed": false,
+      "weighted": false,
+      "bipartite": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "matching_constraint",
+        "description": "每个朋友有两个不同的喜好类型，且这两个类型不能相同（匹配约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "flow_constraint",
+        "description": "每种食物类型的数量有限，朋友只能在有剩余的情况下吃（容量约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "exclusion",
+        "description": "如果一个朋友无法吃到任何一种他喜欢的食物，则他会吃掉Lee（互斥约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "Lee可以选择朋友的呼叫顺序，以确保每个朋友都能吃到至少一种他喜欢的食物（顺序约束）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "matching_constraint",
+              "description": "每个朋友有两个不同的喜好类型，且这两个类型不能相同（匹配约束）",
+              "formal": "∀i, x_i ≠ y_i"
+            },
+            {
+              "name": "flow_constraint",
+              "description": "每种食物类型的数量有限，朋友只能在有剩余的情况下吃（容量约束）",
+              "formal": "w_i ≥ 0, ∀i"
+            },
+            {
+              "name": "exclusion",
+              "description": "如果一个朋友无法吃到任何一种他喜欢的食物，则他会吃掉Lee（互斥约束）",
+              "formal": "if w_{x_i} = 0 and w_{y_i} = 0, then Lee is eaten"
+            },
+            {
+              "name": "ordering",
+              "description": "Lee可以选择朋友的呼叫顺序，以确保每个朋友都能吃到至少一种他喜欢的食物（顺序约束）",
+              "formal": "∃ permutation P of friends such that ∀i, w_{x_{P[i]}} > 0 or w_{y_{P[i]}} > 0 after calling P[1..i-1]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一种顺序，使得所有朋友都能至少吃到一种食物"
+        }
+      }
+    ],
+    "description": "判断是否存在一种顺序，使得所有朋友都能至少吃到一种食物"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "greedy_choice",
+        "description": "局部最优选择导致全局最优：优先选择那些当前剩余数量较多的食物类型的朋友，以确保尽可能多的朋友能够吃到食物。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个朋友的选择只依赖于当前剩余的食物数量，而不受其他朋友选择顺序的影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "greedy_choice",
+              "description": "局部最优选择导致全局最优：优先选择那些当前剩余数量较多的食物类型的朋友，以确保尽可能多的朋友能够吃到食物。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个朋友的选择只依赖于当前剩余的食物数量，而不受其他朋友选择顺序的影响。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

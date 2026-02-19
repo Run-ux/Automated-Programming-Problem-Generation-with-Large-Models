@@ -1,0 +1,87 @@
+{
+  "problem_id": "P5475",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "ordering",
+            "description": "定音鼓的音调必须按升序排列（即鼓 i+1 的音调必须比鼓 i 的音调高）",
+            "formal": "P[i] < P[i+1] for all 1 <= i < D"
+          },
+          {
+            "name": "operation_limit",
+            "description": "在演奏过程中，每次只能调整一个定音鼓的音调，并且只有在当前时刻不需要演奏时才能进行调整",
+            "formal": "At most one drum can be tuned at a time, and only when no note is being played"
+          },
+          {
+            "name": "window_constraint",
+            "description": "每个音符必须在指定的时间点 T_i 演奏，并且此时对应的定音鼓必须已经调整到相应的音调 P_i",
+            "formal": "For each note i, the drum must be tuned to P_i at time T_i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化在给定约束条件下的总调整时间"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "音符时间序列单调递增，且定音鼓的音调调整顺序保持单调性（即鼓 i+1 的音调始终大于鼓 i 的音调）",
+            "properties": {
+              "time_monotonic": true,
+              "pitch_monotonic": true
+            }
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "问题的最优解可以通过子问题的最优解组合得到，即在每个音符演奏时刻之前的最大调整时间可以由前一个音符的最优解推导出来",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移过程中，当前状态的合法性依赖于前一状态的合法性和当前操作的可行性，即定音鼓的音调调整必须满足当前音符的要求",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

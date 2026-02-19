@@ -1,0 +1,172 @@
+{
+  "problem_id": "P12263",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 500000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 500000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_limit",
+        "description": "每次回听操作中，选择的 x 可以进行任意次（包括 0 次）的操作，但每次操作后 a_x 的值会减少 1 直到 0。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "在回听操作中，每次可以选择一个 j < x 进行交换，并更新 x 为 j。这表示只能与左侧的元素进行交换。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "每次修改后需要输出本质不同的 b_i 的数量，即 b_i 与 b_j 本质不同当且仅当 b_i ≠ b_j。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "range_bound",
+        "description": "每次修改操作中，给定 l, r, v，使 a_l 到 a_r 中的每个数增加 v。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "operation_limit",
+              "description": "每次回听操作中，选择的 x 可以进行任意次（包括 0 次）的操作，但每次操作后 a_x 的值会减少 1 直到 0。",
+              "formal": "a_x = max(a_x - 1, 0)"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "在回听操作中，每次可以选择一个 j < x 进行交换，并更新 x 为 j。这表示只能与左侧的元素进行交换。",
+              "formal": "swap(a_x, a_j) where j < x"
+            },
+            {
+              "name": "distinctness",
+              "description": "每次修改后需要输出本质不同的 b_i 的数量，即 b_i 与 b_j 本质不同当且仅当 b_i ≠ b_j。",
+              "formal": "|{b_i | b_i ≠ b_j for all i ≠ j}|"
+            },
+            {
+              "name": "range_bound",
+              "description": "每次修改操作中，给定 l, r, v，使 a_l 到 a_r 中的每个数增加 v。",
+              "formal": "a[i] += v for all i in [l, r]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_count",
+          "description": "求序列中本质不同的最小值个数"
+        }
+      }
+    ],
+    "description": "求序列中本质不同的最小值个数"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "回听操作中，选择的索引 x 逐步向左移动，且每次操作后 a_x 的值单调递减。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": false,
+          "left_monotonic": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "b_i 的最小值可以通过子问题的最优解来确定，即通过回听操作后的局部最优解来构建全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_additivity",
+        "description": "区间 [l, r] 内的元素值增加 v 后，可以通过前缀和的方式快速计算区间的增量。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "interval_mergeable",
+        "description": "在进行多次修改操作后，可以通过合并区间信息来维护 b_i 的值，确保每次修改后的 b_i 值能够高效更新。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "monotonicity",
+              "description": "回听操作中，选择的索引 x 逐步向左移动，且每次操作后 a_x 的值单调递减。",
+              "properties": {
+                "right_monotonic": false,
+                "left_monotonic": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "b_i 的最小值可以通过子问题的最优解来确定，即通过回听操作后的局部最优解来构建全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "interval_additivity",
+              "description": "区间 [l, r] 内的元素值增加 v 后，可以通过前缀和的方式快速计算区间的增量。",
+              "properties": {}
+            },
+            {
+              "name": "interval_mergeable",
+              "description": "在进行多次修改操作后，可以通过合并区间信息来维护 b_i 的值，确保每次修改后的 b_i 值能够高效更新。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

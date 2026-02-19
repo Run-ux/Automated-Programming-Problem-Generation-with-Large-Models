@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 200000
@@ -28,8 +28,8 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_operation_types_constraint",
-            "description": "选取元素的特定属性（最大奇数因子）必须为1"
+            "name": "divisibility",
+            "description": "选取元素的值必须满足其最大奇数因子为1（即2的幂次）"
           }
         ]
       }
@@ -41,7 +41,7 @@
       "status": "success",
       "result": {
         "type": "maximize_count",
-        "description": "统计满足特定条件的区间内元素数量"
+        "description": "求满足条件的元素个数"
       }
     }
   ],
@@ -50,9 +50,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "interval_mergeable",
-        "description": "区间可合并性：通过端点差值计算区间内满足条件的元素数量，适用于前缀和或线段树等数据结构",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过计算区间内符合条件的元素数量，可以将大区间分解为小区间进行计算并合并结果。",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子区间的解来构建，即每个子区间内的VIP客人数量可以独立计算，并最终汇总得到整个区间的解。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

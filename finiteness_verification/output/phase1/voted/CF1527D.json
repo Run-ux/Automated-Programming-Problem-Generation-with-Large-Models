@@ -1,0 +1,143 @@
+{
+  "problem_id": "CF1527D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "tree",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "tree",
+          "length": {
+            "min": 2,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 199999
+          },
+          "properties": {
+            "connected": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 199999
+    },
+    "properties": {
+      "connected": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "connectivity",
+        "description": "图必须连通（题目中给定的边构成一棵树）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "路径上节点标签的 MEX 值必须唯一（MEX 是路径上未出现的最小非负整数）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "计算无序对 (u, v) 的数量，其中 u ≠ v 且满足特定条件（MEX 值为 k 的路径）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "connectivity",
+              "description": "图必须连通（题目中给定的边构成一棵树）"
+            },
+            {
+              "name": "distinctness",
+              "description": "路径上节点标签的 MEX 值必须唯一（MEX 是路径上未出现的最小非负整数）",
+              "formal": "对于路径 P，MEX(P) = min{ x | x ∉ P }"
+            },
+            {
+              "name": "adjacency_relation",
+              "description": "计算无序对 (u, v) 的数量，其中 u ≠ v 且满足特定条件（MEX 值为 k 的路径）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "enumeration",
+          "description": "对于每个给定的整数k，计算满足条件的路径数量，其中条件为路径上所有节点标签的MEX等于k"
+        }
+      }
+    ],
+    "description": "对于每个给定的整数k，计算满足条件的路径数量，其中条件为路径上所有节点标签的MEX等于k"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的解可以通过子问题的解组合得到，即树中任意路径的MEX值可以通过其子路径的MEX值推导出来。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "topological_order",
+        "description": "拓扑序不变量：在树结构上，节点的处理顺序遵循从根到叶或从叶到根的拓扑排序，保证了每个节点在处理时其所有祖先（或后代）节点的信息已知。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：树的不同分支可以独立地计算其路径的MEX值，这些子问题的解可以合并以得到整个问题的解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的解可以通过子问题的解组合得到，即树中任意路径的MEX值可以通过其子路径的MEX值推导出来。",
+              "properties": {}
+            },
+            {
+              "name": "topological_order",
+              "description": "拓扑序不变量：在树结构上，节点的处理顺序遵循从根到叶或从叶到根的拓扑排序，保证了每个节点在处理时其所有祖先（或后代）节点的信息已知。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：树的不同分支可以独立地计算其路径的MEX值，这些子问题的解可以合并以得到整个问题的解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

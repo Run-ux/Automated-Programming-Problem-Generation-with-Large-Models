@@ -1,0 +1,146 @@
+{
+  "problem_id": "P2147",
+  "source": "luogu",
+  "input_structure": {
+    "type": "weighted_undirected_graph",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "weighted_undirected_graph",
+          "length": {
+            "min": 1,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 10000
+          },
+          "properties": {
+            "connected": false,
+            "weighted": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 10000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 10000
+    },
+    "properties": {
+      "connected": false,
+      "weighted": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "acyclicity",
+        "description": "图中不存在环（即任意时刻任意两个节点之间至多只有一条路径）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "connectivity",
+        "description": "查询时，判断两个节点是否连通",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_type",
+        "description": "操作类型限制为 `Connect`、`Destroy` 和 `Query` 三种指令",
+        "confidence": "1/1"
+      },
+      {
+        "name": "existence_requirement",
+        "description": "`Connect` 操作保证原来没有边，`Destroy` 操作保证原来存在边",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "acyclicity",
+              "description": "图中不存在环（即任意时刻任意两个节点之间至多只有一条路径）",
+              "formal": "∀ u, v ∈ V, ∃! path(u, v)"
+            },
+            {
+              "name": "connectivity",
+              "description": "查询时，判断两个节点是否连通",
+              "formal": "Query(u, v) → (u 和 v 是否连通)"
+            },
+            {
+              "name": "operation_type",
+              "description": "操作类型限制为 `Connect`、`Destroy` 和 `Query` 三种指令",
+              "formal": "S ∈ {Connect, Destroy, Query}"
+            },
+            {
+              "name": "existence_requirement",
+              "description": "`Connect` 操作保证原来没有边，`Destroy` 操作保证原来存在边",
+              "formal": "Connect(u, v) → ¬E(u, v), Destroy(u, v) → E(u, v)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断两个节点是否连通"
+        }
+      }
+    ],
+    "description": "判断两个节点是否连通"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "set_difference_invariance",
+        "description": "并查集维护的连通性不变量：任意时刻，每个洞穴属于且仅属于一个连通分量，连通分量的合并和分裂操作保持连通性正确",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "acyclic_graph_property",
+        "description": "森林结构不变量：整个洞穴系统始终是一个无环图（森林），即任意两个洞穴之间至多只有一条路径",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "set_difference_invariance",
+              "description": "并查集维护的连通性不变量：任意时刻，每个洞穴属于且仅属于一个连通分量，连通分量的合并和分裂操作保持连通性正确",
+              "properties": {}
+            },
+            {
+              "name": "acyclic_graph_property",
+              "description": "森林结构不变量：整个洞穴系统始终是一个无环图（森林），即任意两个洞穴之间至多只有一条路径",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

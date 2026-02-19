@@ -1,0 +1,104 @@
+{
+  "problem_id": "P11219",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "sum_constraint",
+            "description": "区间内元素和小于等于 w1 时，youyou 可以标记该区间为红色",
+            "formal": "sum(A[l:r]) <= w1"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "区间内元素和大于 w2 时，yy 可以标记该区间为蓝色",
+            "formal": "sum(A[l:r]) > w2"
+          },
+          {
+            "name": "distance_bound",
+            "description": "youyou 选择的区间长度至多为 c1",
+            "formal": "r - l + 1 <= c1"
+          },
+          {
+            "name": "distance_bound",
+            "description": "yy 选择的区间长度至多为 c2",
+            "formal": "r - l + 1 <= c2"
+          },
+          {
+            "name": "operation_limit",
+            "description": "如果当前操作方没有可操作的区间，则跳过本回合",
+            "formal": "if no valid interval, skip turn"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "youyou 胜利条件是所有数都被标记为红色",
+            "formal": "all elements are red"
+          },
+          {
+            "name": "optimization_objective",
+            "description": "yy 胜利条件是在 10^51971 个回合内 youyou 无法胜利",
+            "formal": "youyou cannot win within 10^51971 turns"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "feasibility",
+        "description": "判断是否存在一种操作序列使得所有元素满足特定条件"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间和可通过端点差值计算，支持快速查询和更新区间和",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移一致性，当前状态的合法性取决于前一状态的合法性和当前操作的影响",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，通过子区间的最优解来构建整个区间的最优解",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

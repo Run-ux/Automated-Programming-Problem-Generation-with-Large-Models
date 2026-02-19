@@ -1,0 +1,86 @@
+{
+  "problem_id": "P11241",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 99999
+        },
+        "properties": {
+          "connected": true,
+          "weighted": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "图必须是树结构（连通且无环）"
+          },
+          {
+            "name": "distance_bound",
+            "description": "每个节点的可达范围受限于给定的距离上限"
+          },
+          {
+            "name": "flow_constraint",
+            "description": "病毒传播需要通过一个共同可达的节点，且该节点的传播时间最短"
+          },
+          {
+            "name": "time_delay_constraint",
+            "description": "感染时间基于传播时间和路径上的最短传播时间计算"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "construction",
+        "description": "构造每个节点首次感染病毒的时间序列"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：每个居民的感染时间可以通过其邻居的感染时间和传播时间计算得出，满足动态规划的最优子结构性质。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个地点到另一个地点的感染时间可以通过路径上的传播时间进行状态转移，保证了状态转移的一致性。",
+            "properties": {}
+          },
+          {
+            "name": "topological_order",
+            "description": "拓扑序不变量：在树结构中，病毒的传播可以按照拓扑序进行，确保每个节点的处理顺序是合理的。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

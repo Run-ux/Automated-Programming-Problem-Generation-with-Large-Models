@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 2,
           "max": 100000
@@ -29,28 +29,28 @@
       "result": {
         "constraints": [
           {
-            "name": "distinct_permutation",
-            "description": "输入数组是一个排列，包含从 1 到 n 的所有整数且每个整数恰好出现一次"
+            "name": "permutation_constraint",
+            "description": "输入序列是一个排列，即包含 n 个从 1 到 n 的不同整数"
           },
           {
-            "name": "turn_based_operation",
-            "description": "两名玩家轮流进行操作，不能跳过回合"
+            "name": "adjacency_relation",
+            "description": "Bob 只能交换相邻位置的元素"
           },
           {
-            "name": "adaptive_interactor",
-            "description": "Alice 可以选择任意两个位置 i 和 j (i ≠ j) 并交换这两个位置的元素"
+            "name": "swap_operation",
+            "description": "Alice 可以选择任意两个位置进行交换"
           },
           {
-            "name": "adaptive_interactor",
-            "description": "Bob 只能选择相邻的两个位置 i 和 i+1 并交换这两个位置的元素"
+            "name": "optimal_play",
+            "description": "双方都采取最优策略进行游戏"
           },
           {
-            "name": "global_optimization_objective",
-            "description": "如果在任何玩家的操作后序列变为升序，则 Alice 获胜；否则 Bob 获胜"
+            "name": "turn_based",
+            "description": "游戏是回合制的，玩家轮流进行操作"
           },
           {
-            "name": "distinct_permutation",
-            "description": "初始排列中至少存在一个位置 i 使得 p_i ≠ i"
+            "name": "ordering",
+            "description": "如果序列变为升序，则 Alice 获胜"
           }
         ]
       }
@@ -61,8 +61,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断是否存在一种操作序列使得在有限步内将给定的排列变为有序"
+        "type": "game_outcome",
+        "description": "确定在给定初始状态和操作规则下，先手或后手的博弈结果"
       }
     }
   ],
@@ -71,9 +71,23 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：问题的解可以通过子问题的最优解组合而成，且每个玩家在每一步都选择对自己最有利的操作以确保最终胜利。",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：当前状态的最优解依赖于子问题的最优解，即在每一步操作中，玩家选择的操作都是基于当前排列下能够使自己获胜的最佳策略。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：每次操作后，排列的状态会发生变化，但始终满足从一个排列到另一个排列的合法转换规则。Alice 的操作是任意两个位置的交换，而 Bob 的操作是相邻位置的交换。",
+            "properties": {}
+          },
+          {
+            "name": "symmetry",
+            "description": "对称性：对于 Alice 和 Bob 来说，如果某个排列可以通过一系列操作达到有序状态，则其逆序排列也可以通过相应的操作达到有序状态。这种对称性保证了某些情况下可以简化分析。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

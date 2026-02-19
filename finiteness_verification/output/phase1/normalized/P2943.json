@@ -1,0 +1,86 @@
+{
+  "problem_id": "P2943",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 40000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 40000
+        },
+        "properties": {
+          "ordered": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "partition",
+            "description": "将序列划分为若干个连续子区间，每个子区间内的元素满足特定条件",
+            "formal": "将序列 A 划分为若干个连续子区间 [l1, r1], [l2, r2], ..., [lk, rk]，使得每个子区间的元素满足特定条件"
+          },
+          {
+            "name": "distinctness",
+            "description": "每个子区间内的不同元素数量不超过 K",
+            "formal": "对于每个子区间 [li, ri]，有 |distinct(A[li:ri])| <= K"
+          },
+          {
+            "name": "sum_constraint",
+            "description": "总代价为各子区间内不同元素数量的平方和",
+            "formal": "总代价 = Σ (|distinct(A[li:ri])|^2) for all i"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求将序列划分成若干连续子段后的最小总代价，其中每段的代价为该段内不同元素种类数的平方"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每个子段的最优解可以合并为整个序列的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：在处理连续子段时，子段的右端点单调递增。",
+            "properties": {
+              "right_monotonic": true
+            }
+          },
+          {
+            "name": "interval_mergeable",
+            "description": "区间可合并性：不同子段的信息可以通过合并操作得到更大区间的有效信息。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

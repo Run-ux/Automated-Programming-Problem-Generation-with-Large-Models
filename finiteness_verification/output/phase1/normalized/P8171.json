@@ -1,0 +1,82 @@
+{
+  "problem_id": "P8171",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 300000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 300000
+        },
+        "properties": {}
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "序列的多样性为其不同的元素个数",
+            "formal": "|distinct(A)|"
+          },
+          {
+            "name": "subsequence_constraint",
+            "description": "总多样性为所有子区间的多样性之和",
+            "formal": "sum(|distinct(A[l:r])| for all l, r)"
+          },
+          {
+            "name": "permutation_constraint",
+            "description": "可以对区间内的元素进行重排以最小化总多样性",
+            "formal": "min(sum(|distinct(A'[l:r])|) for all permutations A' of A[l:r])"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "求给定区间内重排后最小的总多样性"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：原问题的最优解可以通过子问题的最优解组合得到，即每个区间的最小总多样性可以通过其子区间的最小总多样性计算得出",
+            "properties": {}
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：通过前缀和的方式可以高效计算任意子区间的多样性，从而支持快速查询和更新",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个询问区间的重排和计算是独立的，一个区间的重排不影响其他区间的计算结果",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

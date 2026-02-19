@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 4,
           "max": 4
@@ -28,14 +28,9 @@
       "result": {
         "constraints": [
           {
-            "name": "substring_deletion_constraint",
-            "description": "连续相同元素数量不超过 K1 或 K2（分别对应两种类型的元素）",
-            "formal": "对于任意 i, j (i < j), 如果 A[i] == A[j], 则 j - i <= K1 或 K2"
-          },
-          {
-            "name": "constant_submatrix",
-            "description": "同类型元素不可区分",
-            "formal": "所有 n1 个第一种元素视为相同，所有 n2 个第二种元素视为相同"
+            "name": "frequency_bound",
+            "description": "序列中连续相同元素的最大数量不超过给定值（对于两种类型的元素分别有不同限制）",
+            "formal": "对于任意 i, j (i < j), 如果 A[i] == A[j], 则 j - i <= k1 或 k2"
           }
         ]
       }
@@ -46,8 +41,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "统计满足条件的排列数量"
+        "type": "enumeration",
+        "description": "求满足条件的排列数（常取模）"
       }
     }
   ],
@@ -56,12 +51,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，通过动态规划求解满足约束条件的排列数",
-        "properties": {
-          "subproblem_independence": true,
-          "solution_combinable": true
-        }
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的解可以通过子问题的解来构建，即通过较小规模的美丽排列来构造较大规模的美丽排列。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从一个状态到另一个状态的转移是基于当前状态和新增元素（步兵或骑兵）的合法性检查，确保不会出现超过k1个连续步兵或超过k2个连续骑兵的情况。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

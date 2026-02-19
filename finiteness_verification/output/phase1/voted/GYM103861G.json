@@ -2,14 +2,14 @@
   "problem_id": "GYM103861G",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "two_dimensional_array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "two_dimensional_array",
           "length": {
             "min": 1,
             "max": 100
@@ -19,7 +19,11 @@
             "max": 100
           },
           "properties": {
-            "ordered": false,
+            "characters": [
+              "W",
+              "B",
+              "?"
+            ],
             "inferred": true
           }
         }
@@ -34,20 +38,24 @@
       "max": 100
     },
     "properties": {
-      "ordered": false,
+      "characters": [
+        "W",
+        "B",
+        "?"
+      ],
       "inferred": true
     }
   },
   "core_constraints": {
     "constraints": [
       {
-        "name": "pattern_filling_constraint",
-        "description": "任意2x2子矩阵不能形成黑白相间的棋盘格图案",
+        "name": "exclusion",
+        "description": "2x2 子矩阵中不能出现黑白交替的棋盘格图案",
         "confidence": "1/1"
       },
       {
-        "name": "coordinate_fixed_point",
-        "description": "已着色的单元格在输出中不能改变颜色",
+        "name": "existence_requirement",
+        "description": "已着色的单元格颜色不能改变",
         "confidence": "1/1"
       }
     ],
@@ -58,14 +66,12 @@
         "result": {
           "constraints": [
             {
-              "name": "pattern_filling_constraint",
-              "description": "任意2x2子矩阵不能形成黑白相间的棋盘格图案",
-              "formal": "对于所有 2x2 子矩阵 S，S 不应满足以下条件之一：\n1. S[0][0] = 'B' 且 S[0][1] = 'W' 且 S[1][0] = 'W' 且 S[1][1] = 'B'\n2. S[0][0] = 'W' 且 S[0][1] = 'B' 且 S[1][0] = 'B' 且 S[1][1] = 'W'"
+              "name": "exclusion",
+              "description": "2x2 子矩阵中不能出现黑白交替的棋盘格图案"
             },
             {
-              "name": "coordinate_fixed_point",
-              "description": "已着色的单元格在输出中不能改变颜色",
-              "formal": "对于所有 (i, j)，如果输入中 board[i][j] 是 'B' 或 'W'，则输出中 board[i][j] 必须保持不变"
+              "name": "existence_requirement",
+              "description": "已着色的单元格颜色不能改变"
             }
           ]
         }
@@ -73,34 +79,54 @@
     ]
   },
   "objective": {
-    "type": "maximize_count",
+    "type": "feasibility",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "maximize_count",
-          "description": "判断是否存在一种方案使得所有未着色的单元格被着色后，整个矩阵中不包含任何棋盘格模式"
+          "type": "feasibility",
+          "description": "判断是否存在一种方案，使得所有未着色的单元格被着色后，整个矩阵中不包含特定的2x2子矩阵模式"
         }
       }
     ],
-    "description": "判断是否存在一种方案使得所有未着色的单元格被着色后，整个矩阵中不包含任何棋盘格模式"
+    "description": "判断是否存在一种方案，使得所有未着色的单元格被着色后，整个矩阵中不包含特定的2x2子矩阵模式"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每次对未着色的单元格进行着色时，选择不会导致形成棋盘格模式的颜色，从而保证局部最优解能够逐步构建全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个未着色单元格的着色决策仅依赖于其相邻已着色或未着色单元格的状态，而不受其他非相邻单元格的影响。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "局部最优选择导致全局最优：每次对未着色单元格进行着色时，选择不会形成棋盘格模式的颜色，确保最终整个棋盘上没有棋盘格模式。",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每次对未着色的单元格进行着色时，选择不会导致形成棋盘格模式的颜色，从而保证局部最优解能够逐步构建全局最优解。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个未着色单元格的着色决策仅依赖于其相邻已着色或未着色单元格的状态，而不受其他非相邻单元格的影响。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "局部最优选择导致全局最优：每次对未着色单元格进行着色时，选择不会形成棋盘格模式的颜色，确保最终整个棋盘上没有棋盘格模式。"
+    ]
   }
 }

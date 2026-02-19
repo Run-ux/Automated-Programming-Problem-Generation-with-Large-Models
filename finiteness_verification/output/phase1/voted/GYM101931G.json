@@ -2,14 +2,14 @@
   "problem_id": "GYM101931G",
   "source": "icpc_gym",
   "input_structure": {
-    "type": "matrix",
+    "type": "array",
     "confidence": "1/1",
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "type": "matrix",
+          "type": "array",
           "length": {
             "min": 2,
             "max": 100000
@@ -42,6 +42,11 @@
         "name": "suffix_length_constraint",
         "description": "两个字符串的最大公共后缀长度",
         "confidence": "1/1"
+      },
+      {
+        "name": "distinctness",
+        "description": "输入的字符串集合中的每个元素都是唯一的",
+        "confidence": "1/1"
       }
     ],
     "all_rounds": [
@@ -53,6 +58,10 @@
             {
               "name": "suffix_length_constraint",
               "description": "两个字符串的最大公共后缀长度"
+            },
+            {
+              "name": "distinctness",
+              "description": "输入的字符串集合中的每个元素都是唯一的"
             }
           ]
         }
@@ -75,19 +84,39 @@
     "description": "求两个字符串的最大公共后缀长度"
   },
   "invariant": {
-    "name": "optimal_substructure",
-    "confidence": "1/1",
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最大公共后缀长度可以通过比较两个字符串的后缀来确定，且该问题的解可以由更小子问题的解组合而成。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：在比较两个字符串的后缀时，交换两个字符串的位置不会改变它们的最大公共后缀长度。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
     "all_rounds": [
       {
         "round": 1,
         "status": "success",
         "result": {
-          "name": "optimal_substructure",
-          "description": "最优子结构：全局最优解可以通过比较所有可能的局部最优解来获得，即最大公共后缀长度可以通过比较任意两个字符串的后缀得到",
-          "properties": {}
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最大公共后缀长度可以通过比较两个字符串的后缀来确定，且该问题的解可以由更小子问题的解组合而成。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：在比较两个字符串的后缀时，交换两个字符串的位置不会改变它们的最大公共后缀长度。",
+              "properties": {}
+            }
+          ]
         }
       }
-    ],
-    "description": "最优子结构：全局最优解可以通过比较所有可能的局部最优解来获得，即最大公共后缀长度可以通过比较任意两个字符串的后缀得到"
+    ]
   }
 }

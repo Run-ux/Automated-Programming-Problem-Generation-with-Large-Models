@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "string",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 18
@@ -28,20 +28,24 @@
       "result": {
         "constraints": [
           {
-            "name": "binary_tree_structure",
-            "description": "比赛过程形成一个完全二叉树结构，每一轮比赛的胜者进入下一轮，直到决出冠军"
+            "name": "permutation_constraint",
+            "description": "输入的技能水平是一个从 1 到 2^n 的排列，每个元素恰好出现一次"
           },
           {
-            "name": "permutation_constraint",
-            "description": "技能水平是一个从 1 到 2^n 的排列，每个技能水平在排列中恰好出现一次"
+            "name": "binary_matrix_constraint",
+            "description": "输入字符串 s 由 n 个字符组成，每个字符是 0 或 1"
+          },
+          {
+            "name": "elimination_process",
+            "description": "每场比赛淘汰一个队伍，直到只剩下一个队伍为止"
           },
           {
             "name": "pairwise_exclusion",
-            "description": "每场比赛后，输掉比赛的队伍被淘汰，每场比赛只有一个胜者"
+            "description": "每一轮比赛中，队伍两两配对进行比赛，胜者进入下一轮"
           },
           {
-            "name": "state_transition_constraint",
-            "description": "字符串 s 表示每一轮比赛的结果，0 或 1 分别表示某种特定的比赛结果"
+            "name": "optimal_play",
+            "description": "需要找到所有可能赢得比赛的技能水平 x"
           }
         ]
       }
@@ -52,8 +56,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "maximize_count",
-        "description": "判断每个可能的整数是否为满足给定条件的解"
+        "type": "feasibility",
+        "description": "判定给定条件下，哪些整数可以作为获胜者的技能值"
       }
     }
   ],
@@ -62,9 +66,18 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优子结构：大问题的解由子问题的解组合而成，每一轮比赛的结果决定了下一轮的参赛队伍，最终冠军由所有轮次的比赛结果决定",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "divide_conquer",
+            "description": "大问题的解由子问题解合成，每一轮比赛的结果可以递归地通过前一轮的比赛结果确定",
+            "properties": {}
+          },
+          {
+            "name": "optimal_substructure",
+            "description": "最优解包含子问题的最优解，即最终获胜者的路径上的每一步都是局部最优的选择",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

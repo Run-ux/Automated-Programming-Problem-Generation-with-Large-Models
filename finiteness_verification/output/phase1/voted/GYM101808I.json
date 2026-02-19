@@ -1,0 +1,156 @@
+{
+  "problem_id": "GYM101808I",
+  "source": "icpc_gym",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "turn_based",
+        "description": "游戏是回合制的，两名玩家轮流进行操作",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_type",
+        "description": "每轮操作有两种类型：从任意一堆中移除一个石子，或者从每一堆中移除一个石子（前提是每一堆至少有一个石子）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "state_transition",
+        "description": "游戏状态由当前各堆石子的数量决定，每次操作后状态会改变",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "当某一方无法进行任何操作时，该方失败",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimal_play",
+        "description": "双方都以最优策略进行游戏",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "turn_based",
+              "description": "游戏是回合制的，两名玩家轮流进行操作"
+            },
+            {
+              "name": "operation_type",
+              "description": "每轮操作有两种类型：从任意一堆中移除一个石子，或者从每一堆中移除一个石子（前提是每一堆至少有一个石子）"
+            },
+            {
+              "name": "state_transition",
+              "description": "游戏状态由当前各堆石子的数量决定，每次操作后状态会改变"
+            },
+            {
+              "name": "operation_limit",
+              "description": "当某一方无法进行任何操作时，该方失败"
+            },
+            {
+              "name": "optimal_play",
+              "description": "双方都以最优策略进行游戏"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "game_outcome",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "game_outcome",
+          "description": "确定在给定规则下，先手或后手的胜负情况"
+        }
+      }
+    ],
+    "description": "确定在给定规则下，先手或后手的胜负情况"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：游戏的最终结果可以通过子问题的最优解来确定，即每个状态的胜负情况可以由其后续状态的胜负情况推导出来。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "state_transition",
+        "description": "状态转移不变量：游戏的状态转移规则是固定的，当前状态通过合法的操作转移到下一个状态，且状态转移的一致性保证了游戏的公平性和可预测性。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "symmetry",
+        "description": "对称性：在某些情况下，玩家的操作具有对称性，例如当所有堆的石子数量相同时，两个玩家的操作效果是对称的，这可以简化问题的分析。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：游戏的最终结果可以通过子问题的最优解来确定，即每个状态的胜负情况可以由其后续状态的胜负情况推导出来。",
+              "properties": {}
+            },
+            {
+              "name": "state_transition",
+              "description": "状态转移不变量：游戏的状态转移规则是固定的，当前状态通过合法的操作转移到下一个状态，且状态转移的一致性保证了游戏的公平性和可预测性。",
+              "properties": {}
+            },
+            {
+              "name": "symmetry",
+              "description": "对称性：在某些情况下，玩家的操作具有对称性，例如当所有堆的石子数量相同时，两个玩家的操作效果是对称的，这可以简化问题的分析。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

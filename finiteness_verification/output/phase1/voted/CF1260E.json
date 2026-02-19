@@ -1,0 +1,149 @@
+{
+  "problem_id": "CF1260E",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 262144
+          },
+          "value_range": {
+            "min": -1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 262144
+    },
+    "value_range": {
+      "min": -1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "exclusion",
+        "description": "每对匹配中只有一个元素可以获胜并进入下一轮（图着色约束）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "degree_bound",
+        "description": "每个节点在每轮中的出度不超过1（每个选手每轮只能参加一场比赛）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "操作次数限制为 log2(n) 轮（每轮淘汰一半选手，直到只剩一个胜者）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "matching_constraint",
+        "description": "可以通过调整配对关系来影响比赛结果（可以在每轮中自由选择对手）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "optimization_objective",
+        "description": "最小化总花费以确保特定节点获胜（最小化贿赂成本以确保朋友获胜）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "exclusion",
+              "description": "每对匹配中只有一个元素可以获胜并进入下一轮（图着色约束）"
+            },
+            {
+              "name": "degree_bound",
+              "description": "每个节点在每轮中的出度不超过1（每个选手每轮只能参加一场比赛）"
+            },
+            {
+              "name": "operation_limit",
+              "description": "操作次数限制为 log2(n) 轮（每轮淘汰一半选手，直到只剩一个胜者）"
+            },
+            {
+              "name": "matching_constraint",
+              "description": "可以通过调整配对关系来影响比赛结果（可以在每轮中自由选择对手）"
+            },
+            {
+              "name": "optimization_objective",
+              "description": "最小化总花费以确保特定节点获胜（最小化贿赂成本以确保朋友获胜）"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求最小化代价使得特定节点在淘汰赛中获胜"
+        }
+      }
+    ],
+    "description": "求最小化代价使得特定节点在淘汰赛中获胜"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即在每一轮比赛中，为了使朋友获胜，需要选择最小代价的对手进行贿赂。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "divide_conquer",
+        "description": "分治不变量：大问题的解由子问题解合成。在每一轮比赛中，将所有选手分成若干对，每对比赛的结果决定了下一轮的选手名单，最终通过多轮比赛确定胜者。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解来构造，即在每一轮比赛中，为了使朋友获胜，需要选择最小代价的对手进行贿赂。",
+              "properties": {}
+            },
+            {
+              "name": "divide_conquer",
+              "description": "分治不变量：大问题的解由子问题解合成。在每一轮比赛中，将所有选手分成若干对，每对比赛的结果决定了下一轮的选手名单，最终通过多轮比赛确定胜者。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

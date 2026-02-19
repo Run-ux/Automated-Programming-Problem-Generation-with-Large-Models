@@ -6,7 +6,7 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "matrix",
+        "type": "array",
         "length": {
           "min": 1,
           "max": 20000
@@ -26,14 +26,19 @@
       "result": {
         "constraints": [
           {
-            "name": "maximum_lifetime_constraint",
-            "description": "在任意连续的 x 个时间单位内，最多只能有两个任务被完全执行（即最多两个任务被暴露）",
-            "formal": "对于任意 l, r (r - l + 1 = x)，满足 sum(t_i 完全在 [l, r] 内) <= 2"
+            "name": "distance_bound",
+            "description": "在任意连续 x 个时间步内，最多只能有两个消息被暴露（即完全发送）",
+            "formal": "对于任意 i, j (i <= j < i + x)，满足 sum(t_k) 完全在 [i, j] 内的消息数量 <= 2"
           },
           {
-            "name": "continuous_path_constraint",
-            "description": "每个任务一旦开始执行，必须连续执行直到完成，不能中断",
-            "formal": "如果任务 i 在 t 开始，则它必须在 [t, t + t_i - 1] 内连续执行"
+            "name": "connectivity",
+            "description": "一旦开始发送某个消息，必须连续发送直到完成，不能中断",
+            "formal": "如果消息 t_i 在时间 t 开始发送，则它必须在时间 [t, t + t_i - 1] 内连续发送"
+          },
+          {
+            "name": "concurrency",
+            "description": "多个消息可以并行发送，互不影响",
+            "formal": "多个消息可以在同一时间步开始发送，且它们的传输时间互不影响"
           }
         ]
       }
@@ -44,8 +49,8 @@
       "round": 1,
       "status": "success",
       "result": {
-        "type": "minimize_cost",
-        "description": "求完成所有任务所需的最短时间，使得在任意连续时间段内最多有两个任务被暴露"
+        "type": "minimize_value",
+        "description": "求满足条件的最小时间长度"
       }
     }
   ],
@@ -54,9 +59,26 @@
       "round": 1,
       "status": "success",
       "result": {
-        "name": "optimal_substructure",
-        "description": "最优解包含子问题的最优解，通过动态规划方法求解最小时间使得最多两个消息被暴露",
-        "properties": {}
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在某个时间点之前发送的消息集合的最优解可以用于构造整个问题的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "monotonicity",
+            "description": "单调性：随着消息发送时间的推进，已发送消息的数量和总时间均单调增加，且在任意时刻，选择更早的时间开始发送不会导致更差的结果。",
+            "properties": {
+              "left_monotonic": true,
+              "right_monotonic": false
+            }
+          },
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：在任意给定的时间段内，所有在此时间段内完全发送的消息的总时间可以通过该时间段的端点计算得出。",
+            "properties": {}
+          }
+        ]
       }
     }
   ]

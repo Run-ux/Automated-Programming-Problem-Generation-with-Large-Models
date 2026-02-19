@@ -1,0 +1,89 @@
+{
+  "problem_id": "P2465",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100
+        },
+        "properties": {
+          "connected": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "图必须是树结构，即无环且连通"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "每个分部可以建在任意一个村落中，形成一个子集"
+          },
+          {
+            "name": "path_constraint",
+            "description": "每个分部到总部的路径称为管辖范围，路径可能重叠或完全相同"
+          },
+          {
+            "name": "operation_limit",
+            "description": "每个分部可以在多个村落中建设，但每个村落只能计算一次收益损失/获取"
+          },
+          {
+            "name": "operation_order",
+            "description": "多个分部同时管辖同一个村落时，会产生额外的收益或损失"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化总收益，考虑建设分部的花费和管辖范围内的额外收益或损失"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，每个村落的分部选择依赖于其子树中的最优解",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：在树形 DP 中，当前节点的状态由其子节点的状态转移而来，保持一致性",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：不同子树之间的子问题是相互独立的，可以分别求解后再合并结果",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

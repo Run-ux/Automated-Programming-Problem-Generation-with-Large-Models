@@ -1,0 +1,149 @@
+{
+  "problem_id": "P4067",
+  "source": "luogu",
+  "input_structure": {
+    "type": "two_dimensional_array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "two_dimensional_array",
+          "length": {
+            "min": 1,
+            "max": 1000000000000000000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000000000000
+          },
+          "properties": {
+            "inferred": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 1000000000000000000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000000000000
+    },
+    "properties": {
+      "inferred": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "fixed_position_constraint",
+        "description": "每个格子的初始能量值由按位异或运算确定（i ⊕ j）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "non_negative_prefix_sum",
+        "description": "每个格子的能量随时间减少，但不能低于0",
+        "confidence": "1/1"
+      },
+      {
+        "name": "modular_arithmetic",
+        "description": "总能量对给定的模数 p 取模",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "fixed_position_constraint",
+              "description": "每个格子的初始能量值由按位异或运算确定（i ⊕ j）",
+              "formal": "E[i][j] = i ⊕ j"
+            },
+            {
+              "name": "non_negative_prefix_sum",
+              "description": "每个格子的能量随时间减少，但不能低于0",
+              "formal": "E[i][j] = max(E[i][j] - k, 0)"
+            },
+            {
+              "name": "modular_arithmetic",
+              "description": "总能量对给定的模数 p 取模",
+              "formal": "total_energy % p"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求在给定时间单位后，表格中所有格子剩余能量的总和"
+        }
+      }
+    ],
+    "description": "求在给定时间单位后，表格中所有格子剩余能量的总和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过端点差值计算区间的能量和",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：每个格子的能量随时间单调递减，直到为0",
+        "confidence": "1/1",
+        "properties": {
+          "energy_decrease": true
+        }
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：总能量可以通过子区域的能量和来计算",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过端点差值计算区间的能量和",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：每个格子的能量随时间单调递减，直到为0",
+              "properties": {
+                "energy_decrease": true
+              }
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：总能量可以通过子区域的能量和来计算",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

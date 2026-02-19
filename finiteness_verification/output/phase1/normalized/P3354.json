@@ -1,0 +1,91 @@
+{
+  "problem_id": "P3354",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "tree",
+        "length": {
+          "min": 2,
+          "max": 100
+        },
+        "value_range": {
+          "min": 0,
+          "max": 10000
+        },
+        "properties": {
+          "connected": true,
+          "weighted": true,
+          "rooted": true
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "acyclicity",
+            "description": "图结构为树，根节点为 Bytetown"
+          },
+          {
+            "name": "degree_bound",
+            "description": "每个节点的度数不超过 2（除了根节点）"
+          },
+          {
+            "name": "unrestricted_position",
+            "description": "在 k 个节点上选择建设伐木场以最小化总运费"
+          },
+          {
+            "name": "cost_constraint",
+            "description": "每吨木料每千米运费为 1 分钱"
+          },
+          {
+            "name": "revisiting_allowed",
+            "description": "如果村庄有伐木场，则该村庄的木料不需要运输"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "minimize_value",
+        "description": "最小化总运输费用"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在每个村庄建立伐木场与否的决策基于其子树的最优解。",
+            "properties": {}
+          },
+          {
+            "name": "state_transition",
+            "description": "状态转移不变量：从根节点到叶子节点的遍历过程中，每个节点的状态（是否建立伐木场）和成本计算依赖于其子节点的状态。",
+            "properties": {}
+          },
+          {
+            "name": "acyclic_graph_property",
+            "description": "树结构不变量：所有村庄和河流构成一棵有向无环图，且存在唯一的根节点Bytetown，保证了从任意节点到根节点路径的唯一性。",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}

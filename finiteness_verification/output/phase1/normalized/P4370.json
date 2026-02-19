@@ -1,0 +1,79 @@
+{
+  "problem_id": "P4370",
+  "source": "luogu",
+  "input_structure": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "array",
+        "length": {
+          "min": 2,
+          "max": 2
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000
+        },
+        "properties": {
+          "ordered": false
+        }
+      }
+    }
+  ],
+  "core_constraints": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "constraints": [
+          {
+            "name": "distinctness",
+            "description": "选取的组合数必须互不相同（即对于任意两个组合数 C_a^b 和 C_c^d，若 a ≠ c 或 b ≠ d，则认为它们不同）",
+            "formal": "∀ (a, b) ≠ (c, d), C_a^b ≠ C_c^d"
+          },
+          {
+            "name": "range_bound",
+            "description": "每个组合数 C_a^b 必须满足 0 ≤ b ≤ a ≤ n",
+            "formal": "0 ≤ b ≤ a ≤ n"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "从所有可能的组合数中选择 k 个不同的组合数，使得它们的和最大",
+            "formal": "maximize ∑_{i=1}^k C_{a_i}^{b_i} subject to 0 ≤ b_i ≤ a_i ≤ n and all (a_i, b_i) are distinct"
+          }
+        ]
+      }
+    }
+  ],
+  "objective": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "type": "maximize_value",
+        "description": "最大化选取的k个不同组合数的和"
+      }
+    }
+  ],
+  "invariant": [
+    {
+      "round": 1,
+      "status": "success",
+      "result": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即选择最大的 k 个组合数的问题可以分解为选择第 i 大的组合数的问题",
+            "properties": {}
+          },
+          {
+            "name": "greedy_choice",
+            "description": "贪心选择性质：每次选择当前可选的最大组合数，最终能够得到全局最优解",
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}
