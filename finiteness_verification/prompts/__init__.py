@@ -7,6 +7,7 @@ from finiteness_verification.prompts import (
     prompt_invariant,
     prompt_normalize,
     prompt_objective,
+    prompt_transform_space,
 )
 
 __all__ = [
@@ -15,4 +16,5 @@ __all__ = [
     "prompt_invariant",
     "prompt_normalize",
     "prompt_objective",
+    "prompt_transform_space",
 ]
