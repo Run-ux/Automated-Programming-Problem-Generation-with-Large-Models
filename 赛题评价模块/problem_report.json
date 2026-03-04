@@ -1,0 +1,16 @@
+{
+  "total_score": 97.8,
+  "is_qualified": true,
+  "metrics": {
+    "data_compliance": 1.0,  //数据合规性
+    "logic_kill_rate": 1.0,  //逻辑合理性
+    "solvability": 1.0,  //可解性
+    "structural_novelty": 0.8888888888888888  //新颖度
+  },
+  "feedback": "Excellent Problem! High quality and structurally sound.",
+  "generated_artifacts": {
+    "validator_code": "def validate(input_str) -> bool:\n    \"\"\"\n    Validates if the input string represents a 1D array of integers that meets the specified constraints.\n    \n    Args:\n        input_str: Raw stdin string\n        \n    Returns:\n        bool: True if input strictly follows the format and constraints, False otherwise\n        \n    Constraints:\n        - Array length n satisfies 1 <= n <= 100\n        - Element values v satisfy -1000 <= v <= 1000\n    \"\"\"\n    try:\n        # Strip whitespace and check if empty\n        input_str = input_str.strip()\n        if not input_str:\n            return False\n            \n        # Check if string starts with '[' and ends with ']' (typical array representation)\n        if input_str.startswith('[') and input_str.endswith(']'):\n            # Extract content between brackets\n            content = input_str[1:-1].strip()\n            \n            # Handle empty array case (but constraint says min length 1)\n            if not content:\n                return False\n                \n            # Split by comma to get individual elements\n            elements_str = [e.strip() for e in content.split(',')]\n        else:\n            # Try space-separated or other delimiter formats\n            # Split by whitespace and filter out empty strings\n            elements_str = [e.strip() for e in input_str.split() if e.strip()]\n            \n            # If no elements found after splitting, invalid\n            if not elements_str:\n                return False\n        \n        # Check array length constraints\n        n = len(elements_str)\n        if n < 1 or n > 100:\n            return False\n        \n        # Validate each element is an integer within range\n        for elem_str in elements_str:\n            # Check if element is a valid integer string\n            if not elem_str.lstrip('-').isdigit():\n                # Try converting directly - handles negative numbers properly\n                try:\n                    value = int(elem_str)\n                except (ValueError, TypeError):\n                    return False\n            else:\n                value = int(elem_str)\n            \n            # Check value range constraint\n            if value < -1000 or value > 1000:\n                return False\n                \n        return True\n        \n    except Exception:\n        return False",
+    "failed_mutants": [],  //bug
+    "sim_student_code": "def solve(input_str: str) -> str:\n    \"\"\"\n    计算输入字符串中所有数字的和\n    \n    Args:\n        input_str: 一行包含空格分隔的数字的字符串\n        \n    Returns:\n        数字和的字符串表示\n    \"\"\"\n    # 将输入字符串按空格分割，转换为整数列表，然后求和\n    nums = list(map(int, input_str.strip().split()))\n    total = sum(nums)\n    return str(total)",
+  }
+}
