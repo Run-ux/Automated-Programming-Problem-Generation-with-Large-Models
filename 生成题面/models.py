@@ -37,4 +37,6 @@ class GeneratedProblem:
     constraints: list[str]
     samples: list[dict[str, str]] = field(default_factory=list)
     notes: str = ""
-
+    status: str = "ok"
+    error_reason: str = ""
+    feedback: str = ""

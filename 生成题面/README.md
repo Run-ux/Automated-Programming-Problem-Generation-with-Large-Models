@@ -35,12 +35,6 @@ python main.py --problem-ids CF25E CF360C --variants 2
 
 如果输入 schema 只有前四维，`main.py` 会先自动调用 `finiteness_verification` 的 transform 抽取第五维 `transform_space`，把补全后的文件缓存到 `prepared_schemas/`，再继续生成题面。
 
-本地干跑：
-
-```bash
-python main.py --problem-ids CF25E --dry-run
-```
-
 可选参数：
 
 - `--theme cyber_city|arcane_lab|interstellar_logistics|campus_ops`
@@ -53,5 +47,4 @@ python main.py --problem-ids CF25E --dry-run
 
 ## 说明
 
-- `--dry-run` 不调用模型，但会完整执行“读取 schema -> 规划变体 -> 渲染输出 -> 落盘”。
-- 真实生成时要求模型输出 JSON，对题面结构更稳定，便于后续接测试数据和评测模块。
+- 生成时要求模型输出 JSON，对题面结构更稳定，便于后续接测试数据和评测模块。

@@ -12,13 +12,14 @@ DEFAULT_SOURCE_DIR = (
 )
 DEFAULT_OUTPUT_DIR = BASE_DIR / "output"
 DEFAULT_ARTIFACT_DIR = BASE_DIR / "artifacts"
+DEFAULT_REPORT_DIR = BASE_DIR / "reports"
 DEFAULT_PREPARED_SCHEMA_DIR = BASE_DIR / "prepared_schemas"
 
-DEFAULT_MODEL = os.getenv("QWEN_MODEL", "qwen-max")
+DEFAULT_MODEL = os.getenv("QWEN_MODEL", "qwen3.5-plus")
 DEFAULT_BASE_URL = os.getenv(
     "QWEN_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1"
 )
 DEFAULT_API_KEY = os.getenv("QWEN_API_KEY") or os.getenv("DASHSCOPE_API_KEY")
 
 DEFAULT_VARIANTS = 1
-DEFAULT_TEMPERATURE = 0.7
+DEFAULT_TEMPERATURE = 0.2

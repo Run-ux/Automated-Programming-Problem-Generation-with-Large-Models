@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import json
 from pathlib import Path
 
 from config import (
@@ -11,6 +10,7 @@ from config import (
     DEFAULT_MODEL,
     DEFAULT_OUTPUT_DIR,
     DEFAULT_PREPARED_SCHEMA_DIR,
+    DEFAULT_REPORT_DIR,
     DEFAULT_SOURCE_DIR,
     DEFAULT_TEMPERATURE,
     DEFAULT_VARIANTS,
@@ -35,15 +35,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR), help="Markdown 输出目录")
     parser.add_argument("--artifact-dir", default=str(DEFAULT_ARTIFACT_DIR), help="结构化产物目录")
+    parser.add_argument("--report-dir", default=str(DEFAULT_REPORT_DIR), help="过程说明 Markdown 输出目录")
     parser.add_argument("--model", default=DEFAULT_MODEL, help="Qwen 模型名")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="兼容 OpenAI 的 API Base URL")
     parser.add_argument("--temperature", type=float, default=DEFAULT_TEMPERATURE, help="采样温度")
     parser.add_argument("--seed", type=int, default=20260312, help="随机种子")
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="不调用模型，只生成可检查的模板题面",
-    )
     parser.add_argument(
         "--skip-transform-enrich",
         action="store_true",
@@ -56,13 +52,11 @@ def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
 
-    client = None
-    if not args.dry_run:
-        client = QwenClient(
-            api_key=DEFAULT_API_KEY,
-            model=args.model,
-            base_url=args.base_url,
-        )
+    client = QwenClient(
+        api_key=DEFAULT_API_KEY,
+        model=args.model,
+        base_url=args.base_url,
+    )
 
     prepared_source_dir = SchemaPreparer(
         source_dir=Path(args.source_dir),
@@ -73,20 +67,20 @@ def main() -> None:
     )
 
     pipeline = GenerationPipeline(
+        raw_source_dir=Path(args.source_dir),
         source_dir=prepared_source_dir,
         output_dir=Path(args.output_dir),
         artifact_dir=Path(args.artifact_dir),
+        report_dir=Path(args.report_dir),
         generator=ProblemGenerator(client=client, temperature=args.temperature),
         planner=VariantPlanner(seed=args.seed),
     )
 
-    records = pipeline.run(
+    pipeline.run(
         problem_ids=args.problem_ids,
         variants=args.variants,
         theme_id=args.theme,
-        dry_run=args.dry_run,
     )
-    print(json.dumps(records, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
