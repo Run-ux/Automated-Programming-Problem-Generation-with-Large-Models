@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import asdict
 import json
 import sys
 from datetime import datetime
@@ -73,11 +74,17 @@ class GenerationPipeline:
                     schema=prepared_schema,
                     variant_index=variant_index,
                     theme_id=theme_id,
+                    original_schema=original_schema,
+                    original_problem=original_problem,
                 )
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 stem = f"{problem_id}_v{plan.variant_index}_{plan.theme.theme_id}_{timestamp}"
 
-                generated = self.generator.generate(prepared_schema, plan)
+                generated = self.generator.generate(
+                    prepared_schema,
+                    plan,
+                    original_problem=original_problem,
+                )
                 markdown = render_problem_markdown(generated, plan)
                 record = self._save_outputs(
                     stem=stem,
@@ -95,7 +102,7 @@ class GenerationPipeline:
                         prepared_schema=prepared_schema,
                         plan=plan,
                         record=record,
-                        generated_title=generated.title,
+                        generated=generated.__dict__,
                     )
                 )
 
@@ -124,9 +131,14 @@ class GenerationPipeline:
                 "id": plan.theme.theme_id,
                 "name": plan.theme.name,
             },
+            "difference_plan": asdict(plan.difference_plan),
+            "predicted_schema_distance": plan.predicted_schema_distance,
+            "distance_breakdown": plan.distance_breakdown,
+            "changed_axes_realized": plan.changed_axes_realized,
             "objective": plan.objective,
             "numerical_parameters": plan.numerical_parameters,
             "structural_options": plan.structural_options,
+            "instantiated_schema_snapshot": asdict(plan.instantiated_schema_snapshot),
             "generated_problem": payload,
         }
 
@@ -141,6 +153,7 @@ class GenerationPipeline:
             "variant_index": plan.variant_index,
             "markdown_path": str(md_path),
             "artifact_path": str(json_path),
+            "generated_status": payload.get("status", "ok"),
         }
 
     def _build_report_header(
@@ -194,13 +207,16 @@ class GenerationPipeline:
         prepared_schema: dict[str, Any],
         plan: VariantPlan,
         record: dict[str, Any],
-        generated_title: str,
+        generated: dict[str, Any],
     ) -> list[str]:
         return [
             f"## Variant {variant_index}",
             "",
             "### Variant Plan",
             *self._render_variant_plan(plan),
+            "",
+            "### Difference Plan",
+            *self._render_difference_plan(plan),
             "",
             "### 变换过程",
             *self._render_transformation_trace(original_schema, prepared_schema, plan),
@@ -209,7 +225,10 @@ class GenerationPipeline:
             *self._render_transformed_schema(prepared_schema, plan),
             "",
             "### 生成结果",
-            f"- 生成题目标题：{generated_title}",
+            f"- 生成状态：{generated.get('status', 'ok')}",
+            f"- 生成题目标题：{generated.get('title', '') or '无'}",
+            f"- error_reason：{generated.get('error_reason', '') or '无'}",
+            f"- feedback：{generated.get('feedback', '') or '无'}",
             f"- 题面 Markdown：{record['markdown_path']}",
             f"- 结构化产物：{record['artifact_path']}",
             "",
@@ -298,6 +317,25 @@ class GenerationPipeline:
         lines.extend(self._render_plain_list(plan.invariant_summary, empty_text="  - 无"))
         return lines
 
+    def _render_difference_plan(self, plan: VariantPlan) -> list[str]:
+        band = plan.difference_plan.target_distance_band
+        return [
+            f"- target_distance_band: [{band.get('min')}..{band.get('max')})",
+            "- planned_changed_axes: "
+            + (", ".join(plan.difference_plan.changed_axes) or "无"),
+            "- realized_changed_axes: "
+            + (", ".join(plan.changed_axes_realized) or "无"),
+            f"- predicted_schema_distance: {plan.predicted_schema_distance}",
+            "- distance_breakdown: "
+            + ", ".join(
+                f"{name}={value}" for name, value in plan.distance_breakdown.items()
+            ),
+            f"- same_family_allowed: {plan.difference_plan.same_family_allowed}",
+            "- forbidden_reuse:",
+            *self._render_plain_list(plan.difference_plan.forbidden_reuse, empty_text="  - 无"),
+            f"- rationale: {plan.difference_plan.rationale}",
+        ]
+
     def _render_transformation_trace(
         self,
         original_schema: dict[str, Any],
@@ -345,19 +383,20 @@ class GenerationPipeline:
     def _render_transformed_schema(
         self, prepared_schema: dict[str, Any], plan: VariantPlan
     ) -> list[str]:
+        snapshot = asdict(plan.instantiated_schema_snapshot)
         lines = [
-            f"- problem_id: {prepared_schema.get('problem_id', plan.problem_id)}",
-            f"- source: {prepared_schema.get('source', '')}",
-            f"- input_structure: {self._describe_input_structure(prepared_schema.get('input_structure', {}))}",
+            f"- problem_id: {snapshot.get('problem_id', plan.problem_id)}",
+            f"- source: {snapshot.get('source', '')}",
+            f"- input_structure: {self._describe_input_structure(snapshot.get('input_structure', {}))}",
             f"- objective: {self._describe_objective(plan.objective)}",
             "- constraints:",
             *self._render_named_items(
-                prepared_schema.get("core_constraints", {}).get("constraints", []),
+                snapshot.get("core_constraints", {}).get("constraints", []),
                 empty_text="  - 无",
             ),
             "- invariants:",
             *self._render_named_items(
-                prepared_schema.get("invariant", {}).get("invariants", []),
+                snapshot.get("invariant", {}).get("invariants", []),
                 empty_text="  - 无",
             ),
             f"- instantiated_theme: {plan.theme.theme_id} ({plan.theme.name})",

@@ -1,9 +1,17 @@
 from __future__ import annotations
 
 import random
+from dataclasses import asdict
+from itertools import combinations, product
 from typing import Any
 
-from models import Theme, VariantPlan
+from models import DifferencePlan, Theme, VariantPlan
+from schema_tools import (
+    build_forbidden_reuse_list,
+    build_instantiated_schema,
+    compute_changed_axes,
+    compute_schema_distance,
+)
 
 
 THEMES = [
@@ -39,36 +47,161 @@ THEMES = [
 
 
 class VariantPlanner:
+    MIN_DISTANCE = 0.35
+    MAX_DISTANCE = 0.60
+
     def __init__(self, seed: int | None = None):
         self.seed = seed if seed is not None else random.randrange(1, 10**9)
 
     def build_plan(
-        self, schema: dict[str, Any], variant_index: int, theme_id: str | None = None
+        self,
+        schema: dict[str, Any],
+        variant_index: int,
+        theme_id: str | None = None,
+        original_schema: dict[str, Any] | None = None,
+        original_problem: dict[str, Any] | None = None,
     ) -> VariantPlan:
         rng = random.Random(self.seed + variant_index)
         theme = self._select_theme(rng, theme_id)
+        source_schema = original_schema or schema
 
-        transform_space = schema.get("transform_space", {})
-        objective = self._select_objective(schema, transform_space, rng)
-        numerical_parameters = self._materialize_parameters(transform_space, rng)
-        structural_options = self._select_structural_options(transform_space, rng)
+        candidate = self._pick_difference_candidate(
+            schema=schema,
+            source_schema=source_schema,
+            theme=theme,
+            rng=rng,
+        )
+        snapshot = candidate["instantiated_schema"]
+        difference_plan = DifferencePlan(
+            target_distance_band={"min": self.MIN_DISTANCE, "max": self.MAX_DISTANCE},
+            changed_axes=candidate["changed_axes"],
+            same_family_allowed=True,
+            forbidden_reuse=build_forbidden_reuse_list(original_problem),
+            rationale=self._build_difference_rationale(candidate),
+        )
 
         return VariantPlan(
             problem_id=schema.get("problem_id", "unknown"),
             variant_index=variant_index,
             seed=self.seed + variant_index,
             theme=theme,
-            objective=objective,
-            numerical_parameters=numerical_parameters,
-            structural_options=structural_options,
+            objective=candidate["objective"],
+            numerical_parameters=candidate["numerical_parameters"],
+            structural_options=candidate["structural_options"],
             difficulty=self._infer_difficulty(schema),
-            input_summary=self._summarize_input_structure(schema.get("input_structure", {})),
+            input_summary=self._summarize_input_structure(snapshot["input_structure"]),
             constraint_summary=self._summarize_constraints(
-                schema.get("core_constraints", {}).get("constraints", [])
+                snapshot["core_constraints"].get("constraints", [])
             ),
             invariant_summary=self._summarize_invariants(
-                schema.get("invariant", {}).get("invariants", [])
+                snapshot["invariant"].get("invariants", [])
             ),
+            difference_plan=difference_plan,
+            instantiated_schema_snapshot=candidate["instantiated_schema_object"],
+            predicted_schema_distance=candidate["distance"]["total"],
+            distance_breakdown=candidate["distance"],
+            changed_axes_realized=candidate["changed_axes"],
+        )
+
+    def _pick_difference_candidate(
+        self,
+        schema: dict[str, Any],
+        source_schema: dict[str, Any],
+        theme: Theme,
+        rng: random.Random,
+    ) -> dict[str, Any]:
+        transform_space = schema.get("transform_space", {})
+        objectives = self._objective_candidates(schema, transform_space, rng)
+        parameter_sets = self._parameter_candidates(schema, transform_space, rng)
+        structural_sets = self._structural_option_candidates(transform_space, rng)
+        difficulty = self._infer_difficulty(schema)
+        theme_payload = {
+            "id": theme.theme_id,
+            "name": theme.name,
+            "tone": theme.tone,
+            "keywords": list(theme.keywords),
+            "mapping_hint": theme.mapping_hint,
+        }
+
+        best: dict[str, Any] | None = None
+        for objective, numerical_parameters, structural_options in product(
+            objectives,
+            parameter_sets,
+            structural_sets,
+        ):
+            instantiated = build_instantiated_schema(
+                schema=schema,
+                objective=objective,
+                numerical_parameters=numerical_parameters,
+                structural_options=structural_options,
+                theme=theme_payload,
+                difficulty=difficulty,
+            )
+            snapshot = asdict(instantiated)
+            distance = compute_schema_distance(source_schema, snapshot)
+            changed_axes = compute_changed_axes(source_schema, snapshot)
+            candidate = {
+                "objective": objective,
+                "numerical_parameters": numerical_parameters,
+                "structural_options": structural_options,
+                "instantiated_schema": snapshot,
+                "instantiated_schema_object": instantiated,
+                "distance": distance,
+                "changed_axes": changed_axes,
+            }
+            if best is None or self._is_better_candidate(candidate, best, rng):
+                best = candidate
+
+        if best is None:
+            fallback_objective = self._current_objective(schema)
+            fallback_parameters = {}
+            fallback_structural_options: list[str] = []
+            instantiated = build_instantiated_schema(
+                schema=schema,
+                objective=fallback_objective,
+                numerical_parameters=fallback_parameters,
+                structural_options=fallback_structural_options,
+                theme=theme_payload,
+                difficulty=difficulty,
+            )
+            snapshot = asdict(instantiated)
+            return {
+                "objective": fallback_objective,
+                "numerical_parameters": fallback_parameters,
+                "structural_options": fallback_structural_options,
+                "instantiated_schema": snapshot,
+                "instantiated_schema_object": instantiated,
+                "distance": compute_schema_distance(source_schema, snapshot),
+                "changed_axes": compute_changed_axes(source_schema, snapshot),
+            }
+        return best
+
+    def _is_better_candidate(
+        self,
+        candidate: dict[str, Any],
+        current: dict[str, Any],
+        rng: random.Random,
+    ) -> bool:
+        candidate_score = self._candidate_score(candidate)
+        current_score = self._candidate_score(current)
+        if candidate_score != current_score:
+            return candidate_score > current_score
+        return rng.random() > 0.5
+
+    def _candidate_score(self, candidate: dict[str, Any]) -> tuple[float, ...]:
+        distance = candidate["distance"]["total"]
+        core_axes = len([axis for axis in candidate["changed_axes"] if axis in {"I", "C", "O", "T"}])
+        within_band = self.MIN_DISTANCE <= distance < self.MAX_DISTANCE
+        above_min = distance >= self.MIN_DISTANCE
+        target_mid = (self.MIN_DISTANCE + self.MAX_DISTANCE) / 2
+        closeness = -abs(distance - target_mid)
+        return (
+            1.0 if within_band and core_axes >= 2 else 0.0,
+            1.0 if above_min and core_axes >= 2 else 0.0,
+            float(core_axes),
+            closeness,
+            distance,
+            float(len(candidate["structural_options"])),
         )
 
     def _select_theme(self, rng: random.Random, theme_id: str | None) -> Theme:
@@ -79,58 +212,121 @@ class VariantPlanner:
             raise ValueError(f"Unknown theme_id: {theme_id}")
         return rng.choice(THEMES)
 
-    def _select_objective(
+    def _objective_candidates(
         self,
         schema: dict[str, Any],
         transform_space: dict[str, Any],
         rng: random.Random,
-    ) -> dict[str, Any]:
-        original = schema.get("objective", {})
+    ) -> list[dict[str, Any]]:
+        original = self._current_objective(schema)
         options = transform_space.get("objective_options", [])
-        if not options:
-            return {
-                "type": original.get("type", "unknown"),
-                "description": original.get("description", ""),
-            }
-        chosen = rng.choice(options)
-        return {
-            "type": chosen,
-            "description": self._describe_objective(chosen, original.get("description", "")),
-        }
+        candidates: list[dict[str, Any]] = []
+        for option in options:
+            if option == original.get("type"):
+                continue
+            candidates.append(
+                {
+                    "type": option,
+                    "description": self._describe_objective(option, original.get("description", "")),
+                }
+            )
+        if not candidates:
+            return [original]
+        rng.shuffle(candidates)
+        return candidates[:3]
 
-    def _materialize_parameters(
-        self, transform_space: dict[str, Any], rng: random.Random
-    ) -> dict[str, Any]:
-        result: dict[str, Any] = {}
-        for name, spec in transform_space.get("numerical_parameters", {}).items():
+    def _parameter_candidates(
+        self,
+        schema: dict[str, Any],
+        transform_space: dict[str, Any],
+        rng: random.Random,
+    ) -> list[dict[str, Any]]:
+        specs = transform_space.get("numerical_parameters", {})
+        if not specs:
+            return [{}]
+
+        original_length = schema.get("input_structure", {}).get("length", {})
+        fixed_length = (
+            original_length.get("min")
+            if isinstance(original_length.get("min"), int)
+            and original_length.get("min") == original_length.get("max")
+            else None
+        )
+        fields: list[list[tuple[str, dict[str, Any]]]] = []
+        for name, spec in specs.items():
             min_value = spec.get("min")
             max_value = spec.get("max")
+            description = spec.get("description", "")
+            choices: list[Any] = []
             if isinstance(min_value, int) and isinstance(max_value, int):
-                choices = {
+                candidate_values = {
                     min_value,
                     max_value,
                     (min_value + max_value) // 2,
                     rng.randint(min_value, max_value),
                 }
-                value = rng.choice(sorted(choices))
+                if fixed_length is not None and any(
+                    token in f"{name} {description}".lower()
+                    for token in ("number of", "count", "substrings", "items", "segments")
+                ):
+                    for delta in (-1, 1, -2, 2):
+                        value = fixed_length + delta
+                        if min_value <= value <= max_value and value != fixed_length:
+                            candidate_values.add(value)
+                choices = sorted(candidate_values)
             else:
-                value = spec.get("default", "N/A")
-            result[name] = {
-                "value": value,
-                "min": min_value,
-                "max": max_value,
-                "description": spec.get("description", ""),
-            }
-        return result
+                choices = [spec.get("default", "N/A")]
 
-    def _select_structural_options(
-        self, transform_space: dict[str, Any], rng: random.Random
-    ) -> list[str]:
+            fields.append(
+                [
+                    (
+                        name,
+                        {
+                            "value": value,
+                            "min": min_value,
+                            "max": max_value,
+                            "description": description,
+                        },
+                    )
+                    for value in choices[:5]
+                ]
+            )
+
+        candidates: list[dict[str, Any]] = []
+        for combination in product(*fields):
+            candidate = {name: payload for name, payload in combination}
+            candidates.append(candidate)
+            if len(candidates) >= 12:
+                break
+        if not candidates:
+            return [{}]
+        rng.shuffle(candidates)
+        return candidates
+
+    def _structural_option_candidates(
+        self,
+        transform_space: dict[str, Any],
+        rng: random.Random,
+    ) -> list[list[str]]:
         options = list(transform_space.get("structural_options", []))
         if not options:
-            return []
-        count = rng.randint(0, min(2, len(options)))
-        return rng.sample(options, count)
+            return [[]]
+
+        subsets: list[list[str]] = []
+        for size in (1, 2):
+            for combo in combinations(options, min(size, len(options))):
+                subsets.append(list(combo))
+                if len(combo) == len(options):
+                    break
+        rng.shuffle(subsets)
+        return subsets or [[]]
+
+    def _current_objective(self, schema: dict[str, Any]) -> dict[str, Any]:
+        objective = schema.get("objective", {})
+        return {
+            "type": objective.get("type", "unknown"),
+            "description": objective.get("description", ""),
+        }
 
     def _infer_difficulty(self, schema: dict[str, Any]) -> str:
         invariants = schema.get("invariant", {}).get("invariants", [])
@@ -165,6 +361,23 @@ class VariantPlanner:
     def _summarize_invariants(self, invariants: list[dict[str, Any]]) -> list[str]:
         return [item.get("description", "") for item in invariants if item.get("description")]
 
+    def _build_difference_rationale(self, candidate: dict[str, Any]) -> str:
+        distance = candidate["distance"]["total"]
+        axes = ", ".join(candidate["changed_axes"]) or "无"
+        structural = ", ".join(candidate["structural_options"]) or "无"
+        objective = candidate["objective"].get("type", "unknown")
+        if distance < self.MIN_DISTANCE or len(candidate["changed_axes"]) < 2:
+            return (
+                "当前 transform_space 无法稳定支撑中等差异目标。"
+                f" 已尝试 objective={objective}、structural_options={structural}，"
+                f"预测距离={distance:.2f}，落地轴={axes}。"
+            )
+        return (
+            "该方案保持同族算法线索，但通过目标函数、结构选项与参数实例化拉开差异。"
+            f" objective={objective}，structural_options={structural}，"
+            f"预测距离={distance:.2f}，落地轴={axes}。"
+        )
+
     def _describe_objective(self, objective_type: str, fallback: str) -> str:
         mapping = {
             "minimize": "求最小代价或最小长度。",
@@ -180,4 +393,3 @@ class VariantPlanner:
             "lexicographically_first_minimal_string": "求最优结果中字典序最小的构造。",
         }
         return mapping.get(objective_type, fallback or objective_type)
-

@@ -4,6 +4,9 @@ from models import GeneratedProblem, VariantPlan
 
 
 def render_problem_markdown(problem: GeneratedProblem, plan: VariantPlan) -> str:
+    if problem.status != "ok":
+        return _render_generation_failure(problem, plan)
+
     lines: list[str] = [
         f"# {problem.title}",
         "",
@@ -59,3 +62,13 @@ def render_problem_markdown(problem: GeneratedProblem, plan: VariantPlan) -> str
 
     return "\n".join(lines).rstrip() + "\n"
 
+
+def _render_generation_failure(problem: GeneratedProblem, plan: VariantPlan) -> str:
+    return (
+        f"# {plan.problem_id} / v{plan.variant_index}\n\n"
+        f"> 状态：`{problem.status}`\n\n"
+        "## 生成中止原因\n\n"
+        f"{problem.error_reason or '未提供具体原因。'}\n\n"
+        "## 反馈\n\n"
+        f"{problem.feedback or '无'}\n"
+    )

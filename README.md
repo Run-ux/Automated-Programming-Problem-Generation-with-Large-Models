@@ -1,675 +1,314 @@
-# 基于 Problem Schema 的自动编程竞赛题目生成框架
+# AutoProblemGen
 
-本项目的目标是构建一个可扩展、可去重、可自动生成的编程竞赛题目生成系统。核心思路不是直接用自然语言“从零写题”，而是先从高质量竞赛题中抽象出 **Problem Schema**，再基于 Schema 完成去重、变形与生成。
+本仓库围绕一个核心目标展开：不是让大模型“自由发挥写一道新题”，而是先把已有高质量竞赛题抽象成可操作的 `Problem Schema`，再在受控的变换空间里生成新题，并用结构化评估去判断它是不是一题真正的新题。
 
-可以将 Schema 理解为算法竞赛题目的中间表示（IR）：它连接题面文本、算法结构、工程规则与自动生成流程。
+仓库当前包含研究资料、题目采集、Schema/母题实验、有限性验证、题面生成、质量评估，以及若干历史原型。根目录下每个文件夹都对应这条主线中的一个阶段或一个独立实验方向。
 
----
+## 仓库整体主线
 
-## 1. 从具体题目到母题 Schema
-
-系统从已有高质量竞赛题出发，而非空白生成。候选题目主要来自：
-
-- ICPC World Finals / Regional
-- Codeforces（Div.2 D/E，Div.1 C/D）
-- AtCoder（ABC F，ARC，AGC）
-- NOI / 省选公开题目
-
-输入必须是结构完整的题面文本，至少包含：
-
-- 问题描述
-- 输入输出格式
-- 数据范围与约束
-
-对每道候选题，使用大语言模型抽取统一的 **Schema 五元组**，关注题目语义和算法结构，而不是具体代码实现：
+当前最完整的一条工程链路可以概括为：
 
 ```text
-题目文本 -> Problem Schema 五元组
+论文
+  -> 明确 Problem Schema、母题、变换空间、评估标准
+
+爬取题目 / 母题代码
+  -> 收集原始题目文本
+  -> 解析成统一格式
+  -> 早期尝试抽取 Schema 和构建母题库
+
+finiteness_verification
+  -> 对 I/C/O/V 四维做抽取、归一化、投票、统计
+  -> 验证标签集合是否有限、是否可形成稳定分类体系
+  -> 为后续生成提供 voted schema 与标签边界
+
+生成题面
+  -> 补全 transform_space
+  -> 先做 Difference Plan，再实例化 Schema
+  -> 调用模型生成结构化题面
+  -> 输出 Markdown、artifact、过程报告
+
+题目质量评价
+  -> 对生成结果做质量评分、反换皮判定、硬约束检查
+  -> 判断是通过、需要返修，还是应直接拒绝
 ```
 
-由于不同题目可能对应同一算法原型，系统不在题目文本层面去重，而在 Schema 层面进行相似性判断：
+另外两个目录属于历史原型或平行实验：
 
-- 高相似 Schema 合并为同一个母题
-- 显著不同的 Schema 作为新母题加入母题库
+- `自动生成题目初始框架`：早期生成器，重点在“逻辑变异 + 故事包装”。
+- `赛题评价模块`：较早的综合评估原型，强调代码执行、鲁棒性与新颖性检测。
 
-最终得到一个规模可控、结构多样的母题 Schema 库。
+## 如何理解这个仓库
 
----
+如果只看设计思想，可以按下面顺序理解：
 
-## 2. 基于 Schema 的自动出题流程
+1. `论文`：先看问题定义、题目改编思路、Schema 树和论文总结。
+2. `爬取题目`、`母题代码`：看题目从哪里来，怎样被清洗成结构化输入。
+3. `finiteness_verification`：看 Schema 四维为什么能被抽取、归一化和统计，为什么这个表示是“可控”的。
+4. `生成题面`：看当前版本如何把 Schema 变成新题。
+5. `题目质量评价`：看生成后怎样筛掉伪新题和低质量题。
 
-母题 Schema 库建立后，自动出题流程如下：
+## 根目录文件夹详解
+
+## 1. `论文`
+
+这是仓库的研究资料层，保存课题描述、论文 PDF、论文阅读总结、题目改编思考和 `problem_schema_tree.drawio` 这类概念设计文件。
+
+这里的完整流程不是代码流水线，而是研究流水线：
 
 ```text
-选择母题 Schema
-  ↓
-选择变形参数（约束 / 目标 / 数据规模）
-  ↓
-生成 Schema Instance
-  ↓
-生成新题面
-  ↓
-生成测试数据
-  ↓
-生成或验证标准解法
+阅读相关工作
+  -> 总结已有自动出题、测试数据生成、题目评测方法
+  -> 提炼本项目的 Problem Schema 思路
+  -> 形成母题、变换空间、评估准则等概念
+  -> 反过来指导工程目录的设计
 ```
 
-其中：
+方案思想是先把“什么叫可生成、可验证、可去重的题目”讲清楚，再写代码。这个目录决定了仓库不是一个单纯的 prompt 工程项目，而是一个试图把竞赛题表示成中间层结构的研究型工程。
 
-- 母题 Schema 决定算法骨架与不变量
-- 变形参数决定难度、考点组合与题目风格
-- 新题在 Schema 层面可证明“非重复”
+## 2. `爬取题目`
 
-Schema 在系统中的作用包括：
+这是多平台题目采集层，负责从 `Codeforces`、`AtCoder`、`Luogu`、`ICPC` 抓取题目，并统一保存到 `output/` 下。
 
-- 作为母题去重与分类的基本单位
-- 作为自动出题的最小生成单元
-- 作为题目多样性与覆盖度的度量基础
-- 作为 AI 理解能力与工程规则之间的中介表示
+目录内部主要分为几类内容：
 
----
+- 平台抓取器：`atcoder/`、`codeforces/`、`icpc/`、`luogu/`
+- 公共能力：`common/browser.py`、`common/models.py`、`common/storage.py`、`common/utils.py`
+- 入口与配置：`main.py`、`config.py`
+- 结果输出：`output/<platform>/...`
 
-## 3. Problem Schema 五元组的正式定义
-
-为支持可扩展、可去重、可生成的系统设计，项目将每道题抽象为：
+它的完整流程是：
 
 ```text
-S = (I, C, O, V, T)
+main.py 选择平台
+  -> 各平台 scraper 抓取题面、链接、标签等信息
+  -> common 层做统一建模与存储
+  -> 输出到 output/<platform>/
+  -> 生成后续模块可直接消费的题目语料
 ```
 
-其中：
+方案思想有两点：
 
-- `I`：Input Structure，输入结构
-- `C`：Core Constraints，核心约束集合
-- `O`：Objective，目标函数
-- `V`：Invariant，算法不变量
-- `T`：Transform Space，可变参数空间
+1. 先统一“题目数据格式”，再做上层 Schema 抽取。这样后续模块关心的是结构化题目对象，而不是每个平台的页面差异。
+2. 抓取层与生成层解耦。生成器并不直接联网找题，而是基于已经落盘的题库做抽取、验证和生成。
 
-该五元组描述的是一类题目的**算法本质**，而不是某一道具体题目。
+这个目录是整个项目的数据入口，也是 `finiteness_verification` Phase 2 做全量封闭分类时的重要输入来源。
 
-### 3.1 输入结构（I）
+## 3. `母题代码`
 
-输入结构描述数据组织形式，如数组、图、树、字符串、矩阵等。它通常是算法选择的第一决定因素，也有助于快速分类母题并约束解法生成范围。
+这是“母题构建”的实验场，里面有多条早期或平行探索路线，包括爬 LeetCode、用 Qwen 或 Gemini 解析 Schema、把 Schema 向量化并做聚类分析。
 
-```python
-@dataclass
-class InputStructure:
-    type: str
-    length: Dict[str, int]
-    value_range: Dict[str, int]
-    properties: Dict[str, Any]
-```
+目录内部主要包括：
 
-### 3.2 核心约束集合（C）
+- `crawler/`：LeetCode 题目抓取
+- `parser/`：用 Qwen 解析题目到 Schema
+- `Gemini/`：用 Gemini 解析题目到 Schema
+- `embedding/`：把 Schema 转成向量，做相似度、聚类、标签提取和可视化
+- `output/`：实验输出，如原始题目和可读化 Schema
 
-核心约束表示题目必须满足的限制条件，例如：
-
-- 区间内不同元素个数 <= K
-- 最大值 - 最小值 <= D
-- 路径长度限制
-- 状态转移合法性条件
-
-约束以集合形式建模，因为竞赛题难度往往来自多约束组合。
-
-```python
-@dataclass
-class Constraint:
-    name: str
-    description: str
-    check: Callable[[Dict[str, Any]], bool]
-```
-
-```python
-core_constraints: List[Constraint]
-```
-
-示例：
-
-```python
-def distinct_leq_k(ctx):
-    return ctx["distinct"] <= ctx["K"]
-
-constraint_distinct = Constraint(
-    name="distinct_leq_k",
-    description="区间内不同元素数量不超过 K",
-    check=distinct_leq_k
-)
-```
-
-### 3.3 目标函数（O）
-
-目标函数描述题目的求解目标，如最大值、最小值、计数、判定等。同一算法结构在不同目标下可以形成不同题型，因此需要单独建模。
-
-```python
-@dataclass
-class Objective:
-    type: str
-    description: str
-```
-
-### 3.4 算法不变量（V）
-
-算法不变量描述解法始终成立的结构性条件，例如：
-
-- 双指针左右端点单调前进
-- 前缀和可叠加
-- DP 状态只依赖子状态
-
-不变量是最核心的部分，因为它决定解法范式，也是 Schema 去重与距离计算中权重最高的维度。
-
-```python
-@dataclass
-class Invariant:
-    name: str
-    description: str
-    properties: Dict[str, Any]
-```
-
-示例：
-
-```python
-invariant = Invariant(
-    name="two_pointer",
-    description="左右指针单调前进，区间合法性可单调维护",
-    properties={
-        "left_monotonic": True,
-        "right_monotonic": True,
-        "window_shrinkable": True
-    }
-)
-```
-
-### 3.5 可变参数空间（T）
-
-可变参数空间定义在不破坏不变量前提下，题目可被变形的维度，例如：
-
-- 参数 `K`、`D` 的取值范围
-- 是否允许多约束叠加
-- 目标函数是否可切换
-- 数据规模等级
-
-它本质上是自动出题系统的“调节旋钮”，决定同一 Schema 可生成多少不同题目。
-
-```python
-transform_params: Dict[str, Any]
-```
-
-示例：
-
-```python
-transform_params = {
-    "K": {"min": 1, "max": 100000},
-    "D": {"min": 0, "max": 10**9},
-    "objective_options": ["max_length", "count"],
-    "multi_constraints": True
-}
-```
-
-### 3.6 完整 Python 表示
-
-```python
-@dataclass
-class ProblemSchema:
-    name: str
-    input_structure: InputStructure
-    core_constraints: List[Constraint]
-    objective: Objective
-    invariant: Invariant
-    transform_params: Dict[str, Any]
-```
-
-该结构具备三项关键能力：
-
-- 可扩展：Transform Space 支持参数化与组合式变形
-- 可去重：可基于五元组定义结构距离
-- 可生成：可直接为题面、数据、解法生成模块提供输入
-
----
-
-## 4. 母题来源与候选题目的获取
-
-项目中的“母题”不是某一道具体题，而是从高质量竞赛题中抽象出的算法结构原型。候选题选择遵循以下原则：
-
-1. 算法模型清晰
-2. 题面信息完整
-3. 竞赛验证充分
-4. 结构可抽象为 Problem Schema
-
-### 4.1 各题源与获取方式
-
-#### ICPC World Finals / Regional
-
-- 特点：题目质量高，算法模型稳定，母题纯度高
-- 获取方式：收集公开 PDF，提取文本后整理为标准题面
+这里的典型流程是：
 
 ```text
-PDF 文件
-  -> 文本提取
-  -> 标准化题面格式
-  -> 保存为 .txt 或 .md
+抓取原始题目
+  -> 用 LLM 解析为 Schema
+  -> 生成结构化或可读化结果
+  -> 对 Schema 做 embedding
+  -> 做聚类、相似度分析、推荐或去重实验
 ```
 
-#### Codeforces
+方案思想是先探索“母题是否真的可以被抽象、比较、聚类”。也就是在正式生成之前，先回答两个关键问题：
 
-- 特点：题量大、覆盖广，同一 Schema 下变形丰富
-- 重点范围：Div.2 D/E，Div.1 C/D
-- 推荐方式：通过官方 API 获取题目，再清洗 HTML 题面
+- Schema 能否成为稳定的中间表示；
+- 不同题目之间能否在 Schema 空间里衡量相似性，而不只靠题面表述。
+
+这个目录更像研究原型库，很多想法后来被吸收到 `finiteness_verification` 和 `生成题面` 中，但这里仍保留了早期实验脉络。
+
+## 4. `finiteness_verification`
+
+这是当前主线中最关键的中间层，目标不是直接生成题，而是验证 Schema 的四个核心维度 `I/C/O/V` 是否能形成有限、稳定、可归一化的标签集合。
+
+目录内容可以分成五部分：
+
+- 数据：`data/`
+- Prompt 模板：`prompts/`
+- 抽取与分析脚本：`extract.py`、`normalize.py`、`vote.py`、`analyze.py`、`classify.py`
+- 辅助统计脚本：`count_*.py`、`manual_extract_transform.py` 等
+- 输出：`output/pilot/`、`output/phase1/`、`output/phase2/`
+
+它的完整流程分三层：
+
+### Pilot
 
 ```text
-Codeforces API
-  -> 获取题目列表
-  -> 获取题目 HTML
-  -> 清洗并提取题面文本
-  -> 统一格式存储
+sample_pilot.json
+  -> extract.py 多轮抽取 I/C/O/V
+  -> normalize.py 归一化标签
+  -> vote.py 多轮投票
+  -> 得到 pilot/voted/*.json
 ```
 
-```python
-import requests
-from bs4 import BeautifulSoup
-
-def fetch_cf_problem(contest_id, problem_index):
-    url = f"https://codeforces.com/contest/{contest_id}/problem/{problem_index}"
-    html = requests.get(url).text
-    soup = BeautifulSoup(html, "html.parser")
-    statement = soup.find("div", class_="problem-statement")
-    return statement.get_text(separator="\n")
-```
-
-#### AtCoder
-
-- 特点：题面严谨、冗余少、约束规范
-- 推荐范围：ABC F，ARC C 及以上，AGC 全部题目
-- 获取方式：官网 HTML 题面或 AtCoder Problem Archive
+### Phase 1
 
 ```text
-题目页面 HTML
-  -> 抽取 Problem Statement 区域
-  -> 按段落整理文本
-  -> 标准化格式存储
+sample_phase1.json
+  -> extract.py
+  -> normalize.py
+  -> vote.py
+  -> analyze.py 画饱和曲线、统计标签增长
+  -> 判断四维标签是否有限且趋于稳定
 ```
 
-#### NOI / 省选
-
-- 特点：覆盖高难度 DP 与图论 Schema
-- 获取方式：公开 PDF 题面与教学整理资料
-
-### 4.2 候选题文本标准化格式
-
-为便于 LLM 抽取 Schema，所有候选题面统一为：
+### Phase 2
 
 ```text
-[Problem Title]
-
-[Problem Description]
-
-Input
-...
-
-Output
-...
-
-Constraints
-...
+phase1 的标签集合
+  -> classify.py 对全量题目做封闭分类
+  -> report.py 统计 coverage 与 OTHER 收敛
+  -> 判断分类体系是否能覆盖真实题库
 ```
 
-标准化要求：
+方案思想非常明确：如果 Schema 维度本身不稳定、标签集合无限扩张，那后面的“受控生成”就是空中楼阁。先验证表示层是否封闭，再谈生成层是否可靠。
 
-- 不包含样例
-- 不包含提示或解题说明
-- 保留全部约束信息
+换句话说，这个目录回答的是“Schema 能不能当成系统的中间表示”，而不是“模型能不能写出一段像题面的文字”。
 
-### 4.3 获取流水线
+它也是 `生成题面` 的直接上游，因为后者当前消费的输入就是这里沉淀出的 voted schema，并在必要时补全 `transform_space`。
+
+## 5. `生成题面`
+
+这是当前版本的正式生成器。它不是直接根据原题 prompt 改写，而是基于 prepared schema、difference plan 和主题映射生成结构化题面。
+
+核心文件包括：
+
+- `main.py`：命令行入口
+- `schema_preparer.py`：在缺少第五维时补全 `transform_space`
+- `variant_planner.py`：搜索可行的变体方案，控制 schema distance
+- `problem_generator.py`：调用模型生成结构化题目
+- `pipeline.py`：把计划、生成、渲染、落盘串起来
+- `markdown_renderer.py`：把结构化结果渲染成 OJ 风格 Markdown
+- `prepared_schemas/`、`artifacts/`、`output/`、`reports/`：各阶段产物
+
+这里的完整流程是：
 
 ```text
-竞赛平台 / PDF / API
-        ↓
-题面文本获取
-        ↓
-文本清洗与标准化
-        ↓
-结构化存储（txt / md）
-        ↓
-输入至 LLM 进行 Schema 抽取
+读取 voted schema
+  -> schema_preparer 补全 transform_space
+  -> variant_planner 先做 Difference Plan
+  -> 在目标 distance 区间内实例化新 schema
+  -> problem_generator 让模型输出严格 JSON
+  -> markdown_renderer 渲染为题面 Markdown
+  -> pipeline 保存 markdown、artifact、过程报告
 ```
 
-该模块输出标准化题面文本，直接作为下一阶段 Schema 抽取的输入，从而实现题源获取与后续流程解耦。
+这个目录的方案思想和旧版本最大的区别在于“先规划，再生成”：
 
----
+1. 先确定要改哪些轴，而不是先让模型写再看像不像新题。
+2. 用 `schema_distance` 和 `changed_axes` 约束变化幅度，避免只换故事皮。
+3. 要求模型输出 JSON，再渲染成 Markdown，降低自由文本带来的结构漂移。
 
-## 5. 基于 Schema 的母题去重与相似度计算
+因此它不是一个“让模型编题”的脚本，而是一个“在受控结构变化下生成题面”的管线。
 
-如果仅在题目文本层面去重，会遇到三个问题：
+## 6. `题目质量评价`
 
-- 同一题可能有多个平台版本
-- 不同题面描述可能对应同一算法结构
-- 文本相似度无法反映算法本质
+这是当前主线的后验评估模块，直接消费 `生成题面/artifacts/*.json`，结合原题、原始 schema、补全后的 schema 和生成题面做综合评估。
 
-因此，系统采用的原则是：
+目录内部的关键组成包括：
 
-> 不在题目层面去重，而在 Problem Schema 层面去重。
+- `main.py`：入口
+- `problem_quality/evaluator.py`：主评估器
+- `problem_quality/judges.py`：质量与反换皮判定器
+- `problem_quality/models.py`：报告结构
+- `problem_quality/report_renderer.py`：Markdown 报告渲染
+- `tests/`：单元测试
 
-### 5.1 去重层级
-
-系统区分三个层次：
-
-- Problem：具体题目
-- Schema Instance：参数化后的 Schema
-- Mother Schema：母题 Schema
-
-去重与聚类的目标是 **Mother Schema 层级**。
-
-### 5.2 Schema 距离函数
-
-每个 Schema 表示为：
+它的完整流程是：
 
 ```text
-S = (I, C, O, V, T)
+读取 original schema / prepared schema / artifact / 可选 markdown
+  -> 恢复 difference plan 与 instantiated schema
+  -> 做 hard checks
+  -> 评估题面完整性、可读性、样例质量、跨段一致性
+  -> 比较 schema distance、语义差异、解法迁移风险
+  -> 输出 JSON 和 Markdown 评估报告
 ```
 
-定义距离函数：
+方案思想是“双重把关”：
+
+- 一层是硬约束，检查生成状态、差异计划、原题是否成功解析等客观条件；
+- 一层是软判断，评估这道题是不是足够完整、够像 OJ 题、又没有退化成换皮题。
+
+这个目录体现了仓库的一个重要立场：生成不是终点，评估才是闭环。只有在反换皮判定和质量评分上都站得住，生成结果才算可用。
+
+## 7. `自动生成题目初始框架`
+
+这是本项目较早的一版自动出题原型。相较于当前的 `生成题面`，它更强调“逻辑变异器 + 故事引擎”的组合。
+
+核心文件包括：
+
+- `logic_mutator.py`：根据 `Transform Space` 改动数学骨架
+- `story_engine.py`：把抽象结构包装成魔法、科幻、日常等主题
+- `llm_client.py`：调用模型生成题面
+- `main.py`：串联流程
+- `output/`：示例生成结果
+
+完整流程是：
 
 ```text
-D(S1, S2) ∈ [0, 1]
+读取 schema
+  -> logic_mutator 调整参数、目标、约束
+  -> story_engine 给出题面包装主题
+  -> llm_client 生成 Markdown 题面
+  -> 输出到 output/
 ```
 
-- 距离越小，Schema 越相似
-- 距离越大，Schema 越不同
+方案思想偏向验证“Schema 驱动生成是否可行”。它证明了只要有一个可变的五元组表示，模型确实可以围绕该表示写出一版题面。
 
-### 5.3 五个分量的距离设计
+但它的局限也很明显：
 
-#### 输入结构距离 `d_I`
+- 对差异度没有当前版本那么强的显式控制；
+- 对“是否只是换皮”的判定较弱；
+- 中间产物不如当前 `artifact + report` 体系完整。
 
-输入结构为离散类型，可用人工定义的距离矩阵表示：
+因此它更适合被理解为主线生成器的前身。
 
-| I1    | I2    | 距离 |
-| ----- | ----- | ---- |
-| array | array | 0.0  |
-| tree  | graph | 0.3  |
-| array | graph | 1.0  |
+## 8. `赛题评价模块`
 
-```python
-INPUT_STRUCTURE_DISTANCE = {
-    ("array", "array"): 0.0,
-    ("tree", "graph"): 0.3,
-    ("array", "graph"): 1.0,
-}
-```
+这是一个更早的独立评估实验，主体文件是 `ape_system.py`。它实现了一个 Schema 增强版的 APE-System，尝试从数据合法性、鲁棒性、可解性、结构新颖性等角度自动打分。
 
-#### 核心约束集合距离 `d_C`
-
-将约束视为集合，采用 Jaccard Distance：
+它的大致流程是：
 
 ```text
-d_C = 1 - |C1 ∩ C2| / |C1 ∪ C2|
+读取 problem.json
+  -> 归一化 schema
+  -> 校验测试数据是否符合 schema
+  -> 用代码执行和 hack 思路做鲁棒性测试
+  -> 判断题面与 schema 的对齐度
+  -> 计算结构新颖性
+  -> 输出 problem_report.json
 ```
 
-```python
-def constraint_distance(c1, c2):
-    set1 = set(c.name for c in c1)
-    set2 = set(c.name for c in c2)
-    return 1 - len(set1 & set2) / len(set1 | set2)
-```
+方案思想是把“评估”尽量做成接近评测系统的形式，而不是只靠文本审稿。它会涉及代码执行、验证器调用、embedding、新颖性分析等能力。
 
-#### 目标函数距离 `d_O`
+从仓库整体定位看，这个目录更像当前 `题目质量评价` 之前的一次系统化探索。它展示了项目一度尝试把“题目评价”做成强执行型流水线，而不仅是语言模型打分。
 
-目标函数属于有限枚举，目标不同不一定代表母题不同，但应增加距离：
+## 当前各目录在主线中的角色
 
-| O1         | O2         | 距离 |
-| ---------- | ---------- | ---- |
-| max_length | max_length | 0.0  |
-| max_length | count      | 0.5  |
-| count      | decision   | 0.7  |
+如果只关心“现在应该看哪些目录”，可以这样理解：
 
-```python
-OBJECTIVE_DISTANCE = {
-    ("max_length", "count"): 0.5,
-    ("count", "decision"): 0.7,
-}
-```
+- 研究设计层：`论文`
+- 数据采集层：`爬取题目`
+- 母题与表示实验层：`母题代码`
+- 表示验证层：`finiteness_verification`
+- 当前生成层：`生成题面`
+- 当前评估层：`题目质量评价`
+- 历史原型：`自动生成题目初始框架`、`赛题评价模块`
 
-#### 算法不变量距离 `d_V`
+## 这套方案的核心思想
 
-这是最关键的维度，因为不变量几乎直接决定解法范式：
+整个仓库的统一思想可以浓缩为四句话：
 
-| V1          | V2          | 距离 |
-| ----------- | ----------- | ---- |
-| two_pointer | two_pointer | 0.0  |
-| two_pointer | prefix_sum  | 1.0  |
-| dp_tree     | dp_interval | 0.8  |
+1. 不从零写题，而是从高质量题库里抽象母题。
+2. 不直接让模型自由改写，而是在 Schema 的变换空间里受控生成。
+3. 不靠题面字面相似度去重，而是在 Schema 层面衡量差异。
+4. 不把生成视为完成，而是要经过结构化质量评估和反换皮判定。
 
-```python
-INVARIANT_DISTANCE = {
-    ("two_pointer", "two_pointer"): 0.0,
-    ("two_pointer", "prefix_sum"): 1.0,
-}
-```
-
-#### 可变参数空间距离 `d_T`
-
-简化处理时，可按参数数量的相对差异衡量：
-
-```text
-d_T = |len(T1) - len(T2)| / max(len(T1), len(T2))
-```
-
-```python
-def transform_distance(t1, t2):
-    return abs(len(t1) - len(t2)) / max(len(t1), len(t2))
-```
-
-### 5.4 总距离函数
-
-五个分量线性加权得到总距离：
-
-```text
-D(S1, S2) =
-  w1 * d_I +
-  w2 * d_C +
-  w3 * d_O +
-  w4 * d_V +
-  w5 * d_T
-```
-
-推荐权重如下：
-
-| 维度          | 权重 |
-| ------------- | ---- |
-| 不变量（V）   | 0.35 |
-| 约束集合（C） | 0.25 |
-| 输入结构（I） | 0.15 |
-| 目标函数（O） | 0.15 |
-| 变形空间（T） | 0.10 |
-
-### 5.5 去重与聚类规则
-
-- `D < 0.25`：同一母题
-- `0.25 <= D < 0.5`：同一母题族
-- `D >= 0.5`：不同母题
-
-该规则用于：
-
-- 判断是否合并 Schema
-- 控制母题库规模
-- 评估 Schema 多样性
-
-### 5.6 去重流程
-
-```text
-候选题目 Schema 集合
-        ↓
-逐一计算 Schema 距离
-        ↓
-与已有母题 Schema 比较
-        ↓
-小于阈值 -> 合并
-否则 -> 新增母题
-```
-
-```python
-mother_schemas = []
-
-for schema in candidate_schemas:
-    for m in mother_schemas:
-        if schema_distance(schema, m) < THRESHOLD:
-            break
-    else:
-        mother_schemas.append(schema)
-```
-
----
-
-## 6. Schema 驱动的自动出题流水线设计
-
-完成母题库构建与去重后，系统进入自动出题阶段。设计目标包括：
-
-- 结构正确性：生成题目在 Schema 层面必然可解
-- 算法一致性：解法符合 Schema 定义的不变量
-- 难度可控性：可通过参数与约束调节难度
-- 工程可扩展性：不同 Schema 复用统一流水线
-
-### 6.1 总体结构
-
-```text
-Mother Schema
-  ↓
-Schema 参数实例化
-  ↓
-题面生成（Problem Statement Generator）
-  ↓
-测试数据生成（Testcase Generator）
-  ↓
-标准解法生成 / 验证（Solver / Verifier）
-```
-
-### 6.2 Schema 参数实例化模块
-
-职责：
-
-- 从 Transform Space 中选取具体参数
-- 生成 Schema Instance
-- 确定数据规模、约束组合、目标函数与难度等级
-
-```python
-def instantiate_schema(schema, difficulty):
-    params = {}
-    for k, v in schema.transform_params.items():
-        params[k] = sample_param(v, difficulty)
-    return params
-```
-
-### 6.3 题面生成模块
-
-题面生成依赖：
-
-- Input Structure
-- Core Constraints
-- Objective
-- Schema Instance
-
-设计原则：
-
-- 不包含解题提示
-- 所有约束必须显式出现
-- 语言保持竞赛风格，简洁明确
-
-通常采用 LLM 生成：
-
-```text
-输入：
-- Schema 五元组
-- 实例化参数
-
-输出：
-- 标准竞赛题面文本
-```
-
-### 6.4 测试数据生成模块
-
-职责：
-
-- 根据输入结构生成合法输入
-- 覆盖边界情况与极端参数
-- 为解法验证提供数据支持
-
-Schema 信息与作用如下：
-
-| Schema 信息      | 用途           |
-| ---------------- | -------------- |
-| Input Structure  | 决定数据形态   |
-| Transform Space  | 决定规模与分布 |
-| Core Constraints | 决定合法性     |
-
-```python
-class TestcaseGenerator:
-    def generate(self, schema, params):
-        # 1. 根据 InputStructure 生成数据框架
-        # 2. 根据 Transform Params 决定规模
-        # 3. 调整数据以触发关键约束
-        pass
-```
-
-### 6.5 标准解法生成与验证模块
-
-职责：
-
-- 提供当前 Schema 的标准解法模板
-- 对生成数据进行正确性验证
-- 保证生成题目“必然可解”
-
-Solver 主要由不变量驱动选择：
-
-| Invariant   | Solver       |
-| ----------- | ------------ |
-| two_pointer | 双指针模板   |
-| prefix_sum  | 前缀和模板   |
-| dp_interval | 区间 DP 模板 |
-
-```python
-class Solver:
-    def __init__(self, schema):
-        self.invariant = schema.invariant.name
-
-    def solve(self, input_data):
-        if self.invariant == "two_pointer":
-            return solve_two_pointer(input_data)
-```
-
-### 6.6 模块解耦关系
-
-各模块保持最小耦合：
-
-- 题面生成不依赖数据生成细节
-- 数据生成不依赖具体解法实现
-- Solver 仅依赖不变量，不依赖题面文本
-
-因此，Schema 可复用、模块可替换、系统易扩展。
-
-### 6.7 自动出题整体伪流程
-
-```text
-选择母题 Schema
-      ↓
-实例化 Schema 参数
-      ↓
-生成题面文本
-      ↓
-生成测试数据
-      ↓
-运行 Solver 验证正确性
-      ↓
-输出完整新题
-```
-
----
-
-## 7. 总结
-
-本项目的核心方法可以概括为：
-
-1. 从高质量竞赛题中获取标准化题面
-2. 使用 LLM 抽取 Problem Schema 五元组
-3. 在 Schema 层面完成母题去重与聚类
-4. 基于母题 Schema 和变形参数自动生成新题
-5. 通过测试数据与标准解法验证生成结果
-
-Problem Schema 是整个系统的统一中间表示，也是题目获取、结构去重、自动生成与工程实现之间的核心桥梁。
+因此，这个仓库本质上是在构建一条“题目数据 -> Schema 中间表示 -> 有限性验证 -> 受控生成 -> 质量闭环”的完整路径。

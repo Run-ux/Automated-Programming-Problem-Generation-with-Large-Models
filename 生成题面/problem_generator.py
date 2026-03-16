@@ -7,6 +7,7 @@ from typing import Any
 from models import GeneratedProblem, VariantPlan
 from prompt_builder import build_system_prompt, build_user_prompt
 from qwen_client import QwenClient
+from schema_tools import dataclass_to_dict
 
 
 class ProblemGenerator:
@@ -20,14 +21,41 @@ class ProblemGenerator:
         self.temperature = temperature
         self.max_validation_attempts = max_validation_attempts
 
-    def generate(self, schema: dict[str, Any], plan: VariantPlan) -> GeneratedProblem:
+    def generate(
+        self,
+        schema: dict[str, Any],
+        plan: VariantPlan,
+        original_problem: dict[str, Any] | None = None,
+    ) -> GeneratedProblem:
+        if (
+            plan.predicted_schema_distance < plan.difference_plan.target_distance_band["min"]
+            or len(plan.changed_axes_realized) < 2
+        ):
+            return GeneratedProblem(
+                title="",
+                description="",
+                input_format="",
+                output_format="",
+                constraints=[],
+                samples=[],
+                notes="",
+                status="difference_insufficient",
+                error_reason=(
+                    "当前 transform_space 无法稳定支撑中等差异目标。"
+                    f" 预测距离={plan.predicted_schema_distance:.2f}，"
+                    f"落地轴={', '.join(plan.changed_axes_realized) or '无'}。"
+                ),
+                feedback=plan.difference_plan.rationale,
+            )
+
         if self.client is None:
             raise RuntimeError("未初始化 LLM 客户端，无法执行真实生成。")
 
         system_prompt = build_system_prompt()
-        user_prompt = build_user_prompt(schema, plan)
+        user_prompt = build_user_prompt(schema, plan, original_problem=original_problem)
         last_errors: list[str] = []
         base_temperature = min(self.temperature, 0.3)
+        instantiated_schema = dataclass_to_dict(plan.instantiated_schema_snapshot)
 
         for attempt in range(1, self.max_validation_attempts + 1):
             payload = self.client.chat_json(
@@ -36,21 +64,24 @@ class ProblemGenerator:
                 temperature=max(0.1, base_temperature - 0.05 * (attempt - 1)),
             )
             problem = self._normalize_payload(payload, plan)
-            if problem.status == "schema_insufficient":
-                raise RuntimeError(
-                    "上游 schema 信息不足，已被模型标记为不可可靠生成："
-                    f"{problem.error_reason or '未提供具体原因。'}"
-                    + (f" 反馈：{problem.feedback}" if problem.feedback else "")
-                )
-            self._repair_problem(problem, schema)
-            errors = self._validate_problem(problem, schema)
+            if problem.status in {"schema_insufficient", "difference_insufficient"}:
+                return problem
+            self._repair_problem(problem, instantiated_schema)
+            errors = self._validate_problem(problem, instantiated_schema, plan, original_problem)
             if not errors:
                 return problem
 
             last_errors = errors
             if attempt == self.max_validation_attempts:
                 break
-            user_prompt = self._build_retry_prompt(schema, plan, payload, errors, attempt + 1)
+            user_prompt = self._build_retry_prompt(
+                schema,
+                plan,
+                payload,
+                errors,
+                attempt + 1,
+                original_problem,
+            )
 
         raise RuntimeError(
             "模型连续返回不合法题面，校验失败："
@@ -91,7 +122,11 @@ class ProblemGenerator:
         )
 
     def _validate_problem(
-        self, problem: GeneratedProblem, schema: dict[str, Any]
+        self,
+        problem: GeneratedProblem,
+        schema: dict[str, Any],
+        plan: VariantPlan,
+        original_problem: dict[str, Any] | None,
     ) -> list[str]:
         errors: list[str] = []
 
@@ -116,6 +151,15 @@ class ProblemGenerator:
             errors.append("samples 至少需要 2 组。")
 
         expected_sample_lines = self._infer_expected_sample_lines(schema)
+        declared_line_count = self._extract_declared_line_count(
+            "\n".join([problem.input_format, problem.description, problem.notes])
+        )
+        if expected_sample_lines is not None and declared_line_count is not None:
+            if declared_line_count != expected_sample_lines:
+                errors.append(
+                    f"题面声明的输入项数量为 {declared_line_count}，但实例化 schema 要求为 {expected_sample_lines}。"
+                )
+
         for index, sample in enumerate(problem.samples, start=1):
             sample_input = sample.get("input", "").strip()
             sample_output = sample.get("output", "").strip()
@@ -140,6 +184,9 @@ class ProblemGenerator:
                         f"样例 {index} 的输入行数应为 {expected_sample_lines}，实际为 {actual_lines}。"
                     )
 
+        errors.extend(self._validate_objective(problem, plan))
+        errors.extend(self._validate_structural_options(problem, plan))
+        errors.extend(self._validate_source_reuse(problem, original_problem))
         return errors
 
     def _repair_problem(self, problem: GeneratedProblem, schema: dict[str, Any]) -> None:
@@ -178,6 +225,100 @@ class ProblemGenerator:
         cleaned = cleaned.replace("\\n", "\n")
         cleaned = re.sub(r"\\+$", "", cleaned)
         return cleaned.strip()
+
+    def _extract_declared_line_count(self, text: str) -> int | None:
+        patterns = [
+            r"输入共\s*(\d+)\s*行",
+            r"恰好\s*(\d+)\s*行",
+            r"exactly\s*(\d+)\s*lines",
+            r"(\d+)\s*行",
+        ]
+        for pattern in patterns:
+            match = re.search(pattern, text, re.IGNORECASE)
+            if match:
+                return int(match.group(1))
+
+        chinese_digits = {
+            "一": 1,
+            "二": 2,
+            "两": 2,
+            "三": 3,
+            "四": 4,
+            "五": 5,
+            "六": 6,
+            "七": 7,
+            "八": 8,
+            "九": 9,
+            "十": 10,
+        }
+        match = re.search(r"输入共([一二两三四五六七八九十])行", text)
+        if match:
+            return chinese_digits.get(match.group(1))
+        return None
+
+    def _validate_objective(self, problem: GeneratedProblem, plan: VariantPlan) -> list[str]:
+        objective_type = plan.objective.get("type", "")
+        combined = "\n".join([problem.description, problem.output_format, problem.notes]).lower()
+        errors: list[str] = []
+        if objective_type == "count_minimal_strings" and not any(
+            token in combined for token in ("方案数", "个数", "count", "模", "mod")
+        ):
+            errors.append("当前 objective 是计数类，但题面没有明确说明输出的是方案数/计数结果。")
+        if objective_type == "decision" and not any(
+            token in combined for token in ("yes", "no", "是否", "存在")
+        ):
+            errors.append("当前 objective 是判定类，但题面没有明确说明输出判定结果。")
+        if objective_type == "lexicographically_first_minimal_string" and not any(
+            token in combined for token in ("字典序", "lexicographical", "lexicographically")
+        ):
+            errors.append("当前 objective 要求字典序最优，但题面未明确写出字典序规则。")
+        return errors
+
+    def _validate_structural_options(
+        self,
+        problem: GeneratedProblem,
+        plan: VariantPlan,
+    ) -> list[str]:
+        combined = "\n".join([problem.description, problem.notes, problem.constraints and "\n".join(problem.constraints) or ""]).lower()
+        errors: list[str] = []
+        if "must_contain_in_order" in plan.structural_options and not any(
+            token in combined for token in ("顺序", "依次", "in order")
+        ):
+            errors.append("启用了 must_contain_in_order，但题面没有明确说明顺序约束。")
+        if "cyclic_string" in plan.structural_options and not any(
+            token in combined for token in ("循环", "首尾相接", "环", "cyclic")
+        ):
+            errors.append("启用了 cyclic_string，但题面没有明确说明循环/首尾相接语义。")
+        return errors
+
+    def _validate_source_reuse(
+        self,
+        problem: GeneratedProblem,
+        original_problem: dict[str, Any] | None,
+    ) -> list[str]:
+        if not original_problem:
+            return []
+        combined = "\n".join(
+            [
+                problem.title,
+                problem.description,
+                problem.input_format,
+                problem.output_format,
+                problem.notes,
+            ]
+        ).lower()
+        original_title = str(original_problem.get("title", "")).strip().lower()
+        forbidden = [
+            str(original_problem.get("problem_id", "")).strip().lower(),
+            str(original_problem.get("source", "")).strip().lower(),
+            original_title,
+        ]
+        errors: list[str] = []
+        for token in forbidden:
+            if token and token in combined:
+                errors.append(f"题面包含不应复用的原题标识或标题片段：{token}")
+                break
+        return errors
 
     def _repair_sample_input(self, text: str, expected_lines: int) -> str | None:
         stripped = text.strip()
@@ -231,8 +372,9 @@ class ProblemGenerator:
         payload: dict[str, Any],
         errors: list[str],
         next_attempt: int,
+        original_problem: dict[str, Any] | None,
     ) -> str:
-        base_prompt = build_user_prompt(schema, plan)
+        base_prompt = build_user_prompt(schema, plan, original_problem=original_problem)
         error_lines = "\n".join(f"- {error}" for error in errors)
         invalid_payload = json.dumps(payload, ensure_ascii=False, indent=2)
         return (
@@ -242,9 +384,11 @@ class ProblemGenerator:
             f"{error_lines}\n\n"
             "额外要求：\n"
             "- 如果你判断 schema 本身不足以可靠生成题面，不要继续补全，直接返回 `status=\"schema_insufficient\"`，并说明原因与所需补充信息。\n"
+            "- 如果你判断差异计划无法在不复述原题任务的前提下落地，直接返回 `status=\"difference_insufficient\"`。\n"
             "- 样例输入必须是纯文本，不要包含引号拼接残留、HTML 片段或 Markdown 标记。\n"
             "- 样例输入的行数必须与 schema 的输入结构一致。\n"
             "- 如果 schema 表示固定长度数组，就按固定行数逐行给出样例输入。\n"
+            "- 必须按实例化后的 schema 写输入数量、目标函数和结构约束，不要退回原题设定。\n"
             "- 重新生成整份 JSON，不要只修补局部字段。\n\n"
             "上一次的错误 JSON 如下，仅用于定位问题，不可复用：\n"
             f"{invalid_payload}"
