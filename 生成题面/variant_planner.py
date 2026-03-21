@@ -12,6 +12,7 @@ from schema_tools import (
     compute_changed_axes,
     compute_schema_distance,
 )
+from transform_space_tools import expand_transform_space
 
 
 THEMES = [
@@ -49,6 +50,10 @@ THEMES = [
 class VariantPlanner:
     MIN_DISTANCE = 0.35
     MAX_DISTANCE = 0.60
+    MAX_PARAMETER_CANDIDATES = 6
+    MAX_STRUCTURAL_CANDIDATES = 6
+    MAX_INPUT_OPTION_CANDIDATES = 4
+    MAX_INVARIANT_OPTION_CANDIDATES = 4
 
     def __init__(self, seed: int | None = None):
         self.seed = seed if seed is not None else random.randrange(1, 10**9)
@@ -63,10 +68,12 @@ class VariantPlanner:
     ) -> VariantPlan:
         rng = random.Random(self.seed + variant_index)
         theme = self._select_theme(rng, theme_id)
+        normalized_schema = dict(schema)
+        normalized_schema["transform_space"] = expand_transform_space(schema)
         source_schema = original_schema or schema
 
         candidate = self._pick_difference_candidate(
-            schema=schema,
+            schema=normalized_schema,
             source_schema=source_schema,
             theme=theme,
             rng=rng,
@@ -88,6 +95,8 @@ class VariantPlanner:
             objective=candidate["objective"],
             numerical_parameters=candidate["numerical_parameters"],
             structural_options=candidate["structural_options"],
+            input_structure_options=candidate["input_structure_options"],
+            invariant_options=candidate["invariant_options"],
             difficulty=self._infer_difficulty(schema),
             input_summary=self._summarize_input_structure(snapshot["input_structure"]),
             constraint_summary=self._summarize_constraints(
@@ -114,6 +123,8 @@ class VariantPlanner:
         objectives = self._objective_candidates(schema, transform_space, rng)
         parameter_sets = self._parameter_candidates(schema, transform_space, rng)
         structural_sets = self._structural_option_candidates(transform_space, rng)
+        input_sets = self._input_structure_option_candidates(transform_space, rng)
+        invariant_sets = self._invariant_option_candidates(transform_space, rng)
         difficulty = self._infer_difficulty(schema)
         theme_payload = {
             "id": theme.theme_id,
@@ -124,16 +135,20 @@ class VariantPlanner:
         }
 
         best: dict[str, Any] | None = None
-        for objective, numerical_parameters, structural_options in product(
+        for objective, numerical_parameters, structural_options, input_options, invariant_options in product(
             objectives,
             parameter_sets,
             structural_sets,
+            input_sets,
+            invariant_sets,
         ):
             instantiated = build_instantiated_schema(
                 schema=schema,
                 objective=objective,
                 numerical_parameters=numerical_parameters,
                 structural_options=structural_options,
+                input_options=input_options,
+                invariant_options=invariant_options,
                 theme=theme_payload,
                 difficulty=difficulty,
             )
@@ -144,6 +159,12 @@ class VariantPlanner:
                 "objective": objective,
                 "numerical_parameters": numerical_parameters,
                 "structural_options": structural_options,
+                "input_structure_options": [
+                    item.get("name", "") for item in input_options if item.get("name")
+                ],
+                "invariant_options": [
+                    item.get("name", "") for item in invariant_options if item.get("name")
+                ],
                 "instantiated_schema": snapshot,
                 "instantiated_schema_object": instantiated,
                 "distance": distance,
@@ -156,11 +177,15 @@ class VariantPlanner:
             fallback_objective = self._current_objective(schema)
             fallback_parameters = {}
             fallback_structural_options: list[str] = []
+            fallback_input_options: list[dict[str, Any]] = []
+            fallback_invariant_options: list[dict[str, Any]] = []
             instantiated = build_instantiated_schema(
                 schema=schema,
                 objective=fallback_objective,
                 numerical_parameters=fallback_parameters,
                 structural_options=fallback_structural_options,
+                input_options=fallback_input_options,
+                invariant_options=fallback_invariant_options,
                 theme=theme_payload,
                 difficulty=difficulty,
             )
@@ -169,6 +194,8 @@ class VariantPlanner:
                 "objective": fallback_objective,
                 "numerical_parameters": fallback_parameters,
                 "structural_options": fallback_structural_options,
+                "input_structure_options": [],
+                "invariant_options": [],
                 "instantiated_schema": snapshot,
                 "instantiated_schema_object": instantiated,
                 "distance": compute_schema_distance(source_schema, snapshot),
@@ -190,18 +217,25 @@ class VariantPlanner:
 
     def _candidate_score(self, candidate: dict[str, Any]) -> tuple[float, ...]:
         distance = candidate["distance"]["total"]
-        core_axes = len([axis for axis in candidate["changed_axes"] if axis in {"I", "C", "O", "T"}])
+        core_axes = len(
+            [axis for axis in candidate["changed_axes"] if axis in {"I", "C", "O", "V", "T"}]
+        )
         within_band = self.MIN_DISTANCE <= distance < self.MAX_DISTANCE
         above_min = distance >= self.MIN_DISTANCE
         target_mid = (self.MIN_DISTANCE + self.MAX_DISTANCE) / 2
         closeness = -abs(distance - target_mid)
+        option_count = (
+            len(candidate["structural_options"])
+            + len(candidate["input_structure_options"])
+            + len(candidate["invariant_options"])
+        )
         return (
             1.0 if within_band and core_axes >= 2 else 0.0,
             1.0 if above_min and core_axes >= 2 else 0.0,
             float(core_axes),
             closeness,
             distance,
-            float(len(candidate["structural_options"])),
+            float(option_count),
         )
 
     def _select_theme(self, rng: random.Random, theme_id: str | None) -> Theme:
@@ -296,7 +330,7 @@ class VariantPlanner:
         for combination in product(*fields):
             candidate = {name: payload for name, payload in combination}
             candidates.append(candidate)
-            if len(candidates) >= 12:
+            if len(candidates) >= self.MAX_PARAMETER_CANDIDATES:
                 break
         if not candidates:
             return [{}]
@@ -319,7 +353,49 @@ class VariantPlanner:
                 if len(combo) == len(options):
                     break
         rng.shuffle(subsets)
-        return subsets or [[]]
+        return ([[]] + subsets[: self.MAX_STRUCTURAL_CANDIDATES]) or [[]]
+
+    def _input_structure_option_candidates(
+        self,
+        transform_space: dict[str, Any],
+        rng: random.Random,
+    ) -> list[list[dict[str, Any]]]:
+        return self._option_payload_candidates(
+            transform_space.get("input_structure_options", []),
+            rng,
+            max_sets=self.MAX_INPUT_OPTION_CANDIDATES,
+        )
+
+    def _invariant_option_candidates(
+        self,
+        transform_space: dict[str, Any],
+        rng: random.Random,
+    ) -> list[list[dict[str, Any]]]:
+        return self._option_payload_candidates(
+            transform_space.get("invariant_options", []),
+            rng,
+            max_sets=self.MAX_INVARIANT_OPTION_CANDIDATES,
+        )
+
+    def _option_payload_candidates(
+        self,
+        raw_options: list[dict[str, Any]],
+        rng: random.Random,
+        max_sets: int,
+    ) -> list[list[dict[str, Any]]]:
+        options = [item for item in raw_options if isinstance(item, dict) and item.get("name")]
+        if not options:
+            return [[]]
+
+        subsets: list[list[dict[str, Any]]] = [[]]
+        staged: list[list[dict[str, Any]]] = []
+        max_size = min(2, len(options))
+        for size in range(1, max_size + 1):
+            for combo in combinations(options, size):
+                staged.append(list(combo))
+        rng.shuffle(staged)
+        subsets.extend(staged[: max(0, max_sets - 1)])
+        return subsets
 
     def _current_objective(self, schema: dict[str, Any]) -> dict[str, Any]:
         objective = schema.get("objective", {})
@@ -365,16 +441,20 @@ class VariantPlanner:
         distance = candidate["distance"]["total"]
         axes = ", ".join(candidate["changed_axes"]) or "无"
         structural = ", ".join(candidate["structural_options"]) or "无"
+        input_options = ", ".join(candidate["input_structure_options"]) or "无"
+        invariant_options = ", ".join(candidate["invariant_options"]) or "无"
         objective = candidate["objective"].get("type", "unknown")
         if distance < self.MIN_DISTANCE or len(candidate["changed_axes"]) < 2:
             return (
                 "当前 transform_space 无法稳定支撑中等差异目标。"
-                f" 已尝试 objective={objective}、structural_options={structural}，"
+                f" 已尝试 objective={objective}、structural_options={structural}、"
+                f"input_options={input_options}、invariant_options={invariant_options}，"
                 f"预测距离={distance:.2f}，落地轴={axes}。"
             )
         return (
-            "该方案保持同族算法线索，但通过目标函数、结构选项与参数实例化拉开差异。"
+            "该方案保持同族算法线索，但通过目标函数、结构选项、输入视角与不变量提示拉开差异。"
             f" objective={objective}，structural_options={structural}，"
+            f"input_options={input_options}，invariant_options={invariant_options}，"
             f"预测距离={distance:.2f}，落地轴={axes}。"
         )
 

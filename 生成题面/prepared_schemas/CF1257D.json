@@ -1,0 +1,351 @@
+{
+  "problem_id": "CF1257D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "flow_constraint",
+        "description": "每个英雄每天击败的怪物数量不超过其耐力值",
+        "confidence": "1/1"
+      },
+      {
+        "name": "ordering",
+        "description": "英雄必须按顺序击败怪物，不能跳过未击败的怪物",
+        "confidence": "1/1"
+      },
+      {
+        "name": "operation_limit",
+        "description": "每天只能选择一个英雄进入地牢",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "所有英雄的总耐力值必须足够击败所有怪物",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "flow_constraint",
+              "description": "每个英雄每天击败的怪物数量不超过其耐力值"
+            },
+            {
+              "name": "ordering",
+              "description": "英雄必须按顺序击败怪物，不能跳过未击败的怪物"
+            },
+            {
+              "name": "operation_limit",
+              "description": "每天只能选择一个英雄进入地牢"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "所有英雄的总耐力值必须足够击败所有怪物"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "求完成所有任务所需的最小时间"
+        }
+      }
+    ],
+    "description": "求完成所有任务所需的最小时间"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每一天选择英雄的决策基于当前剩余怪物和英雄状态的最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "monotonicity",
+        "description": "单调性：随着天数的增加，已击败的怪物数量单调递增，且每天选择的英雄在满足条件的情况下尽可能多地击败怪物。",
+        "confidence": "1/1",
+        "properties": {
+          "right_monotonic": true
+        }
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：每一步选择当天能够击败最多怪物的英雄，以最小化总天数。这种局部最优的选择最终导致全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每一天选择英雄的决策基于当前剩余怪物和英雄状态的最优解。",
+              "properties": {}
+            },
+            {
+              "name": "monotonicity",
+              "description": "单调性：随着天数的增加，已击败的怪物数量单调递增，且每天选择的英雄在满足条件的情况下尽可能多地击败怪物。",
+              "properties": {
+                "right_monotonic": true
+              }
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：每一步选择当天能够击败最多怪物的英雄，以最小化总天数。这种局部最优的选择最终导致全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "transform_space": {
+    "numerical_parameters": {
+      "t": {
+        "min": 1,
+        "max": 100000,
+        "description": "测试用例的数量"
+      },
+      "n": {
+        "min": 1,
+        "max": 200000,
+        "description": "地牢中怪物的数量"
+      },
+      "m": {
+        "min": 1,
+        "max": 200000,
+        "description": "英雄的数量"
+      },
+      "a_i": {
+        "min": 1,
+        "max": 1000000000,
+        "description": "每个怪物的攻击力"
+      },
+      "p_i": {
+        "min": 1,
+        "max": 1000000000,
+        "description": "每个英雄的攻击力"
+      },
+      "s_i": {
+        "min": 1,
+        "max": 200000,
+        "description": "每个英雄的耐力值"
+      }
+    },
+    "objective_options": [
+      "minimize_days",
+      "count_solutions",
+      "decision_possible"
+    ],
+    "structural_options": [
+      "allow_zero_endurance",
+      "allow_negative_power",
+      "allow_repeated_monsters",
+      "allow_repeated_heroes",
+      "multi_constraints"
+    ],
+    "input_structure_options": [
+      {
+        "name": "zero_enabled_values",
+        "description": "输入值域下界放宽到 0，使零值成为合法输入。",
+        "patch": {
+          "value_range": {
+            "min": 0
+          }
+        },
+        "constraints": [
+          {
+            "name": "zero_enabled_values",
+            "description": "输入中允许出现 0。"
+          }
+        ]
+      },
+      {
+        "name": "signed_input_values",
+        "description": "输入值域扩展为允许负数，题面需要显式说明可出现负值。",
+        "patch": {
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          }
+        },
+        "constraints": [
+          {
+            "name": "signed_input_values",
+            "description": "输入值允许为负数。"
+          }
+        ]
+      },
+      {
+        "name": "duplicate_friendly_input",
+        "description": "输入对象允许重复出现，题面应明确重复项是合法的。",
+        "patch": {
+          "properties": {
+            "duplicate_allowed": true
+          }
+        },
+        "constraints": []
+      }
+    ],
+    "invariant_options": [
+      {
+        "name": "dominance_pruning",
+        "description": "优化目标引入支配关系，较差状态可以被更优状态吸收。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "dominance_pruning",
+            "description": "存在可比较的状态支配关系，保留代表性最优状态即可推进求解。",
+            "properties": {
+              "objective_family": "optimization"
+            }
+          }
+        ]
+      },
+      {
+        "name": "counting_decomposition",
+        "description": "当目标转为计数时，状态可以分解为若干独立计数子结构。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "counting_decomposition",
+            "description": "总方案数可由若干互不重叠的子状态累积得到，允许使用 DP、容斥或分治计数。",
+            "properties": {
+              "objective_family": "count"
+            }
+          }
+        ]
+      },
+      {
+        "name": "feasibility_monotonicity",
+        "description": "当目标转为判定时，可利用可行性关于阈值或步骤的单调变化。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "feasibility_monotonicity",
+            "description": "可行性会随着阈值、次数或资源上界的变化呈现单调性，可据此二分或逐步推进。",
+            "properties": {
+              "objective_family": "decision"
+            }
+          }
+        ]
+      },
+      {
+        "name": "zero_contribution_absorption",
+        "description": "零值对象的引入不会破坏主状态，只会带来可吸收的空贡献。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "zero_contribution_absorption",
+            "description": "零贡献元素可以被安全吸收或跳过，不改变主要状态转移的正确性。",
+            "properties": {
+              "supports_zero_values": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "signed_balance",
+        "description": "允许负值后，状态转移依然依赖净贡献或相对差值。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "signed_balance",
+            "description": "即使输入允许负值，关键状态仍可通过净贡献、偏移或平衡量统一表示。",
+            "properties": {
+              "supports_negative_values": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "frequency_aggregation",
+        "description": "重复对象可以被频次聚合处理，而不必逐个区分身份。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "frequency_aggregation",
+            "description": "对重复输入项，只需维护频次或桶级统计，核心决策仍成立。",
+            "properties": {
+              "supports_duplicates": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "prefix_scan_invariant",
+        "description": "显式引入前缀/分块扫描的不变量，便于同族但非同题的表达。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "prefix_scan_stability",
+            "description": "前缀或分块扫描过程中，局部状态可以被稳定复用，不需要回看全部历史输入。",
+            "properties": {
+              "scan_style": "prefix_or_block"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

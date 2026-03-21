@@ -52,3 +52,4 @@ python main.py --problem-ids CF25E CF360C --variants 2
 - 生成时要求模型输出 JSON，对题面结构更稳定，便于后续接测试数据和评测模块。
 - artifact 现在会额外持久化 `difference_plan`、`instantiated_schema_snapshot`、`predicted_schema_distance` 和 `changed_axes_realized`，供 `题目质量评价` 模块直接消费。
 - 默认差异目标是 `0.35 <= schema_distance < 0.60`。如果当前 schema 只能支撑故事换皮或参数微调，生成器会拒绝产出伪新题。
+- `transform_space` 现在除了 `numerical_parameters`、`objective_options`、`structural_options` 外，还支持 `input_structure_options` 与 `invariant_options`，并会对旧 schema 自动补出兼容的 I/V 变体候选。

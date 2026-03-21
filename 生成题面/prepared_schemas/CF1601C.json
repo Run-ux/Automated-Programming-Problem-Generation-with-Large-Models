@@ -1,0 +1,310 @@
+{
+  "problem_id": "CF1601C",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 2000000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 2000000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "ordering",
+        "description": "插入元素后，数组的逆序对数量应尽可能少",
+        "confidence": "1/1"
+      },
+      {
+        "name": "permutation_constraint",
+        "description": "数组 b 的元素可以以任意顺序插入到数组 a 中，但不能改变 a 的原有顺序",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "ordering",
+              "description": "插入元素后，数组的逆序对数量应尽可能少",
+              "formal": "minimize |{(i, j) | i < j and c_i > c_j}|"
+            },
+            {
+              "name": "permutation_constraint",
+              "description": "数组 b 的元素可以以任意顺序插入到数组 a 中，但不能改变 a 的原有顺序",
+              "formal": "c = a[0:i_1] + b[j_1] + a[i_1+1:i_2] + b[j_2] + ... + a[i_k+1:n]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "minimize_value",
+          "description": "最小化数组中的逆序对数量"
+        }
+      }
+    ],
+    "description": "最小化数组中的逆序对数量"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：最小化数组c中的逆序对数量可以通过解决较小规模的子问题来实现，即插入b中的元素到a中时，每次插入一个元素并计算其对当前逆序对数量的影响。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "greedy_choice",
+        "description": "贪心选择性质：在每一步插入b中的元素时，选择使得当前逆序对数量增加最少的位置进行插入，最终能够得到全局最优解。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：最小化数组c中的逆序对数量可以通过解决较小规模的子问题来实现，即插入b中的元素到a中时，每次插入一个元素并计算其对当前逆序对数量的影响。",
+              "properties": {}
+            },
+            {
+              "name": "greedy_choice",
+              "description": "贪心选择性质：在每一步插入b中的元素时，选择使得当前逆序对数量增加最少的位置进行插入，最终能够得到全局最优解。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "transform_space": {
+    "numerical_parameters": {
+      "t": {
+        "min": 1,
+        "max": 10000,
+        "description": "测试用例的数量"
+      },
+      "n": {
+        "min": 1,
+        "max": 1000000,
+        "description": "数组 a 的长度"
+      },
+      "m": {
+        "min": 1,
+        "max": 1000000,
+        "description": "数组 b 的长度"
+      },
+      "a_i": {
+        "min": 1,
+        "max": 1000000000,
+        "description": "数组 a 中的元素值"
+      },
+      "b_i": {
+        "min": 1,
+        "max": 1000000000,
+        "description": "数组 b 中的元素值"
+      }
+    },
+    "objective_options": [
+      "minimize_inversions",
+      "count_inversions",
+      "decision_inversions"
+    ],
+    "structural_options": [
+      "allow_negative_values",
+      "allow_duplicates",
+      "require_sorted_a",
+      "require_sorted_b",
+      "multi_constraints"
+    ],
+    "input_structure_options": [
+      {
+        "name": "signed_input_values",
+        "description": "输入值域扩展为允许负数，题面需要显式说明可出现负值。",
+        "patch": {
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          }
+        },
+        "constraints": [
+          {
+            "name": "signed_input_values",
+            "description": "输入值允许为负数。"
+          }
+        ]
+      },
+      {
+        "name": "duplicate_friendly_input",
+        "description": "输入对象允许重复出现，题面应明确重复项是合法的。",
+        "patch": {
+          "properties": {
+            "duplicate_allowed": true
+          }
+        },
+        "constraints": []
+      },
+      {
+        "name": "sorted_input_view",
+        "description": "输入带有显式顺序结构，可利用排序后的扫描性质。",
+        "patch": {
+          "properties": {
+            "sorted_input": true
+          }
+        },
+        "constraints": []
+      }
+    ],
+    "invariant_options": [
+      {
+        "name": "dominance_pruning",
+        "description": "优化目标引入支配关系，较差状态可以被更优状态吸收。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "dominance_pruning",
+            "description": "存在可比较的状态支配关系，保留代表性最优状态即可推进求解。",
+            "properties": {
+              "objective_family": "optimization"
+            }
+          }
+        ]
+      },
+      {
+        "name": "counting_decomposition",
+        "description": "当目标转为计数时，状态可以分解为若干独立计数子结构。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "counting_decomposition",
+            "description": "总方案数可由若干互不重叠的子状态累积得到，允许使用 DP、容斥或分治计数。",
+            "properties": {
+              "objective_family": "count"
+            }
+          }
+        ]
+      },
+      {
+        "name": "feasibility_monotonicity",
+        "description": "当目标转为判定时，可利用可行性关于阈值或步骤的单调变化。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "feasibility_monotonicity",
+            "description": "可行性会随着阈值、次数或资源上界的变化呈现单调性，可据此二分或逐步推进。",
+            "properties": {
+              "objective_family": "decision"
+            }
+          }
+        ]
+      },
+      {
+        "name": "signed_balance",
+        "description": "允许负值后，状态转移依然依赖净贡献或相对差值。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "signed_balance",
+            "description": "即使输入允许负值，关键状态仍可通过净贡献、偏移或平衡量统一表示。",
+            "properties": {
+              "supports_negative_values": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "frequency_aggregation",
+        "description": "重复对象可以被频次聚合处理，而不必逐个区分身份。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "frequency_aggregation",
+            "description": "对重复输入项，只需维护频次或桶级统计，核心决策仍成立。",
+            "properties": {
+              "supports_duplicates": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "ordered_scan",
+        "description": "有序输入允许单向扫描或双指针式推进。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "ordered_scan",
+            "description": "当关键字段有序时，状态可以通过单调扫描维护，不需要回退。",
+            "properties": {
+              "requires_ordered_input": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "prefix_scan_invariant",
+        "description": "显式引入前缀/分块扫描的不变量，便于同族但非同题的表达。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "prefix_scan_stability",
+            "description": "前缀或分块扫描过程中，局部状态可以被稳定复用，不需要回看全部历史输入。",
+            "properties": {
+              "scan_style": "prefix_or_block"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

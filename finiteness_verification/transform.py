@@ -7,8 +7,13 @@ import sys
 from pathlib import Path
 from typing import Any, TYPE_CHECKING
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from .problem_repository import ProblemRepository
 from .prompts import prompt_transform_space
+from 生成题面.transform_space_tools import expand_transform_space
 
 if TYPE_CHECKING:
     from .qwen_client import QwenClient
@@ -57,7 +62,13 @@ def enrich_schema_with_transform_space(
 ) -> dict[str, Any]:
     enriched = dict(schema)
     enriched["transform_space"] = extract_transform_space(client, problem, schema)
-    return enriched
+    return upgrade_schema_transform_space(enriched)
+
+
+def upgrade_schema_transform_space(schema: dict[str, Any]) -> dict[str, Any]:
+    upgraded = dict(schema)
+    upgraded["transform_space"] = expand_transform_space(schema)
+    return upgraded
 
 
 def process_directory(
@@ -99,9 +110,10 @@ def process_directory(
             continue
 
         if data.get("transform_space"):
-            logger.info("已存在 transform_space，直接复制: %s", problem_id)
+            logger.info("已存在 transform_space，执行兼容升级后复制: %s", problem_id)
+            upgraded = upgrade_schema_transform_space(data)
             output_file.write_text(
-                json.dumps(data, ensure_ascii=False, indent=2),
+                json.dumps(upgraded, ensure_ascii=False, indent=2),
                 encoding="utf-8",
             )
             if failure_file.exists():

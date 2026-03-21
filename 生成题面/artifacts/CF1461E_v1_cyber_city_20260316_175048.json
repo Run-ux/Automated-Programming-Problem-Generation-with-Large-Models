@@ -1,0 +1,306 @@
+{
+  "problem_id": "CF1461E",
+  "variant_index": 1,
+  "seed": 310,
+  "theme": {
+    "id": "cyber_city",
+    "name": "赛博城市调度"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "C",
+      "O",
+      "T"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "CF1461E",
+      "E. Water Level",
+      "codeforces",
+      "https://codeforces.com/contest/1461/problem/E",
+      "In recent years John has very successfully settled at his new job at the office. But John doesn't like to idly sit around while his code is compiling, so he immediately found himself an interesting distraction. The po...",
+      "不要复写原题的叙事结构、任务定义或样例套路。",
+      "不要只替换实体名称后保留同样的输入输出关系。"
+    ],
+    "rationale": "当前 transform_space 无法稳定支撑中等差异目标。 已尝试 objective=maximize_days、structural_options=allow_initial_water_outside_range, allow_negative_values，预测距离=0.29，落地轴=C, O, T。"
+  },
+  "predicted_schema_distance": 0.29,
+  "distance_breakdown": {
+    "I": 0.0,
+    "C": 0.4,
+    "O": 0.6,
+    "V": 0.0,
+    "T": 1.0,
+    "total": 0.29
+  },
+  "changed_axes_realized": [
+    "C",
+    "O",
+    "T"
+  ],
+  "objective": {
+    "type": "maximize_days",
+    "description": "判断是否存在一种方案使得在给定的天数内，每天的水量都在指定范围内"
+  },
+  "numerical_parameters": {
+    "k": {
+      "value": 1,
+      "min": 1,
+      "max": 1000000000000000000,
+      "description": "初始水量"
+    },
+    "l": {
+      "value": 1,
+      "min": 1,
+      "max": 1000000000000000000,
+      "description": "水位下限"
+    },
+    "r": {
+      "value": 1,
+      "min": 1,
+      "max": 1000000000000000000,
+      "description": "水位上限"
+    },
+    "t": {
+      "value": 1,
+      "min": 1,
+      "max": 1000000000000000000,
+      "description": "天数"
+    },
+    "x": {
+      "value": 1,
+      "min": 1,
+      "max": 1000000,
+      "description": "每天的用水量"
+    },
+    "y": {
+      "value": 1000000000000000000,
+      "min": 1,
+      "max": 1000000000000000000,
+      "description": "每天可以添加的水量"
+    }
+  },
+  "structural_options": [
+    "allow_initial_water_outside_range",
+    "allow_negative_values"
+  ],
+  "instantiated_schema_snapshot": {
+    "problem_id": "CF1461E",
+    "source": "codeforces",
+    "input_structure": {
+      "type": "array",
+      "confidence": "1/1",
+      "all_rounds": [
+        {
+          "round": 1,
+          "status": "success",
+          "result": {
+            "type": "array",
+            "length": {
+              "min": 6,
+              "max": 6
+            },
+            "value_range": {
+              "min": 1,
+              "max": 1000000000000000000
+            },
+            "properties": {}
+          }
+        }
+      ],
+      "length": {
+        "min": 6,
+        "max": 6
+      },
+      "value_range": {
+        "min": 1,
+        "max": 1000000000000000000
+      },
+      "properties": {}
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "flow_constraint",
+          "description": "选取元素权重和不超过容量上限（水位必须在 [l, r] 范围内）",
+          "confidence": "1/1"
+        },
+        {
+          "name": "sum_constraint",
+          "description": "每日消耗和添加的水量必须满足总水量在允许范围内（每天消耗 x 升水，可以添加 y 升水，总水量必须在 [l, r] 范围内）",
+          "confidence": "1/1"
+        },
+        {
+          "name": "operation_limit",
+          "description": "操作次数限制（John 需要在 t 天内维持水位）",
+          "confidence": "1/1"
+        },
+        {
+          "name": "allow_initial_water_outside_range",
+          "description": "启用结构选项：allow_initial_water_outside_range。"
+        },
+        {
+          "name": "allow_negative_values",
+          "description": "启用结构选项：allow_negative_values。"
+        }
+      ],
+      "all_rounds": [
+        {
+          "round": 1,
+          "status": "success",
+          "result": {
+            "constraints": [
+              {
+                "name": "flow_constraint",
+                "description": "选取元素权重和不超过容量上限（水位必须在 [l, r] 范围内）",
+                "formal": "l ≤ water_level ≤ r"
+              },
+              {
+                "name": "sum_constraint",
+                "description": "每日消耗和添加的水量必须满足总水量在允许范围内（每天消耗 x 升水，可以添加 y 升水，总水量必须在 [l, r] 范围内）",
+                "formal": "l ≤ (water_level - x + y) ≤ r"
+              },
+              {
+                "name": "operation_limit",
+                "description": "操作次数限制（John 需要在 t 天内维持水位）",
+                "formal": "t days"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "objective": {
+      "type": "maximize_days",
+      "description": "判断是否存在一种方案使得在给定的天数内，每天的水量都在指定范围内"
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "monotonicity",
+          "description": "水量变化的单调性：每天的水量变化是固定的，可以通过加水和用水来保持在给定范围内",
+          "confidence": "1/1",
+          "properties": {
+            "left_monotonic": false,
+            "right_monotonic": false,
+            "window_shrinkable": false
+          }
+        },
+        {
+          "name": "interval_additivity",
+          "description": "区间可加性：每天的水量变化可以通过加法操作进行计算，确保水量始终在指定范围内",
+          "confidence": "1/1",
+          "properties": {}
+        },
+        {
+          "name": "state_transition",
+          "description": "状态转移不变量：每天的状态（水量）通过固定的加水和用水操作进行转移，且转移后的状态必须满足约束条件",
+          "confidence": "1/1",
+          "properties": {}
+        }
+      ],
+      "all_rounds": [
+        {
+          "round": 1,
+          "status": "success",
+          "result": {
+            "invariants": [
+              {
+                "name": "monotonicity",
+                "description": "水量变化的单调性：每天的水量变化是固定的，可以通过加水和用水来保持在给定范围内",
+                "properties": {
+                  "left_monotonic": false,
+                  "right_monotonic": false,
+                  "window_shrinkable": false
+                }
+              },
+              {
+                "name": "interval_additivity",
+                "description": "区间可加性：每天的水量变化可以通过加法操作进行计算，确保水量始终在指定范围内",
+                "properties": {}
+              },
+              {
+                "name": "state_transition",
+                "description": "状态转移不变量：每天的状态（水量）通过固定的加水和用水操作进行转移，且转移后的状态必须满足约束条件",
+                "properties": {}
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "instantiated_parameters": {
+      "k": {
+        "value": 1,
+        "min": 1,
+        "max": 1000000000000000000,
+        "description": "初始水量"
+      },
+      "l": {
+        "value": 1,
+        "min": 1,
+        "max": 1000000000000000000,
+        "description": "水位下限"
+      },
+      "r": {
+        "value": 1,
+        "min": 1,
+        "max": 1000000000000000000,
+        "description": "水位上限"
+      },
+      "t": {
+        "value": 1,
+        "min": 1,
+        "max": 1000000000000000000,
+        "description": "天数"
+      },
+      "x": {
+        "value": 1,
+        "min": 1,
+        "max": 1000000,
+        "description": "每天的用水量"
+      },
+      "y": {
+        "value": 1000000000000000000,
+        "min": 1,
+        "max": 1000000000000000000,
+        "description": "每天可以添加的水量"
+      }
+    },
+    "selected_structural_options": [
+      "allow_initial_water_outside_range",
+      "allow_negative_values"
+    ],
+    "theme": {
+      "id": "cyber_city",
+      "name": "赛博城市调度",
+      "tone": "冷静、工程化、略带未来感",
+      "keywords": [
+        "节点",
+        "数据流",
+        "权限",
+        "缓存",
+        "链路",
+        "控制台"
+      ],
+      "mapping_hint": "把原始结构映射成网络节点、任务包或访问记录。"
+    },
+    "difficulty": "Hard"
+  },
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "当前 transform_space 无法稳定支撑中等差异目标。 预测距离=0.29，落地轴=C, O, T。",
+    "feedback": "当前 transform_space 无法稳定支撑中等差异目标。 已尝试 objective=maximize_days、structural_options=allow_initial_water_outside_range, allow_negative_values，预测距离=0.29，落地轴=C, O, T。"
+  }
+}

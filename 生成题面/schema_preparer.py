@@ -11,6 +11,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from finiteness_verification.problem_repository import ProblemRepository
 from finiteness_verification.transform import enrich_schema_with_transform_space
+from transform_space_tools import expand_transform_space
 
 
 class SchemaPreparer:
@@ -38,8 +39,10 @@ class SchemaPreparer:
                 missing_transform.append((path, data))
             else:
                 target = self.cache_dir / path.name
+                prepared = dict(data)
+                prepared["transform_space"] = expand_transform_space(prepared)
                 target.write_text(
-                    json.dumps(data, ensure_ascii=False, indent=2),
+                    json.dumps(prepared, ensure_ascii=False, indent=2),
                     encoding="utf-8",
                 )
 
@@ -64,6 +67,7 @@ class SchemaPreparer:
                 problem_id=data.get("problem_id", path.stem),
             )
             enriched = enrich_schema_with_transform_space(data, problem, client)
+            enriched["transform_space"] = expand_transform_space(enriched)
             target = self.cache_dir / path.name
             target.write_text(
                 json.dumps(enriched, ensure_ascii=False, indent=2),

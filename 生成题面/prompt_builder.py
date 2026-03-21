@@ -90,6 +90,8 @@ def build_user_prompt(
         "selected_objective": plan.objective,
         "selected_parameters": plan.numerical_parameters,
         "selected_structural_options": plan.structural_options,
+        "selected_input_structure_options": plan.input_structure_options,
+        "selected_invariant_options": plan.invariant_options,
         "instantiated_schema": instantiated_schema,
         "raw_schema_reference": {
             "input_structure": schema.get("input_structure", {}),

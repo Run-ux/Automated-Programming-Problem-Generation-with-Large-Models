@@ -1,0 +1,351 @@
+{
+  "problem_id": "CF1257D",
+  "variant_index": 1,
+  "seed": 20260313,
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "I",
+      "C",
+      "O",
+      "V",
+      "T"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "CF1257D",
+      "D. Yet Another Monster Killing Problem",
+      "codeforces",
+      "https://codeforces.com/contest/1257/problem/D",
+      "You play a computer game. In this game, you lead a party of $m$ heroes, and you have to clear a dungeon with $n$ monsters. Each monster is characterized by its power $a_i$. Each hero is characterized by his power $p_i...",
+      "不要复写原题的叙事结构、任务定义或样例套路。",
+      "不要只替换实体名称后保留同样的输入输出关系。"
+    ],
+    "rationale": "该方案保持同族算法线索，但通过目标函数、结构选项、输入视角与不变量提示拉开差异。 objective=decision_possible，structural_options=allow_repeated_monsters, allow_repeated_heroes，input_options=zero_enabled_values, duplicate_friendly_input，invariant_options=counting_decomposition, signed_balance，预测距离=0.47，落地轴=I, C, O, V, T。"
+  },
+  "predicted_schema_distance": 0.4746,
+  "distance_breakdown": {
+    "I": 0.25,
+    "C": 0.4286,
+    "O": 0.6,
+    "V": 0.4,
+    "T": 1.0,
+    "total": 0.4746
+  },
+  "changed_axes_realized": [
+    "I",
+    "C",
+    "O",
+    "V",
+    "T"
+  ],
+  "objective": {
+    "type": "decision_possible",
+    "description": "求完成所有任务所需的最小时间"
+  },
+  "numerical_parameters": {
+    "t": {
+      "value": 1,
+      "min": 1,
+      "max": 100000,
+      "description": "测试用例的数量"
+    },
+    "n": {
+      "value": 1,
+      "min": 1,
+      "max": 200000,
+      "description": "地牢中怪物的数量"
+    },
+    "m": {
+      "value": 1,
+      "min": 1,
+      "max": 200000,
+      "description": "英雄的数量"
+    },
+    "a_i": {
+      "value": 1,
+      "min": 1,
+      "max": 1000000000,
+      "description": "每个怪物的攻击力"
+    },
+    "p_i": {
+      "value": 1,
+      "min": 1,
+      "max": 1000000000,
+      "description": "每个英雄的攻击力"
+    },
+    "s_i": {
+      "value": 200000,
+      "min": 1,
+      "max": 200000,
+      "description": "每个英雄的耐力值"
+    }
+  },
+  "structural_options": [
+    "allow_repeated_monsters",
+    "allow_repeated_heroes"
+  ],
+  "input_structure_options": [
+    "zero_enabled_values",
+    "duplicate_friendly_input"
+  ],
+  "invariant_options": [
+    "counting_decomposition",
+    "signed_balance"
+  ],
+  "instantiated_schema_snapshot": {
+    "problem_id": "CF1257D",
+    "source": "codeforces",
+    "input_structure": {
+      "type": "array",
+      "confidence": "1/1",
+      "all_rounds": [
+        {
+          "round": 1,
+          "status": "success",
+          "result": {
+            "type": "array",
+            "length": {
+              "min": 1,
+              "max": 200000
+            },
+            "value_range": {
+              "min": 1,
+              "max": 1000000000
+            },
+            "properties": {
+              "ordered": false
+            }
+          }
+        }
+      ],
+      "length": {
+        "min": 1,
+        "max": 200000
+      },
+      "value_range": {
+        "min": 0,
+        "max": 1000000000
+      },
+      "properties": {
+        "ordered": false,
+        "duplicate_allowed": true
+      }
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "flow_constraint",
+          "description": "每个英雄每天击败的怪物数量不超过其耐力值",
+          "confidence": "1/1"
+        },
+        {
+          "name": "ordering",
+          "description": "英雄必须按顺序击败怪物，不能跳过未击败的怪物",
+          "confidence": "1/1"
+        },
+        {
+          "name": "operation_limit",
+          "description": "每天只能选择一个英雄进入地牢",
+          "confidence": "1/1"
+        },
+        {
+          "name": "sum_constraint",
+          "description": "所有英雄的总耐力值必须足够击败所有怪物",
+          "confidence": "1/1"
+        },
+        {
+          "name": "zero_enabled_values",
+          "description": "输入中允许出现 0。"
+        },
+        {
+          "name": "allow_repeated_monsters",
+          "description": "启用结构选项：allow_repeated_monsters。"
+        },
+        {
+          "name": "allow_repeated_heroes",
+          "description": "启用结构选项：allow_repeated_heroes。"
+        }
+      ],
+      "all_rounds": [
+        {
+          "round": 1,
+          "status": "success",
+          "result": {
+            "constraints": [
+              {
+                "name": "flow_constraint",
+                "description": "每个英雄每天击败的怪物数量不超过其耐力值"
+              },
+              {
+                "name": "ordering",
+                "description": "英雄必须按顺序击败怪物，不能跳过未击败的怪物"
+              },
+              {
+                "name": "operation_limit",
+                "description": "每天只能选择一个英雄进入地牢"
+              },
+              {
+                "name": "sum_constraint",
+                "description": "所有英雄的总耐力值必须足够击败所有怪物"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "objective": {
+      "type": "decision_possible",
+      "description": "求完成所有任务所需的最小时间"
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "optimal_substructure",
+          "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每一天选择英雄的决策基于当前剩余怪物和英雄状态的最优解。",
+          "confidence": "1/1",
+          "properties": {}
+        },
+        {
+          "name": "monotonicity",
+          "description": "单调性：随着天数的增加，已击败的怪物数量单调递增，且每天选择的英雄在满足条件的情况下尽可能多地击败怪物。",
+          "confidence": "1/1",
+          "properties": {
+            "right_monotonic": true
+          }
+        },
+        {
+          "name": "greedy_choice",
+          "description": "贪心选择性质：每一步选择当天能够击败最多怪物的英雄，以最小化总天数。这种局部最优的选择最终导致全局最优解。",
+          "confidence": "1/1",
+          "properties": {}
+        },
+        {
+          "name": "counting_decomposition",
+          "description": "总方案数可由若干互不重叠的子状态累积得到，允许使用 DP、容斥或分治计数。",
+          "properties": {
+            "objective_family": "count"
+          }
+        },
+        {
+          "name": "signed_balance",
+          "description": "即使输入允许负值，关键状态仍可通过净贡献、偏移或平衡量统一表示。",
+          "properties": {
+            "supports_negative_values": true
+          }
+        }
+      ],
+      "all_rounds": [
+        {
+          "round": 1,
+          "status": "success",
+          "result": {
+            "invariants": [
+              {
+                "name": "optimal_substructure",
+                "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即每一天选择英雄的决策基于当前剩余怪物和英雄状态的最优解。",
+                "properties": {}
+              },
+              {
+                "name": "monotonicity",
+                "description": "单调性：随着天数的增加，已击败的怪物数量单调递增，且每天选择的英雄在满足条件的情况下尽可能多地击败怪物。",
+                "properties": {
+                  "right_monotonic": true
+                }
+              },
+              {
+                "name": "greedy_choice",
+                "description": "贪心选择性质：每一步选择当天能够击败最多怪物的英雄，以最小化总天数。这种局部最优的选择最终导致全局最优解。",
+                "properties": {}
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "instantiated_parameters": {
+      "t": {
+        "value": 1,
+        "min": 1,
+        "max": 100000,
+        "description": "测试用例的数量"
+      },
+      "n": {
+        "value": 1,
+        "min": 1,
+        "max": 200000,
+        "description": "地牢中怪物的数量"
+      },
+      "m": {
+        "value": 1,
+        "min": 1,
+        "max": 200000,
+        "description": "英雄的数量"
+      },
+      "a_i": {
+        "value": 1,
+        "min": 1,
+        "max": 1000000000,
+        "description": "每个怪物的攻击力"
+      },
+      "p_i": {
+        "value": 1,
+        "min": 1,
+        "max": 1000000000,
+        "description": "每个英雄的攻击力"
+      },
+      "s_i": {
+        "value": 200000,
+        "min": 1,
+        "max": 200000,
+        "description": "每个英雄的耐力值"
+      }
+    },
+    "selected_structural_options": [
+      "allow_repeated_monsters",
+      "allow_repeated_heroes"
+    ],
+    "selected_input_options": [
+      "zero_enabled_values",
+      "duplicate_friendly_input"
+    ],
+    "selected_invariant_options": [
+      "counting_decomposition",
+      "signed_balance"
+    ],
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Hard"
+  },
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "The provided instantiated_schema retains the core algorithmic logic of the original problem (CF1257D) despite the difference plan's claims. Specifically, the constraints (sequential processing, one resource per day, power threshold + endurance count limits) and objective (minimize days) define the exact same greedy + preprocessing solution as the original. Merely changing the theme to 'Campus Operations' violates Instruction 11 (No Skin). Additionally, there are critical internal contradictions: selected_objective.type is 'decision_possible' but instantiated_schema.objective.description is 'minimize time'; input_structure allows 0/negatives but instantiated_parameters specify min 1. These prevent reliable generation without violating hard constraints.",
+    "feedback": "The upstream schema needs to: 1. Define distinct core constraints that alter the algorithmic approach (e.g., parallel processing, different resource consumption models, or non-sequential task handling). 2. Resolve the contradiction between objective type (decision vs minimization). 3. Consistent value ranges across all schema fields (parameters vs input_structure vs invariants). 4. Ensure the difference plan is actually reflected in the instantiated_schema, not just claimed in the rationale."
+  }
+}

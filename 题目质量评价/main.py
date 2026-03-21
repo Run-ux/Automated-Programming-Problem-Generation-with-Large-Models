@@ -8,6 +8,11 @@ from problem_quality import ProblemEvaluator
 from problem_quality.report_renderer import render_report_markdown
 
 
+PROJECT_DIR = Path(__file__).resolve().parent
+REPORTS_JSON_DIR = PROJECT_DIR / "reports" / "json"
+REPORTS_MD_DIR = PROJECT_DIR / "reports" / "md"
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="题目质量与反换皮评估器")
     parser.add_argument("--original-schema", required=True, help="原始 schema 路径")
@@ -35,8 +40,19 @@ def main() -> None:
     )
 
     artifact_path = Path(args.artifact)
-    output_json = Path(args.output_json) if args.output_json else artifact_path.with_name(f"{artifact_path.stem}_quality_report.json")
-    output_md = Path(args.output_md) if args.output_md else artifact_path.with_name(f"{artifact_path.stem}_quality_report.md")
+    output_json = (
+        Path(args.output_json)
+        if args.output_json
+        else REPORTS_JSON_DIR / f"{artifact_path.stem}_quality_report.json"
+    )
+    output_md = (
+        Path(args.output_md)
+        if args.output_md
+        else REPORTS_MD_DIR / f"{artifact_path.stem}_quality_report.md"
+    )
+
+    output_json.parent.mkdir(parents=True, exist_ok=True)
+    output_md.parent.mkdir(parents=True, exist_ok=True)
 
     output_json.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     output_md.write_text(render_report_markdown(report), encoding="utf-8")

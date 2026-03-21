@@ -2,8 +2,8 @@
 
 该目录提供“题面质量 + 反换皮”单题评估器。它直接消费 `生成题面/artifacts/*.json`，同时读取原始 schema、prepared schema 和原题文本，输出：
 
-- `*_quality_report.json`
-- `*_quality_report.md`
+- `reports/json/*_quality_report.json`
+- `reports/md/*_quality_report.md`
 
 ## 核心能力
 
@@ -22,6 +22,8 @@ python main.py ^
 ```
 
 如果已配置 `QWEN_API_KEY` 或 `DASHSCOPE_API_KEY`，默认会启用 LLM Judge。也可以使用 `--disable-llm` 退回启发式评估。
+
+默认情况下，报告会保存到当前项目目录下的 `reports/json` 和 `reports/md`；如需覆盖该行为，可显式传入 `--output-json` 或 `--output-md`。
 
 ## 测试
 

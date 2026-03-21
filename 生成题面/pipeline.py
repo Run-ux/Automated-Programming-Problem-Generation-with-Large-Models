@@ -138,6 +138,8 @@ class GenerationPipeline:
             "objective": plan.objective,
             "numerical_parameters": plan.numerical_parameters,
             "structural_options": plan.structural_options,
+            "input_structure_options": plan.input_structure_options,
+            "invariant_options": plan.invariant_options,
             "instantiated_schema_snapshot": asdict(plan.instantiated_schema_snapshot),
             "generated_problem": payload,
         }
@@ -280,6 +282,26 @@ class GenerationPipeline:
             "- structural_options: "
             + (", ".join(transform_space.get("structural_options", [])) or "无")
         )
+        input_options = transform_space.get("input_structure_options", [])
+        lines.append("- input_structure_options:")
+        if input_options:
+            for item in input_options:
+                lines.append(
+                    "  - "
+                    + f"{item.get('name', '')}: {item.get('description', '')}"
+                )
+        else:
+            lines.append("  - 无")
+        invariant_options = transform_space.get("invariant_options", [])
+        lines.append("- invariant_options:")
+        if invariant_options:
+            for item in invariant_options:
+                lines.append(
+                    "  - "
+                    + f"{item.get('name', '')}: {item.get('description', '')}"
+                )
+        else:
+            lines.append("  - 无")
         return lines
 
     def _render_variant_plan(self, plan: VariantPlan) -> list[str]:
@@ -310,6 +332,18 @@ class GenerationPipeline:
         lines.append(
             "- selected_structural_options: "
             + (", ".join(plan.structural_options) if plan.structural_options else "无")
+        )
+        lines.append(
+            "- selected_input_structure_options: "
+            + (
+                ", ".join(plan.input_structure_options)
+                if plan.input_structure_options
+                else "无"
+            )
+        )
+        lines.append(
+            "- selected_invariant_options: "
+            + (", ".join(plan.invariant_options) if plan.invariant_options else "无")
         )
         lines.append("- constraint_summary:")
         lines.extend(self._render_plain_list(plan.constraint_summary, empty_text="  - 无"))
@@ -377,6 +411,40 @@ class GenerationPipeline:
             "- selected_structural_options: "
             + (", ".join(plan.structural_options) if plan.structural_options else "无")
         )
+        lines.append(
+            "- input_structure_option_selection: available="
+            + (
+                ", ".join(
+                    item.get("name", "")
+                    for item in prepared_transform_space.get("input_structure_options", [])
+                    if item.get("name")
+                )
+                or "无"
+            )
+        )
+        lines.append(
+            "- selected_input_structure_options: "
+            + (
+                ", ".join(plan.input_structure_options)
+                if plan.input_structure_options
+                else "无"
+            )
+        )
+        lines.append(
+            "- invariant_option_selection: available="
+            + (
+                ", ".join(
+                    item.get("name", "")
+                    for item in prepared_transform_space.get("invariant_options", [])
+                    if item.get("name")
+                )
+                or "无"
+            )
+        )
+        lines.append(
+            "- selected_invariant_options: "
+            + (", ".join(plan.invariant_options) if plan.invariant_options else "无")
+        )
         lines.append(f"- theme_mapping: {plan.theme.name} / {plan.theme.mapping_hint}")
         return lines
 
@@ -416,6 +484,22 @@ class GenerationPipeline:
         lines.append(
             "- instantiated_structural_options: "
             + (", ".join(plan.structural_options) if plan.structural_options else "无")
+        )
+        lines.append(
+            "- instantiated_input_structure_options: "
+            + (
+                ", ".join(snapshot.get("selected_input_options", []))
+                if snapshot.get("selected_input_options")
+                else "无"
+            )
+        )
+        lines.append(
+            "- instantiated_invariant_options: "
+            + (
+                ", ".join(snapshot.get("selected_invariant_options", []))
+                if snapshot.get("selected_invariant_options")
+                else "无"
+            )
         )
         lines.append(f"- instantiated_input_summary: {plan.input_summary}")
         return lines

@@ -1,0 +1,295 @@
+{
+  "problem_id": "CF103D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 300000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {}
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 300000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "arithmetic_progression_constraint",
+        "description": "选择的元素按照等差数列的方式进行选取，即从第 a 个元素开始，每隔 b 个元素选取一次，直到超过数组长度 n。",
+        "confidence": "1/1"
+      },
+      {
+        "name": "sum_constraint",
+        "description": "计算所选元素的总和，即在每个 (a, b) -raid 场景中，计算按等差数列方式选取的元素的总质量。",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "arithmetic_progression_constraint",
+              "description": "选择的元素按照等差数列的方式进行选取，即从第 a 个元素开始，每隔 b 个元素选取一次，直到超过数组长度 n。",
+              "formal": "A[a], A[a + b], A[a + 2b], ..., A[a + kb] where a + kb <= n"
+            },
+            {
+              "name": "sum_constraint",
+              "description": "计算所选元素的总和，即在每个 (a, b) -raid 场景中，计算按等差数列方式选取的元素的总质量。",
+              "formal": "sum(A[a + kb]) for all k such that a + kb <= n"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "maximize_value",
+          "description": "求给定规则下选取元素的总权值和"
+        }
+      }
+    ],
+    "description": "求给定规则下选取元素的总权值和"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：通过计算特定步长的等差序列索引对应的元素和，可以利用前缀和快速求解区间和",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个 (a, b) -raid 场景下的总质量计算是独立的，不依赖于其他场景的结果",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：通过计算特定步长的等差序列索引对应的元素和，可以利用前缀和快速求解区间和",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个 (a, b) -raid 场景下的总质量计算是独立的，不依赖于其他场景的结果",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "transform_space": {
+    "numerical_parameters": {
+      "N": {
+        "min": 1,
+        "max": 300000,
+        "description": "牛群中的牛的数量"
+      },
+      "P": {
+        "min": 1,
+        "max": 300000,
+        "description": "(a, b) -raid 场景的数量"
+      },
+      "W_i": {
+        "min": 1,
+        "max": 1000000000,
+        "description": "每头牛的质量"
+      },
+      "A": {
+        "min": 1,
+        "max": 300000,
+        "description": "等差数列的起始位置"
+      },
+      "B": {
+        "min": 1,
+        "max": 300000,
+        "description": "等差数列的步长"
+      }
+    },
+    "objective_options": [
+      "sum",
+      "count",
+      "decision"
+    ],
+    "structural_options": [
+      "allow_negative_weights",
+      "allow_zero_weights",
+      "allow_duplicate_weights",
+      "multi_constraints"
+    ],
+    "input_structure_options": [
+      {
+        "name": "signed_input_values",
+        "description": "输入值域扩展为允许负数，题面需要显式说明可出现负值。",
+        "patch": {
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          }
+        },
+        "constraints": [
+          {
+            "name": "signed_input_values",
+            "description": "输入值允许为负数。"
+          }
+        ]
+      },
+      {
+        "name": "zero_enabled_values",
+        "description": "输入值域下界放宽到 0，使零值成为合法输入。",
+        "patch": {
+          "value_range": {
+            "min": 0
+          }
+        },
+        "constraints": [
+          {
+            "name": "zero_enabled_values",
+            "description": "输入中允许出现 0。"
+          }
+        ]
+      },
+      {
+        "name": "duplicate_friendly_input",
+        "description": "输入对象允许重复出现，题面应明确重复项是合法的。",
+        "patch": {
+          "properties": {
+            "duplicate_allowed": true
+          }
+        },
+        "constraints": []
+      }
+    ],
+    "invariant_options": [
+      {
+        "name": "counting_decomposition",
+        "description": "当目标转为计数时，状态可以分解为若干独立计数子结构。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "counting_decomposition",
+            "description": "总方案数可由若干互不重叠的子状态累积得到，允许使用 DP、容斥或分治计数。",
+            "properties": {
+              "objective_family": "count"
+            }
+          }
+        ]
+      },
+      {
+        "name": "feasibility_monotonicity",
+        "description": "当目标转为判定时，可利用可行性关于阈值或步骤的单调变化。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "feasibility_monotonicity",
+            "description": "可行性会随着阈值、次数或资源上界的变化呈现单调性，可据此二分或逐步推进。",
+            "properties": {
+              "objective_family": "decision"
+            }
+          }
+        ]
+      },
+      {
+        "name": "signed_balance",
+        "description": "允许负值后，状态转移依然依赖净贡献或相对差值。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "signed_balance",
+            "description": "即使输入允许负值，关键状态仍可通过净贡献、偏移或平衡量统一表示。",
+            "properties": {
+              "supports_negative_values": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "zero_contribution_absorption",
+        "description": "零值对象的引入不会破坏主状态，只会带来可吸收的空贡献。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "zero_contribution_absorption",
+            "description": "零贡献元素可以被安全吸收或跳过，不改变主要状态转移的正确性。",
+            "properties": {
+              "supports_zero_values": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "frequency_aggregation",
+        "description": "重复对象可以被频次聚合处理，而不必逐个区分身份。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "frequency_aggregation",
+            "description": "对重复输入项，只需维护频次或桶级统计，核心决策仍成立。",
+            "properties": {
+              "supports_duplicates": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "prefix_scan_invariant",
+        "description": "显式引入前缀/分块扫描的不变量，便于同族但非同题的表达。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "prefix_scan_stability",
+            "description": "前缀或分块扫描过程中，局部状态可以被稳定复用，不需要回看全部历史输入。",
+            "properties": {
+              "scan_style": "prefix_or_block"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

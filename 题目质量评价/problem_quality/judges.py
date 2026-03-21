@@ -30,7 +30,39 @@ class ProblemQualityJudge:
         generated_problem: dict[str, Any],
         hard_checks: list[dict[str, Any]],
     ) -> dict[str, Any]:
-        system_prompt = """你是一名算法竞赛题面审稿人。请根据实例化后的 schema 与生成题面，评估题面质量。
+        system_prompt = """你是一名算法竞赛题面审稿人。请根据实例化后的 schema、生成题面和 hard_checks，评估题面质量。
+
+评分时使用以下统一 rubric：
+
+1. variant_fidelity
+- 定义：看 instantiated_schema 中已经确定的任务变体、输入对象、目标函数、结构选项，是否真实落地到 generated_problem 的 description、input_format、output_format、constraints、samples。
+- 不要看：它和原题像不像；这里只评估“实例化后的 schema 是否被准确实现”。
+
+2. spec_completeness
+- 定义：看题面是否提供了独立做题所需的关键信息，尤其是任务说明、输入格式、输出格式、约束、必要说明是否齐全。
+- 如果读者仍需要自行猜测核心规则、边界条件或输出对象，则应降低分数。
+
+3. cross_section_consistency
+- 定义：看 description、input_format、output_format、constraints、samples 之间是否互相一致，是否出现字段数量、目标定义、样例格式、符号含义的冲突。
+- 如果某一部分与另一部分矛盾，优先降这一维。
+
+4. sample_quality
+- 定义：看样例数量是否基本充足，样例输入输出是否与题意和格式匹配，解释是否有助于理解任务。
+- 样例少、样例不能覆盖关键结构、样例解释缺失或误导，都应扣分。
+
+5. oj_readability
+- 定义：看题面是否符合正常 OJ 题面的表达习惯，结构清楚、措辞明确、噪声少、无明显来源污染或无关文本。
+- 不要求文采，只看是否便于参赛者快速准确理解。
+
+评分锚点：
+- 5 分：该维度表现稳定，基本无明显问题，只有轻微可忽略瑕疵。
+- 3 分：该维度存在明确但可修复的问题，不至于完全影响做题。
+- 1 分：该维度存在严重问题，明显影响理解、实现或正确判题。
+
+使用 hard_checks 的规则：
+- hard_checks 是强证据。若某项 hard_check 明确失败，相关维度通常不能给高分。
+- rationale 和 issues 必须尽量引用 hard_checks 或输入中的字段路径作为证据。
+- 只依据给定字段路径做判断，不要臆测缺失信息。
 
 必须返回严格 JSON，格式如下：
 {
@@ -54,7 +86,11 @@ class ProblemQualityJudge:
   "suggested_revisions": string[]
 }
 
-只依据给定字段路径做判断，不要输出额外解释。"""
+输出要求：
+- 五个 scores 字段都必须返回。
+- score 只能是 1 到 5 的整数。
+- evidence_refs 只填输入中出现的字段路径或 hard_checks 中的 evidence_refs。
+- 不要输出 JSON 之外的任何解释。"""
         user_prompt = json.dumps(
             {
                 "instantiated_schema": instantiated_schema,
@@ -279,6 +315,41 @@ class SourceDivergenceJudge:
     ) -> dict[str, Any]:
         system_prompt = """你是一名算法竞赛命题审稿人。你的任务是判断新题是否只是原题换皮。
 
+你要综合 original_problem、original_schema、instantiated_schema、generated_problem、hard_checks 和 schema_distance 进行判断。
+
+评分 rubric：
+
+1. semantic_difference
+- 定义：原题与新题在任务语义上的真实差异程度，取值 0.0 到 1.0。
+- 高分表示：输入对象、约束结构、目标函数、求解关注点发生了实质变化，熟悉原题的选手不能只靠替换变量名或故事映射就直接套解。
+- 低分表示：核心任务、状态定义、决策对象、最优性目标基本没变，只是换背景或轻微改写表述。
+
+2. solution_transfer_risk
+- 定义：熟悉原题标准解的选手，能否几乎原样迁移思路、状态设计、关键性质和实现框架到新题，取值 0.0 到 1.0。
+- 高分表示：只需改命名、实体映射或很小的边角逻辑就能沿用原解。
+- 低分表示：必须重新建模或重新选择关键算法，原题解法不能直接迁移。
+
+3. surface_retheme_risk
+- 定义：新题是否主要做了表层换皮，取值 0.0 到 1.0。
+- 高分表示：标题、叙事、句式、任务定义、样例套路、名词映射与原题高度对应，文本或结构复用明显。
+- 低分表示：即使主题相关，表述组织、任务展开和样例设计也没有明显复用痕迹。
+
+判断时的重点：
+- 先看 instantiated_schema 相比 original_schema 是否真的改变了关键轴，再看 generated_problem 是否把这些变化真实落地。
+- schema_distance 是强结构信号，但不是唯一依据；如果 schema_distance 不低，但新题语义和解法迁移风险仍然很接近原题，仍应判为换皮。
+- hard_checks 中与 source_leakage、结构落地失败相关的失败项，是重要负面证据。
+- 不要因为背景故事不同就高估 semantic_difference；关键看“会不会迫使解题者改变问题建模和解法”。
+
+分数锚点：
+- semantic_difference: 0.8-1.0 表示实质差异明显；0.4-0.6 表示有变化但核心求解框架仍较接近；0.0-0.2 表示基本只是换皮。
+- solution_transfer_risk: 0.8-1.0 表示原解几乎可直接迁移；0.4-0.6 表示可部分复用但需要明显调整；0.0-0.2 表示原解基本不能直接迁移。
+- surface_retheme_risk: 0.8-1.0 表示文本/叙事/样例复用明显；0.4-0.6 表示有局部复用；0.0-0.2 表示表层重合很少。
+
+verdict 规则：
+- 若新题主要是表层重主题、原题解法可直接迁移、或 semantic_difference 明显偏低，应返回 reject_as_retheme。
+- 只有在“语义差异真实成立”且“解法迁移风险不高”时，才返回 pass。
+- 当证据冲突时，宁可保守，不要轻易放过疑似换皮题。
+
 必须返回严格 JSON：
 {
   "semantic_difference": 0.0-1.0,
@@ -289,10 +360,11 @@ class SourceDivergenceJudge:
   "evidence_refs": string[]
 }
 
-判断重点：
-1. 熟悉原题的选手，是否几乎只需改变量名/故事映射就能解出新题。
-2. 新题的输入、约束、目标是否真正改变，而不是把原题任务包了新背景。
-3. 原题标题、句式、任务定义、样例套路是否被复用。"""
+输出要求：
+- 三个分数都必须是 0.0 到 1.0 的浮点数。
+- rationale 要明确说明“哪些轴真的变了，哪些地方仍然高度可迁移/可复用”。
+- evidence_refs 只填输入中出现的字段路径或 hard_checks 中的 evidence_refs。
+- 不要输出 JSON 之外的任何解释。"""
         user_prompt = json.dumps(
             {
                 "schema_distance": schema_distance,

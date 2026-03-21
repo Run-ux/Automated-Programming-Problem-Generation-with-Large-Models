@@ -68,6 +68,8 @@ def build_instantiated_schema(
     objective: dict[str, Any],
     numerical_parameters: dict[str, Any],
     structural_options: list[str],
+    input_options: list[dict[str, Any]],
+    invariant_options: list[dict[str, Any]],
     theme: dict[str, Any] | None,
     difficulty: str,
 ) -> InstantiatedSchema:
@@ -86,11 +88,17 @@ def build_instantiated_schema(
         "invariant": invariant,
         "instantiated_parameters": copy.deepcopy(numerical_parameters),
         "selected_structural_options": list(structural_options),
+        "selected_input_options": [item.get("name", "") for item in input_options if item.get("name")],
+        "selected_invariant_options": [
+            item.get("name", "") for item in invariant_options if item.get("name")
+        ],
         "theme": copy.deepcopy(theme or {}),
         "difficulty": difficulty,
     }
     _apply_parameter_overrides(snapshot)
+    _apply_input_options(snapshot, input_options)
     _apply_structural_options(snapshot)
+    _apply_invariant_options(snapshot, invariant_options)
     return InstantiatedSchema(**snapshot)
 
 
@@ -181,7 +189,9 @@ def compute_changed_axes(
         axes.append("C")
     if distance["O"] > 0.0:
         axes.append("O")
-    if distance["T"] >= 0.3 and any(axis in axes for axis in ("I", "C", "O")):
+    if distance["V"] >= 0.18:
+        axes.append("V")
+    if distance["T"] >= 0.3 and any(axis in axes for axis in ("I", "C", "O", "V")):
         axes.append("T")
     return axes
 
@@ -196,6 +206,8 @@ def _normalize_schema(raw_schema: dict[str, Any]) -> dict[str, Any]:
         schema.setdefault("objective", {})
         schema.setdefault("invariant", {"invariants": []})
         schema.setdefault("selected_structural_options", [])
+        schema.setdefault("selected_input_options", [])
+        schema.setdefault("selected_invariant_options", [])
         return schema
 
     normalized = {
@@ -210,6 +222,8 @@ def _normalize_schema(raw_schema: dict[str, Any]) -> dict[str, Any]:
         "invariant": schema.get("invariant")
         or {"invariants": schema.get("V", []) if isinstance(schema.get("V"), list) else []},
         "selected_structural_options": schema.get("selected_structural_options", []),
+        "selected_input_options": schema.get("selected_input_options", []),
+        "selected_invariant_options": schema.get("selected_invariant_options", []),
         "instantiated_parameters": schema.get("instantiated_parameters", {}),
     }
     if isinstance(normalized["objective"], str):
@@ -262,6 +276,33 @@ def _apply_parameter_overrides(snapshot: dict[str, Any]) -> None:
             )
 
 
+def _apply_input_options(
+    snapshot: dict[str, Any],
+    input_options: list[dict[str, Any]],
+) -> None:
+    input_structure = snapshot.setdefault("input_structure", {})
+    constraints = snapshot.setdefault("core_constraints", {}).setdefault("constraints", [])
+
+    for option in input_options:
+        patch = option.get("patch", {})
+        if isinstance(patch, dict):
+            _deep_merge_dict(input_structure, patch)
+
+        for item in option.get("constraints", []):
+            if not isinstance(item, dict):
+                continue
+            name = str(item.get("name", "")).strip()
+            description = str(item.get("description", "")).strip()
+            if not name and not description:
+                continue
+            constraints.append(
+                _constraint_item(
+                    name=name or option.get("name", "input_option"),
+                    description=description or option.get("description", ""),
+                )
+            )
+
+
 def _apply_structural_options(snapshot: dict[str, Any]) -> None:
     input_structure = snapshot.get("input_structure", {})
     constraints = snapshot.setdefault("core_constraints", {}).setdefault("constraints", [])
@@ -288,6 +329,57 @@ def _apply_structural_options(snapshot: dict[str, Any]) -> None:
                 description=meta["description"],
             )
         )
+
+
+def _apply_invariant_options(
+    snapshot: dict[str, Any],
+    invariant_options: list[dict[str, Any]],
+) -> None:
+    invariant_bucket = snapshot.setdefault("invariant", {}).setdefault("invariants", [])
+    if not isinstance(invariant_bucket, list):
+        invariant_bucket = []
+        snapshot["invariant"]["invariants"] = invariant_bucket
+
+    for option in invariant_options:
+        mode = str(option.get("mode", "append")).strip().lower()
+        drop_names = {
+            str(name).strip().lower()
+            for name in option.get("drop_names", [])
+            if str(name).strip()
+        }
+        if drop_names:
+            invariant_bucket[:] = [
+                item
+                for item in invariant_bucket
+                if str(item.get("name", "")).strip().lower() not in drop_names
+            ]
+
+        normalized = [
+            {
+                "name": str(item.get("name", "")).strip(),
+                "description": str(item.get("description", "")).strip(),
+                "properties": copy.deepcopy(item.get("properties", {}))
+                if isinstance(item.get("properties", {}), dict)
+                else {},
+            }
+            for item in option.get("invariants", [])
+            if isinstance(item, dict)
+            and (str(item.get("name", "")).strip() or str(item.get("description", "")).strip())
+        ]
+        if not normalized:
+            continue
+
+        if mode == "replace":
+            invariant_bucket[:] = normalized
+            continue
+
+        existing = {_invariant_signature(item) for item in invariant_bucket if item}
+        for item in normalized:
+            signature = _invariant_signature(item)
+            if signature in existing:
+                continue
+            invariant_bucket.append(item)
+            existing.add(signature)
 
 
 def _constraint_item(name: str, description: str) -> dict[str, str]:
@@ -429,7 +521,10 @@ def _invariant_signature(item: dict[str, Any]) -> str:
 def _transform_distance(original: dict[str, Any], candidate: dict[str, Any]) -> float:
     candidate_params = candidate.get("instantiated_parameters", {}) or {}
     candidate_options = list(candidate.get("selected_structural_options", []) or [])
-    if not candidate_params and not candidate_options:
+    candidate_input_options = list(candidate.get("selected_input_options", []) or [])
+    candidate_invariant_options = list(candidate.get("selected_invariant_options", []) or [])
+    all_options = candidate_options + candidate_input_options + candidate_invariant_options
+    if not candidate_params and not all_options:
         return 0.0
 
     scores: list[float] = []
@@ -452,8 +547,8 @@ def _transform_distance(original: dict[str, Any], candidate: dict[str, Any]) -> 
 
         scores.append(0.4)
 
-    if candidate_options:
-        scores.append(min(1.0, 0.6 + 0.2 * len(candidate_options)))
+    if all_options:
+        scores.append(min(1.0, 0.5 + 0.15 * len(all_options)))
 
     return round(sum(scores) / len(scores), 4) if scores else 0.0
 
@@ -517,3 +612,11 @@ def _truncate_text(text: str, limit: int) -> str:
     if len(cleaned) <= limit:
         return cleaned
     return cleaned[: limit - 3].rstrip() + "..."
+
+
+def _deep_merge_dict(target: dict[str, Any], patch: dict[str, Any]) -> None:
+    for key, value in patch.items():
+        if isinstance(value, dict) and isinstance(target.get(key), dict):
+            _deep_merge_dict(target[key], value)
+            continue
+        target[key] = copy.deepcopy(value)

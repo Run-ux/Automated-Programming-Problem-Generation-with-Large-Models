@@ -1,0 +1,291 @@
+{
+  "problem_id": "CF103D",
+  "variant_index": 1,
+  "seed": 20260313,
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "I",
+      "C",
+      "O",
+      "V",
+      "T"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "CF103D",
+      "D. Time to Raid Cowavans",
+      "codeforces",
+      "https://codeforces.com/contest/103/problem/D",
+      "As you know, the most intelligent beings on the Earth are, of course, cows. This conclusion was reached long ago by the Martian aliens, as well as a number of other intelligent civilizations from outer space. Sometime...",
+      "不要复写原题的叙事结构、任务定义或样例套路。",
+      "不要只替换实体名称后保留同样的输入输出关系。"
+    ],
+    "rationale": "该方案保持同族算法线索，但通过目标函数、结构选项、输入视角与不变量提示拉开差异。 objective=sum，structural_options=无，input_options=zero_enabled_values, duplicate_friendly_input，invariant_options=feasibility_monotonicity, zero_contribution_absorption，预测距离=0.47，落地轴=I, C, O, V, T。"
+  },
+  "predicted_schema_distance": 0.4715,
+  "distance_breakdown": {
+    "I": 0.3333,
+    "C": 0.3333,
+    "O": 0.6,
+    "V": 0.5,
+    "T": 0.7313,
+    "total": 0.4715
+  },
+  "changed_axes_realized": [
+    "I",
+    "C",
+    "O",
+    "V",
+    "T"
+  ],
+  "objective": {
+    "type": "sum",
+    "description": "求给定规则下选取元素的总权值和"
+  },
+  "numerical_parameters": {
+    "N": {
+      "value": 1,
+      "min": 1,
+      "max": 300000,
+      "description": "牛群中的牛的数量"
+    },
+    "P": {
+      "value": 1,
+      "min": 1,
+      "max": 300000,
+      "description": "(a, b) -raid 场景的数量"
+    },
+    "W_i": {
+      "value": 1,
+      "min": 1,
+      "max": 1000000000,
+      "description": "每头牛的质量"
+    },
+    "A": {
+      "value": 150000,
+      "min": 1,
+      "max": 300000,
+      "description": "等差数列的起始位置"
+    },
+    "B": {
+      "value": 91801,
+      "min": 1,
+      "max": 300000,
+      "description": "等差数列的步长"
+    }
+  },
+  "structural_options": [],
+  "input_structure_options": [
+    "zero_enabled_values",
+    "duplicate_friendly_input"
+  ],
+  "invariant_options": [
+    "feasibility_monotonicity",
+    "zero_contribution_absorption"
+  ],
+  "instantiated_schema_snapshot": {
+    "problem_id": "CF103D",
+    "source": "codeforces",
+    "input_structure": {
+      "type": "array",
+      "confidence": "1/1",
+      "all_rounds": [
+        {
+          "round": 1,
+          "status": "success",
+          "result": {
+            "type": "array",
+            "length": {
+              "min": 1,
+              "max": 300000
+            },
+            "value_range": {
+              "min": 1,
+              "max": 1000000000
+            },
+            "properties": {}
+          }
+        }
+      ],
+      "length": {
+        "min": 1,
+        "max": 300000
+      },
+      "value_range": {
+        "min": 0,
+        "max": 1000000000
+      },
+      "properties": {
+        "duplicate_allowed": true
+      }
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "arithmetic_progression_constraint",
+          "description": "选择的元素按照等差数列的方式进行选取，即从第 a 个元素开始，每隔 b 个元素选取一次，直到超过数组长度 n。",
+          "confidence": "1/1"
+        },
+        {
+          "name": "sum_constraint",
+          "description": "计算所选元素的总和，即在每个 (a, b) -raid 场景中，计算按等差数列方式选取的元素的总质量。",
+          "confidence": "1/1"
+        },
+        {
+          "name": "zero_enabled_values",
+          "description": "输入中允许出现 0。"
+        }
+      ],
+      "all_rounds": [
+        {
+          "round": 1,
+          "status": "success",
+          "result": {
+            "constraints": [
+              {
+                "name": "arithmetic_progression_constraint",
+                "description": "选择的元素按照等差数列的方式进行选取，即从第 a 个元素开始，每隔 b 个元素选取一次，直到超过数组长度 n。",
+                "formal": "A[a], A[a + b], A[a + 2b], ..., A[a + kb] where a + kb <= n"
+              },
+              {
+                "name": "sum_constraint",
+                "description": "计算所选元素的总和，即在每个 (a, b) -raid 场景中，计算按等差数列方式选取的元素的总质量。",
+                "formal": "sum(A[a + kb]) for all k such that a + kb <= n"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "objective": {
+      "type": "sum",
+      "description": "求给定规则下选取元素的总权值和"
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "interval_additivity",
+          "description": "区间可加性：通过计算特定步长的等差序列索引对应的元素和，可以利用前缀和快速求解区间和",
+          "confidence": "1/1",
+          "properties": {}
+        },
+        {
+          "name": "subproblem_independence",
+          "description": "子问题独立性：每个 (a, b) -raid 场景下的总质量计算是独立的，不依赖于其他场景的结果",
+          "confidence": "1/1",
+          "properties": {}
+        },
+        {
+          "name": "feasibility_monotonicity",
+          "description": "可行性会随着阈值、次数或资源上界的变化呈现单调性，可据此二分或逐步推进。",
+          "properties": {
+            "objective_family": "decision"
+          }
+        },
+        {
+          "name": "zero_contribution_absorption",
+          "description": "零贡献元素可以被安全吸收或跳过，不改变主要状态转移的正确性。",
+          "properties": {
+            "supports_zero_values": true
+          }
+        }
+      ],
+      "all_rounds": [
+        {
+          "round": 1,
+          "status": "success",
+          "result": {
+            "invariants": [
+              {
+                "name": "interval_additivity",
+                "description": "区间可加性：通过计算特定步长的等差序列索引对应的元素和，可以利用前缀和快速求解区间和",
+                "properties": {}
+              },
+              {
+                "name": "subproblem_independence",
+                "description": "子问题独立性：每个 (a, b) -raid 场景下的总质量计算是独立的，不依赖于其他场景的结果",
+                "properties": {}
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "instantiated_parameters": {
+      "N": {
+        "value": 1,
+        "min": 1,
+        "max": 300000,
+        "description": "牛群中的牛的数量"
+      },
+      "P": {
+        "value": 1,
+        "min": 1,
+        "max": 300000,
+        "description": "(a, b) -raid 场景的数量"
+      },
+      "W_i": {
+        "value": 1,
+        "min": 1,
+        "max": 1000000000,
+        "description": "每头牛的质量"
+      },
+      "A": {
+        "value": 150000,
+        "min": 1,
+        "max": 300000,
+        "description": "等差数列的起始位置"
+      },
+      "B": {
+        "value": 91801,
+        "min": 1,
+        "max": 300000,
+        "description": "等差数列的步长"
+      }
+    },
+    "selected_structural_options": [],
+    "selected_input_options": [
+      "zero_enabled_values",
+      "duplicate_friendly_input"
+    ],
+    "selected_invariant_options": [
+      "feasibility_monotonicity",
+      "zero_contribution_absorption"
+    ],
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Medium"
+  },
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "实例化 Schema 的核心约束（等差数列下标求和）与原题 CF103D 完全一致，仅允许 0 值和更换主题不足以构成算法层面的实质差异，属于硬性要求中禁止的'换皮题'。此外，Schema 中'求和目标'与'可行性单调性不变量'存在逻辑冲突，若强制落地为求和问题则无法利用单调性，若利用单调性则需改为判定/二分问题，这将违背 instantiated_schema 的目标定义。",
+    "feedback": "建议上游调整差异计划：1. 将目标改为判定性问题（如：是否存在步长 b 使得和超过阈值），以匹配可行性单调性不变量；2. 或修改选择规则（如：选取值大于阈值的元素求和），增加数据结构维护的复杂度；3. 避免仅通过允许 0 值和更换故事背景来制造差异，需确保输入输出关系或核心约束有实质变化。"
+  }
+}

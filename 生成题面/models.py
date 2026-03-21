@@ -32,6 +32,8 @@ class InstantiatedSchema:
     invariant: dict[str, Any]
     instantiated_parameters: dict[str, Any]
     selected_structural_options: list[str]
+    selected_input_options: list[str]
+    selected_invariant_options: list[str]
     theme: dict[str, Any]
     difficulty: str
 
@@ -45,6 +47,8 @@ class VariantPlan:
     objective: dict[str, Any]
     numerical_parameters: dict[str, Any]
     structural_options: list[str]
+    input_structure_options: list[str]
+    invariant_options: list[str]
     difficulty: str
     input_summary: str
     constraint_summary: list[str]

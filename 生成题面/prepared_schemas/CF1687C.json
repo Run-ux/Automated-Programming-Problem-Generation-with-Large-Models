@@ -1,0 +1,352 @@
+{
+  "problem_id": "CF1687C",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 2,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": false
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "accumulated_sum_constraint",
+        "description": "操作前后数组元素和不变（即每次操作后，数组的总和必须保持不变）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "transformation",
+        "description": "只能在指定的区间内进行复制粘贴操作（即只能选择给定的区间 [l, r] 进行操作）",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "accumulated_sum_constraint",
+              "description": "操作前后数组元素和不变（即每次操作后，数组的总和必须保持不变）",
+              "formal": "sum(a) == sum(b)"
+            },
+            {
+              "name": "transformation",
+              "description": "只能在指定的区间内进行复制粘贴操作（即只能选择给定的区间 [l, r] 进行操作）",
+              "formal": "a[i] = b[i] for all i in [l, r]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断是否存在一种操作序列，使得一个数组可以通过特定的子数组替换操作转换成另一个数组，同时保持数组元素总和不变"
+        }
+      }
+    ],
+    "description": "判断是否存在一种操作序列，使得一个数组可以通过特定的子数组替换操作转换成另一个数组，同时保持数组元素总和不变"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_additivity",
+        "description": "区间可加性：在进行区间替换操作时，区间的和保持不变，从而保证整个数组的和不变。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "subproblem_independence",
+        "description": "子问题独立性：每个区间的替换操作是独立的，不影响其他区间的替换决策。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_additivity",
+              "description": "区间可加性：在进行区间替换操作时，区间的和保持不变，从而保证整个数组的和不变。",
+              "properties": {}
+            },
+            {
+              "name": "subproblem_independence",
+              "description": "子问题独立性：每个区间的替换操作是独立的，不影响其他区间的替换决策。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "transform_space": {
+    "numerical_parameters": {
+      "t": {
+        "min": 1,
+        "max": 20000,
+        "description": "测试用例的数量"
+      },
+      "n": {
+        "min": 2,
+        "max": 200000,
+        "description": "数组 a 和 b 的长度"
+      },
+      "m": {
+        "min": 1,
+        "max": 200000,
+        "description": "可以进行复制粘贴操作的区间数量"
+      },
+      "a_i": {
+        "min": 1,
+        "max": 1000000000,
+        "description": "初始状态 a 中的元素值"
+      },
+      "b_i": {
+        "min": 1,
+        "max": 1000000000,
+        "description": "目标状态 b 中的元素值"
+      }
+    },
+    "objective_options": [
+      "feasibility",
+      "count_operations",
+      "minimize_operations"
+    ],
+    "structural_options": [
+      "allow_negative_values",
+      "allow_zero_values",
+      "allow_repeated_elements",
+      "allow_overlapping_segments",
+      "require_non_overlapping_segments",
+      "require_sorted_segments",
+      "require_unique_segments"
+    ],
+    "input_structure_options": [
+      {
+        "name": "signed_input_values",
+        "description": "输入值域扩展为允许负数，题面需要显式说明可出现负值。",
+        "patch": {
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          }
+        },
+        "constraints": [
+          {
+            "name": "signed_input_values",
+            "description": "输入值允许为负数。"
+          }
+        ]
+      },
+      {
+        "name": "zero_enabled_values",
+        "description": "输入值域下界放宽到 0，使零值成为合法输入。",
+        "patch": {
+          "value_range": {
+            "min": 0
+          }
+        },
+        "constraints": [
+          {
+            "name": "zero_enabled_values",
+            "description": "输入中允许出现 0。"
+          }
+        ]
+      },
+      {
+        "name": "duplicate_friendly_input",
+        "description": "输入对象允许重复出现，题面应明确重复项是合法的。",
+        "patch": {
+          "properties": {
+            "duplicate_allowed": true
+          }
+        },
+        "constraints": []
+      },
+      {
+        "name": "overlap_enabled_segments",
+        "description": "输入对象允许重叠，题面需要体现重叠结构是合法的。",
+        "patch": {
+          "properties": {
+            "overlap_allowed": true
+          }
+        },
+        "constraints": []
+      },
+      {
+        "name": "sorted_input_view",
+        "description": "输入带有显式顺序结构，可利用排序后的扫描性质。",
+        "patch": {
+          "properties": {
+            "sorted_input": true
+          }
+        },
+        "constraints": []
+      }
+    ],
+    "invariant_options": [
+      {
+        "name": "counting_decomposition",
+        "description": "当目标转为计数时，状态可以分解为若干独立计数子结构。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "counting_decomposition",
+            "description": "总方案数可由若干互不重叠的子状态累积得到，允许使用 DP、容斥或分治计数。",
+            "properties": {
+              "objective_family": "count"
+            }
+          }
+        ]
+      },
+      {
+        "name": "dominance_pruning",
+        "description": "优化目标引入支配关系，较差状态可以被更优状态吸收。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "dominance_pruning",
+            "description": "存在可比较的状态支配关系，保留代表性最优状态即可推进求解。",
+            "properties": {
+              "objective_family": "optimization"
+            }
+          }
+        ]
+      },
+      {
+        "name": "signed_balance",
+        "description": "允许负值后，状态转移依然依赖净贡献或相对差值。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "signed_balance",
+            "description": "即使输入允许负值，关键状态仍可通过净贡献、偏移或平衡量统一表示。",
+            "properties": {
+              "supports_negative_values": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "zero_contribution_absorption",
+        "description": "零值对象的引入不会破坏主状态，只会带来可吸收的空贡献。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "zero_contribution_absorption",
+            "description": "零贡献元素可以被安全吸收或跳过，不改变主要状态转移的正确性。",
+            "properties": {
+              "supports_zero_values": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "frequency_aggregation",
+        "description": "重复对象可以被频次聚合处理，而不必逐个区分身份。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "frequency_aggregation",
+            "description": "对重复输入项，只需维护频次或桶级统计，核心决策仍成立。",
+            "properties": {
+              "supports_duplicates": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "overlap_conflict_resolution",
+        "description": "重叠结构下仍可通过局部冲突消解维持全局正确性。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "overlap_conflict_resolution",
+            "description": "对象存在重叠时，关键状态只依赖有限的边界冲突信息，可局部消解。",
+            "properties": {
+              "supports_overlap": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "ordered_scan",
+        "description": "有序输入允许单向扫描或双指针式推进。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "ordered_scan",
+            "description": "当关键字段有序时，状态可以通过单调扫描维护，不需要回退。",
+            "properties": {
+              "requires_ordered_input": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "prefix_scan_invariant",
+        "description": "显式引入前缀/分块扫描的不变量，便于同族但非同题的表达。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "prefix_scan_stability",
+            "description": "前缀或分块扫描过程中，局部状态可以被稳定复用，不需要回看全部历史输入。",
+            "properties": {
+              "scan_style": "prefix_or_block"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

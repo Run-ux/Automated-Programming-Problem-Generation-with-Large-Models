@@ -1,0 +1,314 @@
+{
+  "problem_id": "P7312",
+  "source": "luogu",
+  "input_structure": {
+    "type": "array",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      }
+    ],
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 0,
+      "max": 1000000000
+    },
+    "properties": {
+      "ordered": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "coverage",
+        "description": "一个矩形完全暴露在阳光下当且仅当它不被任何其他矩形覆盖（即没有其他矩形与它的区域有重叠部分）",
+        "confidence": "1/1"
+      },
+      {
+        "name": "rectangular_layout",
+        "description": "每个矩形的位置由其左下角坐标 (X_i, Y_i) 和尺寸 (A_i, B_i) 确定，且矩形的边必须与坐标轴平行",
+        "confidence": "1/1"
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "constraints": [
+            {
+              "name": "coverage",
+              "description": "一个矩形完全暴露在阳光下当且仅当它不被任何其他矩形覆盖（即没有其他矩形与它的区域有重叠部分）"
+            },
+            {
+              "name": "rectangular_layout",
+              "description": "每个矩形的位置由其左下角坐标 (X_i, Y_i) 和尺寸 (A_i, B_i) 确定，且矩形的边必须与坐标轴平行"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objective": {
+    "type": "feasibility",
+    "confidence": "1/1",
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "type": "feasibility",
+          "description": "判断每个矩形是否完全暴露在阳光下"
+        }
+      }
+    ],
+    "description": "判断每个矩形是否完全暴露在阳光下"
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "interval_mergeable",
+        "description": "区间可合并性：矩形覆盖关系可以通过子区间的合并来计算，从而判断某个矩形是否完全暴露在阳光下。",
+        "confidence": "1/1",
+        "properties": {}
+      },
+      {
+        "name": "optimal_substructure",
+        "description": "最优子结构：每个矩形的可见性状态可以由其子矩形（即被它覆盖或覆盖它的矩形）的状态推导得出。",
+        "confidence": "1/1",
+        "properties": {}
+      }
+    ],
+    "all_rounds": [
+      {
+        "round": 1,
+        "status": "success",
+        "result": {
+          "invariants": [
+            {
+              "name": "interval_mergeable",
+              "description": "区间可合并性：矩形覆盖关系可以通过子区间的合并来计算，从而判断某个矩形是否完全暴露在阳光下。",
+              "properties": {}
+            },
+            {
+              "name": "optimal_substructure",
+              "description": "最优子结构：每个矩形的可见性状态可以由其子矩形（即被它覆盖或覆盖它的矩形）的状态推导得出。",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "transform_space": {
+    "numerical_parameters": {
+      "N": {
+        "min": 1,
+        "max": 100000,
+        "description": "矩形的数量"
+      },
+      "X_i": {
+        "min": 0,
+        "max": 1000000000,
+        "description": "矩形左下角的 x 坐标"
+      },
+      "Y_i": {
+        "min": 0,
+        "max": 1000000000,
+        "description": "矩形左下角的 y 坐标"
+      },
+      "A_i": {
+        "min": 1,
+        "max": 1000000000,
+        "description": "矩形的宽度"
+      },
+      "B_i": {
+        "min": 1,
+        "max": 1000000000,
+        "description": "矩形的高度"
+      }
+    },
+    "objective_options": [
+      "feasibility",
+      "count",
+      "maximize",
+      "minimize"
+    ],
+    "structural_options": [
+      "allow_overlap",
+      "disallow_overlap",
+      "allow_rotation",
+      "disallow_rotation",
+      "allow_negative_coordinates",
+      "disallow_negative_coordinates",
+      "allow_non_integer_coordinates",
+      "disallow_non_integer_coordinates",
+      "allow_variable_sized_rectangles",
+      "disallow_variable_sized_rectangles",
+      "allow_multiple_sun_exposure_levels",
+      "disallow_multiple_sun_exposure_levels"
+    ],
+    "input_structure_options": [
+      {
+        "name": "overlap_enabled_segments",
+        "description": "输入对象允许重叠，题面需要体现重叠结构是合法的。",
+        "patch": {
+          "properties": {
+            "overlap_allowed": true
+          }
+        },
+        "constraints": []
+      },
+      {
+        "name": "rotatable_entities",
+        "description": "输入对象允许旋转或方向归一化处理。",
+        "patch": {
+          "properties": {
+            "rotation_allowed": true
+          }
+        },
+        "constraints": []
+      },
+      {
+        "name": "signed_input_values",
+        "description": "输入值域扩展为允许负数，题面需要显式说明可出现负值。",
+        "patch": {
+          "value_range": {
+            "min": -1000000000,
+            "max": 1000000000
+          }
+        },
+        "constraints": [
+          {
+            "name": "signed_input_values",
+            "description": "输入值允许为负数。"
+          }
+        ]
+      },
+      {
+        "name": "non_negative_coordinates",
+        "description": "坐标或位置索引限定为非负，题面需要强调边界从 0 开始。",
+        "patch": {
+          "value_range": {
+            "min": 0
+          },
+          "properties": {
+            "non_negative_coordinates": true
+          }
+        },
+        "constraints": []
+      }
+    ],
+    "invariant_options": [
+      {
+        "name": "counting_decomposition",
+        "description": "当目标转为计数时，状态可以分解为若干独立计数子结构。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "counting_decomposition",
+            "description": "总方案数可由若干互不重叠的子状态累积得到，允许使用 DP、容斥或分治计数。",
+            "properties": {
+              "objective_family": "count"
+            }
+          }
+        ]
+      },
+      {
+        "name": "dominance_pruning",
+        "description": "优化目标引入支配关系，较差状态可以被更优状态吸收。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "dominance_pruning",
+            "description": "存在可比较的状态支配关系，保留代表性最优状态即可推进求解。",
+            "properties": {
+              "objective_family": "optimization"
+            }
+          }
+        ]
+      },
+      {
+        "name": "overlap_conflict_resolution",
+        "description": "重叠结构下仍可通过局部冲突消解维持全局正确性。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "overlap_conflict_resolution",
+            "description": "对象存在重叠时，关键状态只依赖有限的边界冲突信息，可局部消解。",
+            "properties": {
+              "supports_overlap": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "orientation_normalization",
+        "description": "方向或旋转差异可先归一化，再进入统一状态转移。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "orientation_normalization",
+            "description": "旋转后的对象可通过标准朝向归一化，主算法只需处理规范化表示。",
+            "properties": {
+              "supports_rotation": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "signed_balance",
+        "description": "允许负值后，状态转移依然依赖净贡献或相对差值。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "signed_balance",
+            "description": "即使输入允许负值，关键状态仍可通过净贡献、偏移或平衡量统一表示。",
+            "properties": {
+              "supports_negative_values": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "prefix_scan_invariant",
+        "description": "显式引入前缀/分块扫描的不变量，便于同族但非同题的表达。",
+        "mode": "append",
+        "drop_names": [],
+        "invariants": [
+          {
+            "name": "prefix_scan_stability",
+            "description": "前缀或分块扫描过程中，局部状态可以被稳定复用，不需要回看全部历史输入。",
+            "properties": {
+              "scan_style": "prefix_or_block"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
