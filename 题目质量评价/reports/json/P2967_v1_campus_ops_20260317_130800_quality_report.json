@@ -1,0 +1,530 @@
+{
+  "overall": {
+    "status": "reject_as_retheme",
+    "quality_score": 79.0,
+    "divergence_score": 55.4,
+    "schema_distance": 0.4757,
+    "generated_status": "ok"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 5.0,
+        "rationale": "实例化 schema 中的核心约束（依赖关系、预算限制、负数允许）、目标函数（最大化分值后计数）及输入结构均准确落地到题面中。主题映射（游戏机/游戏 -> 套件/组件）自然且符合 schema 定义。",
+        "evidence_refs": [
+          "snapshots.instantiated_schema.core_constraints",
+          "snapshots.instantiated_schema.objective",
+          "snapshots.generated_problem.description",
+          "snapshots.generated_problem.input_format"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 5.0,
+        "rationale": "题面包含了任务说明、输入输出格式、数据范围约束、取模要求及负数处理说明。读者无需猜测即可理解任务全貌，关键信息齐全。",
+        "evidence_refs": [
+          "snapshots.generated_problem.input_format",
+          "snapshots.generated_problem.output_format",
+          "snapshots.generated_problem.constraints",
+          "snapshots.generated_problem.notes"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 3.0,
+        "rationale": "大部分章节一致，但样例 2 的解释（explanation）中包含了生成过程的内部修正文本（如“等等，若... 这里修正样例逻辑”），这与正式题面的确定性语气冲突，破坏了题面的一致性。",
+        "evidence_refs": [
+          "snapshots.generated_problem.samples[1].explanation"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 2.0,
+        "rationale": "样例 1 质量尚可。样例 2 的解释文本包含明显的草稿痕迹和自我质疑，不仅误导读者，还暴露了生成瑕疵。虽然最终输出可能正确，但解释部分完全不可用。",
+        "evidence_refs": [
+          "snapshots.generated_problem.samples[1].explanation",
+          "snapshots.generated_problem.samples[1].output"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 3.0,
+        "rationale": "整体结构符合 OJ 规范，语言通顺。但样例 2 解释中的噪声文本（内部独白）严重影响了阅读体验和专业性，需清理。",
+        "evidence_refs": [
+          "snapshots.generated_problem.samples[1].explanation",
+          "snapshots.generated_problem.description"
+        ]
+      }
+    ],
+    "strengths": []
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "I": 0.1667,
+      "C": 0.4,
+      "O": 0.6,
+      "V": 0.5,
+      "T": 0.8571,
+      "total": 0.4757
+    },
+    "schema_distance": 0.4757,
+    "changed_axes_planned": [
+      "C",
+      "O",
+      "V",
+      "T"
+    ],
+    "changed_axes_realized": [
+      "C",
+      "O",
+      "V",
+      "T"
+    ],
+    "semantic_difference": 0.45,
+    "solution_transfer_risk": 0.75,
+    "surface_retheme_risk": 0.7,
+    "verdict": "reject_as_retheme",
+    "rationale": "核心算法模型完全一致，均为‘有依赖的分组背包问题’（Dependency Grouped Knapsack）。新题虽然引入了‘负权值/负花费’和‘统计最优方案数’两个修改轴，但这属于动态规划状态定义的标准扩展（如增加计数维度、处理偏移量），并未改变问题的建模本质或求解范式。熟悉原题的选手可以直接复用‘外层枚举组、内层枚举容量、组内枚举物品’的代码框架，仅需调整状态转移方程以支持负数下标和计数累加。输入结构与依赖逻辑（主件 - 附件）与原题高度同构，属于典型的核心逻辑保留、参数与目标微调的换皮题。",
+    "evidence_refs": [
+      "original_problem",
+      "generated_problem",
+      "instantiated_schema",
+      "hard_checks"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "生成状态正常。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.48，达到中等差异阈值。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "已落地核心差异轴：C, O, V, T。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.instantiated_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题/题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=2。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "目标函数已经在题面中落地。",
+      "evidence_refs": [
+        "snapshots.instantiated_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.instantiated_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "样例解释包含生成草稿痕迹",
+      "detail": "样例 2 的 explanation 字段中出现了“等等，若... 这里修正样例逻辑... 为了输出 2，我们设定...",
+      "evidence_refs": [],
+      "fix_hint": ""
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "solution transfer risk too high",
+      "detail": "核心算法模型完全一致，均为‘有依赖的分组背包问题’（Dependency Grouped Knapsack）。新题虽然引入了‘负权值/负花费’和‘统计最优方案数’两个修改轴，但这属于动态规划状态定义的标准扩展（如增加计数维度、处理偏移量），并未改变问题的建模本质或求解范式。熟悉原题的选手可以直接复用‘外层枚举组、内层枚举容量、组内枚举物品’的代码框架，仅需调整状态转移方程以支持负数下标和计数累加。输入结构与依赖逻辑（主件 - 附件）与原题高度同构，属于典型的核心逻辑保留、参数与目标微调的换皮题。",
+      "evidence_refs": [
+        "original_problem",
+        "generated_problem",
+        "instantiated_schema",
+        "hard_checks"
+      ],
+      "fix_hint": "增加输入/约束/目标的实质变化，降低原题解法的直接迁移性。"
+    }
+  ],
+  "suggested_revisions": [
+    "增加输入/约束/目标的实质变化，降低原题解法的直接迁移性。",
+    "优先改写核心任务定义，而不是继续替换故事背景。"
+  ],
+  "snapshots": {
+    "paths": {
+      "original_schema_path": "..\\生成题面\\prepared_schemas\\P2967.json",
+      "prepared_schema_path": "..\\生成题面\\prepared_schemas\\P2967.json",
+      "artifact_path": "..\\生成题面\\artifacts\\P2967_v1_campus_ops_20260317_130800.json",
+      "markdown_path": ""
+    },
+    "original_problem": {
+      "problem_id": "P2967",
+      "title": "[USACO09DEC] Video Game Troubles G",
+      "description": "Farmer John's cows love their video games! FJ noticed that after playing these games that his cows produced much more milk than usual, surely because contented cows make more milk.\n\nThe cows disagree, though, on which is the best game console. One cow wanted to buy the Xbox 360 to play Halo 3; another wanted to buy the Nintendo Wii to play Super Smash Brothers Brawl; a third wanted to play Metal Gear Solid 4 on the PlayStation 3. FJ wants to purchase the set of game consoles (no more than one each) and games (no more than one each -- and within the constraints of a given budget) that helps his cows produce the most milk and thus nourish the most children.\n\nFJ researched N (1 <= N <= 50) consoles, each with a console price P\\_i (1 <= P\\_i <= 1000) and a number of console-specific games G\\_i (1 <= G\\_i <= 10). A cow must, of course, own a console before she can buy any game that is specific to that console. Each individual game has a game price GP\\_j (1 <= GP\\_j price <= 100) and a production value (1 <= PV\\_j <= 1,000,000), which indicates how much milk a cow will produce after playing the game. Lastly, Farmer John has a budget V (1 <= V <= 100,000) which is the maximum amount of money he can spend. Help him maximize the sum of the production values of the games he buys.\n\nConsider one dataset with N=3 consoles and a V=$800 budget. The first console costs $300 and has 2 games with cost $30 and $25 and production values as shown:\n\nGame #    Cost    Production Value\n\n1       $30          50\n\n2       $25          80\n\nThe second console costs $600 and has only 1 game:\n\nGame #    Cost    Production Value\n\n1       $50          130\n\nThe third console costs $400 and has 3 games:\n\nGame #    Cost    Production Value\n\n1       $40         70\n\n2       $30         40\n\n3       $35         60\n\nFarmer John should buy consoles 1 and 3, game 2 for console 1, and games 1 and 3 for console 3 to maximize his expected production at 210:\n\n```cpp\n                                Production Value\n        Budget:     $800      \n        Console 1  -$300\n           Game 2   -$25              80\n        Console 3  -$400\n           Game 1   -$40              70\n           Game 3   -$35              60\n      -------------------------------------------\n        Total:         0 (>= 0)      210\n```",
+      "input": "\\* Line 1: Two space-separated integers: N and V\n\n\\* Lines 2..N+1: Line i+1 describes the price of and the games\n\navailable for console i; it contains: P\\_i, G\\_i, and G\\_i pairs of space-separated integers GP\\_j, PV\\_j",
+      "output": "\\* Line 1: The maximum production value that Farmer John can get with his budget.",
+      "constraints": "",
+      "source": "luogu",
+      "url": "https://www.luogu.com.cn/problem/P2967",
+      "tags": [],
+      "difficulty": "提高+/省选-"
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [
+        "C",
+        "O",
+        "V",
+        "T"
+      ],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "P2967",
+        "[USACO09DEC] Video Game Troubles G",
+        "luogu",
+        "https://www.luogu.com.cn/problem/P2967",
+        "Farmer John's cows love their video games! FJ noticed that after playing these games that his cows produced much more milk than usual, surely because contented cows make more milk. The cows disagree, though, on which...",
+        "不要复写原题的叙事结构、任务定义或样例套路。",
+        "不要只替换实体名称后保留同样的输入输出关系。"
+      ],
+      "rationale": "该方案保持同族算法线索，但通过目标函数、结构选项、输入视角与不变量提示拉开差异。 objective=count_solutions，structural_options=allow_negative_production_values，input_options=signed_input_values，invariant_options=dominance_pruning, counting_decomposition，预测距离=0.48，落地轴=C, O, V, T。"
+    },
+    "instantiated_schema": {
+      "problem_id": "P2967",
+      "source": "luogu",
+      "input_structure": {
+        "type": "array",
+        "confidence": "1/1",
+        "all_rounds": [
+          {
+            "round": 1,
+            "status": "success",
+            "result": {
+              "type": "array",
+              "length": {
+                "min": 1,
+                "max": 50
+              },
+              "value_range": {
+                "min": 1,
+                "max": 1000000
+              },
+              "properties": {
+                "inferred": true
+              }
+            }
+          }
+        ],
+        "length": {
+          "min": 1,
+          "max": 50
+        },
+        "value_range": {
+          "min": -1000000,
+          "max": 1000000
+        },
+        "properties": {
+          "inferred": true
+        }
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "flow_constraint",
+            "description": "选取元素权重和不超过容量上限（总花费不超过预算）",
+            "confidence": "1/1"
+          },
+          {
+            "name": "subset_constraint",
+            "description": "每个集合最多选择一个元素（每种游戏机最多买一台，每款游戏最多买一份）",
+            "confidence": "1/1"
+          },
+          {
+            "name": "acyclicity",
+            "description": "某些元素的选择依赖于其他元素（必须先购买游戏机才能购买其对应的游戏）",
+            "confidence": "1/1"
+          },
+          {
+            "name": "signed_input_values",
+            "description": "输入值允许为负数。"
+          },
+          {
+            "name": "allow_negative_production_values",
+            "description": "启用结构选项：allow_negative_production_values。"
+          }
+        ],
+        "all_rounds": [
+          {
+            "round": 1,
+            "status": "success",
+            "result": {
+              "constraints": [
+                {
+                  "name": "flow_constraint",
+                  "description": "选取元素权重和不超过容量上限（总花费不超过预算）",
+                  "formal": "Σ (P_i + Σ GP_j) <= V"
+                },
+                {
+                  "name": "subset_constraint",
+                  "description": "每个集合最多选择一个元素（每种游戏机最多买一台，每款游戏最多买一份）",
+                  "formal": "对于每个游戏机 i，最多选一个；对于每个游戏 j，最多选一个"
+                },
+                {
+                  "name": "acyclicity",
+                  "description": "某些元素的选择依赖于其他元素（必须先购买游戏机才能购买其对应的游戏）",
+                  "formal": "如果选择了游戏 j，则必须选择该游戏所属的游戏机 i"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "objective": {
+        "type": "count_solutions",
+        "description": "在给定预算内，最大化选择物品的总权值和"
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "optimal_substructure",
+            "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在给定预算下选择游戏机和游戏的最大生产值可以通过子问题（更小预算下的选择）的最优解来构建。",
+            "confidence": "1/1",
+            "properties": {}
+          },
+          {
+            "name": "subset_sum_invariance",
+            "description": "背包约束：每个物品（游戏机或游戏）只能选择一次，并且总花费不能超过给定的预算。通过动态规划的方法，可以确保在不超过预算的情况下选择最大生产值的组合。",
+            "confidence": "1/1",
+            "properties": {}
+          },
+          {
+            "name": "dominance_pruning",
+            "description": "存在可比较的状态支配关系，保留代表性最优状态即可推进求解。",
+            "properties": {
+              "objective_family": "optimization"
+            }
+          },
+          {
+            "name": "counting_decomposition",
+            "description": "总方案数可由若干互不重叠的子状态累积得到，允许使用 DP、容斥或分治计数。",
+            "properties": {
+              "objective_family": "count"
+            }
+          }
+        ],
+        "all_rounds": [
+          {
+            "round": 1,
+            "status": "success",
+            "result": {
+              "invariants": [
+                {
+                  "name": "optimal_substructure",
+                  "description": "最优子结构：问题的最优解可以通过子问题的最优解组合得到，即在给定预算下选择游戏机和游戏的最大生产值可以通过子问题（更小预算下的选择）的最优解来构建。",
+                  "properties": {}
+                },
+                {
+                  "name": "subset_sum_invariance",
+                  "description": "背包约束：每个物品（游戏机或游戏）只能选择一次，并且总花费不能超过给定的预算。通过动态规划的方法，可以确保在不超过预算的情况下选择最大生产值的组合。",
+                  "properties": {}
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "instantiated_parameters": {
+        "N": {
+          "value": 1,
+          "min": 1,
+          "max": 50,
+          "description": "游戏机的数量"
+        },
+        "V": {
+          "value": 1,
+          "min": 1,
+          "max": 100000,
+          "description": "预算金额"
+        },
+        "P_i": {
+          "value": 1,
+          "min": 1,
+          "max": 1000,
+          "description": "每个游戏机的价格"
+        },
+        "G_i": {
+          "value": 1,
+          "min": 1,
+          "max": 10,
+          "description": "每个游戏机的游戏数量"
+        },
+        "GP_j": {
+          "value": 1,
+          "min": 1,
+          "max": 100,
+          "description": "每个游戏的价格"
+        },
+        "PV_j": {
+          "value": 500000,
+          "min": 1,
+          "max": 1000000,
+          "description": "每个游戏的生产值"
+        }
+      },
+      "selected_structural_options": [
+        "allow_negative_production_values"
+      ],
+      "selected_input_options": [
+        "signed_input_values"
+      ],
+      "selected_invariant_options": [
+        "dominance_pruning",
+        "counting_decomposition"
+      ],
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "Hard"
+    },
+    "generated_problem": {
+      "title": "社团装备采购方案",
+      "description": "新学年伊始，校学生会计划为各个社团采购装备以支持活动开展。市面上有 N 种不同的装备套件可供选择，每种套件 i 有一个基础价格 P_i。如果购买了某种套件，还可以进一步选购该套件配套的 G_i 个子组件。每个子组件 j 也有自己的价格 GP_j 和影响力分值 PV_j。\n\n由于财务规定，采购的总花费不能超过预算 V。同时，只有购买了套件 i，才能购买其对应的子组件。每种套件及其子组件最多只能购买一次。\n\n值得注意的是，部分子组件可能因为维护成本过高或实用性低，其影响力分值 PV_j 可能为负数。同样，部分供应商可能提供补贴，导致套件或子组件的价格也可能为负数（即购买后反而增加可用预算）。\n\n学生会希望制定一个采购方案，使得所有选中物品的总影响力分值最大。由于可能存在多种方案都能达到相同的最大影响力分值，现在请你计算：在总花费不超过预算的前提下，能够获得最大总影响力分值的不同采购方案有多少种？\n\n两种方案不同，当且仅当存在至少一件物品（套件或子组件），在一种方案中被选中，而在另一种方案中未被选中。",
+      "input_format": "第一行包含两个整数 N 和 V，分别表示装备套件的数量和总预算。\n接下来 N 行，第 i 行描述第 i 种装备套件的信息。每行首先包含两个整数 P_i 和 G_i，分别表示该套件的价格和配套子组件的数量。\n随后包含 G_i 对整数，每对整数 GP_j 和 PV_j 表示第 j 个子组件的价格和影响力分值。",
+      "output_format": "输出一行一个整数，表示能够获得最大总影响力分值的不同采购方案数量。由于答案可能很大，请输出答案对 10^9+7 取模后的结果。",
+      "constraints": [
+        "1 ≤ N ≤ 50",
+        "1 ≤ V ≤ 100,000",
+        "-1,000 ≤ P_i ≤ 1,000",
+        "1 ≤ G_i ≤ 10",
+        "-100 ≤ GP_j ≤ 100",
+        "-1,000,000 ≤ PV_j ≤ 1,000,000",
+        "时间限制：1.0 秒",
+        "空间限制：128 MB"
+      ],
+      "samples": [
+        {
+          "input": "2 10\n5 2 3 10 4 5\n6 1 5 20",
+          "output": "1",
+          "explanation": "预算为 10。方案 1：买套件 1(5) + 子组件 1(3) + 子组件 2(4)，总花费 12 > 10，不可行。方案 2：买套件 1(5) + 子组件 1(3)，总花费 8，分值 10。方案 3：买套件 2(6) + 子组件 1(5)，总花费 11 > 10，不可行。方案 4：只买套件 1(5)，花费 5，分值 0。方案 5：只买套件 2(6)，花费 6，分值 0。方案 6：什么都不买，花费 0，分值 0。最大分值为 10，只有 1 种方案。"
+        },
+        {
+          "input": "2 10\n5 2 3 10 4 10\n-2 1 5 20",
+          "output": "2",
+          "explanation": "预算为 10。套件 2 价格为 -2，购买后预算变相增加。方案 1：买套件 1(5) + 子组件 1(3) + 子组件 2(4)，总花费 12 > 10，不可行。方案 2：买套件 1(5) + 子组件 1(3)，花费 8，分值 10。方案 3：买套件 1(5) + 子组件 2(4)，花费 9，分值 10。方案 4：买套件 2(-2) + 子组件 1(5)，花费 3，分值 20。最大分值为 20，只有 1 种方案？等等，若套件 1 的两个子组件分值相同且价格不同，或者组合后分值相同。这里修正样例逻辑：假设套件 1 两个子组件分值均为 10，价格分别为 3 和 3。则买套件 1+ 子 1(分值 10) 和买套件 1+ 子 2(分值 10) 是两种方案。若最大分值是 20(套件 2)，则只有 1 种。为了输出 2，我们设定最大分值方案有两种。例如：套件 1 子组件 1(分值 20)，套件 2 子组件 1(分值 20)。且都可行。"
+        }
+      ],
+      "notes": "1. 答案需要对 10^9+7 取模。\n2. 输入中的价格和分值均可能为负数。总花费为所有选中物品价格之和，需满足总花费 ≤ V。\n3. 可以不购买任何物品，此时总花费为 0，总影响力分值为 0。这是一种合法方案。\n4. 若所有可行方案的最大总影响力分值为负数（例如必须购买某物品且其分值为负），则统计达到该负数最大值的方案数。",
+      "status": "ok",
+      "error_reason": "",
+      "feedback": ""
+    },
+    "legacy_warnings": []
+  }
+}

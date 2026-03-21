@@ -1,0 +1,554 @@
+{
+  "overall": {
+    "status": "reject_as_retheme",
+    "quality_score": 58.0,
+    "divergence_score": 48.8,
+    "schema_distance": 0.4803,
+    "generated_status": "ok"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 5.0,
+        "rationale": "实例化 Schema 中的核心约束（区间和不变、区间复制操作、允许 0 值、允许重叠）均准确映射到了题面的描述、输入格式和约束条件中。目标函数（最小化操作数）也正确落地。",
+        "evidence_refs": [
+          "instantiated_schema.core_constraints",
+          "instantiated_schema.selected_input_options",
+          "generated_problem.description",
+          "generated_problem.constraints"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 3.0,
+        "rationale": "题面主体信息完整，但样例 2 的解释部分包含生成过程的内部修正文本，导致读者无法确定真正的样例逻辑，影响了独立做题所需的关键信息确认。",
+        "evidence_refs": [
+          "generated_problem.samples[1].explanation",
+          "generated_problem.samples[1].input"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 1.0,
+        "rationale": "样例 2 存在严重内部矛盾。输入数据中的数组和（15 vs 12）不匹配，理论上应输出 -1，但输出为 2。且解释文本中出现了'修正样例'的字样，描述了一套与输入块完全不同的数据（a=[1,2,1,2]），导致输入、输出、解释三者不一致。",
+        "evidence_refs": [
+          "generated_problem.samples[1].input",
+          "generated_problem.samples[1].output",
+          "generated_problem.samples[1].explanation"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 1.0,
+        "rationale": "样例 2 不可用，包含草稿文本且逻辑错误。样例 1 仅覆盖平凡情况（0 操作和直接不可行）。缺乏有效的非平凡正例来展示区间选择和最小化操作的逻辑。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks[7]"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 3.0,
+        "rationale": "题面结构和语言整体符合 OJ 规范，但样例 2 解释中泄露的生成思考过程（'等等，这个样例构造需要仔细检查...'）属于严重噪声，影响阅读体验和专业性。",
+        "evidence_refs": [
+          "generated_problem.samples[1].explanation",
+          "generated_problem.description"
+        ]
+      }
+    ],
+    "strengths": [
+      "Schema 中的核心约束（区间和不变、区间操作）准确映射到了题面规则中。",
+      "输入输出格式清晰，参数范围（n, m, t）与 Schema 定义一致。",
+      "主题包装（校园物资调配）自然，无原题来源泄露。",
+      "约束条件中明确提到了 0 值允许和区间重叠，符合 Schema 选项。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "I": 0.25,
+      "C": 0.3333,
+      "O": 0.6,
+      "V": 0.5,
+      "T": 0.9443,
+      "total": 0.4803
+    },
+    "schema_distance": 0.4803,
+    "changed_axes_planned": [
+      "I",
+      "C",
+      "O",
+      "V",
+      "T"
+    ],
+    "changed_axes_realized": [
+      "I",
+      "C",
+      "O",
+      "V",
+      "T"
+    ],
+    "semantic_difference": 0.3,
+    "solution_transfer_risk": 0.85,
+    "surface_retheme_risk": 0.75,
+    "verdict": "reject_as_retheme",
+    "rationale": "核心解题洞察完全一致：两题的关键约束都是'操作前后区间和不变'，这导致操作的合法性仅取决于初始数组的差分前缀和（即只有初始差分和为 0 的区间才可用）。这一关键性质将动态操作过程简化为静态的区间选择问题。原题是判断'能否覆盖'（可行性），新题是'最少多少次覆盖'（最优化）。在算法上，'区间覆盖可行性'与'最小区间覆盖'通常使用相同的贪心策略（排序 + 扫描），前者只需判断是否覆盖完成，后者统计步数。因此，熟悉原题的选手只需将最后的检查逻辑改为计数贪心即可 AC 新题，核心建模和关键性质无需重新推导。虽然目标函数从 Yes/No 变为 Min Ops，但这属于同一算法框架下的微调，不足以构成实质性的语义差异。",
+    "evidence_refs": [
+      "original_problem.description",
+      "generated_problem.description",
+      "instantiated_schema.objective",
+      "hard_checks.schema_distance_threshold"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "生成状态正常。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.48，达到中等差异阈值。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "已落地核心差异轴：I, C, O, V, T。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.instantiated_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题/题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=2。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "目标函数已经在题面中落地。",
+      "evidence_refs": [
+        "snapshots.instantiated_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.instantiated_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "样例 2 解释包含生成草稿文本",
+      "detail": "样例 2 的 explanation 字段中包含了'等等，这个样例构造需要仔细检查可行性逻辑。\\n修正样例：...'等内部思考文本，这不应出现在正式题面中，会误导参赛者。",
+      "evidence_refs": [
+        "generated_problem.samples[1].explanation"
+      ],
+      "fix_hint": "删除所有内部修正笔记，确保解释仅针对实际提供的输入数据进行说明。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "样例 2 输入与解释数据不一致",
+      "detail": "样例 2 输入块中的数据是 n=6 的数组，但解释文本后半部分描述的是'修正样例：a = [1, 2, 1, 2]'（n=4）。输入与解释描述的对象不匹配。",
+      "evidence_refs": [
+        "generated_problem.samples[1].input",
+        "generated_problem.samples[1].explanation"
+      ],
+      "fix_hint": "重新构造一个逻辑自洽的样例，确保输入数据、输出结果和解释文本完全对应。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "样例 2 逻辑正确性存疑",
+      "detail": "样例 2 输入中，数组 a 总和为 15，数组 b 总和为 12。根据题面'操作前后数组元素和不变'的约束，全局和不相等通常意味着无法达成目标（应输出 -1），但样例输出为 2。",
+      "evidence_refs": [
+        "generated_problem.samples[1].input",
+        "generated_problem.samples[1].output",
+        "generated_problem.description"
+      ],
+      "fix_hint": "检查样例数据是否满足全局和相等的必要条件，或明确题面中是否允许全局和变化（根据 Schema 应为不变）。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "solution transfer risk too high",
+      "detail": "核心解题洞察完全一致：两题的关键约束都是'操作前后区间和不变'，这导致操作的合法性仅取决于初始数组的差分前缀和（即只有初始差分和为 0 的区间才可用）。这一关键性质将动态操作过程简化为静态的区间选择问题。原题是判断'能否覆盖'（可行性），新题是'最少多少次覆盖'（最优化）。在算法上，'区间覆盖可行性'与'最小区间覆盖'通常使用相同的贪心策略（排序 + 扫描），前者只需判断是否覆盖完成，后者统计步数。因此，熟悉原题的选手只需将最后的检查逻辑改为计数贪心即可 AC 新题，核心建模和关键性质无需重新推导。虽然目标函数从 Yes/No 变为 Min Ops，但这属于同一算法框架下的微调，不足以构成实质性的语义差异。",
+      "evidence_refs": [
+        "original_problem.description",
+        "generated_problem.description",
+        "instantiated_schema.objective",
+        "hard_checks.schema_distance_threshold"
+      ],
+      "fix_hint": "增加输入/约束/目标的实质变化，降低原题解法的直接迁移性。"
+    }
+  ],
+  "suggested_revisions": [
+    "删除所有内部修正笔记，确保解释仅针对实际提供的输入数据进行说明。",
+    "重新构造一个逻辑自洽的样例，确保输入数据、输出结果和解释文本完全对应。",
+    "检查样例数据是否满足全局和相等的必要条件，或明确题面中是否允许全局和变化（根据 Schema 应为不变）。",
+    "增加输入/约束/目标的实质变化，降低原题解法的直接迁移性。",
+    "彻底重写样例 2，移除所有生成过程文本，确保输入、输出、解释三者逻辑一致且正确。",
+    "增加一个展示'区间重叠选择'或'贪心策略'的非平凡正例，以覆盖核心算法逻辑。",
+    "检查全局和不变约束在题面中的表述是否足够明确，避免参赛者对初始状态和是否相等产生歧义。",
+    "优先改写核心任务定义，而不是继续替换故事背景。"
+  ],
+  "snapshots": {
+    "paths": {
+      "original_schema_path": "..\\生成题面\\prepared_schemas\\CF1687C.json",
+      "prepared_schema_path": "..\\生成题面\\prepared_schemas\\CF1687C.json",
+      "artifact_path": "..\\生成题面\\artifacts\\CF1687C_v1_campus_ops_20260317_130224.json",
+      "markdown_path": ""
+    },
+    "original_problem": {
+      "problem_id": "CF1687C",
+      "title": "C. Sanae and Giant Robot",
+      "description": "The state of a robot can be represented by an array of integers of length $n$. Initially, the robot is at state $a$. She wishes to turn it into state $b$.\n\nAs a great programmer, Sanae knows the art of copy-and-paste. In one operation, she can choose some segment from given segments, copy the segment from $b$ and paste it into the same place of the robot, replacing the original state there. However, she has to ensure that the sum of $a$ does not change after each copy operation in case the robot go haywire. Formally, Sanae can choose segment $[l,r]$ and assign $a_i = b_i$ ($l\\le i\\le r$) if $\\sum\\limits_{i=1}^n a_i$ does not change after the operation.\n\nDetermine whether it is possible for Sanae to successfully turn the robot from the initial state $a$ to the desired state $b$ with any (possibly, zero) operations.",
+      "input": "Each test contains multiple test cases. The first line contains a single integer $t$ ($1 \\leq t \\leq 2\\cdot 10^4$) — the number of test cases. The descriptions of the test cases follow. The first line of each test case contains two integers $n$, $m$ ($2 \\leq n\\leq 2\\cdot 10^5$, $1 \\leq m\\leq 2\\cdot 10^5$) — the length of $a$, $b$ and the number of segments. The second line contains $n$ intergers $a_1,a_2,\\ldots,a_n$ ($1 \\leq a_i \\leq 10^9$) — the initial state $a$. The third line contains $n$ intergers $b_1,b_2,\\ldots,b_n$ ($1 \\leq b_i \\leq 10^9$) — the desired state $b$. Then $m$ lines follow, the $i$ -th line contains two intergers $l_i,r_i$ ($1 \\leq l_i < r_i \\leq n$) — the segments that can be copy-pasted by Sanae. It is guaranteed that both the sum of $n$ and the sum of $m$ over all test cases does not exceed $2 \\cdot 10 ^ 5$.",
+      "output": "For each test case, print \" YES \" (without quotes) if $a$ can be turned into $b$, or \" NO \" (without quotes) otherwise. You can output \" YES \" and \" NO \" in any case (for example, strings \" yEs \", \" yes \" and \" Yes \" will be recognized as a positive response).",
+      "constraints": "time limit per test 1 second\nmemory limit per test 256 megabytes",
+      "source": "codeforces",
+      "url": "https://codeforces.com/contest/1687/problem/C",
+      "tags": [
+        "binary search",
+        "brute force",
+        "data structures",
+        "dsu",
+        "greedy",
+        "sortings"
+      ],
+      "difficulty": "2500"
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [
+        "I",
+        "C",
+        "O",
+        "V",
+        "T"
+      ],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "CF1687C",
+        "C. Sanae and Giant Robot",
+        "codeforces",
+        "https://codeforces.com/contest/1687/problem/C",
+        "The state of a robot can be represented by an array of integers of length $n$. Initially, the robot is at state $a$. She wishes to turn it into state $b$. As a great programmer, Sanae knows the art of copy-and-paste....",
+        "不要复写原题的叙事结构、任务定义或样例套路。",
+        "不要只替换实体名称后保留同样的输入输出关系。"
+      ],
+      "rationale": "该方案保持同族算法线索，但通过目标函数、结构选项、输入视角与不变量提示拉开差异。 objective=minimize_operations，structural_options=无，input_options=zero_enabled_values, overlap_enabled_segments，invariant_options=counting_decomposition, frequency_aggregation，预测距离=0.48，落地轴=I, C, O, V, T。"
+    },
+    "instantiated_schema": {
+      "problem_id": "CF1687C",
+      "source": "codeforces",
+      "input_structure": {
+        "type": "array",
+        "confidence": "1/1",
+        "all_rounds": [
+          {
+            "round": 1,
+            "status": "success",
+            "result": {
+              "type": "array",
+              "length": {
+                "min": 2,
+                "max": 200000
+              },
+              "value_range": {
+                "min": 1,
+                "max": 1000000000
+              },
+              "properties": {
+                "ordered": false
+              }
+            }
+          }
+        ],
+        "length": {
+          "min": 2,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false,
+          "overlap_allowed": true
+        }
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "accumulated_sum_constraint",
+            "description": "操作前后数组元素和不变（即每次操作后，数组的总和必须保持不变）",
+            "confidence": "1/1"
+          },
+          {
+            "name": "transformation",
+            "description": "只能在指定的区间内进行复制粘贴操作（即只能选择给定的区间 [l, r] 进行操作）",
+            "confidence": "1/1"
+          },
+          {
+            "name": "zero_enabled_values",
+            "description": "输入中允许出现 0。"
+          }
+        ],
+        "all_rounds": [
+          {
+            "round": 1,
+            "status": "success",
+            "result": {
+              "constraints": [
+                {
+                  "name": "accumulated_sum_constraint",
+                  "description": "操作前后数组元素和不变（即每次操作后，数组的总和必须保持不变）",
+                  "formal": "sum(a) == sum(b)"
+                },
+                {
+                  "name": "transformation",
+                  "description": "只能在指定的区间内进行复制粘贴操作（即只能选择给定的区间 [l, r] 进行操作）",
+                  "formal": "a[i] = b[i] for all i in [l, r]"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "objective": {
+        "type": "minimize_operations",
+        "description": "判断是否存在一种操作序列，使得一个数组可以通过特定的子数组替换操作转换成另一个数组，同时保持数组元素总和不变"
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "interval_additivity",
+            "description": "区间可加性：在进行区间替换操作时，区间的和保持不变，从而保证整个数组的和不变。",
+            "confidence": "1/1",
+            "properties": {}
+          },
+          {
+            "name": "subproblem_independence",
+            "description": "子问题独立性：每个区间的替换操作是独立的，不影响其他区间的替换决策。",
+            "confidence": "1/1",
+            "properties": {}
+          },
+          {
+            "name": "counting_decomposition",
+            "description": "总方案数可由若干互不重叠的子状态累积得到，允许使用 DP、容斥或分治计数。",
+            "properties": {
+              "objective_family": "count"
+            }
+          },
+          {
+            "name": "frequency_aggregation",
+            "description": "对重复输入项，只需维护频次或桶级统计，核心决策仍成立。",
+            "properties": {
+              "supports_duplicates": true
+            }
+          }
+        ],
+        "all_rounds": [
+          {
+            "round": 1,
+            "status": "success",
+            "result": {
+              "invariants": [
+                {
+                  "name": "interval_additivity",
+                  "description": "区间可加性：在进行区间替换操作时，区间的和保持不变，从而保证整个数组的和不变。",
+                  "properties": {}
+                },
+                {
+                  "name": "subproblem_independence",
+                  "description": "子问题独立性：每个区间的替换操作是独立的，不影响其他区间的替换决策。",
+                  "properties": {}
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "instantiated_parameters": {
+        "t": {
+          "value": 1,
+          "min": 1,
+          "max": 20000,
+          "description": "测试用例的数量"
+        },
+        "n": {
+          "value": 2,
+          "min": 2,
+          "max": 200000,
+          "description": "数组 a 和 b 的长度"
+        },
+        "m": {
+          "value": 1,
+          "min": 1,
+          "max": 200000,
+          "description": "可以进行复制粘贴操作的区间数量"
+        },
+        "a_i": {
+          "value": 1,
+          "min": 1,
+          "max": 1000000000,
+          "description": "初始状态 a 中的元素值"
+        },
+        "b_i": {
+          "value": 167121855,
+          "min": 1,
+          "max": 1000000000,
+          "description": "目标状态 b 中的元素值"
+        }
+      },
+      "selected_structural_options": [],
+      "selected_input_options": [
+        "zero_enabled_values",
+        "overlap_enabled_segments"
+      ],
+      "selected_invariant_options": [
+        "counting_decomposition",
+        "frequency_aggregation"
+      ],
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "Medium"
+    },
+    "generated_problem": {
+      "title": "校园物资调配",
+      "description": "大学社团联合会在学期初需要为 $n$ 间教室调配物资。第 $i$ 间教室当前有 $a_i$ 件物资，目标是调整为 $b_i$ 件。\n\n联合会制定了 $m$ 个预设的调配方案，每个方案对应一个区间 $[l, r]$。对于任意一个方案，如果该区间内所有教室的当前物资总数等于目标物资总数（即 $\n\\sum_{i=l}^{r} a_i = \\sum_{i=l}^{r} b_i$），则该方案被视为“可行方案”。\n\n执行一个可行方案 $[l, r]$ 意味着将该区间内所有教室的物资数量直接更新为目标数量（即对于所有 $l \\le i \\le r$，令 $a_i = b_i$）。注意，方案的可行性是基于执行前的初始状态判定的，一旦方案被标记为可行，它在后续步骤中始终可用。\n\n社团负责人希望知道，最少需要执行多少个可行方案，才能使得所有教室的物资数量都达到目标值？如果无法达成目标，请指出。",
+      "input_format": "输入的第一行包含一个整数 $t$（$1 \\le t \\le 20000$），表示测试用例的数量。\n\n每个测试用例的第一行包含两个整数 $n$ 和 $m$（$2 \\le n \\le 200000$，$1 \\le m \\le 200000$），分别表示教室数量和调配方案数量。\n\n第二行包含 $n$ 个整数 $a_1, a_2, \\dots, a_n$（$0 \\le a_i \\le 10^9$），表示初始物资数量。\n\n第三行包含 $n$ 个整数 $b_1, b_2, \\dots, b_n$（$0 \\le b_i \\le 10^9$），表示目标物资数量。\n\n接下来 $m$ 行，每行包含两个整数 $l$ 和 $r$（$1 \\le l \\le r \\le n$），描述一个调配方案的区间。",
+      "output_format": "对于每个测试用例，输出一行。如果可以达成目标，输出一个整数表示最少需要的方案数量；如果无法达成目标，输出 -1。",
+      "constraints": [
+        "时间限制：1.0 秒",
+        "空间限制：256 兆字节",
+        "所有测试用例的 $n$ 之和不超过 $200000$",
+        "所有测试用例的 $m$ 之和不超过 $200000$",
+        "输入中的物资数量可能为 0",
+        "调配方案的区间允许重叠"
+      ],
+      "samples": [
+        {
+          "input": "2\n5 3\n1 2 3 4 5\n1 2 3 4 5\n1 5\n1 3\n3 5\n5 3\n1 1 1 1 1\n2 2 2 2 2\n1 5\n1 3\n3 5",
+          "output": "0\n-1",
+          "explanation": "第一个用例中，初始状态已经等于目标状态，不需要任何操作，输出 0。\n第二个用例中，区间 [1, 5] 的初始和为 5，目标和为 10，不相等，方案不可行。其他方案同理。无法达成目标，输出 -1。"
+        },
+        {
+          "input": "1\n6 4\n2 2 2 3 3 3\n2 2 2 2 2 2\n1 3\n4 6\n1 6\n2 5",
+          "output": "2",
+          "explanation": "初始状态 a=[2,2,2,3,3,3]，目标 b=[2,2,2,2,2,2]。\n需要修改的位置是 4,5,6。\n方案 [4, 6]：a 的和为 9，b 的和为 6，不可行。\n方案 [1, 6]：a 的和为 15，b 的和为 12，不可行。\n方案 [1, 3]：a 的和为 6，b 的和为 6，可行。但覆盖位置 1-3，这些位置不需要修改。\n方案 [2, 5]：a 的和为 10，b 的和为 8，不可行。\n\n等等，这个样例构造需要仔细检查可行性逻辑。\n修正样例：\na = [1, 2, 1, 2], b = [2, 1, 2, 1].\nSum a = 6, Sum b = 6.\nSegments: [1, 2] (Sum a=3, Sum b=3, OK), [3, 4] (Sum a=3, Sum b=3, OK).\nNeed to change all. Use [1, 2] and [3, 4]. Count = 2."
+        }
+      ],
+      "notes": "请注意，物资数量的总和可能超过 32 位整数范围，计算区间和时需使用 64 位整数类型。区间端点 $l, r$ 为 1-based 索引。",
+      "status": "ok",
+      "error_reason": "",
+      "feedback": ""
+    },
+    "legacy_warnings": []
+  }
+}
