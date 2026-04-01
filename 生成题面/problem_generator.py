@@ -5,8 +5,9 @@ import re
 from typing import Any
 
 from models import GeneratedProblem, VariantPlan
-from prompt_builder import build_system_prompt, build_user_prompt
+from prompt_builder import build_generation_system_prompt, build_generation_user_prompt
 from qwen_client import QwenClient
+from rulebook import normalize_rule_id
 from schema_tools import dataclass_to_dict
 
 
@@ -23,10 +24,24 @@ class ProblemGenerator:
 
     def generate(
         self,
-        schema: dict[str, Any],
+        schema_context: dict[str, Any],
         plan: VariantPlan,
-        original_problem: dict[str, Any] | None = None,
+        original_problems: list[dict[str, Any]] | None = None,
     ) -> GeneratedProblem:
+        if plan.planning_status != "ok":
+            return GeneratedProblem(
+                title="",
+                description="",
+                input_format="",
+                output_format="",
+                constraints=[],
+                samples=[],
+                notes="",
+                status=plan.planning_status,
+                error_reason=plan.planning_error_reason,
+                feedback=plan.planning_feedback,
+            )
+
         if (
             plan.predicted_schema_distance < plan.difference_plan.target_distance_band["min"]
             or len(plan.changed_axes_realized) < 2
@@ -41,7 +56,7 @@ class ProblemGenerator:
                 notes="",
                 status="difference_insufficient",
                 error_reason=(
-                    "当前 transform_space 无法稳定支撑中等差异目标。"
+                    "规则规划未达到有效差异门槛。"
                     f" 预测距离={plan.predicted_schema_distance:.2f}，"
                     f"落地轴={', '.join(plan.changed_axes_realized) or '无'}。"
                 ),
@@ -51,8 +66,12 @@ class ProblemGenerator:
         if self.client is None:
             raise RuntimeError("未初始化 LLM 客户端，无法执行真实生成。")
 
-        system_prompt = build_system_prompt()
-        user_prompt = build_user_prompt(schema, plan, original_problem=original_problem)
+        system_prompt = build_generation_system_prompt()
+        user_prompt = build_generation_user_prompt(
+            schema_context,
+            plan,
+            original_problem_references=original_problems or [],
+        )
         last_errors: list[str] = []
         base_temperature = min(self.temperature, 0.3)
         instantiated_schema = dataclass_to_dict(plan.instantiated_schema_snapshot)
@@ -67,7 +86,7 @@ class ProblemGenerator:
             if problem.status in {"schema_insufficient", "difference_insufficient"}:
                 return problem
             self._repair_problem(problem, instantiated_schema)
-            errors = self._validate_problem(problem, instantiated_schema, plan, original_problem)
+            errors = self._validate_problem(problem, instantiated_schema, plan, original_problems or [])
             if not errors:
                 return problem
 
@@ -75,22 +94,17 @@ class ProblemGenerator:
             if attempt == self.max_validation_attempts:
                 break
             user_prompt = self._build_retry_prompt(
-                schema,
+                schema_context,
                 plan,
                 payload,
                 errors,
                 attempt + 1,
-                original_problem,
+                original_problems or [],
             )
 
-        raise RuntimeError(
-            "模型连续返回不合法题面，校验失败："
-            + "；".join(last_errors[:5])
-        )
+        raise RuntimeError("模型连续返回不合法题面，校验失败：" + "；".join(last_errors[:5]))
 
-    def _normalize_payload(
-        self, payload: dict[str, Any], plan: VariantPlan
-    ) -> GeneratedProblem:
+    def _normalize_payload(self, payload: dict[str, Any], plan: VariantPlan) -> GeneratedProblem:
         status = self._clean_text(str(payload.get("status", "ok"))) or "ok"
         samples = []
         for item in payload.get("samples", []):
@@ -103,7 +117,6 @@ class ProblemGenerator:
                     "explanation": self._clean_text(str(item.get("explanation", ""))),
                 }
             )
-
         return GeneratedProblem(
             title=self._clean_text(str(payload.get("title", f"{plan.theme.name}任务"))),
             description=self._clean_text(str(payload.get("description", ""))),
@@ -126,7 +139,7 @@ class ProblemGenerator:
         problem: GeneratedProblem,
         schema: dict[str, Any],
         plan: VariantPlan,
-        original_problem: dict[str, Any] | None,
+        original_problems: list[dict[str, Any]],
     ) -> list[str]:
         errors: list[str] = []
 
@@ -154,29 +167,25 @@ class ProblemGenerator:
         declared_line_count = self._extract_declared_line_count(
             "\n".join([problem.input_format, problem.description, problem.notes])
         )
-        if expected_sample_lines is not None and declared_line_count is not None:
-            if declared_line_count != expected_sample_lines:
-                errors.append(
-                    f"题面声明的输入项数量为 {declared_line_count}，但实例化 schema 要求为 {expected_sample_lines}。"
-                )
+        if expected_sample_lines is not None and declared_line_count is not None and declared_line_count != expected_sample_lines:
+            errors.append(
+                f"题面声明的输入项数量为 {declared_line_count}，但实例化 schema 要求为 {expected_sample_lines}。"
+            )
 
         for index, sample in enumerate(problem.samples, start=1):
             sample_input = sample.get("input", "").strip()
             sample_output = sample.get("output", "").strip()
             explanation = sample.get("explanation", "").strip()
-
             if not sample_input:
                 errors.append(f"样例 {index} 的 input 不能为空。")
             if not sample_output:
                 errors.append(f"样例 {index} 的 output 不能为空。")
             if not explanation:
                 errors.append(f"样例 {index} 的 explanation 不能为空。")
-
             if "```" in sample_input or "```" in sample_output:
                 errors.append(f"样例 {index} 不应包含 Markdown 代码块标记。")
             if self._contains_html_artifact(sample_input) or self._contains_html_artifact(sample_output):
                 errors.append(f"样例 {index} 包含疑似 HTML 污染内容。")
-
             if expected_sample_lines is not None:
                 actual_lines = len([line for line in sample_input.splitlines() if line.strip()])
                 if actual_lines != expected_sample_lines:
@@ -185,20 +194,17 @@ class ProblemGenerator:
                     )
 
         errors.extend(self._validate_objective(problem, plan))
-        errors.extend(self._validate_structural_options(problem, plan))
-        errors.extend(self._validate_source_reuse(problem, original_problem))
+        errors.extend(self._validate_structural_commitments(problem, schema, plan))
+        errors.extend(self._validate_rule_commitments(problem, plan))
+        errors.extend(self._validate_source_reuse(problem, original_problems))
         return errors
 
     def _repair_problem(self, problem: GeneratedProblem, schema: dict[str, Any]) -> None:
         expected_sample_lines = self._infer_expected_sample_lines(schema)
         if expected_sample_lines is None:
             return
-
         for sample in problem.samples:
-            repaired_input = self._repair_sample_input(
-                sample.get("input", ""),
-                expected_sample_lines,
-            )
+            repaired_input = self._repair_sample_input(sample.get("input", ""), expected_sample_lines)
             if repaired_input is not None:
                 sample["input"] = repaired_input
 
@@ -206,7 +212,6 @@ class ProblemGenerator:
         input_structure = schema.get("input_structure", {})
         if input_structure.get("type") != "array":
             return None
-
         length = input_structure.get("length", {})
         min_length = length.get("min")
         max_length = length.get("max")
@@ -216,143 +221,107 @@ class ProblemGenerator:
             return None
         return min_length
 
-    def _contains_html_artifact(self, text: str) -> bool:
-        lowered = text.lower()
-        return bool(re.search(r"<[^>]+>", text)) or "class=" in lowered or "style=" in lowered
-
-    def _clean_text(self, text: str) -> str:
-        cleaned = text.strip()
-        cleaned = cleaned.replace("\\n", "\n")
-        cleaned = re.sub(r"\\+$", "", cleaned)
-        return cleaned.strip()
-
-    def _extract_declared_line_count(self, text: str) -> int | None:
-        patterns = [
-            r"输入共\s*(\d+)\s*行",
-            r"恰好\s*(\d+)\s*行",
-            r"exactly\s*(\d+)\s*lines",
-            r"(\d+)\s*行",
-        ]
-        for pattern in patterns:
-            match = re.search(pattern, text, re.IGNORECASE)
-            if match:
-                return int(match.group(1))
-
-        chinese_digits = {
-            "一": 1,
-            "二": 2,
-            "两": 2,
-            "三": 3,
-            "四": 4,
-            "五": 5,
-            "六": 6,
-            "七": 7,
-            "八": 8,
-            "九": 9,
-            "十": 10,
-        }
-        match = re.search(r"输入共([一二两三四五六七八九十])行", text)
-        if match:
-            return chinese_digits.get(match.group(1))
-        return None
-
     def _validate_objective(self, problem: GeneratedProblem, plan: VariantPlan) -> list[str]:
-        objective_type = plan.objective.get("type", "")
+        objective_type = str(plan.objective.get("type", "")).lower()
         combined = "\n".join([problem.description, problem.output_format, problem.notes]).lower()
         errors: list[str] = []
-        if objective_type == "count_minimal_strings" and not any(
-            token in combined for token in ("方案数", "个数", "count", "模", "mod")
-        ):
+        if "count" in objective_type and not any(token in combined for token in ("方案数", "个数", "count", "模", "mod")):
             errors.append("当前 objective 是计数类，但题面没有明确说明输出的是方案数/计数结果。")
-        if objective_type == "decision" and not any(
+        if any(token in objective_type for token in ("decision", "feasibility")) and not any(
             token in combined for token in ("yes", "no", "是否", "存在")
         ):
             errors.append("当前 objective 是判定类，但题面没有明确说明输出判定结果。")
-        if objective_type == "lexicographically_first_minimal_string" and not any(
+        if any(token in objective_type for token in ("construct", "witness")) and not any(
+            token in combined for token in ("构造", "方案", "witness", "输出一个")
+        ):
+            errors.append("当前 objective 是构造类，但题面没有明确说明需要输出构造方案。")
+        if "lexicographical" in objective_type and not any(
             token in combined for token in ("字典序", "lexicographical", "lexicographically")
         ):
-            errors.append("当前 objective 要求字典序最优，但题面未明确写出字典序规则。")
+            errors.append("当前 objective 要求字典序规范，但题面未明确写出字典序规则。")
         return errors
 
-    def _validate_structural_options(
+    def _validate_structural_commitments(
         self,
         problem: GeneratedProblem,
+        schema: dict[str, Any],
         plan: VariantPlan,
     ) -> list[str]:
-        combined = "\n".join([problem.description, problem.notes, problem.constraints and "\n".join(problem.constraints) or ""]).lower()
+        combined = "\n".join([problem.description, problem.notes, "\n".join(problem.constraints)]).lower()
         errors: list[str] = []
-        if "must_contain_in_order" in plan.structural_options and not any(
-            token in combined for token in ("顺序", "依次", "in order")
+        properties = schema.get("input_structure", {}).get("properties", {}) or {}
+        if properties.get("ordered") and not any(token in combined for token in ("顺序", "依次", "in order")):
+            errors.append("实例化 schema 带有顺序语义，但题面没有明确说明顺序约束。")
+        if properties.get("cyclic") and not any(token in combined for token in ("循环", "首尾相接", "环", "cyclic")):
+            errors.append("实例化 schema 带有循环语义，但题面没有明确说明循环语义。")
+        if schema.get("selected_structural_options") and not plan.structural_options:
+            plan.structural_options = list(schema.get("selected_structural_options", []))
+        return errors
+
+    def _validate_rule_commitments(self, problem: GeneratedProblem, plan: VariantPlan) -> list[str]:
+        combined = "\n".join([problem.description, problem.output_format, problem.notes]).lower()
+        errors: list[str] = []
+        applied_rule = normalize_rule_id(plan.applied_rule)
+        if applied_rule == "construct_or_obstruction" and not any(
+            token in combined for token in ("无解", "阻碍", "证书", "obstruction", "冲突")
         ):
-            errors.append("启用了 must_contain_in_order，但题面没有明确说明顺序约束。")
-        if "cyclic_string" in plan.structural_options and not any(
-            token in combined for token in ("循环", "首尾相接", "环", "cyclic")
+            errors.append("当前规则要求构造或阻碍证书，但题面没有明确失败输出或证书语义。")
+        if applied_rule == "minimum_guarantee_under_perturbation" and not any(
+            token in combined for token in ("保证", "最坏", "任意", "保底", "worst")
         ):
-            errors.append("启用了 cyclic_string，但题面没有明确说明循环/首尾相接语义。")
+            errors.append("当前规则要求保证型优化，但题面没有明确说明最坏情形或保底语义。")
         return errors
 
     def _validate_source_reuse(
         self,
         problem: GeneratedProblem,
-        original_problem: dict[str, Any] | None,
+        original_problems: list[dict[str, Any]],
     ) -> list[str]:
-        if not original_problem:
-            return []
         combined = "\n".join(
-            [
-                problem.title,
-                problem.description,
-                problem.input_format,
-                problem.output_format,
-                problem.notes,
-            ]
+            [problem.title, problem.description, problem.input_format, problem.output_format, problem.notes]
         ).lower()
-        original_title = str(original_problem.get("title", "")).strip().lower()
-        forbidden = [
-            str(original_problem.get("problem_id", "")).strip().lower(),
-            str(original_problem.get("source", "")).strip().lower(),
-            original_title,
-        ]
         errors: list[str] = []
-        for token in forbidden:
-            if token and token in combined:
-                errors.append(f"题面包含不应复用的原题标识或标题片段：{token}")
-                break
+        for original_problem in original_problems:
+            title = str(original_problem.get("title", "")).strip().lower()
+            forbidden = [
+                str(original_problem.get("problem_id", "")).strip().lower(),
+                str(original_problem.get("source", "")).strip().lower(),
+                title,
+            ]
+            for token in forbidden:
+                if token and token in combined:
+                    errors.append(f"题面包含不应复用的原题标识或标题片段：{token}")
+                    return errors
         return errors
+
+    def _contains_html_artifact(self, text: str) -> bool:
+        lowered = text.lower()
+        return bool(re.search(r"<[^>]+>", text)) or "class=" in lowered or "style=" in lowered
+
+    def _clean_text(self, text: str) -> str:
+        cleaned = text.strip().replace("\\n", "\n")
+        cleaned = re.sub(r"\\+$", "", cleaned)
+        return cleaned.strip()
+
+    def _extract_declared_line_count(self, text: str) -> int | None:
+        patterns = [r"输入共\s*(\d+)\s*行", r"恰好\s*(\d+)\s*行", r"exactly\s*(\d+)\s*lines", r"(\d+)\s*行"]
+        for pattern in patterns:
+            match = re.search(pattern, text, re.IGNORECASE)
+            if match:
+                return int(match.group(1))
+        return None
 
     def _repair_sample_input(self, text: str, expected_lines: int) -> str | None:
         stripped = text.strip()
         actual_lines = [line for line in stripped.splitlines() if line.strip()]
         if len(actual_lines) == expected_lines:
             return None
-
-        combined_candidate = (
-            stripped.replace('",["', "\n")
-            .replace('", [', "\n")
-            .replace('","', "\n")
-            .replace('", "', "\n")
-            .replace('["', "")
-            .replace('"]', "")
-            .replace("[", "")
-            .replace("]", "")
-        )
         candidates = [
-            combined_candidate,
-            stripped.replace('",["', "\n"),
-            stripped.replace('", [ "', "\n"),
             stripped.replace('","', "\n"),
             stripped.replace('", "', "\n"),
             stripped.replace('],[', "\n"),
-            stripped.replace('], [', "\n"),
-            stripped.replace('")("', "\n"),
-            stripped.replace('")(', "\n"),
-            stripped.replace(')("', "\n"),
-            stripped.replace(')(', "\n"),
-            re.sub(r'"\s*,\s*"', "\n", stripped),
-            re.sub(r'"\s*;\s*"', "\n", stripped),
-            re.sub(r'"\s*\|\s*"', "\n", stripped),
+            stripped.replace('] [', "\n"),
         ]
-
         for candidate in candidates:
             normalized = "\n".join(
                 line.strip().strip('"').strip("'").strip("(").strip(")")
@@ -362,19 +331,22 @@ class ProblemGenerator:
             normalized_lines = [line for line in normalized.splitlines() if line.strip()]
             if len(normalized_lines) == expected_lines and not self._contains_html_artifact(normalized):
                 return normalized
-
         return None
 
     def _build_retry_prompt(
         self,
-        schema: dict[str, Any],
+        schema_context: dict[str, Any],
         plan: VariantPlan,
         payload: dict[str, Any],
         errors: list[str],
         next_attempt: int,
-        original_problem: dict[str, Any] | None,
+        original_problems: list[dict[str, Any]],
     ) -> str:
-        base_prompt = build_user_prompt(schema, plan, original_problem=original_problem)
+        base_prompt = build_generation_user_prompt(
+            schema_context,
+            plan,
+            original_problem_references=original_problems,
+        )
         error_lines = "\n".join(f"- {error}" for error in errors)
         invalid_payload = json.dumps(payload, ensure_ascii=False, indent=2)
         return (
@@ -383,12 +355,10 @@ class ProblemGenerator:
             "必须修复以下问题：\n"
             f"{error_lines}\n\n"
             "额外要求：\n"
-            "- 如果你判断 schema 本身不足以可靠生成题面，不要继续补全，直接返回 `status=\"schema_insufficient\"`，并说明原因与所需补充信息。\n"
+            "- 如果你判断 schema 本身不足以可靠生成题面，不要继续补全，直接返回 `status=\"schema_insufficient\"`。\n"
             "- 如果你判断差异计划无法在不复述原题任务的前提下落地，直接返回 `status=\"difference_insufficient\"`。\n"
             "- 样例输入必须是纯文本，不要包含引号拼接残留、HTML 片段或 Markdown 标记。\n"
-            "- 样例输入的行数必须与 schema 的输入结构一致。\n"
-            "- 如果 schema 表示固定长度数组，就按固定行数逐行给出样例输入。\n"
-            "- 必须按实例化后的 schema 写输入数量、目标函数和结构约束，不要退回原题设定。\n"
+            "- 必须按实例化后的 schema 写输入数量、目标函数和结构约束，不要退回种子题设定。\n"
             "- 重新生成整份 JSON，不要只修补局部字段。\n\n"
             "上一次的错误 JSON 如下，仅用于定位问题，不可复用：\n"
             f"{invalid_payload}"

@@ -1,0 +1,110 @@
+{
+  "selection_id": "sample_12",
+  "problem_id": "CF1338B",
+  "record_uid": "train-00022-of-00039-1cfd39fa43c1917c__row_0099",
+  "statement_language": "english",
+  "title": "1338_B. Edge Weight Assignment",
+  "description": "You have unweighted tree of n vertices. You have to assign a positive weight to each edge so that the following condition would hold:\n\n  * For every two different leaves v_{1} and v_{2} of this tree, [bitwise XOR](https://en.wikipedia.org/wiki/Bitwise_operation#XOR) of weights of all edges on the simple path between v_{1} and v_{2} has to be equal to 0. \n\n\n\nNote that you can put very large positive integers (like 10^{(10^{10})}).\n\nIt's guaranteed that such assignment always exists under given constraints. Now let's define f as the number of distinct weights in assignment.\n\n<image> In this example, assignment is valid, because bitwise XOR of all edge weights between every pair of leaves is 0. f value is 2 here, because there are 2 distinct edge weights(4 and 5).\n\n<image> In this example, assignment is invalid, because bitwise XOR of all edge weights between vertex 1 and vertex 6 (3, 4, 5, 4) is not 0. \n\nWhat are the minimum and the maximum possible values of f for the given tree? Find and print both.\n\nInput\n\nThe first line contains integer n (3 ≤ n ≤ 10^{5}) — the number of vertices in given tree.\n\nThe i-th of the next n-1 lines contains two integers a_{i} and b_{i} (1 ≤ a_{i} < b_{i} ≤ n) — it means there is an edge between a_{i} and b_{i}. It is guaranteed that given graph forms tree of n vertices.\n\nOutput\n\nPrint two integers — the minimum and maximum possible value of f can be made from valid assignment of given tree. Note that it's always possible to make an assignment under given constraints.\n\nExamples\n\nInput\n\n\n6\n1 3\n2 3\n3 4\n4 5\n5 6\n\n\nOutput\n\n\n1 4\n\n\nInput\n\n\n6\n1 3\n2 3\n3 4\n4 5\n4 6\n\n\nOutput\n\n\n3 3\n\n\nInput\n\n\n7\n1 2\n2 7\n3 4\n4 7\n5 6\n6 7\n\n\nOutput\n\n\n1 6\n\nNote\n\nIn the first example, possible assignments for each minimum and maximum are described in picture below. Of course, there are multiple possible assignments for each minimum and maximum. \n\n<image>\n\nIn the second example, possible assignments for each minimum and maximum are described in picture below. The f value of valid assignment of this tree is always 3. \n\n<image>\n\nIn the third example, possible assignments for each minimum and maximum are described in picture below. Of course, there are multiple possible assignments for each minimum and maximum. \n\n<image>",
+  "public_tests": {
+    "input": [
+      "6\n1 3\n2 3\n3 4\n4 5\n4 6\n",
+      "6\n1 3\n2 3\n3 4\n4 5\n5 6\n",
+      "7\n1 2\n2 7\n3 4\n4 7\n5 6\n6 7\n"
+    ],
+    "output": [
+      "3 3\n",
+      "1 4\n",
+      "1 6\n"
+    ]
+  },
+  "source": {
+    "split": "train",
+    "source_id": 2,
+    "source_name": "CODEFORCES",
+    "url": "https://codeforces.com/contest/1338/problem/B"
+  },
+  "difficulty": {
+    "difficulty_id": 8,
+    "difficulty_name": "B",
+    "difficulty_bucket": null,
+    "cf_rating": 1800,
+    "cf_points": 1000.0,
+    "cf_contest_id": 1338,
+    "cf_index": "B",
+    "rating_bucket": "cf_mid"
+  },
+  "tags": [
+    "bitmasks",
+    "constructive algorithms",
+    "dfs and similar",
+    "greedy",
+    "math",
+    "trees"
+  ],
+  "limits": {
+    "time_limit": {
+      "seconds": 1,
+      "nanos": 0
+    },
+    "memory_limit_bytes": 256000000
+  },
+  "io_mode": {
+    "input_file": "",
+    "output_file": "",
+    "non_stdio": false
+  },
+  "translation": {
+    "is_description_translated": false,
+    "untranslated_description": ""
+  },
+  "reference_solution": {
+    "language_id": 2,
+    "language_guess": "cpp",
+    "code": "#include <bits/stdc++.h>\nusing namespace std;\nconst int N = 100 * 1001;\nint mx, cnt[2], leaves[N];\nvector<int> g[N];\nvoid dfs(int v, int e, int par) {\n  for (int i = 0; i < g[v].size(); i++)\n    if (g[v][i] != par) dfs(g[v][i], e + 1, v);\n  if (g[v].size() != 1) return;\n  cnt[e % 2]++;\n  if (leaves[par]++) mx--;\n}\nint main() {\n  int n;\n  cin >> n;\n  mx = n - 1;\n  for (int i = 0; i < n - 1; i++) {\n    int a, b;\n    cin >> a >> b;\n    g[a].push_back(b);\n    g[b].push_back(a);\n  }\n  int v = 1;\n  while (g[v].size() == 1) v++;\n  dfs(v, 0, 0);\n  cout << (cnt[1] && cnt[0] ? 3 : 1) << ' ' << mx << '\\n';\n}",
+    "char_count": 604,
+    "line_count": 27
+  },
+  "artifact_counts": {
+    "public_tests": 3,
+    "private_tests": 5,
+    "generated_tests": 66,
+    "solutions": 222,
+    "incorrect_solutions": 161
+  },
+  "heuristic_profile": {
+    "tag_families": [
+      "math",
+      "greedy",
+      "constructive",
+      "graphs",
+      "trees"
+    ],
+    "structure_candidates": [
+      "tree",
+      "graph",
+      "array"
+    ],
+    "objective_type": "construct",
+    "coverage_features": [
+      "objective:construct",
+      "rating:cf_mid",
+      "source:CODEFORCES",
+      "structure:array",
+      "structure:graph",
+      "structure:tree",
+      "tag:constructive",
+      "tag:graphs",
+      "tag:greedy",
+      "tag:math",
+      "tag:trees"
+    ],
+    "english_filter": {
+      "passed": true,
+      "score": 20
+    },
+    "notes": [
+      "selection favors source, difficulty, tag and structure coverage over sample count",
+      "heuristic_profile fields are inferred from metadata and statement text"
+    ]
+  }
+}

@@ -1,0 +1,362 @@
+{
+  "global_constraints": {
+    "enabled": true,
+    "mode_must_be_explicit": true,
+    "max_primary_rules_per_plan": 1,
+    "allow_helper_moves": true
+  },
+  "global_redlines": {
+    "enabled": true,
+      "items": [
+      "只换故事背景",
+      "纯改输入输出格式",
+      "只改参数范围，状态结构不变",
+      "跟原核心规律无关的额外约束",
+      "把两道子任务前后串起来"
+    ]
+  },
+  "modes": {
+    "single_seed_extension": {
+      "enabled": true,
+      "helpers": [
+        "调整约束重点",
+        "规范输出",
+        "局部附加条件"
+      ],
+      "rules": [
+        {
+          "id": "canonical_witness",
+          "enabled": true,
+          "summary": "把原题改成需要输出并校验一个规范解的新题。",
+          "eligibility": {
+            "required_seed_properties": [
+              "原题本身有明确的解对象，或者答案可以恢复成方案",
+              "方案有自然顺序，或者能定义清楚的规范"
+            ],
+            "forbidden_seed_properties": [
+              "原题本来就要求输出完整方案",
+              "原解只要顺手回溯就能拿到方案"
+            ]
+          },
+          "required_axis_changes": {
+            "must_change": ["O", "V"],
+            "should_change": ["C"],
+            "must_not_be_only": ["I"]
+          },
+          "core_transformation": {
+            "primary_operator": "canonical_witness",
+            "target_shift": "从给答案改成给规范解",
+            "new_obligation": "输出一个可以直接检查的规范方案"
+          },
+          "allowed_helpers": [
+            "调整约束重点",
+            "规范输出",
+            "局部附加条件"
+          ],
+          "forbidden_helpers": [
+            "只改输入格式",
+            "只换故事背景",
+            "跟原核心规律无关的额外约束"
+          ],
+          "planner_output_contract": {
+            "required_fields": [
+              "eligibility_reason",
+              "core_transformation_summary",
+              "difference_plan",
+              "instantiated_schema",
+              "algorithmic_delta_claim",
+              "anti_shallow_rationale"
+            ]
+          },
+          "validation_contract": {
+            "hard_checks": [
+              "输出要求必须真正变了",
+              "规范要求要影响主要解法",
+              "规定必须变化的轴都要真的变化"
+            ]
+          },
+          "examples": {
+            "positive": "把是否可行改成输出字典序最小的合法构造。",
+            "negative": "原题先求值，再顺手回溯一个任意方案。"
+          },
+          "failure_templates": {
+            "not_applicable": "这道种子题缺少适合做规范化的解对象，不适合扩成规范解题。",
+            "difference_insufficient": "加上规范解输出之后，主要解法几乎没变，还是表面修改。"
+          }
+        },
+        {
+          "id": "construct_or_obstruction",
+          "enabled": true,
+          "summary": "要求输出一个合法方案；如果做不到，就输出一个能直接检查的局部冲突证据。",
+          "eligibility": {
+            "required_seed_properties": [
+              "做不到的原因可以用局部证据表示",
+              "冲突证据可以从输出直接检查"
+            ],
+            "forbidden_seed_properties": [
+              "只能给出抽象解释，没法给出明确证据"
+            ]
+          },
+          "required_axis_changes": {
+            "must_change": ["O", "V"]
+          },
+          "core_transformation": {
+            "primary_operator": "construct_or_obstruction",
+            "target_shift": "从判定或求值改成给方案或给冲突证据",
+            "new_obligation": "输出合法方案，或者输出局部冲突证据"
+          },
+          "allowed_helpers": [
+            "调整约束重点",
+            "局部附加条件"
+          ],
+          "forbidden_helpers": [
+            "只给抽象解释"
+          ],
+          "planner_output_contract": {
+            "required_fields": [
+              "eligibility_reason",
+              "core_transformation_summary",
+              "difference_plan",
+              "instantiated_schema",
+              "algorithmic_delta_claim",
+              "anti_shallow_rationale"
+            ]
+          },
+          "validation_contract": {
+            "hard_checks": [
+              "冲突证据必须能局部检查",
+              "不能退化成一段解释"
+            ]
+          },
+          "examples": {
+            "positive": "输出一个最小冲突集合，作为做不到的证据。",
+            "negative": "只在说明里解释为什么做不到。"
+          },
+          "failure_templates": {
+            "not_applicable": "这道种子题做不到的原因没法稳定地写成局部证据。",
+            "difference_insufficient": "方案或冲突证据没有带来新的校验责任。"
+          }
+        },
+        {
+          "id": "existence_to_counting",
+          "enabled": true,
+          "summary": "把存在性或单一最优值问题改成一个对象明确、去重规则明确的计数题。",
+          "eligibility": {
+            "required_seed_properties": [
+              "解空间有限",
+              "不同解之间的等价关系能说清楚",
+              "可以按某种单元拆分并汇总"
+            ],
+            "forbidden_seed_properties": [
+              "解空间天然无限",
+              "去重规则说不清楚"
+            ]
+          },
+          "required_axis_changes": {
+            "must_change": ["O", "C", "V"]
+          },
+          "core_transformation": {
+            "primary_operator": "existence_to_counting",
+            "target_shift": "从存在性或最优值改成计数",
+            "new_obligation": "定义清楚计数对象、有限性和去重规则"
+          },
+          "allowed_helpers": [
+            "调整约束重点",
+            "规范输出"
+          ],
+          "forbidden_helpers": [
+            "只补模数，不说明为什么可数",
+            "只改输出说法，不定义计数对象"
+          ],
+          "planner_output_contract": {
+            "required_fields": [
+              "eligibility_reason",
+              "core_transformation_summary",
+              "difference_plan",
+              "instantiated_schema",
+              "algorithmic_delta_claim",
+              "anti_shallow_rationale"
+            ]
+          },
+          "validation_contract": {
+            "hard_checks": [
+              "必须说明什么样的解算不同",
+              "必须说明为什么可数，或者说明取模方式",
+              "必须说明按什么单元拆分和汇总"
+            ]
+          },
+          "examples": {
+            "positive": "统计所有满足约束的最优构造数，并定义去重与取模。",
+            "negative": "把是否存在改成计数，但状态结构和计数对象都没重新定义。"
+          },
+          "failure_templates": {
+            "not_applicable": "这道种子题没有稳定的有限解空间，或者去重规则说不清楚，不适合改成计数题。",
+            "difference_insufficient": "改成计数之后没有带来明显的新责任，看起来只是换了答案形式。"
+          }
+        },
+        {
+          "id": "minimum_guarantee_under_perturbation",
+          "enabled": true,
+          "summary": "把存在性问题改成最小保底型优化，要求在原题语义允许的扰动下仍然成立。",
+          "eligibility": {
+            "required_seed_properties": [
+              "原题里本来就有顺序不确定、资源波动或局部选择差异",
+              "最坏情况仍然能落回原题语义"
+            ],
+            "forbidden_seed_properties": [
+              "只能靠故事背景硬造对手"
+            ]
+          },
+          "required_axis_changes": {
+            "must_change": ["O", "C", "V"]
+          },
+          "core_transformation": {
+            "primary_operator": "minimum_guarantee_under_perturbation",
+            "target_shift": "从存在性改成最小保底",
+            "new_obligation": "定义扰动模型，并补上更强的不变量"
+          },
+          "allowed_helpers": [
+            "调整约束重点",
+            "局部附加条件"
+          ],
+          "forbidden_helpers": [
+            "没有真实扰动来源却硬加阈值"
+          ],
+          "planner_output_contract": {
+            "required_fields": [
+              "eligibility_reason",
+              "core_transformation_summary",
+              "difference_plan",
+              "instantiated_schema",
+              "algorithmic_delta_claim",
+              "anti_shallow_rationale"
+            ]
+          },
+          "validation_contract": {
+            "hard_checks": [
+              "扰动模型必须来自原题本身",
+              "必须说明强化后的不变量",
+              "不能只是外面再套一层二分"
+            ]
+          },
+          "examples": {
+            "positive": "求最小资源阈值，使任意合法顺序下都能保证完成。",
+            "negative": "只是把原判定过程外面包一层二分。"
+          },
+          "failure_templates": {
+            "not_applicable": "这道种子题没有可以稳定放大的原生扰动来源。",
+            "difference_insufficient": "保底目标没有形成真正的最坏情况责任。"
+          }
+        }
+      ]
+    },
+    "same_family_fusion": {
+      "enabled": true,
+      "rules": [
+        {
+          "id": "interlocked_constraints",
+          "enabled": true,
+          "summary": "两题共用一个主核，各自带来一个不能删掉的核心约束，而且这两个约束要在同一状态过程中同时起作用。",
+          "eligibility": {
+            "required_seed_properties": [
+              "能抽出同一个共享状态核",
+              "两题约束能同时作用在同一个状态变化过程中"
+            ],
+            "forbidden_seed_properties": [
+              "只能拆成先做 A 再做 B"
+            ]
+          },
+          "required_axis_changes": {
+            "must_change": ["C", "V"],
+            "should_change": ["O"]
+          },
+          "core_transformation": {
+            "primary_operator": "interlocked_constraints",
+            "target_shift": "在同一个主核上形成双约束互锁",
+            "new_obligation": "同一个状态过程要同时满足两题的核心要求"
+          },
+          "planner_output_contract": {
+            "required_fields": [
+              "shared_core_summary",
+              "shared_core_anchors",
+              "seed_a_indispensable_obligation",
+              "seed_b_indispensable_obligation",
+              "why_not_sequential_composition",
+              "fusion_ablation",
+              "instantiated_schema",
+              "algorithmic_delta_claim"
+            ]
+          },
+          "validation_contract": {
+            "hard_checks": [
+              "必须保持单主核",
+              "两题贡献都不能删",
+              "一旦变成前后串联的两步任务就直接失败"
+            ]
+          },
+          "examples": {
+            "positive": "两个种子题共享同一个数组状态核，但一个提供容量约束，另一个提供冲突约束，而且两者同时起作用。",
+            "negative": "先求出第一个子题的答案，再把结果交给第二个子题。"
+          },
+          "failure_templates": {
+            "not_applicable": "这两个种子题没有稳定的共享主核，不能做对等融合。",
+            "difference_insufficient": "融合后只是把约束并排放在一起，没有形成同一状态过程里的互锁。"
+          }
+        },
+        {
+          "id": "shared_core_objective_upgrade",
+          "enabled": true,
+          "summary": "保留共享主核，但让它承担更强的目标和输出责任。",
+          "eligibility": {
+            "required_seed_properties": [
+              "共享主核足够稳定",
+              "共享主核能承担更强的新目标"
+            ],
+            "forbidden_seed_properties": [
+              "新目标只是原答案算完之后顺手处理一下"
+            ]
+          },
+          "required_axis_changes": {
+            "must_change": ["O"],
+            "should_change": ["C", "V"]
+          },
+          "core_transformation": {
+            "primary_operator": "shared_core_objective_upgrade",
+            "target_shift": "在共享主核上抬高目标",
+            "new_obligation": "让共享主核承担原来两题都没有的新主任务"
+          },
+          "planner_output_contract": {
+            "required_fields": [
+              "shared_core_summary",
+              "shared_core_anchors",
+              "seed_a_indispensable_obligation",
+              "seed_b_indispensable_obligation",
+              "why_not_sequential_composition",
+              "fusion_ablation",
+              "instantiated_schema",
+              "algorithmic_delta_claim"
+            ]
+          },
+          "validation_contract": {
+            "hard_checks": [
+              "新目标必须改变共享主核的主要求解任务",
+              "不能只是后处理"
+            ]
+          },
+          "examples": {
+            "positive": "共享状态核从求可行升级为求最优规范构造并附带证明责任。",
+            "negative": "先算原答案，再顺手输出一个简单排名。"
+          },
+          "failure_templates": {
+            "not_applicable": "这对种子题的共享主核还不够稳，扛不住更强的目标责任。",
+            "difference_insufficient": "目标虽然变强了，但共享主核的主要责任并没有改变。"
+          }
+        }
+      ]
+    },
+    "cross_family_fusion": {
+      "enabled": false,
+      "rules": []
+    }
+  }
+}

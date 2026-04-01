@@ -1,0 +1,82 @@
+{
+  "selection_id": "sample_08",
+  "problem_id": "hackerearth_train-00019-of-00039-d688fad5ee604390__row_0028",
+  "record_uid": "train-00019-of-00039-d688fad5ee604390__row_0028",
+  "statement_language": "english",
+  "title": "climbing-ladder-1",
+  "description": "Euler's phi function for a positive integer N is usually denoted as φ(N) and defined as the number of positive integers less than or equal to N that are coprime with N.\n\nDA-IICT is organising its sports event in the month of October and this time they have introduced a new game called climbing ladder.\n\nThe game is as follows:\nEach player is given a ladder of height h and the score of that person is given by φ(h). \n\nThe cost of a ladder is same as its height. Since each player has practised a lot this time and each player knows the maximum score they can achieve, as a manager of the event you need to find the minimum amount of money required to bring the ladders so that each player gets a ladder with a score equal to or greater than his maximum score. \n\nInput Format:-\n\nFirst line contains t - number of test cases.\n\nEach case starts with a line containing an integer n, the number of participants. The next line contains n space separated integers denoting the maximum achievable score of the participant.\n\nOutput Format:-\n\nFor each case, print the minimum possible money spent for buying the ladders.\n\nConstraints:-\n\n1 ≤ t ≤ 100\n\n1 ≤ n ≤ 10000\n\n1 ≤ Score s ≤ 1000000\n\nAuthor :- Nikhil Tekwani\n\nSAMPLE INPUT\n2\r\n4\r\n1 2 3 4\r\n2\r\n1 1\n\nSAMPLE OUTPUT\n14\r\n2\n\nExplanation\n\nFor the first test case, \nscore 1 -> cost = 1\nscore 2 -> cost = 3\nscore 3 -> cost = 5\nscore 4 -> cost = 5\nTotal  = 14",
+  "public_tests": {
+    "input": [
+      "2\n4\n1 2 3 4\n2\n1 1\n\nSAMPLE"
+    ],
+    "output": [
+      "14\n2"
+    ]
+  },
+  "source": {
+    "split": "train",
+    "source_id": 3,
+    "source_name": "HACKEREARTH",
+    "url": null
+  },
+  "difficulty": {
+    "difficulty_id": 0,
+    "difficulty_name": "UNKNOWN_DIFFICULTY",
+    "difficulty_bucket": "unknown",
+    "cf_rating": 0,
+    "cf_points": 0.0,
+    "cf_contest_id": 0,
+    "cf_index": "",
+    "rating_bucket": null
+  },
+  "tags": [],
+  "limits": {
+    "time_limit": null,
+    "memory_limit_bytes": 0
+  },
+  "io_mode": {
+    "input_file": "",
+    "output_file": "",
+    "non_stdio": false
+  },
+  "translation": {
+    "is_description_translated": false,
+    "untranslated_description": ""
+  },
+  "reference_solution": {
+    "language_id": 1,
+    "language_guess": "python",
+    "code": "from bisect import bisect_left\n\nprimes = []\n\ndef get_primes(n):\n    \n    sieve = [True] * (n/2)\n\n    for i in xrange(3,int(n**0.5)+1,2):\n        if sieve[i/2]:\n            sieve[i*i/2::i] = [False] * ((n-i*i-1)/(2*i)+1)\n    \n    return [1] + [2*i for i in xrange(1,n/2) if sieve[i]]\n\t\n\nprimes = get_primes(1000100)\n\nfor _ in xrange(input()):\n\tn = int(raw_input())\n\tprint sum(map(lambda x:1 if bisect_left(primes, int(x)) < 1 else primes[bisect_left(primes, int(x))]+1, raw_input().split()))",
+    "char_count": 490,
+    "line_count": 20
+  },
+  "artifact_counts": {
+    "public_tests": 1,
+    "private_tests": 0,
+    "generated_tests": 0,
+    "solutions": 1,
+    "incorrect_solutions": 0
+  },
+  "heuristic_profile": {
+    "tag_families": [],
+    "structure_candidates": [
+      "array"
+    ],
+    "objective_type": "optimize",
+    "coverage_features": [
+      "difficulty:unknown",
+      "objective:optimize",
+      "source:HACKEREARTH",
+      "special:untagged",
+      "structure:array"
+    ],
+    "english_filter": {
+      "passed": true,
+      "score": 18
+    },
+    "notes": [
+      "selection favors source, difficulty, tag and structure coverage over sample count",
+      "heuristic_profile fields are inferred from metadata and statement text"
+    ]
+  }
+}

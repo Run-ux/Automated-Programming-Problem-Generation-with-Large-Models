@@ -1,0 +1,108 @@
+{
+  "selection_id": "sample_17",
+  "problem_id": "CF722D",
+  "record_uid": "train-00015-of-00039-19ccd7331d695677__row_0134",
+  "statement_language": "english",
+  "title": "722_D. Generating Sets",
+  "description": "You are given a set Y of n distinct positive integers y1, y2, ..., yn.\n\nSet X of n distinct positive integers x1, x2, ..., xn is said to generate set Y if one can transform X to Y by applying some number of the following two operation to integers in X:\n\n  1. Take any integer xi and multiply it by two, i.e. replace xi with 2·xi. \n  2. Take any integer xi, multiply it by two and add one, i.e. replace xi with 2·xi + 1. \n\n\n\nNote that integers in X are not required to be distinct after each operation.\n\nTwo sets of distinct integers X and Y are equal if they are equal as sets. In other words, if we write elements of the sets in the array in the increasing order, these arrays would be equal.\n\nNote, that any set of integers (or its permutation) generates itself.\n\nYou are given a set Y and have to find a set X that generates Y and the maximum element of X is mininum possible.\n\nInput\n\nThe first line of the input contains a single integer n (1 ≤ n ≤ 50 000) — the number of elements in Y.\n\nThe second line contains n integers y1, ..., yn (1 ≤ yi ≤ 109), that are guaranteed to be distinct.\n\nOutput\n\nPrint n integers — set of distinct integers that generate Y and the maximum element of which is minimum possible. If there are several such sets, print any of them.\n\nExamples\n\nInput\n\n5\n1 2 3 4 5\n\n\nOutput\n\n4 5 2 3 1 \n\n\nInput\n\n6\n15 14 3 13 1 12\n\n\nOutput\n\n12 13 14 7 3 1 \n\n\nInput\n\n6\n9 7 13 17 5 11\n\n\nOutput\n\n4 5 2 6 3 1 ",
+  "public_tests": {
+    "input": [
+      "6\n9 7 13 17 5 11\n",
+      "5\n1 2 3 4 5\n",
+      "6\n15 14 3 13 1 12\n"
+    ],
+    "output": [
+      "1 2 3 4 5 6 \n",
+      "1 2 3 4 5 \n",
+      "1 3 7 12 13 14 \n"
+    ]
+  },
+  "source": {
+    "split": "train",
+    "source_id": 2,
+    "source_name": "CODEFORCES",
+    "url": "https://codeforces.com/contest/722/problem/D"
+  },
+  "difficulty": {
+    "difficulty_id": 10,
+    "difficulty_name": "D",
+    "difficulty_bucket": null,
+    "cf_rating": 1900,
+    "cf_points": 1500.0,
+    "cf_contest_id": 722,
+    "cf_index": "D",
+    "rating_bucket": "cf_high"
+  },
+  "tags": [
+    "binary search",
+    "data structures",
+    "dfs and similar",
+    "greedy",
+    "strings",
+    "trees"
+  ],
+  "limits": {
+    "time_limit": {
+      "seconds": 2,
+      "nanos": 0
+    },
+    "memory_limit_bytes": 256000000
+  },
+  "io_mode": {
+    "input_file": "",
+    "output_file": "",
+    "non_stdio": false
+  },
+  "translation": {
+    "is_description_translated": false,
+    "untranslated_description": ""
+  },
+  "reference_solution": {
+    "language_id": 2,
+    "language_guess": "cpp",
+    "code": "#include <bits/stdc++.h>\nusing namespace std;\nint main() {\n  int n, x;\n  set<int> q;\n  cin >> n;\n  while (n--) scanf(\"%d\", &x), q.insert(x);\n  for (;;) {\n    x = *(--q.end());\n    while (q.count(x /= 2))\n      ;\n    if (x == 0) break;\n    q.erase(--q.end());\n    q.insert(x);\n  }\n  for (set<int>::iterator it = q.begin(); it != q.end(); it++) {\n    printf(\"%d \", *it);\n  }\n}",
+    "char_count": 374,
+    "line_count": 19
+  },
+  "artifact_counts": {
+    "public_tests": 3,
+    "private_tests": 7,
+    "generated_tests": 47,
+    "solutions": 343,
+    "incorrect_solutions": 254
+  },
+  "heuristic_profile": {
+    "tag_families": [
+      "greedy",
+      "data_structures",
+      "graphs",
+      "trees",
+      "strings",
+      "binary_search"
+    ],
+    "structure_candidates": [
+      "array"
+    ],
+    "objective_type": "construct",
+    "coverage_features": [
+      "objective:construct",
+      "rating:cf_high",
+      "source:CODEFORCES",
+      "structure:array",
+      "tag:binary_search",
+      "tag:data_structures",
+      "tag:graphs",
+      "tag:greedy",
+      "tag:strings",
+      "tag:trees"
+    ],
+    "english_filter": {
+      "passed": true,
+      "score": 19
+    },
+    "notes": [
+      "selection favors source, difficulty, tag and structure coverage over sample count",
+      "heuristic_profile fields are inferred from metadata and statement text"
+    ]
+  }
+}

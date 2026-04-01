@@ -9,11 +9,10 @@ from models import InstantiatedSchema
 
 
 DISTANCE_WEIGHTS = {
-    "I": 0.15,
-    "C": 0.25,
-    "O": 0.15,
-    "V": 0.35,
-    "T": 0.10,
+    "I": 0.20,
+    "C": 0.35,
+    "O": 0.25,
+    "V": 0.20,
 }
 
 OBJECTIVE_DISTANCE = {
@@ -66,18 +65,22 @@ STRUCTURAL_OPTION_ALIASES = {
 def build_instantiated_schema(
     schema: dict[str, Any],
     objective: dict[str, Any],
-    numerical_parameters: dict[str, Any],
-    structural_options: list[str],
-    input_options: list[dict[str, Any]],
-    invariant_options: list[dict[str, Any]],
-    theme: dict[str, Any] | None,
-    difficulty: str,
+    numerical_parameters: dict[str, Any] | None = None,
+    structural_options: list[str] | None = None,
+    input_options: list[dict[str, Any]] | None = None,
+    invariant_options: list[dict[str, Any]] | None = None,
+    theme: dict[str, Any] | None = None,
+    difficulty: str = "",
 ) -> InstantiatedSchema:
     normalized = _normalize_schema(schema)
     input_structure = copy.deepcopy(normalized.get("input_structure", {}))
     core_constraints = copy.deepcopy(normalized.get("core_constraints", {"constraints": []}))
     objective_copy = copy.deepcopy(objective)
     invariant = copy.deepcopy(normalized.get("invariant", {"invariants": []}))
+    numerical_parameters = copy.deepcopy(numerical_parameters or {})
+    structural_options = list(structural_options or [])
+    input_options = list(input_options or [])
+    invariant_options = list(invariant_options or [])
 
     snapshot = {
         "problem_id": normalized.get("problem_id", "unknown"),
@@ -86,8 +89,8 @@ def build_instantiated_schema(
         "core_constraints": core_constraints,
         "objective": objective_copy,
         "invariant": invariant,
-        "instantiated_parameters": copy.deepcopy(numerical_parameters),
-        "selected_structural_options": list(structural_options),
+        "instantiated_parameters": numerical_parameters,
+        "selected_structural_options": structural_options,
         "selected_input_options": [item.get("name", "") for item in input_options if item.get("name")],
         "selected_invariant_options": [
             item.get("name", "") for item in invariant_options if item.get("name")
@@ -156,21 +159,19 @@ def compute_schema_distance(
         original.get("invariant", {}).get("invariants", []),
         candidate.get("invariant", {}).get("invariants", []),
     )
-    t_distance = _transform_distance(original, candidate)
 
     total = (
         DISTANCE_WEIGHTS["I"] * i_distance
         + DISTANCE_WEIGHTS["C"] * c_distance
         + DISTANCE_WEIGHTS["O"] * o_distance
         + DISTANCE_WEIGHTS["V"] * v_distance
-        + DISTANCE_WEIGHTS["T"] * t_distance
     )
     return {
         "I": round(i_distance, 4),
         "C": round(c_distance, 4),
         "O": round(o_distance, 4),
         "V": round(v_distance, 4),
-        "T": round(t_distance, 4),
+        "T": 0.0,
         "total": round(total, 4),
     }
 
@@ -191,8 +192,6 @@ def compute_changed_axes(
         axes.append("O")
     if distance["V"] >= 0.18:
         axes.append("V")
-    if distance["T"] >= 0.3 and any(axis in axes for axis in ("I", "C", "O", "V")):
-        axes.append("T")
     return axes
 
 
@@ -232,7 +231,6 @@ def _normalize_schema(raw_schema: dict[str, Any]) -> dict[str, Any]:
         normalized["core_constraints"] = {"constraints": normalized["core_constraints"]}
     if isinstance(normalized["invariant"], list):
         normalized["invariant"] = {"invariants": normalized["invariant"]}
-    normalized.setdefault("transform_space", schema.get("transform_space", {}))
     return normalized
 
 

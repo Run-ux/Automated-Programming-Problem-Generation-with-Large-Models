@@ -1,6 +1,6 @@
 # AutoProblemGen
 
-本仓库围绕一个核心目标展开：不是让大模型“自由发挥写一道新题”，而是先把已有高质量竞赛题抽象成可操作的 `Problem Schema`，再在受控的变换空间里生成新题，并用结构化评估去判断它是不是一题真正的新题。
+本仓库围绕一个核心目标展开：不是让大模型“自由发挥写一道新题”，而是先把已有高质量竞赛题抽象成可操作的 `Problem Schema`，再通过规则驱动的四元组规划生成新题，并用结构化评估去判断它是不是一题真正的新题。
 
 仓库当前包含研究资料、题目采集、Schema/母题实验、有限性验证、题面生成、质量评估，以及若干历史原型。根目录下每个文件夹都对应这条主线中的一个阶段或一个独立实验方向。
 
@@ -10,7 +10,7 @@
 
 ```text
 论文
-  -> 明确 Problem Schema、母题、变换空间、评估标准
+  -> 明确 Problem Schema、母题、规则设计、评估标准
 
 爬取题目 / 母题代码
   -> 收集原始题目文本
@@ -23,12 +23,13 @@ finiteness_verification
   -> 为后续生成提供 voted schema 与标签边界
 
 生成题面
-  -> 补全 transform_space
-  -> 先做 Difference Plan，再实例化 Schema
+  -> 规则规划
+  -> 实例化四元组
   -> 调用模型生成结构化题面
   -> 输出 Markdown、artifact、过程报告
 
 题目质量评价
+  -> 消费规则决策轨迹与四轴距离
   -> 对生成结果做质量评分、反换皮判定、硬约束检查
   -> 判断是通过、需要返修，还是应直接拒绝
 ```
@@ -60,7 +61,7 @@ finiteness_verification
 阅读相关工作
   -> 总结已有自动出题、测试数据生成、题目评测方法
   -> 提炼本项目的 Problem Schema 思路
-  -> 形成母题、变换空间、评估准则等概念
+  -> 形成母题、规则、评估准则等概念
   -> 反过来指导工程目录的设计
 ```
 
@@ -93,6 +94,10 @@ main.py 选择平台
 2. 抓取层与生成层解耦。生成器并不直接联网找题，而是基于已经落盘的题库做抽取、验证和生成。
 
 这个目录是整个项目的数据入口，也是 `finiteness_verification` Phase 2 做全量封闭分类时的重要输入来源。
+
+* **codeforces**：2201 道
+* **icpc**：3149 道
+* **luogu**：7903 道
 
 ## 3. `母题代码`
 
@@ -171,19 +176,22 @@ phase1 的标签集合
 
 换句话说，这个目录回答的是“Schema 能不能当成系统的中间表示”，而不是“模型能不能写出一段像题面的文字”。
 
-它也是 `生成题面` 的直接上游，因为后者当前消费的输入就是这里沉淀出的 voted schema，并在必要时补全 `transform_space`。
+它也是 `生成题面` 的直接上游，因为后者当前消费的输入就是这里沉淀出的 voted schema。`finiteness_verification` 负责四元组抽取与归一化，生成器本身不再依赖第五维驱动创新。
 
 ## 5. `生成题面`
 
-这是当前版本的正式生成器。它不是直接根据原题 prompt 改写，而是基于 prepared schema、difference plan 和主题映射生成结构化题面。
+这是当前版本的正式生成器。它不再把 `transform_space` 当成主驱动，而是围绕四元组 `I/C/O/V`、规则和两阶段 LLM 规划生成结构化题面。
 
 核心文件包括：
 
-- `main.py`：命令行入口
-- `schema_preparer.py`：在缺少第五维时补全 `transform_space`
-- `variant_planner.py`：搜索可行的变体方案，控制 schema distance
-- `problem_generator.py`：调用模型生成结构化题目
-- `pipeline.py`：把计划、生成、渲染、落盘串起来
+- `main.py`：命令行入口，显式要求 `mode`
+- `schema_preparer.py`：做四元组归一化，并保留历史兼容字段
+- `planning_rules.json`：规则与红线
+- `rulebook.py`：规则文件读取与模式、规则开关
+- `variant_planner.py`：执行规则规划并完成硬门槛校验
+- `prompt_builder.py`：构造 planner 与 generator 的两阶段提示词
+- `problem_generator.py`：根据实例化四元组生成结构化题目
+- `pipeline.py`：把规划、生成、渲染、落盘串起来
 - `markdown_renderer.py`：把结构化结果渲染成 OJ 风格 Markdown
 - `prepared_schemas/`、`artifacts/`、`output/`、`reports/`：各阶段产物
 
@@ -191,25 +199,33 @@ phase1 的标签集合
 
 ```text
 读取 voted schema
-  -> schema_preparer 补全 transform_space
-  -> variant_planner 先做 Difference Plan
-  -> 在目标 distance 区间内实例化新 schema
+  -> schema_preparer 归一化为四元组
+  -> variant_planner 先在可用规则中选择最适合当前 schema 的规则
+  -> 再按选中的规则规划并过硬门槛
+  -> 将命中的规则实例化为新四元组
   -> problem_generator 让模型输出严格 JSON
   -> markdown_renderer 渲染为题面 Markdown
   -> pipeline 保存 markdown、artifact、过程报告
 ```
 
-这个目录的方案思想和旧版本最大的区别在于“先规划，再生成”：
+当前只启用两个模式：
 
-1. 先确定要改哪些轴，而不是先让模型写再看像不像新题。
-2. 用 `schema_distance` 和 `changed_axes` 约束变化幅度，避免只换故事皮。
-3. 要求模型输出 JSON，再渲染成 Markdown，降低自由文本带来的结构漂移。
+- `single_seed_extension`
+- `same_family_fusion`
 
-因此它不是一个“让模型编题”的脚本，而是一个“在受控结构变化下生成题面”的管线。
+`cross_family_fusion` 仅保留文档与规则文件占位，本轮不宣称已支持。
+
+这个目录的方案思想有三个关键点：
+
+1. 创新来源从“枚举第五维”改成“规则选择 + planner”。
+2. 差异控制只计算四轴距离 `I/C/O/V`，但为兼容旧消费者，artifact 中仍保留 `distance_breakdown.T = 0.0`。
+3. artifact 一方面保留 `difference_plan`、`predicted_schema_distance`、`changed_axes_realized`、`instantiated_schema_snapshot` 这些旧壳字段，另一方面新增 `mode`、`applied_rule`、`rule_selection_reason`、`rejected_candidates`、`algorithmic_delta_claim` 和 `same_family_fusion` 的消融论证。
+
+因此它不是一个“让模型编题”的脚本，而是一个“规则驱动的四元组生成管线”。
 
 ## 6. `题目质量评价`
 
-这是当前主线的后验评估模块，直接消费 `生成题面/artifacts/*.json`，结合原题、原始 schema、补全后的 schema 和生成题面做综合评估。
+这是当前主线的后验评估模块，直接消费 `生成题面/artifacts/*.json`，结合原题、原始 schema、归一化后的 schema 和生成题面做综合评估。
 
 目录内部的关键组成包括：
 
@@ -227,11 +243,11 @@ phase1 的标签集合
   -> 恢复 difference plan 与 instantiated schema
   -> 做 hard checks
   -> 评估题面完整性、可读性、样例质量、跨段一致性
-  -> 比较 schema distance、语义差异、解法迁移风险
+  -> 比较规则决策轨迹、四轴 schema distance、语义差异、解法迁移风险
   -> 输出 JSON 和 Markdown 评估报告
 ```
 
-这个模块的质量分并不是一个笼统的“好不好”，而是拆成五个维度分别打分，再按权重合成为总分：
+当前口径里，`题目质量评价` 消费的是规则决策轨迹与四轴距离，而不是 `transform_space` 时代的第五维逻辑。这个模块的质量分并不是一个笼统的“好不好”，而是拆成五个维度分别打分，再按权重合成为总分：
 
 - `variant_fidelity`，权重 `0.30`
 - `spec_completeness`，权重 `0.25`
@@ -418,7 +434,7 @@ phase1 的标签集合
 整个仓库的统一思想可以浓缩为四句话：
 
 1. 不从零写题，而是从高质量题库里抽象母题。
-2. 不直接让模型自由改写，而是在 Schema 的变换空间里受控生成。
+2. 不直接让模型自由改写，而是在 Schema 四元组上做规则驱动的规划生成。
 3. 不靠题面字面相似度去重，而是在 Schema 层面衡量差异。
 4. 不把生成视为完成，而是要经过结构化质量评估和反换皮判定。
 

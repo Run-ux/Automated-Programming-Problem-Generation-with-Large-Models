@@ -1,0 +1,104 @@
+{
+  "selection_id": "sample_06",
+  "problem_id": "CF253C",
+  "record_uid": "train-00027-of-00039-f8196766547533a2__row_0278",
+  "statement_language": "english",
+  "title": "253_C. Text Editor",
+  "description": "Vasya is pressing the keys on the keyboard reluctantly, squeezing out his ideas on the classical epos depicted in Homer's Odysseus... How can he explain to his literature teacher that he isn't going to become a writer? In fact, he is going to become a programmer. So, he would take great pleasure in writing a program, but none — in writing a composition.\n\nAs Vasya was fishing for a sentence in the dark pond of his imagination, he suddenly wondered: what is the least number of times he should push a key to shift the cursor from one position to another one?\n\nLet's describe his question more formally: to type a text, Vasya is using the text editor. He has already written n lines, the i-th line contains ai characters (including spaces). If some line contains k characters, then this line overall contains (k + 1) positions where the cursor can stand: before some character or after all characters (at the end of the line). Thus, the cursor's position is determined by a pair of integers (r, c), where r is the number of the line and c is the cursor's position in the line (the positions are indexed starting from one from the beginning of the line).\n\nVasya doesn't use the mouse to move the cursor. He uses keys \"Up\", \"Down\", \"Right\" and \"Left\". When he pushes each of these keys, the cursor shifts in the needed direction. Let's assume that before the corresponding key is pressed, the cursor was located in the position (r, c), then Vasya pushed key:\n\n  * \"Up\": if the cursor was located in the first line (r = 1), then it does not move. Otherwise, it moves to the previous line (with number r - 1), to the same position. At that, if the previous line was short, that is, the cursor couldn't occupy position c there, the cursor moves to the last position of the line with number r - 1;\n  * \"Down\": if the cursor was located in the last line (r = n), then it does not move. Otherwise, it moves to the next line (with number r + 1), to the same position. At that, if the next line was short, that is, the cursor couldn't occupy position c there, the cursor moves to the last position of the line with number r + 1;\n  * \"Right\": if the cursor can move to the right in this line (c < ar + 1), then it moves to the right (to position c + 1). Otherwise, it is located at the end of the line and doesn't move anywhere when Vasya presses the \"Right\" key;\n  * \"Left\": if the cursor can move to the left in this line (c > 1), then it moves to the left (to position c - 1). Otherwise, it is located at the beginning of the line and doesn't move anywhere when Vasya presses the \"Left\" key.\n\n\n\nYou've got the number of lines in the text file and the number of characters, written in each line of this file. Find the least number of times Vasya should push the keys, described above, to shift the cursor from position (r1, c1) to position (r2, c2).\n\nInput\n\nThe first line of the input contains an integer n (1 ≤ n ≤ 100) — the number of lines in the file. The second line contains n integers a1, a2, ..., an (0 ≤ ai ≤ 105), separated by single spaces. The third line contains four integers r1, c1, r2, c2 (1 ≤ r1, r2 ≤ n, 1 ≤ c1 ≤ ar1 + 1, 1 ≤ c2 ≤ ar2 + 1).\n\nOutput\n\nPrint a single integer — the minimum number of times Vasya should push a key to move the cursor from position (r1, c1) to position (r2, c2).\n\nExamples\n\nInput\n\n4\n2 1 6 4\n3 4 4 2\n\n\nOutput\n\n3\n\n\nInput\n\n4\n10 5 6 4\n1 11 4 2\n\n\nOutput\n\n6\n\n\nInput\n\n3\n10 1 10\n1 10 1 1\n\n\nOutput\n\n3\n\nNote\n\nIn the first sample the editor contains four lines. Let's represent the cursor's possible positions in the line as numbers. Letter s represents the cursor's initial position, letter t represents the last one. Then all possible positions of the cursor in the text editor are described by the following table.\n\n123\n\n12\n\n123s567\n\n1t345\n\nOne of the possible answers in the given sample is: \"Left\", \"Down\", \"Left\".",
+  "public_tests": {
+    "input": [
+      "3\n10 1 10\n1 10 1 1\n",
+      "4\n2 1 6 4\n3 4 4 2\n",
+      "4\n10 5 6 4\n1 11 4 2\n"
+    ],
+    "output": [
+      "3\n",
+      "3\n",
+      "6\n"
+    ]
+  },
+  "source": {
+    "split": "train",
+    "source_id": 2,
+    "source_name": "CODEFORCES",
+    "url": "https://codeforces.com/contest/253/problem/C"
+  },
+  "difficulty": {
+    "difficulty_id": 9,
+    "difficulty_name": "C",
+    "difficulty_bucket": null,
+    "cf_rating": 1600,
+    "cf_points": 1500.0,
+    "cf_contest_id": 253,
+    "cf_index": "C",
+    "rating_bucket": "cf_mid"
+  },
+  "tags": [
+    "data structures",
+    "dfs and similar",
+    "graphs",
+    "greedy",
+    "shortest paths"
+  ],
+  "limits": {
+    "time_limit": {
+      "seconds": 1,
+      "nanos": 0
+    },
+    "memory_limit_bytes": 256000000
+  },
+  "io_mode": {
+    "input_file": "input.txt",
+    "output_file": "output.txt",
+    "non_stdio": true
+  },
+  "translation": {
+    "is_description_translated": false,
+    "untranslated_description": ""
+  },
+  "reference_solution": {
+    "language_id": 4,
+    "language_guess": "unknown",
+    "code": "import\tjava.util.*;\nimport\tjava.io.*;\npublic\tclass\tMain{\n\tstatic\tint[]Z=new\tint[100];\n\tstatic\tint\tres(Pot2D\tP,int\tm){\n\t\tint\ts=0;\n\t\tfor(;m>P.x;P.y=Math.min(P.y,Z[++P.x]))\t++s;\n\t\tfor(;m<P.x;P.y=Math.min(P.y,Z[--P.x]))\t++s;\n\t\treturn\ts;\n\t}\n\tpublic\tstatic\tvoid\tmain(String[]args)throws\tException{\n\t\tScanner\tfin=new\tScanner(new\tFile(\"input.txt\"));\n\t\tPrintStream\tfout=new\tPrintStream(\"output.txt\");\n\t\tPot2D\tB=new\tPot2D(),E=new\tPot2D(),T=new\tPot2D();\n\t\tfor(int\ts,t,n;fin.hasNextInt();fout.println(s)){\n\t\t\tfor(n=fin.nextInt(),s=0;n>s;Z[s++]=fin.nextInt());\n\t\t\tB.x=fin.nextInt()-1;B.y=fin.nextInt()-1;\n\t\t\tE.x=fin.nextInt()-1;E.y=fin.nextInt()-1;\n\t\t\tfor(s=999999;0<n--;s=Math.min(s,Math.abs(E.y-T.y)+t)){\n\t\t\t\tT.x=B.x;T.y=B.y;t=res(T,n);t+=res(T,E.x);\n\t\t\t}\n\t\t}\n\t}\n}\nclass\tPot2D{int\tx,y;}",
+    "char_count": 775,
+    "line_count": 25
+  },
+  "artifact_counts": {
+    "public_tests": 3,
+    "private_tests": 33,
+    "generated_tests": 0,
+    "solutions": 105,
+    "incorrect_solutions": 325
+  },
+  "heuristic_profile": {
+    "tag_families": [
+      "greedy",
+      "data_structures",
+      "graphs"
+    ],
+    "structure_candidates": [
+      "grid",
+      "array"
+    ],
+    "objective_type": "optimize",
+    "coverage_features": [
+      "objective:optimize",
+      "rating:cf_mid",
+      "source:CODEFORCES",
+      "special:non_stdio",
+      "structure:array",
+      "structure:grid",
+      "tag:data_structures",
+      "tag:graphs",
+      "tag:greedy"
+    ],
+    "english_filter": {
+      "passed": true,
+      "score": 17
+    },
+    "notes": [
+      "selection favors source, difficulty, tag and structure coverage over sample count",
+      "heuristic_profile fields are inferred from metadata and statement text"
+    ]
+  }
+}

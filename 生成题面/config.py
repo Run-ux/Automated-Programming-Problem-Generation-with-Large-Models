@@ -14,6 +14,7 @@ DEFAULT_OUTPUT_DIR = BASE_DIR / "output"
 DEFAULT_ARTIFACT_DIR = BASE_DIR / "artifacts"
 DEFAULT_REPORT_DIR = BASE_DIR / "reports"
 DEFAULT_PREPARED_SCHEMA_DIR = BASE_DIR / "prepared_schemas"
+DEFAULT_RULE_FILE = BASE_DIR / "planning_rules.json"
 
 DEFAULT_MODEL = os.getenv("QWEN_MODEL", "qwen3.5-plus")
 DEFAULT_BASE_URL = os.getenv(

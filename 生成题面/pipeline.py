@@ -10,6 +10,7 @@ from typing import Any
 from markdown_renderer import render_problem_markdown
 from models import VariantPlan
 from problem_generator import ProblemGenerator
+from rulebook import normalize_mode_name
 from schema_loader import SchemaLoader
 from variant_planner import VariantPlanner
 
@@ -30,6 +31,7 @@ class GenerationPipeline:
         report_dir: Path,
         generator: ProblemGenerator,
         planner: VariantPlanner,
+        problem_repository: ProblemRepository | None = None,
     ):
         self.raw_loader = SchemaLoader(raw_source_dir)
         self.loader = SchemaLoader(source_dir)
@@ -38,30 +40,54 @@ class GenerationPipeline:
         self.report_dir = report_dir
         self.generator = generator
         self.planner = planner
-        self.problem_repository = ProblemRepository()
+        self.problem_repository = problem_repository or ProblemRepository()
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.artifact_dir.mkdir(parents=True, exist_ok=True)
         self.report_dir.mkdir(parents=True, exist_ok=True)
 
     def run(
         self,
+        *,
+        mode: str,
         problem_ids: list[str],
         variants: int = 1,
         theme_id: str | None = None,
+        seed_a: str | None = None,
+        seed_b: str | None = None,
+        allowed_rule_ids: set[str] | None = None,
     ) -> list[dict[str, Any]]:
-        if not problem_ids:
-            problem_ids = self.loader.list_problem_ids()
+        canonical_mode = _canonical_mode(mode)
+        if canonical_mode == "single_seed_extension":
+            return self._run_single(
+                problem_ids=problem_ids,
+                variants=variants,
+                theme_id=theme_id,
+                allowed_rule_ids=allowed_rule_ids,
+            )
+        return self._run_same_family(
+            seed_a=seed_a,
+            seed_b=seed_b,
+            variants=variants,
+            theme_id=theme_id,
+            allowed_rule_ids=allowed_rule_ids,
+        )
 
+    def _run_single(
+        self,
+        *,
+        problem_ids: list[str],
+        variants: int,
+        theme_id: str | None,
+        allowed_rule_ids: set[str] | None,
+    ) -> list[dict[str, Any]]:
+        target_problem_ids = list(problem_ids) or self.loader.list_problem_ids()
         records: list[dict[str, Any]] = []
-        for problem_id in problem_ids:
+
+        for problem_id in target_problem_ids:
             original_schema = self.raw_loader.load(problem_id)
             prepared_schema = self.loader.load(problem_id)
-            original_problem = self.problem_repository.get_problem(
-                source=prepared_schema.get("source", ""),
-                problem_id=prepared_schema.get("problem_id", problem_id),
-            )
-
-            report_sections = self._build_report_header(
+            original_problem = self._safe_get_problem(prepared_schema, problem_id)
+            report_sections = self._build_single_report_header(
                 problem_id=problem_id,
                 original_problem=original_problem,
                 original_schema=original_schema,
@@ -71,35 +97,31 @@ class GenerationPipeline:
             problem_records: list[dict[str, Any]] = []
             for variant_index in range(1, variants + 1):
                 plan = self.planner.build_plan(
-                    schema=prepared_schema,
+                    mode="single_seed_extension",
                     variant_index=variant_index,
                     theme_id=theme_id,
                     original_schema=original_schema,
+                    prepared_schema=prepared_schema,
                     original_problem=original_problem,
+                    allowed_rule_ids=allowed_rule_ids,
                 )
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                stem = f"{problem_id}_v{plan.variant_index}_{plan.theme.theme_id}_{timestamp}"
-
+                stem = self._build_stem(plan.source_problem_ids, plan.variant_index, plan.theme.theme_id)
                 generated = self.generator.generate(
-                    prepared_schema,
+                    {"seed_schema": prepared_schema},
                     plan,
-                    original_problem=original_problem,
+                    original_problems=[item for item in [original_problem] if item],
                 )
                 markdown = render_problem_markdown(generated, plan)
                 record = self._save_outputs(
                     stem=stem,
-                    problem_id=problem_id,
                     plan=plan,
                     payload=generated.__dict__,
                     markdown=markdown,
                 )
-                problem_records.append(record)
                 records.append(record)
+                problem_records.append(record)
                 report_sections.extend(
                     self._build_variant_report_sections(
-                        variant_index=variant_index,
-                        original_schema=original_schema,
-                        prepared_schema=prepared_schema,
                         plan=plan,
                         record=record,
                         generated=generated.__dict__,
@@ -112,10 +134,85 @@ class GenerationPipeline:
 
         return records
 
+    def _run_same_family(
+        self,
+        *,
+        seed_a: str | None,
+        seed_b: str | None,
+        variants: int,
+        theme_id: str | None,
+        allowed_rule_ids: set[str] | None,
+    ) -> list[dict[str, Any]]:
+        if not seed_a or not seed_b:
+            raise ValueError("same_family_fusion 模式必须显式提供 seed_a 和 seed_b。")
+
+        original_schema_a = self.raw_loader.load(seed_a)
+        original_schema_b = self.raw_loader.load(seed_b)
+        prepared_schema_a = self.loader.load(seed_a)
+        prepared_schema_b = self.loader.load(seed_b)
+        original_problem_a = self._safe_get_problem(prepared_schema_a, seed_a)
+        original_problem_b = self._safe_get_problem(prepared_schema_b, seed_b)
+
+        report_key = f"{seed_a}__{seed_b}"
+        report_sections = self._build_same_family_report_header(
+            seed_a=seed_a,
+            seed_b=seed_b,
+            original_problem_a=original_problem_a,
+            original_problem_b=original_problem_b,
+            original_schema_a=original_schema_a,
+            original_schema_b=original_schema_b,
+            prepared_schema_a=prepared_schema_a,
+            prepared_schema_b=prepared_schema_b,
+        )
+
+        records: list[dict[str, Any]] = []
+        for variant_index in range(1, variants + 1):
+            plan = self.planner.build_plan(
+                mode="same_family_fusion",
+                variant_index=variant_index,
+                theme_id=theme_id,
+                seed_a_schema=prepared_schema_a,
+                seed_b_schema=prepared_schema_b,
+                seed_a_original_schema=original_schema_a,
+                seed_b_original_schema=original_schema_b,
+                seed_a_problem=original_problem_a or {},
+                seed_b_problem=original_problem_b or {},
+                allowed_rule_ids=allowed_rule_ids,
+            )
+            stem = self._build_stem(plan.source_problem_ids, plan.variant_index, plan.theme.theme_id)
+            generated = self.generator.generate(
+                {
+                    "seed_a_schema": prepared_schema_a,
+                    "seed_b_schema": prepared_schema_b,
+                },
+                plan,
+                original_problems=[item for item in [original_problem_a, original_problem_b] if item],
+            )
+            markdown = render_problem_markdown(generated, plan)
+            record = self._save_outputs(
+                stem=stem,
+                plan=plan,
+                payload=generated.__dict__,
+                markdown=markdown,
+            )
+            records.append(record)
+            report_sections.extend(
+                self._build_variant_report_sections(
+                    plan=plan,
+                    record=record,
+                    generated=generated.__dict__,
+                )
+            )
+
+        report_path = self._write_problem_report(report_key, report_sections)
+        for record in records:
+            record["report_path"] = str(report_path)
+        return records
+
     def _save_outputs(
         self,
+        *,
         stem: str,
-        problem_id: str,
         plan: VariantPlan,
         payload: dict[str, Any],
         markdown: str,
@@ -124,23 +221,37 @@ class GenerationPipeline:
         md_path = self.output_dir / f"{stem}.md"
 
         artifact = {
-            "problem_id": problem_id,
+            "problem_id": plan.problem_id,
+            "source_problem_ids": list(plan.source_problem_ids),
             "variant_index": plan.variant_index,
             "seed": plan.seed,
+            "mode": plan.mode,
             "theme": {
                 "id": plan.theme.theme_id,
                 "name": plan.theme.name,
             },
             "difference_plan": asdict(plan.difference_plan),
             "predicted_schema_distance": plan.predicted_schema_distance,
-            "distance_breakdown": plan.distance_breakdown,
-            "changed_axes_realized": plan.changed_axes_realized,
+            "distance_breakdown": _normalize_distance_breakdown(plan.distance_breakdown),
+            "changed_axes_realized": list(plan.changed_axes_realized),
             "objective": plan.objective,
+            "rule_selection_reason": plan.rule_selection_reason,
             "numerical_parameters": plan.numerical_parameters,
             "structural_options": plan.structural_options,
             "input_structure_options": plan.input_structure_options,
             "invariant_options": plan.invariant_options,
             "instantiated_schema_snapshot": asdict(plan.instantiated_schema_snapshot),
+            "applied_rule": plan.applied_rule,
+            "rejected_candidates": plan.rejected_candidates,
+            "algorithmic_delta_claim": plan.algorithmic_delta_claim,
+            "shared_core_summary": plan.shared_core_summary,
+            "shared_core_anchors": plan.shared_core_anchors,
+            "seed_contributions": plan.seed_contributions,
+            "fusion_ablation": plan.fusion_ablation,
+            "auxiliary_moves": plan.auxiliary_moves,
+            "planning_status": plan.planning_status,
+            "planning_error_reason": plan.planning_error_reason,
+            "planning_feedback": plan.planning_feedback,
             "generated_problem": payload,
         }
 
@@ -151,98 +262,185 @@ class GenerationPipeline:
             handle.write(markdown)
 
         return {
-            "problem_id": problem_id,
+            "problem_id": plan.problem_id,
+            "source_problem_ids": list(plan.source_problem_ids),
+            "mode": plan.mode,
             "variant_index": plan.variant_index,
             "markdown_path": str(md_path),
             "artifact_path": str(json_path),
             "generated_status": payload.get("status", "ok"),
         }
 
-    def _build_report_header(
+    def _build_single_report_header(
         self,
+        *,
         problem_id: str,
-        original_problem: dict[str, Any],
+        original_problem: dict[str, Any] | None,
         original_schema: dict[str, Any],
         prepared_schema: dict[str, Any],
     ) -> list[str]:
         return [
             f"# {problem_id} 生成过程说明",
             "",
+            "## 运行模式",
+            "- mode: single_seed_extension",
+            f"- seed_problem_ids: {problem_id}",
+            "",
             "## 原题信息",
-            f"- 原题标题：{original_problem.get('title', '')}",
-            f"- 来源：{original_problem.get('source', '')}",
-            f"- 原题链接：{original_problem.get('url', '')}",
-            f"- 标签：{', '.join(original_problem.get('tags', [])) or '无'}",
-            f"- 难度：{original_problem.get('difficulty', '') or '无'}",
+            *self._render_problem_reference(original_problem),
             "",
-            "## 原题文本",
-            f"### 标题",
-            original_problem.get("title", "") or "无",
-            "",
-            "### Description",
-            original_problem.get("description", "") or "无",
-            "",
-            "### Input",
-            original_problem.get("input", "") or "无",
-            "",
-            "### Output",
-            original_problem.get("output", "") or "无",
-            "",
-            "### Constraints",
-            original_problem.get("constraints", "") or "无",
-            "",
-            "## 原始 Schema 摘要",
+            "## 原始四元组摘要",
             *self._render_schema_summary(original_schema),
             "",
-            "## Prepared Schema 摘要",
+            "## 归一化四元组摘要",
             *self._render_schema_summary(prepared_schema),
             "",
-            "## Transform Space 参数",
-            *self._render_transform_space(prepared_schema.get("transform_space", {})),
+        ]
+
+    def _build_same_family_report_header(
+        self,
+        *,
+        seed_a: str,
+        seed_b: str,
+        original_problem_a: dict[str, Any] | None,
+        original_problem_b: dict[str, Any] | None,
+        original_schema_a: dict[str, Any],
+        original_schema_b: dict[str, Any],
+        prepared_schema_a: dict[str, Any],
+        prepared_schema_b: dict[str, Any],
+    ) -> list[str]:
+        return [
+            f"# {seed_a}__{seed_b} 生成过程说明",
+            "",
+            "## 运行模式",
+            "- mode: same_family_fusion",
+            f"- seed_problem_ids: {seed_a}, {seed_b}",
+            "",
+            "## 种子题 A",
+            *self._render_problem_reference(original_problem_a),
+            "",
+            "### 原始四元组",
+            *self._render_schema_summary(original_schema_a),
+            "",
+            "### 归一化四元组",
+            *self._render_schema_summary(prepared_schema_a),
+            "",
+            "## 种子题 B",
+            *self._render_problem_reference(original_problem_b),
+            "",
+            "### 原始四元组",
+            *self._render_schema_summary(original_schema_b),
+            "",
+            "### 归一化四元组",
+            *self._render_schema_summary(prepared_schema_b),
             "",
         ]
 
     def _build_variant_report_sections(
         self,
-        variant_index: int,
-        original_schema: dict[str, Any],
-        prepared_schema: dict[str, Any],
+        *,
         plan: VariantPlan,
         record: dict[str, Any],
         generated: dict[str, Any],
     ) -> list[str]:
-        return [
-            f"## Variant {variant_index}",
+        lines = [
+            f"## Variant {plan.variant_index}",
             "",
-            "### Variant Plan",
-            *self._render_variant_plan(plan),
-            "",
-            "### Difference Plan",
-            *self._render_difference_plan(plan),
-            "",
-            "### 变换过程",
-            *self._render_transformation_trace(original_schema, prepared_schema, plan),
-            "",
-            "### 变换后的新 Schema",
-            *self._render_transformed_schema(prepared_schema, plan),
-            "",
-            "### 生成结果",
-            f"- 生成状态：{generated.get('status', 'ok')}",
-            f"- 生成题目标题：{generated.get('title', '') or '无'}",
-            f"- error_reason：{generated.get('error_reason', '') or '无'}",
-            f"- feedback：{generated.get('feedback', '') or '无'}",
-            f"- 题面 Markdown：{record['markdown_path']}",
-            f"- 结构化产物：{record['artifact_path']}",
-            "",
+            "### 规则规划",
+            f"- mode: {plan.mode}",
+            f"- planning_status: {plan.planning_status}",
+            f"- source_problem_ids: {', '.join(plan.source_problem_ids)}",
+            f"- applied_rule: {plan.applied_rule or '无'}",
+            f"- rule_selection_reason: {plan.rule_selection_reason or '无'}",
+            f"- theme: {plan.theme.theme_id} / {plan.theme.name}",
+            f"- shared_core_summary: {plan.shared_core_summary or '无'}",
+            f"- predicted_schema_distance: {plan.predicted_schema_distance}",
+            "- changed_axes_realized: " + (", ".join(plan.changed_axes_realized) or "无"),
+            "- distance_breakdown: "
+            + ", ".join(
+                f"{name}={value}" for name, value in _normalize_distance_breakdown(plan.distance_breakdown).items()
+            ),
+            f"- difference_plan_summary: {plan.difference_plan.summary or '无'}",
+            f"- difference_plan_rationale: {plan.difference_plan.rationale or '无'}",
         ]
+        lines.extend(self._render_auxiliary_moves(plan.auxiliary_moves))
+        lines.extend(self._render_rejected_candidates(plan.rejected_candidates))
+        lines.extend(
+            [
+                "",
+                "### 解法变化说明",
+                *self._render_algorithmic_delta(plan.algorithmic_delta_claim),
+            ]
+        )
+        if plan.mode == "same_family_fusion":
+            lines.extend(
+                [
+                    "",
+                "### 同族融合论证",
+                    *self._render_same_family_fusion(plan),
+                ]
+            )
+        lines.extend(
+            [
+                "",
+                "### 实例化四元组",
+                *self._render_instantiated_schema(plan),
+                "",
+                "### 生成结果",
+                f"- generated_status: {generated.get('status', 'ok')}",
+                f"- title: {generated.get('title', '') or '无'}",
+                f"- error_reason: {generated.get('error_reason', '') or '无'}",
+                f"- feedback: {generated.get('feedback', '') or '无'}",
+                f"- markdown_path: {record['markdown_path']}",
+                f"- artifact_path: {record['artifact_path']}",
+                "",
+            ]
+        )
+        return lines
 
-    def _write_problem_report(self, problem_id: str, lines: list[str]) -> Path:
-        report_path = self.report_dir / f"{problem_id}.md"
+    def _write_problem_report(self, report_name: str, lines: list[str]) -> Path:
+        report_path = self.report_dir / f"{report_name}.md"
         report_path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
         return report_path
 
+    def _safe_get_problem(
+        self,
+        schema: dict[str, Any],
+        fallback_problem_id: str,
+    ) -> dict[str, Any] | None:
+        try:
+            return self.problem_repository.get_problem(
+                source=schema.get("source", ""),
+                problem_id=schema.get("problem_id", fallback_problem_id),
+            )
+        except Exception:
+            return None
+
+    def _build_stem(self, source_problem_ids: list[str], variant_index: int, theme_id: str) -> str:
+        base = "__".join(_slugify(problem_id) for problem_id in source_problem_ids if problem_id)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        return f"{base}_v{variant_index}_{theme_id}_{timestamp}"
+
+    def _render_problem_reference(self, problem: dict[str, Any] | None) -> list[str]:
+        if not problem:
+            return [
+                "- problem_id: 无",
+                "- title: 无",
+                "- source: 无",
+                "- url: 无",
+                "- difficulty: 无",
+                "- tags: 无",
+            ]
+        return [
+            f"- problem_id: {problem.get('problem_id', '')}",
+            f"- title: {problem.get('title', '') or '无'}",
+            f"- source: {problem.get('source', '') or '无'}",
+            f"- url: {problem.get('url', '') or '无'}",
+            f"- difficulty: {problem.get('difficulty', '') or '无'}",
+            f"- tags: {', '.join(problem.get('tags', [])) or '无'}",
+        ]
+
     def _render_schema_summary(self, schema: dict[str, Any]) -> list[str]:
-        transform_space = schema.get("transform_space", {})
         return [
             f"- problem_id: {schema.get('problem_id', '')}",
             f"- source: {schema.get('source', '')}",
@@ -258,205 +456,64 @@ class GenerationPipeline:
                 schema.get("invariant", {}).get("invariants", []),
                 empty_text="  - 无",
             ),
-            f"- has_transform_space: {'yes' if transform_space else 'no'}",
+            f"- transform_space_compat_only: {'yes' if schema.get('transform_space') else 'no'}",
         ]
 
-    def _render_transform_space(self, transform_space: dict[str, Any]) -> list[str]:
-        lines = ["- numerical_parameters:"]
-        numerical_parameters = transform_space.get("numerical_parameters", {})
-        if numerical_parameters:
-            for name, spec in numerical_parameters.items():
-                lines.append(
-                    "  - "
-                    + f"{name}: range=[{spec.get('min')}..{spec.get('max')}], "
-                    + f"description={spec.get('description', '')}"
-                )
-        else:
-            lines.append("  - 无")
-
-        lines.append(
-            "- objective_options: "
-            + (", ".join(transform_space.get("objective_options", [])) or "无")
-        )
-        lines.append(
-            "- structural_options: "
-            + (", ".join(transform_space.get("structural_options", [])) or "无")
-        )
-        input_options = transform_space.get("input_structure_options", [])
-        lines.append("- input_structure_options:")
-        if input_options:
-            for item in input_options:
-                lines.append(
-                    "  - "
-                    + f"{item.get('name', '')}: {item.get('description', '')}"
-                )
-        else:
-            lines.append("  - 无")
-        invariant_options = transform_space.get("invariant_options", [])
-        lines.append("- invariant_options:")
-        if invariant_options:
-            for item in invariant_options:
-                lines.append(
-                    "  - "
-                    + f"{item.get('name', '')}: {item.get('description', '')}"
-                )
-        else:
-            lines.append("  - 无")
-        return lines
-
-    def _render_variant_plan(self, plan: VariantPlan) -> list[str]:
-        lines = [
-            f"- problem_id: {plan.problem_id}",
-            f"- variant_index: {plan.variant_index}",
-            f"- seed: {plan.seed}",
-            f"- theme: {plan.theme.theme_id} ({plan.theme.name})",
-            f"- theme_tone: {plan.theme.tone}",
-            "- theme_keywords: " + ", ".join(plan.theme.keywords),
-            f"- theme_mapping_hint: {plan.theme.mapping_hint}",
-            f"- objective: {self._describe_objective(plan.objective)}",
-            f"- difficulty: {plan.difficulty}",
-            f"- input_summary: {plan.input_summary}",
-            "- selected_parameters:",
-        ]
-        if plan.numerical_parameters:
-            for name, spec in plan.numerical_parameters.items():
-                lines.append(
-                    "  - "
-                    + f"{name}: value={spec.get('value')}, "
-                    + f"range=[{spec.get('min')}..{spec.get('max')}], "
-                    + f"description={spec.get('description', '')}"
-                )
-        else:
-            lines.append("  - 无")
-
-        lines.append(
-            "- selected_structural_options: "
-            + (", ".join(plan.structural_options) if plan.structural_options else "无")
-        )
-        lines.append(
-            "- selected_input_structure_options: "
-            + (
-                ", ".join(plan.input_structure_options)
-                if plan.input_structure_options
-                else "无"
-            )
-        )
-        lines.append(
-            "- selected_invariant_options: "
-            + (", ".join(plan.invariant_options) if plan.invariant_options else "无")
-        )
-        lines.append("- constraint_summary:")
-        lines.extend(self._render_plain_list(plan.constraint_summary, empty_text="  - 无"))
-        lines.append("- invariant_summary:")
-        lines.extend(self._render_plain_list(plan.invariant_summary, empty_text="  - 无"))
-        return lines
-
-    def _render_difference_plan(self, plan: VariantPlan) -> list[str]:
-        band = plan.difference_plan.target_distance_band
+    def _render_auxiliary_moves(self, moves: list[str]) -> list[str]:
         return [
-            f"- target_distance_band: [{band.get('min')}..{band.get('max')})",
-            "- planned_changed_axes: "
-            + (", ".join(plan.difference_plan.changed_axes) or "无"),
-            "- realized_changed_axes: "
-            + (", ".join(plan.changed_axes_realized) or "无"),
-            f"- predicted_schema_distance: {plan.predicted_schema_distance}",
-            "- distance_breakdown: "
-            + ", ".join(
-                f"{name}={value}" for name, value in plan.distance_breakdown.items()
-            ),
-            f"- same_family_allowed: {plan.difference_plan.same_family_allowed}",
-            "- forbidden_reuse:",
-            *self._render_plain_list(plan.difference_plan.forbidden_reuse, empty_text="  - 无"),
-            f"- rationale: {plan.difference_plan.rationale}",
+            "- auxiliary_moves: " + (", ".join(moves) if moves else "无"),
         ]
 
-    def _render_transformation_trace(
-        self,
-        original_schema: dict[str, Any],
-        prepared_schema: dict[str, Any],
-        plan: VariantPlan,
-    ) -> list[str]:
-        original_transform_space = original_schema.get("transform_space", {})
-        prepared_transform_space = prepared_schema.get("transform_space", {})
-        if original_transform_space:
-            resolution = "原始 schema 已包含 transform_space，直接使用。"
-        elif prepared_transform_space:
-            resolution = "原始 schema 不包含 transform_space，使用 prepared schema 中补全后的 transform_space。"
-        else:
-            resolution = "schema 中未发现 transform_space。"
-
-        lines = [
-            f"- transform_space_resolution: {resolution}",
-            "- objective_selection:",
-            f"  - original: {self._describe_objective(original_schema.get('objective', {}))}",
-            "  - available_options: "
-            + (", ".join(prepared_transform_space.get("objective_options", [])) or "无"),
-            f"  - selected: {self._describe_objective(plan.objective)}",
-            "- parameter_materialization:",
-        ]
-        if plan.numerical_parameters:
-            for name, spec in plan.numerical_parameters.items():
-                lines.append(
-                    "  - "
-                    + f"{name}: from [{spec.get('min')}..{spec.get('max')}] "
-                    + f"to {spec.get('value')} ({spec.get('description', '')})"
-                )
-        else:
+    def _render_rejected_candidates(self, rejected_candidates: list[dict[str, Any]]) -> list[str]:
+        lines = ["- rejected_candidates:"]
+        if not rejected_candidates:
             lines.append("  - 无")
-        lines.append(
-            "- structural_option_selection: available="
-            + (", ".join(prepared_transform_space.get("structural_options", [])) or "无")
-        )
-        lines.append(
-            "- selected_structural_options: "
-            + (", ".join(plan.structural_options) if plan.structural_options else "无")
-        )
-        lines.append(
-            "- input_structure_option_selection: available="
-            + (
-                ", ".join(
-                    item.get("name", "")
-                    for item in prepared_transform_space.get("input_structure_options", [])
-                    if item.get("name")
-                )
-                or "无"
+            return lines
+        for item in rejected_candidates:
+            lines.append(
+                "  - "
+                + f"rule_id={item.get('rule_id', '')}; "
+                + f"status={item.get('status', '') or 'difference_insufficient'}; "
+                + f"reason={item.get('reason', '') or '无'}"
             )
-        )
-        lines.append(
-            "- selected_input_structure_options: "
-            + (
-                ", ".join(plan.input_structure_options)
-                if plan.input_structure_options
-                else "无"
-            )
-        )
-        lines.append(
-            "- invariant_option_selection: available="
-            + (
-                ", ".join(
-                    item.get("name", "")
-                    for item in prepared_transform_space.get("invariant_options", [])
-                    if item.get("name")
-                )
-                or "无"
-            )
-        )
-        lines.append(
-            "- selected_invariant_options: "
-            + (", ".join(plan.invariant_options) if plan.invariant_options else "无")
-        )
-        lines.append(f"- theme_mapping: {plan.theme.name} / {plan.theme.mapping_hint}")
         return lines
 
-    def _render_transformed_schema(
-        self, prepared_schema: dict[str, Any], plan: VariantPlan
-    ) -> list[str]:
+    def _render_algorithmic_delta(self, claim: dict[str, Any]) -> list[str]:
+        if not claim:
+            return ["- 无"]
+        return [
+            f"- seed_solver_core: {claim.get('seed_solver_core', '') or '无'}",
+            f"- reusable_subroutines: {claim.get('reusable_subroutines', '') or '无'}",
+            f"- new_solver_core: {claim.get('new_solver_core', '') or '无'}",
+            f"- new_proof_obligation: {claim.get('new_proof_obligation', '') or '无'}",
+            f"- why_direct_reuse_fails: {claim.get('why_direct_reuse_fails', '') or '无'}",
+        ]
+
+    def _render_same_family_fusion(self, plan: VariantPlan) -> list[str]:
+        return [
+            f"- shared_state: {plan.shared_core_anchors.get('shared_state', '') or '无'}",
+            f"- shared_transition: {plan.shared_core_anchors.get('shared_transition', '') or '无'}",
+            f"- shared_decision_basis: {plan.shared_core_anchors.get('shared_decision_basis', '') or '无'}",
+            f"- seed_a_contribution: {plan.seed_contributions.get('seed_a', '') or '无'}",
+            f"- seed_b_contribution: {plan.seed_contributions.get('seed_b', '') or '无'}",
+            f"- without_seed_a: {plan.fusion_ablation.get('without_seed_a', '') or '无'}",
+            f"- without_seed_b: {plan.fusion_ablation.get('without_seed_b', '') or '无'}",
+        ]
+
+    def _render_instantiated_schema(self, plan: VariantPlan) -> list[str]:
         snapshot = asdict(plan.instantiated_schema_snapshot)
-        lines = [
-            f"- problem_id: {snapshot.get('problem_id', plan.problem_id)}",
+        return [
+            f"- problem_id: {snapshot.get('problem_id', '')}",
             f"- source: {snapshot.get('source', '')}",
             f"- input_structure: {self._describe_input_structure(snapshot.get('input_structure', {}))}",
-            f"- objective: {self._describe_objective(plan.objective)}",
+            f"- objective: {self._describe_objective(snapshot.get('objective', {}))}",
+            f"- difficulty: {snapshot.get('difficulty', '') or '无'}",
+            "- selected_structural_options: "
+            + (", ".join(snapshot.get("selected_structural_options", [])) or "无"),
+            "- selected_input_options: "
+            + (", ".join(snapshot.get("selected_input_options", [])) or "无"),
+            "- selected_invariant_options: "
+            + (", ".join(snapshot.get("selected_invariant_options", [])) or "无"),
             "- constraints:",
             *self._render_named_items(
                 snapshot.get("core_constraints", {}).get("constraints", []),
@@ -467,42 +524,7 @@ class GenerationPipeline:
                 snapshot.get("invariant", {}).get("invariants", []),
                 empty_text="  - 无",
             ),
-            f"- instantiated_theme: {plan.theme.theme_id} ({plan.theme.name})",
-            f"- instantiated_difficulty: {plan.difficulty}",
-            "- instantiated_parameters:",
         ]
-        if plan.numerical_parameters:
-            for name, spec in plan.numerical_parameters.items():
-                lines.append(
-                    "  - "
-                    + f"{name}: value={spec.get('value')}, "
-                    + f"range=[{spec.get('min')}..{spec.get('max')}], "
-                    + f"description={spec.get('description', '')}"
-                )
-        else:
-            lines.append("  - 无")
-        lines.append(
-            "- instantiated_structural_options: "
-            + (", ".join(plan.structural_options) if plan.structural_options else "无")
-        )
-        lines.append(
-            "- instantiated_input_structure_options: "
-            + (
-                ", ".join(snapshot.get("selected_input_options", []))
-                if snapshot.get("selected_input_options")
-                else "无"
-            )
-        )
-        lines.append(
-            "- instantiated_invariant_options: "
-            + (
-                ", ".join(snapshot.get("selected_invariant_options", []))
-                if snapshot.get("selected_invariant_options")
-                else "无"
-            )
-        )
-        lines.append(f"- instantiated_input_summary: {plan.input_summary}")
-        return lines
 
     def _describe_input_structure(self, input_structure: dict[str, Any]) -> str:
         length = input_structure.get("length", {})
@@ -516,8 +538,9 @@ class GenerationPipeline:
         if value_range:
             parts.append(f"value_range=[{value_range.get('min')}..{value_range.get('max')}]")
         if properties:
-            props = ", ".join(f"{key}={value}" for key, value in properties.items())
-            parts.append(f"properties={props}")
+            parts.append(
+                "properties=" + ", ".join(f"{key}={value}" for key, value in properties.items())
+            )
         return "; ".join(parts)
 
     def _describe_objective(self, objective: dict[str, Any]) -> str:
@@ -528,11 +551,7 @@ class GenerationPipeline:
             parts.append(f"confidence={objective.get('confidence')}")
         return "; ".join(parts)
 
-    def _render_named_items(
-        self,
-        items: list[dict[str, Any]],
-        empty_text: str,
-    ) -> list[str]:
+    def _render_named_items(self, items: list[dict[str, Any]], empty_text: str) -> list[str]:
         if not items:
             return [empty_text]
         lines: list[str] = []
@@ -547,7 +566,23 @@ class GenerationPipeline:
             lines.append("  - " + "; ".join(parts))
         return lines
 
-    def _render_plain_list(self, items: list[str], empty_text: str) -> list[str]:
-        if not items:
-            return [empty_text]
-        return [f"  - {item}" for item in items]
+
+def _canonical_mode(mode: str) -> str:
+    return normalize_mode_name(mode)
+
+
+def _normalize_distance_breakdown(distance_breakdown: dict[str, float]) -> dict[str, float]:
+    normalized = {
+        "I": round(float(distance_breakdown.get("I", 0.0)), 4),
+        "C": round(float(distance_breakdown.get("C", 0.0)), 4),
+        "O": round(float(distance_breakdown.get("O", 0.0)), 4),
+        "V": round(float(distance_breakdown.get("V", 0.0)), 4),
+        "T": round(float(distance_breakdown.get("T", 0.0)), 4),
+        "total": round(float(distance_breakdown.get("total", 0.0)), 4),
+    }
+    return normalized
+
+
+def _slugify(text: str) -> str:
+    cleaned = "".join(char if char.isalnum() or char in {"-", "_"} else "_" for char in str(text))
+    return cleaned.strip("_") or "variant"

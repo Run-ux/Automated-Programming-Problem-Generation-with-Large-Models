@@ -20,6 +20,8 @@ class DifferencePlan:
     same_family_allowed: bool
     forbidden_reuse: list[str]
     rationale: str
+    summary: str = ""
+    mode: str = "single_seed_extension"
 
 
 @dataclass
@@ -30,12 +32,12 @@ class InstantiatedSchema:
     core_constraints: dict[str, Any]
     objective: dict[str, Any]
     invariant: dict[str, Any]
-    instantiated_parameters: dict[str, Any]
-    selected_structural_options: list[str]
-    selected_input_options: list[str]
-    selected_invariant_options: list[str]
-    theme: dict[str, Any]
-    difficulty: str
+    instantiated_parameters: dict[str, Any] = field(default_factory=dict)
+    selected_structural_options: list[str] = field(default_factory=list)
+    selected_input_options: list[str] = field(default_factory=list)
+    selected_invariant_options: list[str] = field(default_factory=list)
+    theme: dict[str, Any] = field(default_factory=dict)
+    difficulty: str = ""
 
 
 @dataclass
@@ -43,13 +45,12 @@ class VariantPlan:
     problem_id: str
     variant_index: int
     seed: int
+    mode: str
     theme: Theme
+    source_problem_ids: list[str]
     objective: dict[str, Any]
-    numerical_parameters: dict[str, Any]
-    structural_options: list[str]
-    input_structure_options: list[str]
-    invariant_options: list[str]
     difficulty: str
+    rule_selection_reason: str
     input_summary: str
     constraint_summary: list[str]
     invariant_summary: list[str]
@@ -58,6 +59,21 @@ class VariantPlan:
     predicted_schema_distance: float
     distance_breakdown: dict[str, float]
     changed_axes_realized: list[str]
+    applied_rule: str
+    rejected_candidates: list[dict[str, Any]] = field(default_factory=list)
+    algorithmic_delta_claim: dict[str, Any] = field(default_factory=dict)
+    planning_status: str = "ok"
+    planning_error_reason: str = ""
+    planning_feedback: str = ""
+    shared_core_summary: str = ""
+    shared_core_anchors: dict[str, Any] = field(default_factory=dict)
+    seed_contributions: dict[str, Any] = field(default_factory=dict)
+    fusion_ablation: dict[str, Any] = field(default_factory=dict)
+    auxiliary_moves: list[str] = field(default_factory=list)
+    numerical_parameters: dict[str, Any] = field(default_factory=dict)
+    structural_options: list[str] = field(default_factory=list)
+    input_structure_options: list[str] = field(default_factory=list)
+    invariant_options: list[str] = field(default_factory=list)
 
 
 @dataclass

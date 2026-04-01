@@ -1,0 +1,82 @@
+{
+  "selection_id": "sample_05",
+  "problem_id": "codechef_train-00011-of-00039-5de236be5188959d__row_0096",
+  "record_uid": "train-00011-of-00039-5de236be5188959d__row_0096",
+  "statement_language": "english",
+  "title": "eqidlis",
+  "description": "Did you know that Chwee kueh, a cuisine of Singapore, means water rice cake ? Its a variety of the most popular South Indian savory cake, only that we call it here idli :). The tastiest idlis are made in Chennai, by none other than our famous chef, Dexter Murugan. Being very popular, he is flown from Marina to Miami, to serve idlis in the opening ceremony of icpc world finals ( which is happening right now ! ).\nThere are N students and they are initially served with some idlis. Some of them are angry because they got less idlis than some other. Dexter decides to redistribute the idlis so they all get equal number of idlis finally. He recollects his father's code, \"Son, if you ever want to redistribute idlis, follow this method. While there are two persons with unequal number of idlis, repeat the following step. Select two persons A and B,  A having the maximum and B having the minimum number of idlis, currently. If there are multiple ways to select A (similarly B), select any one randomly. Let A and B have P and Q number of idlis respectively and R = ceil( ( P - Q ) / 2 ), Transfer R idlis from A to B.\"\nGiven the initial number of idlis served to each student, find the number of times Dexter has to repeat the above step. If he can not distribute idlis equally by following the above method, print -1.\n\n\nNotes ceil(x) is the smallest integer that is not less than x.\n\n\nInput\nFirst line contains an integer T ( number of test cases, around 20 ). T cases follows. Each case starts with an integer N ( 1 <= N <= 3000 ). Next line contains an array A of N integers separated by spaces, the initial number of idlis served ( 0 <= A[i] <= N )\n\n\nOutput\nFor each case, output the number of times Dexter has to repeat the given step to distribute idlis equally or -1 if its not possible.\n\n\nExample\n\nInput:\n3\n4\n1 2 2 3\n2\n1 2\n7\n1 2 3 4 5 6 7\nOutput:\n1\n-1\n3\n\nExplanation:\nCase 1 : { 1, 2, 2, 3}. Maximum 3, Minimum 1. R = ceil((3-1)/2) = 1. Transfer 1 idli from person having 3 idlis to the person having 1 idli. Each of them has 2 idlis now, so just 1 step is enough.\nCase 2 : {1,2} R = ceil((2-1)/2) = 1. {1,2} -> {2,1} -> {1,2} .... they can never get equal idlis :(\nCase 3 : Sorted arrays, in the order encountered {1, 2, 3, 4, 5, 6, 7} -> {2, 3, 4, 4, 4, 5, 6} -> {3, 4, 4, 4, 4, 4, 5} -> {4, 4, 4, 4, 4, 4, 4}\n\nNoteThere are multiple test sets, and the judge shows the sum of the time taken over all test sets of your submission, if Accepted. Time limit on each test set is 3 sec",
+  "public_tests": {
+    "input": [
+      "3\n4\n1 2 2 3\n2\n1 2\n7\n1 2 3 4 5 6 7"
+    ],
+    "output": [
+      "1\n-1\n3\n"
+    ]
+  },
+  "source": {
+    "split": "train",
+    "source_id": 1,
+    "source_name": "CODECHEF",
+    "url": null
+  },
+  "difficulty": {
+    "difficulty_id": 2,
+    "difficulty_name": "MEDIUM",
+    "difficulty_bucket": "medium",
+    "cf_rating": 0,
+    "cf_points": 0.0,
+    "cf_contest_id": 0,
+    "cf_index": "",
+    "rating_bucket": null
+  },
+  "tags": [],
+  "limits": {
+    "time_limit": null,
+    "memory_limit_bytes": 0
+  },
+  "io_mode": {
+    "input_file": "",
+    "output_file": "",
+    "non_stdio": false
+  },
+  "translation": {
+    "is_description_translated": false,
+    "untranslated_description": ""
+  },
+  "reference_solution": {
+    "language_id": 1,
+    "language_guess": "python",
+    "code": "def process(N, A):\n    if not A:      return  0\n    if sum(A) % N: return -1\n    T = [0] * (N+1)\n    for a in A: T[a] += 1\n    i, j, c = 0, N, 0\n    while i < j:\n        while not T[i]: i += 1\n        while not T[j]: j -= 1\n        if i == j: break\n        R = (j-i) / 2 + (j-i) % 2\n        T[i]   -= 1\n        T[j]   -= 1\n        T[i+R] += 1\n        T[j-R] += 1\n        c      += 1\n    return c\n\ndef main():\n    T = int(raw_input())\n    for t in xrange(T):\n        N = int(raw_input())\n        A = map(int, raw_input().split())\n        print process(N, A)\n\nmain()",
+    "char_count": 564,
+    "line_count": 26
+  },
+  "artifact_counts": {
+    "public_tests": 1,
+    "private_tests": 0,
+    "generated_tests": 100,
+    "solutions": 4,
+    "incorrect_solutions": 0
+  },
+  "heuristic_profile": {
+    "tag_families": [],
+    "structure_candidates": [
+      "array"
+    ],
+    "objective_type": "optimize",
+    "coverage_features": [
+      "difficulty:medium",
+      "objective:optimize",
+      "source:CODECHEF",
+      "special:untagged",
+      "structure:array"
+    ],
+    "english_filter": {
+      "passed": true,
+      "score": 19
+    },
+    "notes": [
+      "selection favors source, difficulty, tag and structure coverage over sample count",
+      "heuristic_profile fields are inferred from metadata and statement text"
+    ]
+  }
+}
