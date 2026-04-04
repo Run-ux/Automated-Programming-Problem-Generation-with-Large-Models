@@ -1,0 +1,30 @@
+{
+  "problem_id": "CF1339D",
+  "source": "codeforces",
+  "dimension": "invariant",
+  "result": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "DFS traversal maintains the parity of the distance from a chosen root to each node. The state transitions by flipping parity across each edge, enabling accurate classification of all leaves into even and odd depth sets. This classification directly determines the minimum number of distinct weights required.",
+        "properties": {
+          "state_definition": "(current_vertex, depth_parity)",
+          "transition_rule": "child_parity = parent_parity XOR 1",
+          "aggregation_target": "leaf_count_by_parity"
+        },
+        "evidence_source": "solution_code"
+      },
+      {
+        "name": "local_equality_constraint",
+        "description": "For any internal vertex, all edges connecting it to its direct leaf children must be assigned the same weight. This structural necessity arises because the path between any two such leaves consists solely of these two edges, requiring their XOR to be zero. This invariant dictates the exact reduction in the maximum possible distinct weights.",
+        "properties": {
+          "trigger_condition": "internal_node_with_multiple_leaf_children",
+          "structural_implication": "incident_leaf_edges_must_be_identical",
+          "count_adjustment": "subtract_leaf_children_count_minus_one"
+        },
+        "evidence_source": "solution_code"
+      }
+    ]
+  },
+  "status": "success"
+}

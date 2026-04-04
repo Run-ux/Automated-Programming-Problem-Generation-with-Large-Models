@@ -1,0 +1,92 @@
+{
+  "problem_id": "atcoder_train-00020-of-00039-5d59387098675b73__row_0218",
+  "source": "atcoder",
+  "input_structure": {
+    "type": "composite",
+    "length": {
+      "min": 1,
+      "max": 10000
+    },
+    "value_range": {
+      "min": null,
+      "max": null
+    },
+    "properties": {
+      "connected": true
+    },
+    "components": [
+      {
+        "role": "tree",
+        "type": "tree",
+        "length": {
+          "min": 1,
+          "max": 10000
+        },
+        "value_range": {
+          "min": null,
+          "max": null
+        },
+        "properties": {
+          "connected": true
+        }
+      },
+      {
+        "role": "values",
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 10000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100000
+        },
+        "properties": {
+          "distinct": false
+        }
+      }
+    ]
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "permutation_constraint",
+        "description": "The integers assigned to the N vertices must form a permutation of the given multiset c_1, c_2, ..., c_N, preserving the exact frequency of each value.",
+        "formal": "\\{d_1, d_2, \\ldots, d_N\\} = \\{c_1, c_2, \\ldots, c_N\\} \\text{ as multisets}",
+        "source_sections": [
+          "description",
+          "output"
+        ]
+      },
+      {
+        "name": "connectivity",
+        "description": "The input graph is guaranteed to be a tree, meaning it is connected and acyclic with exactly N-1 edges.",
+        "formal": "G=(V,E) \\text{ is a tree}",
+        "source_sections": [
+          "description",
+          "constraints"
+        ]
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_value",
+    "description": "Maximize the sum of the minimum values assigned to the endpoints of each edge in a tree.",
+    "target": "sum",
+    "requires_solution": true
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "标准解法在遍历树的过程中,始终将当前剩余的最大数值分配给新访问的节点。该单调递减的分配策略保证了在任意时刻,已确定值的节点构成的连通子树中,父节点的值恒不小于子节点的值,从而使得每条边的贡献值稳定等于子节点的值,最终总分收敛于所有数值之和减去最大值。",
+        "properties": {
+          "assignment_sequence": "non_increasing",
+          "parent_child_constraint": "parent_value_ge_child_value",
+          "edge_contribution_rule": "min_equals_child_value"
+        },
+        "evidence_source": "solution_code"
+      }
+    ]
+  }
+}

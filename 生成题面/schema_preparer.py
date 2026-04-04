@@ -42,6 +42,4 @@ class SchemaPreparer:
             "invariant",
             data.get("invariant") or {"invariants": data.get("V", []) if isinstance(data.get("V"), list) else []},
         )
-        if "transform_space" in data:
-            prepared["transform_space"] = data.get("transform_space")
         return prepared

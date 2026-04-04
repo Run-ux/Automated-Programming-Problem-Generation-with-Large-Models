@@ -1,149 +1,193 @@
-"""
-结构验证脚本：验证四维 Prompt 构造正确性（不调用真实 API）
-
-从 imandra_curated_schema_inputs 选取 2 道题，
-验证四维 prompt 能够正确构造 system/user prompt。
-"""
+"""结构验证脚本：验证 Prompt 是否携带完整分节证据与新 schema 字段。"""
 
 from __future__ import annotations
 
 import json
 import sys
 from pathlib import Path
+from typing import Any, Dict
 
 current_dir = Path(__file__).resolve().parent
 project_root = current_dir.parent
 sys.path.insert(0, str(current_dir))
 
-from problem_schema import prepare_problem_record
-
-from prompts.prompt_input_structure import (
-    build_system_prompt as build_i_system,
-    build_user_prompt as build_i_user,
-    INPUT_STRUCTURE_SCHEMA,
+from label_vocab import (
+    CONSTRAINT_SOURCE_SECTIONS,
+    INPUT_STRUCTURE_TYPE_LABELS,
+    INVARIANT_EVIDENCE_SOURCES,
+    OBJECTIVE_LABELS,
 )
+from prompt_test_cases import CATEGORY_LABELS, select_problems_by_category
 from prompts.prompt_constraints import (
+    CONSTRAINTS_SCHEMA,
     build_system_prompt as build_c_system,
     build_user_prompt as build_c_user,
-    CONSTRAINTS_SCHEMA,
 )
-from prompts.prompt_objective import (
-    build_system_prompt as build_o_system,
-    build_user_prompt as build_o_user,
-    OBJECTIVE_SCHEMA,
+from prompts.prompt_input_structure import (
+    INPUT_STRUCTURE_SCHEMA,
+    build_system_prompt as build_i_system,
+    build_user_prompt as build_i_user,
 )
 from prompts.prompt_invariant import (
+    INVARIANT_SCHEMA,
     build_system_prompt as build_v_system,
     build_user_prompt as build_v_user,
-    INVARIANT_SCHEMA,
 )
+from prompts.prompt_objective import (
+    OBJECTIVE_SCHEMA,
+    build_system_prompt as build_o_system,
+    build_user_prompt as build_o_user,
+)
+from prompts.prompt_sections import EMPTY_SECTION_TEXT
 
 
-def load_problems(count: int = 2):
-    input_dir = project_root / "爬取题目" / "output" / "imandra_curated_schema_inputs"
-    problems = []
-    for path in sorted(input_dir.glob("*.json")):
-        if path.name.lower() == "manifest.json":
-            continue
-        problems.append(json.loads(path.read_text(encoding="utf-8")))
-        if len(problems) >= count:
-            break
-    return problems
+def _assert_prompt_sections(user_prompt: str, problem: Dict[str, Any], include_code: bool) -> None:
+    expected_sections = {
+        "标题": problem.get("title", "").strip() or EMPTY_SECTION_TEXT,
+        "题面全文": problem.get("description", "").strip() or EMPTY_SECTION_TEXT,
+        "Input 分节": problem.get("input", "").strip() or EMPTY_SECTION_TEXT,
+        "Output 分节": problem.get("output", "").strip() or EMPTY_SECTION_TEXT,
+        "Constraints 分节": problem.get("constraints", "").strip() or EMPTY_SECTION_TEXT,
+    }
+    for title, expected_text in expected_sections.items():
+        assert f"{title}：" in user_prompt, f"user_prompt 缺少 {title}"
+        assert expected_text in user_prompt, f"user_prompt 缺少 {title} 对应内容"
+
+    solution_code = problem.get("standard_solution_code", "")
+    if include_code and isinstance(solution_code, str) and solution_code.strip():
+        assert "标准解法代码：" in user_prompt, "invariant prompt 缺少标准解法代码分节"
+        assert solution_code.strip() in user_prompt, "invariant prompt 缺少标准解法代码内容"
 
 
-def verify_dimension(dimension: str, build_sys, build_usr, schema, problem: dict):
-    prepared = prepare_problem_record(problem)
-    print(f"\n{'='*60}")
-    print(f"验证维度: {dimension}")
-    print(f"题目: {prepared['problem_id']} - {prepared['title']}")
-    print(f"{'='*60}")
-    
+def _assert_system_prompt_sections(system_prompt: str) -> None:
+    assert "科研定义：" in system_prompt, "system_prompt 缺少科研定义"
+    assert "判别边界：" in system_prompt, "system_prompt 缺少判别边界"
+
+
+def _assert_input_structure_schema(schema: Dict[str, Any]) -> None:
+    assert schema.get("required") == ["type", "length", "value_range", "properties"]
+    assert schema.get("additionalProperties") is True
+    properties = schema["properties"]
+    type_names = [name for name, _ in INPUT_STRUCTURE_TYPE_LABELS]
+    assert "components" in properties
+    assert properties["type"].get("enum") == type_names
+    assert {"integer", "float", "char", "boolean", "tuple"}.issubset(set(type_names))
+    assert properties["length"]["properties"]["min"]["type"] == ["integer", "null"]
+    assert properties["value_range"]["properties"]["max"]["type"] == ["integer", "null"]
+
+
+def _assert_constraints_schema(schema: Dict[str, Any]) -> None:
+    assert schema.get("required") == ["constraints"]
+    item_schema = schema["properties"]["constraints"]["items"]
+    assert item_schema.get("required") == ["name", "description"]
+    assert "source_sections" in item_schema["properties"]
+    assert item_schema["properties"]["source_sections"]["items"]["enum"] == CONSTRAINT_SOURCE_SECTIONS
+
+
+def _assert_objective_schema(schema: Dict[str, Any]) -> None:
+    assert schema.get("required") == ["type", "description"]
+    properties = schema["properties"]
+    assert "target" in properties
+    assert "requires_solution" in properties
+    assert properties["type"].get("enum") == [name for name, _ in OBJECTIVE_LABELS]
+
+
+def _assert_invariant_schema(schema: Dict[str, Any]) -> None:
+    assert schema.get("required") == ["invariants"]
+    item_schema = schema["properties"]["invariants"]["items"]
+    assert item_schema.get("required") == ["name", "description", "properties"]
+    assert "evidence_source" in item_schema["properties"]
+    assert item_schema["properties"]["evidence_source"]["enum"] == INVARIANT_EVIDENCE_SOURCES
+
+
+def verify_dimension(
+    dimension: str,
+    build_sys,
+    build_usr,
+    schema: Dict[str, Any],
+    problem: Dict[str, Any],
+) -> Dict[str, Any]:
     system_prompt = build_sys()
     user_prompt = build_usr(problem)
-    
-    assert isinstance(system_prompt, str), "system_prompt 必须是字符串"
-    assert isinstance(user_prompt, str), "user_prompt 必须是字符串"
-    assert len(system_prompt) > 0, "system_prompt 不能为空"
-    assert len(user_prompt) > 0, "user_prompt 不能为空"
-    
-    print(f"[OK] System Prompt 长度: {len(system_prompt)} 字符")
-    print(f"[OK] User Prompt 长度: {len(user_prompt)} 字符")
-    
-    assert "JSON" in system_prompt or "json" in system_prompt, "system_prompt 必须明确要求 JSON 输出"
-    assert prepared["title"] in user_prompt, "user_prompt 必须包含题目标题"
-    assert prepared["description"] in user_prompt, "user_prompt 必须包含题面全文"
-    if dimension.startswith("V") and prepared.get("standard_solution_code"):
-        assert prepared["standard_solution_code"] in user_prompt, "invariant prompt 必须包含标准解法代码"
-    
-    print(f"[OK] System Prompt 包含 JSON 输出要求")
-    print(f"[OK] User Prompt 包含题目完整信息")
-    
-    print(f"\nJSON Schema 验证:")
-    print(f"  - Required 字段: {schema.get('required', [])}")
-    print(f"  - Properties 字段数: {len(schema.get('properties', {}))}")
-    
-    print(f"\n[OK] 维度 {dimension} 验证通过")
-    return system_prompt, user_prompt
+
+    assert isinstance(system_prompt, str) and system_prompt.strip()
+    assert isinstance(user_prompt, str) and user_prompt.strip()
+    assert "JSON" in system_prompt or "json" in system_prompt
+    _assert_system_prompt_sections(system_prompt)
+
+    include_code = dimension.startswith("V")
+    _assert_prompt_sections(user_prompt, problem, include_code=include_code)
+
+    if dimension.startswith("I"):
+        _assert_input_structure_schema(schema)
+    elif dimension.startswith("C"):
+        _assert_constraints_schema(schema)
+    elif dimension.startswith("O"):
+        _assert_objective_schema(schema)
+    elif dimension.startswith("V"):
+        _assert_invariant_schema(schema)
+
+    return {
+        "system_prompt_length": len(system_prompt),
+        "user_prompt_length": len(user_prompt),
+    }
 
 
-def main():
-    problems = load_problems(count=2)
-    
+def main() -> None:
+    selected_problems = select_problems_by_category(project_root)
     dimensions = [
         ("I - Input Structure", build_i_system, build_i_user, INPUT_STRUCTURE_SCHEMA),
         ("C - Core Constraints", build_c_system, build_c_user, CONSTRAINTS_SCHEMA),
         ("O - Objective", build_o_system, build_o_user, OBJECTIVE_SCHEMA),
         ("V - Invariant", build_v_system, build_v_user, INVARIANT_SCHEMA),
     ]
-    
+
     evidence = {
         "validation_status": "success",
-        "problems_tested": [],
+        "categories": [],
     }
-    
-    for problem in problems:
-        pid = problem["problem_id"]
-        print(f"\n\n{'#'*70}")
-        print(f"# 题目: {pid} - {problem['title']}")
-        print(f"{'#'*70}")
-        
-        problem_evidence = {
-            "problem_id": pid,
+
+    for category, problem in selected_problems:
+        print(f"\n{'#' * 70}")
+        print(f"# 类别: {CATEGORY_LABELS.get(category, category)}")
+        print(f"# 题目: {problem['problem_id']} - {problem['title']}")
+        print(f"{'#' * 70}")
+
+        category_evidence = {
+            "category": category,
+            "label": CATEGORY_LABELS.get(category, category),
+            "problem_id": problem["problem_id"],
             "title": problem["title"],
-            "dimensions": {}
+            "dimensions": {},
         }
-        
+
         for dim_name, build_sys, build_usr, schema in dimensions:
             try:
-                sys_prompt, usr_prompt = verify_dimension(
-                    dim_name, build_sys, build_usr, schema, problem
-                )
-                problem_evidence["dimensions"][dim_name] = {
+                result = verify_dimension(dim_name, build_sys, build_usr, schema, problem)
+                category_evidence["dimensions"][dim_name] = {
                     "status": "ok",
-                    "system_prompt_length": len(sys_prompt),
-                    "user_prompt_length": len(usr_prompt),
+                    **result,
                 }
-            except Exception as e:
-                print(f"[FAIL] 验证失败: {e}")
-                problem_evidence["dimensions"][dim_name] = {
-                    "status": "failed",
-                    "error": str(e),
-                }
+                print(f"[OK] {dim_name}")
+            except Exception as exc:
                 evidence["validation_status"] = "partial_failure"
-        
-        evidence["problems_tested"].append(problem_evidence)
-    
+                category_evidence["dimensions"][dim_name] = {
+                    "status": "failed",
+                    "error": str(exc),
+                }
+                print(f"[FAIL] {dim_name}: {exc}")
+
+        evidence["categories"].append(category_evidence)
+
     evidence_dir = project_root / "爬取题目" / ".sisyphus" / "evidence"
     evidence_dir.mkdir(parents=True, exist_ok=True)
     evidence_path = evidence_dir / "task-2-prompt-validation.json"
-    
-    with open(evidence_path, "w", encoding="utf-8") as f:
-        json.dump(evidence, f, ensure_ascii=False, indent=2)
-    
-    print(f"\n\n{'='*70}")
-    print(f"[OK] 验证完成，证据已保存: {evidence_path}")
+    evidence_path.write_text(json.dumps(evidence, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    print(f"\n{'=' * 70}")
     print(f"状态: {evidence['validation_status']}")
-    print(f"{'='*70}")
+    print(f"证据已保存: {evidence_path}")
+    print(f"{'=' * 70}")
 
 
 if __name__ == "__main__":

@@ -5,8 +5,6 @@ import re
 from dataclasses import asdict, is_dataclass
 from typing import Any
 
-from models import InstantiatedSchema
-
 
 DISTANCE_WEIGHTS = {
     "I": 0.20,
@@ -45,64 +43,6 @@ INPUT_TYPE_DISTANCE = {
     ("tree", "array"): 1.0,
     ("array", "tree"): 1.0,
 }
-
-STRUCTURAL_OPTION_ALIASES = {
-    "must_contain_in_order": {
-        "constraint_name": "must_contain_in_order",
-        "description": "目标对象需要按给定顺序覆盖所有输入项。",
-        "property_key": "ordered",
-        "property_value": True,
-    },
-    "cyclic_string": {
-        "constraint_name": "cyclic_string",
-        "description": "结果对象按循环意义处理，允许首尾相接形成匹配。",
-        "property_key": "cyclic",
-        "property_value": True,
-    },
-}
-
-
-def build_instantiated_schema(
-    schema: dict[str, Any],
-    objective: dict[str, Any],
-    numerical_parameters: dict[str, Any] | None = None,
-    structural_options: list[str] | None = None,
-    input_options: list[dict[str, Any]] | None = None,
-    invariant_options: list[dict[str, Any]] | None = None,
-    theme: dict[str, Any] | None = None,
-    difficulty: str = "",
-) -> InstantiatedSchema:
-    normalized = _normalize_schema(schema)
-    input_structure = copy.deepcopy(normalized.get("input_structure", {}))
-    core_constraints = copy.deepcopy(normalized.get("core_constraints", {"constraints": []}))
-    objective_copy = copy.deepcopy(objective)
-    invariant = copy.deepcopy(normalized.get("invariant", {"invariants": []}))
-    numerical_parameters = copy.deepcopy(numerical_parameters or {})
-    structural_options = list(structural_options or [])
-    input_options = list(input_options or [])
-    invariant_options = list(invariant_options or [])
-
-    snapshot = {
-        "problem_id": normalized.get("problem_id", "unknown"),
-        "source": normalized.get("source", ""),
-        "input_structure": input_structure,
-        "core_constraints": core_constraints,
-        "objective": objective_copy,
-        "invariant": invariant,
-        "instantiated_parameters": numerical_parameters,
-        "selected_structural_options": structural_options,
-        "selected_input_options": [item.get("name", "") for item in input_options if item.get("name")],
-        "selected_invariant_options": [
-            item.get("name", "") for item in invariant_options if item.get("name")
-        ],
-        "theme": copy.deepcopy(theme or {}),
-        "difficulty": difficulty,
-    }
-    _apply_parameter_overrides(snapshot)
-    _apply_input_options(snapshot, input_options)
-    _apply_structural_options(snapshot)
-    _apply_invariant_options(snapshot, invariant_options)
-    return InstantiatedSchema(**snapshot)
 
 
 def dataclass_to_dict(value: Any) -> dict[str, Any]:
@@ -171,7 +111,6 @@ def compute_schema_distance(
         "C": round(c_distance, 4),
         "O": round(o_distance, 4),
         "V": round(v_distance, 4),
-        "T": 0.0,
         "total": round(total, 4),
     }
 
@@ -184,9 +123,7 @@ def compute_changed_axes(
     axes: list[str] = []
     if distance["I"] >= 0.18:
         axes.append("I")
-    if distance["C"] >= 0.25 or _normalize_schema(candidate_schema).get(
-        "selected_structural_options"
-    ):
+    if distance["C"] >= 0.25:
         axes.append("C")
     if distance["O"] > 0.0:
         axes.append("O")
@@ -200,13 +137,10 @@ def _normalize_schema(raw_schema: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(schema, dict):
         return {}
 
-    if "input_structure" in schema or "instantiated_parameters" in schema:
+    if any(key in schema for key in ("input_structure", "core_constraints", "objective", "invariant")):
         schema.setdefault("core_constraints", {"constraints": []})
         schema.setdefault("objective", {})
         schema.setdefault("invariant", {"invariants": []})
-        schema.setdefault("selected_structural_options", [])
-        schema.setdefault("selected_input_options", [])
-        schema.setdefault("selected_invariant_options", [])
         return schema
 
     normalized = {
@@ -215,15 +149,9 @@ def _normalize_schema(raw_schema: dict[str, Any]) -> dict[str, Any]:
         "input_structure": schema.get("input_structure") or schema.get("I") or {},
         "core_constraints": schema.get("core_constraints")
         or {"constraints": schema.get("C", []) if isinstance(schema.get("C"), list) else []},
-        "objective": schema.get("objective")
-        or schema.get("O")
-        or {},
+        "objective": schema.get("objective") or schema.get("O") or {},
         "invariant": schema.get("invariant")
         or {"invariants": schema.get("V", []) if isinstance(schema.get("V"), list) else []},
-        "selected_structural_options": schema.get("selected_structural_options", []),
-        "selected_input_options": schema.get("selected_input_options", []),
-        "selected_invariant_options": schema.get("selected_invariant_options", []),
-        "instantiated_parameters": schema.get("instantiated_parameters", {}),
     }
     if isinstance(normalized["objective"], str):
         normalized["objective"] = {"type": normalized["objective"], "description": normalized["objective"]}
@@ -232,201 +160,6 @@ def _normalize_schema(raw_schema: dict[str, Any]) -> dict[str, Any]:
     if isinstance(normalized["invariant"], list):
         normalized["invariant"] = {"invariants": normalized["invariant"]}
     return normalized
-
-
-def _apply_parameter_overrides(snapshot: dict[str, Any]) -> None:
-    input_structure = snapshot.get("input_structure", {})
-    constraints = snapshot.setdefault("core_constraints", {}).setdefault("constraints", [])
-    parameters = snapshot.get("instantiated_parameters", {})
-
-    for name, spec in parameters.items():
-        value = spec.get("value")
-        description = str(spec.get("description", ""))
-        if value is None:
-            continue
-
-        if _looks_like_count_parameter(name, description) and isinstance(value, int):
-            length = input_structure.setdefault("length", {})
-            if isinstance(length, dict):
-                length["min"] = value
-                length["max"] = value
-            properties = input_structure.setdefault("properties", {})
-            if isinstance(properties, dict):
-                properties["fixed_item_count"] = value
-            constraints.append(
-                _constraint_item(
-                    name=f"fixed_{_slugify(name)}",
-                    description=f"输入项数量固定为 {value}。",
-                )
-            )
-            _rewrite_count_mentions(constraints, value)
-            continue
-
-        if _looks_like_length_limit_parameter(name, description) and isinstance(value, int):
-            value_range = input_structure.setdefault("value_range", {})
-            if isinstance(value_range, dict):
-                value_range["max"] = value
-            constraints.append(
-                _constraint_item(
-                    name=f"materialized_{_slugify(name)}",
-                    description=f"{description or name} 固定为不超过 {value}。",
-                )
-            )
-
-
-def _apply_input_options(
-    snapshot: dict[str, Any],
-    input_options: list[dict[str, Any]],
-) -> None:
-    input_structure = snapshot.setdefault("input_structure", {})
-    constraints = snapshot.setdefault("core_constraints", {}).setdefault("constraints", [])
-
-    for option in input_options:
-        patch = option.get("patch", {})
-        if isinstance(patch, dict):
-            _deep_merge_dict(input_structure, patch)
-
-        for item in option.get("constraints", []):
-            if not isinstance(item, dict):
-                continue
-            name = str(item.get("name", "")).strip()
-            description = str(item.get("description", "")).strip()
-            if not name and not description:
-                continue
-            constraints.append(
-                _constraint_item(
-                    name=name or option.get("name", "input_option"),
-                    description=description or option.get("description", ""),
-                )
-            )
-
-
-def _apply_structural_options(snapshot: dict[str, Any]) -> None:
-    input_structure = snapshot.get("input_structure", {})
-    constraints = snapshot.setdefault("core_constraints", {}).setdefault("constraints", [])
-    properties = input_structure.setdefault("properties", {})
-    if not isinstance(properties, dict):
-        properties = {}
-        input_structure["properties"] = properties
-
-    for option in snapshot.get("selected_structural_options", []):
-        meta = STRUCTURAL_OPTION_ALIASES.get(option)
-        if meta is None:
-            constraints.append(
-                _constraint_item(
-                    name=option,
-                    description=f"启用结构选项：{option}。",
-                )
-            )
-            continue
-
-        properties[meta["property_key"]] = meta["property_value"]
-        constraints.append(
-            _constraint_item(
-                name=meta["constraint_name"],
-                description=meta["description"],
-            )
-        )
-
-
-def _apply_invariant_options(
-    snapshot: dict[str, Any],
-    invariant_options: list[dict[str, Any]],
-) -> None:
-    invariant_bucket = snapshot.setdefault("invariant", {}).setdefault("invariants", [])
-    if not isinstance(invariant_bucket, list):
-        invariant_bucket = []
-        snapshot["invariant"]["invariants"] = invariant_bucket
-
-    for option in invariant_options:
-        mode = str(option.get("mode", "append")).strip().lower()
-        drop_names = {
-            str(name).strip().lower()
-            for name in option.get("drop_names", [])
-            if str(name).strip()
-        }
-        if drop_names:
-            invariant_bucket[:] = [
-                item
-                for item in invariant_bucket
-                if str(item.get("name", "")).strip().lower() not in drop_names
-            ]
-
-        normalized = [
-            {
-                "name": str(item.get("name", "")).strip(),
-                "description": str(item.get("description", "")).strip(),
-                "properties": copy.deepcopy(item.get("properties", {}))
-                if isinstance(item.get("properties", {}), dict)
-                else {},
-            }
-            for item in option.get("invariants", [])
-            if isinstance(item, dict)
-            and (str(item.get("name", "")).strip() or str(item.get("description", "")).strip())
-        ]
-        if not normalized:
-            continue
-
-        if mode == "replace":
-            invariant_bucket[:] = normalized
-            continue
-
-        existing = {_invariant_signature(item) for item in invariant_bucket if item}
-        for item in normalized:
-            signature = _invariant_signature(item)
-            if signature in existing:
-                continue
-            invariant_bucket.append(item)
-            existing.add(signature)
-
-
-def _constraint_item(name: str, description: str) -> dict[str, str]:
-    return {
-        "name": name,
-        "description": description,
-    }
-
-
-def _rewrite_count_mentions(constraints: list[dict[str, Any]], count: int) -> None:
-    replacements = [
-        (r"三个", f"{count}个"),
-        (r"three", str(count)),
-        (r"\b3\b", str(count)),
-    ]
-    for item in constraints:
-        description = str(item.get("description", ""))
-        for pattern, replacement in replacements:
-            description = re.sub(pattern, replacement, description, flags=re.IGNORECASE)
-        item["description"] = description
-
-
-def _looks_like_count_parameter(name: str, description: str) -> bool:
-    text = f"{name} {description}".lower()
-    return any(
-        keyword in text
-        for keyword in (
-            "number of",
-            "count of",
-            "substrings",
-            "strings to combine",
-            "k_substrings",
-            "items",
-            "segments",
-        )
-    )
-
-
-def _looks_like_length_limit_parameter(name: str, description: str) -> bool:
-    text = f"{name} {description}".lower()
-    return any(
-        keyword in text
-        for keyword in (
-            "maximum length",
-            "length constraint",
-            "max length",
-            "size limit",
-        )
-    )
 
 
 def _input_distance(left: dict[str, Any], right: dict[str, Any]) -> float:
@@ -516,77 +249,6 @@ def _invariant_signature(item: dict[str, Any]) -> str:
     return name or description
 
 
-def _transform_distance(original: dict[str, Any], candidate: dict[str, Any]) -> float:
-    candidate_params = candidate.get("instantiated_parameters", {}) or {}
-    candidate_options = list(candidate.get("selected_structural_options", []) or [])
-    candidate_input_options = list(candidate.get("selected_input_options", []) or [])
-    candidate_invariant_options = list(candidate.get("selected_invariant_options", []) or [])
-    all_options = candidate_options + candidate_input_options + candidate_invariant_options
-    if not candidate_params and not all_options:
-        return 0.0
-
-    scores: list[float] = []
-    for name, spec in candidate_params.items():
-        value = spec.get("value")
-        description = str(spec.get("description", ""))
-        minimum = spec.get("min")
-        maximum = spec.get("max")
-        baseline = _infer_parameter_baseline(original, name, description)
-
-        if isinstance(value, (int, float)) and isinstance(baseline, (int, float)):
-            denominator = max(abs(baseline), abs((maximum or value) - (minimum or value)), 1)
-            scores.append(min(1.0, abs(value - baseline) / denominator))
-            continue
-
-        if all(isinstance(item, (int, float)) for item in (value, minimum, maximum)) and maximum > minimum:
-            midpoint = (minimum + maximum) / 2
-            scores.append(min(1.0, abs(value - midpoint) / max((maximum - minimum) / 2, 1)))
-            continue
-
-        scores.append(0.4)
-
-    if all_options:
-        scores.append(min(1.0, 0.5 + 0.15 * len(all_options)))
-
-    return round(sum(scores) / len(scores), 4) if scores else 0.0
-
-
-def _infer_parameter_baseline(
-    original: dict[str, Any],
-    name: str,
-    description: str,
-) -> int | float | None:
-    text = f"{name} {description}".lower()
-    input_structure = original.get("input_structure", {})
-    length = input_structure.get("length", {}) or {}
-    value_range = input_structure.get("value_range", {}) or {}
-
-    current_match = re.search(r"currently\s+(\d+)", text)
-    if current_match:
-        return int(current_match.group(1))
-
-    if any(keyword in text for keyword in ("number of", "count of", "substrings", "items", "segments")):
-        fixed_length = _extract_fixed_value(length)
-        if fixed_length is not None:
-            return fixed_length
-
-    if any(keyword in text for keyword in ("maximum length", "length constraint", "max length", "size limit")):
-        if isinstance(value_range.get("max"), (int, float)):
-            return value_range["max"]
-        if isinstance(length.get("max"), (int, float)):
-            return length["max"]
-
-    return None
-
-
-def _extract_fixed_value(length: dict[str, Any]) -> int | None:
-    minimum = length.get("min")
-    maximum = length.get("max")
-    if isinstance(minimum, int) and minimum == maximum:
-        return minimum
-    return None
-
-
 def _jaccard_distance(left: set[str], right: set[str]) -> float:
     if not left and not right:
         return 0.0
@@ -600,21 +262,8 @@ def _tokenize_text(text: str) -> list[str]:
     return re.findall(r"[a-z0-9_]+|[\u4e00-\u9fff]+", lowered)
 
 
-def _slugify(text: str) -> str:
-    slug = re.sub(r"[^a-z0-9]+", "_", text.lower())
-    return slug.strip("_") or "field"
-
-
 def _truncate_text(text: str, limit: int) -> str:
     cleaned = " ".join(str(text).split())
     if len(cleaned) <= limit:
         return cleaned
     return cleaned[: limit - 3].rstrip() + "..."
-
-
-def _deep_merge_dict(target: dict[str, Any], patch: dict[str, Any]) -> None:
-    for key, value in patch.items():
-        if isinstance(value, dict) and isinstance(target.get(key), dict):
-            _deep_merge_dict(target[key], value)
-            continue
-        target[key] = copy.deepcopy(value)

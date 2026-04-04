@@ -1,13 +1,13 @@
 # 四元组抽取 项目结构分析
 
-本文总结 `四元组抽取` 目录当前面向的新输入结构、核心模块与处理流程。
+本文总结 `四元组抽取` 目录当前的输入假设、核心模块和处理流程。
 
 ## 1. 项目定位
 
-- 目标：对单题 schema JSON 进行四维抽取、归一化与投票。
+- 目标：对单题 schema JSON 进行四维抽取与归一化。
 - 语言：Python 3。
 - 主输入：`D:\AutoProblemGen\爬取题目\output\imandra_curated_schema_inputs\*.json`
-- 关键流程：读取单题 schema → 题面分节切分 → 抽取 I/C/O/V → 归一化 → 投票。
+- 主流程：读取单题 schema → 题面分节切分 → 抽取 I/C/O/V → 结构化归一化。
 
 ## 2. 输入结构
 
@@ -20,34 +20,50 @@
 - `limits`
 - `reference_solution.code`
 
-其中：
+当前预处理行为：
 
-- `description` 会完整保留，并作为 prompt 的主输入
-- 代码会尝试从 `description` 中切分 `Input`、`Output`、`Constraints` 作为辅助字段
-- `reference_solution.code` 会在 invariant 抽取时作为额外证据输入模型
+- `description` 会完整保留，并作为 prompt 的基础文本。
+- `problem_schema.py` 会从 `description` 中切分 `Input`、`Output`、`Constraints`。
+- `limits` 会被并入 `constraints` 文本。
+- `reference_solution.code` 会在 invariant 维作为额外证据输入模型。
 
-## 3. 核心模块
+## 3. 统一词表与 schema
+
+- `label_vocab.py`：维护收紧后的四维统一词表。`input_structure.type` 只保留输入载体类型，既覆盖 `integer`、`float`、`char`、`boolean`、`tuple` 这类标量或定长记录，也覆盖数组、字符串、图、树等结构；`pair` 归入 `tuple`，集合语义通过 `array` 加 `properties` 表达；语义性质下沉到 `properties`。
+- `prompt_input_structure.py`：顶层保留 `type`、`length`、`value_range`、`properties`，新增可选 `components`，system prompt 内含输入结构科研定义与标签边界，user prompt 为关键字段补充填写语义与误填提醒。
+- `prompt_constraints.py`：顶层保留 `constraints[]`，单项新增可选 `source_sections`，system prompt 内含核心约束科研定义、标签边界与语义缺口下的新标签规则，user prompt 为关键字段补充填写语义与误填提醒。
+- `prompt_objective.py`：顶层保留 `type` 与 `description`，新增可选 `target`、`requires_solution`，system prompt 内含目标维度科研定义与标签边界，user prompt 为关键字段补充填写语义与误填提醒。
+- `prompt_invariant.py`：顶层保留 `invariants[]`，单项新增可选 `evidence_source`，system prompt 内含算法不变量科研定义、标签边界与语义缺口下的新标签规则，user prompt 为关键字段补充填写语义与误填提醒。
+- `prompt_normalize.py`：归一化 prompt 接收结构化原始条目，而不是裸标签字符串，同时为关键字段补充填写语义与误填提醒。
+- `normalize.py`：读取单轮原始抽取结果，完成 embedding 加 LLM 两阶段标签归一化，并直接输出最终四维结果。
+
+## 4. 核心模块
 
 ```text
 四元组抽取/
+├── scripts/
+│   └── set_qwen_env.ps1         # PowerShell 环境变量写入脚本
 ├── prompts/
 │   ├── prompt_input_structure.py
 │   ├── prompt_constraints.py
 │   ├── prompt_objective.py
 │   ├── prompt_invariant.py
-│   └── prompt_normalize.py
-├── problem_schema.py             # 新 schema 读取、校验、分节切分
-├── extract.py                    # 抽取入口，接受单文件或目录
-├── normalize.py                  # 归一化入口
-├── vote.py                       # 投票入口
-├── verify_prompts_structure.py   # Prompt 结构验证
-├── test_prompts_qa.py            # Prompt QA 测试
-├── qwen_client.py                # 模型调用
+│   ├── prompt_normalize.py
+│   └── prompt_sections.py
+├── label_vocab.py               # 四维统一词表与枚举定义
+├── problem_schema.py            # schema 读取、校验、分节切分
+├── extract.py                   # 抽取入口，接受单文件或目录
+├── normalize.py                 # 归一化入口，embedding + LLM 两阶段
+├── test_normalize.py            # 归一化单元测试
+├── prompt_test_cases.py         # 验证脚本用的题型选样工具
+├── verify_prompts_structure.py  # Prompt 结构验证
+├── test_prompts_qa.py           # Prompt QA 测试
+├── qwen_client.py               # 模型调用
 ├── README.md
 └── README_PILOT.md
 ```
 
-## 4. 数据流
+## 5. 数据流
 
 ```text
 imandra_curated_schema_inputs/*.json
@@ -55,14 +71,13 @@ imandra_curated_schema_inputs/*.json
   → extract.py
   → output/<run>/raw/
   → normalize.py
+     → embedding 归一化
+     → LLM 归一化
   → output/<run>/normalized/
-  → vote.py
-  → output/<run>/voted/
 ```
 
-## 5. 主要输出
+## 6. 主要输出
 
-- `output/<run>/raw/`：每题每维每轮抽取结果
-- `output/<run>/normalized/`：归一化结果
-- `output/<run>/label_registry/`：标签注册表
-- `output/<run>/voted/`：投票结果
+- `output/<run>/raw/`：每题每维单轮抽取结果
+- `output/<run>/normalized/`：归一化后的最终结果
+- `output/<run>/label_registry/`：动态标签注册表

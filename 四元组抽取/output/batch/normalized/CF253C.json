@@ -1,0 +1,97 @@
+{
+  "problem_id": "CF253C",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "composite",
+    "length": {
+      "min": null,
+      "max": null
+    },
+    "value_range": {
+      "min": null,
+      "max": null
+    },
+    "properties": {},
+    "components": [
+      {
+        "role": "sequence_lengths",
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100
+        },
+        "value_range": {
+          "min": 0,
+          "max": 100000
+        },
+        "properties": {
+          "ordered": true
+        }
+      },
+      {
+        "role": "cursor_positions",
+        "type": "array",
+        "length": {
+          "min": 4,
+          "max": 4
+        },
+        "value_range": {
+          "min": 1,
+          "max": 100001
+        },
+        "properties": {}
+      }
+    ]
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "state_transition",
+        "description": "光标位置转移严格遵循四种方向键规则:左右移动在行内增减列号,触及行首或行尾时按键无效；上下移动尝试保持列号不变,若目标行长度不足以容纳该列号则自动截断至该行末尾,处于首行或末行时按对应方向键无效。",
+        "formal": "Next(r, c, dir) = { (r, max(1, c-1)) if dir=L; (r, min(c+1, a_r+1)) if dir=R; (r-1, min(c, a_{r-1}+1)) if dir=U & r>1; (r+1, min(c, a_{r+1}+1)) if dir=D & r<n; (r, c) otherwise }",
+        "source_sections": [
+          "description"
+        ]
+      },
+      {
+        "name": "range_bound",
+        "description": "光标在第 r 行的合法列坐标 c 受限于该行字符数,必须满足 1 ≤ c ≤ a_r + 1。",
+        "formal": "∀r ∈ [1, n], c ∈ [1, a_r + 1]",
+        "source_sections": [
+          "description",
+          "input"
+        ]
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "description": "Minimize the number of operations required to transition from a starting state to a target state.",
+    "target": "operations",
+    "requires_solution": false
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "垂直移动过程中,列坐标受限于途经行的容量上限,呈现单调不增性质。该性质保证了列坐标的收缩仅由途经区间的最小容量决定,枚举所有行作为潜在收缩点即可覆盖最优路径。",
+        "properties": {
+          "monotonic_variable": "column_index",
+          "direction": "non_increasing",
+          "bound_type": "interval_minimum"
+        },
+        "evidence_source": "both"
+      },
+      {
+        "name": "state_transition",
+        "description": "状态在垂直操作下遵循确定性转移规律,列坐标按取小规则更新,垂直移动代价严格等于行号跨度,使得总代价可分解为垂直步数与终点水平偏移的线性叠加。",
+        "properties": {
+          "transition_type": "vertical_move",
+          "update_logic": "min_clamping",
+          "cost_additivity": "linear_row_diff"
+        },
+        "evidence_source": "solution_code"
+      }
+    ]
+  }
+}

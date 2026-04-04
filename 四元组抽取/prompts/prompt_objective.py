@@ -1,140 +1,119 @@
-"""
-目标函数（Objective, O）维度的 Prompt 模板
-
-用于抽取题目要求求解的目标类型，包括：
-- 最大值 / 最小值（如最长子数组、最短路径）
-- 计数（如满足条件的区间数量）
-- 判定（是否存在合法解）
-- 构造（输出一个满足条件的方案）
-
-输出 JSON Schema：
-{
-    "type": "max_length | min_cost | count | decision | construction | ...",
-    "description": "目标函数的中文描述"
-}
-"""
+"""目标函数维度 Prompt。"""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 try:
+    from ..label_vocab import OBJECTIVE_LABELS
     from ..problem_schema import prepare_problem_record
+    from .prompt_sections import build_problem_context
 except ImportError:
+    from label_vocab import OBJECTIVE_LABELS
     from problem_schema import prepare_problem_record
+    from prompts.prompt_sections import build_problem_context
 
 if TYPE_CHECKING:
-    from typing import Dict, Any
+    from typing import Any, Dict
+
+
+OBJECTIVE_TYPES = [name for name, _ in OBJECTIVE_LABELS]
 
 
 def build_system_prompt() -> str:
-    """构建系统提示词（角色定义与输出格式要求）"""
-    return """你是编程竞赛题目目标函数分析专家。
+    type_list = ", ".join(OBJECTIVE_TYPES)
+    return f"""你是编程竞赛题目目标函数分析专家。
 
-你的任务是识别题目要求求解的目标类型。
+你的任务是识别题目的主要求解目标。
 
-常见目标类型（优先从中选择，但允许必要时新增）：
-1. maximize_value（最大化值）：最大和、最大积、最大距离、最大面积
-2. minimize_value（最小化值）：最小代价、最短路径、最小距离
-3. maximize_count（最大化计数）：最大匹配数、最大方案数
-4. minimize_count（最小化计数）：最少操作次数、最少删除数
-5. maximize_probability（最大化概率/期望）：最大期望收益
-6. minimize_probability（最小化概率/期望）：最小期望代价
-7. min_max（极小化极大）：瓶颈路径、最小化最大值
-8. max_min（极大化极小）：最大化最小值
-9. lexicographic_optimize（字典序优化）：最小/最大字典序
-10. feasibility（可行性判定）：是否存在解
-11. construction（构造）：输出任意/最优方案
-12. enumeration（计数/枚举）：求方案数（常取模）
-13. multi_objective（多目标优化）：同时优化多个指标
-14. game_outcome（博弈结果）：先手胜/后手胜/平局
+科研定义：
+- 目标维度描述题目在输出层面要求返回的主结果类型，不描述采用何种算法实现该目标。
+- 该维度区分优化、判定、构造、计数与博弈结果等主要求。
+- 输出格式、解释性文字或中间过程不改变主目标类型。
+- 题目同时要求最优值与对应方案时，主类型仍按目标本身标注，并通过 requires_solution 表示是否需要输出方案。
 
-输出要求：
-- 必须输出严格的 JSON 对象，不要输出任何解释文字
-- JSON 必须包含 type 和 description 字段
-- type 必须是简洁的英文标识（如 max_length, count, decision）
-- description 必须清晰描述目标函数的含义
-- 如果推荐清单中没有合适类型，必须自由新增更准确的目标类型，不要为了套用而强行归类
+硬规则：
+1. 只输出严格 JSON 对象，不输出任何解释文字。
+2. type 必须复用规范目标词表：{type_list}。
+3. 不得把题目情境词直接写进 type 或 target。
 
-识别原则：
-1. 优先从题目标题和输出要求中识别
-2. 关键词识别：
-   - "最长"、"最大" → max_*
-   - "最短"、"最小" → min_*
-   - "有多少"、"计数" → count
-   - "是否存在"、"能否" → decision
-   - "输出任意"、"构造一个" → construction
-3. 如果题目有多个子问题，选择主要目标
+证据优先级：
+1. 任务句与 Output 分节
+2. 题面全文
+3. Input 分节
+4. Constraints 分节
+5. 标题
 
-抽象化要求（CRITICAL）：
-- type 和 description 必须用算法领域的抽象术语，严禁包含原题目的具体情境词汇
-- 必须将题目情境翻译为通用的算法优化目标
-- 反例：题目说"求鲨鱼能吃到的最多鱿鱼数" → type 不能写 "max_squid"，应写 "max_matching" 或 "max_count"
-- 反例：题目说"求从家到学校的最短路" → description 不能写 "求从家到学校的最短路"，应写 "求两点间最短路径长度"
-- 正例：题目说"收集最多金币" → type 写 "max_sum"，description 写 "最大化路径上的权值和"
+判别规则：
+- enumeration 用于统计方案数、计数结果或取模计数。
+- maximize_count 用于最大化可选数量，例如最多能选多少个元素。
+- construction 用于输出方案本身。
+- feasibility 用于判定存在性或可行性。
+- game_outcome 用于先手、后手、平局等博弈结果。
+- 题目既要求最优值又要求输出达到该值的方案时，type 仍选目标类型，并把 requires_solution 设为 true。
+
+判别边界：
+- enumeration 用于统计合法方案数、可行解数量或取模计数。
+- maximize_count 用于最大化可选对象数量，不用于统计全部方案数。
+- construction 用于直接输出方案对象。
+- feasibility 用于判定是否存在合法解。
+- maximize_expected_value 与 minimize_expected_value 用于最大化或最小化期望型目标。
 """
 
 
 def build_user_prompt(problem: Dict[str, Any]) -> str:
-    """
-    构建用户提示词（题面内容）
-    
-    Args:
-        problem: 单题 schema JSON，核心字段包括：
-            - problem_id: 题目 id
-            - title: 题目标题
-            - description: 题目描述
-            - source: 来源对象
-            - limits: 时间/空间限制对象
-
-        其中 Input / Output / Constraints 会从 description 中自动切分。
-    
-    Returns:
-        格式化的用户提示词
-    """
     problem = prepare_problem_record(problem)
-    return f"""请识别以下题目的目标函数：
+    context = build_problem_context(problem)
+    type_list = ", ".join(OBJECTIVE_TYPES)
+    return f"""请根据下列题目信息识别主要目标。
 
-标题：{problem.get('title', 'N/A')}
+{context}
 
-题面全文：
-{problem.get('description', '')}
+字段说明：
+1. type 表示主要求解目标的抽象类型。始终从统一词表中选择；所有已知类型都不适配时写 other；只有题目确实存在主目标时填写。常见误填：把输出对象、算法方法或题目情境词写进 type。
+2. description 表示当前题目的目标语义摘要。识别出主目标后始终填写；没有单独留空场景。常见误填：照抄输出格式，或把算法过程写进 description。
+3. target 表示主目标对象的简短英文名。目标对象能够稳定概括时填写，例如 sum、distance、operations；对象不清晰或没有必要单列时留空。常见误填：把 maximize、minimize、feasibility 这类目标类型写进 target。
+4. requires_solution 表示除了目标值之外是否还必须输出达到该目标的方案。题目明确要求输出构造结果、路径、集合或方案时填写 true；只输出数值、计数或 Yes/No 时写 false 或省略。常见误填：因为题目有多组测试或有解释样例就写 true。
 
----
-
-请输出该题的目标函数 JSON，格式如下：
-
+请输出 JSON：
 {{
-    "type": "目标类型（maximize_value, minimize_value, maximize_count, feasibility, construction 等）",
-    "description": "目标函数的中文描述（如：求满足条件的最长子数组长度）"
+  "type": "必须从 {type_list} 中选择",
+  "description": "目标的抽象描述",
+  "target": "抽象目标对象英文名，可留空",
+  "requires_solution": false
 }}
 
-注意：
-1. type 必须简洁且符合常见分类（maximize_*, minimize_*, count, feasibility, construction 等）
-2. description 必须完整描述题目要求输出什么
-3. 如果题目要求输出多个值，选择主要目标（通常是第一个或最重要的）
-4. 常见模式：
-   - 求"最长"、"最大" → maximize_value
-   - 求"最短"、"最小" → minimize_value
-   - 求"有多少个" → enumeration 或 maximize_count
-   - 判断"是否存在" → feasibility
-   - 要求"输出方案" → construction
-5. 所有输出必须是算法领域的抽象概括，不得包含题目中的具体情境词汇（如角色名、物品名等），需翻译为通用的算法术语
-6. 如果推荐清单中没有合适类型，必须自由新增更准确的目标类型，不要为了套用而强行归类
+要求：
+1. 字段说明优先于字段名直觉，不要仅凭命名猜测字段含义。
+2. 任务句与 Output 分节的证据权重高于标题。
+3. 题目要求计数时用 enumeration，要求最大化数量时用 maximize_count。
+4. 判定存在性用 feasibility，要求直接输出方案用 construction。
+5. target 与 description 使用抽象算法术语，不写题目情境词。
+6. 题目只求值不要求方案时，可省略 requires_solution 或写 false。
 """
 
 
 OBJECTIVE_SCHEMA = {
     "type": "object",
     "required": ["type", "description"],
+    "additionalProperties": True,
     "properties": {
         "type": {
             "type": "string",
-        "description": "目标类型，如 maximize_value, minimize_value, maximize_count, feasibility, construction"
+            "enum": OBJECTIVE_TYPES,
+            "description": "目标类型，必须来自统一目标词表",
         },
         "description": {
             "type": "string",
-            "description": "目标函数的中文描述"
-        }
-    }
+            "description": "目标函数的中文描述",
+        },
+        "target": {
+            "type": "string",
+            "description": "可选扩展字段。目标对象的简短英文名，如 sum 或 distance",
+        },
+        "requires_solution": {
+            "type": "boolean",
+            "description": "可选扩展字段。是否除了目标值还要求输出方案",
+        },
+    },
 }

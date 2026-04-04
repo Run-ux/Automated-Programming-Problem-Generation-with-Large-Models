@@ -7,7 +7,7 @@ from typing import Any
 from models import GeneratedProblem, VariantPlan
 from prompt_builder import build_generation_system_prompt, build_generation_user_prompt
 from qwen_client import QwenClient
-from rulebook import normalize_rule_id
+from rule_handlers import get_rule_handler
 from schema_tools import dataclass_to_dict
 
 
@@ -17,10 +17,12 @@ class ProblemGenerator:
         client: QwenClient | None,
         temperature: float = 0.7,
         max_validation_attempts: int = 4,
+        solver_verifier: Any | None = None,
     ):
         self.client = client
         self.temperature = temperature
         self.max_validation_attempts = max_validation_attempts
+        self.solver_verifier = solver_verifier
 
     def generate(
         self,
@@ -254,23 +256,16 @@ class ProblemGenerator:
             errors.append("实例化 schema 带有顺序语义，但题面没有明确说明顺序约束。")
         if properties.get("cyclic") and not any(token in combined for token in ("循环", "首尾相接", "环", "cyclic")):
             errors.append("实例化 schema 带有循环语义，但题面没有明确说明循环语义。")
-        if schema.get("selected_structural_options") and not plan.structural_options:
-            plan.structural_options = list(schema.get("selected_structural_options", []))
         return errors
 
     def _validate_rule_commitments(self, problem: GeneratedProblem, plan: VariantPlan) -> list[str]:
-        combined = "\n".join([problem.description, problem.output_format, problem.notes]).lower()
-        errors: list[str] = []
-        applied_rule = normalize_rule_id(plan.applied_rule)
-        if applied_rule == "construct_or_obstruction" and not any(
-            token in combined for token in ("无解", "阻碍", "证书", "obstruction", "冲突")
-        ):
-            errors.append("当前规则要求构造或阻碍证书，但题面没有明确失败输出或证书语义。")
-        if applied_rule == "minimum_guarantee_under_perturbation" and not any(
-            token in combined for token in ("保证", "最坏", "任意", "保底", "worst")
-        ):
-            errors.append("当前规则要求保证型优化，但题面没有明确说明最坏情形或保底语义。")
-        return errors
+        if not plan.applied_rule:
+            return []
+        handler = get_rule_handler({"id": plan.applied_rule, "handler": plan.applied_rule})
+        outcome = handler.validate_problem(problem=problem, plan=plan)
+        if outcome.events:
+            plan.validation_trace.extend(dataclass_to_dict(event) for event in outcome.events)
+        return list(outcome.errors)
 
     def _validate_source_reuse(
         self,

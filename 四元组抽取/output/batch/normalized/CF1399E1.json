@@ -1,0 +1,80 @@
+{
+  "problem_id": "CF1399E1",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "tree",
+    "length": {
+      "min": 2,
+      "max": 100000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000
+    },
+    "properties": {
+      "weighted": true,
+      "rooted": true,
+      "multiple_test_cases": true
+    },
+    "components": []
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_type",
+        "description": "每次操作允许选择任意一条边,并将其权值更新为原权值除以 2 向下取整的结果。",
+        "formal": "w_i := \\lfloor w_i / 2 \\rfloor",
+        "source_sections": [
+          "description"
+        ]
+      },
+      {
+        "name": "sum_constraint",
+        "description": "经过若干次操作后,所有叶子节点到根节点的路径权值总和必须不超过给定阈值 S。",
+        "formal": "\\sum_{v \\in \\text{leaves}} w(\\text{root}, v) \\le S",
+        "source_sections": [
+          "description",
+          "output"
+        ]
+      },
+      {
+        "name": "connectivity",
+        "description": "输入的图结构保证连通。",
+        "formal": "",
+        "source_sections": [
+          "description"
+        ]
+      },
+      {
+        "name": "acyclicity",
+        "description": "输入的图结构不包含任何环,构成树形结构。",
+        "formal": "",
+        "source_sections": [
+          "description"
+        ]
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "description": "最小化使根到所有叶子节点路径权重总和不超过给定阈值所需的操作次数",
+    "target": "operations",
+    "requires_solution": false
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "exchange_argument",
+        "description": "由于各边除2操作的收益相互独立且单次收益随边权减小而单调递减,全局最优策略等价于每次选取当前收益最大的操作。通过交换论证可知,将任意非最大收益操作替换为当前最大收益操作,在相同步数下不会降低总权值削减量,从而保证达到目标阈值S的步数最少。",
+        "properties": {},
+        "evidence_source": "solution_code"
+      },
+      {
+        "name": "monotonicity",
+        "description": "任意边权连续执行向下取整除2操作时,其单次操作对根叶路径总权值的削减量呈单调不增趋势；算法维护的候选削减量集合始终按降序排列,确保循环推进方向与收益递减规律一致。",
+        "properties": {},
+        "evidence_source": "solution_code"
+      }
+    ]
+  }
+}

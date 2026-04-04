@@ -43,6 +43,9 @@ def normalize_rule_id(rule_id: str) -> str:
 def _normalize_rule_entry(rule: dict[str, Any]) -> dict[str, Any]:
     normalized = copy.deepcopy(rule)
     normalized["id"] = normalize_rule_id(normalized.get("id", ""))
+    normalized["family"] = str(normalized.get("family", normalized["id"] or "generic")).strip() or "generic"
+    normalized["handler"] = normalize_rule_id(normalized.get("handler", normalized["id"]))
+    normalized["audit_tags"] = [str(item).strip() for item in normalized.get("audit_tags", []) if str(item).strip()]
     core_transformation = normalized.get("core_transformation")
     if isinstance(core_transformation, dict) and core_transformation.get("primary_operator"):
         core_transformation["primary_operator"] = normalize_rule_id(core_transformation["primary_operator"])
@@ -61,6 +64,7 @@ class RuleBook:
         missing = REQUIRED_TOP_LEVEL_KEYS - set(payload)
         if missing:
             raise ValueError(f"Rule file missing keys: {', '.join(sorted(missing))}")
+        payload.setdefault("version", "legacy")
         raw_modes = payload.get("modes", {})
         modes: dict[str, dict[str, Any]] = {}
         for raw_mode_name, raw_mode_config in raw_modes.items():
@@ -78,6 +82,9 @@ class RuleBook:
             modes.setdefault(mode, {"enabled": False, "rules": []})
         payload["modes"] = modes
         return cls(path=target, payload=payload)
+
+    def version(self) -> str:
+        return str(self.payload.get("version", "legacy")).strip() or "legacy"
 
     def global_constraints(self) -> dict[str, Any]:
         return dict(self.payload.get("global_constraints", {}))

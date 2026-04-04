@@ -7,6 +7,67 @@ from models import VariantPlan
 from schema_tools import dataclass_to_dict
 
 
+def build_eligibility_system_prompt() -> str:
+    return """你是一名算法竞赛题目变化规则资格审查官。
+
+你的工作不是规划新题，也不是在多条规则之间做最终排序，而是针对单条规则做严格、保守的准入判断。
+
+你必须扮演给定的 `review_role`，以该角色的审查重点判断当前规则是否值得进入后续规划阶段。
+
+硬性要求：
+1. 你一次只审查一条规则，不要比较其它规则。
+2. 如果证据不足，默认拒绝，不要乐观放行。
+3. 判断必须基于给定 schema、原题摘要、规则声明、全局约束和红线。
+4. 你只能回答资格问题，不能替规划阶段发明新四元组。
+5. 输出必须是严格 JSON，不要输出 Markdown。
+
+返回格式：
+{
+  "status": "eligible|ineligible|schema_insufficient",
+  "score": number,
+  "reason_code": string,
+  "selection_reason": string,
+  "risk_tags": string[],
+  "evidence": string,
+  "feedback": string
+}
+"""
+
+
+def build_eligibility_user_prompt(
+    *,
+    mode: str,
+    review_role: str,
+    rule: dict[str, Any],
+    schema_context: dict[str, Any],
+    original_problem_references: list[dict[str, Any]],
+    global_constraints: dict[str, Any],
+    global_redlines: list[str],
+) -> str:
+    payload = {
+        "review_type": "eligibility",
+        "mode": mode,
+        "review_role": review_role,
+        "rule_under_review": rule,
+        "schema_context": schema_context,
+        "original_problem_references": original_problem_references,
+        "global_constraints": global_constraints,
+        "global_redlines": global_redlines,
+    }
+    return (
+        "请以给定角色完成单条规则资格审查。"
+        "\n要求：\n"
+        "- 只能判断该规则是否适合进入下一阶段规划。\n"
+        "- `selection_reason` 直接写结论依据，不要泛泛而谈。\n"
+        "- `evidence` 必须引用 schema、原题摘要或规则声明中的具体证据。\n"
+        "- `score` 取 0 到 1，表示进入后续规划的把握度；拒绝时可以是 0 到 0.49。\n"
+        "- `risk_tags` 只保留高价值风险标签，例如 `low_novelty`、`shared_core_risk`、`semantic_mismatch`。\n"
+        "- 如果 schema 信息不足以判断，返回 `schema_insufficient`。\n"
+        "- 如果不确定，返回 `ineligible`。\n\n"
+        f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
+    )
+
+
 def build_rule_selection_system_prompt() -> str:
     return """你是一名算法竞赛出题规则选择器。你的任务不是直接规划新题，而是先阅读 schema、原题参考和候选规则，从中选出最适合当前种子题的那一条规则。
 
@@ -21,6 +82,7 @@ def build_rule_selection_system_prompt() -> str:
 返回格式：
 {
   "status": "ok|schema_insufficient|difference_insufficient",
+  "ranked_rule_ids": string[],
   "selected_rule_id": string,
   "selection_reason": string,
   "innovation_reason": string,
@@ -55,6 +117,7 @@ def build_rule_selection_user_prompt(
         "- 目标是在保证可落地的前提下，让生成题的创新度和难度尽可能高。\n"
         "- 如果某条规则只会导致浅改、换皮、后处理增强或伪融合，不要选择它。\n"
         "- `selection_reason` 要直接说明为什么它优于其余规则。\n"
+        "- 优先返回 `ranked_rule_ids`，按推荐尝试顺序排列前 2 到 3 条规则；`selected_rule_id` 保留为第一推荐项。\n"
         "- `innovation_reason` 要说明它会把哪些核心义务拉离原题。\n"
         "- `difficulty_reason` 要说明它会在哪个主求解责任上抬高难度。\n"
         "- `risk_reason` 要说明主要风险；如果风险可控，也要明确写出来。\n"
@@ -69,11 +132,13 @@ def build_planner_system_prompt() -> str:
 硬性要求：
 1. 只能在给定规则的边界内规划，不要自由创造未声明的规则类型。
 2. 规划结果必须围绕四元组 `input_structure / core_constraints / objective / invariant` 展开。
-3. 不要依赖 transform_space，不要回到旧的 option 枚举思路。
+3. 只围绕四元组与必要元信息规划，不要为 `instantiated_schema` 扩展未声明字段。
 4. 必须先判断规则是否适用；若不适用，返回 `status="difference_insufficient"` 或 `status="schema_insufficient"`。
 5. 不能输出换皮题。要明确说明哪些局部子程序可复用，哪些主导义务不能直套原解。
 6. 如果是 same_family_fusion，必须解释共享主核、两题不可删贡献，以及为何不是串联子任务。
 7. 输出必须是严格 JSON，不要输出 Markdown。
+8. 固定参数、输入特性、结构变化和不变量承诺都要直接写进四元组本身。
+9. `algorithmic_delta_claim.new_proof_obligation` 表示新增正确性证明，要写清新题相对种子题多出来的关键证明点。
 
 返回格式：
 {
@@ -94,10 +159,6 @@ def build_planner_system_prompt() -> str:
     "core_constraints": object,
     "objective": object,
     "invariant": object,
-    "instantiated_parameters": object,
-    "selected_structural_options": string[],
-    "selected_input_options": string[],
-    "selected_invariant_options": string[],
     "difficulty": string
   },
   "algorithmic_delta_claim": {
@@ -151,6 +212,9 @@ def build_planner_user_prompt(
         "- 先判断该规则是否适用，再决定是否继续规划。\n"
         "- 必须输出完整 instantiated_schema，不要只写自然语言摘要。\n"
         "- `difference_plan.changed_axes` 必须与 instantiated_schema 的真实变化保持一致。\n"
+        "- 所有参数、输入特性、结构变化和不变量承诺都必须 materialize 到四元组字段里。\n"
+        "- `instantiated_schema` 只能包含约定字段，不要附带任何额外键。\n"
+        "- `algorithmic_delta_claim.new_proof_obligation` 表示新增正确性证明，不要把它写成泛泛的难度评价。\n"
         "- 如果模式是 same_family_fusion，`shared_core_summary` 和三个 shared_core_anchors 不能为空。\n"
         "- 如果你认为该规则不适用或只能做浅改，请返回失败状态，不要硬套。\n\n"
         f"{json.dumps(payload, ensure_ascii=False, indent=2)}"

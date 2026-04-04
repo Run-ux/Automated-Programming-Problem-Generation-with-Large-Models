@@ -1,18 +1,16 @@
 """
-主抽取管线：对单题或多题 schema JSON 进行多轮抽取。
+主抽取管线：对单题或多题 schema JSON 进行单轮抽取。
 
 用法：
     python extract.py \
         --input D:\\AutoProblemGen\\爬取题目\\output\\imandra_curated_schema_inputs\\16_codeforces_1399_e1_weights_division_easy_version.json \
         --output output/pilot/ \
-        --rounds 3 \
         [--resume]
 
 输出目录结构：
     output/pilot/
-    ├── raw/          # 原始抽取结果（每题每维每轮独立文件）
-    ├── normalized/   # 归一化后的结果
-    ├── voted/        # 多数投票后的最终结果
+    ├── raw/          # 原始抽取结果（每题每维一个文件）
+    ├── normalized/   # 归一化后的最终结果
     └── logs/         # 日志和进度记录
 """
 
@@ -21,13 +19,14 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import time
 from pathlib import Path
 from typing import Any, Dict, List
 
 try:
     from .problem_schema import load_problem_records
-    from .qwen_client import QwenClient
+    from .qwen_client import QwenClient, QwenConfig
     from .prompts import (
         prompt_constraints,
         prompt_input_structure,
@@ -36,7 +35,7 @@ try:
     )
 except ImportError:
     from problem_schema import load_problem_records
-    from qwen_client import QwenClient
+    from qwen_client import QwenClient, QwenConfig
     from prompts import (
         prompt_constraints,
         prompt_input_structure,
@@ -90,7 +89,6 @@ def extract_single_dimension(
     client: QwenClient,
     problem: Dict[str, Any],
     dimension_name: str,
-    round_num: int,
     rate_limiter: RateLimiter,
     logger: logging.Logger,
     temperature: float = 0.4,
@@ -102,10 +100,9 @@ def extract_single_dimension(
         client: Qwen API 客户端
         problem: 已标准化的题目字典
         dimension_name: 维度名称（如 input_structure, core_constraints 等）
-        round_num: 抽取轮次（1, 2, 3）
         rate_limiter: 速率限制器
         logger: 日志记录器
-        temperature: LLM 采样温度（默认 0.4，较高温度增加多轮抽取的多样性）
+        temperature: LLM 采样温度（默认 0.4）
 
     Returns:
         抽取结果（JSON 对象）
@@ -116,7 +113,7 @@ def extract_single_dimension(
     system_prompt = module.build_system_prompt()
     user_prompt = module.build_user_prompt(problem)
 
-    logger.info(f"  [{dimension_name}] Round {round_num} - {problem['problem_id']}")
+    logger.info(f"  [{dimension_name}] {problem['problem_id']}")
 
     # 速率限制
     rate_limiter.wait()
@@ -127,7 +124,6 @@ def extract_single_dimension(
             "problem_id": problem["problem_id"],
             "source": problem.get("source", ""),
             "dimension": dimension_name,
-            "round": round_num,
             "result": result,
             "status": "success",
         }
@@ -137,33 +133,30 @@ def extract_single_dimension(
             "problem_id": problem["problem_id"],
             "source": problem.get("source", ""),
             "dimension": dimension_name,
-            "round": round_num,
             "result": {},
             "status": "failed",
             "error": str(e),
         }
 
 
-def extract_all_rounds(
+def extract_all_problems(
     client: QwenClient,
     problems: List[Dict[str, Any]],
     output_dir: Path,
-    rounds: int,
     resume: bool,
     logger: logging.Logger,
     temperature: float = 0.4,
 ) -> None:
     """
-    对所有题目进行 N 轮抽取（每题每维 N 次）
+    对所有题目进行单轮抽取（每题每维 1 次）
 
     输出文件命名规则：
-        raw/{problem_id}_{dimension}_round{N}.json
+        raw/{problem_id}_{dimension}.json
 
     Args:
         client: Qwen API 客户端
         problems: 题目列表
         output_dir: 输出根目录
-        rounds: 抽取轮次（默认 3）
         resume: 是否断点续传（跳过已存在的文件）
         logger: 日志记录器
         temperature: LLM 采样温度（默认 0.4）
@@ -173,12 +166,12 @@ def extract_all_rounds(
 
     rate_limiter = RateLimiter(min_interval=1.0)  # API 限速 1 秒/次
 
-    total_tasks = len(problems) * len(DIMENSIONS) * rounds
+    total_tasks = len(problems) * len(DIMENSIONS)
     completed = 0
     skipped = 0
 
     logger.info(
-        f"开始抽取：{len(problems)} 题 × {len(DIMENSIONS)} 维 × {rounds} 轮 = {total_tasks} 次调用"
+        f"开始抽取：{len(problems)} 题 × {len(DIMENSIONS)} 维 = {total_tasks} 次调用"
     )
 
     for problem in problems:
@@ -186,39 +179,33 @@ def extract_all_rounds(
         logger.info(f"Processing: {problem_id}")
 
         for dim_name in DIMENSIONS:
-            for round_num in range(1, rounds + 1):
-                # 输出文件路径
-                output_file = raw_dir / f"{problem_id}_{dim_name}_round{round_num}.json"
+            output_file = raw_dir / f"{problem_id}_{dim_name}.json"
 
-                # 断点续传：跳过已存在的文件
-                if resume and output_file.exists():
-                    logger.debug(f"    Skipping (already exists): {output_file.name}")
-                    skipped += 1
-                    completed += 1
-                    continue
-
-                # 执行抽取
-                result = extract_single_dimension(
-                    client,
-                    problem,
-                    dim_name,
-                    round_num,
-                    rate_limiter,
-                    logger,
-                    temperature=temperature,
-                )
-
-                # 保存结果
-                output_file.write_text(
-                    json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8"
-                )
-
+            if resume and output_file.exists():
+                logger.debug(f"    Skipping (already exists): {output_file.name}")
+                skipped += 1
                 completed += 1
+                continue
 
-                if completed % 10 == 0:
-                    logger.info(
-                        f"  Progress: {completed}/{total_tasks} ({100 * completed / total_tasks:.1f}%)"
-                    )
+            result = extract_single_dimension(
+                client,
+                problem,
+                dim_name,
+                rate_limiter,
+                logger,
+                temperature=temperature,
+            )
+
+            output_file.write_text(
+                json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
+
+            completed += 1
+
+            if completed % 10 == 0:
+                logger.info(
+                    f"  Progress: {completed}/{total_tasks} ({100 * completed / total_tasks:.1f}%)"
+                )
 
     logger.info(f"抽取完成：{completed} 个任务（跳过 {skipped} 个已存在文件）")
 
@@ -227,7 +214,7 @@ def extract_all_rounds(
 # CLI 入口
 # ---------------------------------------------------------------------------
 def main():
-    parser = argparse.ArgumentParser(description="四元组抽取管线（多轮采样）")
+    parser = argparse.ArgumentParser(description="四元组抽取管线（单轮采样）")
     parser.add_argument(
         "--input",
         type=str,
@@ -239,12 +226,6 @@ def main():
         type=str,
         required=True,
         help="输出目录路径（如 output/pilot/）",
-    )
-    parser.add_argument(
-        "--rounds",
-        type=int,
-        default=3,
-        help="每题每维抽取轮次（默认 3）",
     )
     parser.add_argument(
         "--resume",
@@ -262,7 +243,7 @@ def main():
         "--temperature",
         type=float,
         default=0.4,
-        help="LLM 采样温度，较高值增加多轮抽取多样性（默认 0.4，归一化/分类阶段固定使用 0.2）",
+        help="LLM 采样温度（默认 0.4，归一化阶段固定使用 0.2）",
     )
 
     args = parser.parse_args()
@@ -299,7 +280,9 @@ def main():
 
     # 初始化 Qwen 客户端
     try:
-        client = QwenClient()
+        client = QwenClient(
+            QwenConfig(model=os.getenv("QWEN_EXTRACT_MODEL"))
+        )
         logger.info("Qwen 客户端初始化成功")
     except RuntimeError as e:
         logger.error(f"Qwen 客户端初始化失败：{e}")
@@ -308,18 +291,17 @@ def main():
 
     # 执行抽取
     logger.info(f"抽取阶段 LLM 温度：{args.temperature}")
-    extract_all_rounds(
+    extract_all_problems(
         client=client,
         problems=problems,
         output_dir=output_dir,
-        rounds=args.rounds,
         resume=args.resume,
         logger=logger,
         temperature=args.temperature,
     )
 
     logger.info(f"所有结果已保存到：{output_dir / 'raw'}")
-    logger.info("下一步：运行 normalize.py 进行归一化，然后运行 vote.py 进行多数投票")
+    logger.info("下一步：运行 normalize.py 生成归一化后的最终结果")
 
 
 if __name__ == "__main__":

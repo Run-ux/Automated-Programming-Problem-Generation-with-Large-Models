@@ -1,0 +1,94 @@
+{
+  "problem_id": "codechef_train-00003-of-00039-e3822fccad6e083a__row_0335",
+  "source": "codechef",
+  "input_structure": {
+    "type": "composite",
+    "length": {
+      "min": null,
+      "max": null
+    },
+    "value_range": {
+      "min": null,
+      "max": null
+    },
+    "properties": {
+      "multiple_test_cases": true
+    },
+    "components": [
+      {
+        "role": "n",
+        "type": "other",
+        "length": {
+          "min": null,
+          "max": null
+        },
+        "value_range": {
+          "min": 1,
+          "max": 30
+        },
+        "properties": {}
+      },
+      {
+        "role": "m",
+        "type": "other",
+        "length": {
+          "min": null,
+          "max": null
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000
+        },
+        "properties": {}
+      }
+    ]
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "permutation_constraint",
+        "description": "The sequence in which soldiers occupy the N spots must be a permutation of the set {1, 2, ..., N}.",
+        "formal": "P ∈ S_N",
+        "source_sections": [
+          "description"
+        ]
+      },
+      {
+        "name": "adjacency_relation",
+        "description": "Each newly placed soldier establishes connections only with the nearest already occupied position to the left (or the left tower at position 0) and to the right (or the right tower at position N+1).",
+        "formal": "For spot x at step k, edges connect to L(x) = max({y < x} ∩ (S ∪ {0})) and R(x) = min({z > x} ∩ (S ∪ {N+1}))",
+        "source_sections": [
+          "description"
+        ]
+      },
+      {
+        "name": "sum_constraint",
+        "description": "The total length of wires consumed by all connections formed during the placement process must not exceed the given wire budget M.",
+        "formal": "∑_{i=1}^{N} (|p_i - L_i| + |R_i - p_i|) ≤ M",
+        "source_sections": [
+          "description",
+          "output"
+        ]
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "description": "Minimize the unused wire length given a fixed total supply and sequence-dependent connection costs.",
+    "target": "unused_wire_length",
+    "requires_solution": false
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "value_contiguity",
+        "description": "对于固定的N,所有合法排列对应的总连线长度取值集合构成一个连续的整数区间。该性质稳定约束了目标函数的值域结构,使得算法无需搜索具体排列或进行动态规划,仅通过预计算的区间上下界与输入M进行大小比较即可直接得出最小剩余线长或判定不可行。",
+        "properties": {
+          "value_range_structure": "contiguous_integer_interval",
+          "decision_logic": "bounds_comparison"
+        },
+        "evidence_source": "solution_code"
+      }
+    ]
+  }
+}

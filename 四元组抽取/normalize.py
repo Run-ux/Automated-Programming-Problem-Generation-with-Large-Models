@@ -1,5 +1,5 @@
 """
-LLM 归一化层：逐步聚类归一化标签
+LLM 归一化层：逐步聚类归一化标签，并直接输出最终结果。
 
 用法：
     python normalize.py \
@@ -7,10 +7,10 @@ LLM 归一化层：逐步聚类归一化标签
         --output output/pilot/normalized/
 
 输入：
-    raw/{problem_id}_{dimension}_round{N}.json（原始抽取结果）
+    raw/{problem_id}_{dimension}.json（单轮原始抽取结果）
 
 输出：
-    normalized/{problem_id}.json（归一化后的四维结果）
+    normalized/{problem_id}.json（归一化后的最终四维结果）
     label_registry/{dimension}.json（动态标签注册表）
 """
 
@@ -19,15 +19,30 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import time
+from collections import Counter
+from copy import deepcopy
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Tuple
 
 try:
+    from .label_vocab import (
+        CORE_CONSTRAINT_LABELS,
+        INPUT_STRUCTURE_TYPE_LABELS,
+        INVARIANT_LABELS,
+        OBJECTIVE_LABELS,
+    )
     from .prompts import prompt_normalize
     from .qwen_client import QwenClient, QwenConfig
 except ImportError:
+    from label_vocab import (
+        CORE_CONSTRAINT_LABELS,
+        INPUT_STRUCTURE_TYPE_LABELS,
+        INVARIANT_LABELS,
+        OBJECTIVE_LABELS,
+    )
     from prompts import prompt_normalize
     from qwen_client import QwenClient, QwenConfig
 
@@ -49,90 +64,10 @@ DIMENSION_DISPLAY = {
 
 
 PREDEFINED_LABELS: Dict[str, List[Tuple[str, str]]] = {
-    "core_constraints": [
-        ("connectivity", "连通性/可达性约束，如连通图或可达要求"),
-        ("acyclicity", "无环性约束，如 DAG 或森林结构"),
-        ("planarity", "平面性约束，图需可平面嵌入"),
-        ("bipartiteness", "二部性约束，图为二部图"),
-        ("degree_bound", "度数上下界约束，如节点度限制"),
-        ("path_constraint", "路径约束，如路径长度/简单路径限制"),
-        ("matching_constraint", "匹配约束，如最大/完美匹配"),
-        ("flow_constraint", "流量/容量约束，如守恒或容量限制"),
-        ("coloring_constraint", "染色约束，如相邻不同色或色数限制"),
-        ("spanning_constraint", "生成结构约束，如生成树/生成子图"),
-        ("ordering", "有序性约束，如单调、排序或字典序"),
-        ("distinctness", "唯一性约束，如元素互异或去重"),
-        ("adjacency_relation", "相邻关系约束，如相等/差值/相邻互斥"),
-        ("frequency_bound", "频次约束，如出现次数上界/下界"),
-        ("subsequence_constraint", "子序列/子串约束，如包含或排除"),
-        ("permutation_constraint", "排列/置换约束，如逆序对或循环结构"),
-        ("range_bound", "值域/范围约束，如元素上下界"),
-        ("sum_constraint", "和约束，如区间和/前缀和条件"),
-        ("divisibility", "整除/同余约束，如 GCD/LCM"),
-        ("parity", "奇偶性约束"),
-        ("linear_relation", "线性关系约束，如线性方程或不等式"),
-        ("modular_arithmetic", "模运算约束，如取模结果限制"),
-        ("convexity", "凸性约束，如凸包或凸多边形"),
-        ("distance_bound", "距离约束，如曼哈顿/欧氏距离限制"),
-        ("intersection", "相交/重叠关系约束"),
-        ("orientation", "方向/朝向约束，如顺逆时针"),
-        ("subset_constraint", "子集约束，如子集选择或大小限制"),
-        ("partition", "划分约束，如分组或等价类划分"),
-        ("coverage", "覆盖约束，如区间或集合覆盖"),
-        ("exclusion", "互斥/禁止约束"),
-        ("inclusion", "包含/必选约束"),
-        ("operation_limit", "操作次数限制"),
-        ("operation_type", "操作类型限制，如仅交换/翻转/插入"),
-        ("state_transition", "状态转移约束，如合法转移"),
-        ("concurrency", "并发/同步约束"),
-        ("reversibility", "可逆性约束"),
-        ("transformation", "变换/替换/映射规则约束"),
-        ("palindrome", "回文约束"),
-        ("pattern_matching", "模式匹配约束，如通配符"),
-        ("alphabet_constraint", "字符集约束，如字母表大小"),
-        ("repetition", "重复性/周期性约束"),
-        ("turn_based", "回合制约束"),
-        ("optimal_play", "最优策略约束"),
-        ("query_limit", "询问次数限制"),
-        ("probability_distribution", "概率分布约束"),
-        ("independence", "独立性约束"),
-    ],
-    "invariant": [
-        ("monotonicity", "单调性不变量，如双指针或二分的单调推进"),
-        ("optimal_substructure", "最优子结构不变量，如动态规划的最优解可组合"),
-        ("greedy_choice", "贪心选择性质不变量"),
-        ("state_transition", "状态转移不变量，如状态机/博弈 DP"),
-        ("interval_additivity", "区间可加性不变量，如前缀和"),
-        ("interval_mergeable", "区间可合并性不变量，如线段树"),
-        ("divide_conquer", "分治不变量，如子问题可合成"),
-        ("topological_order", "拓扑序不变量，如 DAG 依赖顺序"),
-        ("flow_conservation", "流守恒不变量"),
-        ("matroid_exchange", "拟阵交换性质不变量"),
-        ("convexity", "凸性不变量，如斜率优化或凸包"),
-        ("symmetry", "对称性不变量"),
-        ("idempotency", "幂等性不变量，如 RMQ/倍增"),
-        ("prefix_decomposability", "前缀可分解性不变量"),
-        ("cycle_invariant", "环不变量，如置换环或判圈"),
-        ("subproblem_independence", "子问题独立性不变量"),
-        ("exchange_argument", "交换论证不变量"),
-        ("potential_function", "势函数不变量"),
-    ],
-    "objective": [
-        ("maximize_value", "最大化某个值，如和/积/距离"),
-        ("minimize_value", "最小化某个值，如代价/距离/时间"),
-        ("maximize_count", "最大化计数，如方案数或匹配数"),
-        ("minimize_count", "最小化计数，如操作次数"),
-        ("maximize_probability", "最大化概率或期望"),
-        ("minimize_probability", "最小化概率或期望"),
-        ("min_max", "极小化极大值，如瓶颈路径"),
-        ("max_min", "极大化极小值"),
-        ("lexicographic_optimize", "字典序优化"),
-        ("feasibility", "可行性判定"),
-        ("construction", "构造任意或最优方案"),
-        ("enumeration", "计数/枚举方案数"),
-        ("multi_objective", "多目标优化"),
-        ("game_outcome", "博弈结果"),
-    ],
+    "input_structure": INPUT_STRUCTURE_TYPE_LABELS,
+    "core_constraints": CORE_CONSTRAINT_LABELS,
+    "objective": OBJECTIVE_LABELS,
+    "invariant": INVARIANT_LABELS,
 }
 
 
@@ -210,118 +145,312 @@ class LabelRegistry:
             )
 
 
-def extract_raw_labels_for_dimension(
-    problem_rounds: List[Dict[str, Any]],
+def _compact_json(value: Any) -> str:
+    if value in (None, "", [], {}):
+        return ""
+    return json.dumps(value, ensure_ascii=False, sort_keys=True)
+
+
+def _build_input_structure_description(result: Dict[str, Any]) -> str:
+    parts: List[str] = []
+    length = result.get("length", {})
+    value_range = result.get("value_range", {})
+    properties = result.get("properties", {})
+    components = result.get("components", [])
+
+    if isinstance(length, dict):
+        parts.append(
+            f"length={_compact_json({'min': length.get('min'), 'max': length.get('max')})}"
+        )
+    if isinstance(value_range, dict):
+        parts.append(
+            "value_range="
+            + _compact_json(
+                {"min": value_range.get("min"), "max": value_range.get("max")}
+            )
+        )
+    if isinstance(properties, dict) and properties:
+        parts.append(f"properties={_compact_json(properties)}")
+    if isinstance(components, list) and components:
+        parts.append(f"components={_compact_json(components)}")
+    return "; ".join(part for part in parts if part)
+
+
+def _build_objective_description(result: Dict[str, Any]) -> str:
+    parts: List[str] = []
+    description = result.get("description")
+    target = result.get("target")
+    requires_solution = result.get("requires_solution")
+
+    if isinstance(description, str) and description.strip():
+        parts.append(description.strip())
+    if isinstance(target, str) and target.strip():
+        parts.append(f"target={target.strip()}")
+    if isinstance(requires_solution, bool):
+        parts.append(f"requires_solution={str(requires_solution).lower()}")
+    return "; ".join(parts)
+
+
+def extract_raw_entries_for_dimension(
+    problem_dimension: Dict[str, Any],
     dimension: str,
-) -> List[str]:
+) -> List[Dict[str, Any]]:
+    entries: List[Dict[str, Any]] = []
+    if problem_dimension.get("status") != "success":
+        return entries
+
+    result = problem_dimension.get("result", {})
+
+    if dimension == "input_structure":
+        label = result.get("type")
+        if label:
+            entries.append(
+                {
+                    "entry_id": "input_structure",
+                    "name": str(label),
+                    "description": _build_input_structure_description(result),
+                }
+            )
+    elif dimension == "objective":
+        label = result.get("type")
+        if label:
+            entries.append(
+                {
+                    "entry_id": "objective",
+                    "name": str(label),
+                    "description": _build_objective_description(result),
+                }
+            )
+    elif dimension == "invariant":
+        invariants = result.get("invariants", [])
+        for index, inv in enumerate(invariants, start=1):
+            name = inv.get("name")
+            if not name:
+                continue
+            entry = {
+                "entry_id": f"invariant_{index}",
+                "name": str(name),
+                "description": str(inv.get("description", "")).strip(),
+            }
+            properties = inv.get("properties")
+            if isinstance(properties, dict) and properties:
+                entry["properties"] = properties
+            evidence_source = inv.get("evidence_source")
+            if isinstance(evidence_source, str) and evidence_source.strip():
+                entry["evidence_source"] = evidence_source.strip()
+            entries.append(entry)
+    elif dimension == "core_constraints":
+        constraints = result.get("constraints", [])
+        for index, constraint in enumerate(constraints, start=1):
+            name = constraint.get("name")
+            if not name:
+                continue
+            entry = {
+                "entry_id": f"constraint_{index}",
+                "name": str(name),
+                "description": str(constraint.get("description", "")).strip(),
+            }
+            formal = constraint.get("formal")
+            if isinstance(formal, str) and formal.strip():
+                entry["formal"] = formal.strip()
+            entries.append(entry)
+    return entries
+
+
+def extract_label_names(raw_entries: List[Dict[str, Any]]) -> List[str]:
     labels: List[str] = []
-    for item in problem_rounds:
-        if item.get("status") != "success":
-            continue
-        result = item.get("result", {})
-        if dimension == "input_structure":
-            label = result.get("type")
-            if label:
-                labels.append(str(label))
-        elif dimension == "objective":
-            label = result.get("type")
-            if label:
-                labels.append(str(label))
-        elif dimension == "invariant":
-            invariants = result.get("invariants", [])
-            for inv in invariants:
-                name = inv.get("name")
-                if name:
-                    labels.append(str(name))
-        elif dimension == "core_constraints":
-            constraints = result.get("constraints", [])
-            for c in constraints:
-                name = c.get("name")
-                if name:
-                    labels.append(str(name))
+    for entry in raw_entries:
+        name = entry.get("name")
+        if isinstance(name, str) and name.strip():
+            labels.append(name.strip())
     return labels
 
 
-def apply_mapping_to_rounds(
-    problem_rounds: List[Dict[str, Any]],
+def apply_mapping_to_result(
+    problem_dimension: Dict[str, Any],
     dimension: str,
     mapping: Dict[str, str],
 ) -> None:
-    for item in problem_rounds:
-        if item.get("status") != "success":
-            continue
-        result = item.get("result", {})
-        if dimension == "input_structure" and "type" in result:
-            result["type"] = mapping.get(result.get("type"), result.get("type"))
-        elif dimension == "objective" and "type" in result:
-            result["type"] = mapping.get(result.get("type"), result.get("type"))
-        elif dimension == "invariant":
-            invariants = result.get("invariants", [])
-            for inv in invariants:
-                name = inv.get("name")
-                if name:
-                    inv["name"] = mapping.get(name, name)
-        elif dimension == "core_constraints":
-            constraints = result.get("constraints", [])
-            for c in constraints:
-                name = c.get("name")
-                if name:
-                    c["name"] = mapping.get(name, name)
-        item["result"] = result
+    if problem_dimension.get("status") != "success":
+        return
+
+    result = problem_dimension.get("result", {})
+    if dimension == "input_structure" and "type" in result:
+        result["type"] = mapping.get(result.get("type"), result.get("type"))
+    elif dimension == "objective" and "type" in result:
+        result["type"] = mapping.get(result.get("type"), result.get("type"))
+    elif dimension == "invariant":
+        invariants = result.get("invariants", [])
+        for inv in invariants:
+            name = inv.get("name")
+            if name:
+                inv["name"] = mapping.get(name, name)
+    elif dimension == "core_constraints":
+        constraints = result.get("constraints", [])
+        for constraint in constraints:
+            name = constraint.get("name")
+            if name:
+                constraint["name"] = mapping.get(name, name)
+    problem_dimension["result"] = result
+
+
+def _build_default_dimension_result(dimension: str) -> Dict[str, Any]:
+    if dimension == "input_structure":
+        return {"type": None}
+    if dimension == "objective":
+        return {"type": None}
+    if dimension == "core_constraints":
+        return {"constraints": []}
+    if dimension == "invariant":
+        return {"invariants": []}
+    return {}
+
+
+def _build_final_dimension_result(
+    problem_dimension: Dict[str, Any],
+    dimension: str,
+) -> Dict[str, Any]:
+    if problem_dimension.get("status") != "success":
+        return _build_default_dimension_result(dimension)
+
+    raw_result = problem_dimension.get("result", {})
+    if not isinstance(raw_result, dict):
+        return _build_default_dimension_result(dimension)
+
+    result = deepcopy(raw_result)
+    if dimension == "input_structure":
+        result.setdefault("type", None)
+        return result
+    if dimension == "objective":
+        result.setdefault("type", None)
+        return result
+    if dimension == "core_constraints":
+        constraints = result.get("constraints")
+        return {"constraints": constraints if isinstance(constraints, list) else []}
+    if dimension == "invariant":
+        invariants = result.get("invariants")
+        return {"invariants": invariants if isinstance(invariants, list) else []}
+    return result
+
+
+def build_final_problem_output(problem_data: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "problem_id": problem_data["problem_id"],
+        "source": problem_data["source"],
+        "input_structure": _build_final_dimension_result(
+            problem_data["input_structure"], "input_structure"
+        ),
+        "core_constraints": _build_final_dimension_result(
+            problem_data["core_constraints"], "core_constraints"
+        ),
+        "objective": _build_final_dimension_result(
+            problem_data["objective"], "objective"
+        ),
+        "invariant": _build_final_dimension_result(
+            problem_data["invariant"], "invariant"
+        ),
+    }
 
 
 def normalize_labels_with_llm(
     client: QwenClient,
     registry: LabelRegistry,
     dimension: str,
-    raw_labels: List[str],
+    raw_entries: List[Dict[str, Any]],
     logger: logging.Logger,
 ) -> Tuple[Dict[str, str], List[str]]:
-    if not raw_labels:
+    if not raw_entries:
         return {}, []
 
-    unique_labels = sorted(set(raw_labels))
+    expected_entry_ids = {
+        str(entry["entry_id"])
+        for entry in raw_entries
+        if isinstance(entry.get("entry_id"), str) and entry["entry_id"]
+    }
     registry_text = registry.to_prompt_text()
     system_prompt = prompt_normalize.build_system_prompt()
     user_prompt = prompt_normalize.build_user_prompt(
+        dimension_key=dimension,
         dimension_name=DIMENSION_DISPLAY[dimension],
         registry_text=registry_text,
-        raw_labels=unique_labels,
+        raw_entries=raw_entries,
     )
 
     result = client.chat_json(system_prompt, user_prompt)
     mappings = result.get("mappings", [])
     new_labels = result.get("new_labels", [])
 
-    mapping_dict: Dict[str, str] = {}
-    newly_created: List[str] = []
+    entry_counts: Counter[str] = Counter()
+    original_candidates: Dict[str, Counter[str]] = {}
+    newly_created: set[str] = set()
+    returned_new_labels: Dict[str, str] = {}
 
     for m in mappings:
+        entry_id = m.get("entry_id")
         original = m.get("original")
         normalized = m.get("normalized")
         is_new = m.get("is_new")
-        if not original or not normalized:
+        if not entry_id or not original or not normalized:
             continue
-        mapping_dict[original] = normalized
+        entry_counts[str(entry_id)] += 1
+        original_key = str(original)
+        normalized_name = str(normalized)
+        original_candidates.setdefault(original_key, Counter())[normalized_name] += 1
         if is_new:
-            newly_created.append(normalized)
+            newly_created.add(normalized_name)
 
     for nl in new_labels:
         name = nl.get("name")
         description = nl.get("description", "")
         if not name:
             continue
+        name_str = str(name)
+        if name_str in returned_new_labels:
+            logger.warning("重复的新标签定义：%s", name_str)
+            continue
+        returned_new_labels[name_str] = str(description)
+
+    missing_entries = expected_entry_ids - set(entry_counts.keys())
+    duplicate_entries = sorted(
+        entry_id for entry_id, count in entry_counts.items() if count != 1
+    )
+    if missing_entries:
+        logger.warning("LLM 归一化缺少 %s 个条目映射：%s", len(missing_entries), sorted(missing_entries))
+    if duplicate_entries:
+        logger.warning("LLM 归一化存在重复条目映射：%s", duplicate_entries)
+
+    for name in sorted(newly_created):
+        if name not in returned_new_labels:
+            logger.warning("is_new=true 的标签缺少 new_labels 定义：%s", name)
+            returned_new_labels[name] = ""
+
+    for name, description in returned_new_labels.items():
         registry.register(name, description)
+
+    mapping_dict: Dict[str, str] = {}
+    for original, candidate_counter in original_candidates.items():
+        normalized_name, count = candidate_counter.most_common(1)[0]
+        if len(candidate_counter) > 1:
+            logger.warning(
+                "原始标签 %s 出现多种归一化结果 %s，采用多数结果 %s",
+                original,
+                dict(candidate_counter),
+                normalized_name,
+            )
+        mapping_dict[original] = normalized_name
 
     for original, normalized in mapping_dict.items():
         if normalized in registry.labels:
             registry.add_alias(normalized, original)
 
     logger.debug(
-        f"{dimension}: 归一化 {len(unique_labels)} 个标签, 新增 {len(new_labels)} 个"
+        "%s: 归一化 %s 个条目, 新增 %s 个标签",
+        dimension,
+        len(raw_entries),
+        len(returned_new_labels),
     )
 
-    return mapping_dict, newly_created
+    return mapping_dict, sorted(newly_created)
 
 
 def _cosine_similarity(vec_a: List[float], vec_b: List[float]) -> float:
@@ -398,30 +527,46 @@ def normalize_labels_with_embedding(
 
 
 def load_raw_files(raw_dir: Path, logger: logging.Logger) -> Dict[str, Dict[str, Any]]:
-    raw_files = list(raw_dir.glob("*.json"))
+    raw_files = sorted(raw_dir.glob("*.json"))
     logger.info(f"找到 {len(raw_files)} 个原始抽取文件")
     problems: Dict[str, Dict[str, Any]] = {}
     for raw_file in raw_files:
         raw_data = json.loads(raw_file.read_text(encoding="utf-8"))
         problem_id = raw_data["problem_id"]
         dimension = raw_data["dimension"]
-        round_num = raw_data["round"]
         if problem_id not in problems:
             problems[problem_id] = {
                 "problem_id": problem_id,
                 "source": raw_data["source"],
-                "input_structure": [],
-                "core_constraints": [],
-                "objective": [],
-                "invariant": [],
+                "input_structure": {"status": "failed", "result": {}},
+                "core_constraints": {"status": "failed", "result": {}},
+                "objective": {"status": "failed", "result": {}},
+                "invariant": {"status": "failed", "result": {}},
             }
-        problems[problem_id][dimension].append(
-            {
-                "round": round_num,
-                "status": raw_data.get("status"),
-                "result": raw_data.get("result", {}),
-            }
-        )
+
+        if dimension not in DIMENSIONS:
+            logger.warning("跳过未知维度文件：%s", raw_file.name)
+            continue
+
+        current_dimension = problems[problem_id][dimension]
+        if current_dimension.get("_loaded"):
+            logger.warning(
+                "题目 %s 的维度 %s 存在重复原始文件，保留首个文件并跳过 %s",
+                problem_id,
+                dimension,
+                raw_file.name,
+            )
+            continue
+
+        problems[problem_id][dimension] = {
+            "_loaded": True,
+            "status": raw_data.get("status"),
+            "result": raw_data.get("result", {}),
+        }
+
+    for data in problems.values():
+        for dimension in DIMENSIONS:
+            data[dimension].pop("_loaded", None)
     return problems
 
 
@@ -447,7 +592,12 @@ def normalize_all_problems(
         registries[dim] = reg
 
     try:
-        client = QwenClient(QwenConfig(model="qwen-flash"))
+        normalize_model = (
+            os.getenv("QWEN_NORMALIZE_MODEL")
+            or os.getenv("QWEN_MODEL")
+            or "qwen-flash"
+        )
+        client = QwenClient(QwenConfig(model=normalize_model))
     except RuntimeError as e:
         logger.error(f"Qwen 客户端初始化失败：{e}")
         return
@@ -462,8 +612,9 @@ def normalize_all_problems(
             continue
 
         for dim in DIMENSIONS:
-            rounds = data[dim]
-            raw_labels = extract_raw_labels_for_dimension(rounds, dim)
+            problem_dimension = data[dim]
+            raw_entries = extract_raw_entries_for_dimension(problem_dimension, dim)
+            raw_labels = extract_label_names(raw_entries)
             embedding_mapping: Dict[str, str] = {}
             unresolved_labels = raw_labels
             if raw_labels:
@@ -476,25 +627,32 @@ def normalize_all_problems(
                 )
 
             if embedding_mapping:
-                apply_mapping_to_rounds(rounds, dim, embedding_mapping)
+                apply_mapping_to_result(problem_dimension, dim, embedding_mapping)
 
+            unresolved_label_set = set(unresolved_labels)
+            unresolved_entries = [
+                entry
+                for entry in raw_entries
+                if entry.get("name") in unresolved_label_set
+            ]
             llm_mapping, _ = normalize_labels_with_llm(
                 client=client,
                 registry=registries[dim],
                 dimension=dim,
-                raw_labels=unresolved_labels,
+                raw_entries=unresolved_entries,
                 logger=logger,
             )
             if llm_mapping:
-                apply_mapping_to_rounds(rounds, dim, llm_mapping)
+                apply_mapping_to_result(problem_dimension, dim, llm_mapping)
 
             registry_path = registry_dir / f"{dim}.json"
             registries[dim].save(registry_path)
 
             time.sleep(0.5)
 
+        output_data = build_final_problem_output(data)
         output_file.write_text(
-            json.dumps(data, ensure_ascii=False, indent=2),
+            json.dumps(output_data, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
         processed += 1
@@ -556,7 +714,7 @@ def main():
         embedding_threshold=args.embedding_threshold,
         logger=logger,
     )
-    logger.info("下一步：运行 vote.py 进行多数投票")
+    logger.info("归一化完成，normalized/ 目录中的文件已可直接作为最终结果使用")
 
 
 if __name__ == "__main__":

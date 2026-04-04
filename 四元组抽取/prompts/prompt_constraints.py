@@ -1,222 +1,138 @@
-"""
-核心约束集合（Core Constraints, C）维度的 Prompt 模板
-
-用于从题目描述中抽取必须满足的限制条件，包括：
-- 区间内不同元素个数 ≤ K
-- 最大值 − 最小值 ≤ D
-- 路径长度限制
-- 状态转移合法性条件
-等。
-
-CRITICAL: 约束必须从题面全文提取（description + input + output + constraints），
-因为 CF/ICPC 的 constraints 字段通常只包含时间/内存限制，而真正的业务约束
-散布在题目描述、输入输出格式说明中。
-
-输出 JSON Schema：
-{
-    "constraints": [
-        {
-            "name": "约束名称（如 distinct_leq_k）",
-            "description": "约束描述（如：区间内不同元素数量不超过 K）",
-            "formal": "形式化表达（可选，如：|distinct(A[l:r])| <= K）"
-        },
-        ...
-    ]
-}
-"""
+"""核心约束维度 Prompt。"""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 try:
+    from ..label_vocab import (
+        CONSTRAINT_SOURCE_SECTIONS,
+        CORE_CONSTRAINT_LABELS,
+    )
     from ..problem_schema import prepare_problem_record
+    from .prompt_sections import build_problem_context
 except ImportError:
+    from label_vocab import (
+        CONSTRAINT_SOURCE_SECTIONS,
+        CORE_CONSTRAINT_LABELS,
+    )
     from problem_schema import prepare_problem_record
+    from prompts.prompt_sections import build_problem_context
 
 if TYPE_CHECKING:
-    from typing import Dict, Any
+    from typing import Any, Dict
+
+
+CORE_CONSTRAINT_NAMES = [name for name, _ in CORE_CONSTRAINT_LABELS]
 
 
 def build_system_prompt() -> str:
-    """构建系统提示词（角色定义与输出格式要求）"""
-    return """你是编程竞赛题目约束条件分析专家。
+    preferred_names = ", ".join(CORE_CONSTRAINT_NAMES)
+    return f"""你是编程竞赛题目约束条件分析专家。
 
-你的任务是从题目描述的全文中抽取所有核心约束条件。
+你的任务是从题目全文中抽取核心语义约束。
 
-约束来源（按优先级）：
-1. 题目描述（Description）- 通常包含问题的业务逻辑约束
-2. 输入格式（Input）- 可能包含输入数据的合法性约束
-3. 输出格式（Output）- 可能包含输出结果的约束条件
-4. 约束条件（Constraints）- 通常只包含时间/内存限制，但也可能包含数值范围约束
+科研定义：
+- 核心约束指对合法对象、合法操作、合法状态或合法解集合产生语义作用的限制。
+- 该维度只记录会改变可行性、转移合法性、可选解集合或目标定义的约束。
+- 纯输入规模上界、时间限制与内存限制不属于该维度。
 
-CRITICAL WARNING:
-- 不要只看 Constraints 字段！大部分业务约束在 Description 和 Input/Output 中！
-- Constraints 字段通常只写"1 ≤ n ≤ 10^5"和"Time Limit: 2s"这种，真正的约束在题面里！
+硬规则：
+1. 只输出严格 JSON 对象，不输出任何解释文字。
+2. name 必须优先复用规范约束词表：{preferred_names}。
+3. 若现有词表无法准确覆盖当前题目的约束语义，允许创建新的抽象标签。
+4. 新标签必须使用小写英文加下划线格式，并保持算法术语风格。
+5. 不得把题目情境词直接写进 name 或 source_sections。
 
-输出要求：
-- 必须输出严格的 JSON 对象，不要输出任何解释文字
-- JSON 必须包含 constraints 数组字段
-- 每个约束必须包含 name 和 description 字段
-- formal 字段可选（形式化表达，如数学公式或伪代码）
-- 如果推荐清单中没有合适标签，必须自由新增更准确的标签，不要为了套用而强行归类
+证据优先级：
+1. 题面全文中的任务描述
+2. Input 分节
+3. Output 分节
+4. Constraints 分节
+5. 标题
 
-约束识别原则：
-1. 识别限制条件：如"区间内不同元素个数不超过 K"、"路径长度不超过 L"
-2. 识别关系约束：如"最大值减最小值不超过 D"、"相邻元素差值不超过 1"
-3. 识别结构约束：如"图必须连通"、"数组必须非递减"
-4. 识别逻辑约束：如"选择的元素不能重复"、"每个节点最多访问一次"
-5. 排除纯粹的数值范围：如"1 ≤ n ≤ 10^5"不算核心约束，只是输入规模
-6. 排除时间/内存限制：如"Time Limit: 2s"不算业务约束
+边界规则：
+- 排除纯输入规模边界，例如 1 ≤ n ≤ 10^5。
+- 排除时间限制与内存限制。
+- 保留具有语义作用的范围约束，例如度数上界、操作次数上界、字符集限制、容量上限、可用步数上限。
+- 同一语义约束只保留一条；若多个句子共同支撑同一约束，合并到同一条 description。
+- name 不得使用 distinct_leq_k、max_min_diff_leq_d 这类实例化标签，具体数值与场景写入 description 或 formal。
+- source_sections 只允许使用 description、input、output、constraints。
+- 题面没有可确认的核心语义约束时，返回 {{"constraints": []}}。
 
-抽象化要求（CRITICAL）：
-- 约束的 name 和 description 必须用算法/数据结构领域的抽象术语，严禁包含原题目的具体情境词汇
-- 必须将题目情境翻译为算法领域的通用概念
-- 反例：题目说"鲨鱼不能吃同种鱿鱼" → name 不能写 "shark_eat_squid_limit"，应写 "pairwise_exclusion" 或 "matching_constraint"
-- 反例：题目说"每个城市最多修建3条公路" → name 不能写 "city_road_limit"，应写 "degree_upper_bound"
-- 正例：题目说"相邻房间不能涂相同颜色" → name 写 "adjacent_difference"，description 写 "相邻节点取值不同（图着色约束）"
-- 正例：题目说"背包重量不超过W" → name 写 "capacity_constraint"，description 写 "选取元素权重和不超过容量上限"
-
-推荐的约束类型清单（优先从中选择，但允许必要时新增）：
-图论约束：
-- connectivity（连通性）
-- acyclicity（无环性）
-- planarity（平面性）
-- bipartiteness（二部性）
-- degree_bound（度数约束）
-- path_constraint（路径约束）
-- matching_constraint（匹配约束）
-- flow_constraint（流量/容量约束）
-- coloring_constraint（染色约束）
-- spanning_constraint（生成结构约束）
-
-序列/数组约束：
-- ordering（有序性）
-- distinctness（唯一性/去重）
-- adjacency_relation（相邻关系）
-- frequency_bound（频次约束）
-- subsequence_constraint（子序列约束）
-- permutation_constraint（排列约束）
-
-数值/代数约束：
-- range_bound（值域约束）
-- sum_constraint（和约束）
-- divisibility（整除/同余）
-- parity（奇偶性）
-- linear_relation（线性关系）
-- modular_arithmetic（模运算约束）
-
-几何约束：
-- convexity（凸性）
-- distance_bound（距离约束）
-- intersection（相交关系）
-- orientation（方向/朝向约束）
-
-集合/组合约束：
-- subset_constraint（子集约束）
-- partition（划分约束）
-- coverage（覆盖约束）
-- exclusion（互斥/禁止）
-- inclusion（包含/必选）
-
-操作/过程约束：
-- operation_limit（操作次数限制）
-- operation_type（操作类型限制）
-- state_transition（状态转移约束）
-- concurrency（并发/同步约束）
-- reversibility（可逆性）
-- transformation（变换/操作规则）
-
-字符串约束：
-- palindrome（回文约束）
-- pattern_matching（模式匹配）
-- alphabet_constraint（字符集约束）
-- repetition（重复性/周期性）
-
-博弈/交互约束：
-- turn_based（回合制）
-- optimal_play（最优策略）
-- query_limit（询问次数限制）
-
-概率/随机约束：
-- probability_distribution（概率分布约束）
-- independence（独立性约束）
-
-规则：
-1. 优先使用上述清单中的标签作为 name。
-2. 如果确实没有匹配项，允许创建新标签（必须抽象化且简洁）。
-3. 避免对同一约束创建多种同义标签。
+判别边界：
+- range_bound 只用于具有语义作用的范围限制，不用于 n、m、q 或 a_i 的普通输入范围。
+- operation_limit 用于操作步数、修改次数或资源配额上界。
+- operation_type 用于允许哪些操作或禁止哪些操作。
+- state_transition 用于状态之间的合法转移规则，而非普通过程描述。
+- order_constraint 用于顺序、相对位置、单调排列等语义限制。
+- distinctness 用于互异性要求；排列特有约束优先归入 permutation_constraint。
+- 对抗式轮流行动与策略最优性，统一优先归入 optimal_play。
 """
 
 
 def build_user_prompt(problem: Dict[str, Any]) -> str:
-    """
-    构建用户提示词（题面内容）
-    
-    Args:
-        problem: 单题 schema JSON，核心字段包括：
-            - problem_id: 题目 id
-            - title: 题目标题
-            - description: 题目描述
-            - source: 来源对象
-            - limits: 时间/空间限制对象
-
-        其中 Input / Output / Constraints 会从 description 中自动切分。
-    
-    Returns:
-        格式化的用户提示词
-    """
     problem = prepare_problem_record(problem)
-    return f"""请从以下题目的全文中抽取核心约束条件：
+    context = build_problem_context(problem)
+    preferred_names = ", ".join(CORE_CONSTRAINT_NAMES)
+    return f"""请根据下列题目信息抽取核心约束。
 
-标题：{problem.get('title', 'N/A')}
+{context}
 
-题面全文：
-{problem.get('description', '')}
+字段说明：
+1. constraints[].name 表示约束的抽象标签。现有词表能够覆盖时填写规范标签；只有明确存在语义缺口时才新建标签；没有约束项时不出现。常见误填：把具体数值、题目名词或整句限制直接写进 name。
+2. constraints[].description 表示该题中这条约束的具体语义内容。存在该约束项时始终填写；只有整条约束不存在时才不出现。常见误填：只写标签释义，不写当前题目的具体限制。
+3. constraints[].formal 表示便于归一化的形式化表达。题面存在清晰公式、逻辑式或边界表达时填写；没有必要时留空。常见误填：把自然语言 description 原样重复到 formal。
+4. constraints[].source_sections 表示证据出现在题面哪个分节。需要追溯证据位置时填写；无法明确定位时留空。常见误填：把推理来源、代码来源或不在允许集合中的值写进去。
 
----
-
-请输出该题的核心约束集合 JSON，格式如下：
-
+请输出 JSON：
 {{
-    "constraints": [
-        {{
-            "name": "约束的简短英文标识（如 distinct_leq_k, max_min_diff_leq_d）",
-            "description": "约束的中文描述（清晰完整，如：区间内不同元素数量不超过 K）",
-            "formal": "形式化表达（可选，如：|distinct(A[l:r])| <= K）"
-        }},
-        ...
-    ]
+  "constraints": [
+    {{
+      "name": "优先复用规范标签，例如 {preferred_names}",
+      "description": "该题中的具体约束描述",
+      "formal": "形式化表达，可留空",
+      "source_sections": ["description", "input"]
+    }}
+  ]
 }}
 
-注意：
-1. 必须阅读题面全文，不要只看局部片段
-2. 只提取业务逻辑约束，不包括：
-   - 纯粹的数值范围（如 1 ≤ n ≤ 10^5）
-   - 时间/内存限制（如 Time Limit: 2s）
-3. 如果题目没有明显的业务约束，返回空数组 []
-4. 每个约束的 description 必须清晰完整，能够独立理解
-5. formal 字段可选，如果能用数学公式或伪代码表达清楚，则填写
-6. 所有约束的 name 和 description 必须是算法领域的抽象概括，不得包含题目中的具体情境词汇（如角色名、物品名、场景名等），需翻译为通用的算法/数据结构术语
-7. 如果推荐清单中没有合适标签，必须自由新增更准确的标签，不要为了套用而强行归类
+要求：
+1. 字段说明优先于字段名直觉，不要仅凭命名猜测字段含义。
+2. name 优先对齐现有规范标签；若词表无法准确覆盖当前约束，允许新建一个抽象标签。
+3. 新标签保持小写英文加下划线格式，不创建实例化标签。
+4. description 负责表达该题中的具体限制条件。
+5. formal 可选，source_sections 可选，且元素只能来自 description、input、output、constraints。
+6. 纯输入规模边界与时间内存限制不要抽取。
+7. 多句支撑同一约束时合并为一条。
+8. 没有可确认约束时返回 {{"constraints": []}}。
 """
 
 
 CONSTRAINTS_SCHEMA = {
     "type": "object",
     "required": ["constraints"],
+    "additionalProperties": True,
     "properties": {
         "constraints": {
             "type": "array",
             "items": {
                 "type": "object",
                 "required": ["name", "description"],
+                "additionalProperties": True,
                 "properties": {
                     "name": {"type": "string"},
                     "description": {"type": "string"},
-                    "formal": {"type": "string"}
-                }
-            }
+                    "formal": {"type": "string"},
+                    "source_sections": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": CONSTRAINT_SOURCE_SECTIONS,
+                        },
+                    },
+                },
+            },
         }
-    }
+    },
 }

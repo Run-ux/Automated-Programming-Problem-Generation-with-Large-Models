@@ -1,0 +1,68 @@
+{
+  "problem_id": "CF1513D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "length": {
+      "min": 2,
+      "max": 200000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "multiple_test_cases": true
+    },
+    "components": []
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "adjacency_relation",
+        "description": "Edges between vertices i and j (i < j) are generated under two specific rules: an edge with weight min(a[i..j]) exists if gcd(a[i..j]) equals min(a[i..j]); an edge with fixed weight p exists between adjacent vertices (j = i + 1). Multiple edges are permitted, and the absence of both conditions results in no edge.",
+        "formal": "∀1≤i<j≤n: (gcd(a[i..j]) = min(a[i..j]) ⇒ (i,j)∈E ∧ w=min(a[i..j])) ∧ (j=i+1 ⇒ (i,j)∈E ∧ w=p)",
+        "source_sections": [
+          "description"
+        ]
+      },
+      {
+        "name": "spanning_constraint",
+        "description": "The solution must correspond to a minimum spanning tree of the constructed graph, requiring the selection of a connected, acyclic edge subset that spans all n vertices while minimizing the total weight.",
+        "formal": "min ∑_{e∈T} w(e) s.t. (V, T) is connected, acyclic, |T| = n-1",
+        "source_sections": [
+          "description"
+        ]
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "description": "计算图的最小生成树的总权重",
+    "target": "mst_weight",
+    "requires_solution": false
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "线性扫描过程中维护一个当前活跃除数候选值。状态转移规则为:若当前元素能被候选值整除,则状态保持并更新对应相邻边的权重；否则状态重置为当前元素。该不变量保证了在任意连续倍数段内,最小可能边权被正确传播至段内所有间隙。",
+        "properties": {
+          "transition_trigger": "divisibility_check",
+          "state_persistence": "contiguous_multiples_segment",
+          "reset_condition": "divisibility_failure"
+        },
+        "evidence_source": "solution_code"
+      },
+      {
+        "name": "interval_additivity",
+        "description": "图的最小生成树总权重可分解为各相邻顶点对之间最小合法权重的独立求和。由于基础图为边权固定的链状结构,且任意合法长边均可被若干权重不大于该长边的相邻边路径替代,全局最优解等价于对各间隙进行局部最小化。",
+        "properties": {
+          "decomposition_target": "adjacent_gap_weights",
+          "optimality_equivalence": "local_minimization_implies_global_optimum"
+        },
+        "evidence_source": "both"
+      }
+    ]
+  }
+}

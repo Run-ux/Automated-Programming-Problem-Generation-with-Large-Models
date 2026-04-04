@@ -1,0 +1,628 @@
+{
+  "status": "success",
+  "categories": [
+    {
+      "category": "single_array",
+      "label": "单数组题",
+      "problem_id": "CF1324C",
+      "title": "1324_C. Frog Jumps",
+      "dimensions": {
+        "I - Input Structure": {
+          "status": "ok",
+          "result": {
+            "type": "queries",
+            "length": {
+              "min": 1,
+              "max": 10000
+            },
+            "value_range": {
+              "min": null,
+              "max": null
+            },
+            "properties": {
+              "multiple_test_cases": true
+            },
+            "components": [
+              {
+                "role": "query",
+                "type": "string",
+                "length": {
+                  "min": 1,
+                  "max": 200000
+                },
+                "value_range": {
+                  "min": null,
+                  "max": null
+                },
+                "properties": {}
+              }
+            ]
+          }
+        },
+        "C - Core Constraints": {
+          "status": "ok",
+          "result": {
+            "constraints": [
+              {
+                "name": "path_constraint",
+                "description": "The frog can only jump to the left if the current cell is 'L' and to the right if the current cell is 'R'. The frog can jump by no more than d cells at once, where d is a positive integer chosen before the first jump. The goal is to find the minimum possible value of d such that the frog can reach the cell n+1 from the cell 0.",
+                "source_sections": [
+                  "description",
+                  "input"
+                ]
+              },
+              {
+                "name": "alphabet_constraint",
+                "description": "The string s consists of characters 'L' and 'R' only.",
+                "source_sections": [
+                  "description",
+                  "input"
+                ]
+              }
+            ]
+          }
+        },
+        "O - Objective": {
+          "status": "ok",
+          "result": {
+            "type": "minimize_value",
+            "description": "Find the minimum value of a parameter that allows a certain condition to be met.",
+            "target": "d"
+          }
+        },
+        "V - Invariant": {
+          "status": "ok",
+          "result": {
+            "invariants": [
+              {
+                "name": "interval_additivity",
+                "description": "通过计算连续的'L'字符的最大长度来确定最小跳跃距离d,这表明在每个'R'字符处可以将区间进行分割,并且这些区间的最大长度加1即为所需的最小跳跃距离。",
+                "properties": {},
+                "evidence_source": "solution_code"
+              },
+              {
+                "name": "greedy_choice",
+                "description": "选择最大的连续'L'字符长度作为跳跃距离d,这是一种贪心策略,确保了青蛙能够以最小的跳跃距离到达目标位置。",
+                "properties": {},
+                "evidence_source": "solution_code"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "category": "graph",
+      "label": "图题",
+      "problem_id": "aizu_train-00007-of-00039-05785de21e8b8429__row_0105",
+      "title": "p02064 Restore Shortest Path",
+      "dimensions": {
+        "I - Input Structure": {
+          "status": "ok",
+          "result": {
+            "type": "queries",
+            "length": {
+              "min": null,
+              "max": 500
+            },
+            "value_range": {
+              "min": null,
+              "max": 1000000000
+            },
+            "properties": {
+              "online_queries": true
+            },
+            "components": [
+              {
+                "role": "graph",
+                "type": "graph",
+                "length": {
+                  "min": 2,
+                  "max": 300
+                },
+                "value_range": {
+                  "min": null,
+                  "max": 1000000000
+                },
+                "properties": {
+                  "connected": true,
+                  "weighted": true
+                }
+              },
+              {
+                "role": "start_vertex",
+                "type": "integer",
+                "length": {
+                  "min": 1,
+                  "max": 300
+                },
+                "value_range": {
+                  "min": 1,
+                  "max": 300
+                },
+                "properties": {}
+              },
+              {
+                "role": "end_vertex",
+                "type": "integer",
+                "length": {
+                  "min": 1,
+                  "max": 300
+                },
+                "value_range": {
+                  "min": 1,
+                  "max": 300
+                },
+                "properties": {}
+              }
+            ]
+          }
+        },
+        "C - Core Constraints": {
+          "status": "ok",
+          "result": {
+            "constraints": [
+              {
+                "name": "connectivity",
+                "description": "The graph used in the problem is guaranteed to be connected.",
+                "source_sections": [
+                  "constraints"
+                ]
+              },
+              {
+                "name": "query_limit",
+                "description": "Find the shortest path from s to t with 5N or less questions. If the number of questions asked by the program exceeds 5N, it is judged as an incorrect answer (WA).",
+                "source_sections": [
+                  "description",
+                  "constraints"
+                ]
+              },
+              {
+                "name": "distance_bound",
+                "description": "For any two vertices u, v on the graph used in the problem, the maximum value of the shortest distance is 10^9 or less.",
+                "source_sections": [
+                  "constraints"
+                ]
+              }
+            ]
+          }
+        },
+        "O - Objective": {
+          "status": "ok",
+          "result": {
+            "type": "construction",
+            "description": "Find and output the shortest path from s to t with at most 5N queries.",
+            "target": "path",
+            "requires_solution": true
+          }
+        },
+        "V - Invariant": {
+          "status": "ok",
+          "result": {
+            "invariants": [
+              {
+                "name": "optimal_substructure",
+                "description": "最短路径问题可以通过子问题的最优解来构造全局最优解,即从s到t的最短路径可以由从s到中间点i以及从i到t的最短路径组成。",
+                "properties": {},
+                "evidence_source": "solution_code"
+              },
+              {
+                "name": "subproblem_independence",
+                "description": "在寻找从s到t的最短路径时,每个顶点作为潜在中间点的选择是独立的。这意味着对于任意两个不同的顶点i和j,它们是否能成为最短路径上的点互不影响。",
+                "properties": {},
+                "evidence_source": "solution_code"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "category": "tree_queries",
+      "label": "树加查询题",
+      "problem_id": "SYNTH_TREE_QUERY",
+      "title": "Synthetic Tree Queries Fixture",
+      "dimensions": {
+        "I - Input Structure": {
+          "status": "ok",
+          "result": {
+            "type": "composite",
+            "length": {
+              "min": null,
+              "max": null
+            },
+            "value_range": {
+              "min": null,
+              "max": null
+            },
+            "properties": {},
+            "components": [
+              {
+                "role": "tree",
+                "type": "tree",
+                "length": {
+                  "min": 1,
+                  "max": 200000
+                },
+                "value_range": {
+                  "min": null,
+                  "max": null
+                },
+                "properties": {
+                  "rooted": true
+                }
+              },
+              {
+                "role": "queries",
+                "type": "queries",
+                "length": {
+                  "min": 1,
+                  "max": 200000
+                },
+                "value_range": {
+                  "min": null,
+                  "max": null
+                },
+                "properties": {
+                  "online_queries": false
+                }
+              }
+            ]
+          }
+        },
+        "C - Core Constraints": {
+          "status": "ok",
+          "result": {
+            "constraints": [
+              {
+                "name": "connectivity",
+                "description": "给定的图是一个有根树。",
+                "source_sections": [
+                  "constraints"
+                ]
+              },
+              {
+                "name": "path_constraint",
+                "description": "每个查询要求计算两个节点之间的路径上的值的和。",
+                "source_sections": [
+                  "description",
+                  "input"
+                ]
+              }
+            ]
+          }
+        },
+        "O - Objective": {
+          "status": "ok",
+          "result": {
+            "type": "construction",
+            "description": "Compute the sum of values along the path between two nodes in a tree for each query.",
+            "target": "path_sum"
+          }
+        },
+        "V - Invariant": {
+          "status": "ok",
+          "result": {
+            "invariants": [
+              {
+                "name": "prefix_decomposability",
+                "description": "路径和可以通过前缀和分解计算,即任意两点u, v之间的路径和可以表示为从根到u的前缀和加上从根到v的前缀和减去两倍从根到它们最近公共祖先lca(u, v)的前缀和再加上lca(u, v)节点的值。",
+                "properties": {},
+                "evidence_source": "solution_code"
+              },
+              {
+                "name": "subproblem_independence",
+                "description": "每个查询独立处理,一个查询的结果不影响其他查询的结果。",
+                "properties": {},
+                "evidence_source": "statement"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "category": "feasibility",
+      "label": "判定题",
+      "problem_id": "CF1338D",
+      "title": "1338_D. Nested Rubber Bands",
+      "dimensions": {
+        "I - Input Structure": {
+          "status": "ok",
+          "result": {
+            "type": "tree",
+            "length": {
+              "min": 3,
+              "max": 100000
+            },
+            "value_range": {
+              "min": 1,
+              "max": 100000
+            },
+            "properties": {
+              "rooted": false,
+              "connected": true
+            },
+            "components": [
+              {
+                "role": "edges",
+                "type": "array",
+                "length": {
+                  "min": 2,
+                  "max": 99999
+                },
+                "value_range": {
+                  "min": 1,
+                  "max": 100000
+                },
+                "properties": {}
+              }
+            ]
+          }
+        },
+        "C - Core Constraints": {
+          "status": "ok",
+          "result": {
+            "constraints": [
+              {
+                "name": "connectivity",
+                "description": "给定的图是一个树,即连通无环图。",
+                "source_sections": [
+                  "description",
+                  "input"
+                ]
+              },
+              {
+                "name": "intersection",
+                "description": "对于每一对顶点a和b,橡胶圈a和b应该相交当且仅当在树中存在边(a, b)。",
+                "source_sections": [
+                  "description"
+                ]
+              },
+              {
+                "name": "planarity",
+                "description": "橡胶圈必须是简单回路,即不自相交的回路。",
+                "source_sections": [
+                  "description"
+                ]
+              },
+              {
+                "name": "inclusion",
+                "description": "橡胶圈a包含橡胶圈b,当且仅当橡胶圈b在橡胶圈a的区域内,并且它们不相交。",
+                "source_sections": [
+                  "description"
+                ]
+              },
+              {
+                "name": "nesting",
+                "description": "橡胶圈序列a1, a2, ..., ak (k ≥ 2)是嵌套的,当且仅当对于所有i (2 ≤ i ≤ k),ai-1包含ai。",
+                "source_sections": [
+                  "description"
+                ]
+              }
+            ]
+          }
+        },
+        "O - Objective": {
+          "status": "ok",
+          "result": {
+            "type": "maximize_count",
+            "description": "Maximize the length of a sequence of nested elements",
+            "target": "length_of_sequence"
+          }
+        },
+        "V - Invariant": {
+          "status": "ok",
+          "result": {
+            "invariants": [
+              {
+                "name": "optimal_substructure",
+                "description": "每个节点的最优解可以通过其子节点的最优解来计算。",
+                "properties": {},
+                "evidence_source": "solution_code"
+              },
+              {
+                "name": "state_transition",
+                "description": "状态转移方程定义了如何从子节点的状态转移到当前节点的状态。",
+                "properties": {},
+                "evidence_source": "solution_code"
+              },
+              {
+                "name": "subproblem_independence",
+                "description": "子问题的解是独立的,可以分别求解后再合并。",
+                "properties": {},
+                "evidence_source": "solution_code"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "category": "enumeration",
+      "label": "计数题",
+      "problem_id": "CF1468F",
+      "title": "1468_F. Full Turn",
+      "dimensions": {
+        "I - Input Structure": {
+          "status": "ok",
+          "result": {
+            "type": "queries",
+            "length": {
+              "min": 1,
+              "max": 10000
+            },
+            "value_range": {
+              "min": null,
+              "max": null
+            },
+            "properties": {
+              "multiple_test_cases": true
+            },
+            "components": [
+              {
+                "role": "test_case",
+                "type": "sequence",
+                "length": {
+                  "min": 1,
+                  "max": 100000
+                },
+                "value_range": {
+                  "min": -1000000000,
+                  "max": 1000000000
+                },
+                "properties": {
+                  "distinct": true
+                }
+              }
+            ]
+          }
+        },
+        "C - Core Constraints": {
+          "status": "ok",
+          "result": {
+            "constraints": [
+              {
+                "name": "orientation",
+                "description": "每个人会同步以相同角速度顺时针旋转,直到完成一个完整的360度旋转。两个人A和B在A看向B的同时B也看向A的方向时,认为他们进行了眼神接触。",
+                "formal": "For all pairs (i, j), if the direction from person i to person j and from person j to person i align at any point during the rotation, they make eye contact.",
+                "source_sections": [
+                  "description"
+                ]
+              },
+              {
+                "name": "distinctness",
+                "description": "每个测试用例中每个人的初始位置是唯一的。",
+                "formal": "For each test case, (x_i, y_i) ≠ (x_j, y_j) for all i ≠ j.",
+                "source_sections": [
+                  "input"
+                ]
+              }
+            ]
+          }
+        },
+        "O - Objective": {
+          "status": "ok",
+          "result": {
+            "type": "enumeration",
+            "description": "Count the number of pairs that satisfy a certain condition over a process.",
+            "target": "pairs"
+          }
+        },
+        "V - Invariant": {
+          "status": "ok",
+          "result": {
+            "invariants": [
+              {
+                "name": "symmetry",
+                "description": "对于每一对人A和B,如果A看向B的方向与B看向A的方向相同,则他们可以进行眼神交流。这种关系是对称的。",
+                "properties": {},
+                "evidence_source": "statement"
+              },
+              {
+                "name": "state_transition",
+                "description": "通过计算每个方向向量的简化形式,并使用计数器来记录每个方向向量出现的次数,从而确定有多少对人会在旋转过程中进行眼神交流。",
+                "properties": {},
+                "evidence_source": "solution_code"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "category": "no_solution_code",
+      "label": "无标准解法代码题",
+      "problem_id": "CF1324C_NO_CODE",
+      "title": "1324_C. Frog Jumps No Code Fixture",
+      "dimensions": {
+        "I - Input Structure": {
+          "status": "ok",
+          "result": {
+            "type": "queries",
+            "length": {
+              "min": 1,
+              "max": 10000
+            },
+            "value_range": {
+              "min": null,
+              "max": null
+            },
+            "properties": {
+              "multiple_test_cases": true
+            },
+            "components": [
+              {
+                "role": "query",
+                "type": "string",
+                "length": {
+                  "min": 1,
+                  "max": 200000
+                },
+                "value_range": {
+                  "min": null,
+                  "max": null
+                },
+                "properties": {
+                  "distinct": false,
+                  "sorted": false
+                }
+              }
+            ]
+          }
+        },
+        "C - Core Constraints": {
+          "status": "ok",
+          "result": {
+            "constraints": [
+              {
+                "name": "path_constraint",
+                "description": "青蛙从第0个单元格跳到第n+1个单元格,每次跳跃的距离不超过d。如果当前单元格的字符是'L',青蛙只能向左跳；如果是'R',青蛙只能向右跳。青蛙需要选择一个最小的d值,使得它能够从第0个单元格跳到第n+1个单元格。",
+                "formal": "Find the minimum d such that there exists a path from cell 0 to cell n+1, where each jump is at most d cells and follows the direction constraints given by the string s.",
+                "source_sections": [
+                  "description",
+                  "input"
+                ]
+              },
+              {
+                "name": "operation_limit",
+                "description": "青蛙在跳跃前选择一个正整数d,并且在整个过程中不能改变这个d值。青蛙可以跳跃任意多次,但每次跳跃的距离不能超过d。",
+                "formal": "The frog chooses a positive integer d before the first jump and cannot change it. The frog can perform as many jumps as needed, but each jump must be no more than d cells.",
+                "source_sections": [
+                  "description"
+                ]
+              }
+            ]
+          }
+        },
+        "O - Objective": {
+          "status": "ok",
+          "result": {
+            "type": "minimize_value",
+            "description": "Find the minimum value of a parameter that allows a certain condition to be met.",
+            "target": "d"
+          }
+        },
+        "V - Invariant": {
+          "status": "ok",
+          "result": {
+            "invariants": [
+              {
+                "name": "optimal_substructure",
+                "description": "问题的最优解可以通过子问题的最优解来构造,即找到每个'R'之间的最长连续'L'序列长度加1,可以确定最小跳跃距离d。",
+                "properties": {},
+                "evidence_source": "solution_code"
+              },
+              {
+                "name": "greedy_choice",
+                "description": "每次选择当前'R'之前的最长连续'L'序列长度加1作为跳跃距离d,确保了局部最优解能够达到全局最优解。",
+                "properties": {},
+                "evidence_source": "solution_code"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

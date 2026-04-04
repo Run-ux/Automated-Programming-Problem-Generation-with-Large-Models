@@ -28,13 +28,16 @@ from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_CHAT_MODEL = "qwen-max"
+DEFAULT_EMBEDDING_MODEL = "text-embedding-v3"
+
 
 @dataclass
 class QwenConfig:
     base_url: str | None = None
     api_key: str | None = None
-    model: str = "qwen-max"
-    embedding_model: str = "text-embedding-v3"
+    model: str | None = None
+    embedding_model: str | None = None
     timeout_s: int = 300
 
 
@@ -59,9 +62,11 @@ class QwenClient:
 
         self.base_url = base_url or "https://dashscope.aliyuncs.com/compatible-mode/v1"
         self.api_key = api_key
-        self.model = cfg.model or os.getenv("QWEN_MODEL", "qwen-max")
-        self.embedding_model = cfg.embedding_model or os.getenv(
-            "QWEN_EMBEDDING_MODEL", "text-embedding-v3"
+        self.model = cfg.model or os.getenv("QWEN_MODEL") or DEFAULT_CHAT_MODEL
+        self.embedding_model = (
+            cfg.embedding_model
+            or os.getenv("QWEN_EMBEDDING_MODEL")
+            or DEFAULT_EMBEDDING_MODEL
         )
         self.timeout_s = cfg.timeout_s
 

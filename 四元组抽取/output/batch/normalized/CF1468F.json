@@ -1,0 +1,55 @@
+{
+  "problem_id": "CF1468F",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "length": {
+      "min": 1,
+      "max": 100000
+    },
+    "value_range": {
+      "min": -1000000000,
+      "max": 1000000000
+    },
+    "properties": {
+      "multiple_test_cases": true
+    },
+    "components": []
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "orientation_constraint",
+        "description": "A pair of persons is counted if and only if their gaze directions simultaneously align with the line segment connecting them at some moment during the synchronous 360-degree clockwise rotation. This restricts valid pairs to those satisfying a specific geometric relationship between their initial positions and initial gaze vectors.",
+        "formal": "\\exists \\theta \\in [0, 2\\pi) : \\text{Rot}(D_i, -\\theta) \\parallel (P_j - P_i) \\land \\text{Rot}(D_j, -\\theta) \\parallel (P_i - P_j)",
+        "source_sections": [
+          "description"
+        ]
+      },
+      {
+        "name": "distinctness",
+        "description": "The spatial coordinates of all persons within a single test case are pairwise distinct.",
+        "formal": "\\forall i \\neq j, (x_i, y_i) \\neq (x_j, y_j)",
+        "source_sections": [
+          "input"
+        ]
+      }
+    ]
+  },
+  "objective": {
+    "type": "enumeration",
+    "description": "统计满足特定几何对齐与同步旋转条件的配对数量",
+    "target": "pair_count",
+    "requires_solution": false
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "relative_angle_invariance",
+        "description": "同步同速旋转保证任意两人视线方向的相对夹角在过程中恒定不变,使得眼神交流发生的充要条件等价于两者的初始视线方向向量严格互为相反向量。该几何不变量将动态旋转判定转化为静态的相反向量频次匹配,算法通过维护已遍历方向的哈希计数实现线性累加。",
+        "properties": {},
+        "evidence_source": "both"
+      }
+    ]
+  }
+}

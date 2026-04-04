@@ -1,0 +1,56 @@
+{
+  "problem_id": "CF1338B",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "tree",
+    "length": {
+      "min": 3,
+      "max": 100000
+    },
+    "value_range": {
+      "min": null,
+      "max": null
+    },
+    "properties": {}
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "对于树中任意两个不同的叶子节点,连接它们的简单路径上所有边权的按位异或和必须等于0。",
+        "formal": "\\forall v_1, v_2 \\in \\text{Leaves}, v_1 \\neq v_2 \\implies \\bigoplus_{e \\in \\text{Path}(v_1, v_2)} w(e) = 0",
+        "source_sections": [
+          "description"
+        ]
+      }
+    ]
+  },
+  "objective": {
+    "type": "min_max",
+    "description": "Determine the minimum and maximum possible number of distinct edge weights such that the XOR sum of weights on the path between any two leaves equals zero.",
+    "target": "distinct_weights_count",
+    "requires_solution": false
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "xor_invariance",
+        "description": "The pairwise zero-XOR condition implies that the XOR sum from a fixed root to every terminal node must be identical. This reduces the global constraint to a uniform path property, enabling depth-based analysis.",
+        "properties": {},
+        "evidence_source": "both"
+      },
+      {
+        "name": "parity_invariance",
+        "description": "The minimum number of distinct values is strictly determined by the parity distribution of terminal node depths. Uniform parity allows a single value; mixed parity requires at least three due to alternating cancellation properties along paths.",
+        "properties": {},
+        "evidence_source": "solution_code"
+      },
+      {
+        "name": "local_equality_invariance",
+        "description": "Edges from a common parent to multiple terminal children must share identical values to preserve the root-to-terminal XOR invariant. Each additional terminal sibling linearly reduces the maximum possible distinct value count.",
+        "properties": {},
+        "evidence_source": "solution_code"
+      }
+    ]
+  }
+}

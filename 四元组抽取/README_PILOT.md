@@ -4,6 +4,16 @@
 
 ```powershell
 $env:DASHSCOPE_API_KEY = "your-api-key-here"
+$env:QWEN_EXTRACT_MODEL = "qwen-max"
+$env:QWEN_NORMALIZE_MODEL = "qwen-flash"
+$env:QWEN_EMBEDDING_MODEL = "text-embedding-v3"
+```
+
+也可以直接执行 [scripts/set_qwen_env.ps1](/D:/AutoProblemGen/四元组抽取/scripts/set_qwen_env.ps1)：
+
+```powershell
+.\scripts\set_qwen_env.ps1 -ApiKey "your-api-key-here"
+.\scripts\set_qwen_env.ps1 -ApiKey "your-api-key-here" -PersistUser
 ```
 
 ## 输入格式
@@ -22,21 +32,22 @@ $env:DASHSCOPE_API_KEY = "your-api-key-here"
 
 ```powershell
 cd D:\AutoProblemGen\四元组抽取
-python extract.py --input D:\AutoProblemGen\爬取题目\output\imandra_curated_schema_inputs\16_codeforces_1399_e1_weights_division_easy_version.json --output output\single\ --rounds 3 --resume
+python extract.py --input D:\AutoProblemGen\爬取题目\output\imandra_curated_schema_inputs\16_codeforces_1399_e1_weights_division_easy_version.json --output output\single\ --resume
 ```
 
 目录批量：
 
 ```powershell
-python extract.py --input D:\AutoProblemGen\爬取题目\output\imandra_curated_schema_inputs --output output\batch\ --rounds 3 --resume
+python extract.py --input D:\AutoProblemGen\爬取题目\output\imandra_curated_schema_inputs --output output\batch\ --resume
 ```
 
-## 归一化与投票
+## 归一化
 
 ```powershell
 python normalize.py --input output\batch\raw\ --output output\batch\normalized\ --embedding-threshold 0.85
-python vote.py --input output\batch\normalized\ --output output\batch\voted\
 ```
+
+`normalized\` 目录中的文件就是最终结果。
 
 ## 验证
 
@@ -54,6 +65,6 @@ output/
 └── batch/
     ├── raw/
     ├── normalized/
-    ├── voted/
+    ├── label_registry/
     └── logs/
 ```

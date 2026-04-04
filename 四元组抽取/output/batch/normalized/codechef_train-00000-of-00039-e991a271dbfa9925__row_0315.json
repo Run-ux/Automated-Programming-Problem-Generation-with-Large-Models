@@ -1,0 +1,61 @@
+{
+  "problem_id": "codechef_train-00000-of-00039-e991a271dbfa9925__row_0315",
+  "source": "codechef",
+  "input_structure": {
+    "type": "array",
+    "length": {
+      "min": 1,
+      "max": 100
+    },
+    "value_range": {
+      "min": null,
+      "max": null
+    },
+    "properties": {
+      "multiple_test_cases": true
+    },
+    "components": []
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_type",
+        "description": "Specifies the four allowed activity types and their deterministic laddu accrual rules: CONTEST_WON yields 300 + max(0, 20 - rank), TOP_CONTRIBUTOR yields 300, BUG_FOUND yields severity points, and CONTEST_HOSTED yields 50.",
+        "formal": "accrual(type, param) = {300 + max(0, 20 - rank) if type == CONTEST_WON; 300 if type == TOP_CONTRIBUTOR; severity if type == BUG_FOUND; 50 if type == CONTEST_HOSTED}",
+        "source_sections": [
+          "description",
+          "input"
+        ]
+      },
+      {
+        "name": "range_bound",
+        "description": "Each monthly redemption must consume at least a fixed threshold of laddus (200 for origin 'INDIAN', 400 for 'NON_INDIAN'), restricting the maximum number of feasible redemptions to floor(total_accrued / threshold).",
+        "formal": "max_months = floor(total_laddus / threshold), threshold = (origin == 'INDIAN' ? 200 : 400)",
+        "source_sections": [
+          "description",
+          "output"
+        ]
+      }
+    ]
+  },
+  "objective": {
+    "type": "maximize_count",
+    "description": "计算在固定月度兑换阈值下,总积分可覆盖的最大月数",
+    "target": "months",
+    "requires_solution": false
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "算法在顺序遍历活动记录时,持续维护一个累加器状态,该状态始终等于已处理活动所获积分的总和。每次状态转移严格依据活动类型与参数按确定规则增加对应分值,保证累加过程的确定性与无后效性,最终通过固定阈值的整除运算推导结果。",
+        "properties": {
+          "state_definition": "prefix_sum_of_scores",
+          "transition_rule": "additive_update",
+          "termination_mapping": "floor_division_by_threshold"
+        },
+        "evidence_source": "solution_code"
+      }
+    ]
+  }
+}

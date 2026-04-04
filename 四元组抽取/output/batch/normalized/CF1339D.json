@@ -1,0 +1,67 @@
+{
+  "problem_id": "CF1339D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "tree",
+    "length": {
+      "min": 3,
+      "max": 100000
+    },
+    "value_range": {
+      "min": null,
+      "max": null
+    },
+    "properties": {},
+    "components": []
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "path_constraint",
+        "description": "For every pair of distinct leaves in the tree, the bitwise XOR sum of the weights of all edges on the simple path connecting them must be exactly 0.",
+        "formal": "\\forall u, v \\in \\text{Leaves}, u \\neq v \\Rightarrow \\bigoplus_{e \\in \\text{path}(u,v)} w(e) = 0",
+        "source_sections": [
+          "description"
+        ]
+      },
+      {
+        "name": "range_bound",
+        "description": "Each edge in the tree must be assigned a positive integer weight.",
+        "formal": "w(e) \\in \\mathbb{Z}^+ \\quad \\forall e \\in E",
+        "source_sections": [
+          "description"
+        ]
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "description": "Determine the minimum and maximum possible cardinality of the assigned weight set satisfying the pairwise leaf path XOR constraints.",
+    "target": "distinct_weight_count",
+    "requires_solution": false
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "state_transition",
+        "description": "DFS traversal maintains the parity of the distance from a chosen root to each node. The state transitions by flipping parity across each edge, enabling accurate classification of all leaves into even and odd depth sets. This classification directly determines the minimum number of distinct weights required.",
+        "properties": {
+          "state_definition": "(current_vertex, depth_parity)",
+          "transition_rule": "child_parity = parent_parity XOR 1",
+          "aggregation_target": "leaf_count_by_parity"
+        },
+        "evidence_source": "solution_code"
+      },
+      {
+        "name": "local_equality_invariance",
+        "description": "For any internal vertex, all edges connecting it to its direct leaf children must be assigned the same weight. This structural necessity arises because the path between any two such leaves consists solely of these two edges, requiring their XOR to be zero. This invariant dictates the exact reduction in the maximum possible distinct weights.",
+        "properties": {
+          "trigger_condition": "internal_node_with_multiple_leaf_children",
+          "structural_implication": "incident_leaf_edges_must_be_identical",
+          "count_adjustment": "subtract_leaf_children_count_minus_one"
+        },
+        "evidence_source": "solution_code"
+      }
+    ]
+  }
+}

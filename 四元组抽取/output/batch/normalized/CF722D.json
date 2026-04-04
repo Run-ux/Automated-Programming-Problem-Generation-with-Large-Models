@@ -1,0 +1,76 @@
+{
+  "problem_id": "CF722D",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "array",
+    "length": {
+      "min": 1,
+      "max": 50000
+    },
+    "value_range": {
+      "min": 1,
+      "max": 1000000000
+    },
+    "properties": {
+      "distinct": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "operation_type",
+        "description": "仅允许对集合中的整数执行两种变换操作:将当前整数乘以2,或将当前整数乘以2后加1。",
+        "formal": "x \\to 2x \\quad \\text{或} \\quad x \\to 2x+1",
+        "source_sections": [
+          "description"
+        ]
+      },
+      {
+        "name": "distinctness",
+        "description": "输入集合Y与待求集合X均必须由n个互不相同的正整数构成。",
+        "formal": "X, Y \\subset \\mathbb{Z}^+, |X|=|Y|=n, \\forall a,b \\in X, a \\neq b",
+        "source_sections": [
+          "description",
+          "input"
+        ]
+      },
+      {
+        "name": "state_transition",
+        "description": "集合X必须能够通过有限次允许的操作变换为集合Y,即Y中的每个元素都必须能由X中的某个元素经过若干次指定操作到达。",
+        "formal": "\\forall y \\in Y, \\exists x \\in X, y \\text{ is reachable from } x \\text{ via allowed operations}",
+        "source_sections": [
+          "description"
+        ]
+      }
+    ]
+  },
+  "objective": {
+    "type": "min_max",
+    "description": "Minimize the maximum element of a source set that can generate the given target set through allowed transformations.",
+    "target": "max_element",
+    "requires_solution": true
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "The global maximum of the maintained set is non-increasing throughout the execution. By iteratively selecting the current peak and replacing it with a smaller valid ancestor, the algorithm monotonically pushes the objective value downward until a fixed point is reached where no peak can be reduced without violating distinctness.",
+        "properties": {
+          "global_maximum_non_increasing": true,
+          "convergence_to_fixed_point": true
+        },
+        "evidence_source": "solution_code"
+      },
+      {
+        "name": "state_transition",
+        "description": "The state is defined as a collection of exactly n distinct positive integers. Each transition identifies the maximum element, computes its highest unoccupied ancestor via repeated integer division, and substitutes it. This update rule strictly preserves set cardinality and pairwise distinctness at every step.",
+        "properties": {
+          "cardinality_constant": true,
+          "distinctness_preserved": true,
+          "update_target": "current_maximum"
+        },
+        "evidence_source": "solution_code"
+      }
+    ]
+  }
+}

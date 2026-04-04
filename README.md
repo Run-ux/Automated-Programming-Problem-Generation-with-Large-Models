@@ -180,15 +180,16 @@ phase1 的标签集合
 
 ## 5. `生成题面`
 
-这是当前版本的正式生成器。它不再把 `transform_space` 当成主驱动，而是围绕四元组 `I/C/O/V`、规则和两阶段 LLM 规划生成结构化题面。
+这是当前版本的正式生成器，围绕四元组 `I/C/O/V`、规则和两阶段 LLM 规划生成结构化题面。当前内部采用“规则声明 + 代码执行”架构。规则资格阶段会先由 LLM 按角色审查式提示词完成单规则准入判断，handler 负责解释结果、执行规划校验、题面校验并生成审计事件。
 
 核心文件包括：
 
 - `main.py`：命令行入口，显式要求 `mode`
-- `schema_preparer.py`：做四元组归一化，并保留历史兼容字段
+- `schema_preparer.py`：做四元组归一化
 - `planning_rules.json`：规则与红线
 - `rulebook.py`：规则文件读取与模式、规则开关
-- `variant_planner.py`：执行规则规划并完成硬门槛校验
+- `rule_handlers.py`：规则资格审查接入、规划校验、题面校验与审计事件
+- `variant_planner.py`：执行规则选择、候选回退与硬门槛校验
 - `prompt_builder.py`：构造 planner 与 generator 的两阶段提示词
 - `problem_generator.py`：根据实例化四元组生成结构化题目
 - `pipeline.py`：把规划、生成、渲染、落盘串起来
@@ -200,10 +201,10 @@ phase1 的标签集合
 ```text
 读取 voted schema
   -> schema_preparer 归一化为四元组
-  -> variant_planner 先在可用规则中选择最适合当前 schema 的规则
-  -> 再按选中的规则规划并过硬门槛
-  -> 将命中的规则实例化为新四元组
-  -> problem_generator 让模型输出严格 JSON
+  -> rule_handlers 发起单规则资格审查
+  -> variant_planner 排序并依次尝试前几条候选规则
+  -> 通过代码级规则校验后实例化新四元组
+  -> problem_generator 让模型输出严格 JSON，并继续执行规则专属题面校验
   -> markdown_renderer 渲染为题面 Markdown
   -> pipeline 保存 markdown、artifact、过程报告
 ```
@@ -217,9 +218,9 @@ phase1 的标签集合
 
 这个目录的方案思想有三个关键点：
 
-1. 创新来源从“枚举第五维”改成“规则选择 + planner”。
-2. 差异控制只计算四轴距离 `I/C/O/V`，但为兼容旧消费者，artifact 中仍保留 `distance_breakdown.T = 0.0`。
-3. artifact 一方面保留 `difference_plan`、`predicted_schema_distance`、`changed_axes_realized`、`instantiated_schema_snapshot` 这些旧壳字段，另一方面新增 `mode`、`applied_rule`、`rule_selection_reason`、`rejected_candidates`、`algorithmic_delta_claim` 和 `same_family_fusion` 的消融论证。
+1. 创新来源是规则选择加 planner，并把变化直接落实到实例化四元组。
+2. 差异控制只计算四轴距离 `I/C/O/V`，artifact 会显式记录 `distance_breakdown`、`changed_axes_realized` 与 `difference_plan`。
+3. artifact 还会记录 `mode`、`source_problem_ids`、`applied_rule`、`rule_selection_reason`、`rejected_candidates`、`algorithmic_delta_claim`，以及 `rule_version`、`selection_trace`、`validation_trace`、`candidate_attempts`。
 
 因此它不是一个“让模型编题”的脚本，而是一个“规则驱动的四元组生成管线”。
 

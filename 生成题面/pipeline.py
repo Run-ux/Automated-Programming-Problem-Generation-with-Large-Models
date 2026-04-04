@@ -226,6 +226,7 @@ class GenerationPipeline:
             "variant_index": plan.variant_index,
             "seed": plan.seed,
             "mode": plan.mode,
+            "rule_version": plan.rule_version,
             "theme": {
                 "id": plan.theme.theme_id,
                 "name": plan.theme.name,
@@ -236,10 +237,6 @@ class GenerationPipeline:
             "changed_axes_realized": list(plan.changed_axes_realized),
             "objective": plan.objective,
             "rule_selection_reason": plan.rule_selection_reason,
-            "numerical_parameters": plan.numerical_parameters,
-            "structural_options": plan.structural_options,
-            "input_structure_options": plan.input_structure_options,
-            "invariant_options": plan.invariant_options,
             "instantiated_schema_snapshot": asdict(plan.instantiated_schema_snapshot),
             "applied_rule": plan.applied_rule,
             "rejected_candidates": plan.rejected_candidates,
@@ -252,6 +249,9 @@ class GenerationPipeline:
             "planning_status": plan.planning_status,
             "planning_error_reason": plan.planning_error_reason,
             "planning_feedback": plan.planning_feedback,
+            "selection_trace": plan.selection_trace,
+            "validation_trace": plan.validation_trace,
+            "candidate_attempts": plan.candidate_attempts,
             "generated_problem": payload,
         }
 
@@ -349,6 +349,7 @@ class GenerationPipeline:
             "### 规则规划",
             f"- mode: {plan.mode}",
             f"- planning_status: {plan.planning_status}",
+            f"- rule_version: {plan.rule_version or '无'}",
             f"- source_problem_ids: {', '.join(plan.source_problem_ids)}",
             f"- applied_rule: {plan.applied_rule or '无'}",
             f"- rule_selection_reason: {plan.rule_selection_reason or '无'}",
@@ -365,11 +366,19 @@ class GenerationPipeline:
         ]
         lines.extend(self._render_auxiliary_moves(plan.auxiliary_moves))
         lines.extend(self._render_rejected_candidates(plan.rejected_candidates))
+        lines.extend(self._render_candidate_attempts(plan.candidate_attempts))
         lines.extend(
             [
                 "",
                 "### 解法变化说明",
                 *self._render_algorithmic_delta(plan.algorithmic_delta_claim),
+            ]
+        )
+        lines.extend(
+            [
+                "",
+                "### 审计轨迹",
+                *self._render_trace_summary(plan.selection_trace, plan.validation_trace),
             ]
         )
         if plan.mode == "same_family_fusion":
@@ -456,7 +465,6 @@ class GenerationPipeline:
                 schema.get("invariant", {}).get("invariants", []),
                 empty_text="  - 无",
             ),
-            f"- transform_space_compat_only: {'yes' if schema.get('transform_space') else 'no'}",
         ]
 
     def _render_auxiliary_moves(self, moves: list[str]) -> list[str]:
@@ -478,6 +486,23 @@ class GenerationPipeline:
             )
         return lines
 
+    def _render_candidate_attempts(self, candidate_attempts: list[dict[str, Any]]) -> list[str]:
+        lines = ["- candidate_attempts:"]
+        if not candidate_attempts:
+            lines.append("  - 无")
+            return lines
+        for item in candidate_attempts:
+            lines.append(
+                "  - "
+                + f"attempt_index={item.get('attempt_index', '')}; "
+                + f"rule_id={item.get('rule_id', '')}; "
+                + f"score={item.get('score', '')}; "
+                + f"accepted={item.get('accepted', False)}; "
+                + f"reason_code={item.get('reason_code', '') or '无'}; "
+                + f"reason={item.get('reason', '') or '无'}"
+            )
+        return lines
+
     def _render_algorithmic_delta(self, claim: dict[str, Any]) -> list[str]:
         if not claim:
             return ["- 无"]
@@ -485,7 +510,7 @@ class GenerationPipeline:
             f"- seed_solver_core: {claim.get('seed_solver_core', '') or '无'}",
             f"- reusable_subroutines: {claim.get('reusable_subroutines', '') or '无'}",
             f"- new_solver_core: {claim.get('new_solver_core', '') or '无'}",
-            f"- new_proof_obligation: {claim.get('new_proof_obligation', '') or '无'}",
+            f"- 新增正确性证明: {claim.get('new_proof_obligation', '') or '无'}",
             f"- why_direct_reuse_fails: {claim.get('why_direct_reuse_fails', '') or '无'}",
         ]
 
@@ -500,6 +525,35 @@ class GenerationPipeline:
             f"- without_seed_b: {plan.fusion_ablation.get('without_seed_b', '') or '无'}",
         ]
 
+    def _render_trace_summary(
+        self,
+        selection_trace: list[dict[str, Any]],
+        validation_trace: list[dict[str, Any]],
+    ) -> list[str]:
+        lines = [
+            f"- selection_trace_count: {len(selection_trace)}",
+            f"- validation_trace_count: {len(validation_trace)}",
+        ]
+        if selection_trace:
+            for item in selection_trace[:3]:
+                lines.append(
+                    "  - "
+                    + f"rule_id={item.get('rule_id', '')}; "
+                    + f"accepted={item.get('accepted', False)}; "
+                    + f"score={item.get('score', '')}; "
+                    + f"reason_code={item.get('reason_code', '') or '无'}"
+                )
+        if validation_trace:
+            for item in validation_trace[:5]:
+                lines.append(
+                    "  - "
+                    + f"stage={item.get('stage', '')}; "
+                    + f"rule_id={item.get('rule_id', '')}; "
+                    + f"outcome={item.get('outcome', '')}; "
+                    + f"reason_code={item.get('reason_code', '') or '无'}"
+                )
+        return lines
+
     def _render_instantiated_schema(self, plan: VariantPlan) -> list[str]:
         snapshot = asdict(plan.instantiated_schema_snapshot)
         return [
@@ -508,12 +562,6 @@ class GenerationPipeline:
             f"- input_structure: {self._describe_input_structure(snapshot.get('input_structure', {}))}",
             f"- objective: {self._describe_objective(snapshot.get('objective', {}))}",
             f"- difficulty: {snapshot.get('difficulty', '') or '无'}",
-            "- selected_structural_options: "
-            + (", ".join(snapshot.get("selected_structural_options", [])) or "无"),
-            "- selected_input_options: "
-            + (", ".join(snapshot.get("selected_input_options", [])) or "无"),
-            "- selected_invariant_options: "
-            + (", ".join(snapshot.get("selected_invariant_options", [])) or "无"),
             "- constraints:",
             *self._render_named_items(
                 snapshot.get("core_constraints", {}).get("constraints", []),
@@ -577,7 +625,6 @@ def _normalize_distance_breakdown(distance_breakdown: dict[str, float]) -> dict[
         "C": round(float(distance_breakdown.get("C", 0.0)), 4),
         "O": round(float(distance_breakdown.get("O", 0.0)), 4),
         "V": round(float(distance_breakdown.get("V", 0.0)), 4),
-        "T": round(float(distance_breakdown.get("T", 0.0)), 4),
         "total": round(float(distance_breakdown.get("total", 0.0)), 4),
     }
     return normalized

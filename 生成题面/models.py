@@ -32,12 +32,39 @@ class InstantiatedSchema:
     core_constraints: dict[str, Any]
     objective: dict[str, Any]
     invariant: dict[str, Any]
-    instantiated_parameters: dict[str, Any] = field(default_factory=dict)
-    selected_structural_options: list[str] = field(default_factory=list)
-    selected_input_options: list[str] = field(default_factory=list)
-    selected_invariant_options: list[str] = field(default_factory=list)
     theme: dict[str, Any] = field(default_factory=dict)
     difficulty: str = ""
+
+
+@dataclass
+class AuditTraceEvent:
+    stage: str
+    rule_id: str
+    outcome: str
+    reason_code: str
+    message: str
+    details: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class RuleSelectionResult:
+    rule_id: str
+    handler: str
+    accepted: bool
+    score: float
+    reason_code: str
+    selection_reason: str
+    risk_tags: list[str] = field(default_factory=list)
+    details: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class RuleValidationOutcome:
+    accepted: bool
+    errors: list[str] = field(default_factory=list)
+    events: list[AuditTraceEvent] = field(default_factory=list)
+    reason_code: str = ""
+    message: str = ""
 
 
 @dataclass
@@ -70,10 +97,10 @@ class VariantPlan:
     seed_contributions: dict[str, Any] = field(default_factory=dict)
     fusion_ablation: dict[str, Any] = field(default_factory=dict)
     auxiliary_moves: list[str] = field(default_factory=list)
-    numerical_parameters: dict[str, Any] = field(default_factory=dict)
-    structural_options: list[str] = field(default_factory=list)
-    input_structure_options: list[str] = field(default_factory=list)
-    invariant_options: list[str] = field(default_factory=list)
+    rule_version: str = ""
+    selection_trace: list[dict[str, Any]] = field(default_factory=list)
+    validation_trace: list[dict[str, Any]] = field(default_factory=list)
+    candidate_attempts: list[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass

@@ -1,42 +1,26 @@
-"""
-算法不变量（Invariant, V）维度的 Prompt 模板
-
-用于抽取题目解法中始终成立的结构性条件，包括：
-- 双指针左右端点单调前进
-- 前缀和可叠加
-- DP 状态只依赖子状态
-- 贪心选择性质
-等。
-
-不变量几乎决定了解法范式，是母题识别的核心依据。
-
-输出 JSON Schema：
-{
-    "invariants": [
-        {
-            "name": "monotonicity | optimal_substructure | greedy_choice | ...",
-            "description": "不变量的中文描述",
-            "properties": {
-                "left_monotonic": true/false,
-                "right_monotonic": true/false,
-                ... (其他性质)
-            }
-        }
-    ]
-}
-"""
+"""算法不变量维度 Prompt。"""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 try:
+    from ..label_vocab import (
+        INVARIANT_EVIDENCE_SOURCES,
+        INVARIANT_LABELS,
+    )
     from ..problem_schema import prepare_problem_record
+    from .prompt_sections import build_problem_context
 except ImportError:
+    from label_vocab import (
+        INVARIANT_EVIDENCE_SOURCES,
+        INVARIANT_LABELS,
+    )
     from problem_schema import prepare_problem_record
+    from prompts.prompt_sections import build_problem_context
 
 if TYPE_CHECKING:
-    from typing import Dict, Any
+    from typing import Any, Dict
 
 
 SOLUTION_CODE_KEYS = [
@@ -44,98 +28,51 @@ SOLUTION_CODE_KEYS = [
     "reference_solution",
 ]
 
+INVARIANT_NAMES = [name for name, _ in INVARIANT_LABELS]
+
 
 def build_system_prompt() -> str:
-    """构建系统提示词（角色定义与输出格式要求）"""
-    return """你是编程竞赛算法不变量分析专家。
+    invariant_names = ", ".join(INVARIANT_NAMES)
+    return f"""你是编程竞赛算法不变量分析专家。
 
-你的任务是识别题目解法中始终成立的结构性条件（算法不变量）。
-输入中除了题面，还可能额外提供该题的标准解法代码。
+你的任务是抽取标准解法对应的关键算法不变量。
 
-算法不变量定义：
-在算法执行过程中，始终保持成立的性质或条件，是算法正确性的核心保证。
+科研定义：
+- 算法不变量指标准解法在计算过程中持续维护、反复利用或作为正确性依据的稳定性质。
+- 该维度要求证据能够落实到状态定义、转移关系、边界推进、守恒关系、可合并关系或交换性质等可检验对象。
+- 变量名、模板代码、容器选择、输入输出细节不属于不变量。
+- 证据不足时返回空结果。
 
-常见不变量类型（优先从中选择，但允许必要时新增）：
-1. monotonicity（单调性）
-   - 双指针：左右端点单调前进
-   - 滑动窗口：窗口右端点单调递增
-   - 二分搜索：搜索区间单调缩小
+硬规则：
+1. 只输出严格 JSON 对象，不输出任何解释文字。
+2. name 必须优先复用规范不变量词表：{invariant_names}。
+3. 若现有词表无法准确覆盖当前题目的关键稳定性质，允许创建新的抽象标签。
+4. 新标签必须使用小写英文加下划线格式，并保持算法术语风格。
+5. 不得把题目情境词直接写进 name、properties 的键名或 evidence_source。
 
-2. optimal_substructure（最优子结构）
-   - DP：最优解包含子问题的最优解
+证据优先级：
+1. 标准解法代码
+2. 题面全文
+3. Input 分节
+4. Constraints 分节
+5. Output 分节
+6. 标题
 
-3. greedy_choice（贪心选择性质）
-   - 局部最优选择导致全局最优
+抽取边界：
+- 有标准解法代码时，以代码为主证据，重点读取状态定义、循环推进方向、维护量、转移关系、合并规则。
+- 没有代码时，只保留题面能够明确支撑的结构性质；证据不足时返回 {{"invariants": []}}。
+- 变量名、宏定义、模板封装、输入输出写法不计入不变量。
+- 无充分证据时宁可少报，不补报。
+- properties 只写稳定、可机械理解的细粒度事实；拿不准就写空对象。
+- evidence_source 只允许使用 statement、solution_code、both。
 
-4. state_transition（状态转移不变量）
-   - 状态机 DP、博弈 DP 的转移一致性
-
-5. interval_additivity（区间可加性）
-   - 前缀和：区间和可通过端点差值计算
-
-6. interval_mergeable（区间可合并性）
-   - 线段树：区间信息可通过子区间合并
-
-7. divide_conquer（分治不变量）
-   - 大问题的解由子问题解合成
-
-8. topological_order（拓扑序不变量）
-   - DAG 上的顺序依赖
-
-9. flow_conservation（流守恒）
-   - 网络流中的守恒性质
-
-10. matroid_exchange（拟阵交换性）
-    - 最小生成树等贪心正确性基础
-
-11. convexity（凸性不变量）
-    - 凸壳、斜率优化中的凸性结构
-
-12. symmetry（对称性）
-    - 对称变换不改变问题结构
-
-13. idempotency（幂等性）
-    - RMQ/倍增等可重复合并
-
-14. prefix_decomposability（前缀可分解性）
-    - KMP/Z 函数的前缀结构
-
-15. cycle_invariant（环不变量）
-    - 置换环、判圈性质
-
-16. subproblem_independence（子问题独立性）
-    - 分治或 DP 中子问题相互独立
-
-17. exchange_argument（交换论证）
-    - 邻项交换贪心证明
-
-18. potential_function（势函数）
-    - 均摊分析中的势函数不变量
-
-输出要求：
-- 必须输出严格的 JSON 对象，不要输出任何解释文字
-- JSON 必须包含 invariants 数组字段
-- 每个不变量必须包含 name, description, properties 字段
-- name 必须是简洁的英文标识（如 monotonicity, greedy_choice）
-- description 必须清晰描述不变量的含义
-- properties 包含具体的性质（可以为空对象 {}）
-- 如果推荐清单中没有合适类型，必须自由新增更准确的不变量类型，不要为了套用而强行归类
-- 如果存在多个关键不变量，必须全部输出，不要只选一个
-
-识别原则：
-1. 不变量不是题目要求，而是解法的结构性质
-2. 不变量决定了"为什么这个算法成立"
-3. 如果提供了标准解法代码，应结合代码中的状态设计、循环结构、转移关系、维护量、数据结构操作来识别不变量
-4. 标准解法代码是高价值证据，但不要把语言细节、变量名、宏定义、模板代码当成不变量
-5. 优先识别主流算法范式的典型不变量
-6. 如果题目解法仍不明确，可以根据输入结构和约束推断可能的不变量
-
-抽象化要求（CRITICAL）：
-- name、description 和 properties 的 key 必须用算法领域的抽象术语，严禁包含原题目的具体情境词汇
-- 不变量描述的是算法的结构性质，不是题目故事的叙述
-- 反例：题目说"机器人每次只能向右或向下走" → description 不能写 "机器人移动方向限制"，应写 "状态转移方向受限（仅向右/向下），满足 DAG 上的最优子结构"
-- 反例：题目说"每轮拍卖价格递增" → name 不能写 "auction_price_increase"，应写 "monotonicity"
-- 正例：题目说"蚂蚁在树上爬行相遇会掉头" → name 写 "symmetry"，description 写 "对称性：碰撞等价于穿越，可消除个体差异"
+判别边界：
+- monotonicity 用于指针、边界、答案下界或决策前沿沿单一方向推进的性质。
+- state_transition 用于状态定义与转移关系构成的稳定维护规律。
+- exchange_argument 只在替换某个局部选择后仍能保持可行性或最优性时使用。
+- flow_conservation 用于流量守恒、质量守恒或等价的平衡关系。
+- interval_additivity 与 interval_mergeable 只在区间量可以分解或合并时使用。
+- 最优子结构、贪心选择或分治范式若无法落实为稳定维护关系，不单列为不变量标签，应写入 description。
 """
 
 
@@ -152,103 +89,76 @@ def _get_standard_solution_code(problem: Dict[str, Any]) -> str:
 
 
 def build_user_prompt(problem: Dict[str, Any]) -> str:
-    """
-    构建用户提示词（题面内容）
-    
-    Args:
-        problem: 单题 schema JSON，核心字段包括：
-            - problem_id: 题目 id
-            - title: 题目标题
-            - description: 题目描述
-            - source: 来源对象
-            - limits: 时间/空间限制对象
-            - reference_solution.code: 标准解法代码，可选
-
-        其中 Input / Output / Constraints 会从 description 中自动切分。
-    
-    Returns:
-        格式化的用户提示词
-    """
     problem = prepare_problem_record(problem)
     solution_code = _get_standard_solution_code(problem)
-    solution_code_section = ""
-    if solution_code:
-        solution_code_section = f"""
-标准解法代码：
-```text
-{solution_code}
-```
-"""
+    context = build_problem_context(problem, solution_code=solution_code)
+    invariant_names = ", ".join(INVARIANT_NAMES)
+    return f"""请根据下列题目信息抽取关键算法不变量。
 
-    return f"""请识别以下题目解法的算法不变量：
+{context}
 
-标题：{problem.get('title', 'N/A')}
+字段说明：
+1. invariants[].name 表示不变量的抽象标签。现有词表能够覆盖时填写规范标签；只有明确存在语义缺口时才新建标签；证据不足时整条不变量不出现。常见误填：把贪心、二分、DP 这类算法范式直接写进 name。
+2. invariants[].description 表示该不变量为何成立以及它稳定约束了什么。存在该不变量项时始终填写；只有整条不变量不存在时才不出现。常见误填：复述代码步骤，却没有说明稳定维护的性质。
+3. invariants[].properties 表示可机械理解的细粒度事实。能够明确抽出稳定布尔性质或局部结构事实时填写；拿不准时写空对象。常见误填：把长句解释、变量名或题目情境词塞进 properties。
+4. invariants[].evidence_source 表示证据来自题面、标准解法代码或两者。证据来源清晰时填写；返回空数组时不出现。常见误填：把置信度、推理过程或不在允许集合中的值写进去。
 
-题面全文：
-{problem.get('description', '')}
-{solution_code_section}
-
----
-
-请输出该题解法的算法不变量 JSON，格式如下：
-
+请输出 JSON：
 {{
-    "invariants": [
-        {{
-            "name": "不变量类型（monotonicity, optimal_substructure, greedy_choice, state_transition, interval_additivity, interval_mergeable 等）",
-            "description": "不变量的中文描述（如：双指针左右端点单调前进，区间合法性可单调维护）",
-            "properties": {{
-                "left_monotonic": true/false (双指针专用，可选),
-                "right_monotonic": true/false (双指针专用，可选),
-                "window_shrinkable": true/false (滑动窗口专用，可选),
-                ... (其他性质)
-            }}
-        }}
-    ]
+  "invariants": [
+    {{
+      "name": "优先复用规范标签，例如 {invariant_names}",
+      "description": "该不变量为何成立，以及它约束了什么",
+      "properties": {{}},
+      "evidence_source": "solution_code"
+    }}
+  ]
 }}
 
-注意：
-1. 不变量是解法的性质，不是题目要求
-2. 常见算法范式的不变量：
-   - 双指针/滑动窗口 → monotonicity（单调性）
-   - 动态规划 → optimal_substructure（最优子结构）
-   - 贪心算法 → greedy_choice（贪心选择性质）
-   - 前缀和 → interval_additivity（区间可加性）
-   - 线段树/ST 表 → interval_mergeable（区间可合并性）
-3. 如果题目没有明显的算法不变量，可以根据输入结构和约束推断
-4. 如果提供了标准解法代码，必须把代码中的核心状态、维护量、转移关系、单调关系、可合并性、可分解性等作为重要证据
-5. 不要把实现细节当作不变量，例如变量命名、输入输出写法、模板封装、常量定义
-6. properties 中只包含明确可识别的性质，不确定的不要填写
-7. 如果存在多个关键不变量，必须全部输出，不要只选一个
-8. 所有输出必须是算法领域的抽象概括，不得包含题目的具体情境词汇（如角色名、物品名等），需要从算法结构性质的角度进行描述
-9. 如果推荐清单中没有合适类型，必须自由新增更准确的不变量类型，不要为了套用而强行归类
+要求：
+1. 字段说明优先于字段名直觉，不要仅凭命名猜测字段含义。
+2. 有标准解法代码时，代码是主证据；没有代码时，只保留题面可直接支撑的结构性质。
+3. name 优先对齐现有规范标签；若词表无法准确覆盖当前不变量，允许新建一个抽象标签。
+4. 新标签保持小写英文加下划线格式，不写题目情境词。
+5. 变量名、模板封装、宏定义、输入输出写法不计入不变量。
+6. 重点读取状态定义、循环推进方向、维护量、转移关系、合并规则。
+7. properties 拿不准就写空对象。
+8. 证据不足时返回 {{"invariants": []}}。
 """
 
 
 INVARIANT_SCHEMA = {
     "type": "object",
     "required": ["invariants"],
+    "additionalProperties": True,
     "properties": {
         "invariants": {
             "type": "array",
             "items": {
                 "type": "object",
                 "required": ["name", "description", "properties"],
+                "additionalProperties": True,
                 "properties": {
                     "name": {
                         "type": "string",
-                        "description": "不变量类型，如 monotonicity, optimal_substructure, greedy_choice"
+                        "description": "不变量类型，如 monotonicity, state_transition, exchange_argument",
                     },
                     "description": {
                         "type": "string",
-                        "description": "不变量的中文描述"
+                        "description": "不变量的中文描述",
                     },
                     "properties": {
                         "type": "object",
-                        "description": "具体性质，如 left_monotonic, right_monotonic 等"
-                    }
-                }
-            }
+                        "description": "稳定、可机械理解的细粒度事实",
+                        "additionalProperties": True,
+                    },
+                    "evidence_source": {
+                        "type": "string",
+                        "enum": INVARIANT_EVIDENCE_SOURCES,
+                        "description": "可选扩展字段。证据来源，取值为 statement、solution_code、both",
+                    },
+                },
+            },
         }
-    }
+    },
 }

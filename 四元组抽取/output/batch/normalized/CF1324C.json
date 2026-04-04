@@ -1,0 +1,54 @@
+{
+  "problem_id": "CF1324C",
+  "source": "codeforces",
+  "input_structure": {
+    "type": "string",
+    "length": {
+      "min": 1,
+      "max": 200000
+    },
+    "value_range": null,
+    "properties": {
+      "multiple_test_cases": true
+    }
+  },
+  "core_constraints": {
+    "constraints": [
+      {
+        "name": "distance_bound",
+        "description": "A fixed positive integer d is chosen before movement begins, and every jump must cover a distance of at most d cells.",
+        "formal": "\\forall \\text{ jumps } (u \\to v), |u - v| \\le d",
+        "source_sections": [
+          "description"
+        ]
+      },
+      {
+        "name": "state_transition",
+        "description": "The valid target range for a jump is strictly determined by the character at the current cell: 'L' permits jumps only to the left within distance d, 'R' permits jumps only to the right within distance d, and the starting cell 0 only permits right jumps.",
+        "formal": "s_i = \\text{'L'} \\implies v \\in [\\max(0, i-d), i-1]; \\quad s_i = \\text{'R'} \\implies v \\in [i+1, \\min(n+1, i+d)]; \\quad i=0 \\implies v \\in [1, \\min(n+1, d)]",
+        "source_sections": [
+          "description"
+        ]
+      }
+    ]
+  },
+  "objective": {
+    "type": "minimize_value",
+    "description": "最小化保证青蛙能够从起点到达终点所需的最大单次跳跃距离",
+    "target": "max_jump_distance",
+    "requires_solution": false
+  },
+  "invariant": {
+    "invariants": [
+      {
+        "name": "monotonicity",
+        "description": "青蛙能否到达终点的可行性关于跳跃距离 d 具有单调非减性质,且最小可行 d 严格由字符串中连续 'L' 段的最大长度（即相邻 'R' 或边界间的最大间隔）决定。标准解法通过按 'R' 分割字符串并取最大片段长度加一,直接计算该单调下界,体现了答案由局部瓶颈单调约束的稳定性质。",
+        "properties": {
+          "monotonic_feasibility": true,
+          "threshold_equals_max_gap_plus_one": true
+        },
+        "evidence_source": "solution_code"
+      }
+    ]
+  }
+}
