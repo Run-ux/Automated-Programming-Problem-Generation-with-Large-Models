@@ -47,8 +47,6 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--artifact-dir", default=str(DEFAULT_ARTIFACT_DIR), help="结构化产物目录")
     parser.add_argument("--report-dir", default=str(DEFAULT_REPORT_DIR), help="过程说明 Markdown 输出目录")
     parser.add_argument("--rule-file", default=str(DEFAULT_RULE_FILE), help="规则 JSON 文件")
-    parser.add_argument("--model", default=DEFAULT_MODEL, help="Qwen 模型名")
-    parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="兼容 OpenAI 的 API Base URL")
     parser.add_argument("--temperature", type=float, default=DEFAULT_TEMPERATURE, help="采样温度")
     parser.add_argument("--seed", type=int, default=20260312, help="随机种子")
     parser.add_argument(
@@ -67,8 +65,8 @@ def main() -> None:
 
     client = QwenClient(
         api_key=DEFAULT_API_KEY,
-        model=args.model,
-        base_url=args.base_url,
+        model=DEFAULT_MODEL,
+        base_url=DEFAULT_BASE_URL,
     )
     rulebook = RuleBook.load(args.rule_file)
 

@@ -19,7 +19,6 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import os
 import time
 from collections import Counter
 from copy import deepcopy
@@ -599,12 +598,7 @@ def normalize_all_problems(
         registries[dim] = reg
 
     try:
-        normalize_model = (
-            os.getenv("QWEN_NORMALIZE_MODEL")
-            or os.getenv("QWEN_MODEL")
-            or "qwen-flash"
-        )
-        client = QwenClient(QwenConfig(model=normalize_model))
+        client = QwenClient(QwenConfig(stage="normalize"))
     except RuntimeError as e:
         logger.error(f"Qwen 客户端初始化失败：{e}")
         return

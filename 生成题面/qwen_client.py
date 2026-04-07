@@ -10,7 +10,9 @@ from typing import Any
 class QwenClient:
     def __init__(self, api_key: str, model: str, base_url: str, timeout_s: int = 180):
         if not api_key:
-            raise RuntimeError("缺少 API Key，请设置 DASHSCOPE_API_KEY 或 QWEN_API_KEY。")
+            raise RuntimeError(
+                "缺少 API Key，请在生成题面/.env 中设置 DASHSCOPE_API_KEY 或 QWEN_API_KEY。"
+            )
         self.api_key = api_key
         self.model = model
         self.base_url = base_url.rstrip("/")

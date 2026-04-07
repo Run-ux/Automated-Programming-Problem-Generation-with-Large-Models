@@ -41,8 +41,10 @@
 
 ```text
 四元组抽取/
+├── .env.example                # 模块级环境变量模板
+├── env_loader.py               # 读取当前目录下的 .env
 ├── scripts/
-│   └── set_qwen_env.ps1         # PowerShell 环境变量写入脚本
+│   └── set_qwen_env.ps1         # 历史遗留的 PowerShell 环境变量写入脚本
 ├── prompts/
 │   ├── prompt_input_structure.py
 │   ├── prompt_constraints.py
@@ -81,3 +83,9 @@ imandra_curated_schema_inputs/*.json
 - `output/<run>/raw/`：每题每维单轮抽取结果
 - `output/<run>/normalized/`：归一化后的最终结果
 - `output/<run>/label_registry/`：动态标签注册表
+
+## 7. 环境变量读取
+
+- `qwen_client.py` 会在导入时先加载当前目录下的 `.env`。
+- 运行时只读取 `.env` 中的值，不再读取同名进程环境变量。
+- 推荐把模块专属配置写入本目录的 `.env`，避免依赖全局环境变量。

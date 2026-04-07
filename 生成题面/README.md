@@ -30,10 +30,12 @@
 pip install -r requirements.txt
 ```
 
-配置环境变量：
+配置环境变量。运行时只读取 [生成题面/.env](/D:/AutoProblemGen/生成题面/.env) 中的这些值。可直接参考 [生成题面/.env.example](/D:/AutoProblemGen/生成题面/.env.example)：
 
-```bash
-set DASHSCOPE_API_KEY=your_key
+```dotenv
+DASHSCOPE_API_KEY=your_key
+QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+QWEN_MODEL=qwen3.5-plus
 ```
 
 单题扩展：
@@ -67,8 +69,6 @@ python main.py --mode single --problem-ids CF25E --rule-override canonical_witne
 - `--artifact-dir <json输出目录>`
 - `--report-dir <过程报告目录>`
 - `--rule-file <规则文件>`
-- `--model <模型名>`
-- `--base-url <API地址>`
 - `--temperature <采样温度>`
 - `--seed <随机种子>`
 - `--rule-override <rule id>`：可重复传入，也可用逗号分隔

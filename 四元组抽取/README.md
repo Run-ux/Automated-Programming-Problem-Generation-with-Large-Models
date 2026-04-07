@@ -103,19 +103,13 @@ python -m unittest test_normalize.py
 
 ## 环境要求
 
-- 设置 `DASHSCOPE_API_KEY` 或 `QWEN_API_KEY`。
+- 运行时会先尝试读取当前模块目录下的 `.env` 文件，也就是 [四元组抽取/.env](/D:/AutoProblemGen/四元组抽取/.env)。
+- 运行时只读取这个 `.env` 文件中的配置，不再读取同名进程环境变量。
+- 可直接参考 [四元组抽取/.env.example](/D:/AutoProblemGen/四元组抽取/.env.example) 填写 [四元组抽取/.env](/D:/AutoProblemGen/四元组抽取/.env)。
+- 在 `.env` 中设置 `DASHSCOPE_API_KEY` 或 `QWEN_API_KEY`。
 - 可选模型环境变量：
   - `QWEN_MODEL`：通用对话模型默认值。抽取阶段默认读取它，归一化阶段也会把它作为后备值。
   - `QWEN_EXTRACT_MODEL`：只覆盖抽取阶段模型。
   - `QWEN_NORMALIZE_MODEL`：只覆盖归一化阶段模型。未设置时默认 `qwen-flash`。
   - `QWEN_EMBEDDING_MODEL`：覆盖 embedding 模型，默认 `text-embedding-v4`。
-- 可直接执行 [scripts/set_qwen_env.ps1](/D:/AutoProblemGen/四元组抽取/scripts/set_qwen_env.ps1) 写入环境变量：
-
-```powershell
-.\scripts\set_qwen_env.ps1 -ApiKey "your-api-key"
-.\scripts\set_qwen_env.ps1 -ApiKey "your-api-key" -PersistUser
-```
-
-- 第一条命令只写入当前 PowerShell 会话。
-- 第二条命令会同时写入当前会话和用户级环境变量，新开终端后仍然有效。
 - 输入文件来自 `D:\AutoProblemGen\爬取题目\output\imandra_curated_schema_inputs`。

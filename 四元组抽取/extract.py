@@ -19,7 +19,6 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import os
 import time
 from pathlib import Path
 from typing import Any, Dict, List
@@ -280,13 +279,11 @@ def main():
 
     # 初始化 Qwen 客户端
     try:
-        client = QwenClient(
-            QwenConfig(model=os.getenv("QWEN_EXTRACT_MODEL"))
-        )
+        client = QwenClient(QwenConfig(stage="extract"))
         logger.info("Qwen 客户端初始化成功")
     except RuntimeError as e:
         logger.error(f"Qwen 客户端初始化失败：{e}")
-        logger.error("请设置环境变量 DASHSCOPE_API_KEY 或 QWEN_API_KEY")
+        logger.error("请在四元组抽取/.env 中设置 DASHSCOPE_API_KEY 或 QWEN_API_KEY")
         return
 
     # 执行抽取

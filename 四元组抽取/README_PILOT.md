@@ -2,19 +2,16 @@
 
 ## 前置条件
 
-```powershell
-$env:DASHSCOPE_API_KEY = "your-api-key-here"
-$env:QWEN_EXTRACT_MODEL = "qwen-max"
-$env:QWEN_NORMALIZE_MODEL = "qwen-flash"
-$env:QWEN_EMBEDDING_MODEL = "text-embedding-v4"
+推荐在 [四元组抽取/.env](/D:/AutoProblemGen/四元组抽取/.env) 中填写配置，可直接参考 [四元组抽取/.env.example](/D:/AutoProblemGen/四元组抽取/.env.example)：
+
+```dotenv
+DASHSCOPE_API_KEY=your-api-key-here
+QWEN_EXTRACT_MODEL=qwen-max
+QWEN_NORMALIZE_MODEL=qwen-flash
+QWEN_EMBEDDING_MODEL=text-embedding-v4
 ```
 
-也可以直接执行 [scripts/set_qwen_env.ps1](/D:/AutoProblemGen/四元组抽取/scripts/set_qwen_env.ps1)：
-
-```powershell
-.\scripts\set_qwen_env.ps1 -ApiKey "your-api-key-here"
-.\scripts\set_qwen_env.ps1 -ApiKey "your-api-key-here" -PersistUser
-```
+运行时只读取这个 `.env` 文件中的配置。
 
 ## 输入格式
 

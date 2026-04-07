@@ -16,7 +16,6 @@ from __future__ import annotations
 import ast
 import json
 import logging
-import os
 import re
 import socket
 import time
@@ -25,19 +24,22 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
+try:
+    from .env_loader import get_env_value
+except ImportError:
+    from env_loader import get_env_value
+
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 DEFAULT_CHAT_MODEL = "qwen3.6-plus"
 DEFAULT_EMBEDDING_MODEL = "text-embedding-v4"
 
 
 @dataclass
 class QwenConfig:
-    base_url: str | None = None
-    api_key: str | None = None
-    model: str | None = None
-    embedding_model: str | None = None
+    stage: str = "default"
     timeout_s: int = 300
 
 
@@ -50,24 +52,18 @@ class QwenJSONError(RuntimeError):
 class QwenClient:
     def __init__(self, cfg: Optional[QwenConfig] = None):
         cfg = cfg or QwenConfig()
-        base_url = cfg.base_url or os.getenv("QWEN_BASE_URL")
-        api_key = (
-            cfg.api_key or os.getenv("QWEN_API_KEY") or os.getenv("DASHSCOPE_API_KEY")
-        )
+        base_url = get_env_value("QWEN_BASE_URL") or DEFAULT_BASE_URL
+        api_key = get_env_value("QWEN_API_KEY") or get_env_value("DASHSCOPE_API_KEY")
 
         if not api_key:
             raise RuntimeError(
-                "缺少API Key：请设置环境变量 DASHSCOPE_API_KEY 或 QWEN_API_KEY"
+                "缺少 API Key：请在四元组抽取/.env 中设置 DASHSCOPE_API_KEY 或 QWEN_API_KEY。"
             )
 
-        self.base_url = base_url or "https://dashscope.aliyuncs.com/compatible-mode/v1"
+        self.base_url = base_url
         self.api_key = api_key
-        self.model = cfg.model or os.getenv("QWEN_MODEL") or DEFAULT_CHAT_MODEL
-        self.embedding_model = (
-            cfg.embedding_model
-            or os.getenv("QWEN_EMBEDDING_MODEL")
-            or DEFAULT_EMBEDDING_MODEL
-        )
+        self.model = _resolve_chat_model(cfg.stage)
+        self.embedding_model = get_env_value("QWEN_EMBEDDING_MODEL") or DEFAULT_EMBEDDING_MODEL
         self.timeout_s = cfg.timeout_s
 
     def chat_json(
@@ -143,9 +139,7 @@ class QwenClient:
 
         raise QwenJSONError(f"调用千问失败：{last_err}", raw_text=last_raw_text)
 
-    def embed_texts(
-        self, texts: list[str], model: str | None = None, batch_size: int = 10
-    ) -> list[list[float]]:
+    def embed_texts(self, texts: list[str], batch_size: int = 10) -> list[list[float]]:
         """调用 embedding API，自动分批（DashScope 限制每批最多 10 条）。"""
         if not texts:
             return []
@@ -154,12 +148,11 @@ class QwenClient:
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
-        use_model = model or self.embedding_model
         all_embeddings: list[list[float]] = []
         for start in range(0, len(texts), batch_size):
             batch = texts[start : start + batch_size]
             payload = {
-                "model": use_model,
+                "model": self.embedding_model,
                 "input": batch,
             }
             request = urllib.request.Request(
@@ -231,6 +224,15 @@ class QwenClient:
         if isinstance(error, (TimeoutError, socket.timeout)):
             return 5.0 * attempt
         return 1.5 * attempt
+
+
+def _resolve_chat_model(stage: str) -> str:
+    normalized_stage = str(stage).strip().lower()
+    if normalized_stage == "extract":
+        return get_env_value("QWEN_EXTRACT_MODEL") or get_env_value("QWEN_MODEL") or DEFAULT_CHAT_MODEL
+    if normalized_stage == "normalize":
+        return get_env_value("QWEN_NORMALIZE_MODEL") or get_env_value("QWEN_MODEL") or "qwen-flash"
+    return get_env_value("QWEN_MODEL") or DEFAULT_CHAT_MODEL
 
 
 def _extract_first_json_object(text: str) -> Dict[str, Any]:
