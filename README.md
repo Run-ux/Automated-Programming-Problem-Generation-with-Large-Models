@@ -222,6 +222,74 @@ phase1 的标签集合
 2. 差异控制仍围绕四轴 `I/C/O/V` 展开，但 `distance_breakdown` 已升级为结构化距离：顶层包含 `distance_version`、`backend`、`total`、`axis_scores`、`components`，artifact 会继续显式记录 `changed_axes_realized` 与 `difference_plan`。
 3. artifact 还会记录 `mode`、`source_problem_ids`、`applied_rule`、`rule_selection_reason`、`rejected_candidates`、`algorithmic_delta_claim`，以及 `rule_version`、`selection_trace`、`validation_trace`、`candidate_attempts`。
 
+### Schema Distance V2 各维度计算方法
+
+`distance_breakdown.total` 由四轴加权得到：
+
+```text
+total = 0.25 * I + 0.30 * C + 0.25 * O + 0.20 * V
+```
+
+其中 `axis_scores` 的每一轴都在 `[0, 1]` 区间：
+
+- `I`（输入结构距离）
+
+  基于输入树编辑距离。
+
+  1. 先把 `input_structure` 归一化成树，固定包含 `type`、`length(min/max)`、`value_range(min/max)`、`properties`。
+  2. 对两棵树做编辑距离，允许插入、删除、替换。插入或删除一棵子树的代价是该子树节点数。
+  3. 节点替换代价规则：
+     - `kind` 不同，代价 `1.0`。
+     - `numeric` 节点按数值差异计算：`abs(l-r)/max(abs(l), abs(r), 1)`，截断到 `1.0`。
+     - `section/property` 节点代价为 `0.6 * label_distance + 0.4 * value_distance`。
+     - 其他文本节点代价为 `1 - similarity`。
+  4. 最终 `I = min(1, tree_edit_distance / (size_left + size_right))`。
+
+- `C`（核心约束距离）
+
+  把两侧 `constraints` 当作集合匹配问题，用匈牙利算法做最小代价一一匹配。
+
+  - 单条约束代价：`0.35 * name_distance + 0.65 * description_distance`。
+  - 当两侧数量不一致时，自动补齐虚拟项，未匹配项代价按 `1.0` 处理。
+  - 最终 `C = min(1, total_match_cost / max(len(left), len(right)))`。
+
+- `O`（目标函数距离）
+
+  由 `objective.type` 和 `objective.description` 组合：
+
+  ```text
+  O = 0.6 * objective_type_distance + 0.4 * objective_text_distance
+  ```
+
+  其中 `objective.type` 先映射到语义提示语再算距离，`objective.description` 直接按文本距离计算。
+
+- `V`（不变量距离）
+
+  与 `C` 同一套集合匹配方法，输入从 `constraints` 换成 `invariants`：
+
+  - 单条不变量代价：`0.35 * name_distance + 0.65 * description_distance`。
+  - 最终 `V = min(1, total_match_cost / max(len(left), len(right)))`。
+
+`components` 会展开中间量，便于审计：
+
+- `input_tree_distance` 对应 `I`
+- `constraint_match_distance` 对应 `C`
+- `objective_type_distance` 对应 `O` 中类型子项
+- `objective_text_distance` 对应 `O` 中文本子项
+- `invariant_match_distance` 对应 `V`
+
+相似度后端由 `backend` 标识：
+
+- `embedding`：优先使用 embedding 余弦相似度
+- `lexical_fallback`：当 embedding 不可用或失败时，回退到词法 Jaccard 相似度
+
+`changed_axes_realized` 使用固定阈值判定是否算作“轴变化已落地”：
+
+- `I >= 0.18`
+- `C >= 0.25`
+- `O >= 0.18`
+- `V >= 0.18`
+
 因此它不是一个“让模型编题”的脚本，而是一个“规则驱动的四元组生成管线”。
 
 ## 6. `题目质量评价`
