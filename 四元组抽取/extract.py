@@ -81,6 +81,60 @@ DIMENSIONS = {
         "module": prompt_invariant,
     },
 }
+
+
+def _is_integer_or_null(value: Any) -> bool:
+    return value is None or (isinstance(value, int) and not isinstance(value, bool))
+
+
+def _validate_range_field(value: Any, field_path: str) -> None:
+    if not isinstance(value, dict):
+        raise ValueError(f"{field_path} 必须是包含 min 和 max 的对象")
+    if "min" not in value or "max" not in value:
+        raise ValueError(f"{field_path} 缺少 min 或 max")
+    if not _is_integer_or_null(value.get("min")):
+        raise ValueError(f"{field_path}.min 必须是整数或 null")
+    if not _is_integer_or_null(value.get("max")):
+        raise ValueError(f"{field_path}.max 必须是整数或 null")
+
+
+def validate_input_structure_result(result: Dict[str, Any]) -> None:
+    structure_type = result.get("type")
+    if structure_type != "composite":
+        return
+
+    _validate_range_field(result.get("length"), "length")
+    _validate_range_field(result.get("value_range"), "value_range")
+    properties = result.get("properties")
+    if not isinstance(properties, dict):
+        raise ValueError("properties 必须是对象")
+
+    components = result.get("components")
+    if not isinstance(components, list) or not components:
+        raise ValueError("components 必须是非空数组")
+
+    for index, component in enumerate(components):
+        field_prefix = f"components[{index}]"
+        if not isinstance(component, dict):
+            raise ValueError(f"{field_prefix} 必须是对象")
+
+        for key in ("role", "role_description"):
+            value = component.get(key)
+            if not isinstance(value, str) or not value.strip():
+                raise ValueError(f"{field_prefix}.{key} 必须是非空字符串")
+
+        component_type = component.get("type")
+        if not isinstance(component_type, str) or component_type not in prompt_input_structure.MAIN_TYPES:
+            raise ValueError(f"{field_prefix}.type 必须是受控词表中的字符串")
+
+        _validate_range_field(component.get("length"), f"{field_prefix}.length")
+        _validate_range_field(component.get("value_range"), f"{field_prefix}.value_range")
+
+        component_properties = component.get("properties")
+        if not isinstance(component_properties, dict):
+            raise ValueError(f"{field_prefix}.properties 必须是对象")
+
+
 # ---------------------------------------------------------------------------
 # 主抽取逻辑
 # ---------------------------------------------------------------------------
@@ -119,6 +173,8 @@ def extract_single_dimension(
 
     try:
         result = client.chat_json(system_prompt, user_prompt, temperature=temperature)
+        if dimension_name == "input_structure":
+            validate_input_structure_result(result)
         return {
             "problem_id": problem["problem_id"],
             "source": problem.get("source", ""),

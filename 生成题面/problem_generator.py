@@ -228,18 +228,14 @@ class ProblemGenerator:
         objective_type = str(plan.objective.get("type", "")).lower()
         combined = "\n".join([problem.description, problem.output_format, problem.notes]).lower()
         errors: list[str] = []
-        if "count" in objective_type and not any(token in combined for token in ("方案数", "个数", "count", "模", "mod")):
+        if objective_type == "counting" and not any(token in combined for token in ("方案数", "个数", "count", "模", "mod")):
             errors.append("当前 objective 是计数类，但题面没有明确说明输出的是方案数/计数结果。")
-        if any(token in objective_type for token in ("decision", "feasibility")) and not any(
-            token in combined for token in ("yes", "no", "是否", "存在")
-        ):
+        if objective_type == "decision" and not any(token in combined for token in ("yes", "no", "是否", "存在")):
             errors.append("当前 objective 是判定类，但题面没有明确说明输出判定结果。")
-        if any(token in objective_type for token in ("construct", "witness")) and not any(
-            token in combined for token in ("构造", "方案", "witness", "输出一个")
-        ):
+        if objective_type == "construction" and not any(token in combined for token in ("构造", "方案", "witness", "输出一个")):
             errors.append("当前 objective 是构造类，但题面没有明确说明需要输出构造方案。")
-        if "lexicographical" in objective_type and not any(
-            token in combined for token in ("字典序", "lexicographical", "lexicographically")
+        if objective_type == "lexicographic_optimize" and not any(
+            token in combined for token in ("字典序", "lexicographic", "lexicographical", "lexicographically")
         ):
             errors.append("当前 objective 要求字典序规范，但题面未明确写出字典序规则。")
         return errors

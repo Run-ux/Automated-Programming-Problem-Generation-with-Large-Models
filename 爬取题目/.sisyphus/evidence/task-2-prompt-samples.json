@@ -10,10 +10,10 @@
         "I - Input Structure": {
           "status": "ok",
           "result": {
-            "type": "queries",
+            "type": "string",
             "length": {
               "min": 1,
-              "max": 10000
+              "max": 200000
             },
             "value_range": {
               "min": null,
@@ -21,22 +21,7 @@
             },
             "properties": {
               "multiple_test_cases": true
-            },
-            "components": [
-              {
-                "role": "query",
-                "type": "string",
-                "length": {
-                  "min": 1,
-                  "max": 200000
-                },
-                "value_range": {
-                  "min": null,
-                  "max": null
-                },
-                "properties": {}
-              }
-            ]
+            }
           }
         },
         "C - Core Constraints": {
@@ -44,19 +29,19 @@
           "result": {
             "constraints": [
               {
-                "name": "path_constraint",
-                "description": "The frog can only jump to the left if the current cell is 'L' and to the right if the current cell is 'R'. The frog can jump by no more than d cells at once, where d is a positive integer chosen before the first jump. The goal is to find the minimum possible value of d such that the frog can reach the cell n+1 from the cell 0.",
+                "name": "state_transition",
+                "description": "青蛙的跳跃转移受当前位置字符与固定步长上限 d 共同限制:若 s[i] 为 'L' 则仅能向左跳至 [max(0, i-d), i-1],若 s[i] 为 'R' 则仅能向右跳至 [i+1, min(n+1, i+d)]；且从起点 0 出发只能向右跳跃。",
+                "formal": "s[i]='L' ⇒ next ∈ [max(0,i-d), i-1]; s[i]='R' ⇒ next ∈ [i+1, min(n+1,i+d)]; from 0 ⇒ next ∈ [1, min(n+1,d)]",
                 "source_sections": [
-                  "description",
-                  "input"
+                  "description"
                 ]
               },
               {
-                "name": "alphabet_constraint",
-                "description": "The string s consists of characters 'L' and 'R' only.",
+                "name": "path_constraint",
+                "description": "必须存在一条从位置 0 到位置 n+1 的合法跳跃序列,使得青蛙能够成功到达终点。",
+                "formal": "∃ sequence 0 = p_0, p_1, ..., p_m = n+1 such that each (p_k, p_{k+1}) satisfies the transition rules",
                 "source_sections": [
-                  "description",
-                  "input"
+                  "description"
                 ]
               }
             ]
@@ -66,8 +51,9 @@
           "status": "ok",
           "result": {
             "type": "minimize_value",
-            "description": "Find the minimum value of a parameter that allows a certain condition to be met.",
-            "target": "d"
+            "description": "最小化满足从起点到终点可达性条件的最大跳跃距离",
+            "target": "max_jump_distance",
+            "requires_solution": false
           }
         },
         "V - Invariant": {
@@ -75,14 +61,8 @@
           "result": {
             "invariants": [
               {
-                "name": "interval_additivity",
-                "description": "通过计算连续的'L'字符的最大长度来确定最小跳跃距离d,这表明在每个'R'字符处可以将区间进行分割,并且这些区间的最大长度加1即为所需的最小跳跃距离。",
-                "properties": {},
-                "evidence_source": "solution_code"
-              },
-              {
-                "name": "greedy_choice",
-                "description": "选择最大的连续'L'字符长度作为跳跃距离d,这是一种贪心策略,确保了青蛙能够以最小的跳跃距离到达目标位置。",
+                "name": "bottleneck_constraint",
+                "description": "算法正确性依赖于路径可行性由最长连续单向限制段决定。由于跨越任意连续 'L' 区域必须通过一次从左侧安全点（'R' 或起点）到右侧安全点（'R' 或终点）的跳跃,该区域长度加一构成局部必要下界,所有局部下界的最大值即为全局最小可行跳跃距离。",
                 "properties": {},
                 "evidence_source": "solution_code"
               }
@@ -100,62 +80,17 @@
         "I - Input Structure": {
           "status": "ok",
           "result": {
-            "type": "queries",
+            "type": "tuple",
             "length": {
-              "min": null,
-              "max": 500
+              "min": 3,
+              "max": 3
             },
             "value_range": {
-              "min": null,
-              "max": 1000000000
+              "min": 1,
+              "max": 300
             },
-            "properties": {
-              "online_queries": true
-            },
-            "components": [
-              {
-                "role": "graph",
-                "type": "graph",
-                "length": {
-                  "min": 2,
-                  "max": 300
-                },
-                "value_range": {
-                  "min": null,
-                  "max": 1000000000
-                },
-                "properties": {
-                  "connected": true,
-                  "weighted": true
-                }
-              },
-              {
-                "role": "start_vertex",
-                "type": "integer",
-                "length": {
-                  "min": 1,
-                  "max": 300
-                },
-                "value_range": {
-                  "min": 1,
-                  "max": 300
-                },
-                "properties": {}
-              },
-              {
-                "role": "end_vertex",
-                "type": "integer",
-                "length": {
-                  "min": 1,
-                  "max": 300
-                },
-                "value_range": {
-                  "min": 1,
-                  "max": 300
-                },
-                "properties": {}
-              }
-            ]
+            "properties": {},
+            "components": []
           }
         },
         "C - Core Constraints": {
@@ -163,25 +98,20 @@
           "result": {
             "constraints": [
               {
-                "name": "connectivity",
-                "description": "The graph used in the problem is guaranteed to be connected.",
-                "source_sections": [
-                  "constraints"
-                ]
-              },
-              {
-                "name": "query_limit",
-                "description": "Find the shortest path from s to t with 5N or less questions. If the number of questions asked by the program exceeds 5N, it is judged as an incorrect answer (WA).",
+                "name": "operation_limit",
+                "description": "程序向评测机询问任意两点间最短距离的交互查询次数上限为 5N 次。",
+                "formal": "Q \\leq 5N",
                 "source_sections": [
                   "description",
                   "constraints"
                 ]
               },
               {
-                "name": "distance_bound",
-                "description": "For any two vertices u, v on the graph used in the problem, the maximum value of the shortest distance is 10^9 or less.",
+                "name": "path_constraint",
+                "description": "输出的顶点序列必须构成从 s 到 t 的最短路径,即序列首元素为 s,末元素为 t,序列中任意相邻两顶点在图中直接相连,且路径总长度等于 s 到 t 的最短距离。",
+                "formal": "x_1 = s, x_k = t, \\forall 1 \\leq i < k, (x_i, x_{i+1}) \\in E, \\text{len}(path) = \\text{dist}(s, t)",
                 "source_sections": [
-                  "constraints"
+                  "description"
                 ]
               }
             ]
@@ -191,8 +121,8 @@
           "status": "ok",
           "result": {
             "type": "construction",
-            "description": "Find and output the shortest path from s to t with at most 5N queries.",
-            "target": "path",
+            "description": "构造并输出从起点到终点的最短路径顶点序列",
+            "target": "shortest_path",
             "requires_solution": true
           }
         },
@@ -201,15 +131,12 @@
           "result": {
             "invariants": [
               {
-                "name": "optimal_substructure",
-                "description": "最短路径问题可以通过子问题的最优解来构造全局最优解,即从s到t的最短路径可以由从s到中间点i以及从i到t的最短路径组成。",
-                "properties": {},
-                "evidence_source": "solution_code"
-              },
-              {
-                "name": "subproblem_independence",
-                "description": "在寻找从s到t的最短路径时,每个顶点作为潜在中间点的选择是独立的。这意味着对于任意两个不同的顶点i和j,它们是否能成为最短路径上的点互不影响。",
-                "properties": {},
+                "name": "additivity",
+                "description": "最短路径度量满足距离可加性:顶点位于起点到终点的最短路径上,当且仅当其到起点的距离与到终点的距离之和等于起点到终点的最短距离。算法利用该等式精确筛选所有路径候选顶点,并按到起点的距离升序排列以直接还原出一条合法最短路径。",
+                "properties": {
+                  "metric_decomposition": "d(start, v) + d(v, end) == d(start, end)",
+                  "reconstruction_order": "strictly increasing d(start, v)"
+                },
                 "evidence_source": "solution_code"
               }
             ]
@@ -238,7 +165,8 @@
             "properties": {},
             "components": [
               {
-                "role": "tree",
+                "role": "tree_structure",
+                "role_description": "Defines the adjacency and hierarchical relationships of the rooted tree.",
                 "type": "tree",
                 "length": {
                   "min": 1,
@@ -249,12 +177,15 @@
                   "max": null
                 },
                 "properties": {
-                  "rooted": true
+                  "rooted": true,
+                  "acyclic": true,
+                  "connected": true
                 }
               },
               {
-                "role": "queries",
-                "type": "queries",
+                "role": "node_values",
+                "role_description": "Stores the numerical weight associated with each node.",
+                "type": "array",
                 "length": {
                   "min": 1,
                   "max": 200000
@@ -263,9 +194,21 @@
                   "min": null,
                   "max": null
                 },
-                "properties": {
-                  "online_queries": false
-                }
+                "properties": {}
+              },
+              {
+                "role": "path_queries",
+                "role_description": "Specifies pairs of nodes for which path sums are requested.",
+                "type": "array",
+                "length": {
+                  "min": 1,
+                  "max": 200000
+                },
+                "value_range": {
+                  "min": null,
+                  "max": null
+                },
+                "properties": {}
               }
             ]
           }
@@ -275,15 +218,9 @@
           "result": {
             "constraints": [
               {
-                "name": "connectivity",
-                "description": "给定的图是一个有根树。",
-                "source_sections": [
-                  "constraints"
-                ]
-              },
-              {
                 "name": "path_constraint",
-                "description": "每个查询要求计算两个节点之间的路径上的值的和。",
+                "description": "每次查询的操作范围被严格限定为树上给定两点之间的唯一简单路径,需计算该路径覆盖的所有节点权值之和。",
+                "formal": "\\forall (u, v) \\in \\text{Queries}, \\text{output} = \\sum_{w \\in \\text{Path}(u, v)} \\text{value}(w)",
                 "source_sections": [
                   "description",
                   "input"
@@ -295,9 +232,10 @@
         "O - Objective": {
           "status": "ok",
           "result": {
-            "type": "construction",
-            "description": "Compute the sum of values along the path between two nodes in a tree for each query.",
-            "target": "path_sum"
+            "type": "value_computation",
+            "description": "计算树中指定两点间路径上的节点权值之和",
+            "target": "path_sum",
+            "requires_solution": false
           }
         },
         "V - Invariant": {
@@ -305,16 +243,14 @@
           "result": {
             "invariants": [
               {
-                "name": "prefix_decomposability",
-                "description": "路径和可以通过前缀和分解计算,即任意两点u, v之间的路径和可以表示为从根到u的前缀和加上从根到v的前缀和减去两倍从根到它们最近公共祖先lca(u, v)的前缀和再加上lca(u, v)节点的值。",
-                "properties": {},
+                "name": "additivity",
+                "description": "路径权值和满足可加性,任意两点间路径的总和可稳定拆解为根到两节点的前缀累积和与根到其最近公共祖先的前缀累积和的线性组合。算法预处理并维护从根到各节点的累积和,查询时直接利用该可加分解关系推导答案。",
+                "properties": {
+                  "decomposition_rule": "path_sum(u, v) = prefix[u] + prefix[v] - 2 * prefix[lca(u, v)] + value[lca(u, v)]",
+                  "maintained_quantity": "root_to_node_cumulative_sum",
+                  "operation_type": "linear_combination"
+                },
                 "evidence_source": "solution_code"
-              },
-              {
-                "name": "subproblem_independence",
-                "description": "每个查询独立处理,一个查询的结果不影响其他查询的结果。",
-                "properties": {},
-                "evidence_source": "statement"
               }
             ]
           }
@@ -322,7 +258,7 @@
       }
     },
     {
-      "category": "feasibility",
+      "category": "decision",
       "label": "判定题",
       "problem_id": "CF1338D",
       "title": "1338_D. Nested Rubber Bands",
@@ -340,24 +276,10 @@
               "max": 100000
             },
             "properties": {
-              "rooted": false,
-              "connected": true
+              "connected": true,
+              "acyclic": true
             },
-            "components": [
-              {
-                "role": "edges",
-                "type": "array",
-                "length": {
-                  "min": 2,
-                  "max": 99999
-                },
-                "value_range": {
-                  "min": 1,
-                  "max": 100000
-                },
-                "properties": {}
-              }
-            ]
+            "components": []
           }
         },
         "C - Core Constraints": {
@@ -365,37 +287,17 @@
           "result": {
             "constraints": [
               {
-                "name": "connectivity",
-                "description": "给定的图是一个树,即连通无环图。",
-                "source_sections": [
-                  "description",
-                  "input"
-                ]
-              },
-              {
-                "name": "intersection",
-                "description": "对于每一对顶点a和b,橡胶圈a和b应该相交当且仅当在树中存在边(a, b)。",
+                "name": "adjacency_relation",
+                "description": "橡皮筋之间的几何相交关系必须与树中顶点的邻接关系严格等价,即任意两橡皮筋相交当且仅当对应顶点在树中存在边相连。",
+                "formal": "intersect(u, v) iff (u, v) in E",
                 "source_sections": [
                   "description"
                 ]
               },
               {
-                "name": "planarity",
-                "description": "橡胶圈必须是简单回路,即不自相交的回路。",
-                "source_sections": [
-                  "description"
-                ]
-              },
-              {
-                "name": "inclusion",
-                "description": "橡胶圈a包含橡胶圈b,当且仅当橡胶圈b在橡胶圈a的区域内,并且它们不相交。",
-                "source_sections": [
-                  "description"
-                ]
-              },
-              {
-                "name": "nesting",
-                "description": "橡胶圈序列a1, a2, ..., ak (k ≥ 2)是嵌套的,当且仅当对于所有i (2 ≤ i ≤ k),ai-1包含ai。",
+                "name": "path_constraint",
+                "description": "嵌套序列要求序列中相邻橡皮筋满足包含关系且互不相交,该几何包含链在树结构上等价于一条简单路径,序列长度即为路径上的顶点数量。",
+                "formal": "a_{i-1} includes a_i => sequence corresponds to a simple path in the tree",
                 "source_sections": [
                   "description"
                 ]
@@ -406,9 +308,10 @@
         "O - Objective": {
           "status": "ok",
           "result": {
-            "type": "maximize_count",
-            "description": "Maximize the length of a sequence of nested elements",
-            "target": "length_of_sequence"
+            "type": "maximize_value",
+            "description": "Maximize the length of a valid nested sequence under the given structural constraints.",
+            "target": "length",
+            "requires_solution": false
           }
         },
         "V - Invariant": {
@@ -416,21 +319,39 @@
           "result": {
             "invariants": [
               {
-                "name": "optimal_substructure",
-                "description": "每个节点的最优解可以通过其子节点的最优解来计算。",
-                "properties": {},
-                "evidence_source": "solution_code"
-              },
-              {
                 "name": "state_transition",
-                "description": "状态转移方程定义了如何从子节点的状态转移到当前节点的状态。",
-                "properties": {},
+                "description": "算法为每个节点维护两个固定语义的状态,分别表示子树内可向上延伸的最优解与在子树内转折的最优解。状态含义在自底向上过程中保持不变,父节点状态通过统一的转移方程由子节点状态与局部度数推导得出。",
+                "properties": {
+                  "state_dimension": 2,
+                  "transition_inputs": [
+                    "child_states",
+                    "local_branch_count"
+                  ],
+                  "transition_outputs": [
+                    "parent_states"
+                  ],
+                  "semantic_stability": "状态定义不随遍历深度或子树规模改变"
+                },
                 "evidence_source": "solution_code"
               },
               {
-                "name": "subproblem_independence",
-                "description": "子问题的解是独立的,可以分别求解后再合并。",
-                "properties": {},
+                "name": "dependency_order",
+                "description": "计算过程严格遵循树的后序遍历顺序,确保任意节点的状态更新仅在其所有子节点状态完全确定后执行,满足子问题依赖的拓扑序约束。",
+                "properties": {
+                  "traversal_type": "post_order",
+                  "dependency_direction": "children_to_parent",
+                  "computation_guarantee": "子状态先于父状态计算完成"
+                },
+                "evidence_source": "solution_code"
+              },
+              {
+                "name": "mergeability",
+                "description": "子树的最优摘要可通过固定规则合并各子节点摘要得到。算法利用局部度数与子节点状态值进行组合,无需重新扫描子树结构即可更新全局候选答案。",
+                "properties": {
+                  "merge_rule": "max_combination_with_degree_offset",
+                  "summary_size": "constant_per_subtree",
+                  "no_rescan_needed": true
+                },
                 "evidence_source": "solution_code"
               }
             ]
@@ -439,7 +360,7 @@
       }
     },
     {
-      "category": "enumeration",
+      "category": "counting",
       "label": "计数题",
       "problem_id": "CF1468F",
       "title": "1468_F. Full Turn",
@@ -447,10 +368,10 @@
         "I - Input Structure": {
           "status": "ok",
           "result": {
-            "type": "queries",
+            "type": "array",
             "length": {
               "min": 1,
-              "max": 10000
+              "max": 100000
             },
             "value_range": {
               "min": null,
@@ -459,23 +380,7 @@
             "properties": {
               "multiple_test_cases": true
             },
-            "components": [
-              {
-                "role": "test_case",
-                "type": "sequence",
-                "length": {
-                  "min": 1,
-                  "max": 100000
-                },
-                "value_range": {
-                  "min": -1000000000,
-                  "max": 1000000000
-                },
-                "properties": {
-                  "distinct": true
-                }
-              }
-            ]
+            "components": []
           }
         },
         "C - Core Constraints": {
@@ -483,19 +388,11 @@
           "result": {
             "constraints": [
               {
-                "name": "orientation",
-                "description": "每个人会同步以相同角速度顺时针旋转,直到完成一个完整的360度旋转。两个人A和B在A看向B的同时B也看向A的方向时,认为他们进行了眼神接触。",
-                "formal": "For all pairs (i, j), if the direction from person i to person j and from person j to person i align at any point during the rotation, they make eye contact.",
+                "name": "orientation_constraint",
+                "description": "两人能发生眼神交流的条件是他们的初始视线方向向量恰好相反（夹角为180度）。题目明确中间有人不阻挡视线,且所有人同步同速旋转360度,因此只要初始视线方向相反,必存在某一时刻两人视线同时沿连线指向对方。",
+                "formal": "\\theta_i - \\theta_j \\equiv \\pi \\pmod{2\\pi},其中 \\theta_k 为向量 (u_k-x_k, v_k-y_k) 的极角",
                 "source_sections": [
                   "description"
-                ]
-              },
-              {
-                "name": "distinctness",
-                "description": "每个测试用例中每个人的初始位置是唯一的。",
-                "formal": "For each test case, (x_i, y_i) ≠ (x_j, y_j) for all i ≠ j.",
-                "source_sections": [
-                  "input"
                 ]
               }
             ]
@@ -504,9 +401,10 @@
         "O - Objective": {
           "status": "ok",
           "result": {
-            "type": "enumeration",
-            "description": "Count the number of pairs that satisfy a certain condition over a process.",
-            "target": "pairs"
+            "type": "counting",
+            "description": "统计满足特定几何同步条件的点对数量",
+            "target": "count",
+            "requires_solution": false
           }
         },
         "V - Invariant": {
@@ -514,15 +412,13 @@
           "result": {
             "invariants": [
               {
-                "name": "symmetry",
-                "description": "对于每一对人A和B,如果A看向B的方向与B看向A的方向相同,则他们可以进行眼神交流。这种关系是对称的。",
-                "properties": {},
-                "evidence_source": "statement"
-              },
-              {
-                "name": "state_transition",
-                "description": "通过计算每个方向向量的简化形式,并使用计数器来记录每个方向向量出现的次数,从而确定有多少对人会在旋转过程中进行眼神交流。",
-                "properties": {},
+                "name": "equivalence_class",
+                "description": "由于所有人同步同速旋转,任意两人视线方向的相对夹角在过程中保持恒定,发生眼神交流的充要条件是初始方向向量互为相反数。算法通过除以最大公约数将方向向量约分为最简整数比以定义方向等价类,并在遍历过程中持续维护各类别的出现频次,将几何匹配条件转化为离散等价类的配对计数。",
+                "properties": {
+                  "canonical_form": "primitive_integer_vector",
+                  "pair_condition": "opposite_canonical_vectors",
+                  "update_mechanism": "incremental_frequency_accumulation"
+                },
                 "evidence_source": "solution_code"
               }
             ]
@@ -539,36 +435,20 @@
         "I - Input Structure": {
           "status": "ok",
           "result": {
-            "type": "queries",
+            "type": "string",
             "length": {
               "min": 1,
-              "max": 10000
+              "max": 200000
             },
             "value_range": {
               "min": null,
               "max": null
             },
             "properties": {
-              "multiple_test_cases": true
+              "multiple_test_cases": true,
+              "ordered": true
             },
-            "components": [
-              {
-                "role": "query",
-                "type": "string",
-                "length": {
-                  "min": 1,
-                  "max": 200000
-                },
-                "value_range": {
-                  "min": null,
-                  "max": null
-                },
-                "properties": {
-                  "distinct": false,
-                  "sorted": false
-                }
-              }
-            ]
+            "components": []
           }
         },
         "C - Core Constraints": {
@@ -576,20 +456,28 @@
           "result": {
             "constraints": [
               {
-                "name": "path_constraint",
-                "description": "青蛙从第0个单元格跳到第n+1个单元格,每次跳跃的距离不超过d。如果当前单元格的字符是'L',青蛙只能向左跳；如果是'R',青蛙只能向右跳。青蛙需要选择一个最小的d值,使得它能够从第0个单元格跳到第n+1个单元格。",
-                "formal": "Find the minimum d such that there exists a path from cell 0 to cell n+1, where each jump is at most d cells and follows the direction constraints given by the string s.",
+                "name": "orientation_constraint",
+                "description": "青蛙在当前格子的跳跃方向严格由该格字符决定:字符为 'L' 时只能向左跳,字符为 'R' 时只能向右跳；初始位于格子 0 时只能向右跳。",
+                "formal": "s_i = 'L' => next < i; s_i = 'R' => next > i; i = 0 => next > 0",
                 "source_sections": [
-                  "description",
-                  "input"
+                  "description"
                 ]
               },
               {
-                "name": "operation_limit",
-                "description": "青蛙在跳跃前选择一个正整数d,并且在整个过程中不能改变这个d值。青蛙可以跳跃任意多次,但每次跳跃的距离不能超过d。",
-                "formal": "The frog chooses a positive integer d before the first jump and cannot change it. The frog can perform as many jumps as needed, but each jump must be no more than d cells.",
+                "name": "distance_bound",
+                "description": "青蛙在开始前选定一个固定正整数 d,之后每次跳跃的跨度（绝对距离）不得超过 d。",
+                "formal": "|next - current| <= d",
                 "source_sections": [
                   "description"
+                ]
+              },
+              {
+                "name": "path_constraint",
+                "description": "必须存在一条从起始格子 0 到目标格子 n+1 的合法跳跃序列,使得青蛙能够成功到达终点。",
+                "formal": "∃ path 0 = p_0, p_1, ..., p_k = n+1 satisfying jump rules",
+                "source_sections": [
+                  "description",
+                  "output"
                 ]
               }
             ]
@@ -599,8 +487,9 @@
           "status": "ok",
           "result": {
             "type": "minimize_value",
-            "description": "Find the minimum value of a parameter that allows a certain condition to be met.",
-            "target": "d"
+            "description": "最小化保证从起点可达终点的最大单次跳跃距离",
+            "target": "max_jump_distance",
+            "requires_solution": false
           }
         },
         "V - Invariant": {
@@ -608,15 +497,13 @@
           "result": {
             "invariants": [
               {
-                "name": "optimal_substructure",
-                "description": "问题的最优解可以通过子问题的最优解来构造,即找到每个'R'之间的最长连续'L'序列长度加1,可以确定最小跳跃距离d。",
-                "properties": {},
-                "evidence_source": "solution_code"
-              },
-              {
-                "name": "greedy_choice",
-                "description": "每次选择当前'R'之前的最长连续'L'序列长度加1作为跳跃距离d,确保了局部最优解能够达到全局最优解。",
-                "properties": {},
+                "name": "bottleneck_constraint",
+                "description": "最小可行跳跃距离由序列中连续非安全区域的最大跨度决定。特定标记字符将序列划分为若干安全落脚点,全局答案严格等于相邻安全标记间最大距离。该性质将全局路径可达性问题归约为局部最大间隔的静态计算,且该间隔长度同时构成答案的下界与充分条件。",
+                "properties": {
+                  "partition_basis": "specific character type defines safe landing positions",
+                  "critical_measure": "maximum length of consecutive non-safe segments",
+                  "answer_derivation": "minimum required capacity equals critical measure plus one"
+                },
                 "evidence_source": "solution_code"
               }
             ]

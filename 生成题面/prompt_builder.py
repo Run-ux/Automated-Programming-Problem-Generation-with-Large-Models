@@ -79,8 +79,9 @@ def build_rule_plan_validation_system_prompt() -> str:
 3. 如果证据不足，默认返回 `fail`。
 4. 不要替规划结果补设定，也不要发明新四元组。
 5. 判断必须基于给定 `review_role`、`review_brief`、规则声明、source schema、candidate schema 与规划 payload。
-6. 输出必须是严格 JSON，不要输出 Markdown。
-7. JSON 只能包含规定字段，不能添加额外键。
+6. 如果规则声明了 `helpers`，必须逐条检查这些 helper 是否都被应用，并且是否真的落到了四元组变化里。
+7. 输出必须是严格 JSON，不要输出 Markdown。
+8. JSON 只能包含规定字段，不能添加额外键。
 
 返回格式：
 {
@@ -121,6 +122,7 @@ def build_rule_plan_validation_user_prompt(
         "- `message` 直接概括结论，不要泛泛而谈。\n"
         "- `errors` 只写真正构成拒绝的规则专属问题；通过时返回空数组。\n"
         "- `evidence` 必须引用给定 payload、schema 或规则声明中的具体内容。\n"
+        "- 如果规则声明了 `helpers`，要逐条核对 helper 是否全部出现，以及每个 helper 是否兑现了自己的目标变化轴、落点和 redlines。\n"
         "- 如果不能确认已经兑现规则专属合同，返回 `fail`。\n\n"
         f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
     )
@@ -137,8 +139,9 @@ def build_rule_problem_validation_system_prompt() -> str:
 3. 如果证据不足，默认返回 `fail`。
 4. 不要替题面补设定，也不要假定未写出的语义已经成立。
 5. 判断必须基于给定 `review_role`、`review_brief`、规则声明、计划摘要、实例化 schema 和题面内容。
-6. 输出必须是严格 JSON，不要输出 Markdown。
-7. JSON 只能包含规定字段，不能添加额外键。
+6. 如果规则声明了 `helpers`，必须判断题面是否把这些 helper 对应的关键语义写实。
+7. 输出必须是严格 JSON，不要输出 Markdown。
+8. JSON 只能包含规定字段，不能添加额外键。
 
 返回格式：
 {
@@ -175,6 +178,7 @@ def build_rule_problem_validation_user_prompt(
         "- `message` 直接概括结论，不要泛泛而谈。\n"
         "- `errors` 只写真正构成拒绝的规则专属问题；通过时返回空数组。\n"
         "- `evidence` 必须引用题面、实例化 schema、规划摘要或规则声明中的具体内容。\n"
+        "- 如果规则声明了 `helpers`，要确认题面把这些 helper 的语义承诺写清，而不是只在规划摘要里出现。\n"
         "- 如果题面没有把关键语义写清楚，返回 `fail`。\n\n"
         f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
     )
@@ -281,7 +285,16 @@ def build_planner_system_prompt() -> str:
     "why_direct_reuse_fails": string
   },
   "anti_shallow_rationale": string,
-  "auxiliary_moves": string[],
+  "applied_helpers": [
+    {
+      "id": string,
+      "selection_reason": string,
+      "affected_axes": string[],
+      "schema_changes": string[],
+      "innovation_reason": string,
+      "difficulty_reason": string
+    }
+  ],
   "shared_core_summary": string,
   "shared_core_anchors": {
     "shared_state": string,
@@ -327,6 +340,8 @@ def build_planner_user_prompt(
         "- 所有参数、输入特性、结构变化和不变量承诺都必须 materialize 到四元组字段里。\n"
         "- `instantiated_schema` 只能包含约定字段，不要附带任何额外键。\n"
         "- `algorithmic_delta_claim.new_proof_obligation` 表示新增正确性证明，不要把它写成泛泛的难度评价。\n"
+        "- 必须应用当前规则声明的全部 `helpers`，并把它们完整写入 `applied_helpers`。\n"
+        "- `applied_helpers` 中的每一项都要写清它作用到哪些变化轴、改变了哪些 schema 部分、怎样抬高创新度、怎样抬高难度。\n"
         "- 如果模式是 same_family_fusion，`shared_core_summary` 和三个 shared_core_anchors 不能为空。\n"
         "- 如果你认为该规则不适用或只能做浅改，请返回失败状态，不要硬套。\n\n"
         f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
@@ -404,6 +419,7 @@ def build_generation_user_prompt(
         "predicted_schema_distance": plan.predicted_schema_distance,
         "changed_axes_realized": plan.changed_axes_realized,
         "algorithmic_delta_claim": plan.algorithmic_delta_claim,
+        "applied_helpers": plan.applied_helpers,
         "shared_core_summary": plan.shared_core_summary,
         "shared_core_anchors": plan.shared_core_anchors,
         "seed_contributions": plan.seed_contributions,
@@ -421,6 +437,7 @@ def build_generation_user_prompt(
         "- 只有 `algorithmic_delta_claim.reusable_subroutines` 里明确提到的局部子程序可以复用；不能把原题整体解法框架直接搬过来。\n"
         "- 如果熟悉原题的选手只需要小改状态、补一个后处理、外包一层二分或计数，就能沿用原解，请不要继续生成，直接返回 `difference_insufficient`。\n"
         "- `algorithmic_delta_claim.why_direct_reuse_fails` 必须能在题面定义里体现出来，而不是只写在规划字段里。\n"
+        "- `applied_helpers` 里的每个 helper 都要在题面和实例化 schema 中落地，不能只停留在规划说明里。\n"
         f"- {sample_shape_hint}\n"
         "- `notes` 用于补充模数、字典序、证书定义、失败输出约定等关键说明；没有则返回空字符串。\n\n"
         f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
@@ -451,10 +468,9 @@ def _rule_review_excerpt(rule: dict[str, Any]) -> dict[str, Any]:
         "audit_tags",
         "required_axis_changes",
         "core_transformation",
+        "helpers",
         "validation_contract",
         "planner_output_contract",
-        "allowed_helpers",
-        "forbidden_helpers",
         "examples",
         "failure_templates",
     )

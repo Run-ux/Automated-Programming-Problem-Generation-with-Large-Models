@@ -1,14 +1,10 @@
 {
-  "version": "2026-04-rules-v2",
+  "version": "2026-04-rules-v3",
   "global_constraints": {
-    "enabled": true,
-    "mode_must_be_explicit": true,
-    "max_primary_rules_per_plan": 1,
     "allow_helper_moves": true
   },
   "global_redlines": {
-    "enabled": true,
-      "items": [
+    "items": [
       "只换故事背景",
       "纯改输入输出格式",
       "只改参数范围，状态结构不变",
@@ -19,11 +15,17 @@
   "modes": {
     "single_seed_extension": {
       "enabled": true,
-      "helpers": [
-        "调整约束重点",
-        "规范输出",
-        "局部附加条件"
-      ],
+      "planner_output_contract": {
+        "required_fields": [
+          "eligibility_reason",
+          "core_transformation_summary",
+          "difference_plan",
+          "instantiated_schema",
+          "algorithmic_delta_claim",
+          "anti_shallow_rationale",
+          "applied_helpers"
+        ]
+      },
       "rules": [
         {
           "id": "canonical_witness",
@@ -43,35 +45,66 @@
             ]
           },
           "required_axis_changes": {
-            "must_change": ["O", "V"],
-            "should_change": ["C"],
-            "must_not_be_only": ["I"]
+            "must_change": ["O", "V"]
           },
           "core_transformation": {
             "primary_operator": "canonical_witness",
             "target_shift": "从给答案改成给规范解",
             "new_obligation": "输出一个可以直接检查的规范方案"
           },
-          "allowed_helpers": [
-            "调整约束重点",
-            "规范输出",
-            "局部附加条件"
+          "helpers": [
+            {
+              "id": "canonical_order_pressure",
+              "summary": "把规范顺序推进到主状态演化。",
+              "semantic_purpose": "规范顺序进入主状态演化与主要决策。",
+              "must_realize_in": ["core_constraints", "objective", "invariant"],
+              "target_axes": ["C", "O", "V"],
+              "innovation_role": "让输出对象与验证责任离开原题路径。",
+              "difficulty_role": "让状态转移承担新的规范性证明。",
+              "prompt_guidance": [
+                "让规范顺序进入合法性或最优性定义。",
+                "让验证责任依赖全局结构。"
+              ],
+              "redlines": [
+                "不能退化为输出后处理。",
+                "不能只加字典序描述。"
+              ]
+            },
+            {
+              "id": "proof_bearing_output",
+              "summary": "把输出对象升级成带证明责任的规范解。",
+              "semantic_purpose": "规范解直接承接可检查的结构承诺。",
+              "must_realize_in": ["objective", "invariant"],
+              "target_axes": ["O", "V"],
+              "innovation_role": "让新题输出责任变成可校验的解对象。",
+              "difficulty_role": "要求解法解释为什么规范解满足全局约束。",
+              "prompt_guidance": [
+                "让输出对象直接承接新校验责任。",
+                "不要把证明责任留在题面备注之外。"
+              ],
+              "redlines": [
+                "不能把规范性留给说明文补充。",
+                "不能只要求输出任意方案。"
+              ]
+            },
+            {
+              "id": "constraint_reweighting",
+              "summary": "调整约束重心，让规范解要求进入主约束。",
+              "semantic_purpose": "规范输出改变主约束的组织重心与优先级。",
+              "must_realize_in": ["core_constraints", "invariant"],
+              "target_axes": ["C", "V"],
+              "innovation_role": "让原题的次要约束变成主导责任的一部分。",
+              "difficulty_role": "迫使解法在状态设计里处理新的约束重心。",
+              "prompt_guidance": [
+                "让规范要求改变主约束组织方式。",
+                "让不变量反映新的约束优先级。"
+              ],
+              "redlines": [
+                "不能只增加一句格式要求。",
+                "不能保持原主约束完全不动。"
+              ]
+            }
           ],
-          "forbidden_helpers": [
-            "只改输入格式",
-            "只换故事背景",
-            "跟原核心规律无关的额外约束"
-          ],
-          "planner_output_contract": {
-            "required_fields": [
-              "eligibility_reason",
-              "core_transformation_summary",
-              "difference_plan",
-              "instantiated_schema",
-              "algorithmic_delta_claim",
-              "anti_shallow_rationale"
-            ]
-          },
           "validation_contract": {
             "hard_checks": [
               "输出要求必须真正变了",
@@ -112,23 +145,59 @@
             "target_shift": "从判定或求值改成给方案或给冲突证据",
             "new_obligation": "输出合法方案，或者输出局部冲突证据"
           },
-          "allowed_helpers": [
-            "调整约束重点",
-            "局部附加条件"
+          "helpers": [
+            {
+              "id": "local_certificate_design",
+              "summary": "把无解原因压成可局部检查的证据对象。",
+              "semantic_purpose": "失败原因稳定映射为可局部检查的证据对象。",
+              "must_realize_in": ["core_constraints", "objective", "invariant"],
+              "target_axes": ["C", "O", "V"],
+              "innovation_role": "让失败语义从解释变成输出对象。",
+              "difficulty_role": "要求解法同时构造成功分支和失败证据分支。",
+              "prompt_guidance": [
+                "让失败输出拥有明确结构。",
+                "让证据可以在局部规则下直接检查。"
+              ],
+              "redlines": [
+                "不能只写无解原因说明。",
+                "不能让失败输出退化成自然语言解释。"
+              ]
+            },
+            {
+              "id": "failure_branch_symmetry",
+              "summary": "让成功分支与失败分支都承担正式输出责任。",
+              "semantic_purpose": "成功分支与失败分支都承担完整输出与校验责任。",
+              "must_realize_in": ["core_constraints", "objective"],
+              "target_axes": ["C", "O"],
+              "innovation_role": "把单目标输出改成双分支输出合同。",
+              "difficulty_role": "要求算法统一处理两类输出语义。",
+              "prompt_guidance": [
+                "让两条分支共享输入语义但承担不同输出对象。",
+                "让失败分支不能靠特判绕开主结构。"
+              ],
+              "redlines": [
+                "不能让失败分支成为附属备注。",
+                "不能只定义成功分支。"
+              ]
+            },
+            {
+              "id": "boundary_case_amplification",
+              "summary": "把原题边界情形放大成证据构造压力。",
+              "semantic_purpose": "边界情形直接暴露局部冲突与证据构造压力。",
+              "must_realize_in": ["core_constraints", "invariant"],
+              "target_axes": ["C", "V"],
+              "innovation_role": "让原题边界条件变成新题失败证据的一部分。",
+              "difficulty_role": "要求解法在边界条件下保持证据可检查性。",
+              "prompt_guidance": [
+                "让边界约束决定证据对象的结构。",
+                "让不变量说明边界情形下为何无法构造。"
+              ],
+              "redlines": [
+                "不能只加一个无关紧要的失败条件。",
+                "不能让边界情形脱离主求解过程。"
+              ]
+            }
           ],
-          "forbidden_helpers": [
-            "只给抽象解释"
-          ],
-          "planner_output_contract": {
-            "required_fields": [
-              "eligibility_reason",
-              "core_transformation_summary",
-              "difference_plan",
-              "instantiated_schema",
-              "algorithmic_delta_claim",
-              "anti_shallow_rationale"
-            ]
-          },
           "validation_contract": {
             "hard_checks": [
               "冲突证据必须能局部检查",
@@ -170,24 +239,59 @@
             "target_shift": "从存在性或最优值改成计数",
             "new_obligation": "定义清楚计数对象、有限性和去重规则"
           },
-          "allowed_helpers": [
-            "调整约束重点",
-            "规范输出"
+          "helpers": [
+            {
+              "id": "counting_unit_definition",
+              "summary": "明确计数对象、等价关系与不同答案口径。",
+              "semantic_purpose": "计数对象、等价关系与有限性口径明确落入目标定义。",
+              "must_realize_in": ["core_constraints", "objective", "invariant"],
+              "target_axes": ["C", "O", "V"],
+              "innovation_role": "把原题答案换成对象明确的计数结果。",
+              "difficulty_role": "要求解法处理等价类和有限性证明。",
+              "prompt_guidance": [
+                "把计数对象直接写进目标定义。",
+                "把去重口径写进约束或不变量。"
+              ],
+              "redlines": [
+                "不能只补一个模数。",
+                "不能不定义什么算不同答案。"
+              ]
+            },
+            {
+              "id": "state_factorization",
+              "summary": "把解空间拆成可汇总的计数单元。",
+              "semantic_purpose": "主状态按稳定单元分解并可重组汇总。",
+              "must_realize_in": ["core_constraints", "invariant"],
+              "target_axes": ["C", "V"],
+              "innovation_role": "让计数从主状态组织方式中自然长出来。",
+              "difficulty_role": "要求解法在分解与汇总层面重建主状态。",
+              "prompt_guidance": [
+                "让核心约束说明如何拆成计数单元。",
+                "让不变量解释单元之间如何避免重复。"
+              ],
+              "redlines": [
+                "不能保持原状态结构不动。",
+                "不能把计数只当成结果后处理。"
+              ]
+            },
+            {
+              "id": "counting_obligation_lock",
+              "summary": "把计数责任锁进主求解目标而不是附带统计。",
+              "semantic_purpose": "计数责任成为主目标并改变算法推进方向。",
+              "must_realize_in": ["core_constraints", "objective"],
+              "target_axes": ["C", "O"],
+              "innovation_role": "把原题主目标替换成新的计数义务。",
+              "difficulty_role": "要求算法同时承担计数正确性和去重正确性。",
+              "prompt_guidance": [
+                "让目标定义主导状态转移。",
+                "不要保留原判定主目标再顺手计数。"
+              ],
+              "redlines": [
+                "不能继续由原题判定过程主导。",
+                "不能把计数目标放进备注。"
+              ]
+            }
           ],
-          "forbidden_helpers": [
-            "只补模数，不说明为什么可数",
-            "只改输出说法，不定义计数对象"
-          ],
-          "planner_output_contract": {
-            "required_fields": [
-              "eligibility_reason",
-              "core_transformation_summary",
-              "difference_plan",
-              "instantiated_schema",
-              "algorithmic_delta_claim",
-              "anti_shallow_rationale"
-            ]
-          },
           "validation_contract": {
             "hard_checks": [
               "必须说明什么样的解算不同",
@@ -228,23 +332,59 @@
             "target_shift": "从存在性改成最小保底",
             "new_obligation": "定义扰动模型，并补上更强的不变量"
           },
-          "allowed_helpers": [
-            "调整约束重点",
-            "局部附加条件"
+          "helpers": [
+            {
+              "id": "native_perturbation_model",
+              "summary": "把原题自带的不确定性写成明确扰动模型。",
+              "semantic_purpose": "原题自带的不确定性被写成正式扰动模型。",
+              "must_realize_in": ["core_constraints", "invariant"],
+              "target_axes": ["C", "V"],
+              "innovation_role": "让原题隐藏的不确定性变成正式约束来源。",
+              "difficulty_role": "要求解法在最坏情形下维持可行性。",
+              "prompt_guidance": [
+                "扰动来源必须回到原题语义。",
+                "把扰动模型写成正式约束。"
+              ],
+              "redlines": [
+                "不能凭背景硬造对手。",
+                "不能只在原题外层加一层阈值。"
+              ]
+            },
+            {
+              "id": "worst_case_invariant",
+              "summary": "补出最坏情形下仍成立的强化不变量。",
+              "semantic_purpose": "保底目标引入新的全局证明责任与强化不变量。",
+              "must_realize_in": ["core_constraints", "objective", "invariant"],
+              "target_axes": ["C", "O", "V"],
+              "innovation_role": "让目标从可行扩成保底最优。",
+              "difficulty_role": "要求算法证明强化不变量在任意扰动下都成立。",
+              "prompt_guidance": [
+                "让不变量直接服务最坏情况保证。",
+                "让目标与不变量相互绑定。"
+              ],
+              "redlines": [
+                "不能只给经验性保证。",
+                "不能省略最坏情况正确性责任。"
+              ]
+            },
+            {
+              "id": "guarantee_threshold_coupling",
+              "summary": "把保底阈值与主约束耦合起来。",
+              "semantic_purpose": "保底阈值直接耦合主约束并改变状态推进。",
+              "must_realize_in": ["core_constraints", "objective"],
+              "target_axes": ["C", "O"],
+              "innovation_role": "让保底阈值成为新题的主目标。",
+              "difficulty_role": "要求算法同时处理阈值搜索与可行性结构。",
+              "prompt_guidance": [
+                "让阈值直接影响约束定义。",
+                "不要把原解外面简单包一层二分。"
+              ],
+              "redlines": [
+                "不能只是外套二分。",
+                "不能让阈值脱离主状态定义。"
+              ]
+            }
           ],
-          "forbidden_helpers": [
-            "没有真实扰动来源却硬加阈值"
-          ],
-          "planner_output_contract": {
-            "required_fields": [
-              "eligibility_reason",
-              "core_transformation_summary",
-              "difference_plan",
-              "instantiated_schema",
-              "algorithmic_delta_claim",
-              "anti_shallow_rationale"
-            ]
-          },
           "validation_contract": {
             "hard_checks": [
               "扰动模型必须来自原题本身",
@@ -265,6 +405,19 @@
     },
     "same_family_fusion": {
       "enabled": true,
+      "planner_output_contract": {
+        "required_fields": [
+          "shared_core_summary",
+          "shared_core_anchors",
+          "seed_a_indispensable_obligation",
+          "seed_b_indispensable_obligation",
+          "why_not_sequential_composition",
+          "fusion_ablation",
+          "instantiated_schema",
+          "algorithmic_delta_claim",
+          "applied_helpers"
+        ]
+      },
       "rules": [
         {
           "id": "interlocked_constraints",
@@ -283,26 +436,66 @@
             ]
           },
           "required_axis_changes": {
-            "must_change": ["C", "V"],
-            "should_change": ["O"]
+            "must_change": ["C", "V"]
           },
           "core_transformation": {
             "primary_operator": "interlocked_constraints",
             "target_shift": "在同一个主核上形成双约束互锁",
             "new_obligation": "同一个状态过程要同时满足两题的核心要求"
           },
-          "planner_output_contract": {
-            "required_fields": [
-              "shared_core_summary",
-              "shared_core_anchors",
-              "seed_a_indispensable_obligation",
-              "seed_b_indispensable_obligation",
-              "why_not_sequential_composition",
-              "fusion_ablation",
-              "instantiated_schema",
-              "algorithmic_delta_claim"
-            ]
-          },
+          "helpers": [
+            {
+              "id": "shared_state_locking",
+              "summary": "把共享状态核写成两题约束共同承压的唯一主核。",
+              "semantic_purpose": "共享状态核成为两题约束共同承压的唯一主核。",
+              "must_realize_in": ["core_constraints", "invariant"],
+              "target_axes": ["C", "V"],
+              "innovation_role": "让融合不再是并排拼接，而是同核互锁。",
+              "difficulty_role": "要求解法在同一状态中同时满足双义务。",
+              "prompt_guidance": [
+                "让共享状态核成为唯一主核。",
+                "让两题约束在同一转移里同时生效。"
+              ],
+              "redlines": [
+                "不能拆成两个独立状态核。",
+                "不能让一题约束只在后处理生效。"
+              ]
+            },
+            {
+              "id": "cross_obligation_output",
+              "summary": "让输出责任直接体现双义务互锁。",
+              "semantic_purpose": "输出对象直接反映共享主核上的双重约束。",
+              "must_realize_in": ["core_constraints", "objective"],
+              "target_axes": ["C", "O"],
+              "innovation_role": "让融合结果拥有新的统一输出对象。",
+              "difficulty_role": "要求算法在输出层面兑现双义务。",
+              "prompt_guidance": [
+                "让输出对象依赖两题贡献同时成立。",
+                "不要保留任一单题的原输出合同。"
+              ],
+              "redlines": [
+                "不能只保留其中一题输出目标。",
+                "不能让新输出只体现单边义务。"
+              ]
+            },
+            {
+              "id": "anti_sequential_barrier",
+              "summary": "建立无法串联拆分的结构障碍。",
+              "semantic_purpose": "共享主核的每一步都同步承担双义务并拒绝串联拆分。",
+              "must_realize_in": ["core_constraints", "invariant"],
+              "target_axes": ["C", "V"],
+              "innovation_role": "阻止融合退化成前后两道子任务。",
+              "difficulty_role": "要求解法给出真正的同步论证。",
+              "prompt_guidance": [
+                "让约束和不变量都拒绝串联拆分。",
+                "把反串联理由写进主状态过程。"
+              ],
+              "redlines": [
+                "不能允许先做 A 再做 B。",
+                "不能只在文字解释里说不是串联。"
+              ]
+            }
+          ],
           "validation_contract": {
             "hard_checks": [
               "必须保持单主核",
@@ -336,26 +529,66 @@
             ]
           },
           "required_axis_changes": {
-            "must_change": ["O"],
-            "should_change": ["C", "V"]
+            "must_change": ["O"]
           },
           "core_transformation": {
             "primary_operator": "shared_core_objective_upgrade",
             "target_shift": "在共享主核上抬高目标",
             "new_obligation": "让共享主核承担原来两题都没有的新主任务"
           },
-          "planner_output_contract": {
-            "required_fields": [
-              "shared_core_summary",
-              "shared_core_anchors",
-              "seed_a_indispensable_obligation",
-              "seed_b_indispensable_obligation",
-              "why_not_sequential_composition",
-              "fusion_ablation",
-              "instantiated_schema",
-              "algorithmic_delta_claim"
-            ]
-          },
+          "helpers": [
+            {
+              "id": "shared_core_target_escalation",
+              "summary": "把共享主核的主目标升级到更强层级。",
+              "semantic_purpose": "共享主核本身承担新的输出与优化责任。",
+              "must_realize_in": ["core_constraints", "objective"],
+              "target_axes": ["C", "O"],
+              "innovation_role": "让融合题拥有超出两题原目标的新主任务。",
+              "difficulty_role": "要求算法围绕新目标重建主求解路径。",
+              "prompt_guidance": [
+                "让新目标主导共享主核的求解方向。",
+                "不要保留原目标再附加排序或过滤。"
+              ],
+              "redlines": [
+                "不能只是后处理。",
+                "不能让原目标继续主导。"
+              ]
+            },
+            {
+              "id": "proof_bearing_upgrade",
+              "summary": "给升级后的目标附加新的证明责任。",
+              "semantic_purpose": "升级后的目标直接附加新的正确性证明责任。",
+              "must_realize_in": ["objective", "invariant"],
+              "target_axes": ["O", "V"],
+              "innovation_role": "让升级目标变成可校验的新输出责任。",
+              "difficulty_role": "要求解法证明共享主核能支撑升级目标。",
+              "prompt_guidance": [
+                "让不变量直接支撑升级目标。",
+                "让输出对象对应新的证明义务。"
+              ],
+              "redlines": [
+                "不能只换一个更强的措辞。",
+                "不能省略升级后的证明责任。"
+              ]
+            },
+            {
+              "id": "core_preserving_reweighting",
+              "summary": "在保留共享主核的前提下重排约束重心。",
+              "semantic_purpose": "共享主核保持不变，但主导约束重心被重排改写。",
+              "must_realize_in": ["core_constraints", "invariant"],
+              "target_axes": ["C", "V"],
+              "innovation_role": "让共享主核承担新的主约束组合。",
+              "difficulty_role": "迫使算法在同一主核下适应新的约束分布。",
+              "prompt_guidance": [
+                "保留共享主核的骨架。",
+                "让新目标改变约束与不变量的主次关系。"
+              ],
+              "redlines": [
+                "不能换掉共享主核。",
+                "不能保持约束权重完全不变。"
+              ]
+            }
+          ],
           "validation_contract": {
             "hard_checks": [
               "新目标必须改变共享主核的主要求解任务",

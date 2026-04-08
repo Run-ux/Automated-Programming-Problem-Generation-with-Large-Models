@@ -49,7 +49,7 @@ def build_system_prompt() -> str:
 硬规则：
 1. 只输出严格 JSON 对象，不输出任何解释文字。
 2. type 必须优先复用规范主类型词表：{controlled_types}。
-3. 不得把题目情境词直接写进 type、properties 的键名或 components 的 role 与 type。
+3. 不得把题目情境词直接写进 type、properties 的键名或 components 的 role、role_description 与 type。
 
 规范标签说明：
 {type_reference}
@@ -72,7 +72,8 @@ def build_system_prompt() -> str:
 - 推荐复用的 properties 键为：{property_keys}。
 - 题面没有明确证据时，length.min、length.max、value_range.min、value_range.max 写 null。
 - 未识别到的性质不要补写。
-- 多个关键输入结构同时出现时，写入 components；每个组件包含 role、type、length、value_range、properties。
+- 多个关键输入结构同时出现时，写入 components；每个组件包含 role、role_description、type、length、value_range、properties。
+- role_description 用简洁英文短语或短句说明该组件承载的信息职责，不重复 type。
 - 顶层字段始终镜像主组件，保持旧流程兼容。
 - 只有在不存在单一主结构时才使用 composite；所有已知类型都不适配时使用 other。
 
@@ -109,6 +110,7 @@ def build_user_prompt(problem: Dict[str, Any]) -> str:
 4. properties 表示稳定结构性质。题面明确给出 directed、weighted、distinct 这类性质时填写；没有明确证据时写空对象。常见误填：把题目情境词、算法方法或目标要求写进 properties。
 5. components 表示多个关键输入组件并列时的逐项展开。存在多个关键组件且单看顶层不足以表达时填写；只有单一主结构时可省略。常见误填：把 test case 数量、输出对象或求解过程中的中间结构写进 components。
 6. components.role 表示组件角色的抽象英文名。只有 components 中的单项需要区分角色时填写；没有 components 时不出现。常见误填：把具体题意名词、整句描述或与 type 重复的复合标签写进 role。
+7. components.role_description 表示组件角色的英文职责说明。只在 components 中出现，使用简洁英文短语或短句描述该组件承载的信息，不要重复 role 或 type。常见误填：留空、照抄题面整句，或把算法动作写进 role_description。
 
 请输出 JSON：
 {{
@@ -119,6 +121,7 @@ def build_user_prompt(problem: Dict[str, Any]) -> str:
   "components": [
     {{
       "role": "组件角色英文名",
+      "role_description": "组件职责英文说明",
       "type": "从 {type_list} 中选择的组件类型",
       "length": {{"min": null, "max": null}},
       "value_range": {{"min": null, "max": null}},
@@ -135,6 +138,7 @@ def build_user_prompt(problem: Dict[str, Any]) -> str:
 5. 多个关键输入结构时写入 components，顶层继续镜像主组件。
 6. length 与 value_range 在缺少明确证据时写 null，不要补整数。
 7. 标签与键名只用抽象数据结构术语，不写题目情境词。
+8. 顶层 type 为 composite 时，每个组件都必须填写非空 role 与 role_description。
 """
 
 
@@ -180,10 +184,11 @@ INPUT_STRUCTURE_SCHEMA = {
             "description": "可选扩展字段。存在多个关键输入组件时逐项列出",
             "items": {
                 "type": "object",
-                "required": ["role", "type", "length", "value_range", "properties"],
+                "required": ["role", "role_description", "type", "length", "value_range", "properties"],
                 "additionalProperties": True,
                 "properties": {
                     "role": {"type": "string"},
+                    "role_description": {"type": "string"},
                     "type": {
                         "type": "string",
                         "enum": MAIN_TYPES,

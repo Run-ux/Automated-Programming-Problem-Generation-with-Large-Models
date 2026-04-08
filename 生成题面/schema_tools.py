@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import copy
+import importlib.util
 import json
 import math
 import re
+import sys
 from dataclasses import asdict, dataclass, is_dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable
 
-from config import DEFAULT_DISTANCE_CACHE_DIR, DEFAULT_EMBEDDING_MODEL
+from config import DEFAULT_DISTANCE_CACHE_DIR, DEFAULT_EMBEDDING_MODEL, PROJECT_ROOT
 
 
 DISTANCE_VERSION = "v2"
@@ -578,20 +581,34 @@ def _objective_distance(
 
 def _objective_type_prompt(objective_type: Any) -> str:
     objective_type = _normalize_text(objective_type)
-    prompts = {
-        "decision": "determine whether any valid solution exists",
-        "count": "count all valid solutions",
-        "construct_witness": "construct and output one valid witness",
-        "construct_or_obstruction": "output a valid witness or a locally checkable obstruction certificate",
-        "minimize_value": "minimize the target value under the given constraints",
-        "maximize_value": "maximize the target value under the given constraints",
-        "minimize_length": "find the shortest valid construction",
-        "count_minimal_strings": "count all shortest valid strings",
-        "lexicographically_first_minimal_string": "find the lexicographically first shortest valid string",
-        "maximize": "maximize the target objective",
-        "minimize": "minimize the target objective",
-    }
-    return prompts.get(objective_type, objective_type or "unknown objective")
+    if not objective_type:
+        return "unknown objective"
+
+    prompts = _load_objective_type_prompts()
+    return prompts.get(objective_type, objective_type)
+
+
+@lru_cache(maxsize=1)
+def _load_objective_type_prompts() -> dict[str, str]:
+    label_vocab_path = PROJECT_ROOT / "四元组抽取" / "label_vocab.py"
+    if not label_vocab_path.exists():
+        return {}
+
+    spec = importlib.util.spec_from_file_location("autoproblemgen_upstream_label_vocab", label_vocab_path)
+    if spec is None or spec.loader is None:
+        return {}
+
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+
+    prompts: dict[str, str] = {}
+    for objective_spec in getattr(module, "OBJECTIVE_SPECS", []):
+        name = _normalize_text(getattr(objective_spec, "name", ""))
+        description = str(getattr(objective_spec, "description", "")).strip()
+        if name and description:
+            prompts[name] = f"{name}: {description}"
+    return prompts
 
 
 def _cosine_similarity(left: list[float], right: list[float]) -> float:

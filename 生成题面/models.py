@@ -96,7 +96,7 @@ class VariantPlan:
     shared_core_anchors: dict[str, Any] = field(default_factory=dict)
     seed_contributions: dict[str, Any] = field(default_factory=dict)
     fusion_ablation: dict[str, Any] = field(default_factory=dict)
-    auxiliary_moves: list[str] = field(default_factory=list)
+    applied_helpers: list[dict[str, Any]] = field(default_factory=list)
     rule_version: str = ""
     selection_trace: list[dict[str, Any]] = field(default_factory=list)
     validation_trace: list[dict[str, Any]] = field(default_factory=list)

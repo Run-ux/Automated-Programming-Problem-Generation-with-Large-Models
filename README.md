@@ -220,7 +220,7 @@ phase1 的标签集合
 
 1. 创新来源是规则选择加 planner，并把变化直接落实到实例化四元组。
 2. 差异控制仍围绕四轴 `I/C/O/V` 展开，但 `distance_breakdown` 已升级为结构化距离：顶层包含 `distance_version`、`backend`、`total`、`axis_scores`、`components`，artifact 会继续显式记录 `changed_axes_realized` 与 `difference_plan`。
-3. artifact 还会记录 `mode`、`source_problem_ids`、`applied_rule`、`rule_selection_reason`、`rejected_candidates`、`algorithmic_delta_claim`，以及 `rule_version`、`selection_trace`、`validation_trace`、`candidate_attempts`。
+3. artifact 还会记录 `mode`、`source_problem_ids`、`applied_rule`、`rule_selection_reason`、`rejected_candidates`、`algorithmic_delta_claim`、`applied_helpers`，以及 `rule_version`、`selection_trace`、`validation_trace`、`candidate_attempts`。
 
 ### Schema Distance V2 各维度计算方法
 

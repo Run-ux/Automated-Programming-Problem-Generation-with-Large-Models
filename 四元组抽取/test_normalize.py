@@ -44,6 +44,7 @@ class NormalizeHelpersTests(unittest.TestCase):
                 "components": [
                     {
                         "role": "queries",
+                        "role_description": "online query stream",
                         "type": "array",
                         "length": {"min": 1, "max": 5},
                         "value_range": {"min": 0, "max": 20},
@@ -164,6 +165,7 @@ class NormalizePipelineTests(unittest.TestCase):
                         "components": [
                             {
                                 "role": "queries",
+                                "role_description": "online query stream",
                                 "type": "array",
                                 "length": {"min": 1, "max": 5},
                                 "value_range": {"min": 0, "max": 20},
@@ -250,6 +252,10 @@ class NormalizePipelineTests(unittest.TestCase):
 
         self.assertEqual(output["problem_id"], "demo")
         self.assertEqual(output["input_structure"]["type"], "array")
+        self.assertEqual(
+            output["input_structure"]["components"][0]["role_description"],
+            "online query stream",
+        )
         self.assertEqual(
             output["core_constraints"]["constraints"][0]["name"],
             "range_bound",

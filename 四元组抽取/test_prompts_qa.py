@@ -68,8 +68,20 @@ def _validate_input_structure(result: Dict[str, Any]) -> None:
     assert isinstance(result.get("length"), dict)
     assert isinstance(result.get("value_range"), dict)
     assert isinstance(result.get("properties"), dict)
-    if "components" in result:
-        assert isinstance(result["components"], list)
+    components = result.get("components")
+    if components is not None:
+        assert isinstance(components, list)
+        for component in components:
+            assert isinstance(component, dict)
+            assert isinstance(component.get("role"), str)
+            assert component["role"].strip()
+            assert isinstance(component.get("type"), str)
+            assert isinstance(component.get("length"), dict)
+            assert isinstance(component.get("value_range"), dict)
+            assert isinstance(component.get("properties"), dict)
+            if result.get("type") == "composite":
+                assert isinstance(component.get("role_description"), str)
+                assert component["role_description"].strip()
 
 
 def _validate_constraints(result: Dict[str, Any]) -> None:
@@ -119,6 +131,8 @@ def test_dimension(
     _assert_system_prompt_sections(system_prompt)
     if dimension.startswith("I"):
         assert "性质键说明：" in system_prompt, "input_structure system_prompt 缺少性质键说明"
+        assert "role_description" in system_prompt, "input_structure system_prompt 缺少 role_description 说明"
+        assert "components.role_description" in user_prompt, "input_structure user_prompt 缺少 role_description 字段说明"
     _assert_prompt_sections(user_prompt, problem, include_code=dimension.startswith("V"))
 
     result = client.chat_json(system_prompt, user_prompt)

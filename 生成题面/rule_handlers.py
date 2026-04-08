@@ -136,49 +136,158 @@ class RuleHandler:
                 )
             )
 
-        auxiliary_moves = [str(item).strip() for item in payload.get("auxiliary_moves", []) if str(item).strip()]
-        if auxiliary_moves and not global_constraints.get("allow_helper_moves", True):
-            errors.append("全局配置禁止 auxiliary_moves，但规划结果仍输出了辅助动作。")
+        expected_helpers = _normalize_rule_helpers(rule.get("helpers", []))
+        applied_helpers = _normalize_applied_helpers(payload.get("applied_helpers", []))
+        if expected_helpers and not global_constraints.get("allow_helper_moves", True):
+            errors.append("全局配置禁止 applied_helpers，但当前规则要求 helper 全量应用。")
             events.append(
                 _event(
                     stage="plan_validation",
                     rule_id=self.rule_id,
                     outcome="fail",
                     reason_code="helper_moves_disabled",
-                    message="辅助动作违反全局配置。",
-                    details={"auxiliary_moves": auxiliary_moves},
+                    message="helper 应用违反全局配置。",
+                    details={"expected_helper_ids": [helper["id"] for helper in expected_helpers]},
                 )
             )
-
-        allowed_helpers = {str(item).strip() for item in rule.get("allowed_helpers", []) if str(item).strip()}
-        forbidden_helpers = {str(item).strip() for item in rule.get("forbidden_helpers", []) if str(item).strip()}
-        if allowed_helpers:
-            invalid_helpers = sorted(move for move in auxiliary_moves if move not in allowed_helpers)
-            if invalid_helpers:
-                errors.append("规划结果使用了规则未允许的 auxiliary_moves：" + ", ".join(invalid_helpers) + "。")
-                events.append(
-                    _event(
-                        stage="plan_validation",
-                        rule_id=self.rule_id,
-                        outcome="fail",
-                        reason_code="helper_not_allowed",
-                        message="辅助动作不在规则白名单中。",
-                        details={"invalid_helpers": invalid_helpers},
-                    )
-                )
-        forbidden_hits = sorted(move for move in auxiliary_moves if move in forbidden_helpers)
-        if forbidden_hits:
-            errors.append("规划结果命中了规则禁止的 auxiliary_moves：" + ", ".join(forbidden_hits) + "。")
+        duplicate_helper_ids = sorted(
+            {helper["id"] for helper in applied_helpers if [item["id"] for item in applied_helpers].count(helper["id"]) > 1}
+        )
+        if duplicate_helper_ids:
+            errors.append("规划结果重复声明了 applied_helpers：" + ", ".join(duplicate_helper_ids) + "。")
             events.append(
                 _event(
                     stage="plan_validation",
                     rule_id=self.rule_id,
                     outcome="fail",
-                    reason_code="helper_forbidden",
-                    message="辅助动作命中规则黑名单。",
-                    details={"forbidden_helpers": forbidden_hits},
+                    reason_code="helper_duplicate",
+                    message="规划结果重复声明 helper。",
+                    details={"duplicate_helper_ids": duplicate_helper_ids},
                 )
             )
+
+        expected_helper_ids = {helper["id"] for helper in expected_helpers}
+        applied_helper_ids = {helper["id"] for helper in applied_helpers}
+        missing_helper_ids = sorted(expected_helper_ids - applied_helper_ids)
+        unexpected_helper_ids = sorted(applied_helper_ids - expected_helper_ids)
+        if missing_helper_ids:
+            errors.append("规划结果缺少规则要求的 applied_helpers：" + ", ".join(missing_helper_ids) + "。")
+            events.append(
+                _event(
+                    stage="plan_validation",
+                    rule_id=self.rule_id,
+                    outcome="fail",
+                    reason_code="helper_missing",
+                    message="规划结果没有全量应用规则 helper。",
+                    details={"missing_helper_ids": missing_helper_ids},
+                )
+            )
+        if unexpected_helper_ids:
+            errors.append("规划结果声明了未定义的 applied_helpers：" + ", ".join(unexpected_helper_ids) + "。")
+            events.append(
+                _event(
+                    stage="plan_validation",
+                    rule_id=self.rule_id,
+                    outcome="fail",
+                    reason_code="helper_not_declared",
+                    message="规划结果使用了规则未声明的 helper。",
+                    details={"unexpected_helper_ids": unexpected_helper_ids},
+                )
+            )
+
+        actual_changed_sections = _changed_schema_sections(source_schema, candidate_schema)
+        helper_by_id = {helper["id"]: helper for helper in applied_helpers}
+        for helper_spec in expected_helpers:
+            helper_id = helper_spec["id"]
+            applied_helper = helper_by_id.get(helper_id)
+            if not applied_helper:
+                continue
+            missing_text_fields = [
+                field
+                for field in ("selection_reason", "innovation_reason", "difficulty_reason")
+                if not str(applied_helper.get(field, "")).strip()
+            ]
+            if missing_text_fields:
+                errors.append(f"helper `{helper_id}` 缺少必要说明字段：" + ", ".join(missing_text_fields) + "。")
+                events.append(
+                    _event(
+                        stage="plan_validation",
+                        rule_id=self.rule_id,
+                        outcome="fail",
+                        reason_code="helper_fields_missing",
+                        message="helper 缺少必要说明字段。",
+                        details={"helper_id": helper_id, "missing_fields": missing_text_fields},
+                    )
+                )
+            if not applied_helper.get("schema_changes"):
+                errors.append(f"helper `{helper_id}` 没有给出 schema_changes。")
+                events.append(
+                    _event(
+                        stage="plan_validation",
+                        rule_id=self.rule_id,
+                        outcome="fail",
+                        reason_code="helper_schema_changes_missing",
+                        message="helper 没有说明落到哪些 schema 变化。",
+                        details={"helper_id": helper_id},
+                    )
+                )
+            target_axes = {str(axis).strip() for axis in helper_spec.get("target_axes", []) if str(axis).strip()}
+            affected_axes = {str(axis).strip() for axis in applied_helper.get("affected_axes", []) if str(axis).strip()}
+            missing_axes = sorted(target_axes - affected_axes)
+            if missing_axes:
+                errors.append(f"helper `{helper_id}` 没有覆盖目标变化轴：" + ", ".join(missing_axes) + "。")
+                events.append(
+                    _event(
+                        stage="plan_validation",
+                        rule_id=self.rule_id,
+                        outcome="fail",
+                        reason_code="helper_target_axes_missing",
+                        message="helper 没有覆盖声明的目标变化轴。",
+                        details={"helper_id": helper_id, "missing_axes": missing_axes},
+                    )
+                )
+            missing_sections = sorted(
+                section
+                for section in helper_spec.get("must_realize_in", [])
+                if str(section).strip() and str(section).strip() not in actual_changed_sections
+            )
+            if missing_sections:
+                errors.append(f"helper `{helper_id}` 没有在必需 schema 部分落地：" + ", ".join(missing_sections) + "。")
+                events.append(
+                    _event(
+                        stage="plan_validation",
+                        rule_id=self.rule_id,
+                        outcome="fail",
+                        reason_code="helper_realization_missing",
+                        message="helper 没有在声明的 schema 部分落地。",
+                        details={"helper_id": helper_id, "missing_sections": missing_sections},
+                    )
+                )
+            helper_text = " ".join(
+                [
+                    str(applied_helper.get("selection_reason", "")),
+                    str(applied_helper.get("innovation_reason", "")),
+                    str(applied_helper.get("difficulty_reason", "")),
+                    " ".join(applied_helper.get("schema_changes", [])),
+                ]
+            ).lower()
+            redline_hits = [
+                redline
+                for redline in helper_spec.get("redlines", [])
+                if str(redline).strip() and str(redline).strip().lower() in helper_text
+            ]
+            if redline_hits:
+                errors.append(f"helper `{helper_id}` 命中了自身 redlines：" + "；".join(redline_hits) + "。")
+                events.append(
+                    _event(
+                        stage="plan_validation",
+                        rule_id=self.rule_id,
+                        outcome="fail",
+                        reason_code="helper_redline_hit",
+                        message="helper 命中 redline。",
+                        details={"helper_id": helper_id, "redline_hits": redline_hits},
+                    )
+                )
 
         # 这组硬判据负责拦住浅改规划：没有新输出责任、主目标没变、主状态没变、
         # 或者仍然可以直接套用原解的候选都会在这里被拒绝。
@@ -299,6 +408,7 @@ class RuleHandler:
             "shared_core_anchors": copy.deepcopy(plan.shared_core_anchors),
             "seed_contributions": copy.deepcopy(plan.seed_contributions),
             "fusion_ablation": copy.deepcopy(plan.fusion_ablation),
+            "applied_helpers": copy.deepcopy(plan.applied_helpers),
             "instantiated_schema": dataclass_to_dict(plan.instantiated_schema_snapshot),
         }
         return self._run_validation_review(
@@ -649,6 +759,58 @@ def _first_failure_reason_code(events: list[AuditTraceEvent]) -> str:
         if event.outcome == "fail" and event.reason_code:
             return event.reason_code
     return ""
+
+
+def _normalize_rule_helpers(payload: Any) -> list[dict[str, Any]]:
+    if not isinstance(payload, list):
+        return []
+    normalized: list[dict[str, Any]] = []
+    for item in payload:
+        if not isinstance(item, dict):
+            continue
+        helper_id = normalize_rule_id(item.get("id", ""))
+        if not helper_id:
+            continue
+        normalized.append(
+            {
+                "id": helper_id,
+                "must_realize_in": [str(section).strip() for section in item.get("must_realize_in", []) if str(section).strip()],
+                "target_axes": [str(axis).strip() for axis in item.get("target_axes", []) if str(axis).strip()],
+                "redlines": [str(redline).strip() for redline in item.get("redlines", []) if str(redline).strip()],
+            }
+        )
+    return normalized
+
+
+def _normalize_applied_helpers(payload: Any) -> list[dict[str, Any]]:
+    if not isinstance(payload, list):
+        return []
+    normalized: list[dict[str, Any]] = []
+    for item in payload:
+        if not isinstance(item, dict):
+            continue
+        helper_id = normalize_rule_id(item.get("id", ""))
+        if not helper_id:
+            continue
+        normalized.append(
+            {
+                "id": helper_id,
+                "selection_reason": str(item.get("selection_reason", "")).strip(),
+                "affected_axes": [str(axis).strip() for axis in item.get("affected_axes", []) if str(axis).strip()],
+                "schema_changes": [str(change).strip() for change in item.get("schema_changes", []) if str(change).strip()],
+                "innovation_reason": str(item.get("innovation_reason", "")).strip(),
+                "difficulty_reason": str(item.get("difficulty_reason", "")).strip(),
+            }
+        )
+    return normalized
+
+
+def _changed_schema_sections(source_schema: dict[str, Any], candidate_schema: dict[str, Any]) -> set[str]:
+    changed_sections: set[str] = set()
+    for section in ("input_structure", "core_constraints", "objective", "invariant"):
+        if copy.deepcopy(source_schema.get(section)) != copy.deepcopy(candidate_schema.get(section)):
+            changed_sections.add(section)
+    return changed_sections
 
 
 def _objective_text(schema: dict[str, Any]) -> str:

@@ -667,7 +667,7 @@ class VariantPlanner:
                 "without_seed_a": str(payload.get("fusion_ablation", {}).get("without_seed_a", "")),
                 "without_seed_b": str(payload.get("fusion_ablation", {}).get("without_seed_b", "")),
             },
-            "auxiliary_moves": [str(item) for item in payload.get("auxiliary_moves", []) if str(item).strip()],
+            "applied_helpers": _normalize_applied_helpers(payload.get("applied_helpers", [])),
             "rule_snapshot": copy.deepcopy(rule),
         }
         return True, normalized, "", _serialize_events(trace), ""
@@ -753,6 +753,7 @@ class VariantPlanner:
                 selection_trace=list(selection_trace or []),
                 validation_trace=list(validation_trace or []),
                 candidate_attempts=list(candidate_attempts or []),
+                applied_helpers=[],
                 rule_snapshot={},
             )
 
@@ -791,7 +792,7 @@ class VariantPlanner:
             shared_core_anchors=selected["shared_core_anchors"],
             seed_contributions=selected["seed_contributions"],
             fusion_ablation=selected["fusion_ablation"],
-            auxiliary_moves=selected["auxiliary_moves"],
+            applied_helpers=selected["applied_helpers"],
             rule_version=rule_version,
             selection_trace=list(selection_trace or []),
             validation_trace=list(validation_trace or []),
@@ -852,6 +853,29 @@ def _normalize_algorithmic_delta(payload: dict[str, Any]) -> dict[str, Any]:
         "new_proof_obligation": str(payload.get("new_proof_obligation", "")),
         "why_direct_reuse_fails": str(payload.get("why_direct_reuse_fails", "")),
     }
+
+
+def _normalize_applied_helpers(payload: Any) -> list[dict[str, Any]]:
+    if not isinstance(payload, list):
+        return []
+    normalized: list[dict[str, Any]] = []
+    for item in payload:
+        if not isinstance(item, dict):
+            continue
+        helper_id = str(item.get("id", "")).strip()
+        if not helper_id:
+            continue
+        normalized.append(
+            {
+                "id": helper_id,
+                "selection_reason": str(item.get("selection_reason", "")).strip(),
+                "affected_axes": [str(axis).strip() for axis in item.get("affected_axes", []) if str(axis).strip()],
+                "schema_changes": [str(change).strip() for change in item.get("schema_changes", []) if str(change).strip()],
+                "innovation_reason": str(item.get("innovation_reason", "")).strip(),
+                "difficulty_reason": str(item.get("difficulty_reason", "")).strip(),
+            }
+        )
+    return normalized
 
 
 def _summarize_rule_selection(payload: dict[str, Any]) -> str:

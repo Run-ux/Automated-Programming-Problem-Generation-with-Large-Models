@@ -40,15 +40,116 @@ def normalize_rule_id(rule_id: str) -> str:
     return str(rule_id).strip()
 
 
-def _normalize_rule_entry(rule: dict[str, Any]) -> dict[str, Any]:
+def _normalize_helper_entry(helper: dict[str, Any]) -> dict[str, Any]:
+    normalized = copy.deepcopy(helper)
+    helper_id = normalize_rule_id(normalized.get("id", ""))
+    if not helper_id:
+        raise ValueError("Rule helper missing id")
+    normalized["id"] = helper_id
+    normalized["summary"] = str(normalized.get("summary", "")).strip()
+    normalized["semantic_purpose"] = str(normalized.get("semantic_purpose", "")).strip()
+    normalized["innovation_role"] = str(normalized.get("innovation_role", "")).strip()
+    normalized["difficulty_role"] = str(normalized.get("difficulty_role", "")).strip()
+    normalized["must_realize_in"] = [
+        str(item).strip()
+        for item in normalized.get("must_realize_in", [])
+        if str(item).strip()
+    ]
+    normalized["target_axes"] = [
+        str(item).strip()
+        for item in normalized.get("target_axes", [])
+        if str(item).strip()
+    ]
+    normalized["prompt_guidance"] = [
+        str(item).strip()
+        for item in normalized.get("prompt_guidance", [])
+        if str(item).strip()
+    ]
+    normalized["redlines"] = [
+        str(item).strip()
+        for item in normalized.get("redlines", [])
+        if str(item).strip()
+    ]
+    missing_fields = [
+        field_name
+        for field_name, present in (
+            ("summary", bool(normalized["summary"])),
+            ("semantic_purpose", bool(normalized["semantic_purpose"])),
+            ("must_realize_in", bool(normalized["must_realize_in"])),
+            ("target_axes", bool(normalized["target_axes"])),
+            ("innovation_role", bool(normalized["innovation_role"])),
+            ("difficulty_role", bool(normalized["difficulty_role"])),
+            ("prompt_guidance", bool(normalized["prompt_guidance"])),
+            ("redlines", bool(normalized["redlines"])),
+        )
+        if not present
+    ]
+    if missing_fields:
+        raise ValueError(
+            f"Rule helper {helper_id} missing required fields: {', '.join(missing_fields)}"
+        )
+    return normalized
+
+
+def _merge_required_fields(defaults: dict[str, Any], rule_level: dict[str, Any]) -> dict[str, Any]:
+    default_fields = [
+        str(field).strip()
+        for field in defaults.get("required_fields", [])
+        if str(field).strip()
+    ]
+    rule_fields = [
+        str(field).strip()
+        for field in rule_level.get("required_fields", [])
+        if str(field).strip()
+    ]
+    merged_fields: list[str] = []
+    for field in default_fields + rule_fields:
+        if field not in merged_fields:
+            merged_fields.append(field)
+    return {"required_fields": merged_fields}
+
+
+def _normalize_rule_entry(rule: dict[str, Any], *, mode_defaults: dict[str, Any] | None = None) -> dict[str, Any]:
     normalized = copy.deepcopy(rule)
     normalized["id"] = normalize_rule_id(normalized.get("id", ""))
-    normalized["family"] = str(normalized.get("family", normalized["id"] or "generic")).strip() or "generic"
-    normalized["handler"] = normalize_rule_id(normalized.get("handler", normalized["id"]))
+    normalized["family"] = str(normalized.get("family", "")).strip()
+    normalized["handler"] = normalize_rule_id(normalized.get("handler", ""))
     normalized["audit_tags"] = [str(item).strip() for item in normalized.get("audit_tags", []) if str(item).strip()]
+    helpers = [
+        _normalize_helper_entry(helper)
+        for helper in normalized.get("helpers", [])
+        if isinstance(helper, dict)
+    ]
+    helper_ids = [helper["id"] for helper in helpers]
+    if len(helper_ids) != len(set(helper_ids)):
+        duplicate_ids = sorted({helper_id for helper_id in helper_ids if helper_ids.count(helper_id) > 1})
+        raise ValueError(f"Rule {normalized['id'] or '<unknown>'} has duplicate helper ids: {', '.join(duplicate_ids)}")
+    normalized["helpers"] = helpers
+    normalized["planner_output_contract"] = _merge_required_fields(
+        dict((mode_defaults or {}).get("planner_output_contract", {})),
+        dict(normalized.get("planner_output_contract", {})),
+    )
     core_transformation = normalized.get("core_transformation")
     if isinstance(core_transformation, dict) and core_transformation.get("primary_operator"):
         core_transformation["primary_operator"] = normalize_rule_id(core_transformation["primary_operator"])
+    if normalized.get("enabled", False):
+        missing_fields = []
+        if not normalized["id"]:
+            missing_fields.append("id")
+        if not normalized["family"]:
+            missing_fields.append("family")
+        if not normalized["handler"]:
+            missing_fields.append("handler")
+        if not helpers:
+            missing_fields.append("helpers")
+        if not normalized.get("required_axis_changes", {}).get("must_change", []):
+            missing_fields.append("required_axis_changes.must_change")
+        if not normalized["planner_output_contract"].get("required_fields", []):
+            missing_fields.append("planner_output_contract.required_fields")
+        if missing_fields:
+            raise ValueError(
+                f"Rule {normalized['id'] or '<unknown>'} missing required execution fields: {', '.join(missing_fields)}"
+            )
     return normalized
 
 
@@ -72,11 +173,18 @@ class RuleBook:
                 continue
             mode_name = normalize_mode_name(raw_mode_name)
             mode_config = dict(raw_mode_config)
+            mode_defaults = {
+                "planner_output_contract": _merge_required_fields(
+                    {},
+                    dict(mode_config.get("planner_output_contract", {})),
+                )
+            }
             mode_config["rules"] = [
-                _normalize_rule_entry(rule)
+                _normalize_rule_entry(rule, mode_defaults=mode_defaults)
                 for rule in mode_config.get("rules", [])
                 if isinstance(rule, dict)
             ]
+            mode_config["planner_output_contract"] = mode_defaults["planner_output_contract"]
             modes[mode_name] = mode_config
         for mode in CANONICAL_MODE_NAMES:
             modes.setdefault(mode, {"enabled": False, "rules": []})

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import importlib.util
 import json
 import re
 import sys
@@ -20,8 +21,63 @@ from problem_generator import ProblemGenerator
 from rule_handlers import get_rule_handler
 from rulebook import RuleBook
 from schema_preparer import SchemaPreparer
-from schema_tools import compute_schema_distance
+from schema_tools import _objective_type_prompt, compute_schema_distance
 from variant_planner import VariantPlanner
+
+
+def _load_upstream_objective_specs() -> dict[str, str]:
+    module_path = ROOT / "四元组抽取" / "label_vocab.py"
+    spec = importlib.util.spec_from_file_location("test_upstream_label_vocab", module_path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"failed to load upstream label vocab: {module_path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return {
+        str(item.name): str(item.description)
+        for item in getattr(module, "OBJECTIVE_SPECS", [])
+    }
+
+
+def _load_rule_helper_specs() -> dict[str, list[dict[str, object]]]:
+    payload = json.loads((GEN_DIR / "planning_rules.json").read_text(encoding="utf-8"))
+    helper_specs: dict[str, list[dict[str, object]]] = {}
+    for mode_config in payload.get("modes", {}).values():
+        if not isinstance(mode_config, dict):
+            continue
+        for rule in mode_config.get("rules", []):
+            if not isinstance(rule, dict):
+                continue
+            rule_id = str(rule.get("id", "")).strip()
+            if not rule_id:
+                continue
+            helper_specs[rule_id] = copy.deepcopy(rule.get("helpers", []))
+    return helper_specs
+
+
+def _schema_change_text(section: str) -> str:
+    mapping = {
+        "input_structure": "输入结构承担新的主导责任",
+        "core_constraints": "核心约束承接新的 helper 义务",
+        "objective": "目标定义切换到新的主求解对象",
+        "invariant": "不变量需要支撑新的证明责任",
+    }
+    return mapping.get(section, f"{section} 发生了结构变化")
+
+
+def make_applied_helpers(rule_id: str) -> list[dict[str, object]]:
+    helper_specs = _load_rule_helper_specs()[rule_id]
+    return [
+        {
+            "id": str(helper["id"]),
+            "selection_reason": str(helper.get("summary", "")) or f"{helper['id']} 改变了主导义务。",
+            "affected_axes": [str(axis) for axis in helper.get("target_axes", []) if str(axis).strip()],
+            "schema_changes": [_schema_change_text(str(section)) for section in helper.get("must_realize_in", []) if str(section).strip()],
+            "innovation_reason": str(helper.get("innovation_role", "")) or f"{helper['id']} 提高了创新度。",
+            "difficulty_reason": str(helper.get("difficulty_role", "")) or f"{helper['id']} 提高了难度。",
+        }
+        for helper in helper_specs
+    ]
 
 
 class RuleBookTests(unittest.TestCase):
@@ -42,8 +98,96 @@ class RuleBookTests(unittest.TestCase):
         self.assertNotIn("canonical_witness", enabled_ids)
         self.assertIn("construct_or_obstruction", enabled_ids)
         first_rule = rulebook.enabled_rules("single_seed_extension")[0]
+        self.assertNotIn("helpers", rulebook.mode_config("single_seed_extension"))
         self.assertTrue(first_rule["handler"])
         self.assertTrue(first_rule["family"])
+        self.assertTrue(first_rule["helpers"])
+
+    def test_rulebook_rejects_duplicate_helper_ids(self) -> None:
+        base_payload = json.loads((GEN_DIR / "planning_rules.json").read_text(encoding="utf-8"))
+        duplicated = copy.deepcopy(base_payload["modes"]["single_seed_extension"]["rules"][0]["helpers"][0])
+        base_payload["modes"]["single_seed_extension"]["rules"][0]["helpers"].append(duplicated)
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            rule_path = Path(tempdir) / "rules.json"
+            rule_path.write_text(json.dumps(base_payload, ensure_ascii=False, indent=2), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "duplicate helper ids"):
+                RuleBook.load(rule_path)
+
+    def test_rulebook_inherits_mode_level_planner_output_contract(self) -> None:
+        rulebook = RuleBook.load(GEN_DIR / "planning_rules.json")
+
+        single_rule = rulebook.rule("single_seed_extension", "canonical_witness")
+        self.assertEqual(
+            single_rule["planner_output_contract"]["required_fields"],
+            [
+                "eligibility_reason",
+                "core_transformation_summary",
+                "difference_plan",
+                "instantiated_schema",
+                "algorithmic_delta_claim",
+                "anti_shallow_rationale",
+                "applied_helpers",
+            ],
+        )
+
+        same_family_rule = rulebook.rule("same_family_fusion", "interlocked_constraints")
+        self.assertEqual(
+            same_family_rule["planner_output_contract"]["required_fields"],
+            [
+                "shared_core_summary",
+                "shared_core_anchors",
+                "seed_a_indispensable_obligation",
+                "seed_b_indispensable_obligation",
+                "why_not_sequential_composition",
+                "fusion_ablation",
+                "instantiated_schema",
+                "algorithmic_delta_claim",
+                "applied_helpers",
+            ],
+        )
+
+    def test_rulebook_merges_mode_level_and_rule_level_required_fields(self) -> None:
+        base_payload = json.loads((GEN_DIR / "planning_rules.json").read_text(encoding="utf-8"))
+        base_payload["modes"]["single_seed_extension"]["rules"][0]["planner_output_contract"] = {
+            "required_fields": ["custom_field", "instantiated_schema"]
+        }
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            rule_path = Path(tempdir) / "rules.json"
+            rule_path.write_text(json.dumps(base_payload, ensure_ascii=False, indent=2), encoding="utf-8")
+            rulebook = RuleBook.load(rule_path)
+
+        self.assertEqual(
+            rulebook.rule("single_seed_extension", "canonical_witness")["planner_output_contract"]["required_fields"],
+            [
+                "eligibility_reason",
+                "core_transformation_summary",
+                "difference_plan",
+                "instantiated_schema",
+                "algorithmic_delta_claim",
+                "anti_shallow_rationale",
+                "applied_helpers",
+                "custom_field",
+            ],
+        )
+
+    def test_rulebook_normalizes_helper_semantic_purpose(self) -> None:
+        rulebook = RuleBook.load(GEN_DIR / "planning_rules.json")
+
+        helper = rulebook.rule("single_seed_extension", "canonical_witness")["helpers"][0]
+        self.assertIn("semantic_purpose", helper)
+        self.assertTrue(helper["semantic_purpose"])
+
+    def test_rulebook_rejects_missing_required_execution_fields(self) -> None:
+        base_payload = json.loads((GEN_DIR / "planning_rules.json").read_text(encoding="utf-8"))
+        base_payload["modes"]["single_seed_extension"]["rules"][0]["handler"] = ""
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            rule_path = Path(tempdir) / "rules.json"
+            rule_path.write_text(json.dumps(base_payload, ensure_ascii=False, indent=2), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "missing required execution fields"):
+                RuleBook.load(rule_path)
 
 
 class SchemaPreparerTests(unittest.TestCase):
@@ -51,7 +195,7 @@ class SchemaPreparerTests(unittest.TestCase):
         raw_schema = {
             **make_schema(problem_id="SCHEMA"),
             "transform_space": {
-                "objective_options": ["count"],
+                "objective_options": ["counting"],
             },
         }
 
@@ -75,6 +219,14 @@ class SchemaPreparerTests(unittest.TestCase):
 
 
 class SchemaDistanceTests(unittest.TestCase):
+    def test_objective_type_prompt_uses_upstream_objective_specs(self) -> None:
+        objective_specs = _load_upstream_objective_specs()
+
+        self.assertEqual(_objective_type_prompt("decision"), f"decision: {objective_specs['decision']}")
+        self.assertEqual(_objective_type_prompt("counting"), f"counting: {objective_specs['counting']}")
+        self.assertEqual(_objective_type_prompt("construction"), f"construction: {objective_specs['construction']}")
+        self.assertEqual(_objective_type_prompt("count"), "count")
+
     def test_identical_schema_distance_is_zero(self) -> None:
         schema = make_schema(problem_id="IDENTICAL")
         distance = compute_schema_distance(schema, copy.deepcopy(schema), embedding_client=StubEmbeddingClient())
@@ -104,18 +256,19 @@ class SchemaDistanceTests(unittest.TestCase):
 
     def test_objective_count_shift_is_larger_than_small_description_rewrite(self) -> None:
         base = make_schema(problem_id="BASE")
-        count_variant = make_schema(problem_id="COUNT", objective_type="count")
+        count_variant = make_schema(problem_id="COUNT", objective_type="counting")
         count_variant["objective"]["description"] = "统计所有合法方案数。"
         rewrite_variant = make_schema(problem_id="REWRITE")
         rewrite_variant["objective"]["description"] = "判断是否能找到任意合法方案。"
+        objective_specs = _load_upstream_objective_specs()
 
         embedding_client = StubEmbeddingClient(
             {
                 "判断是否存在合法方案。": [1.0, 0.0, 0.0],
                 "判断是否能找到任意合法方案。": [0.97, 0.03, 0.0],
                 "统计所有合法方案数。": [0.1, 0.95, 0.0],
-                "determine whether any valid solution exists": [1.0, 0.0, 0.0],
-                "count all valid solutions": [0.0, 1.0, 0.0],
+                f"decision: {objective_specs['decision']}": [1.0, 0.0, 0.0],
+                f"counting: {objective_specs['counting']}": [0.0, 1.0, 0.0],
             }
         )
 
@@ -502,7 +655,7 @@ class RuleHandlerTests(unittest.TestCase):
                     reason_code="already_constructive",
                     selection_reason="种子题已经自带构造输出责任。",
                     risk_tags=["low_novelty"],
-                    evidence="objective.type 已经是 construct_witness。",
+                    evidence="objective.type 已经是 construction。",
                 )
             },
         )
@@ -511,7 +664,7 @@ class RuleHandlerTests(unittest.TestCase):
             mode="single_seed_extension",
             rule={"id": "canonical_witness", "handler": "canonical_witness", "family": "output_upgrade", "audit_tags": []},
             schema_context={
-                "seed_schema": make_schema(problem_id="CW", objective_type="construct_witness"),
+                "seed_schema": make_schema(problem_id="CW", objective_type="construction"),
             },
             original_refs=[{"output_summary": "输出一个合法构造。"}],
             global_constraints={"allow_helper_moves": True},
@@ -647,6 +800,71 @@ class RuleHandlerTests(unittest.TestCase):
         self.assertFalse(outcome.accepted)
         self.assertNotIn("plan_review:canonical_witness", client.calls)
 
+    def test_rule_plan_validation_rejects_missing_or_extra_helpers(self) -> None:
+        rule = self.rulebook.rule("single_seed_extension", "canonical_witness")
+        handler = get_rule_handler(rule)
+
+        missing_payload = make_single_payload("canonical_witness")
+        missing_payload["applied_helpers"] = missing_payload["applied_helpers"][:-1]
+        missing_outcome = handler.validate_plan(
+            client=FakePlannerClient(responses={}),
+            mode="single_seed_extension",
+            rule=rule,
+            payload=missing_payload,
+            source_schema=make_schema(problem_id="SRC"),
+            candidate_schema=missing_payload["instantiated_schema"],
+            changed_axes=missing_payload["difference_plan"]["changed_axes"],
+            global_constraints={"allow_helper_moves": True},
+        )
+        self.assertFalse(missing_outcome.accepted)
+        self.assertEqual(missing_outcome.reason_code, "helper_missing")
+
+        extra_payload = make_single_payload("canonical_witness")
+        extra_payload["applied_helpers"] = list(extra_payload["applied_helpers"]) + [
+            {
+                "id": "unexpected_helper",
+                "selection_reason": "无效 helper。",
+                "affected_axes": ["C"],
+                "schema_changes": ["核心约束被改动。"],
+                "innovation_reason": "无效。",
+                "difficulty_reason": "无效。",
+            }
+        ]
+        extra_outcome = handler.validate_plan(
+            client=FakePlannerClient(responses={}),
+            mode="single_seed_extension",
+            rule=rule,
+            payload=extra_payload,
+            source_schema=make_schema(problem_id="SRC"),
+            candidate_schema=extra_payload["instantiated_schema"],
+            changed_axes=extra_payload["difference_plan"]["changed_axes"],
+            global_constraints={"allow_helper_moves": True},
+        )
+        self.assertFalse(extra_outcome.accepted)
+        self.assertEqual(extra_outcome.reason_code, "helper_not_declared")
+
+    def test_rule_plan_validation_rejects_helper_without_realized_schema_sections(self) -> None:
+        rule = self.rulebook.rule("single_seed_extension", "canonical_witness")
+        handler = get_rule_handler(rule)
+        payload = make_single_payload("canonical_witness")
+        broken_helper = copy.deepcopy(payload["applied_helpers"][0])
+        broken_helper["schema_changes"] = ["只有目标变了。"]
+        payload["applied_helpers"][0] = broken_helper
+        candidate_schema = copy.deepcopy(payload["instantiated_schema"])
+        candidate_schema["invariant"] = copy.deepcopy(make_schema(problem_id="SRC")["invariant"])
+        outcome = handler.validate_plan(
+            client=FakePlannerClient(responses={}),
+            mode="single_seed_extension",
+            rule=rule,
+            payload=payload,
+            source_schema=make_schema(problem_id="SRC"),
+            candidate_schema=candidate_schema,
+            changed_axes=payload["difference_plan"]["changed_axes"],
+            global_constraints={"allow_helper_moves": True},
+        )
+        self.assertFalse(outcome.accepted)
+        self.assertEqual(outcome.reason_code, "helper_realization_missing")
+
     def test_rule_specific_problem_validation_rejects_missing_commitments(self) -> None:
         base_problem = GeneratedProblem(
             title="题目",
@@ -735,7 +953,7 @@ class PipelineArtifactTests(unittest.TestCase):
                     {"name": "dual_lock", "description": "两个种子义务在同一状态过程里互锁。"}
                 ]
             },
-            objective={"type": "construct_witness", "description": "输出一个规范构造。"},
+            objective={"type": "construction", "description": "输出一个规范构造。"},
             invariant={
                 "invariants": [
                     {"name": "shared_core", "description": "共享状态核支撑双义务。"}
@@ -751,7 +969,7 @@ class PipelineArtifactTests(unittest.TestCase):
             mode="same_family_fusion",
             theme=theme,
             source_problem_ids=["A", "B"],
-            objective={"type": "construct_witness", "description": "输出一个规范构造。"},
+            objective={"type": "construction", "description": "输出一个规范构造。"},
             difficulty="Hard",
             rule_selection_reason="共享主核稳定，选择 interlocked_constraints 可以把创新度和难度一起抬高。",
             input_summary="类型=array；长度范围=3..3",
@@ -779,8 +997,8 @@ class PipelineArtifactTests(unittest.TestCase):
             },
             seed_contributions={"seed_a": "容量义务", "seed_b": "冲突义务"},
             fusion_ablation={"without_seed_a": "容量义务缺失后主核退化。", "without_seed_b": "冲突义务缺失后主核退化。"},
-            auxiliary_moves=["规范输出"],
-            rule_version="2026-04-rules-v2",
+            applied_helpers=make_applied_helpers("interlocked_constraints"),
+            rule_version="2026-04-rules-v3",
             selection_trace=[{"rule_id": "interlocked_constraints", "accepted": True, "score": 0.88}],
             validation_trace=[{"stage": "plan_validation", "rule_id": "interlocked_constraints", "outcome": "pass", "reason_code": "ok"}],
             candidate_attempts=[{"attempt_index": 1, "rule_id": "interlocked_constraints", "accepted": True, "score": 0.88}],
@@ -833,6 +1051,7 @@ class PipelineArtifactTests(unittest.TestCase):
             "rejected_candidates",
             "algorithmic_delta_claim",
             "fusion_ablation",
+            "applied_helpers",
             "rule_version",
             "selection_trace",
             "validation_trace",
@@ -1165,7 +1384,7 @@ def _toy_embedding(text: str) -> list[float]:
     features = [
         1.0 if any(token in {"decision", "判断", "存在", "合法"} for token in tokens) else 0.0,
         1.0 if any(token in {"count", "统计", "counting"} for token in tokens) else 0.0,
-        1.0 if any(token in {"construct", "构造", "witness"} for token in tokens) else 0.0,
+        1.0 if any(token in {"construct", "construction", "构造", "witness"} for token in tokens) else 0.0,
         1.0 if any(token in {"minimize", "minimum", "最小", "保底"} for token in tokens) else 0.0,
         1.0 if any(token in {"array", "数组"} for token in tokens) else 0.0,
         1.0 if any(token in {"tree", "树"} for token in tokens) else 0.0,
@@ -1222,7 +1441,7 @@ def make_single_payload(rule_id: str) -> dict:
                     {"name": f"{rule_id}_constraint", "description": f"{rule_id} 引入新的核心约束。"}
                 ]
             },
-            "objective": {"type": "construct_witness", "description": "输出一个规范 witness。"},
+            "objective": {"type": "construction", "description": "输出一个规范 witness。"},
             "invariant": {
                 "invariants": [
                     {"name": "base_invariant", "description": "基础不变量保持成立。"},
@@ -1239,7 +1458,7 @@ def make_single_payload(rule_id: str) -> dict:
             "why_direct_reuse_fails": "原解缺少对新义务的验证链路",
         },
         "anti_shallow_rationale": "变化已进入主导义务。",
-        "auxiliary_moves": ["规范输出"],
+        "applied_helpers": make_applied_helpers(rule_id),
         "shared_core_summary": "",
         "shared_core_anchors": {
             "shared_state": "",
@@ -1257,16 +1476,14 @@ def make_single_payload(rule_id: str) -> dict:
     constraints = base["instantiated_schema"]["core_constraints"]["constraints"]
     invariants = base["instantiated_schema"]["invariant"]["invariants"]
     if rule_id == "construct_or_obstruction":
-        base["instantiated_schema"]["objective"] = {"type": "construct_or_obstruction", "description": "输出构造或阻碍证书。"}
-        base["auxiliary_moves"] = ["局部附加条件"]
+        base["instantiated_schema"]["objective"] = {"type": "construction", "description": "输出构造或阻碍证书。"}
         constraints.append({"name": "obstruction_certificate", "description": "当无解时，必须输出一个可局部检查的冲突证书。"})
     elif rule_id == "existence_to_counting":
-        base["instantiated_schema"]["objective"] = {"type": "count", "description": "统计所有合法方案数。"}
+        base["instantiated_schema"]["objective"] = {"type": "counting", "description": "统计所有合法方案数。"}
         constraints.append({"name": "counting_scope", "description": "两个方案只有在选择对象集合不同或等价类不同的情况下才计作不同答案；结果对 998244353 取模。"})
         invariants.append({"name": "finite_counting", "description": "候选对象空间有限，且每个对象都能映射到唯一计数单元。"})
     elif rule_id == "minimum_guarantee_under_perturbation":
         base["instantiated_schema"]["objective"] = {"type": "minimize_value", "description": "求最小保底阈值。"}
-        base["auxiliary_moves"] = ["局部附加条件"]
         constraints.append({"name": "worst_case_perturbation", "description": "必须在任意合法扰动顺序下都保证目标成立。"})
         invariants.append({"name": "guarantee_invariant", "description": "存在一个保底不变量，使最坏情形仍能维持可行。"})
     else:
@@ -1301,7 +1518,7 @@ def make_same_family_payload(rule_id: str, drop_fields: set[str] | None = None) 
                     {"name": f"{rule_id}_constraint", "description": f"{rule_id} 让双义务在同一状态过程中互锁。"}
                 ]
             },
-            "objective": {"type": "construct_witness", "description": "输出共享主核下的规范构造。"},
+            "objective": {"type": "construction", "description": "输出共享主核下的规范构造。"},
             "invariant": {
                 "invariants": [
                     {"name": "base_invariant", "description": "基础不变量保持成立。"},
@@ -1318,7 +1535,7 @@ def make_same_family_payload(rule_id: str, drop_fields: set[str] | None = None) 
             "why_direct_reuse_fails": "任一单题原解都缺少另一题的不可删义务",
         },
         "anti_shallow_rationale": "融合义务已进入核心状态演化。",
-        "auxiliary_moves": ["规范输出"],
+        "applied_helpers": make_applied_helpers(rule_id),
         "shared_core_summary": "两个种子题共享同一状态核。",
         "shared_core_anchors": {
             "shared_state": "统一状态数组",
@@ -1334,7 +1551,7 @@ def make_same_family_payload(rule_id: str, drop_fields: set[str] | None = None) 
         },
     }
     if rule_id == "interlocked_constraints":
-        payload["instantiated_schema"]["objective"] = {"type": "count", "description": "统计共享主核下的合法方案数。"}
+        payload["instantiated_schema"]["objective"] = {"type": "counting", "description": "统计共享主核下的合法方案数。"}
     if drop_fields:
         for field in drop_fields:
             if field == "why_not_sequential_composition":
@@ -1364,14 +1581,14 @@ def make_validation_plan(rule_id: str) -> VariantPlan:
             "properties": {"ordered": True} if "interlocked" in rule_id or "shared_core" in rule_id else {},
         },
         core_constraints={"constraints": [{"name": "base_constraint", "description": "基础约束。"}]},
-        objective={"type": "construct_witness", "description": "输出一个规范构造。"},
+        objective={"type": "construction", "description": "输出一个规范构造。"},
         invariant={"invariants": [{"name": "base_invariant", "description": "基础不变量。"}]},
         theme={"id": "campus_ops", "name": "校园运营"},
         difficulty="Hard",
     )
     objective = instantiated_schema.objective
     if rule_id == "existence_to_counting":
-        objective = {"type": "count", "description": "统计所有合法方案数。"}
+        objective = {"type": "counting", "description": "统计所有合法方案数。"}
     elif rule_id == "minimum_guarantee_under_perturbation":
         objective = {"type": "minimize_value", "description": "求最小保底阈值。"}
     return VariantPlan(
@@ -1422,6 +1639,7 @@ def make_validation_plan(rule_id: str) -> VariantPlan:
         fusion_ablation={"without_seed_a": "退化", "without_seed_b": "退化"}
         if "interlocked" in rule_id or "shared_core" in rule_id
         else {},
+        applied_helpers=make_applied_helpers(rule_id),
     )
 
 

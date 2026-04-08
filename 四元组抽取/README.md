@@ -20,7 +20,8 @@
 - 四个抽取维度与归一化维度的 user prompt 都会给关键 JSON 字段补充简短说明，固定说明字段含义、填写条件、留空条件与常见误填。
 - JSON 示例继续保留，但改为中性结构骨架，用于约束层级与字段形状，不再用具体题型词汇暗示语义。
 - `input_structure.type` 只描述输入载体形态，既允许 `integer`、`float`、`char`、`boolean`、`tuple` 这类标量或定长记录类型，也允许数组、字符串、图、树等结构类型；`pair` 统一归入 `tuple`，集合语义仍归入 `array` 并通过 `properties` 表达，复合输入写入可选 `components`。
-- `input_structure.components` 是归一化最终结果中的正式字段。模型单轮抽取出的组件结构会原样进入最终结果。
+- `input_structure.components` 是归一化最终结果中的正式字段。组件项包含 `role`、`role_description`、`type`、`length`、`value_range`、`properties`。模型单轮抽取出的组件结构会原样进入最终结果。
+- 当 `input_structure.type=composite` 时，`components` 必须为非空数组，且每个组件都必须提供非空 `role` 与 `role_description`。缺失时抽取阶段直接记为失败，不写入成功结果。
 - `core_constraints.name` 优先复用规范词表；存在明确语义缺口时允许新建抽象标签，具体题目限制写入 `description`、`formal` 与可选 `source_sections`。
 - `objective.type` 统一到目标词表，可选扩展 `target` 与 `requires_solution`。
 - `invariant` 只保留可由代码或题面支撑的稳定维护性质，不把算法范式直接当作不变量标签；优先复用规范词表，存在明确语义缺口时允许新建抽象标签；有代码时以代码为主证据，无充分证据时允许返回空数组。
@@ -87,6 +88,7 @@ python verify_prompts_structure.py
 - user prompt 是否包含标题、题面全文、`input`、`output`、`constraints` 分节。
 - invariant 维在有标准解法代码时是否把代码注入 prompt。
 - schema 必填字段与新增可选字段是否齐全。
+- `input_structure.type=composite` 时，组件 schema 与模型输出是否包含 `role_description`。
 - 样本是否覆盖单数组题、图题、树加查询题、判定题、计数题、无标准解法代码题。
 
 需要实际调用模型时：

@@ -75,6 +75,9 @@ def _assert_input_structure_schema(schema: Dict[str, Any]) -> None:
     assert {"integer", "float", "char", "boolean", "tuple"}.issubset(set(type_names))
     assert properties["length"]["properties"]["min"]["type"] == ["integer", "null"]
     assert properties["value_range"]["properties"]["max"]["type"] == ["integer", "null"]
+    component_schema = properties["components"]["items"]
+    assert "role_description" in component_schema["properties"]
+    assert "role_description" in component_schema["required"]
 
 
 def _assert_constraints_schema(schema: Dict[str, Any]) -> None:
@@ -122,6 +125,8 @@ def verify_dimension(
     if dimension.startswith("I"):
         _assert_input_structure_schema(schema)
         assert "性质键说明：" in system_prompt, "input_structure system_prompt 缺少性质键说明"
+        assert "role_description" in system_prompt, "input_structure system_prompt 缺少 role_description 说明"
+        assert "components.role_description" in user_prompt, "input_structure user_prompt 缺少 role_description 字段说明"
     elif dimension.startswith("C"):
         _assert_constraints_schema(schema)
     elif dimension.startswith("O"):

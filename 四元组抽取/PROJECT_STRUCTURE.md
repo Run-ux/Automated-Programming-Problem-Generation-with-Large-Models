@@ -30,7 +30,7 @@
 ## 3. 统一词表与 schema
 
 - `label_vocab.py`：维护四维统一词表与可直接注入 prompt 的标签判定说明。`input_structure.type` 只保留输入载体类型，既覆盖 `integer`、`float`、`char`、`boolean`、`tuple` 这类标量或定长记录，也覆盖数组、字符串、图、树等结构；`pair` 归入 `tuple`，集合语义通过 `array` 加 `properties` 表达；语义性质下沉到 `properties`，并补充 `properties` 键的文字说明。
-- `prompt_input_structure.py`：顶层保留 `type`、`length`、`value_range`、`properties`，新增可选 `components`，system prompt 内含输入结构科研定义、规范标签说明、性质键说明与标签边界，user prompt 为关键字段补充填写语义与误填提醒。
+- `prompt_input_structure.py`：顶层保留 `type`、`length`、`value_range`、`properties`，新增可选 `components`。组件项包含 `role`、`role_description`、`type`、`length`、`value_range`、`properties`；当顶层为 `composite` 时，组件角色名与角色说明都必须存在。system prompt 内含输入结构科研定义、规范标签说明、性质键说明与标签边界，user prompt 为关键字段补充填写语义与误填提醒。
 - `prompt_constraints.py`：顶层保留 `constraints[]`，单项新增可选 `source_sections`，system prompt 内含核心约束科研定义、规范标签说明、标签边界与语义缺口下的新标签规则，user prompt 为关键字段补充填写语义与误填提醒。
 - `prompt_objective.py`：顶层保留 `type` 与 `description`，新增可选 `target`、`requires_solution`，system prompt 内含目标维度科研定义、规范标签说明与标签边界，user prompt 为关键字段补充填写语义与误填提醒。
 - `prompt_invariant.py`：顶层保留 `invariants[]`，单项新增可选 `evidence_source`，system prompt 内含算法不变量科研定义、规范标签说明、标签边界与语义缺口下的新标签规则，user prompt 为关键字段补充填写语义与误填提醒。

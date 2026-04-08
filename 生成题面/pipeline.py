@@ -245,7 +245,7 @@ class GenerationPipeline:
             "shared_core_anchors": plan.shared_core_anchors,
             "seed_contributions": plan.seed_contributions,
             "fusion_ablation": plan.fusion_ablation,
-            "auxiliary_moves": plan.auxiliary_moves,
+            "applied_helpers": plan.applied_helpers,
             "planning_status": plan.planning_status,
             "planning_error_reason": plan.planning_error_reason,
             "planning_feedback": plan.planning_feedback,
@@ -362,7 +362,7 @@ class GenerationPipeline:
             f"- difference_plan_summary: {plan.difference_plan.summary or '无'}",
             f"- difference_plan_rationale: {plan.difference_plan.rationale or '无'}",
         ]
-        lines.extend(self._render_auxiliary_moves(plan.auxiliary_moves))
+        lines.extend(self._render_applied_helpers(plan.applied_helpers))
         lines.extend(self._render_rejected_candidates(plan.rejected_candidates))
         lines.extend(self._render_candidate_attempts(plan.candidate_attempts))
         lines.extend(
@@ -465,10 +465,22 @@ class GenerationPipeline:
             ),
         ]
 
-    def _render_auxiliary_moves(self, moves: list[str]) -> list[str]:
-        return [
-            "- auxiliary_moves: " + (", ".join(moves) if moves else "无"),
-        ]
+    def _render_applied_helpers(self, helpers: list[dict[str, Any]]) -> list[str]:
+        lines = ["- applied_helpers:"]
+        if not helpers:
+            lines.append("  - 无")
+            return lines
+        for helper in helpers:
+            lines.append(
+                "  - "
+                + f"id={helper.get('id', '') or '无'}; "
+                + f"affected_axes={', '.join(helper.get('affected_axes', [])) or '无'}; "
+                + f"selection_reason={helper.get('selection_reason', '') or '无'}; "
+                + f"innovation_reason={helper.get('innovation_reason', '') or '无'}; "
+                + f"difficulty_reason={helper.get('difficulty_reason', '') or '无'}; "
+                + f"schema_changes={', '.join(helper.get('schema_changes', [])) or '无'}"
+            )
+        return lines
 
     def _render_rejected_candidates(self, rejected_candidates: list[dict[str, Any]]) -> list[str]:
         lines = ["- rejected_candidates:"]
