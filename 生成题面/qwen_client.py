@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import socket
 import time
 import urllib.error
 import urllib.request
@@ -102,20 +103,33 @@ class QwenClient:
         }
 
         last_error: Exception | None = None
+        payload_json = json.dumps(payload, ensure_ascii=False)
+        payload_size = len(payload_json.encode("utf-8"))
         for attempt in range(1, max_retries + 1):
             try:
                 request = urllib.request.Request(
                     url=url,
-                    data=json.dumps(payload).encode("utf-8"),
+                    data=payload_json.encode("utf-8"),
                     headers=headers,
                     method="POST",
                 )
                 with urllib.request.urlopen(request, timeout=self.timeout_s) as response:
                     return response.read().decode("utf-8")
-            except (urllib.error.URLError, urllib.error.HTTPError, KeyError, ValueError) as exc:
+            except (
+                TimeoutError,
+                socket.timeout,
+                urllib.error.URLError,
+                urllib.error.HTTPError,
+                KeyError,
+                ValueError,
+            ) as exc:
                 last_error = exc
                 time.sleep(1.5 * attempt)
-        raise RuntimeError(f"调用 Qwen 失败: {last_error}")
+        raise RuntimeError(
+            "调用 Qwen 失败: "
+            f"model={self.model}; url={url}; timeout_s={self.timeout_s}; "
+            f"max_retries={max_retries}; payload_bytes={payload_size}; error={last_error}"
+        )
 
 
 def _extract_json_object(text: str) -> dict[str, Any]:

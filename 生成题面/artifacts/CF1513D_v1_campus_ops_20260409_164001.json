@@ -1,0 +1,536 @@
+{
+  "problem_id": "CampusMST_Count",
+  "source_problem_ids": [
+    "CF1513D"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "C",
+      "O",
+      "V"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "CF1513D",
+      "D. GCD and MST",
+      "codeforces",
+      "https://codeforces.com/contest/1513/problem/D",
+      "You are given an array $a$ of $n$ ($n \\geq 2$) positive integers and an integer $p$. Consider an undirected weighted graph of $n$ vertices numbered from $1$ to $n$ for which the edges between the vertices $i$ and $j$...",
+      "不要复写原题的叙事结构、任务定义或样例套路。",
+      "不要只替换实体名称后保留同样的输入输出关系。"
+    ],
+    "rationale": "目标从标量最优值转为组合计数，约束增加模数与去重定义，不变量从代价可加性转为方案可乘性与局部独立性。",
+    "summary": "全面重构求解目标与状态分解逻辑，引入计数责任与组合依赖证明。",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.3705,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.3705,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.4494,
+      "O": 0.5421,
+      "V": 0.5009
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.4494,
+      "objective_type_distance": 0.6347,
+      "objective_text_distance": 0.4031,
+      "invariant_match_distance": 0.5009
+    }
+  },
+  "changed_axes_realized": [
+    "C",
+    "O",
+    "V"
+  ],
+  "objective": {
+    "type": "count_schemes",
+    "description": "计算所有能使总建设成本达到全局最小值的通道选择方案数，对 10^9+7 取模。",
+    "target": "optimal_scheme_count",
+    "requires_solution": true
+  },
+  "rule_selection_reason": "existence_to_counting:原题图结构顶点与边权规则明确，解空间天然有限；核心不变量 additivity 直接支持将全局最优拆分为 n-1 个相邻割的独立代价，完美契合规则要求的按单元拆分并汇总；计数对象可通过明确等价关系定义去重，满足准入条件。",
+  "instantiated_schema_snapshot": {
+    "problem_id": "CampusMST_Count",
+    "source": "custom",
+    "input_structure": {
+      "type": "composite",
+      "length": {
+        "min": null,
+        "max": null
+      },
+      "value_range": {
+        "min": null,
+        "max": null
+      },
+      "properties": {
+        "multiple_test_cases": true
+      },
+      "components": [
+        {
+          "role": "parameters",
+          "role_description": "社团摊位数量 n 与相邻摊位固定通道建设成本 p",
+          "type": "tuple",
+          "length": {
+            "min": 2,
+            "max": 2
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {}
+        },
+        {
+          "role": "vertex_values",
+          "role_description": "各摊位招新预算序列 a",
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      ]
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "divisibility",
+          "description": "对于任意摊位对 i 和 j (i < j)，当且仅当子数组 a[i..j] 的最小预算能整除该段所有摊位预算时，可在 i 和 j 间建直达通道，成本为该最小值。",
+          "formal": "gcd(a_i, ..., a_j) = min(a_i, ..., a_j) ⇔ edge(i, j) with weight min(a_i, ..., a_j)",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "adjacency_relation",
+          "description": "任意相邻摊位 i 与 i+1 之间始终存在一条固定通道，成本为 p。",
+          "formal": "∀ i ∈ [1, n-1], edge(i, i+1) exists with weight p",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "counting_deduplication",
+          "description": "两个建设方案视为不同，当且仅当它们选择的通道集合（边集）不同。仅统计总成本严格等于全局最小值的方案，结果对 10^9+7 取模。",
+          "formal": "Count distinct edge sets E' ⊆ E such that sum(w(e) for e in E') = MST_min_weight, modulo 10^9+7",
+          "source_sections": [
+            "objective"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "count_schemes",
+      "description": "计算所有能使总建设成本达到全局最小值的通道选择方案数，对 10^9+7 取模。",
+      "target": "optimal_scheme_count",
+      "requires_solution": true
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "combinatorial_decomposition",
+          "description": "全局最优方案的计数可分解为各独立“瓶颈间隙”内最优边选择数的乘积。由于一维线性结构与区间边的嵌套特性，每个相邻间隙的最优连接代价独立确定，且不同间隙的合法最优边集合在缩点后互不干扰，从而将全局计数转化为局部方案数的累乘。",
+          "properties": {},
+          "evidence_source": "both"
+        },
+        {
+          "name": "optimal_cost_threshold",
+          "description": "任意区间边被计入最优方案的充要条件是其权重严格小于等于跨越该区间内所有相邻间隙的固定通道成本 p，且该区间边权重等于该区间内所有元素的最小值。计数时仅统计满足此阈值且能构成树的边组合，排除形成环的冗余边。",
+          "properties": {},
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Expert"
+  },
+  "applied_rule": "existence_to_counting",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {
+    "seed_solver_core": "贪心策略结合并查集/单调栈，按相邻间隙独立计算最小跨越代价并直接累加得到 MST 总权值。",
+    "reusable_subroutines": "区间最小值查询（RMQ/单调栈预处理）、相邻间隙最优代价计算、连通块合并逻辑、一维数组扫描框架。",
+    "new_solver_core": "在确定每个间隙的最优代价阈值后，统计跨越该间隙且代价等于最优值的合法区间边数量；处理区间边重叠导致的连通块依赖，使用乘法原理或基于连通块缩点的 DP 合并独立区间的方案数。",
+    "new_proof_obligation": "需严格证明在最优总代价约束下，不同间隙的边选择是否真正独立；若存在共享区间边同时覆盖多个间隙，需证明其选择不会破坏树结构或导致重复计数，并给出严格的去重计数公式（如按连通块缩点后的生成树计数或独立区间乘法原理的适用边界证明）。",
+    "why_direct_reuse_fails": "原解法仅关注代价最小值并直接累加，忽略多重最优边共存时的组合爆炸与环约束；直接复用贪心求和逻辑无法处理方案数的乘法依赖与去重，必须重构状态转移以支持组合计数。"
+  },
+  "shared_core_summary": "单种子扩展模式，共享核心为一维线性图结构与区间整除边生成规则，所有变化均围绕该核心进行目标升级。",
+  "shared_core_anchors": {
+    "shared_state": "一维顶点序列与相邻间隙连通状态",
+    "shared_transition": "基于区间最小值与整除条件的边生成与连通性更新",
+    "shared_decision_basis": "局部最优代价阈值与全局连通性约束"
+  },
+  "seed_contributions": {
+    "seed_a": "原 MST 贪心求和逻辑与相邻间隙独立代价计算框架",
+    "seed_b": "N/A (单种子模式，无第二种子)"
+  },
+  "fusion_ablation": {
+    "without_seed_a": "失去一维间隙分解基础与整除边生成规则，计数退化为全图生成树计数，复杂度不可控且失去原题结构优势。",
+    "without_seed_b": "N/A (单种子模式)"
+  },
+  "applied_helpers": [
+    {
+      "id": "counting_unit_definition",
+      "selection_reason": "明确计数对象与去重口径是存在性转计数题的前提，防止答案定义模糊。",
+      "affected_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "在 objective 中明确计数目标与取模要求",
+        "在 core_constraints 中定义边集去重规则与有限性",
+        "在 invariant 中声明计数单元的等价类划分标准"
+      ],
+      "innovation_reason": "将原题答案从单一数值替换为对象明确的组合计数结果，强制重构输出语义与验证标准。",
+      "difficulty_reason": "要求算法严格处理等价类边界、有限性证明与模运算下的组合累乘，增加逻辑严密性要求。"
+    },
+    {
+      "id": "state_factorization",
+      "selection_reason": "一维线性结构天然支持按间隙/连通块拆分，是构建高效计数算法的关键。",
+      "affected_axes": [
+        "C",
+        "V"
+      ],
+      "schema_changes": [
+        "在 core_constraints 中说明如何按相邻间隙拆分解空间",
+        "在 invariant 中解释单元之间如何避免重复计数与依赖隔离"
+      ],
+      "innovation_reason": "让计数从主状态组织方式中自然长出来，将全局组合问题降维为局部独立子问题。",
+      "difficulty_reason": "要求解法在分解与汇总层面重建主状态，证明局部独立性并处理边界重叠情况。"
+    },
+    {
+      "id": "counting_obligation_lock",
+      "selection_reason": "确保计数责任成为主导目标，避免退化为附带统计或后处理。",
+      "affected_axes": [
+        "C",
+        "O"
+      ],
+      "schema_changes": [
+        "在 objective 中替换原判定主目标为计数义务",
+        "在 core_constraints 中要求算法同时承担计数正确性与去重正确性"
+      ],
+      "innovation_reason": "把原题主目标替换成新的计数义务，主导状态转移与数据结构设计。",
+      "difficulty_reason": "要求算法同时承担计数正确性和去重正确性，状态空间从标量扩展为组合分布。"
+    }
+  ],
+  "planning_status": "ok",
+  "planning_error_reason": "",
+  "planning_feedback": "",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "forbidden_seed_property_trivial_backtrack",
+      "selection_reason": "原题仅求MST权值和，其标准贪心/单调栈解法在计算过程中可极低成本记录所选边，直接要求输出规范解仅增加记录开销，未改变核心状态转移与主约束结构，明确触发“原解只要顺手回溯就能拿到方案”的禁令，且无法满足规则要求的C轴实质性变化。",
+      "risk_tags": [
+        "low_novelty",
+        "shared_core_risk",
+        "post_processing_degeneration"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中objective为minimize_value且requires_solution为false；invariant(additivity/monotonicity)表明最优权值可通过单向扫描独立求和得出。该算法逻辑天然支持在O(n)遍历中顺手记录构成最优割的边集。规则eligibility明确禁止“原解只要顺手回溯就能拿到方案”，且failure_templates指出此类修改会导致difference_insufficient。",
+        "feedback": "当前种子题的算法核心是权值聚合而非方案构造。若强行套用canonical_witness，极易退化为输出后处理。建议更换具有强构造性、且原解无法直接回溯出唯一/规范方案的种子题，或引入使规范性要求反噬主约束(C)的强辅助规则。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "seed_lacks_failure_semantics",
+      "selection_reason": "原题CF1513D为确定性最优化求值问题，其图结构由相邻固定权边保证始终连通，不存在无解分支。规则强制要求种子题具备“失败可输出局部冲突证据”的语义基础，与原题的always-feasible求值目标根本冲突，强行套用将导致失败分支退化为人为附加的全局解释，直接触发forbidden_seed_properties红线。",
+      "risk_tags": [
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.type为'minimize_value'且requires_solution为false；core_constraints.adjacency_relation明确相邻顶点间恒有权重为p的边，保证图连通且MST必存在。而rule_under_review.required_seed_properties明确要求'做不到的原因可以用局部证据表示'，原题无此语义支撑。",
+        "feedback": "该规则适用于本身具有可行性判定或构造约束的种子题（如匹配、覆盖、可满足性问题）。若需应用于本题，需先将原题重构为带硬性阈值或额外约束的判定/构造问题，否则无法生成符合validation_contract的局部可检证书。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "finite_decomposable_space",
+      "selection_reason": "原题图结构顶点与边权规则明确，解空间天然有限；核心不变量 additivity 直接支持将全局最优拆分为 n-1 个相邻割的独立代价，完美契合规则要求的按单元拆分并汇总；计数对象可通过明确等价关系定义去重，满足准入条件。",
+      "risk_tags": [
+        "shared_core_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.invariant.additivity 明确说明 'The minimum spanning tree weight decomposes into the sum of minimum costs required to cross each of the n-1 adjacent cuts... allowing the global optimum to be computed via direct summation.'，直接对应规则 required_seed_properties 中的拆分汇总要求；core_constraints 中 divisibility 与 adjacency_relation 严格限定边集生成条件，保证解空间有限，满足解空间有限准入项。",
+        "feedback": "规划时需强制将 additivity 不变量转化为计数 DP 的状态转移基础，明确计数单元为单个相邻割的合法连接方案；必须在 objective 中彻底替换原最小化目标，并在约束中显式定义去重口径，严禁仅追加取模或保留原判定逻辑。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.15,
+      "reason_code": "missing_native_perturbation",
+      "selection_reason": "原题CF1513D为确定性静态构图问题，输入数组与参数p固定，边权生成规则严格依赖整除关系，完全不具备规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动特征。强行套用将导致扰动模型脱离原题语义，违反规则自身的准入条件与红线。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "规则声明明确要求'原题里本来就有顺序不确定、资源波动或局部选择差异'且'扰动来源必须回到原题语义'。但seed_schema显示原题core_constraints为确定性整除条件与固定相邻边，objective为固定输入下的MST最小值，invariant基于确定性单调扫描与可加性，无任何波动或不确定性设定。",
+        "feedback": "该规则不适用于确定性静态图/数组构造类种子题。建议替换为输入含动态变化、容错要求或天然存在策略博弈/资源波动的题目，或改用其他不依赖原生扰动的变换族。"
+      },
+      "selected_for_attempt": false
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "forbidden_seed_property_trivial_backtrack",
+      "message": "原题仅求MST权值和，其标准贪心/单调栈解法在计算过程中可极低成本记录所选边，直接要求输出规范解仅增加记录开销，未改变核心状态转移与主约束结构，明确触发“原解只要顺手回溯就能拿到方案”的禁令，且无法满足规则要求的C轴实质性变化。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.2,
+        "risk_tags": [
+          "low_novelty",
+          "shared_core_risk",
+          "post_processing_degeneration"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中objective为minimize_value且requires_solution为false；invariant(additivity/monotonicity)表明最优权值可通过单向扫描独立求和得出。该算法逻辑天然支持在O(n)遍历中顺手记录构成最优割的边集。规则eligibility明确禁止“原解只要顺手回溯就能拿到方案”，且failure_templates指出此类修改会导致difference_insufficient。",
+        "feedback": "当前种子题的算法核心是权值聚合而非方案构造。若强行套用canonical_witness，极易退化为输出后处理。建议更换具有强构造性、且原解无法直接回溯出唯一/规范方案的种子题，或引入使规范性要求反噬主约束(C)的强辅助规则。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "seed_lacks_failure_semantics",
+      "message": "原题CF1513D为确定性最优化求值问题，其图结构由相邻固定权边保证始终连通，不存在无解分支。规则强制要求种子题具备“失败可输出局部冲突证据”的语义基础，与原题的always-feasible求值目标根本冲突，强行套用将导致失败分支退化为人为附加的全局解释，直接触发forbidden_seed_properties红线。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.type为'minimize_value'且requires_solution为false；core_constraints.adjacency_relation明确相邻顶点间恒有权重为p的边，保证图连通且MST必存在。而rule_under_review.required_seed_properties明确要求'做不到的原因可以用局部证据表示'，原题无此语义支撑。",
+        "feedback": "该规则适用于本身具有可行性判定或构造约束的种子题（如匹配、覆盖、可满足性问题）。若需应用于本题，需先将原题重构为带硬性阈值或额外约束的判定/构造问题，否则无法生成符合validation_contract的局部可检证书。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "finite_decomposable_space",
+      "message": "原题图结构顶点与边权规则明确，解空间天然有限；核心不变量 additivity 直接支持将全局最优拆分为 n-1 个相邻割的独立代价，完美契合规则要求的按单元拆分并汇总；计数对象可通过明确等价关系定义去重，满足准入条件。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.97,
+        "risk_tags": [
+          "shared_core_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.invariant.additivity 明确说明 'The minimum spanning tree weight decomposes into the sum of minimum costs required to cross each of the n-1 adjacent cuts... allowing the global optimum to be computed via direct summation.'，直接对应规则 required_seed_properties 中的拆分汇总要求；core_constraints 中 divisibility 与 adjacency_relation 严格限定边集生成条件，保证解空间有限，满足解空间有限准入项。",
+        "feedback": "规划时需强制将 additivity 不变量转化为计数 DP 的状态转移基础，明确计数单元为单个相邻割的合法连接方案；必须在 objective 中彻底替换原最小化目标，并在约束中显式定义去重口径，严禁仅追加取模或保留原判定逻辑。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation",
+      "message": "原题CF1513D为确定性静态构图问题，输入数组与参数p固定，边权生成规则严格依赖整除关系，完全不具备规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动特征。强行套用将导致扰动模型脱离原题语义，违反规则自身的准入条件与红线。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.15,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "规则声明明确要求'原题里本来就有顺序不确定、资源波动或局部选择差异'且'扰动来源必须回到原题语义'。但seed_schema显示原题core_constraints为确定性整除条件与固定相邻边，objective为固定输入下的MST最小值，invariant基于确定性单调扫描与可加性，无任何波动或不确定性设定。",
+        "feedback": "该规则不适用于确定性静态图/数组构造类种子题。建议替换为输入含动态变化、容错要求或天然存在策略博弈/资源波动的题目，或改用其他不依赖原生扰动的变换族。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "规划完整兑现了 existence_to_counting 规则合同，明确定义了计数对象、去重口径与取模约定，并通过瓶颈间隙分解实现了状态因子化，计数责任已完全锁定为主目标。",
+      "details": {
+        "review_role": "你扮演一名计数规划审查官，重点确认规划是否真正把目标升级为对象明确的计数任务。",
+        "review_brief": "确认规划是否定义了计数对象、去重口径、有限性来源，以及需要时的取模约定。",
+        "evidence": "1. counting_unit_definition: core_constraints 新增 counting_deduplication 明确‘边集不同即方案不同’并规定 10^9+7 取模；objective 替换为 count_schemes；invariant 中 combinatorial_decomposition 定义计数单元与等价类划分。2. state_factorization: invariant 明确将全局计数分解为独立‘瓶颈间隙’方案数的乘积，algorithmic_delta_claim 说明按间隙统计合法边数并处理连通块依赖，打破原贪心累加结构。3. counting_obligation_lock: objective 主导求解目标，core_constraints 将计数与去重绑定为核心约束，原 MST 求和降级为计数前置阈值。4. 硬门槛检查：去重口径（边集差异）、取模方式（10^9+7）、拆分汇总单元（瓶颈间隙累乘）均在 schema 与 payload 中明确声明，满足 validation_contract 全部要求。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "题面完整兑现了存在性转计数规则的核心承诺，明确定义了计数对象、去重口径与取模约定，计数目标已完全主导求解义务，且通过实例化 schema 的不变量明确了计数单元的拆分与汇总逻辑，未触发任何红线。",
+      "details": {
+        "review_role": "你扮演一名计数题面审查官，重点确认题面是否完整兑现计数目标与去重规则。",
+        "review_brief": "确认题面是否明确写出统计对象、等价关系、不同答案的判定口径，以及必要的模数约定。",
+        "evidence": "题面正文直接声明‘计算总造价达到最小值的不同通道选择方案数。两种方案被视为不同，当且仅当它们选中的通道集合（即边集）不完全相同’，并规定‘结果对 10^9+7 取模’，严格满足 counting_unit_definition 与 hard_checks 中关于不同解判定与可数性/取模的要求；objective 字段锁定为 count_schemes，彻底替换原最优值目标，符合 counting_obligation_lock；instantiated_schema 的 invariant 明确写出‘全局最优方案的计数可分解为各独立瓶颈间隙内最优边选择数的乘积’，配合题面边集定义，完整交代了计数单元的拆分与汇总路径，满足 state_factorization 要求。"
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "score": 0.97,
+      "accepted": true,
+      "risk_tags": [
+        "shared_core_risk"
+      ],
+      "status": "ok",
+      "reason_code": "plan_validation_failed",
+      "reason": "",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "社团招新通道规划",
+    "description": "校园文化节即将开幕，学生会需要在一条直线上依次布置 $n$ 个社团摊位，编号从 $1$ 到 $n$。为了方便同学们穿梭交流，需要在摊位之间修建通道。\n\n已知任意相邻的两个摊位 $i$ 和 $i+1$ 之间，学校后勤部会统一修建一条固定通道，造价恒为 $p$。\n\n此外，任意两个摊位 $i$ 和 $j$（$1 \\le i < j \\le n$）之间也可以申请修建直达通道。但审批规则十分严格：只有当区间 $[i, j]$ 内所有摊位的招新预算 $a_i, a_{i+1}, \\dots, a_j$ 都能被该区间的最小预算整除时，这条直达通道才会被批准。若获批，其造价恰好等于该区间的最小预算。\n\n现在，你需要从所有获批的通道（包含固定通道）中挑选若干条，使得所有 $n$ 个摊位相互连通，且总造价严格最小。由于预算审批存在多种组合可能，请你计算总造价达到最小值的**不同通道选择方案数**。两种方案被视为不同，当且仅当它们选中的通道集合（即边集）不完全相同。\n\n由于方案数可能极大，请将结果对 $10^9+7$ 取模后输出。",
+    "input_format": "第一行包含一个整数 $t$（$1 \\le t \\le 10^4$），表示测试用例的数量。\n\n每个测试用例的第一行包含两个整数 $n$ 和 $p$（$2 \\le n \\le 2 \\cdot 10^5$，$1 \\le p \\le 10^9$），分别表示摊位数量和固定通道造价。\n\n每个测试用例的第二行包含 $n$ 个整数 $a_1, a_2, \\dots, a_n$（$1 \\le a_i \\le 10^9$），表示各摊位的招新预算。\n\n保证所有测试用例的 $n$ 之和不超过 $2 \\cdot 10^5$。",
+    "output_format": "对于每个测试用例，输出一行一个整数，表示总造价最小的连通方案数对 $10^9+7$ 取模的结果。",
+    "constraints": [
+      "时间限制：2.0 秒",
+      "空间限制：256 MB",
+      "$1 \\le t \\le 10^4$",
+      "$2 \\le n \\le 2 \\cdot 10^5$，且所有测试用例的 $n$ 之和不超过 $2 \\cdot 10^5$",
+      "$1 \\le p \\le 10^9$",
+      "$1 \\le a_i \\le 10^9$"
+    ],
+    "samples": [
+      {
+        "input": "2\n3 10\n2 2 2\n4 100\n2 2 2 2",
+        "output": "3\n16",
+        "explanation": "第一个样例中，相邻固定通道造价为 10。区间 [1,2]、[2,3]、[1,3] 的最小预算均为 2，且均能整除区间内所有预算，因此这三条直达通道造价均为 2。最小总造价为 4。选择任意两条直达通道均可连通所有摊位且不形成环，共有 3 种方案。\n第二个样例中，所有区间的最小预算均为 2 且满足整除条件，任意两点间均可修建造价为 2 的通道。此时图退化为完全图，最小生成树总造价为 6。4 个节点的完全图共有 16 棵生成树，故答案为 16。"
+      },
+      {
+        "input": "1\n5 5\n1 2 4 8 16",
+        "output": "1",
+        "explanation": "该样例中，区间 [1,2]、[1,3]、[1,4]、[1,5] 的最小预算均为 1，且满足整除条件，造价均为 1。其他区间边造价均大于等于 2。固定通道造价为 5。显然，选择边集 {(1,2), (1,3), (1,4), (1,5)} 即可连通所有节点且总造价最小（为 4）。该边集唯一，故答案为 1。"
+      }
+    ],
+    "notes": "本题要求统计最小生成树的数量。两种方案不同当且仅当所选边集不同。结果需对 $10^9+7$ 取模。输入数据保证图连通。",
+    "status": "ok",
+    "error_reason": "",
+    "feedback": ""
+  }
+}

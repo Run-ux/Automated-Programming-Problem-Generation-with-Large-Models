@@ -209,7 +209,7 @@ phase1 的标签集合
   -> pipeline 保存 markdown、artifact、过程报告
 ```
 
-`single` 模式省略 `--problem-ids` 时，会把 `--source-dir` 当前层级下的全部 schema JSON 视为一批任务，按文件名字典序逐个执行。批量模式要求文件内 `problem_id` 与文件名一致；任一任务报错后整批立即停止，但已成功落盘的结果会保留，整批汇总会写入 `batch_*.json` 与 `batch_*.md`。
+`single` 模式省略 `--problem-ids` 时，会把 `--source-dir` 当前层级下的全部 schema JSON 视为一批任务，按文件名字典序逐个执行。批量模式要求文件内 `problem_id` 与文件名一致；单题报错后会在整批汇总中记为失败，随后继续执行后续任务，已成功落盘的结果会保留，整批汇总会写入 `batch_*.json` 与 `batch_*.md`。
 
 运行时控制台会输出阶段提示，覆盖参数校验、schema 归一化、进入流水线、当前题、variant 规划、题面生成、产物写入与批量结束状态。
 

@@ -1,0 +1,495 @@
+{
+  "problem_id": "CampusOps_CanonicalXOR",
+  "source_problem_ids": [
+    "CF1339D"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "C",
+      "O",
+      "V"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "引入字典序最小规范输出要求，彻底改变目标函数；将规范顺序嵌入合法性校验，重构核心约束优先级；不变量从静态奇偶划分升级为动态构造导航，指导贪心决策。",
+    "summary": "从计数问题转为规范构造问题，解法需结合奇偶类预判与贪心DFS，输出可直接校验的边权序列。",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.4255,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.4255,
+    "axis_scores": {
+      "I": 0.1429,
+      "C": 0.6694,
+      "O": 0.5084,
+      "V": 0.3095
+    },
+    "components": {
+      "input_tree_distance": 0.1429,
+      "constraint_match_distance": 0.6694,
+      "objective_type_distance": 0.7048,
+      "objective_text_distance": 0.2137,
+      "invariant_match_distance": 0.3095
+    }
+  },
+  "changed_axes_realized": [
+    "C",
+    "O",
+    "V"
+  ],
+  "objective": {
+    "type": "construct_canonical_sequence",
+    "description": "输出按DFS先序遍历的边权分配序列，该序列需满足异或约束、使用最少不同权值，且字典序最小。",
+    "target": "canonical_weight_sequence",
+    "requires_solution": true
+  },
+  "rule_selection_reason": "canonical_witness:种子题目标仅为极值计数（requires_solution: false），存在明确的边权赋值解对象；其结构不变量（深度奇偶划分、兄弟叶子边合并）为定义规范解提供了清晰的数学基础，且可通过辅助器将规范性要求嵌入主约束与验证责任，满足C/O/V轴强制变更条件。",
+  "instantiated_schema_snapshot": {
+    "problem_id": "CampusOps_CanonicalXOR",
+    "source": "CF1339D_extended",
+    "input_structure": {
+      "type": "tree",
+      "length": {
+        "min": 3,
+        "max": 100000
+      },
+      "value_range": {
+        "min": 1,
+        "max": 1000000
+      },
+      "properties": {
+        "connected": true,
+        "acyclic": true,
+        "rooted_at": 1
+      }
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "xor_leaf_path",
+          "description": "任意两社团活动室（叶子节点）间走廊路径的门禁码（边权）异或和必须为0。",
+          "formal": "\\forall u,v \\in Leaves, u \\neq v \\implies \\bigoplus_{e \\in Path(u,v)} w(e) = 0",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "canonical_dfs_order",
+          "description": "门禁码分配序列按DFS先序遍历排列必须为字典序最小，且使用的不同门禁码种类数必须等于理论最小值。",
+          "formal": "\\text{Seq}(w) = \\min_{\\text{lex}} \\{ S \\mid S \\text{ satisfies xor constraint and } |\\text{distinct}(S)| = K_{\\min} \\}",
+          "source_sections": [
+            "description"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "construct_canonical_sequence",
+      "description": "输出按DFS先序遍历的边权分配序列，该序列需满足异或约束、使用最少不同权值，且字典序最小。",
+      "target": "canonical_weight_sequence",
+      "requires_solution": true
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "parity_guided_greedy",
+          "description": "子树根节点的深度奇偶性决定了该子树内叶子路径的异或基准。贪心分配时，当前边权必须与子树奇偶类兼容，且选择最小可用权值不会破坏未来叶子对的异或零条件。",
+          "properties": {
+            "partition_basis": "subtree_leaf_parity",
+            "greedy_rule": "assign_min_valid_compatible_with_parity"
+          },
+          "evidence_source": "solution_code"
+        },
+        {
+          "name": "canonical_mergeability",
+          "description": "共享父节点的叶子边在字典序最小要求下必须分配相同权值，除非奇偶类冲突强制区分。该规则直接决定序列前缀的确定性。",
+          "properties": {
+            "merge_scope": "sibling_leaf_edges",
+            "lexicographical_impact": "forces_equal_assignment_unless_parity_conflict"
+          },
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "hard"
+  },
+  "applied_rule": "canonical_witness",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {
+    "seed_solver_core": "基于叶子深度奇偶性分类，直接计算最小/最大不同权值数（1或3，及合并收益）。",
+    "reusable_subroutines": "奇偶类判定、兄弟叶子边合并统计、树DFS遍历框架。",
+    "new_solver_core": "结合奇偶类预判的贪心DFS构造器。在遍历每条边时，动态计算当前边权可选的最小值，确保不破坏全局异或零条件，并严格遵循字典序最小原则。",
+    "new_proof_obligation": "证明贪心选择当前最小合法权值不会导致后续叶子路径异或约束无法满足（即局部最优可推至全局可行）；证明在固定奇偶类划分下，字典序最小序列的构造具有唯一性且与全局最优权值数严格兼容。",
+    "why_direct_reuse_fails": "原解仅做静态计数，无需考虑构造顺序与字典序。直接套用无法处理当前贪心选择对未来路径异或值的影响，也无法保证输出序列的字典序最优性，必须重构状态转移逻辑。"
+  },
+  "shared_core_summary": "",
+  "shared_core_anchors": {
+    "shared_state": "",
+    "shared_transition": "",
+    "shared_decision_basis": ""
+  },
+  "seed_contributions": {
+    "seed_a": "",
+    "seed_b": ""
+  },
+  "fusion_ablation": {
+    "without_seed_a": "",
+    "without_seed_b": ""
+  },
+  "applied_helpers": [
+    {
+      "id": "canonical_order_pressure",
+      "selection_reason": "将字典序规范嵌入主状态演化，避免退化为后处理。",
+      "affected_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "在core_constraints中增加canonical_dfs_order约束",
+        "在objective中要求输出规范序列",
+        "在invariant中引入parity_guided_greedy指导贪心"
+      ],
+      "innovation_reason": "让输出对象与验证责任离开原题路径，字典序要求成为合法性的一部分。",
+      "difficulty_reason": "状态转移需预判奇偶类，贪心选择受全局约束限制，无法简单回溯。"
+    },
+    {
+      "id": "proof_bearing_output",
+      "selection_reason": "升级输出对象为带证明责任的规范解。",
+      "affected_axes": [
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "objective明确要求requires_solution: true且目标为canonical_weight_sequence",
+        "invariant增加canonical_mergeability证明构造唯一性"
+      ],
+      "innovation_reason": "输出序列直接承接字典序最小与权值数最少的双重校验责任。",
+      "difficulty_reason": "要求解法严格证明构造序列满足双重最优性，增加正确性证明负担。"
+    },
+    {
+      "id": "constraint_reweighting",
+      "selection_reason": "重排主约束优先级，让规范解要求进入主约束。",
+      "affected_axes": [
+        "C",
+        "V"
+      ],
+      "schema_changes": [
+        "core_constraints中canonical_dfs_order与xor_leaf_path并列为主约束",
+        "invariant反映新约束主次关系，奇偶类划分服务于字典序贪心"
+      ],
+      "innovation_reason": "规范性要求改变主约束的优先级组织，打破原单一异或约束主导。",
+      "difficulty_reason": "迫使解法在状态设计里处理新的约束主次关系，平衡局部贪心与全局一致性。"
+    }
+  ],
+  "planning_status": "ok",
+  "planning_error_reason": "",
+  "planning_feedback": "",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": true,
+      "score": 0.77,
+      "reason_code": "meets_required_properties_and_axis_changes",
+      "selection_reason": "种子题目标仅为极值计数（requires_solution: false），存在明确的边权赋值解对象；其结构不变量（深度奇偶划分、兄弟叶子边合并）为定义规范解提供了清晰的数学基础，且可通过辅助器将规范性要求嵌入主约束与验证责任，满足C/O/V轴强制变更条件。",
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "schema中objective.requires_solution为false，证明原题不要求输出方案；invariant.equivalence_class与mergeability提供了可规范化的结构依据；规则required_axis_changes.must_change包含C/O/V，可通过helpers实现非退化升级。",
+        "feedback": "规划时需严格应用canonical_order_pressure与constraint_reweighting辅助器，明确规范性定义（如基于节点编号的字典序），确保验证逻辑与主约束深度耦合，避免退化为求值后的简单贪心赋值或纯格式要求。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "seed_lacks_impossibility_case",
+      "selection_reason": "种子题原约束恒有解，目标为最值而非可行性判定，缺乏规则要求的无解情形与局部冲突证据生成基础。",
+      "risk_tags": [
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.type为'minimize_value'且requires_solution为false；core_constraints.path_constraint在树上恒可满足（例如全边权赋0即可满足任意叶子路径异或为0）；invariant仅描述奇偶类对最值的影响（1或3），未定义任何不可满足的边界条件。规则required_seed_properties明确要求'做不到的原因可以用局部证据表示'，与种子题结构直接冲突。",
+        "feedback": "该规则强依赖失败分支的证书化输出，而CF1339D为恒有解的最值构造题。若强行套用需人为添加不可满足约束，极易触发红线'跟原核心规律无关的额外约束'。建议改用具有明确可行性判定边界或天然蕴含不可满足约束的种子题，或切换至纯构造/最值优化类规则。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "infinite_solution_space",
+      "selection_reason": "种子题边权取值范围无界（schema中value_range为null），导致合法赋值方案解空间天然无限，直接触发规则forbidden_seed_properties中的“解空间天然无限”禁令；且原题目标已是极值优化，强行转为计数需额外构造有限值域或取模规则，超出单种子安全扩展边界。",
+      "risk_tags": [
+        "infinite_solution_space",
+        "objective_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "schema中input_structure.value_range为{min: null, max: null}，且objective.type为minimize_value；规则明确列出forbidden_seed_properties包含“解空间天然无限”，且validation_contract要求“必须说明为什么可数，或者说明取模方式”，当前种子未提供任何有限化基础。",
+        "feedback": "当前种子缺乏有限解空间与明确计数单元，无法直接满足计数化改造的准入条件。若需推进，需先显式限定边权取值范围（如{0,1}或模M）或更换为天然离散有限的种子题（如排列、子集划分、有限状态图）。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.1,
+      "reason_code": "missing_native_perturbation",
+      "selection_reason": "原题CF1339D为确定性树结构赋值问题，核心约束为严格的叶子路径异或和为0，完全不存在规则 eligibility.required_seed_properties 所要求的“顺序不确定、资源波动或局部选择差异”。强行套用该规则必然需要凭空构造扰动，直接触碰“不能凭背景硬造对手”与“扰动模型必须来自原题本身”的红线。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints 明确为确定性全称量词约束（\\forall v_1, v_2 \\in Leaves, XOR path = 0）；seed_schema.invariant 依赖固定的 depth_parity_mod_2 划分与 sibling_leaf_edges 合并规则。全题无任何动态、波动或不确定性参数，与规则 required_seed_properties 第一条严重冲突。",
+        "feedback": "该保底优化规则高度依赖种子题自带的内在不确定性或参数波动。建议将本规则应用于具有天然调度顺序、动态容量限制或区间/概率波动的题目；对于此类强结构确定性组合题，应优先考虑拓扑变形或约束强化类规则。"
+      },
+      "selected_for_attempt": false
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "meets_required_properties_and_axis_changes",
+      "message": "种子题目标仅为极值计数（requires_solution: false），存在明确的边权赋值解对象；其结构不变量（深度奇偶划分、兄弟叶子边合并）为定义规范解提供了清晰的数学基础，且可通过辅助器将规范性要求嵌入主约束与验证责任，满足C/O/V轴强制变更条件。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.77,
+        "risk_tags": [
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "schema中objective.requires_solution为false，证明原题不要求输出方案；invariant.equivalence_class与mergeability提供了可规范化的结构依据；规则required_axis_changes.must_change包含C/O/V，可通过helpers实现非退化升级。",
+        "feedback": "规划时需严格应用canonical_order_pressure与constraint_reweighting辅助器，明确规范性定义（如基于节点编号的字典序），确保验证逻辑与主约束深度耦合，避免退化为求值后的简单贪心赋值或纯格式要求。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "seed_lacks_impossibility_case",
+      "message": "种子题原约束恒有解，目标为最值而非可行性判定，缺乏规则要求的无解情形与局部冲突证据生成基础。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.type为'minimize_value'且requires_solution为false；core_constraints.path_constraint在树上恒可满足（例如全边权赋0即可满足任意叶子路径异或为0）；invariant仅描述奇偶类对最值的影响（1或3），未定义任何不可满足的边界条件。规则required_seed_properties明确要求'做不到的原因可以用局部证据表示'，与种子题结构直接冲突。",
+        "feedback": "该规则强依赖失败分支的证书化输出，而CF1339D为恒有解的最值构造题。若强行套用需人为添加不可满足约束，极易触发红线'跟原核心规律无关的额外约束'。建议改用具有明确可行性判定边界或天然蕴含不可满足约束的种子题，或切换至纯构造/最值优化类规则。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "infinite_solution_space",
+      "message": "种子题边权取值范围无界（schema中value_range为null），导致合法赋值方案解空间天然无限，直接触发规则forbidden_seed_properties中的“解空间天然无限”禁令；且原题目标已是极值优化，强行转为计数需额外构造有限值域或取模规则，超出单种子安全扩展边界。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.2,
+        "risk_tags": [
+          "infinite_solution_space",
+          "objective_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "schema中input_structure.value_range为{min: null, max: null}，且objective.type为minimize_value；规则明确列出forbidden_seed_properties包含“解空间天然无限”，且validation_contract要求“必须说明为什么可数，或者说明取模方式”，当前种子未提供任何有限化基础。",
+        "feedback": "当前种子缺乏有限解空间与明确计数单元，无法直接满足计数化改造的准入条件。若需推进，需先显式限定边权取值范围（如{0,1}或模M）或更换为天然离散有限的种子题（如排列、子集划分、有限状态图）。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation",
+      "message": "原题CF1339D为确定性树结构赋值问题，核心约束为严格的叶子路径异或和为0，完全不存在规则 eligibility.required_seed_properties 所要求的“顺序不确定、资源波动或局部选择差异”。强行套用该规则必然需要凭空构造扰动，直接触碰“不能凭背景硬造对手”与“扰动模型必须来自原题本身”的红线。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.1,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints 明确为确定性全称量词约束（\\forall v_1, v_2 \\in Leaves, XOR path = 0）；seed_schema.invariant 依赖固定的 depth_parity_mod_2 划分与 sibling_leaf_edges 合并规则。全题无任何动态、波动或不确定性参数，与规则 required_seed_properties 第一条严重冲突。",
+        "feedback": "该保底优化规则高度依赖种子题自带的内在不确定性或参数波动。建议将本规则应用于具有天然调度顺序、动态容量限制或区间/概率波动的题目；对于此类强结构确定性组合题，应优先考虑拓扑变形或约束强化类规则。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "规划完整兑现canonical_witness规则合同：C/O/V三轴均发生实质性重构，三个helper全部应用且精准落入指定schema模块，规范解责任已深度绑定至状态转移与校验逻辑，有效规避所有redlines。",
+      "details": {
+        "review_role": "你扮演一名规范解规划审查官，重点确认规划是否真正把输出责任升级为可比较、可校验的规范解。",
+        "review_brief": "确认规划是否明确了规范解的定义、比较口径与校验方式，并且规范性会改变主要求解责任。",
+        "evidence": "candidate_schema中core_constraints新增canonical_dfs_order与xor_leaf_path并列，objective升级为construct_canonical_sequence且requires_solution为true，invariant替换为parity_guided_greedy与canonical_mergeability；planner_payload的applied_helpers完整覆盖canonical_order_pressure、proof_bearing_output、constraint_reweighting，且anti_shallow_rationale明确声明'规范输出要求直接介入状态转移决策，而非事后排序或简单回溯'，algorithmic_delta_claim指出解法从静态计数重构为贪心DFS构造并新增new_proof_obligation，完全满足helper的must_realize_in落点与redlines要求。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "canonical_witness_fulfilled",
+      "message": "题面明确将输出目标升级为满足异或约束与最少权值数前提下的字典序最小DFS边权序列，规范性要求已深度融入核心约束与验证责任，未退化为后处理或格式说明，完全兑现规则专属合同。",
+      "details": {
+        "review_role": "你扮演一名规范解题面审查官，重点确认题面是否要求输出一个规范且可检查的构造。",
+        "review_brief": "确认题面是否写清规范解、字典序或统一比较规则，并要求输出一个可校验的构造方案。",
+        "evidence": "题面描述中明确要求“在满足该条件的所有合法分配方案中，还需要按照特定的巡查顺序输出门禁码序列，并要求该序列的字典序严格最小”，且Notes第2条强调“必须恰好使用该最小种类数”。核心约束`canonical_dfs_order`与`xor_leaf_path`并列，目标函数`construct_canonical_sequence`直接承接可校验的构造输出。DFS遍历顺序与字典序最小化要求共同主导了贪心构造逻辑，符合`canonical_order_pressure`、`proof_bearing_output`与`constraint_reweighting`的语义承诺，且未触碰任何redlines。"
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "score": 0.77,
+      "accepted": true,
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "status": "ok",
+      "reason_code": "plan_validation_failed",
+      "reason": "",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "社团活动室的智能门禁",
+    "description": "学校社团联合会最近对旧教学楼进行了翻新，将走廊改造成了智能门禁通道。教学楼的结构可以看作一棵以 1 号节点为根的树，其中叶子节点代表各社团的活动室，非叶子节点代表走廊交汇点或楼梯间。为了统一管理，后勤部需要为每条走廊分配一个正整数门禁码。\n\n出于安全与通行效率的考虑，门禁码需满足以下核心规则：任意两个不同社团活动室（叶子节点）之间的唯一路径上，所有走廊门禁码的按位异或（XOR）和必须恰好为 0。\n\n为了降低维护成本，后勤部希望使用的不同门禁码种类数尽可能少。在满足该条件的所有合法分配方案中，还需要按照特定的巡查顺序输出门禁码序列，并要求该序列的字典序严格最小。\n\n巡查顺序定义如下：从根节点（1 号节点）出发进行深度优先搜索（DFS），每次优先访问编号较小的相邻节点（父节点除外）。按遍历到每条边的先后顺序，依次记录该边的门禁码，形成一个长度为 $N-1$ 的序列。你的任务是求出这个字典序最小的门禁码序列。",
+    "input_format": "第一行包含一个整数 $N$，表示教学楼的节点总数。\n接下来 $N-1$ 行，每行包含两个整数 $u, v$，表示节点 $u$ 和节点 $v$ 之间有一条走廊相连。\n输入保证构成一棵以 1 为根的树，且 $N \\ge 3$。",
+    "output_format": "输出一行，包含 $N-1$ 个正整数，表示按 DFS 巡查顺序得到的门禁码序列。相邻整数之间用单个空格分隔。",
+    "constraints": [
+      "$3 \\le N \\le 10^5$",
+      "门禁码必须为 $[1, 10^6]$ 范围内的整数",
+      "时间限制：2.0 秒",
+      "空间限制：512 MB"
+    ],
+    "samples": [
+      {
+        "input": "4\n1 2\n1 3\n1 4",
+        "output": "1 1 1",
+        "explanation": "叶子节点为 2, 3, 4，它们到根节点的深度均为 1（奇偶性相同）。此时只需将所有边权赋为 1，任意两叶子路径异或和均为 $1 \\oplus 1 = 0$。不同门禁码种类数为 1，已达理论最小。DFS 访问顺序为边 (1,2), (1,3), (1,4)，对应序列为 1 1 1，字典序最小。"
+      },
+      {
+        "input": "4\n1 2\n1 3\n2 4",
+        "output": "1 2 3",
+        "explanation": "叶子节点为 3 和 4，深度分别为 1 和 2（奇偶性不同）。理论最少需 3 种门禁码。DFS 访问边的顺序为 (1,2), (1,3), (2,4)。贪心尝试分配：令 (1,2)=1，为满足叶子 3 与 4 路径异或为 0，需 $w(1,3) \\oplus 1 \\oplus w(2,4) = 0$。尝试 $w(1,3)=2$，则 $w(2,4)=3$，使用种类 {1,2,3} 共 3 种，序列为 1 2 3。该方案满足所有条件且字典序最小。"
+      }
+    ],
+    "notes": "1. 题目保证对于给定的树结构，一定存在满足条件的门禁码分配方案。\n2. “不同门禁码种类数最少”是指在该树结构下，满足异或约束所需的全局最小种类数（通常为 1 或 3）。你的方案必须恰好使用该最小种类数，不可随意增加。\n3. DFS 遍历时，若当前节点有多个未访问的子节点，必须严格按照节点编号从小到大的顺序进行递归。\n4. 输出序列的长度严格等于 $N-1$，且每个数必须在 $[1, 10^6]$ 范围内。",
+    "status": "ok",
+    "error_reason": "",
+    "feedback": ""
+  }
+}

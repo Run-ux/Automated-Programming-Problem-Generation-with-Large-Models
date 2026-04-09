@@ -1,0 +1,841 @@
+{
+  "problem_id": "CampusOps_CountMinCost",
+  "source_problem_ids": [
+    "CF1399E2"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "C",
+      "O",
+      "V"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "目标轴(O)从求最小代价改为计数方案数；约束轴(C)增加去重口径、模数约定及最小代价唯一性前提；不变量轴(V)从单调性与交换论证转为组合乘法定理、临界值平局处理与代价类型独立性。三轴联动确保计数责任贯穿求解全程。",
+    "summary": "以最小代价为锚点，将原贪心策略的边界选择自由度显式化为组合计数对象，重构状态表示与验证逻辑。",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.3722,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.3722,
+    "axis_scores": {
+      "I": 0.1,
+      "C": 0.3567,
+      "O": 0.5125,
+      "V": 0.5603
+    },
+    "components": {
+      "input_tree_distance": 0.1,
+      "constraint_match_distance": 0.3567,
+      "objective_type_distance": 0.5827,
+      "objective_text_distance": 0.4071,
+      "invariant_match_distance": 0.5603
+    }
+  },
+  "changed_axes_realized": [
+    "C",
+    "O",
+    "V"
+  ],
+  "objective": {
+    "type": "count_solutions",
+    "description": "统计所有总代价恰好等于最小可行代价 C_min 且满足叶子路径和约束的不同操作次数向量数量，输出对 998244353 取模的结果。",
+    "target": "count_modulo",
+    "requires_solution": false
+  },
+  "rule_selection_reason": "原题核心为基于贪心与双指针的最优化问题，解空间有限且操作具有明确的代价与收益结构。existence_to_counting 能将目标从求最小代价彻底转向统计达成最优或特定阈值的方案数，迫使算法从单向扫描升级为组合计数与等价类处理，创新度与难度提升显著。相比之下，canonical_witness 在原题贪心结构下极易退化为简单的方案回溯，直接触碰该规则明确禁止的‘原解只要顺手回溯就能拿到方案’红线，故不优先推荐。；创新度判断：将核心义务从寻找最优代价拉离至定义计数单元、处理操作等价类与全局约束下的组合计数。原题的单调性与交换论证将转化为计数时的边界划分与组合数乘积逻辑，输出责任与验证责任完全脱离原题的数值优化路径，转为对方案空间结构的精确刻画。；难度判断：在主求解责任上，要求选手在保持全局路径和约束的前提下，对具有相同收益或代价的边进行组合计数，并处理两类操作数量耦合带来的计数边界问题。需重建状态设计以支持方案数累加与去重，算法难度从线性贪心跃升至组合数学或计数DP，且必须严格证明计数口径的完备性。；风险判断：主要风险在于若去重规则定义不当，可能导致计数退化为简单乘法或引发题意歧义。但通过明确以操作边的集合差异作为区分标准，并利用原题固有的代价分层结构作为计数主轴，该风险完全可控，且能自然契合竞赛计数题的命题范式。",
+  "instantiated_schema_snapshot": {
+    "problem_id": "CampusOps_CountMinCost",
+    "source": "custom",
+    "input_structure": {
+      "type": "tree",
+      "length": {
+        "min": 2,
+        "max": 100000
+      },
+      "value_range": {
+        "min": 1,
+        "max": 1000000000
+      },
+      "properties": {
+        "weighted": true,
+        "rooted": true,
+        "connected": true,
+        "acyclic": true,
+        "multiple_test_cases": true,
+        "cost_types": [
+          1,
+          2
+        ]
+      }
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "operation_type",
+          "description": "允许对树中任意边执行向下取整除以2操作，每次操作消耗该边对应的固定代价 c_i ∈ {1, 2}。",
+          "formal": "w_i := \\lfloor w_i / 2 \\rfloor, \\text{cost} = c_i",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "sum_constraint",
+          "description": "操作完成后，所有叶子节点到根节点的路径权重总和不得超过阈值 S。",
+          "formal": "\\sum_{v \\in \\text{leaves}} w(\\text{root}, v) \\le S",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "counting_object_and_dedup",
+          "description": "计数对象为各边操作次数构成的向量 X = (x_1, x_2, ..., x_{n-1})。两个方案视为不同当且仅当存在至少一条边 i 使得 x_i 不同。仅统计总代价等于全局最小代价 C_min 且满足路径和约束的方案，结果对 998244353 取模。",
+          "formal": "\\text{Count} \\{ X \\mid \\sum c_i x_i = C_{min} \\land \\sum_{v} w_X(\\text{root}, v) \\le S \\} \\pmod{998244353}",
+          "source_sections": [
+            "objective"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "count_solutions",
+      "description": "统计所有总代价恰好等于最小可行代价 C_min 且满足叶子路径和约束的不同操作次数向量数量，输出对 998244353 取模的结果。",
+      "target": "count_modulo",
+      "requires_solution": false
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "additivity_and_greedy_boundary",
+          "description": "路径和减少量具有严格可加性。达到最小代价的最优方案必然优先选取单次减少量最大的操作。当总代价固定为 C_min 时，方案差异仅来源于处于选择临界值的操作项（即减少量相同且位于贪心边界处的操作）。",
+          "properties": {
+            "contribution_independence": true,
+            "greedy_optimality_preserved": true
+          },
+          "evidence_source": "transformation_design"
+        },
+        {
+          "name": "cost_type_separation_and_combinatorial_independence",
+          "description": "代价为1和代价为2的操作池相互独立，不可跨池等价替换。在各自池内，临界值处的重复减少量项可任意组合选取，方案总数等于两池临界组合数的乘积。该不变量保证计数可安全分解为独立子问题汇总。",
+          "properties": {
+            "pool_independence": true,
+            "multiplicative_counting": true
+          },
+          "evidence_source": "transformation_design"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Hard"
+  },
+  "applied_rule": "existence_to_counting",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {
+    "seed_solver_core": "将边权减半收益按代价1和2分类，分别计算前缀和，利用双指针扫描寻找满足减少量阈值的最小总代价。",
+    "reusable_subroutines": "单次操作收益计算、两类代价收益列表的构建与降序排序、前缀和数组生成、双指针可行性边界判定。",
+    "new_solver_core": "在双指针确定最小代价 C_min 及对应的两类操作选取数量 (k1, k2) 后，定位两类收益列表中处于临界位置的重复值频次，利用组合数公式计算临界区间的选取方案数，并将两池结果相乘取模。",
+    "new_proof_obligation": "需严格证明：1) 最小代价 C_min 的唯一性；2) 任何达到 C_min 的合法方案必须包含所有严格大于临界值的操作，且仅能在临界值处进行组合替换；3) 代价1与代价2的操作因权重不同，不存在跨池等价替换可能，从而确立两池组合计数的乘法独立性。",
+    "why_direct_reuse_fails": "原解法仅输出标量最小代价，未维护临界收益值的频次分布与组合自由度。直接复用会丢失计数所需的边界状态信息，且无法处理平局替换带来的指数级方案分支。"
+  },
+  "shared_core_summary": "",
+  "shared_core_anchors": {
+    "shared_state": "",
+    "shared_transition": "",
+    "shared_decision_basis": ""
+  },
+  "seed_contributions": {
+    "seed_a": "",
+    "seed_b": ""
+  },
+  "fusion_ablation": {
+    "without_seed_a": "",
+    "without_seed_b": ""
+  },
+  "applied_helpers": [
+    {
+      "id": "counting_unit_definition",
+      "selection_reason": "规则强制要求明确计数对象与去重规则，避免答案口径模糊。",
+      "affected_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "在",
+        "c",
+        "o",
+        "r",
+        "e",
+        "_",
+        "c",
+        "o",
+        "n",
+        "s",
+        "t",
+        "r",
+        "a",
+        "i",
+        "n",
+        "t",
+        "s",
+        "中",
+        "新",
+        "增",
+        "c",
+        "o",
+        "u",
+        "n",
+        "t",
+        "i",
+        "n",
+        "g",
+        "_",
+        "o",
+        "b",
+        "j",
+        "e",
+        "c",
+        "t",
+        "_",
+        "a",
+        "n",
+        "d",
+        "_",
+        "d",
+        "e",
+        "d",
+        "u",
+        "p",
+        "约",
+        "束",
+        "，",
+        "明",
+        "确",
+        "定",
+        "义",
+        "操",
+        "作",
+        "次",
+        "数",
+        "向",
+        "量",
+        "为",
+        "计",
+        "数",
+        "单",
+        "元",
+        "；",
+        "在",
+        "o",
+        "b",
+        "j",
+        "e",
+        "c",
+        "t",
+        "i",
+        "v",
+        "e",
+        "中",
+        "将",
+        "t",
+        "a",
+        "r",
+        "g",
+        "e",
+        "t",
+        "改",
+        "为",
+        "c",
+        "o",
+        "u",
+        "n",
+        "t",
+        "_",
+        "m",
+        "o",
+        "d",
+        "u",
+        "l",
+        "o",
+        "；",
+        "在",
+        "i",
+        "n",
+        "v",
+        "a",
+        "r",
+        "i",
+        "a",
+        "n",
+        "t",
+        "中",
+        "补",
+        "充",
+        "组",
+        "合",
+        "独",
+        "立",
+        "性",
+        "说",
+        "明",
+        "。"
+      ],
+      "innovation_reason": "将原题的数值优化目标彻底替换为对象明确的计数结果，确立去重口径（向量逐维比对），消除多解歧义。",
+      "difficulty_reason": "要求解法不仅验证可行性，还需精确刻画等价类边界，处理组合数学中的重复元素选取问题。"
+    },
+    {
+      "id": "state_factorization",
+      "selection_reason": "计数必须从主状态组织方式中自然衍生，而非事后统计。",
+      "affected_axes": [
+        "C",
+        "V"
+      ],
+      "schema_changes": [
+        "在",
+        "c",
+        "o",
+        "r",
+        "e",
+        "_",
+        "c",
+        "o",
+        "n",
+        "s",
+        "t",
+        "r",
+        "a",
+        "i",
+        "n",
+        "t",
+        "s",
+        "中",
+        "隐",
+        "含",
+        "按",
+        "代",
+        "价",
+        "类",
+        "型",
+        "拆",
+        "分",
+        "操",
+        "作",
+        "池",
+        "的",
+        "结",
+        "构",
+        "；",
+        "在",
+        "i",
+        "n",
+        "v",
+        "a",
+        "r",
+        "i",
+        "a",
+        "n",
+        "t",
+        "中",
+        "明",
+        "确",
+        "c",
+        "o",
+        "s",
+        "t",
+        "_",
+        "t",
+        "y",
+        "p",
+        "e",
+        "_",
+        "s",
+        "e",
+        "p",
+        "a",
+        "r",
+        "a",
+        "t",
+        "i",
+        "o",
+        "n",
+        "_",
+        "a",
+        "n",
+        "d",
+        "_",
+        "c",
+        "o",
+        "m",
+        "b",
+        "i",
+        "n",
+        "a",
+        "t",
+        "o",
+        "r",
+        "i",
+        "a",
+        "l",
+        "_",
+        "i",
+        "n",
+        "d",
+        "e",
+        "p",
+        "e",
+        "n",
+        "d",
+        "e",
+        "n",
+        "c",
+        "e",
+        "，",
+        "规",
+        "定",
+        "解",
+        "空",
+        "间",
+        "按",
+        "代",
+        "价",
+        "1",
+        "/",
+        "2",
+        "池",
+        "分",
+        "解",
+        "，",
+        "单",
+        "元",
+        "间",
+        "通",
+        "过",
+        "乘",
+        "法",
+        "原",
+        "理",
+        "汇",
+        "总",
+        "。"
+      ],
+      "innovation_reason": "迫使算法在状态构建阶段就按代价类型与收益值分组，使计数逻辑与状态分解强绑定，避免全局暴力枚举。",
+      "difficulty_reason": "要求选手在分解与汇总层面重建主状态，理解不同代价池的不可互换性，并正确应用组合乘法定理。"
+    },
+    {
+      "id": "counting_obligation_lock",
+      "selection_reason": "确保计数责任主导求解过程，而非作为原判定过程的副产品。",
+      "affected_axes": [
+        "C",
+        "O"
+      ],
+      "schema_changes": [
+        "在",
+        "o",
+        "b",
+        "j",
+        "e",
+        "c",
+        "t",
+        "i",
+        "v",
+        "e",
+        "中",
+        "移",
+        "除",
+        "m",
+        "i",
+        "n",
+        "i",
+        "m",
+        "i",
+        "z",
+        "e",
+        "_",
+        "v",
+        "a",
+        "l",
+        "u",
+        "e",
+        "类",
+        "型",
+        "，",
+        "锁",
+        "定",
+        "为",
+        "c",
+        "o",
+        "u",
+        "n",
+        "t",
+        "_",
+        "s",
+        "o",
+        "l",
+        "u",
+        "t",
+        "i",
+        "o",
+        "n",
+        "s",
+        "；",
+        "在",
+        "c",
+        "o",
+        "r",
+        "e",
+        "_",
+        "c",
+        "o",
+        "n",
+        "s",
+        "t",
+        "r",
+        "a",
+        "i",
+        "n",
+        "t",
+        "s",
+        "中",
+        "强",
+        "调",
+        "仅",
+        "统",
+        "计",
+        "C",
+        "_",
+        "m",
+        "i",
+        "n",
+        "方",
+        "案",
+        "，",
+        "禁",
+        "止",
+        "保",
+        "留",
+        "原",
+        "判",
+        "定",
+        "主",
+        "目",
+        "标",
+        "。"
+      ],
+      "innovation_reason": "将原题主目标替换为计数义务，算法必须同时承担最小代价定位与边界组合计数的双重责任，主导状态转移逻辑。",
+      "difficulty_reason": "要求算法在扫描过程中同步维护临界频次信息，证明计数正确性与去重正确性，增加状态维护与逻辑耦合复杂度。"
+    }
+  ],
+  "planning_status": "ok",
+  "planning_error_reason": "",
+  "planning_feedback": "",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": true,
+      "score": 0.77,
+      "reason_code": "canonical_tie_breaking_potential",
+      "selection_reason": "原题目标仅为最小化代价（requires_solution: false），解对象为边操作集合，且依赖exchange_argument进行贪心选择。该结构天然支持通过定义操作序列的规范顺序（如字典序或收益相同时的边索引优先级）来升级输出契约，满足C/O/V轴变更条件，且未触碰‘原题已要求输出完整方案’的禁令。",
+      "risk_tags": [
+        "low_novelty",
+        "shared_core_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.objective.requires_solution为false，证明原题不要求输出方案；seed_schema.invariant.exchange_argument表明最优解由收益降序选取构成，具备明确的解对象与可定义规范的基础；rule_under_review.required_axis_changes要求C/O/V变更，结合helpers.canonical_order_pressure可迫使规范顺序介入贪心平局处理，避免退化为顺手回溯。",
+        "feedback": "规划时必须强制应用canonical_order_pressure与constraint_reweighting，确保规范性约束（如操作执行顺序或边选择优先级）实质性改变原贪心策略的状态转移或排序逻辑，严禁仅添加输出格式说明或依赖原题天然唯一解。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 2
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "seed_structure_mismatch",
+      "selection_reason": "种子题为全局求和最小化问题，其不可行性由全局路径权值和下界决定，无法自然压缩为可局部检查的冲突证据；强行构造局部阻碍会破坏原题贪心/单调性结构，且失败分支易退化为全局阈值说明。",
+      "risk_tags": [
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要中 core_constraints.sum_constraint 要求全局叶子到根路径权值和 ≤ S，invariant.additivity 与 monotonicity 均依赖全局累加与双指针扫描。规则 required_seed_properties 明确要求“做不到的原因可以用局部证据表示”，但全局求和约束的不可行性无法映射为局部边/子树冲突，违反 helpers.obstruction_embedding 中“让冲突证据直接来自主约束中的不可兼容关系”的设计前提。",
+        "feedback": "当前种子题的全局优化性质与局部冲突证书规则存在结构性冲突。建议替换为具有天然局部互斥/容量瓶颈结构的题目（如二分图匹配、区间覆盖、局部度数限制等），或放弃局部检查要求改为全局不可行性证明。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "finite_decomposable_space",
+      "selection_reason": "种子题的解空间由每条边的操作次数向量唯一确定，天然有限且去重规则明确；核心约束的加性不变量支持按边单元拆分计数，满足计数化改造的准入条件。",
+      "risk_tags": [
+        "paradigm_shift_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema中'operation_type'规定边权向下取整除以2，操作次数存在明确上界（权值归零），保证解空间有限；'additivity'不变量指出总减少量为各操作贡献的线性累加，支持按边拆分汇总；去重口径可直接定义为各边操作次数元组，无歧义。",
+        "feedback": "规划时需严格锁定计数目标，避免沿用原题贪心/双指针逻辑；建议明确取模要求，并设计基于子树贡献合并或背包思想的DP状态，确保计数责任主导求解过程。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "missing_native_perturbation",
+      "selection_reason": "原题CF1399E2为确定性树形贪心优化问题，输入结构、边权与阈值S均固定，不存在规则要求的‘顺序不确定、资源波动或局部选择差异’等原生扰动来源。强行引入最坏情况保证需凭空构造扰动模型，直接违反规则声明中的forbidden_seed_properties（只能靠故事背景硬造对手）及redlines。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema的core_constraints明确操作代价c_i与阈值S为固定输入，invariant依赖exchange_argument与monotonicity等确定性贪心性质，未体现任何顺序依赖或资源波动。规则eligibility.required_seed_properties明确要求‘原题里本来就有顺序不确定、资源波动或局部选择差异’，当前种子题完全不满足该硬性前提。",
+        "feedback": "建议更换具有天然不确定性或动态决策顺序的种子题（如带随机到达的调度、边权动态变化的网络流等），或改用其他不依赖扰动模型的规则族。"
+      },
+      "selected_for_attempt": false
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "canonical_tie_breaking_potential",
+      "message": "原题目标仅为最小化代价（requires_solution: false），解对象为边操作集合，且依赖exchange_argument进行贪心选择。该结构天然支持通过定义操作序列的规范顺序（如字典序或收益相同时的边索引优先级）来升级输出契约，满足C/O/V轴变更条件，且未触碰‘原题已要求输出完整方案’的禁令。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.77,
+        "risk_tags": [
+          "low_novelty",
+          "shared_core_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.objective.requires_solution为false，证明原题不要求输出方案；seed_schema.invariant.exchange_argument表明最优解由收益降序选取构成，具备明确的解对象与可定义规范的基础；rule_under_review.required_axis_changes要求C/O/V变更，结合helpers.canonical_order_pressure可迫使规范顺序介入贪心平局处理，避免退化为顺手回溯。",
+        "feedback": "规划时必须强制应用canonical_order_pressure与constraint_reweighting，确保规范性约束（如操作执行顺序或边选择优先级）实质性改变原贪心策略的状态转移或排序逻辑，严禁仅添加输出格式说明或依赖原题天然唯一解。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "seed_structure_mismatch",
+      "message": "种子题为全局求和最小化问题，其不可行性由全局路径权值和下界决定，无法自然压缩为可局部检查的冲突证据；强行构造局部阻碍会破坏原题贪心/单调性结构，且失败分支易退化为全局阈值说明。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要中 core_constraints.sum_constraint 要求全局叶子到根路径权值和 ≤ S，invariant.additivity 与 monotonicity 均依赖全局累加与双指针扫描。规则 required_seed_properties 明确要求“做不到的原因可以用局部证据表示”，但全局求和约束的不可行性无法映射为局部边/子树冲突，违反 helpers.obstruction_embedding 中“让冲突证据直接来自主约束中的不可兼容关系”的设计前提。",
+        "feedback": "当前种子题的全局优化性质与局部冲突证书规则存在结构性冲突。建议替换为具有天然局部互斥/容量瓶颈结构的题目（如二分图匹配、区间覆盖、局部度数限制等），或放弃局部检查要求改为全局不可行性证明。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "finite_decomposable_space",
+      "message": "种子题的解空间由每条边的操作次数向量唯一确定，天然有限且去重规则明确；核心约束的加性不变量支持按边单元拆分计数，满足计数化改造的准入条件。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.97,
+        "risk_tags": [
+          "paradigm_shift_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema中'operation_type'规定边权向下取整除以2，操作次数存在明确上界（权值归零），保证解空间有限；'additivity'不变量指出总减少量为各操作贡献的线性累加，支持按边拆分汇总；去重口径可直接定义为各边操作次数元组，无歧义。",
+        "feedback": "规划时需严格锁定计数目标，避免沿用原题贪心/双指针逻辑；建议明确取模要求，并设计基于子树贡献合并或背包思想的DP状态，确保计数责任主导求解过程。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation",
+      "message": "原题CF1399E2为确定性树形贪心优化问题，输入结构、边权与阈值S均固定，不存在规则要求的‘顺序不确定、资源波动或局部选择差异’等原生扰动来源。强行引入最坏情况保证需凭空构造扰动模型，直接违反规则声明中的forbidden_seed_properties（只能靠故事背景硬造对手）及redlines。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema的core_constraints明确操作代价c_i与阈值S为固定输入，invariant依赖exchange_argument与monotonicity等确定性贪心性质，未体现任何顺序依赖或资源波动。规则eligibility.required_seed_properties明确要求‘原题里本来就有顺序不确定、资源波动或局部选择差异’，当前种子题完全不满足该硬性前提。",
+        "feedback": "建议更换具有天然不确定性或动态决策顺序的种子题（如带随机到达的调度、边权动态变化的网络流等），或改用其他不依赖扰动模型的规则族。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "规划完整兑现了存在性转计数规则的专属语义合同，明确定义了计数对象、去重口径与有限性来源，三个 helper 均按要求落位至对应 schema 节点并驱动了 O/C/V 三轴联动变更。",
+      "details": {
+        "review_role": "你扮演一名计数规划审查官，重点确认规划是否真正把目标升级为对象明确的计数任务。",
+        "review_brief": "确认规划是否定义了计数对象、去重口径、有限性来源，以及需要时的取模约定。",
+        "evidence": "1. counting_unit_definition 已落实：core_constraints 新增 counting_object_and_dedup 明确计数对象为操作次数向量 X 且去重规则为逐维比对，objective 转为 count_solutions，invariant 补充组合独立性说明，未违反‘仅补模数’或‘不定义不同答案’的 redline。2. state_factorization 已落实：invariant 中 cost_type_separation_and_combinatorial_independence 明确将解空间按代价1/2池拆分，并通过乘法原理汇总，打破原贪心扫描状态结构，计数非后处理。3. counting_obligation_lock 已落实：objective 彻底替换为 count_solutions，core_constraints 锁定仅统计 C_min 方案，原判定目标未保留，计数责任主导求解。4. 硬门槛验证：去重口径见 counting_object_and_dedup 描述；有限性见 eligibility_reason 中‘边权经有限次向下取整除法后必收敛至0或1’；拆分汇总见 invariant 中代价池独立与组合乘法定理。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "rule_fulfilled",
+      "message": "题面完整兑现了计数目标转换与去重规则，明确定义了计数对象、等价判定口径及取模约定，且计数责任已完全替代原最优值目标。",
+      "details": {
+        "review_role": "你扮演一名计数题面审查官，重点确认题面是否完整兑现计数目标与去重规则。",
+        "review_brief": "确认题面是否明确写出统计对象、等价关系、不同答案的判定口径，以及必要的模数约定。",
+        "evidence": "题面描述明确写道：'在总预算消耗恰好等于最小可能值 C_min 的情况下，共有多少种不同的线路优化方案？两种方案被视为不同，当且仅当存在至少一条边，其被优化的次数不同。由于答案可能很大，请输出对 998244353 取模的结果。' 该表述直接落实了 counting_unit_definition（明确向量对象与逐维比对去重）与 counting_obligation_lock（主目标替换为计数），notes 部分进一步固化了判定口径，满足 hard_checks 中关于解差异定义、可数性/取模及计数单元说明的全部要求。"
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "score": 0.97,
+      "accepted": true,
+      "risk_tags": [
+        "paradigm_shift_risk"
+      ],
+      "status": "ok",
+      "reason_code": "plan_validation_failed",
+      "reason": "",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "社团仓库的线路优化",
+    "description": "校园网络中心负责维护连接总控中心（1号节点）与各社团活动室（叶子节点）的通信线路。网络拓扑是一棵以 1 为根的有根树，每条边有一个初始延迟值 w_i。为了提升通信质量，中心可以对任意边进行“线路优化”：每次优化会将该边的延迟值变为 floor(w_i / 2)，并消耗一定的专项预算。每条边 i 的单次优化预算消耗固定为 c_i ∈ {1, 2}。一条边可以被多次优化。\n网络中心希望所有社团活动室到总控中心的路径延迟总和不超过给定的阈值 S。在满足该条件的前提下，中心希望总预算消耗尽可能小。现在，请你计算：在总预算消耗恰好等于最小可能值 C_min 的情况下，共有多少种不同的线路优化方案？\n两种方案被视为不同，当且仅当存在至少一条边，其被优化的次数不同。由于答案可能很大，请输出对 998244353 取模的结果。",
+    "input_format": "第一行包含一个整数 t，表示测试用例的数量。\n每个测试用例的第一行包含两个整数 n 和 S，分别表示节点数和允许的最大路径延迟总和。\n接下来 n-1 行，每行包含四个整数 u, v, w, c，表示节点 u 和 v 之间有一条边，初始延迟为 w，单次优化预算消耗为 c。保证输入构成一棵以 1 为根的树，且 c ∈ {1, 2}。",
+    "output_format": "对于每个测试用例，输出一行一个整数，表示满足条件的方案数对 998244353 取模的结果。",
+    "constraints": [
+      "1 ≤ t ≤ 10^4",
+      "2 ≤ n ≤ 10^5，且所有测试用例的 n 之和不超过 2 × 10^5",
+      "1 ≤ S ≤ 10^15",
+      "1 ≤ w ≤ 10^9",
+      "c ∈ {1, 2}",
+      "时间限制：2.0 秒",
+      "空间限制：512 MB"
+    ],
+    "samples": [
+      {
+        "input": "1\n3 6\n1 2 4 1\n1 3 4 1",
+        "output": "2",
+        "explanation": "初始时叶子节点 2 和 3 到根的路径延迟和为 8。需减少至少 2。代价为 1 的收益池包含 [2,1,1] 和 [2,1,1]。最小代价为 1，只需执行 1 次优化。临界收益值为 2，共有 2 个可选，任选其一即可，故方案数为 2。"
+      },
+      {
+        "input": "1\n4 10\n1 2 8 1\n1 3 8 1\n2 4 8 2",
+        "output": "2",
+        "explanation": "初始路径和为 24，需减少至少 14。代价 1 池收益降序为 [4,4,2,2,1,1,1,1]，代价 2 池为 [4,2,1,1]。经扫描得最小总代价为 5（代价 1 选 3 次，代价 2 选 1 次）。代价 1 池临界值为 2，共 2 个需选 1 个，组合数为 2；代价 2 池临界值为 4，共 1 个需选 1 个，组合数为 1。总方案数 2×1=2。"
+      }
+    ],
+    "notes": "本题要求统计总代价恰好等于最小可行代价 C_min 的方案数。方案差异由各边优化次数向量唯一确定。计算组合数时请使用模 998244353 下的乘法逆元或预处理阶乘。若初始状态已满足路径和约束，则 C_min=0，方案数为 1。",
+    "status": "ok",
+    "error_reason": "",
+    "feedback": ""
+  }
+}

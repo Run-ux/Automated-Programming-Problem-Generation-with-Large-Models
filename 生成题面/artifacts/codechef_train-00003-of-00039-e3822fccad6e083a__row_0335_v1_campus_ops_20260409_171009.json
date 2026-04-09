@@ -1,0 +1,601 @@
+{
+  "problem_id": "campus_ops_counting_001",
+  "source_problem_ids": [
+    "codechef_train-00003-of-00039-e3822fccad6e083a__row_0335"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "C",
+      "O",
+      "V"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "目标从最值/判定转为计数(O)；约束从单一阈值判定转为累计代价的分布统计(C)；值空间/不变量从连续区间存在性转为方案数的组合分解与模运算(V)。",
+    "summary": "核心从边界比较转为组合计数DP，状态结构从O(1)判定转为O(N^2)计数，新增去重与模运算承诺。",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.3798,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.3798,
+    "axis_scores": {
+      "I": 0.1528,
+      "C": 0.2914,
+      "O": 0.6741,
+      "V": 0.4283
+    },
+    "components": {
+      "input_tree_distance": 0.1528,
+      "constraint_match_distance": 0.2914,
+      "objective_type_distance": 0.6638,
+      "objective_text_distance": 0.6895,
+      "invariant_match_distance": 0.4283
+    }
+  },
+  "changed_axes_realized": [
+    "C",
+    "O",
+    "V"
+  ],
+  "objective": {
+    "type": "count_modulo",
+    "description": "计算满足总线长预算M的合法入驻排列总数，结果对给定质数取模。",
+    "target": "valid_permutation_count",
+    "requires_solution": true
+  },
+  "rule_selection_reason": "该规则将原题的边界比较型最优化彻底转化为组合计数问题，算法范式从O(N)数学推导跃迁至状态分解与组合聚合，创新跨度最大。相比canonical_witness可能退化为贪心构造，以及minimum_guarantee_under_perturbation仅会复现已知的区间上界R_N，计数规则能充分利用排列解空间的有限性与明确等价关系，强制重构主状态转移逻辑，避免浅层修改。；创新度判断：将核心义务从‘计算连续区间端点’拉离至‘定义计数单元、处理排列等价类与约束汇总’。原题依赖的‘值域连续性’捷径被打破，新题必须显式刻画排列生成过程中的代价分布，使输出责任从单一数值变为带模数的组合统计量。；难度判断：在主求解责任上，要求算法从直接公式计算升级为状态因子分解与动态规划/生成函数设计。求解者需在状态转移中同时维护排列合法性与线长累加分布，承担计数正确性与去重逻辑的双重证明负担，复杂度与思维深度显著提升。；风险判断：主要风险在于计数模型若设计不当可能导致状态爆炸或组合恒等式过于晦涩。但风险可控：通过限制N≤1000并引导使用O(N^2)的插入型DP或前缀和优化，可确保算法在竞赛时限内稳定落地；同时明确‘按插入位置或代价增量拆分计数单元’，避免退化为暴力枚举。",
+  "instantiated_schema_snapshot": {
+    "problem_id": "campus_ops_counting_001",
+    "source": "codechef_train-00003-of-00039-e3822fccad6e083a__row_0335",
+    "input_structure": {
+      "type": "tuple",
+      "length": {
+        "min": 3,
+        "max": 3
+      },
+      "value_range": {
+        "min": 1,
+        "max": 1000000007
+      },
+      "properties": {
+        "multiple_test_cases": true,
+        "modulo_required": true
+      }
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "permutation_sequence_constraint",
+          "description": "N个社团摊位必须按1~N的某种排列顺序依次入驻，每次入驻选择当前空位中距离最近已有摊位或边界电源塔的位置。",
+          "formal": "P \\in S_N",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "budget_sum_constraint",
+          "description": "按入驻顺序累加每次拉线的长度，总长度不得超过预算M。计数对象为所有满足该约束的不同排列P。",
+          "formal": "\\sum_{k=1}^{N} \\text{cost}(P_k) \\le M",
+          "source_sections": [
+            "description",
+            "output"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "count_modulo",
+      "description": "计算满足总线长预算M的合法入驻排列总数，结果对给定质数取模。",
+      "target": "valid_permutation_count",
+      "requires_solution": true
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "gap_distribution_symmetry",
+          "description": "在已放置k个摊位的任意合法历史下，剩余空位形成的k+1个间隙的长度分布特征仅依赖于k与总长度N，与具体历史排列无关。该对称性保证计数状态可压缩为(已放置数, 累计代价)，转移系数仅由k决定，从而支持多项式时间DP汇总。",
+          "properties": {
+            "state_compressible_to_k_and_cost": true,
+            "transition_coefficients_history_independent": true,
+            "modulo_arithmetic_valid": true
+          },
+          "evidence_source": "combinatorial_symmetry"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Hard"
+  },
+  "applied_rule": "existence_to_counting",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {
+    "seed_solver_core": "基于值域连续性不变量，直接计算最小/最大代价并与M比较，O(1)或O(N)判定。",
+    "reusable_subroutines": "单次放置代价的计算逻辑、边界电源塔的初始化处理、多组测试用例的输入解析框架。",
+    "new_solver_core": "基于间隙对称性的动态规划计数。状态为dp[k][c]表示放置k个摊位累计代价为c的方案数，转移时枚举当前步产生的代价d，乘以该步可选的间隙数量系数，进行模加汇总。",
+    "new_proof_obligation": "必须严格证明“任意历史下第k步的间隙代价分布仅与k有关”这一组合对称性，并证明DP转移系数不会因历史路径不同而产生重复计数或遗漏，同时需证明模运算下的线性叠加保持计数正确性。",
+    "why_direct_reuse_fails": "原解法仅依赖区间端点做边界比较，完全丢弃了中间代价的分布信息；直接套用无法回答“有多少种排列落在阈值内”，必须重建状态以追踪代价分布并汇总方案数。"
+  },
+  "shared_core_summary": "单种子升级模式，核心围绕排列代价分布的组合计数展开，状态压缩与转移系数推导构成统一求解主线。",
+  "shared_core_anchors": {
+    "shared_state": "dp[k][c] 表示已放置k个摊位且累计代价为c的方案数",
+    "shared_transition": "dp[k][c] = sum(dp[k-1][c-d] * coeff(k, d)) mod P",
+    "shared_decision_basis": "间隙分布对称性保证转移系数仅依赖k，与历史路径无关"
+  },
+  "seed_contributions": {
+    "seed_a": "原种子题的区间连续性证明是理解代价分布边界的基础，为本题DP状态压缩提供理论起点。",
+    "seed_b": "N/A (单种子模式)"
+  },
+  "fusion_ablation": {
+    "without_seed_a": "失去代价分布的边界认知与间隙对称性直觉，无法构建正确的DP状态与转移系数，退化为暴力枚举。",
+    "without_seed_b": "N/A (单种子模式，无第二种子)"
+  },
+  "applied_helpers": [
+    {
+      "id": "counting_unit_definition",
+      "selection_reason": "明确计数对象为排列序列，定义等价关系为序列不同即不同，目标改为模计数。",
+      "affected_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "将",
+        "目",
+        "标",
+        "字",
+        "段",
+        "替",
+        "换",
+        "为",
+        "c",
+        "o",
+        "u",
+        "n",
+        "t",
+        "_",
+        "m",
+        "o",
+        "d",
+        "u",
+        "l",
+        "o",
+        "，",
+        "约",
+        "束",
+        "中",
+        "明",
+        "确",
+        "计",
+        "数",
+        "单",
+        "元",
+        "与",
+        "去",
+        "重",
+        "口",
+        "径",
+        "，",
+        "不",
+        "变",
+        "量",
+        "补",
+        "充",
+        "模",
+        "运",
+        "算",
+        "有",
+        "效",
+        "性",
+        "。"
+      ],
+      "innovation_reason": "将模糊的可行性转化为精确的组合计数口径，消除原判定题的单一答案局限。",
+      "difficulty_reason": "要求处理排列去重与模运算下的累加正确性，增加组合推导负担。"
+    },
+    {
+      "id": "state_factorization",
+      "selection_reason": "将全排列空间分解为按步放置的间隙状态，利用对称性压缩状态维度。",
+      "affected_axes": [
+        "C",
+        "V"
+      ],
+      "schema_changes": [
+        "约",
+        "束",
+        "中",
+        "引",
+        "入",
+        "间",
+        "隙",
+        "分",
+        "布",
+        "描",
+        "述",
+        "，",
+        "不",
+        "变",
+        "量",
+        "承",
+        "诺",
+        "间",
+        "隙",
+        "分",
+        "布",
+        "的",
+        "对",
+        "称",
+        "性",
+        "与",
+        "状",
+        "态",
+        "可",
+        "压",
+        "缩",
+        "性",
+        "。"
+      ],
+      "innovation_reason": "使计数从主状态组织方式中自然导出，避免暴力枚举，构建可汇总的计数单元。",
+      "difficulty_reason": "需证明分解后的子状态可独立汇总，且转移系数推导复杂，要求较高的组合数学功底。"
+    },
+    {
+      "id": "counting_obligation_lock",
+      "selection_reason": "移除原最值/判定目标，将计数责任锁入DP主循环。",
+      "affected_axes": [
+        "C",
+        "O"
+      ],
+      "schema_changes": [
+        "目",
+        "标",
+        "字",
+        "段",
+        "彻",
+        "底",
+        "替",
+        "换",
+        "为",
+        "计",
+        "数",
+        "，",
+        "约",
+        "束",
+        "中",
+        "强",
+        "调",
+        "累",
+        "计",
+        "代",
+        "价",
+        "的",
+        "统",
+        "计",
+        "义",
+        "务",
+        "，",
+        "移",
+        "除",
+        "原",
+        "判",
+        "定",
+        "分",
+        "支",
+        "。"
+      ],
+      "innovation_reason": "算法设计完全围绕方案数累积展开，计数成为主导状态转移的唯一驱动力。",
+      "difficulty_reason": "要求同时保证计数正确性与去重正确性，不能依赖原判定剪枝，必须完整遍历状态空间。"
+    }
+  ],
+  "planning_status": "ok",
+  "planning_error_reason": "",
+  "planning_feedback": "",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": true,
+      "score": 0.87,
+      "reason_code": "meets_seed_requirements_and_axis_changes",
+      "selection_reason": "种子题约束中明确定义了排列P作为底层解对象，且原题仅要求输出数值（requires_solution: false），满足规则对‘明确解对象’与‘非完整方案输出’的要求；将目标从区间判定升级为输出字典序最小合法排列，必然驱动C/O/V三轴重构，符合canonical_witness的升级路径。",
+      "risk_tags": [
+        "algorithmic_paradigm_shift",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.core_constraints明确定义'P \\in S_N'为放置顺序；seed_schema.objective指出'requires_solution: false'且目标为数值最小化；规则eligibility要求'原题本身有明确的解对象'且'原题本来就要求输出完整方案'为禁止项，本种子完全契合。",
+        "feedback": "规划阶段需重点设计canonical_order_pressure helper，确保字典序要求真正融入状态转移或合法性判定，避免退化为先判定可行性再贪心构造的后处理逻辑；同时需明确新题的验证契约，防止区间不变量被完全废弃导致题目失去原题数学美感。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 2
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "semantic_mismatch",
+      "selection_reason": "种子题的无解情形仅依赖于全局资源阈值比较（M < L_N），缺乏可局部验证的组合冲突结构。强制要求输出局部冲突证据将退化为输出数值边界或抽象说明，违反规则红线“不能只写无解原因说明”及“不能让失败输出退化成自然语言解释”。",
+      "risk_tags": [
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要invariant明确指出：'对于固定的 N,所有合法排列对应的总用线长度集合恰好构成连续整数区间 [L_N, R_N]...仅通过比较给定线长 M 与预计算的区间端点即可直接确定最小剩余长度。' 规则要求'做不到的原因可以用局部证据表示'且'冲突证据可以从输出直接检查'，但本题失败语义仅为标量不等式 M < L_N，无法构造具有局部拓扑/组合结构的阻碍证书。",
+        "feedback": "当前种子题的不可行性为纯数值阈值判定，不具备构造局部冲突证据的组合基础。建议替换为具有显式局部矛盾结构（如Hall条件违反、区间重叠冲突、图论奇环等）的种子题，或将本规则降级为全局边界证书输出。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": true,
+      "score": 0.87,
+      "reason_code": "meets_counting_criteria",
+      "selection_reason": "种子题解空间为有限排列集合S_N，去重规则天然明确（不同排列即视为不同解），且可通过将目标从最小化剩余长度改为统计满足线长约束的排列数量，直接满足规则对有限性、去重口径及O/C/V轴变更的要求。",
+      "risk_tags": [
+        "shared_core_risk",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema中permutation_constraint明确解空间为P∈S_N（有限），sum_constraint提供明确的计数筛选条件total_wire(P)≤M；规则required_seed_properties要求'解空间有限'与'不同解之间的等价关系能说清楚'，本题排列天然互异，满足准入条件。",
+        "feedback": "规划阶段必须严格调用counting_unit_definition与state_factorization helper，明确计数单元（如基于插入顺序或DP状态的前缀分解），避免直接套用原value_contiguity不变量导致计数退化为区间长度计算。需在objective中彻底替换原优化目标，并补充取模约定与去重口径，确保计数责任主导状态转移。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": true,
+      "score": 0.82,
+      "reason_code": "native_perturbation_aligned",
+      "selection_reason": "原题核心约束明确包含排列顺序的不确定性（P∈S_N），且不变量已证明结果构成连续区间[L_N, R_N]，天然具备最坏情况分析基础。规则要求的原生扰动放大可直接映射为对排列顺序的对抗性扰动或受限顺序下的保底资源计算，完全满足required_seed_properties，且未违反全局红线。",
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "eligible",
+        "evidence": "core_constraints.permutation_constraint 明确 P∈S_N 提供原生顺序扰动源；invariant.value_contiguity 指出所有合法排列结果构成连续区间 [L_N, R_N]，证明原题语义已完整覆盖全序扰动下的极值分布，满足规则对“最坏情况落回原题语义”的硬性要求。",
+        "feedback": "规划阶段需严格定义扰动模型的具体边界（如部分序约束、相邻交换扰动或k-偏离排列），防止新题退化为直接输出区间右端点R_N的平凡问题。强化不变量必须与扰动模型深度绑定，确保目标函数与约束结构发生实质性重构，避免仅在外层套用二分或阈值检查。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 3
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "meets_seed_requirements_and_axis_changes",
+      "message": "种子题约束中明确定义了排列P作为底层解对象，且原题仅要求输出数值（requires_solution: false），满足规则对‘明确解对象’与‘非完整方案输出’的要求；将目标从区间判定升级为输出字典序最小合法排列，必然驱动C/O/V三轴重构，符合canonical_witness的升级路径。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.87,
+        "risk_tags": [
+          "algorithmic_paradigm_shift",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.core_constraints明确定义'P \\in S_N'为放置顺序；seed_schema.objective指出'requires_solution: false'且目标为数值最小化；规则eligibility要求'原题本身有明确的解对象'且'原题本来就要求输出完整方案'为禁止项，本种子完全契合。",
+        "feedback": "规划阶段需重点设计canonical_order_pressure helper，确保字典序要求真正融入状态转移或合法性判定，避免退化为先判定可行性再贪心构造的后处理逻辑；同时需明确新题的验证契约，防止区间不变量被完全废弃导致题目失去原题数学美感。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "semantic_mismatch",
+      "message": "种子题的无解情形仅依赖于全局资源阈值比较（M < L_N），缺乏可局部验证的组合冲突结构。强制要求输出局部冲突证据将退化为输出数值边界或抽象说明，违反规则红线“不能只写无解原因说明”及“不能让失败输出退化成自然语言解释”。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要invariant明确指出：'对于固定的 N,所有合法排列对应的总用线长度集合恰好构成连续整数区间 [L_N, R_N]...仅通过比较给定线长 M 与预计算的区间端点即可直接确定最小剩余长度。' 规则要求'做不到的原因可以用局部证据表示'且'冲突证据可以从输出直接检查'，但本题失败语义仅为标量不等式 M < L_N，无法构造具有局部拓扑/组合结构的阻碍证书。",
+        "feedback": "当前种子题的不可行性为纯数值阈值判定，不具备构造局部冲突证据的组合基础。建议替换为具有显式局部矛盾结构（如Hall条件违反、区间重叠冲突、图论奇环等）的种子题，或将本规则降级为全局边界证书输出。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "meets_counting_criteria",
+      "message": "种子题解空间为有限排列集合S_N，去重规则天然明确（不同排列即视为不同解），且可通过将目标从最小化剩余长度改为统计满足线长约束的排列数量，直接满足规则对有限性、去重口径及O/C/V轴变更的要求。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.87,
+        "risk_tags": [
+          "shared_core_risk",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema中permutation_constraint明确解空间为P∈S_N（有限），sum_constraint提供明确的计数筛选条件total_wire(P)≤M；规则required_seed_properties要求'解空间有限'与'不同解之间的等价关系能说清楚'，本题排列天然互异，满足准入条件。",
+        "feedback": "规划阶段必须严格调用counting_unit_definition与state_factorization helper，明确计数单元（如基于插入顺序或DP状态的前缀分解），避免直接套用原value_contiguity不变量导致计数退化为区间长度计算。需在objective中彻底替换原优化目标，并补充取模约定与去重口径，确保计数责任主导状态转移。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "pass",
+      "reason_code": "native_perturbation_aligned",
+      "message": "原题核心约束明确包含排列顺序的不确定性（P∈S_N），且不变量已证明结果构成连续区间[L_N, R_N]，天然具备最坏情况分析基础。规则要求的原生扰动放大可直接映射为对排列顺序的对抗性扰动或受限顺序下的保底资源计算，完全满足required_seed_properties，且未违反全局红线。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.82,
+        "risk_tags": [
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "eligible",
+        "evidence": "core_constraints.permutation_constraint 明确 P∈S_N 提供原生顺序扰动源；invariant.value_contiguity 指出所有合法排列结果构成连续区间 [L_N, R_N]，证明原题语义已完整覆盖全序扰动下的极值分布，满足规则对“最坏情况落回原题语义”的硬性要求。",
+        "feedback": "规划阶段需严格定义扰动模型的具体边界（如部分序约束、相邻交换扰动或k-偏离排列），防止新题退化为直接输出区间右端点R_N的平凡问题。强化不变量必须与扰动模型深度绑定，确保目标函数与约束结构发生实质性重构，避免仅在外层套用二分或阈值检查。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "规划完整兑现了existence_to_counting规则合同，明确定义了计数对象（不同排列P）、去重口径、取模约定与状态拆分汇总逻辑，三个helper均按要求落位至对应schema字段，且彻底替换了原判定/最值目标。",
+      "details": {
+        "review_role": "你扮演一名计数规划审查官，重点确认规划是否真正把目标升级为对象明确的计数任务。",
+        "review_brief": "确认规划是否定义了计数对象、去重口径、有限性来源，以及需要时的取模约定。",
+        "evidence": "1. counting_unit_definition: candidate_schema.core_constraints.budget_sum_constraint明确'计数对象为所有满足该约束的不同排列P'，objective.type为'count_modulo'，满足去重与取模要求，未违反'不能只补模数/不定义不同答案'的redline。2. state_factorization: candidate_schema.invariant.gap_distribution_symmetry说明'计数状态可压缩为(已放置数, 累计代价)...支持多项式时间DP汇总'，planner_payload.algorithmic_delta_claim.new_solver_core给出dp[k][c]转移公式，实现状态分解与汇总，未保持原O(1)判定结构。3. counting_obligation_lock: objective彻底替换为count_modulo，planner_payload.anti_shallow_rationale强调'原O(1)判定被替换为O(N^2)的组合DP...计数成为主导状态转移的唯一驱动力'，未保留原判定分支或放入备注。所有hard checks（不同解定义、可数/取模、拆分汇总）均在payload与schema中明确体现。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "题面完整兑现计数目标与去重规则，明确定义统计对象为入驻排列序列，在备注中清晰声明排列顺序不同即算不同方案的去重口径，并将取模约定与计数义务锁定为主求解目标，符合所有硬性检查与helper语义承诺。",
+      "details": {
+        "review_role": "你扮演一名计数题面审查官，重点确认题面是否完整兑现计数目标与去重规则。",
+        "review_brief": "确认题面是否明确写出统计对象、等价关系、不同答案的判定口径，以及必要的模数约定。",
+        "evidence": "题面描述明确提问“有多少种不同的社团入驻顺序（即 1 到 N 的排列）”，Notes中补充“排列顺序不同即视为不同方案（例如 [1,2] 与 [2,1] 算作两种）”落实了counting_unit_definition；Output Format与Constraints中明确“结果对给定质数 P 取模”满足可数性与模数约定；主目标完全替换为计数，无原判定残留，符合counting_obligation_lock；过程描述“依次入驻...统计总长度”自然支撑了state_factorization所需的按步拆分与汇总逻辑。"
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "score": 0.87,
+      "accepted": true,
+      "risk_tags": [
+        "shared_core_risk",
+        "low_novelty"
+      ],
+      "status": "ok",
+      "reason_code": "plan_validation_failed",
+      "reason": "",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "社团招新布线",
+    "description": "新学期伊始，学校主干道旁规划了一排编号为 1 到 N 的连续摊位，用于各社团招新。为了保障用电安全，走廊两端（位置 0 和位置 N+1）已预先架设了电源塔。各社团将按某种顺序依次入驻摊位。每次入驻时，该社团必须从当前尚未使用的空位中任选一个，并拉设一条电线连接到距离该空位最近的已通电位置（可以是两端的电源塔，也可以是已经入驻并通电的社团摊位）。电线的长度即为两个位置编号之差的绝对值。入驻完成后，该摊位自动通电，后续社团可将其作为连接点。所有 N 个社团入驻完毕后，统计拉设电线的总长度。现在，学校后勤处希望知道：有多少种不同的社团入驻顺序（即 1 到 N 的排列），能够使得最终拉设的电线总长度不超过给定的预算 M？由于方案数可能极大，请输出结果对给定质数 P 取模后的值。",
+    "input_format": "第一行包含一个正整数 T，表示测试用例的数量。\n接下来 T 行，每行包含三个正整数 N, M, P，分别表示摊位数量、预算上限以及取模用的质数。",
+    "output_format": "对于每组测试用例，输出一行一个整数，表示满足总长度不超过 M 的入驻排列总数对 P 取模的结果。",
+    "constraints": [
+      "1 ≤ T ≤ 10",
+      "1 ≤ N ≤ 100",
+      "1 ≤ M ≤ 5000",
+      "10^8 ≤ P ≤ 10^9+7，且 P 为质数",
+      "时间限制：1.0 秒",
+      "空间限制：256 MB"
+    ],
+    "samples": [
+      {
+        "input": "2\n1 1 1000000007\n2 2 1000000007",
+        "output": "1\n2",
+        "explanation": "第一组：N=1，仅有一个摊位（位置1）。入驻时距离最近电源塔（0或2）均为1，总长度必为1。预算M=1，满足条件的排列只有[1]，共1种。\n第二组：N=2，摊位为1和2。排列[1,2]：先入驻1，连0长度1；再入驻2，连1长度1；总长2。排列[2,1]：先入驻2，连3长度1；再入驻1，连2长度1；总长2。两种排列总长均为2，均不超过预算M=2，故答案为2。"
+      },
+      {
+        "input": "1\n3 3 1000000007",
+        "output": "2",
+        "explanation": "N=3时，总长度可能为3或4。经枚举，仅有排列[1,2,3]和[3,2,1]的总长度恰好为3，其余4种排列总长度均为4。预算M=3，故满足条件的排列共2种。"
+      }
+    ],
+    "notes": "本题要求精确计数并对输入的质数 P 取模。若不存在任何排列满足总长度约束，请输出 0。排列顺序不同即视为不同方案（例如 [1,2] 与 [2,1] 算作两种）。",
+    "status": "ok",
+    "error_reason": "",
+    "feedback": ""
+  }
+}

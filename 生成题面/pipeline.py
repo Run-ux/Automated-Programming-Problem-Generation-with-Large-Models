@@ -129,16 +129,8 @@ class GenerationPipeline:
                         "variant_records": [],
                     }
                 )
-                self._write_batch_summary(
-                    stem=batch_stem,
-                    started_at=batch_started_at,
-                    finished_at=datetime.now(),
-                    source_dir=batch_source_dir,
-                    target_problem_ids=target_problem_ids,
-                    batch_items=batch_items,
-                )
                 self._emit_progress(f"[batch] {problem_id} 失败：{exc}")
-                raise
+                continue
 
             records.extend(problem_records)
             batch_items.append(
@@ -534,6 +526,7 @@ class GenerationPipeline:
             "task_order": list(target_problem_ids),
             "task_count": len(target_problem_ids),
             "completed_count": sum(1 for item in batch_items if item.get("status") == "completed"),
+            "failed_count": sum(1 for item in batch_items if item.get("status") == "failed"),
             "status": "failed" if failed_item else "completed",
             "failed_problem_id": failed_item.get("problem_id", "") if failed_item else "",
             "failed_reason": failed_item.get("error_reason", "") if failed_item else "",
@@ -585,6 +578,7 @@ class GenerationPipeline:
             f"- source_dir: {summary_payload.get('source_dir', '')}",
             f"- task_count: {summary_payload.get('task_count', 0)}",
             f"- completed_count: {summary_payload.get('completed_count', 0)}",
+            f"- failed_count: {summary_payload.get('failed_count', 0)}",
             f"- status: {summary_payload.get('status', '')}",
             f"- started_at: {summary_payload.get('started_at', '')}",
             f"- finished_at: {summary_payload.get('finished_at', '')}",

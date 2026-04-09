@@ -1,0 +1,455 @@
+{
+  "problem_id": "CF1294D",
+  "source_problem_ids": [
+    "CF1294D"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "规划结果未达到硬门槛，预测距离=0.3210，落地轴=C, O, V。",
+    "summary": "选中的规则未能稳定落地",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.0,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "lexical_fallback",
+    "total": 0.0,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.0,
+      "O": 0.0,
+      "V": 0.0
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.0,
+      "objective_type_distance": 0.0,
+      "objective_text_distance": 0.0,
+      "invariant_match_distance": 0.0
+    }
+  },
+  "changed_axes_realized": [],
+  "objective": {
+    "type": "maximize_value",
+    "description": "Maximize the minimum excluded non-negative integer of the array after applying allowed additive operations.",
+    "target": "mex",
+    "requires_solution": false
+  },
+  "rule_selection_reason": "canonical_witness:原题仅要求输出MEX数值（requires_solution: false），解对象明确但未要求输出；同余类划分与单调指针提供了定义规范顺序的结构基础，可通过引入字典序或分配优先级将目标从求值转为规范构造，满足C/O/V轴变更与输出契约要求。",
+  "instantiated_schema_snapshot": {
+    "problem_id": "CF1294D",
+    "source": "codeforces",
+    "input_structure": {
+      "type": "composite",
+      "length": {
+        "min": 1,
+        "max": 400000
+      },
+      "value_range": {
+        "min": 0,
+        "max": 1000000000
+      },
+      "properties": {
+        "ordered": true
+      },
+      "components": [
+        {
+          "role": "parameters",
+          "role_description": "query count and operation step value",
+          "type": "tuple",
+          "length": {
+            "min": 2,
+            "max": 2
+          },
+          "value_range": {
+            "min": 1,
+            "max": 400000
+          },
+          "properties": {}
+        },
+        {
+          "role": "query_stream",
+          "role_description": "sequence of integers appended in each query",
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 400000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      ]
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "divisibility",
+          "description": "每次操作只能对数组元素增加或减少 x,因此元素变换后的值必须与原值模 x 同余,即每个元素被严格限制在其初始值对应的模 x 剩余类中。",
+          "formal": "a_i' ≡ a_i (mod x)",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "range_bound",
+          "description": "对元素执行加减 x 操作时,变换后的值必须保持为非负整数,即不允许元素值小于 0。",
+          "formal": "a_i' ≥ 0",
+          "source_sections": [
+            "description"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "maximize_value",
+      "description": "Maximize the minimum excluded non-negative integer of the array after applying allowed additive operations.",
+      "target": "mex",
+      "requires_solution": false
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "monotonicity",
+          "description": "当前可达到的最大 MEX 值随查询推进单调不减。算法通过单向递增指针维护已连续覆盖的非负整数前缀边界,已填充的数值不会因后续操作被撤销或回退。",
+          "properties": {},
+          "evidence_source": "solution_code"
+        },
+        {
+          "name": "equivalence_class",
+          "description": "加减固定值 x 的操作将全体非负整数划分为 x 个同余等价类。算法仅按余数维护各类中可用元素的数量,不同余数类之间的资源分配相互独立,状态转移仅依赖目标位置对应的同余类余量。",
+          "properties": {},
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Medium"
+  },
+  "applied_rule": "canonical_witness",
+  "rejected_candidates": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "status": "ok",
+      "reason_code": "distance_gate_failed",
+      "reason": "规划结果未达到硬门槛，预测距离=0.3210，落地轴=C, O, V。"
+    }
+  ],
+  "algorithmic_delta_claim": {},
+  "shared_core_summary": "",
+  "shared_core_anchors": {},
+  "seed_contributions": {},
+  "fusion_ablation": {},
+  "applied_helpers": [],
+  "planning_status": "difference_insufficient",
+  "planning_error_reason": "规划结果未达到硬门槛，预测距离=0.3210，落地轴=C, O, V。",
+  "planning_feedback": "已尝试 1 条候选规则，均未通过规划校验。",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": true,
+      "score": 0.77,
+      "reason_code": "canonical_upgrade_feasible",
+      "selection_reason": "原题仅要求输出MEX数值（requires_solution: false），解对象明确但未要求输出；同余类划分与单调指针提供了定义规范顺序的结构基础，可通过引入字典序或分配优先级将目标从求值转为规范构造，满足C/O/V轴变更与输出契约要求。",
+      "risk_tags": [
+        "shared_core_risk",
+        "trivial_backtrack_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "schema中objective.requires_solution为false，证明原题不要求输出方案；invariant.equivalence_class表明解空间按模x独立划分，具备定义规范分配顺序的条件；规则required_seed_properties要求'方案有自然顺序或能定义清楚的规范'，本种子题的贪心填充过程天然支持该定义。",
+        "feedback": "规划时需严格定义规范性（如结果数组字典序最小或同余类内严格升序分配），避免仅要求输出任意合法构造导致退化为'顺手回溯'；必须在核心约束中显式绑定规范顺序与合法性校验，确保验证责任真正进入主状态演化。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "seed_property_mismatch",
+      "selection_reason": "种子题为纯在线查询最优化问题，原题始终可解且无不可行分支，不满足规则要求的“做不到的原因可用局部证据表示”前提。强行引入失败语义需彻底重构目标与约束，违背保守审查原则。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "forced_failure_branch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "schema中objective.type为maximize_value且requires_solution为false，原题仅要求输出最大MEX值，不存在构造失败或无解情形；而规则eligibility.required_seed_properties明确要求种子需具备可局部化的失败原因，当前schema未提供该特性支撑。",
+        "feedback": "建议替换为具有明确可行性边界或硬性容量约束的构造/判定类种子题（如精确覆盖、二分图匹配、资源分配等），或先通过其他规则将本题转化为判定型问题后再引入证书输出机制。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "forbidden_seed_property_violation",
+      "selection_reason": "种子题的操作空间（元素可无限次加减x且仅受非负限制）天然无限，直接违反规则声明中的forbidden_seed_properties['解空间天然无限']。在缺乏自然上界或等价类截断机制的情况下，无法定义有限且明确的计数对象与去重规则。",
+      "risk_tags": [
+        "infinite_solution_space",
+        "deduplication_undefined"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "规则eligibility明确禁止'解空间天然无限'。原题core_constraints仅规定'a_i' ≡ a_i (mod x)'与'a_i' ≥ 0'，未提供值域上界，导致满足MEX最大化的合法构造方案有无穷多种。同时，invariant中的equivalence_class仅服务于贪心余量维护，未提供用于计数的离散等价划分与去重口径，无法满足validation_contract中'必须说明什么样的解算不同'与'必须说明为什么可数'的硬性检查。",
+        "feedback": "当前种子题不适用于existence_to_counting规则。若需推进，需更换具有天然有限解空间（如排列组合、有限状态图、固定步数路径）的种子题，或在本规则中显式引入强截断约束（如限定最终值域范围/操作步数），否则无法满足计数化对有限性与去重口径的硬性要求。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "no_native_perturbation_source",
+      "selection_reason": "原题CF1294D为确定性在线查询流问题，缺乏规则要求的‘顺序不确定、资源波动或局部选择差异’等原生扰动来源。强行引入扰动将直接违反‘扰动模型必须来自原题本身’及‘不能凭背景硬造对手’的硬性约束。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中input_structure为确定的query_stream，core_constraints为固定的模x同余与非负限制，objective为确定性最大化MEX。规则eligibility明确要求‘原题里本来就有顺序不确定、资源波动或局部选择差异’，且helpers与validation_contract强调‘扰动来源必须回到原题语义’、‘扰动模型必须来自原题本身’。原题无任何不确定性或波动机制，无法满足准入前提。",
+        "feedback": "该规则适用于本身具备动态波动、随机输入或对抗性调度机制的种子题。CF1294D的核心在于贪心维护MEX与同余类计数，改造为保底优化将破坏原题确定性结构，极易触发‘外套二分’或‘硬加阈值’的失败模板。建议更换具有天然扰动特征的种子，或改用其他不依赖扰动放大的规则族。"
+      },
+      "selected_for_attempt": false
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "canonical_upgrade_feasible",
+      "message": "原题仅要求输出MEX数值（requires_solution: false），解对象明确但未要求输出；同余类划分与单调指针提供了定义规范顺序的结构基础，可通过引入字典序或分配优先级将目标从求值转为规范构造，满足C/O/V轴变更与输出契约要求。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.77,
+        "risk_tags": [
+          "shared_core_risk",
+          "trivial_backtrack_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "schema中objective.requires_solution为false，证明原题不要求输出方案；invariant.equivalence_class表明解空间按模x独立划分，具备定义规范分配顺序的条件；规则required_seed_properties要求'方案有自然顺序或能定义清楚的规范'，本种子题的贪心填充过程天然支持该定义。",
+        "feedback": "规划时需严格定义规范性（如结果数组字典序最小或同余类内严格升序分配），避免仅要求输出任意合法构造导致退化为'顺手回溯'；必须在核心约束中显式绑定规范顺序与合法性校验，确保验证责任真正进入主状态演化。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "seed_property_mismatch",
+      "message": "种子题为纯在线查询最优化问题，原题始终可解且无不可行分支，不满足规则要求的“做不到的原因可用局部证据表示”前提。强行引入失败语义需彻底重构目标与约束，违背保守审查原则。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "forced_failure_branch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "schema中objective.type为maximize_value且requires_solution为false，原题仅要求输出最大MEX值，不存在构造失败或无解情形；而规则eligibility.required_seed_properties明确要求种子需具备可局部化的失败原因，当前schema未提供该特性支撑。",
+        "feedback": "建议替换为具有明确可行性边界或硬性容量约束的构造/判定类种子题（如精确覆盖、二分图匹配、资源分配等），或先通过其他规则将本题转化为判定型问题后再引入证书输出机制。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "forbidden_seed_property_violation",
+      "message": "种子题的操作空间（元素可无限次加减x且仅受非负限制）天然无限，直接违反规则声明中的forbidden_seed_properties['解空间天然无限']。在缺乏自然上界或等价类截断机制的情况下，无法定义有限且明确的计数对象与去重规则。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.2,
+        "risk_tags": [
+          "infinite_solution_space",
+          "deduplication_undefined"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "规则eligibility明确禁止'解空间天然无限'。原题core_constraints仅规定'a_i' ≡ a_i (mod x)'与'a_i' ≥ 0'，未提供值域上界，导致满足MEX最大化的合法构造方案有无穷多种。同时，invariant中的equivalence_class仅服务于贪心余量维护，未提供用于计数的离散等价划分与去重口径，无法满足validation_contract中'必须说明什么样的解算不同'与'必须说明为什么可数'的硬性检查。",
+        "feedback": "当前种子题不适用于existence_to_counting规则。若需推进，需更换具有天然有限解空间（如排列组合、有限状态图、固定步数路径）的种子题，或在本规则中显式引入强截断约束（如限定最终值域范围/操作步数），否则无法满足计数化对有限性与去重口径的硬性要求。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "no_native_perturbation_source",
+      "message": "原题CF1294D为确定性在线查询流问题，缺乏规则要求的‘顺序不确定、资源波动或局部选择差异’等原生扰动来源。强行引入扰动将直接违反‘扰动模型必须来自原题本身’及‘不能凭背景硬造对手’的硬性约束。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中input_structure为确定的query_stream，core_constraints为固定的模x同余与非负限制，objective为确定性最大化MEX。规则eligibility明确要求‘原题里本来就有顺序不确定、资源波动或局部选择差异’，且helpers与validation_contract强调‘扰动来源必须回到原题语义’、‘扰动模型必须来自原题本身’。原题无任何不确定性或波动机制，无法满足准入前提。",
+        "feedback": "该规则适用于本身具备动态波动、随机输入或对抗性调度机制的种子题。CF1294D的核心在于贪心维护MEX与同余类计数，改造为保底优化将破坏原题确定性结构，极易触发‘外套二分’或‘硬加阈值’的失败模板。建议更换具有天然扰动特征的种子，或改用其他不依赖扰动放大的规则族。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "distance_gate_failed",
+      "message": "规划结果未达到差异度或变化轴硬门槛。",
+      "details": {
+        "distance": {
+          "distance_version": "v2",
+          "backend": "embedding",
+          "total": 0.321,
+          "axis_scores": {
+            "I": 0.0,
+            "C": 0.3333,
+            "O": 0.5971,
+            "V": 0.3589
+          },
+          "components": {
+            "input_tree_distance": 0.0,
+            "constraint_match_distance": 0.3333,
+            "objective_type_distance": 0.6047,
+            "objective_text_distance": 0.5858,
+            "invariant_match_distance": 0.3589
+          }
+        },
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "score": 0.77,
+      "accepted": false,
+      "risk_tags": [
+        "shared_core_risk",
+        "trivial_backtrack_risk"
+      ],
+      "status": "ok",
+      "reason_code": "distance_gate_failed",
+      "reason": "规划结果未达到硬门槛，预测距离=0.3210，落地轴=C, O, V。",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "规划结果未达到硬门槛，预测距离=0.3210，落地轴=C, O, V。",
+    "feedback": "已尝试 1 条候选规则，均未通过规划校验。"
+  }
+}

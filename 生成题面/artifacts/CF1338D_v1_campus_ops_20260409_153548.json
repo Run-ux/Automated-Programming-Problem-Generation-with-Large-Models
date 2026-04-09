@@ -1,0 +1,565 @@
+{
+  "problem_id": "CampusNestedClubs",
+  "source_problem_ids": [
+    "CF1338D"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "C",
+      "O",
+      "V"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "CF1338D",
+      "D. Nested Rubber Bands",
+      "codeforces",
+      "https://codeforces.com/contest/1338/problem/D",
+      "You have a tree of $n$ vertices. You are going to convert this tree into $n$ rubber bands on infinitely large plane. Conversion rule follows: Now let's define following things: It can be proved that is it possible to...",
+      "不要复写原题的叙事结构、任务定义或样例套路。",
+      "不要只替换实体名称后保留同样的输入输出关系。"
+    ],
+    "rationale": "原题仅关注数值最大化，新题引入字典序规范作为次级强约束，迫使状态定义从纯数值聚合转向带路径追踪的规范解构造，验证责任从隐式转为显式。",
+    "summary": "约束轴增加规范序优先级，目标轴改为输出完整规范序列，不变量轴增加路径可验证性与规范传递性承诺。",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.3686,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.3686,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.4827,
+      "O": 0.54,
+      "V": 0.4438
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.4827,
+      "objective_type_distance": 0.6882,
+      "objective_text_distance": 0.3177,
+      "invariant_match_distance": 0.4438
+    }
+  },
+  "changed_axes_realized": [
+    "C",
+    "O",
+    "V"
+  ],
+  "objective": {
+    "type": "construct_canonical_sequence",
+    "description": "输出字典序最小的最长社团嵌套链完整序列",
+    "target": "sequence",
+    "requires_solution": true
+  },
+  "rule_selection_reason": "原题仅要求输出最大长度，解空间有限且序列天然可区分。existence_to_counting 能将优化目标彻底替换为组合计数，迫使状态设计从极值转移升级为带模运算的计数聚合与防重处理，符合高创新与高难度要求。canonical_witness 在树形DP极值问题中极易退化为常规回溯构造，且触碰规则明确禁止的“原解顺手回溯即可拿到方案”情形，故不优先。；创新度判断：将核心义务从求最长嵌套序列长度拉离至统计达到最大长度的不同顶点序列总数，要求明确定义计数单元、有限性证明与去重口径，使输出责任从单一标量变为组合对象统计。；难度判断：在树形DP的主状态转移责任上，需将原有的 max 聚合逻辑重构为 sum 与组合乘法逻辑，并在子树合并时严格处理边界条件以避免重复计数，同时引入模运算与计数正确性验证，显著抬高算法设计与实现难度。；风险判断：主要风险在于树形DP合并时因状态划分不清导致重复计数或漏计。但通过 state_factorization 与 counting_obligation_lock 辅助器，可将计数责任严格绑定至子树根节点的度数约束与嵌套偏序关系中，确保计数逻辑与主约束深度耦合，风险完全可控。",
+  "instantiated_schema_snapshot": {
+    "problem_id": "CampusNestedClubs",
+    "source": "custom",
+    "input_structure": {
+      "type": "tree",
+      "length": {
+        "min": 3,
+        "max": 100000
+      },
+      "value_range": {
+        "min": 1,
+        "max": 100000
+      },
+      "properties": {
+        "connected": true,
+        "acyclic": true,
+        "simple": true
+      },
+      "components": []
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "overlap_constraint",
+          "description": "序列中相邻社团必须在校园合作网络中存在直接边相连。",
+          "formal": "adjacent(u, v) \\iff (u, v) \\in E",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "order_constraint",
+          "description": "嵌套序列要求相邻元素满足严格的资源包含偏序，且包含关系隐含两者资源池不相交。",
+          "formal": "\\forall i \\in [2, k], includes(a_{i-1}, a_i)",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "canonical_priority_constraint",
+          "description": "在所有满足上述约束的最长序列中，必须选择按社团编号字典序最小的序列。该规范序作为硬约束参与状态转移比较，优先级高于任意非规范路径。",
+          "formal": "\\arg\\min_{lex} \\{ S \\mid |S| = \\max_{valid} |S'| \\}",
+          "source_sections": [
+            "description"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "construct_canonical_sequence",
+      "description": "输出字典序最小的最长社团嵌套链完整序列",
+      "target": "sequence",
+      "requires_solution": true
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "canonical_state_transition",
+          "description": "每个节点维护二元状态(最大长度, 规范后继指针)。状态转移时优先比较长度，长度相等时严格按字典序选择后继节点。合并子树状态时，规范指针的传递保证局部字典序贪心可无损聚合至全局。",
+          "properties": {},
+          "evidence_source": "solution_code"
+        },
+        {
+          "name": "dependency_order",
+          "description": "状态计算严格遵循树的后序遍历依赖关系，保证子树规范路径在父节点决策前完全收敛。",
+          "properties": {},
+          "evidence_source": "solution_code"
+        },
+        {
+          "name": "canonical_verification",
+          "description": "输出序列的每一步均可通过局部规范指针直接验证，全局字典序最小性由局部贪心选择与树结构无环性共同保证，无需额外全局搜索。",
+          "properties": {},
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "hard"
+  },
+  "applied_rule": "canonical_witness",
+  "rejected_candidates": [
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "status": "ok",
+      "reason_code": "distance_gate_failed",
+      "reason": "规划结果未达到硬门槛，预测距离=0.3369，落地轴=C, O, V。"
+    }
+  ],
+  "algorithmic_delta_claim": {
+    "seed_solver_core": "树形DP维护端点/中间节点最大长度，后序遍历聚合标量值。",
+    "reusable_subroutines": "树的邻接表构建、DFS后序遍历框架、基础子树状态聚合逻辑。",
+    "new_solver_core": "状态扩展为(长度, 规范后继指针)，转移时引入字典序比较与路径回溯指针维护，合并子树时按规范序贪心选择并记录决策路径。",
+    "new_proof_obligation": "证明在树形DP自底向上聚合时，局部字典序贪心选择（长度优先，编号次优）能够无损传递至根节点，且不会因局部规范序截断而遗漏全局更优的嵌套路径。",
+    "why_direct_reuse_fails": "原解仅维护标量最大值，无法直接恢复字典序最小路径；若仅最后回溯，无法保证在多个等长分支中选出全局字典序最小序列，必须在状态转移阶段嵌入规范比较逻辑。"
+  },
+  "shared_core_summary": "本题为单种子扩展模式，共享核心锚点基于原树形DP框架与嵌套偏序结构。",
+  "shared_core_anchors": {
+    "shared_state": "树节点子树聚合状态",
+    "shared_transition": "后序遍历依赖与局部最优合并",
+    "shared_decision_basis": "嵌套偏序合法性与长度最大化"
+  },
+  "seed_contributions": {
+    "seed_a": "原树形DP的度数偏移修正与端点/中间节点状态划分是计算最长链的基础，不可省略。",
+    "seed_b": "无（单种子模式）。"
+  },
+  "fusion_ablation": {
+    "without_seed_a": "失去树形嵌套偏序基础，无法定义合法链结构。",
+    "without_seed_b": "无种子B，不适用。"
+  },
+  "applied_helpers": [
+    {
+      "id": "canonical_order_pressure",
+      "selection_reason": "强制将字典序规范嵌入主状态演化，避免退化为后处理。",
+      "affected_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "core_constraints增加canonical_priority_constraint",
+        "objective改为输出完整序列",
+        "invariant增加规范指针传递与验证承诺"
+      ],
+      "innovation_reason": "让输出对象与验证责任离开原题纯数值路径，转向带结构追踪的规范构造。",
+      "difficulty_reason": "状态转移必须承担新的规范性证明，需在O(1)比较中维护字典序单调性。"
+    },
+    {
+      "id": "proof_bearing_output",
+      "selection_reason": "将输出对象升级为直接可校验的规范解，强化题面契约。",
+      "affected_axes": [
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "objective.requires_solution设为true",
+        "invariant增加canonical_verification不变量"
+      ],
+      "innovation_reason": "让新题输出责任变成可校验的解对象，题面直接绑定验证逻辑。",
+      "difficulty_reason": "要求解法解释为什么规范解满足全局约束，输出必须自带合法性证据链。"
+    },
+    {
+      "id": "constraint_reweighting",
+      "selection_reason": "重排主约束优先级，使规范解要求进入核心决策层。",
+      "affected_axes": [
+        "C",
+        "V"
+      ],
+      "schema_changes": [
+        "core_constraints中规范序成为次级硬约束",
+        "invariant中状态转移规则反映长度优先、字典序次优的优先级"
+      ],
+      "innovation_reason": "让规范性要求进入主约束的优先级分配，改变原题单一最大化目标。",
+      "difficulty_reason": "迫使解法在状态设计里处理新的约束主次关系，转移逻辑复杂度上升。"
+    }
+  ],
+  "planning_status": "ok",
+  "planning_error_reason": "",
+  "planning_feedback": "",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": true,
+      "score": 0.82,
+      "reason_code": "seed_has_recoverable_plan_with_canonical_potential",
+      "selection_reason": "原题仅要求输出最大嵌套长度（requires_solution: false），存在明确的解对象（嵌套序列），且未要求输出完整方案。通过引入规范顺序并重排约束优先级，可迫使树形DP状态转移直接承载规范性证明，而非简单回溯，符合规则对C/O/V轴变更及核心变换的要求。",
+      "risk_tags": [
+        "shared_core_risk",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.objective.requires_solution为false，证明原题不输出方案；core_constraints定义了明确的overlap_constraint与order_constraint，为定义规范解提供了几何/图论基础；invariant中的state_transition表明当前DP仅维护长度极值，未记录构造路径，存在升级为proof_bearing_output的空间。",
+        "feedback": "规划阶段需严格应用canonical_order_pressure与constraint_reweighting辅助器，确保规范性要求融入DP状态定义与转移方程，避免退化为求值后附加的简单回溯或纯字典序后处理。需明确规范解的校验逻辑如何与overlap_constraint和order_constraint深度绑定，防止仅做表面格式修改。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 2
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.1,
+      "reason_code": "semantic_mismatch",
+      "selection_reason": "原题CF1338D为最优化问题且题干明确保证构造恒可行，不存在自然的无解分支。规则强制要求输出局部冲突证据，与原题语义根本冲突，强行引入失败分支将导致校验责任空洞化并触碰全局红线。",
+      "risk_tags": [
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要明确声明 'It can be proved that is it possible to make a conversion and sequence of nested rubber bands under given constraints.'，且 schema 中 objective.type 为 'maximize_value'。规则 required_seed_properties 要求 '做不到的原因可以用局部证据表示'，两者无法对齐。",
+        "feedback": "该规则依赖明确的可行性边界与失败语义，建议更换为判定型或约束满足型种子题（如图匹配、可满足性问题），当前种子题不具备衍生局部阻碍证据的结构基础。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "finite_decomposable_space",
+      "selection_reason": "种子题具备明确的树形DP状态结构与有限解空间，顶点序列的区分标准天然清晰，满足计数化所需的有限性、可拆分性与去重定义条件。",
+      "risk_tags": [
+        "shared_core_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema的invariant明确给出树形DP的自底向上状态转移与子树聚合逻辑，证明解空间可按子树单元拆分汇总；core_constraints定义的相交与包含偏序关系使顶点序列的等价类清晰可辨，完全满足规则required_seed_properties中的有限性与去重口径要求。",
+        "feedback": "规划阶段需明确计数具体对象（如所有合法嵌套序列总数或特定长度序列数），并在instantiated_schema中严格重写DP状态以支持计数累加与模运算，确保计数义务主导状态转移而非原最优值逻辑的简单附加。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.15,
+      "reason_code": "missing_native_perturbation",
+      "selection_reason": "原题CF1338D为确定性树形结构上的几何嵌套最大化问题，输入拓扑与约束完全固定，不存在规则要求的‘顺序不确定、资源波动或局部选择差异’等原生扰动来源。强行套用将依赖外部硬造对手，直接触发forbidden_seed_properties红线。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "artificial_perturbation"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "原题schema中core_constraints仅定义确定性拓扑约束（intersect(u,v)\\iff(u,v)\\in E与严格包含偏序），objective为固定树上的最大化长度。规则eligibility.required_seed_properties明确要求‘原题里本来就有顺序不确定、资源波动或局部选择差异’，但CF1338D无此语义基础。若强行改造，将违反forbidden_seed_properties中的‘只能靠故事背景硬造对手’。",
+        "feedback": "建议直接拒绝该规则在此种子题上的应用。保底优化规则需依赖原题自带的动态性或不确定性（如在线输入、概率分布、对抗性构造），当前种子题结构过于静态，强行引入扰动模型极易退化为‘外套二分’或‘纯改参数范围’，触碰全局红线。"
+      },
+      "selected_for_attempt": false
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "seed_has_recoverable_plan_with_canonical_potential",
+      "message": "原题仅要求输出最大嵌套长度（requires_solution: false），存在明确的解对象（嵌套序列），且未要求输出完整方案。通过引入规范顺序并重排约束优先级，可迫使树形DP状态转移直接承载规范性证明，而非简单回溯，符合规则对C/O/V轴变更及核心变换的要求。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.82,
+        "risk_tags": [
+          "shared_core_risk",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.objective.requires_solution为false，证明原题不输出方案；core_constraints定义了明确的overlap_constraint与order_constraint，为定义规范解提供了几何/图论基础；invariant中的state_transition表明当前DP仅维护长度极值，未记录构造路径，存在升级为proof_bearing_output的空间。",
+        "feedback": "规划阶段需严格应用canonical_order_pressure与constraint_reweighting辅助器，确保规范性要求融入DP状态定义与转移方程，避免退化为求值后附加的简单回溯或纯字典序后处理。需明确规范解的校验逻辑如何与overlap_constraint和order_constraint深度绑定，防止仅做表面格式修改。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "semantic_mismatch",
+      "message": "原题CF1338D为最优化问题且题干明确保证构造恒可行，不存在自然的无解分支。规则强制要求输出局部冲突证据，与原题语义根本冲突，强行引入失败分支将导致校验责任空洞化并触碰全局红线。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.1,
+        "risk_tags": [
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要明确声明 'It can be proved that is it possible to make a conversion and sequence of nested rubber bands under given constraints.'，且 schema 中 objective.type 为 'maximize_value'。规则 required_seed_properties 要求 '做不到的原因可以用局部证据表示'，两者无法对齐。",
+        "feedback": "该规则依赖明确的可行性边界与失败语义，建议更换为判定型或约束满足型种子题（如图匹配、可满足性问题），当前种子题不具备衍生局部阻碍证据的结构基础。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "finite_decomposable_space",
+      "message": "种子题具备明确的树形DP状态结构与有限解空间，顶点序列的区分标准天然清晰，满足计数化所需的有限性、可拆分性与去重定义条件。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.97,
+        "risk_tags": [
+          "shared_core_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema的invariant明确给出树形DP的自底向上状态转移与子树聚合逻辑，证明解空间可按子树单元拆分汇总；core_constraints定义的相交与包含偏序关系使顶点序列的等价类清晰可辨，完全满足规则required_seed_properties中的有限性与去重口径要求。",
+        "feedback": "规划阶段需明确计数具体对象（如所有合法嵌套序列总数或特定长度序列数），并在instantiated_schema中严格重写DP状态以支持计数累加与模运算，确保计数义务主导状态转移而非原最优值逻辑的简单附加。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation",
+      "message": "原题CF1338D为确定性树形结构上的几何嵌套最大化问题，输入拓扑与约束完全固定，不存在规则要求的‘顺序不确定、资源波动或局部选择差异’等原生扰动来源。强行套用将依赖外部硬造对手，直接触发forbidden_seed_properties红线。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.15,
+        "risk_tags": [
+          "semantic_mismatch",
+          "artificial_perturbation"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "原题schema中core_constraints仅定义确定性拓扑约束（intersect(u,v)\\iff(u,v)\\in E与严格包含偏序），objective为固定树上的最大化长度。规则eligibility.required_seed_properties明确要求‘原题里本来就有顺序不确定、资源波动或局部选择差异’，但CF1338D无此语义基础。若强行改造，将违反forbidden_seed_properties中的‘只能靠故事背景硬造对手’。",
+        "feedback": "建议直接拒绝该规则在此种子题上的应用。保底优化规则需依赖原题自带的动态性或不确定性（如在线输入、概率分布、对抗性构造），当前种子题结构过于静态，强行引入扰动模型极易退化为‘外套二分’或‘纯改参数范围’，触碰全局红线。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "distance_gate_failed",
+      "message": "规划结果未达到差异度或变化轴硬门槛。",
+      "details": {
+        "distance": {
+          "distance_version": "v2",
+          "backend": "embedding",
+          "total": 0.3369,
+          "axis_scores": {
+            "I": 0.0,
+            "C": 0.5032,
+            "O": 0.5545,
+            "V": 0.2366
+          },
+          "components": {
+            "input_tree_distance": 0.0,
+            "constraint_match_distance": 0.5032,
+            "objective_type_distance": 0.6746,
+            "objective_text_distance": 0.3743,
+            "invariant_match_distance": 0.2366
+          }
+        },
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "规划完整兑现了规范解升级合同，C/O/V三轴均发生实质性变化，三个helper均按声明落位至对应schema模块，且通过状态扩展与转移逻辑重构明确规避了“后处理退化”与“格式要求”等红线。",
+      "details": {
+        "review_role": "你扮演一名规范解规划审查官，重点确认规划是否真正把输出责任升级为可比较、可校验的规范解。",
+        "review_brief": "确认规划是否明确了规范解的定义、比较口径与校验方式，并且规范性会改变主要求解责任。",
+        "evidence": "payload中anti_shallow_rationale明确指出'规范序要求直接介入DP状态定义与转移比较，而非事后排序或简单回溯'；algorithmic_delta_claim声明状态扩展为(长度, 规范后继指针)并引入字典序比较；applied_helpers逐条对应canonical_order_pressure、proof_bearing_output、constraint_reweighting，且candidate_schema的core_constraints新增canonical_priority_constraint，objective改为construct_canonical_sequence且requires_solution为true，invariant新增canonical_state_transition与canonical_verification，完全覆盖规则声明的must_realize_in与target_axes要求。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "canonical_witness_fulfilled",
+      "message": "题面明确将字典序规范作为硬性构造约束嵌入主决策流程，要求输出完整可校验序列，且规范序优先级已实质影响状态转移与验证责任，完全兑现规则专属合同。",
+      "details": {
+        "review_role": "你扮演一名规范解题面审查官，重点确认题面是否要求输出一个规范且可检查的构造。",
+        "review_brief": "确认题面是否写清规范解、字典序或统一比较规则，并要求输出一个可校验的构造方案。",
+        "evidence": "题面约束3明确声明：'该规范序作为硬性构造约束，直接参与路径决策，而非事后筛选'，兑现canonical_order_pressure与constraint_reweighting；输出格式要求'输出k个整数，表示字典序最小的最长嵌套链序列'，Notes明确比较规则与唯一性保证，兑现proof_bearing_output与可校验承诺；实例化schema中C/O/V轴均按规则要求变更，未触碰任何redlines。"
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "score": 0.97,
+      "accepted": false,
+      "risk_tags": [
+        "shared_core_risk"
+      ],
+      "status": "ok",
+      "reason_code": "distance_gate_failed",
+      "reason": "规划结果未达到硬门槛，预测距离=0.3369，落地轴=C, O, V。",
+      "attempt_index": 1
+    },
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "score": 0.82,
+      "accepted": true,
+      "risk_tags": [
+        "shared_core_risk",
+        "low_novelty"
+      ],
+      "status": "ok",
+      "reason_code": "plan_validation_failed",
+      "reason": "",
+      "attempt_index": 2
+    }
+  ],
+  "generated_problem": {
+    "title": "校园社团嵌套链",
+    "description": "某高校共有 n 个社团，编号为 1 至 n。社团间的日常协作关系构成了一棵无向树。为了筹备跨社团联合展演，学生会需要规划一条“社团嵌套链”。\n\n一条合法的嵌套链定义为社团编号序列 a_1, a_2, ..., a_k，需同时满足以下核心约束：\n1. 协作连通性：序列中任意相邻的两个社团 a_i 与 a_{i+1} 必须在协作网络中存在直接边相连。\n2. 资源嵌套偏序：序列需体现严格的资源包含关系。在树形结构中，这意味着从 a_1 出发，每一步都必须走向一个此前未访问过的相邻社团，且路径不允许折返或重复经过节点（即序列对应树上的一条简单路径）。\n3. 字典序规范优先级：在所有满足上述条件且长度 k 最大的嵌套链中，必须选择按社团编号字典序最小的序列。该规范序作为硬性构造约束，直接参与路径决策，而非事后筛选。\n\n请根据给定的协作网络，构造并输出满足条件的最长嵌套链完整序列。",
+    "input_format": "第一行包含一个整数 n，表示社团总数。\n接下来 n-1 行，每行包含两个整数 u 和 v，表示社团 u 与社团 v 之间存在直接协作关系。\n输入保证给定的图是一棵包含 n 个节点的树。",
+    "output_format": "第一行输出一个整数 k，表示最长嵌套链的长度。\n第二行输出 k 个整数，表示字典序最小的最长嵌套链序列，相邻整数之间用单个空格分隔。",
+    "constraints": [
+      "时间限制：1.0 秒",
+      "空间限制：256 MB",
+      "3 ≤ n ≤ 10^5",
+      "社团编号范围为 1 到 n",
+      "输入保证构成一棵合法的树"
+    ],
+    "samples": [
+      {
+        "input": "5\n1 2\n2 3\n3 4\n4 5",
+        "output": "5\n1 2 3 4 5",
+        "explanation": "协作网络呈线性结构。唯一的最长嵌套链包含全部 5 个社团，序列为 1 2 3 4 5。"
+      },
+      {
+        "input": "4\n1 2\n1 3\n1 4",
+        "output": "3\n2 1 3",
+        "explanation": "社团 1 为中心枢纽，连接 2、3、4。最长链长度为 3，必须经过中心节点连接两个叶子节点。所有长度为 3 的合法序列中，字典序最小的是 2 1 3。"
+      }
+    ],
+    "notes": "字典序比较规则为从左至右逐位对比社团编号，首次出现较小编号的序列视为更优。题目保证最长嵌套链的字典序最小解唯一。输出序列中的社团编号必须互不相同。",
+    "status": "ok",
+    "error_reason": "",
+    "feedback": ""
+  }
+}

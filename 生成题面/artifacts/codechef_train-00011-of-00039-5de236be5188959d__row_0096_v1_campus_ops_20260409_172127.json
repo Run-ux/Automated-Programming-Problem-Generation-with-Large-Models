@@ -1,0 +1,360 @@
+{
+  "problem_id": "codechef_train-00011-of-00039-5de236be5188959d__row_0096",
+  "source_problem_ids": [
+    "codechef_train-00011-of-00039-5de236be5188959d__row_0096"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "没有规则通过资格校验。",
+    "summary": "规则规划失败",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.0,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "lexical_fallback",
+    "total": 0.0,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.0,
+      "O": 0.0,
+      "V": 0.0
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.0,
+      "objective_type_distance": 0.0,
+      "objective_text_distance": 0.0,
+      "invariant_match_distance": 0.0
+    }
+  },
+  "changed_axes_realized": [],
+  "objective": {
+    "type": "value_computation",
+    "description": "计算按照给定确定性规则进行数值转移直至所有元素相等所需的操作步数,若过程无法收敛达成均分则返回-1",
+    "target": "steps",
+    "requires_solution": false
+  },
+  "rule_selection_reason": "所有启用规则都被资格校验拒绝。",
+  "instantiated_schema_snapshot": {
+    "problem_id": "codechef_train-00011-of-00039-5de236be5188959d__row_0096",
+    "source": "codechef",
+    "input_structure": {
+      "type": "array",
+      "length": {
+        "min": 1,
+        "max": 3000
+      },
+      "value_range": {
+        "min": 0,
+        "max": 3000
+      },
+      "properties": {
+        "multiple_test_cases": true
+      },
+      "components": []
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "operation_type",
+          "description": "每次 redistribution 步骤必须严格选择当前 idli 数量最多和最少的两人（若存在多个极值则任选其一）,计算转移量 R = ceil((P - Q) / 2),并将 R 个 idli 从最多者转移给最少者；该过程持续进行直至所有元素值相等或判定无法收敛。",
+          "formal": "while max(A) != min(A): P = max(A), Q = min(A), R = ceil((P - Q) / 2), A[max_idx] -= R, A[min_idx] += R",
+          "source_sections": [
+            "description"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "value_computation",
+      "description": "计算按照给定确定性规则进行数值转移直至所有元素相等所需的操作步数,若过程无法收敛达成均分则返回-1",
+      "target": "steps",
+      "requires_solution": false
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "conservation",
+          "description": "The total sum of values across all elements remains strictly constant throughout the redistribution process. Each operation transfers a quantity between the current maximum and minimum elements while preserving their pairwise sum. This invariant is used to verify initial feasibility and guarantees that the process converges to a uniform distribution if the total sum is divisible by the count.",
+          "properties": {
+            "global_sum_constant": true,
+            "pairwise_sum_preservation": true
+          },
+          "evidence_source": "both"
+        },
+        {
+          "name": "monotonicity",
+          "description": "The pointers tracking the current minimum and maximum values in the frequency representation move strictly inward without backtracking. The minimum index only increments and the maximum index only decrements, ensuring that each value bucket is processed at most once as an extremum and enabling efficient simulation.",
+          "properties": {
+            "min_index_monotonic_increase": true,
+            "max_index_monotonic_decrease": true
+          },
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Medium"
+  },
+  "applied_rule": "",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {},
+  "shared_core_summary": "",
+  "shared_core_anchors": {},
+  "seed_contributions": {},
+  "fusion_ablation": {},
+  "applied_helpers": [],
+  "planning_status": "difference_insufficient",
+  "planning_error_reason": "没有规则通过资格校验。",
+  "planning_feedback": "请更换种子题，或调整规则集合。",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "difference_insufficient",
+      "selection_reason": "种子题为纯确定性模拟求步数，正向模拟过程天然生成操作序列。改为输出规范解仅需在循环中记录步骤，核心算法与状态设计未发生实质改变，直接触发规则声明中的 forbidden_seed_properties（原解顺手可得方案）与 failure_templates（主要解法几乎没变）。",
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.type 为 value_computation，core_constraints 描述为确定性 while 循环模拟。规则 eligibility.forbidden_seed_properties 明确禁止“原解只要顺手回溯就能拿到方案”，且 failure_templates 指出 difference_insufficient 情形。本题模拟即构造，输出要求升级无法驱动 C/O/V 轴的实质性算法重构。",
+        "feedback": "该规则要求规范性输出能反推主状态演化或约束优先级重排。当前种子题缺乏多解空间与构造自由度，无法承载 canonical_order_pressure 与 proof_bearing_output 的升级意图。建议替换为具有组合构造性质、存在多解需通过字典序/极小性约束剪枝，或原答案为存在性/计数型的种子题。"
+      }
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "seed_lacks_local_obstruction_structure",
+      "selection_reason": "原题无解条件仅为全局算术性质（总和不可整除），无法自然导出满足“局部可检查”要求的冲突证据结构，强行套用会导致证书退化为全局说明或特判，违反规则对局部证据的硬性要求。",
+      "risk_tags": [
+        "low_novelty",
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "原题 `invariant` 明确指出 'guarantees that the process converges to a uniform distribution if the total sum is divisible by the count'，表明无解原因仅为全局的 `sum % N != 0`。规则 `eligibility` 要求 '做不到的原因可以用局部证据表示'，且 `helpers` 强调 '让失败输出拥有明确结构' 与 '让证据可以在局部规则下直接检查'。当前种子的确定性模拟过程缺乏结构性冲突，无法提供非平凡的局部阻碍证据。",
+        "feedback": "建议更换具有组合/图论结构性无解条件的种子题，或放弃此规则对该种子的应用。当前种子仅支持全局算术判定，不满足局部证书输出的准入标准。"
+      }
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": false,
+      "score": 0.15,
+      "reason_code": "seed_type_mismatch",
+      "selection_reason": "种子题为单实例模拟求值问题，缺乏可供计数的组合解空间与等价类定义，不满足计数化规则的准入前提。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "structural_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.type 为 value_computation，core_constraints 描述的是确定性模拟循环 while max(A) != min(A)...；对照 rule.eligibility.required_seed_properties 明确要求“解空间有限”“不同解之间的等价关系能说清楚”，本题解空间仅为单点轨迹或步数标量，无法定义计数对象与去重口径，直接命中 rule.failure_templates.not_applicable 描述。",
+        "feedback": "建议放弃对该种子使用 existence_to_counting 规则。若需改造，可考虑转向“参数反推/构造”或“过程性质分析”类规则，避免强行引入计数目标导致核心约束与状态结构脱节。"
+      }
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "insufficient_native_perturbation",
+      "selection_reason": "原题核心为确定性数值转移模拟，仅存在极值并列时的微弱选择差异，缺乏规则要求的原生顺序不确定或资源波动。强行套用保底优化需人工注入扰动，违反扰动必须内生于原题语义的硬性要求。",
+      "risk_tags": [
+        "low_novelty",
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "schema中core_constraints明确操作为严格选择当前最大最小值转移，仅括号注明若存在多个极值则任选其一；规则eligibility要求原题里本来就有顺序不确定、资源波动或局部选择差异，且helpers红线条款强调扰动来源必须回到原题语义、不能凭背景硬造对手。原题的并列选择差异不足以构成鲁棒优化所需的扰动空间。",
+        "feedback": "建议替换为具有天然多路径决策、动态资源约束或显式顺序依赖的种子题，以提供可被形式化为最坏情况扰动模型的内生结构。"
+      }
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "difference_insufficient",
+      "message": "种子题为纯确定性模拟求步数，正向模拟过程天然生成操作序列。改为输出规范解仅需在循环中记录步骤，核心算法与状态设计未发生实质改变，直接触发规则声明中的 forbidden_seed_properties（原解顺手可得方案）与 failure_templates（主要解法几乎没变）。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.2,
+        "risk_tags": [
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.type 为 value_computation，core_constraints 描述为确定性 while 循环模拟。规则 eligibility.forbidden_seed_properties 明确禁止“原解只要顺手回溯就能拿到方案”，且 failure_templates 指出 difference_insufficient 情形。本题模拟即构造，输出要求升级无法驱动 C/O/V 轴的实质性算法重构。",
+        "feedback": "该规则要求规范性输出能反推主状态演化或约束优先级重排。当前种子题缺乏多解空间与构造自由度，无法承载 canonical_order_pressure 与 proof_bearing_output 的升级意图。建议替换为具有组合构造性质、存在多解需通过字典序/极小性约束剪枝，或原答案为存在性/计数型的种子题。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "seed_lacks_local_obstruction_structure",
+      "message": "原题无解条件仅为全局算术性质（总和不可整除），无法自然导出满足“局部可检查”要求的冲突证据结构，强行套用会导致证书退化为全局说明或特判，违反规则对局部证据的硬性要求。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "low_novelty",
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "原题 `invariant` 明确指出 'guarantees that the process converges to a uniform distribution if the total sum is divisible by the count'，表明无解原因仅为全局的 `sum % N != 0`。规则 `eligibility` 要求 '做不到的原因可以用局部证据表示'，且 `helpers` 强调 '让失败输出拥有明确结构' 与 '让证据可以在局部规则下直接检查'。当前种子的确定性模拟过程缺乏结构性冲突，无法提供非平凡的局部阻碍证据。",
+        "feedback": "建议更换具有组合/图论结构性无解条件的种子题，或放弃此规则对该种子的应用。当前种子仅支持全局算术判定，不满足局部证书输出的准入标准。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "seed_type_mismatch",
+      "message": "种子题为单实例模拟求值问题，缺乏可供计数的组合解空间与等价类定义，不满足计数化规则的准入前提。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.15,
+        "risk_tags": [
+          "semantic_mismatch",
+          "structural_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.type 为 value_computation，core_constraints 描述的是确定性模拟循环 while max(A) != min(A)...；对照 rule.eligibility.required_seed_properties 明确要求“解空间有限”“不同解之间的等价关系能说清楚”，本题解空间仅为单点轨迹或步数标量，无法定义计数对象与去重口径，直接命中 rule.failure_templates.not_applicable 描述。",
+        "feedback": "建议放弃对该种子使用 existence_to_counting 规则。若需改造，可考虑转向“参数反推/构造”或“过程性质分析”类规则，避免强行引入计数目标导致核心约束与状态结构脱节。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "insufficient_native_perturbation",
+      "message": "原题核心为确定性数值转移模拟，仅存在极值并列时的微弱选择差异，缺乏规则要求的原生顺序不确定或资源波动。强行套用保底优化需人工注入扰动，违反扰动必须内生于原题语义的硬性要求。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.2,
+        "risk_tags": [
+          "low_novelty",
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "schema中core_constraints明确操作为严格选择当前最大最小值转移，仅括号注明若存在多个极值则任选其一；规则eligibility要求原题里本来就有顺序不确定、资源波动或局部选择差异，且helpers红线条款强调扰动来源必须回到原题语义、不能凭背景硬造对手。原题的并列选择差异不足以构成鲁棒优化所需的扰动空间。",
+        "feedback": "建议替换为具有天然多路径决策、动态资源约束或显式顺序依赖的种子题，以提供可被形式化为最坏情况扰动模型的内生结构。"
+      }
+    }
+  ],
+  "candidate_attempts": [],
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "没有规则通过资格校验。",
+    "feedback": "请更换种子题，或调整规则集合。"
+  }
+}

@@ -1,0 +1,436 @@
+{
+  "problem_id": "atcoder_train-00020-of-00039-5d59387098675b73__row_0218",
+  "source_problem_ids": [
+    "atcoder_train-00020-of-00039-5d59387098675b73__row_0218"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "difference_plan.changed_axes 与实例化 schema 的真实变化不一致。",
+    "summary": "选中的规则未能稳定落地",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.0,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "lexical_fallback",
+    "total": 0.0,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.0,
+      "O": 0.0,
+      "V": 0.0
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.0,
+      "objective_type_distance": 0.0,
+      "objective_text_distance": 0.0,
+      "invariant_match_distance": 0.0
+    }
+  },
+  "changed_axes_realized": [],
+  "objective": {
+    "type": "maximize_value",
+    "description": "最大化边两端点赋值较小值的总和",
+    "target": "sum",
+    "requires_solution": true
+  },
+  "rule_selection_reason": "existence_to_counting:种子题解空间为有限多重集排列，且不变量已给出最优值闭式解，将目标升级为统计达到最优值的分配方案数具有明确的计数对象。树形拓扑天然支持子树状态分解与乘法原理汇总，等价关系（考虑相同数值交换的去重）可通过组合数学明确定义，完全满足规则对有限性、去重口径和可拆分汇总的硬性要求。",
+  "instantiated_schema_snapshot": {
+    "problem_id": "atcoder_train-00020-of-00039-5d59387098675b73__row_0218",
+    "source": "atcoder",
+    "input_structure": {
+      "type": "composite",
+      "length": {
+        "min": null,
+        "max": null
+      },
+      "value_range": {
+        "min": null,
+        "max": null
+      },
+      "properties": {},
+      "components": [
+        {
+          "role": "tree_topology",
+          "role_description": "defines the tree structure via edge connections between vertices",
+          "type": "tree",
+          "length": {
+            "min": 1,
+            "max": 10000
+          },
+          "value_range": {
+            "min": null,
+            "max": null
+          },
+          "properties": {
+            "acyclic": true,
+            "connected": true
+          }
+        },
+        {
+          "role": "vertex_values",
+          "role_description": "provides the multiset of integers to be assigned to vertices",
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 10000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {}
+        }
+      ]
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "permutation_constraint",
+          "description": "要求分配给每个顶点的整数序列 d_1, d_2, ..., d_N 必须是给定整数序列 c_1, c_2, ..., c_N 的一个排列,即每个给定的正整数必须恰好被使用一次。",
+          "formal": "\\{d_1, d_2, \\ldots, d_N\\} = \\{c_1, c_2, \\ldots, c_N\\} \\text{ (多重集相等)}",
+          "source_sections": [
+            "description",
+            "output"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "maximize_value",
+      "description": "最大化边两端点赋值较小值的总和",
+      "target": "sum",
+      "requires_solution": true
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "monotonicity",
+          "description": "算法按树遍历顺序降序分配权值,严格维持父节点权值不小于子节点权值的单调关系,使得每条边的贡献稳定等于子节点权值。",
+          "properties": {
+            "value_order_along_edges": "parent_value >= child_value",
+            "edge_min_identity": "edge_value == child_value"
+          },
+          "evidence_source": "solution_code"
+        },
+        {
+          "name": "additivity",
+          "description": "在满足父子权值单调性的前提下,全局得分可线性分解为所有非根节点权值之和,进而等价于输入数列中最大 N-1 个数的累加和。",
+          "properties": {
+            "score_linear_decomposition": "sum_edge_mins == sum_vertex_values - root_value",
+            "closed_form_maximum": "max_score == sum(c) - min(c)"
+          },
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Medium"
+  },
+  "applied_rule": "existence_to_counting",
+  "rejected_candidates": [
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "status": "ok",
+      "reason_code": "declared_axes_mismatch",
+      "reason": "difference_plan.changed_axes 与实例化 schema 的真实变化不一致。"
+    }
+  ],
+  "algorithmic_delta_claim": {},
+  "shared_core_summary": "",
+  "shared_core_anchors": {},
+  "seed_contributions": {},
+  "fusion_ablation": {},
+  "applied_helpers": [],
+  "planning_status": "difference_insufficient",
+  "planning_error_reason": "difference_plan.changed_axes 与实例化 schema 的真实变化不一致。",
+  "planning_feedback": "已尝试 1 条候选规则，均未通过规划校验。",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "difference_insufficient",
+      "selection_reason": "种子题最优解存在闭式公式（max_score == sum(c) - min(c)），核心算法仅为数学计算。强制输出规范解仅增加线性贪心构造步骤，属于典型的输出后处理，未实质性改变主状态设计与核心约束，违反规则中“规范要求要影响主要解法”及“不能退化为输出后处理”的硬性要求。",
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "依据 seed_schema.invariant 中 closed_form_maximum: max_score == sum(c) - min(c) 可知原题解法高度退化；结合 rule_under_review.forbidden_seed_properties 中“原解只要顺手回溯就能拿到方案”及 helpers.redlines 中“不能退化为输出后处理”，该种子不具备规范解升级所需的算法增量空间。",
+        "feedback": "该种子题核心难度在于数学观察而非构造，规范解要求无法有效渗透至核心约束与状态转移（C/O/V轴变化将流于表面）。建议更换具有复杂状态依赖、多解空间需严格剪枝或DP转移的种子题进行同类升级。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.15,
+      "reason_code": "missing_required_seed_property",
+      "selection_reason": "原题是无条件可行的树形赋值最大化问题，不存在无解分支，无法提供规则要求的局部冲突证据。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "structural_incompatibility"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.type为'maximize_value'且invariant.additivity明确给出闭式最优解'max_score == sum(c) - min(c)'，证明任意合法输入均存在可行赋值；core_constraints仅含排列约束，无任何导致无解的可行性条件。规则eligibility.required_seed_properties明确要求'做不到的原因可以用局部证据表示'，与原题恒有解的数学结构直接冲突。",
+        "feedback": "该规则强依赖种子题具备条件可行性（即部分输入无解且失败原因可局部验证）。当前种子题为纯优化/构造题，全局恒有解且最优值可闭式计算。强行套用需凭空发明可行性约束，极易触碰'跟原核心规律无关的额外约束'红线，并破坏原题的单调性不变量。建议替换为具备明确存在性边界（如匹配、流、覆盖、度数限制等）的种子题。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "finite_space_and_clear_decomposition",
+      "selection_reason": "种子题解空间为有限多重集排列，且不变量已给出最优值闭式解，将目标升级为统计达到最优值的分配方案数具有明确的计数对象。树形拓扑天然支持子树状态分解与乘法原理汇总，等价关系（考虑相同数值交换的去重）可通过组合数学明确定义，完全满足规则对有限性、去重口径和可拆分汇总的硬性要求。",
+      "risk_tags": [
+        "shared_core_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.invariant.additivity 明确给出 max_score == sum(c) - min(c)，证明最优目标值固定且有限；core_constraints.permutation_constraint 限定解空间为给定整数序列的排列，天然有限；树结构支持按子树划分计数单元，符合 helper.state_factorization 要求的拆分与汇总机制。",
+        "feedback": "规划阶段必须在核心约束中严格定义‘不同解’的判定口径（如顶点标号区分度与多重集相同值的等价类处理），并在状态设计中强制体现去重逻辑，避免退化为无约束的阶乘或组合数计算。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "missing_required_seed_property",
+      "selection_reason": "原题是确定性树图上的排列分配优化，最优解具有确定性闭式表达，缺乏规则准入所必需的‘原生顺序不确定或资源波动’；强行引入扰动将直接违反‘扰动必须来自原题本身’与‘不能凭背景硬造对手’的硬性约束。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中core_constraints仅为permutation_constraint，invariant明确给出max_score == sum(c) - min(c)的确定性闭式解，无任何输入波动或顺序不确定性描述；而rule_under_review的eligibility.required_seed_properties明确要求‘原题里本来就有顺序不确定、资源波动或局部选择差异’，且validation_contract.hard_checks强调‘扰动模型必须来自原题本身’，当前种子题无法满足该前提。",
+        "feedback": "该规则适用于在线决策、动态资源或随机输入类题目。建议替换具有天然扰动源的种子题，或改用确定性结构/目标变形规则。"
+      },
+      "selected_for_attempt": false
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "difference_insufficient",
+      "message": "种子题最优解存在闭式公式（max_score == sum(c) - min(c)），核心算法仅为数学计算。强制输出规范解仅增加线性贪心构造步骤，属于典型的输出后处理，未实质性改变主状态设计与核心约束，违反规则中“规范要求要影响主要解法”及“不能退化为输出后处理”的硬性要求。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.2,
+        "risk_tags": [
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "依据 seed_schema.invariant 中 closed_form_maximum: max_score == sum(c) - min(c) 可知原题解法高度退化；结合 rule_under_review.forbidden_seed_properties 中“原解只要顺手回溯就能拿到方案”及 helpers.redlines 中“不能退化为输出后处理”，该种子不具备规范解升级所需的算法增量空间。",
+        "feedback": "该种子题核心难度在于数学观察而非构造，规范解要求无法有效渗透至核心约束与状态转移（C/O/V轴变化将流于表面）。建议更换具有复杂状态依赖、多解空间需严格剪枝或DP转移的种子题进行同类升级。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "missing_required_seed_property",
+      "message": "原题是无条件可行的树形赋值最大化问题，不存在无解分支，无法提供规则要求的局部冲突证据。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.15,
+        "risk_tags": [
+          "semantic_mismatch",
+          "structural_incompatibility"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.type为'maximize_value'且invariant.additivity明确给出闭式最优解'max_score == sum(c) - min(c)'，证明任意合法输入均存在可行赋值；core_constraints仅含排列约束，无任何导致无解的可行性条件。规则eligibility.required_seed_properties明确要求'做不到的原因可以用局部证据表示'，与原题恒有解的数学结构直接冲突。",
+        "feedback": "该规则强依赖种子题具备条件可行性（即部分输入无解且失败原因可局部验证）。当前种子题为纯优化/构造题，全局恒有解且最优值可闭式计算。强行套用需凭空发明可行性约束，极易触碰'跟原核心规律无关的额外约束'红线，并破坏原题的单调性不变量。建议替换为具备明确存在性边界（如匹配、流、覆盖、度数限制等）的种子题。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "finite_space_and_clear_decomposition",
+      "message": "种子题解空间为有限多重集排列，且不变量已给出最优值闭式解，将目标升级为统计达到最优值的分配方案数具有明确的计数对象。树形拓扑天然支持子树状态分解与乘法原理汇总，等价关系（考虑相同数值交换的去重）可通过组合数学明确定义，完全满足规则对有限性、去重口径和可拆分汇总的硬性要求。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.97,
+        "risk_tags": [
+          "shared_core_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.invariant.additivity 明确给出 max_score == sum(c) - min(c)，证明最优目标值固定且有限；core_constraints.permutation_constraint 限定解空间为给定整数序列的排列，天然有限；树结构支持按子树划分计数单元，符合 helper.state_factorization 要求的拆分与汇总机制。",
+        "feedback": "规划阶段必须在核心约束中严格定义‘不同解’的判定口径（如顶点标号区分度与多重集相同值的等价类处理），并在状态设计中强制体现去重逻辑，避免退化为无约束的阶乘或组合数计算。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_required_seed_property",
+      "message": "原题是确定性树图上的排列分配优化，最优解具有确定性闭式表达，缺乏规则准入所必需的‘原生顺序不确定或资源波动’；强行引入扰动将直接违反‘扰动必须来自原题本身’与‘不能凭背景硬造对手’的硬性约束。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中core_constraints仅为permutation_constraint，invariant明确给出max_score == sum(c) - min(c)的确定性闭式解，无任何输入波动或顺序不确定性描述；而rule_under_review的eligibility.required_seed_properties明确要求‘原题里本来就有顺序不确定、资源波动或局部选择差异’，且validation_contract.hard_checks强调‘扰动模型必须来自原题本身’，当前种子题无法满足该前提。",
+        "feedback": "该规则适用于在线决策、动态资源或随机输入类题目。建议替换具有天然扰动源的种子题，或改用确定性结构/目标变形规则。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "declared_axes_mismatch",
+      "message": "difference_plan.changed_axes 与实际变化轴不一致。",
+      "details": {
+        "declared_axes": [
+          "C",
+          "O",
+          "V"
+        ],
+        "realized_axes": [
+          "I",
+          "C",
+          "O",
+          "V"
+        ]
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "score": 0.97,
+      "accepted": false,
+      "risk_tags": [
+        "shared_core_risk"
+      ],
+      "status": "ok",
+      "reason_code": "declared_axes_mismatch",
+      "reason": "difference_plan.changed_axes 与实例化 schema 的真实变化不一致。",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "difference_plan.changed_axes 与实例化 schema 的真实变化不一致。",
+    "feedback": "已尝试 1 条候选规则，均未通过规划校验。"
+  }
+}

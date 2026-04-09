@@ -7,6 +7,7 @@ import re
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -18,6 +19,7 @@ from main import _load_batch_problem_ids, _normalize_rule_overrides, _target_pro
 from models import DifferencePlan, GeneratedProblem, InstantiatedSchema, Theme, VariantPlan
 from pipeline import GenerationPipeline
 from problem_generator import ProblemGenerator
+from qwen_client import QwenClient
 from rule_handlers import get_rule_handler
 from rulebook import RuleBook
 from schema_preparer import SchemaPreparer
@@ -1213,7 +1215,7 @@ class BatchPipelineTests(unittest.TestCase):
         self.assertIn("### 1. A", batch_report_text)
         self.assertIn("### 2. B", batch_report_text)
 
-    def test_batch_single_run_stops_on_first_failure_and_persists_summary(self) -> None:
+    def test_batch_single_run_continues_after_failure_and_persists_summary(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
             temp = Path(tempdir)
             source_dir = temp / "schemas"
@@ -1237,14 +1239,13 @@ class BatchPipelineTests(unittest.TestCase):
                 planner=ProblemAwarePlanner(),
                 problem_repository=FakeProblemRepository(),
             )
-            with self.assertRaisesRegex(RuntimeError, "B 生成失败"):
-                pipeline.run(
-                    mode="single",
-                    problem_ids=["A", "B", "C"],
-                    variants=1,
-                    theme_id="campus_ops",
-                    batch_source_dir=source_dir,
-                )
+            records = pipeline.run(
+                mode="single",
+                problem_ids=["A", "B", "C"],
+                variants=1,
+                theme_id="campus_ops",
+                batch_source_dir=source_dir,
+            )
 
             batch_artifacts = sorted(artifact_dir.glob("batch_*.json"))
             batch_reports = sorted(report_dir.glob("batch_*.md"))
@@ -1254,21 +1255,27 @@ class BatchPipelineTests(unittest.TestCase):
             markdown_paths = sorted(path.name for path in output_dir.glob("*.md"))
 
         self.assertEqual(batch_payload["status"], "failed")
-        self.assertEqual(batch_payload["completed_count"], 1)
+        self.assertEqual(batch_payload["completed_count"], 2)
+        self.assertEqual(batch_payload["failed_count"], 1)
         self.assertEqual(batch_payload["failed_problem_id"], "B")
-        self.assertEqual([item["problem_id"] for item in batch_payload["items"]], ["A", "B"])
-        self.assertEqual(len(markdown_paths), 1)
+        self.assertEqual([item["problem_id"] for item in batch_payload["items"]], ["A", "B", "C"])
+        self.assertEqual([record["source_problem_ids"] for record in records], [["A"], ["C"]])
+        self.assertEqual(len(markdown_paths), 2)
         self.assertTrue(markdown_paths[0].startswith("A_v1_campus_ops_"))
+        self.assertTrue(markdown_paths[1].startswith("C_v1_campus_ops_"))
 
 
 class CliAndDocumentationTests(unittest.TestCase):
     def test_cli_supports_single_and_same_family_with_rule_override(self) -> None:
         parser = build_parser()
 
-        single_args = parser.parse_args(["--mode", "single", "--problem-ids", "CF1", "CF2"])
+        single_args = parser.parse_args(
+            ["--mode", "single", "--problem-ids", "CF1", "CF2", "--timeout", "360"]
+        )
         _validate_args(parser, single_args)
         self.assertEqual(single_args.mode, "single")
         self.assertEqual(single_args.problem_ids, ["CF1", "CF2"])
+        self.assertEqual(single_args.timeout, 360)
 
         same_family_args = parser.parse_args(
             [
@@ -1338,6 +1345,13 @@ class CliAndDocumentationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "显式提供 problem_id"):
                 _load_batch_problem_ids(source_dir)
 
+    def test_cli_rejects_non_positive_timeout(self) -> None:
+        parser = build_parser()
+        args = parser.parse_args(["--mode", "single", "--problem-ids", "CF1", "--timeout", "0"])
+
+        with self.assertRaises(SystemExit):
+            _validate_args(parser, args)
+
     def test_readmes_describe_rule_driven_four_tuple_flow(self) -> None:
         generator_readme = (GEN_DIR / "README.md").read_text(encoding="utf-8")
         rules_doc = (GEN_DIR / "RULES.md").read_text(encoding="utf-8")
@@ -1360,6 +1374,30 @@ class CliAndDocumentationTests(unittest.TestCase):
         self.assertIn("check_eligibility", rules_doc)
         self.assertIn("validate_plan", rules_doc)
         self.assertIn("validate_problem", rules_doc)
+
+
+class QwenClientTests(unittest.TestCase):
+    def test_chat_json_retries_on_timeout_error(self) -> None:
+        client = QwenClient(
+            api_key="test-key",
+            model="test-model",
+            base_url="https://example.com/v1",
+            timeout_s=5,
+        )
+
+        with mock.patch("qwen_client.time.sleep") as mocked_sleep:
+            with mock.patch("qwen_client.urllib.request.urlopen") as mocked_urlopen:
+                mocked_response = mock.MagicMock()
+                mocked_response.__enter__.return_value.read.return_value = (
+                    b'{"choices":[{"message":{"content":"{\\"status\\":\\"ok\\"}"}}]}'
+                )
+                mocked_urlopen.side_effect = [TimeoutError("timed out"), mocked_response]
+
+                payload = client.chat_json(system_prompt="system", user_prompt="user", max_retries=2)
+
+        self.assertEqual(payload, {"status": "ok"})
+        self.assertEqual(mocked_urlopen.call_count, 2)
+        mocked_sleep.assert_called_once()
 
 
 class StubEmbeddingClient:

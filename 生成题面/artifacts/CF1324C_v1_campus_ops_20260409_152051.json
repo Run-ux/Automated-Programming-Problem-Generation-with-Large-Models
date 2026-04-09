@@ -1,0 +1,354 @@
+{
+  "problem_id": "CF1324C",
+  "source_problem_ids": [
+    "CF1324C"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "种子缺乏规则所需的必要属性：无多解/规范排序空间、无自然失败语义、路径回溯平凡。不满足 canonical_witness 的 forbidden_seed_properties 与 construct_or_obstruction 的 required_seed_properties。",
+    "summary": "规则规划失败",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.0,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "lexical_fallback",
+    "total": 0.0,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.0,
+      "O": 0.0,
+      "V": 0.0
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.0,
+      "objective_type_distance": 0.0,
+      "objective_text_distance": 0.0,
+      "invariant_match_distance": 0.0
+    }
+  },
+  "changed_axes_realized": [],
+  "objective": {
+    "type": "minimize_value",
+    "description": "求满足从起点到达终点条件的最小跳跃步长上限",
+    "target": "max_jump_distance",
+    "requires_solution": false
+  },
+  "rule_selection_reason": "种子题 CF1324C 为极简贪心/数学题，答案仅为单一整数且天然恒有解。两条候选规则均明确要求复杂的解对象或明确的失败分支，与当前种子结构不匹配，强制套用将直接违反规则自带的 eligibility 条件。；创新度判断：无。canonical_witness 要求输出规范方案，但原题最优路径由贪心唯一确定，输出合同升级只会退化为后处理打印；construct_or_obstruction 要求失败证据，但原题无不可行分支，强行引入需脱离原核心规律凭空构造约束，属于伪融合。；难度判断：无。原题主求解责任仅为一次线性扫描求最大间隙，输出合同的改变无法在状态设计、转移逻辑或校验责任上引入实质性复杂度，难度天花板被种子本身的数学性质锁死。；风险判断：极高风险。强行应用必然退化为浅改或换皮（如仅要求输出跳跃序列或强行添加无解特判），直接触碰全局红线中的“纯改输入输出格式”与“跟原核心规律无关的额外约束”，且无法通过规则自带的 hard_checks。",
+  "instantiated_schema_snapshot": {
+    "problem_id": "CF1324C",
+    "source": "codeforces",
+    "input_structure": {
+      "type": "string",
+      "length": {
+        "min": 1,
+        "max": 200000
+      },
+      "value_range": {
+        "min": null,
+        "max": null
+      },
+      "properties": {
+        "multiple_test_cases": true
+      },
+      "components": []
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "state_transition",
+          "description": "青蛙在任意位置 i 执行跳跃时,转移目标必须严格遵循当前格字符指示的方向（s[i] 为 'L' 仅允许向左转移,s[i] 为 'R' 仅允许向右转移,初始位置 0 仅允许向右转移）,且单次转移的跨度不得超过预设参数 d。",
+          "formal": "∀ 转移 (i → j): (i=0 ∨ s[i]='R') ⇒ j > i; s[i]='L' ⇒ j < i; 且 |i - j| ≤ d",
+          "source_sections": [
+            "description"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "minimize_value",
+      "description": "求满足从起点到达终点条件的最小跳跃步长上限",
+      "target": "max_jump_distance",
+      "requires_solution": false
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "bottleneck_constraint",
+          "description": "青蛙向右推进时只能以 'R' 字符位置（含起点 0 与终点 n+1）作为有效落脚点,连续的 'L' 区域无法提供向右的支撑。因此,任意可行跳跃方案必须单次跨越所有连续 'L' 段,最小跳跃距离 d 严格由最长连续 'L' 段的长度加 1 决定。该最大间隙性质在字符串结构中稳定存在,并直接约束全局最优解。",
+          "properties": {
+            "safe_landing_positions": "起点 0、所有 'R' 索引、终点 n+1",
+            "gap_definition": "相邻安全落脚点之间连续 'L' 字符的数量",
+            "bottleneck_rule": "最小可行 d 等于所有 gap 的最大值加 1"
+          },
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Easy"
+  },
+  "applied_rule": "",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {},
+  "shared_core_summary": "",
+  "shared_core_anchors": {},
+  "seed_contributions": {},
+  "fusion_ablation": {},
+  "applied_helpers": [],
+  "planning_status": "schema_insufficient",
+  "planning_error_reason": "种子缺乏规则所需的必要属性：无多解/规范排序空间、无自然失败语义、路径回溯平凡。不满足 canonical_witness 的 forbidden_seed_properties 与 construct_or_obstruction 的 required_seed_properties。",
+  "planning_feedback": "建议更换具有多解空间、复杂状态转移或天然可行性边界的种子题（如构造题、带约束的图论/DP题），或提供侧重约束重构、状态升维、交互/博弈机制的规则集以匹配当前种子的极简特性。",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": true,
+      "score": 0.87,
+      "reason_code": "meets_required_properties",
+      "selection_reason": "种子题目标为求最小步长上限（requires_solution: false），不要求输出具体路径，符合规则要求的“有明确解对象且可恢复为方案”；落脚点序列具有天然索引顺序，易于定义字典序或贪心规范。结合辅助器可强制规范顺序进入主约束，满足C/O/V轴变更要求。",
+      "risk_tags": [
+        "shared_core_risk",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.objective.requires_solution为false，且invariant明确指出最小d由最长连续L段决定，原解仅输出数值；规则required_seed_properties要求方案有自然顺序，该题落脚点索引天然有序；helpers中的canonical_order_pressure与constraint_reweighting可防止退化为简单回溯。",
+        "feedback": "规划时必须落实constraint_reweighting与proof_bearing_output，使规范性要求（如特定落脚点优先级或全局验证责任）实质性改变状态转移与不变量设计，严禁仅添加字典序输出或后处理逻辑，否则将触发global_redlines中的纯格式修改或difference_insufficient失败模板。"
+      }
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "obstruction_naturally_defined",
+      "selection_reason": "种子题的不变量已明确将不可行性绑定于具体的连续L段间隙，该结构天然满足规则要求的局部可检查性与对象化输出，无需额外发明证据形式。",
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "eligible",
+        "evidence": "schema的invariant.bottleneck_constraint指出'最小可行d等于所有gap的最大值加1'，且gap_definition明确定义为'相邻安全落脚点之间连续L字符的数量'。这直接证明无解原因可被实例化为具体的区间索引，符合规则'冲突证据可以从输出直接检查'的硬性要求。",
+        "feedback": "规划阶段需将原题minimize目标彻底替换为给定固定d的构造/证伪双分支合同；必须强制失败分支输出具体的L区间起止索引，并在校验逻辑中增加对该区间长度与d的局部比对，严防退化回原题的求最值逻辑或自然语言解释。"
+      }
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": false,
+      "score": 0.3,
+      "reason_code": "core_structure_mismatch",
+      "selection_reason": "原题核心为确定性贪心瓶颈分析，最优解唯一且由局部极值直接决定，缺乏支撑计数化改造的多路径分支或组合结构。强行转换将导致计数义务无法从原状态组织方式中自然衍生，违反state_factorization与counting_obligation_lock的硬性要求。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty",
+        "core_invariant_discard"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.invariant明确指出'最小可行d等于所有gap的最大值加1'，证明解空间为单值优化而非组合枚举；rule.helpers.state_factorization要求'让计数从主状态组织方式中自然长出来'，但原题状态转移仅服务于寻找瓶颈，无天然等价类或可汇总计数单元。",
+        "feedback": "当前种子题的确定性贪心性质与计数化规则所需的组合分支结构存在根本冲突。建议更换具有多决策路径、图遍历或排列组合约束的种子题，或放弃计数化方向，保留原优化/判定框架。"
+      }
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.15,
+      "reason_code": "missing_native_perturbation_source",
+      "selection_reason": "原题CF1324C为完全确定性的静态字符串问题，最优解由最长连续'L'段长度直接决定，不存在规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行引入扰动将违反规则自身的“扰动来源必须回到原题语义”及“不能凭背景硬造对手”红线。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "规则eligibility.required_seed_properties明确要求'原题里本来就有顺序不确定、资源波动或局部选择差异'；但seed_schema.invariant.bottleneck_constraint明确指出'最小可行d等于所有gap的最大值加1'，且core_constraints为固定方向转移，整体为静态确定性结构，无内建不确定性可放大。",
+        "feedback": "该规则适用于具有内在调度冲突、动态资源分配或路径选择不确定性的种子题。对于CF1324C这类具有显式闭式解的静态结构题，建议改用结构变形或约束耦合类规则，避免生造扰动导致题目偏离原语义。"
+      }
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "meets_required_properties",
+      "message": "种子题目标为求最小步长上限（requires_solution: false），不要求输出具体路径，符合规则要求的“有明确解对象且可恢复为方案”；落脚点序列具有天然索引顺序，易于定义字典序或贪心规范。结合辅助器可强制规范顺序进入主约束，满足C/O/V轴变更要求。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.87,
+        "risk_tags": [
+          "shared_core_risk",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.objective.requires_solution为false，且invariant明确指出最小d由最长连续L段决定，原解仅输出数值；规则required_seed_properties要求方案有自然顺序，该题落脚点索引天然有序；helpers中的canonical_order_pressure与constraint_reweighting可防止退化为简单回溯。",
+        "feedback": "规划时必须落实constraint_reweighting与proof_bearing_output，使规范性要求（如特定落脚点优先级或全局验证责任）实质性改变状态转移与不变量设计，严禁仅添加字典序输出或后处理逻辑，否则将触发global_redlines中的纯格式修改或difference_insufficient失败模板。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "pass",
+      "reason_code": "obstruction_naturally_defined",
+      "message": "种子题的不变量已明确将不可行性绑定于具体的连续L段间隙，该结构天然满足规则要求的局部可检查性与对象化输出，无需额外发明证据形式。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.97,
+        "risk_tags": [
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "eligible",
+        "evidence": "schema的invariant.bottleneck_constraint指出'最小可行d等于所有gap的最大值加1'，且gap_definition明确定义为'相邻安全落脚点之间连续L字符的数量'。这直接证明无解原因可被实例化为具体的区间索引，符合规则'冲突证据可以从输出直接检查'的硬性要求。",
+        "feedback": "规划阶段需将原题minimize目标彻底替换为给定固定d的构造/证伪双分支合同；必须强制失败分支输出具体的L区间起止索引，并在校验逻辑中增加对该区间长度与d的局部比对，严防退化回原题的求最值逻辑或自然语言解释。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "core_structure_mismatch",
+      "message": "原题核心为确定性贪心瓶颈分析，最优解唯一且由局部极值直接决定，缺乏支撑计数化改造的多路径分支或组合结构。强行转换将导致计数义务无法从原状态组织方式中自然衍生，违反state_factorization与counting_obligation_lock的硬性要求。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.3,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty",
+          "core_invariant_discard"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.invariant明确指出'最小可行d等于所有gap的最大值加1'，证明解空间为单值优化而非组合枚举；rule.helpers.state_factorization要求'让计数从主状态组织方式中自然长出来'，但原题状态转移仅服务于寻找瓶颈，无天然等价类或可汇总计数单元。",
+        "feedback": "当前种子题的确定性贪心性质与计数化规则所需的组合分支结构存在根本冲突。建议更换具有多决策路径、图遍历或排列组合约束的种子题，或放弃计数化方向，保留原优化/判定框架。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation_source",
+      "message": "原题CF1324C为完全确定性的静态字符串问题，最优解由最长连续'L'段长度直接决定，不存在规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行引入扰动将违反规则自身的“扰动来源必须回到原题语义”及“不能凭背景硬造对手”红线。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.15,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "规则eligibility.required_seed_properties明确要求'原题里本来就有顺序不确定、资源波动或局部选择差异'；但seed_schema.invariant.bottleneck_constraint明确指出'最小可行d等于所有gap的最大值加1'，且core_constraints为固定方向转移，整体为静态确定性结构，无内建不确定性可放大。",
+        "feedback": "该规则适用于具有内在调度冲突、动态资源分配或路径选择不确定性的种子题。对于CF1324C这类具有显式闭式解的静态结构题，建议改用结构变形或约束耦合类规则，避免生造扰动导致题目偏离原语义。"
+      }
+    }
+  ],
+  "candidate_attempts": [],
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "schema_insufficient",
+    "error_reason": "种子缺乏规则所需的必要属性：无多解/规范排序空间、无自然失败语义、路径回溯平凡。不满足 canonical_witness 的 forbidden_seed_properties 与 construct_or_obstruction 的 required_seed_properties。",
+    "feedback": "建议更换具有多解空间、复杂状态转移或天然可行性边界的种子题（如构造题、带约束的图论/DP题），或提供侧重约束重构、状态升维、交互/博弈机制的规则集以匹配当前种子的极简特性。"
+  }
+}

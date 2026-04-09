@@ -1,0 +1,405 @@
+{
+  "problem_id": "CF253C",
+  "source_problem_ids": [
+    "CF253C"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "没有规则通过资格校验。",
+    "summary": "规则规划失败",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.0,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "lexical_fallback",
+    "total": 0.0,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.0,
+      "O": 0.0,
+      "V": 0.0
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.0,
+      "objective_type_distance": 0.0,
+      "objective_text_distance": 0.0,
+      "invariant_match_distance": 0.0
+    }
+  },
+  "changed_axes_realized": [],
+  "objective": {
+    "type": "minimize_value",
+    "description": "计算从起始光标位置移动到目标光标位置所需的最少按键次数",
+    "target": "key_presses",
+    "requires_solution": false
+  },
+  "rule_selection_reason": "所有启用规则都被资格校验拒绝。",
+  "instantiated_schema_snapshot": {
+    "problem_id": "CF253C",
+    "source": "codeforces",
+    "input_structure": {
+      "type": "composite",
+      "length": {
+        "min": null,
+        "max": null
+      },
+      "value_range": {
+        "min": null,
+        "max": null
+      },
+      "properties": {},
+      "components": [
+        {
+          "role": "scalar_count",
+          "role_description": "number of elements in the subsequent array",
+          "type": "integer",
+          "length": {
+            "min": null,
+            "max": null
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100
+          },
+          "properties": {}
+        },
+        {
+          "role": "value_array",
+          "role_description": "sequence of numeric values indexed by position",
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 100
+          },
+          "value_range": {
+            "min": 0,
+            "max": 100000
+          },
+          "properties": {}
+        },
+        {
+          "role": "coordinate_tuple",
+          "role_description": "fixed-length record of start and end indices",
+          "type": "tuple",
+          "length": {
+            "min": 4,
+            "max": 4
+          },
+          "value_range": {
+            "min": 1,
+            "max": null
+          },
+          "properties": {}
+        }
+      ]
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "state_transition",
+          "description": "光标状态由行号 r 和列号 c 唯一确定。每次执行 Up、Down、Left、Right 操作时,根据当前行列位置及对应行长度决定合法的下一状态；若目标位置超出当前行有效范围或触及文件首尾边界,则光标按规则调整至边界位置或保持不动。",
+          "formal": "设当前状态为 (r, c),行长度数组为 a。Up: r>1 时移至 (r-1, min(c, a[r-1]+1)),否则不变；Down: r<n 时移至 (r+1, min(c, a[r+1]+1)),否则不变；Left: c>1 时移至 (r, c-1),否则不变；Right: c < a[r]+1 时移至 (r, c+1),否则不变。",
+          "source_sections": [
+            "description"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "minimize_value",
+      "description": "计算从起始光标位置移动到目标光标位置所需的最少按键次数",
+      "target": "key_presses",
+      "requires_solution": false
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "monotonicity",
+          "description": "在垂直方向移动光标遍历各行时,算法通过取最小值操作持续维护列坐标的非递增性质。当前列位置始终被约束为初始列坐标与路径上所有已遍历行最大允许列位置的最小值,该约束在上下移动过程中稳定保持且不可逆。",
+          "properties": {
+            "coordinate_update_rule": "non_increasing_clamping",
+            "path_bound_constraint": "min_of_initial_coordinate_and_encountered_line_capacities"
+          },
+          "evidence_source": "solution_code"
+        },
+        {
+          "name": "additivity",
+          "description": "光标移动的总代价可严格分解为垂直移动步数与水平移动步数之和。算法独立计算到达目标行的垂直步数及受行长度限制后的最终列位置,再叠加目标行内的水平调整距离,两部分代价互不干扰且可线性累加。",
+          "properties": {
+            "cost_decomposition": "vertical_steps_plus_horizontal_steps",
+            "component_independence": "vertical_path_cost_and_final_row_horizontal_distance"
+          },
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Medium"
+  },
+  "applied_rule": "",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {},
+  "shared_core_summary": "",
+  "shared_core_anchors": {},
+  "seed_contributions": {},
+  "fusion_ablation": {},
+  "applied_helpers": [],
+  "planning_status": "difference_insufficient",
+  "planning_error_reason": "没有规则通过资格校验。",
+  "planning_feedback": "请更换种子题，或调整规则集合。",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": false,
+      "score": 0.3,
+      "reason_code": "forbidden_seed_property",
+      "selection_reason": "种子题原目标仅为最小步数，且其状态转移与代价分解具有强确定性（单调截断与可加性），最优路径可通过直接模拟或简单公式顺手还原，命中规则明确禁止的“原解只要顺手回溯就能拿到方案”条件。强行引入规范解输出极易退化为表面格式修改或输出后处理，无法实质性改变核心约束与验证轴，不符合准入要求。",
+      "risk_tags": [
+        "low_novelty",
+        "difference_insufficient"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.requires_solution为false，且invariant中明确存在additivity与monotonicity性质，表明最优路径的构造完全由行列长度与起止坐标决定，可通过O(n)模拟直接还原。这直接触发rule_under_review.eligibility.forbidden_seed_properties中的“原解只要顺手回溯就能拿到方案”。同时，helpers.redlines明确警告“不能退化为输出后处理”，该种子题的确定性结构使得规范解要求难以深入core_constraints与invariant，必然导致required_axis_changes(C,O,V)无法发生实质性演变。",
+        "feedback": "建议更换具有多解空间或解结构非平凡的种子题（如组合构造、带复杂剪枝的搜索/DP题），以便规范顺序能真正介入状态设计与验证逻辑，避免规则退化为纯输出格式包装。"
+      }
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "seed_lacks_obstruction_basis",
+      "selection_reason": "原题CF253C为连通状态空间上的最短路径问题，状态转移规则保证任意合法输入均可达，不存在天然的无解情形。规则强制要求提供可局部检查的冲突证据，但种子题缺乏支撑该语义的约束基础，强行应用会导致失败分支退化为死代码或需人为捏造不可行条件，违反规则准入前提。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "forced_branch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "schema中objective为minimize_value，core_constraints定义的光标移动规则在给定行列边界内构成连通图；invariant仅描述代价可加性与列坐标单调性，未包含任何可达性限制或不可满足条件。规则eligibility.required_seed_properties明确要求'做不到的原因可以用局部证据表示'，但原题输入结构与约束均无法提供此类证据载体。",
+        "feedback": "建议替换为具有天然不可行性判定基础的种子题（如存在奇偶校验、容量瓶颈或明确割条件的构造/图论题）。若需保留本题，必须重构核心约束以引入真实的不可达情形，但这将偏离单种子扩展原则并可能触碰全局红线。"
+      }
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": false,
+      "score": 0.25,
+      "reason_code": "seed_structure_mismatch",
+      "selection_reason": "种子题为带min截断的最短路径优化问题，Schema未提供解空间等价关系定义与可拆分汇总的结构证据；直接转为计数题易退化为仅添加模数或统计路径数，违反规则redlines中‘不能只补一个模数’与‘不能不定义什么算不同答案’的要求，且核心状态转移的耦合特性使去重与单元分解缺乏明确依据。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要objective为minimize_value，core_constraints为带min截断的state_transition，invariant为additivity。规则eligibility要求‘不同解之间的等价关系能说清楚’与‘可以按某种单元拆分并汇总’，但当前Schema未体现路径等价类划分或独立计数单元；helpers中redlines明确禁止‘不能只补一个模数’和‘不能不定义什么算不同答案’，现有证据不足以支撑该转换的严谨性。",
+        "feedback": "需明确计数对象（如操作序列/状态序列/有效路径）的等价类定义，并证明在min截断约束下解空间可按独立单元拆分汇总。若无法提供去重口径与有限性证明路径，建议更换具有天然组合分解结构（如排列组合、图论DAG路径计数）的种子题。"
+      }
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.15,
+      "reason_code": "missing_native_perturbation",
+      "selection_reason": "原题CF253C为完全确定性的网格光标移动问题，输入为静态行长度数组与固定起止坐标，状态转移规则严格确定，不具备规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行套用将导致扰动模型脱离原题语义，违反“扰动模型必须来自原题本身”及“不能凭背景硬造对手”的红线。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints.formal 明确给出确定性转移公式（如 Up: r>1 时移至 (r-1, min(c, a[r-1]+1))），objective 为固定起点终点的最少按键次数。rule_under_review.eligibility.required_seed_properties 明确要求“原题里本来就有顺序不确定、资源波动或局部选择差异”，但原题输入结构与约束均为静态确定值，无任何内在不确定性或对抗结构可供放大。",
+        "feedback": "该规则高度依赖种子题自带的非确定性或资源波动特性。建议替换为具有动态环境、非确定执行序列或隐式资源约束的题目作为种子，否则极易退化为外层二分或生硬添加对抗层，无法通过后续规划的硬校验。"
+      }
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "forbidden_seed_property",
+      "message": "种子题原目标仅为最小步数，且其状态转移与代价分解具有强确定性（单调截断与可加性），最优路径可通过直接模拟或简单公式顺手还原，命中规则明确禁止的“原解只要顺手回溯就能拿到方案”条件。强行引入规范解输出极易退化为表面格式修改或输出后处理，无法实质性改变核心约束与验证轴，不符合准入要求。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.3,
+        "risk_tags": [
+          "low_novelty",
+          "difference_insufficient"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.requires_solution为false，且invariant中明确存在additivity与monotonicity性质，表明最优路径的构造完全由行列长度与起止坐标决定，可通过O(n)模拟直接还原。这直接触发rule_under_review.eligibility.forbidden_seed_properties中的“原解只要顺手回溯就能拿到方案”。同时，helpers.redlines明确警告“不能退化为输出后处理”，该种子题的确定性结构使得规范解要求难以深入core_constraints与invariant，必然导致required_axis_changes(C,O,V)无法发生实质性演变。",
+        "feedback": "建议更换具有多解空间或解结构非平凡的种子题（如组合构造、带复杂剪枝的搜索/DP题），以便规范顺序能真正介入状态设计与验证逻辑，避免规则退化为纯输出格式包装。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "seed_lacks_obstruction_basis",
+      "message": "原题CF253C为连通状态空间上的最短路径问题，状态转移规则保证任意合法输入均可达，不存在天然的无解情形。规则强制要求提供可局部检查的冲突证据，但种子题缺乏支撑该语义的约束基础，强行应用会导致失败分支退化为死代码或需人为捏造不可行条件，违反规则准入前提。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "forced_branch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "schema中objective为minimize_value，core_constraints定义的光标移动规则在给定行列边界内构成连通图；invariant仅描述代价可加性与列坐标单调性，未包含任何可达性限制或不可满足条件。规则eligibility.required_seed_properties明确要求'做不到的原因可以用局部证据表示'，但原题输入结构与约束均无法提供此类证据载体。",
+        "feedback": "建议替换为具有天然不可行性判定基础的种子题（如存在奇偶校验、容量瓶颈或明确割条件的构造/图论题）。若需保留本题，必须重构核心约束以引入真实的不可达情形，但这将偏离单种子扩展原则并可能触碰全局红线。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "seed_structure_mismatch",
+      "message": "种子题为带min截断的最短路径优化问题，Schema未提供解空间等价关系定义与可拆分汇总的结构证据；直接转为计数题易退化为仅添加模数或统计路径数，违反规则redlines中‘不能只补一个模数’与‘不能不定义什么算不同答案’的要求，且核心状态转移的耦合特性使去重与单元分解缺乏明确依据。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.25,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要objective为minimize_value，core_constraints为带min截断的state_transition，invariant为additivity。规则eligibility要求‘不同解之间的等价关系能说清楚’与‘可以按某种单元拆分并汇总’，但当前Schema未体现路径等价类划分或独立计数单元；helpers中redlines明确禁止‘不能只补一个模数’和‘不能不定义什么算不同答案’，现有证据不足以支撑该转换的严谨性。",
+        "feedback": "需明确计数对象（如操作序列/状态序列/有效路径）的等价类定义，并证明在min截断约束下解空间可按独立单元拆分汇总。若无法提供去重口径与有限性证明路径，建议更换具有天然组合分解结构（如排列组合、图论DAG路径计数）的种子题。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation",
+      "message": "原题CF253C为完全确定性的网格光标移动问题，输入为静态行长度数组与固定起止坐标，状态转移规则严格确定，不具备规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行套用将导致扰动模型脱离原题语义，违反“扰动模型必须来自原题本身”及“不能凭背景硬造对手”的红线。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.15,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints.formal 明确给出确定性转移公式（如 Up: r>1 时移至 (r-1, min(c, a[r-1]+1))），objective 为固定起点终点的最少按键次数。rule_under_review.eligibility.required_seed_properties 明确要求“原题里本来就有顺序不确定、资源波动或局部选择差异”，但原题输入结构与约束均为静态确定值，无任何内在不确定性或对抗结构可供放大。",
+        "feedback": "该规则高度依赖种子题自带的非确定性或资源波动特性。建议替换为具有动态环境、非确定执行序列或隐式资源约束的题目作为种子，否则极易退化为外层二分或生硬添加对抗层，无法通过后续规划的硬校验。"
+      }
+    }
+  ],
+  "candidate_attempts": [],
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "没有规则通过资格校验。",
+    "feedback": "请更换种子题，或调整规则集合。"
+  }
+}

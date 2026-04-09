@@ -10,6 +10,16 @@ except ImportError:
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BASE_DIR.parent
 
+
+def _get_env_int(name: str, default: int) -> int:
+    raw = get_env_value(name)
+    if raw is None:
+        return default
+    try:
+        return int(str(raw).strip())
+    except ValueError:
+        return default
+
 DEFAULT_SOURCE_DIR = (
     PROJECT_ROOT / "四元组抽取" / "output" / "batch" / "normalized"
 )
@@ -25,6 +35,7 @@ DEFAULT_BASE_URL = get_env_value(
     "QWEN_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1"
 )
 DEFAULT_API_KEY = get_env_value("QWEN_API_KEY") or get_env_value("DASHSCOPE_API_KEY")
+DEFAULT_TIMEOUT_S = _get_env_int("QWEN_TIMEOUT_S", 360)
 
 DEFAULT_VARIANTS = 1
 DEFAULT_TEMPERATURE = 0.2

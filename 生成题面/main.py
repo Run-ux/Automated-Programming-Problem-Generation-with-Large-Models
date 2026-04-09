@@ -17,6 +17,7 @@ from config import (
     DEFAULT_RULE_FILE,
     DEFAULT_SOURCE_DIR,
     DEFAULT_TEMPERATURE,
+    DEFAULT_TIMEOUT_S,
     DEFAULT_VARIANTS,
 )
 from pipeline import GenerationPipeline
@@ -50,6 +51,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--artifact-dir", default=str(DEFAULT_ARTIFACT_DIR), help="结构化产物目录")
     parser.add_argument("--report-dir", default=str(DEFAULT_REPORT_DIR), help="过程说明 Markdown 输出目录")
     parser.add_argument("--rule-file", default=str(DEFAULT_RULE_FILE), help="规则 JSON 文件")
+    parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT_S, help="模型接口请求超时秒数")
     parser.add_argument("--temperature", type=float, default=DEFAULT_TEMPERATURE, help="采样温度")
     parser.add_argument("--seed", type=int, default=20260312, help="随机种子")
     parser.add_argument(
@@ -77,6 +79,7 @@ def main() -> None:
         api_key=DEFAULT_API_KEY,
         model=DEFAULT_MODEL,
         base_url=DEFAULT_BASE_URL,
+        timeout_s=args.timeout,
         embedding_model=DEFAULT_EMBEDDING_MODEL,
     )
     rulebook = RuleBook.load(args.rule_file)
@@ -116,6 +119,8 @@ def main() -> None:
 
 
 def _validate_args(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
+    if args.timeout <= 0:
+        parser.error("--timeout 必须是正整数。")
     if args.mode == "single":
         if args.seed_a or args.seed_b:
             parser.error("single 模式不接受 --seed-a 或 --seed-b。")

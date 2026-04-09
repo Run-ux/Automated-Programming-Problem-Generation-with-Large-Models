@@ -1,0 +1,354 @@
+{
+  "problem_id": "hackerearth_train-00019-of-00039-d688fad5ee604390__row_0028",
+  "source_problem_ids": [
+    "hackerearth_train-00019-of-00039-d688fad5ee604390__row_0028"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "没有规则通过资格校验。",
+    "summary": "规则规划失败",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.0,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "lexical_fallback",
+    "total": 0.0,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.0,
+      "O": 0.0,
+      "V": 0.0
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.0,
+      "objective_type_distance": 0.0,
+      "objective_text_distance": 0.0,
+      "invariant_match_distance": 0.0
+    }
+  },
+  "changed_axes_realized": [],
+  "objective": {
+    "type": "minimize_value",
+    "description": "Minimize the total cost of purchasing ladders such that each participant's ladder score meets or exceeds their required threshold.",
+    "target": "total_cost",
+    "requires_solution": false
+  },
+  "rule_selection_reason": "所有启用规则都被资格校验拒绝。",
+  "instantiated_schema_snapshot": {
+    "problem_id": "hackerearth_train-00019-of-00039-d688fad5ee604390__row_0028",
+    "source": "hackerearth",
+    "input_structure": {
+      "type": "array",
+      "length": {
+        "min": 1,
+        "max": 10000
+      },
+      "value_range": {
+        "min": 1,
+        "max": 1000000
+      },
+      "properties": {
+        "multiple_test_cases": true
+      },
+      "components": []
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "range_bound",
+          "description": "为每位玩家分配的梯子高度 h 必须满足其欧拉函数值 φ(h) 不小于该玩家给定的目标分数 s。",
+          "formal": "φ(h_i) ≥ s_i, ∀i ∈ [1, n]",
+          "source_sections": [
+            "description"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "minimize_value",
+      "description": "Minimize the total cost of purchasing ladders such that each participant's ladder score meets or exceeds their required threshold.",
+      "target": "total_cost",
+      "requires_solution": false
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "additivity",
+          "description": "The total minimum expenditure decomposes into the sum of independently computed minimum costs for each participant. The absence of shared constraints or coupling between queries allows the global objective to be solved by directly aggregating per-query local optima.",
+          "properties": {},
+          "evidence_source": "solution_code"
+        },
+        {
+          "name": "monotonicity",
+          "description": "The minimum ladder height required to achieve a given score threshold is a non-decreasing function of the threshold. This stable ordering ensures the feasible search interval for each query can be narrowed unidirectionally via binary search on a precomputed sequence.",
+          "properties": {},
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Medium"
+  },
+  "applied_rule": "",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {},
+  "shared_core_summary": "",
+  "shared_core_anchors": {},
+  "seed_contributions": {},
+  "fusion_ablation": {},
+  "applied_helpers": [],
+  "planning_status": "difference_insufficient",
+  "planning_error_reason": "没有规则通过资格校验。",
+  "planning_feedback": "请更换种子题，或调整规则集合。",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": false,
+      "score": 0.25,
+      "reason_code": "forbidden_seed_property",
+      "selection_reason": "原题目标为最小化总代价，且不变量明确指出问题具有完全可加性（additivity），每位玩家的最优梯子高度可独立通过二分或查表直接得出。输出规范解仅需收集各查询的独立最优值，属于规则声明中明确禁止的“原解只要顺手回溯就能拿到方案”情形，缺乏升级为带规范性构造输出的算法空间。",
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.invariant.invariants[0].description 明确指出 'The total minimum expenditure decomposes into the sum of independently computed minimum costs for each participant.'；seed_schema.objective.requires_solution 为 false；规则声明 forbidden_seed_properties 包含 '原解只要顺手回溯就能拿到方案'。",
+        "feedback": "该种子题的解空间高度解耦，规范解的提取与原题求值过程完全重合。若强行应用此规则，极易退化为仅修改输出格式的浅层变换。建议选用具有全局耦合约束、状态转移依赖历史选择或存在多解冲突需额外规范性剪枝的种子题。"
+      }
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "always_feasible_seed",
+      "selection_reason": "原题约束 φ(h_i) ≥ s_i 在正整数域内恒有解，不存在天然无解分支；强行构造不可行情形需引入与原核心规律无关的额外约束，违反全局红线且无法自然导出可局部检查的冲突证据。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints 定义 'φ(h_i) ≥ s_i, ∀i ∈ [1, n]'，且 invariant 明确指出 'absence of shared constraints or coupling' 与 'monotonicity'，表明各查询独立且搜索空间无界。规则 required_seed_properties 要求 '做不到的原因可以用局部证据表示'，但当前种子题数学结构天然排除无解情形，缺乏构造 obstruction 的语义基础。若强行添加不可行条件将触碰红线 '跟原核心规律无关的额外约束'。",
+        "feedback": "建议替换为具有天然不可行性（如容量限制、匹配冲突、图连通性破坏或强耦合资源竞争）的种子题；若坚持使用本题，需在不违反红线的前提下显式定义与原约束强耦合的硬性资源上限或互斥条件，否则无法通过冲突证书审查。"
+      }
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "forbidden_property_violation",
+      "selection_reason": "种子题核心约束 φ(h_i) ≥ s_i 对变量 h_i 无上界限制，导致满足条件的解空间天然无限，直接违反规则明确禁止的“解空间天然无限”条件。同时，原题独立最小化求和的结构缺乏明确的有限计数对象与等价类划分依据，无法支撑“定义清楚计数对象、有限性和去重规则”的核心义务。",
+      "risk_tags": [
+        "infinite_solution_space",
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "规则 eligibility 中 forbidden_seed_properties 明确包含“解空间天然无限”，required_seed_properties 要求“解空间有限”与“不同解之间的等价关系能说清楚”。原题摘要 core_constraints 描述为“φ(h_i) ≥ s_i, ∀i ∈ [1, n]”，且 invariant 指出“absence of shared constraints... allows the global objective to be solved by directly aggregating per-query local optima”。该数学约束在自然数域内对 h_i 无上限，解集无限，且原题目标为独立最优值聚合，未提供可转化为有限计数单元的等价关系或边界条件。",
+        "feedback": "当前种子不具备改造为计数题的基础条件。强行引入人工上界或修改约束将触发全局红线（只改参数范围/状态结构不变）或导致语义断裂。建议放弃此规则对该种子的应用，或转向保留优化/判定性质的规则族。"
+      }
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "missing_native_perturbation",
+      "selection_reason": "原题语义为完全确定性的独立查询优化（φ(h_i)≥s_i），具有强可加性与单调性，缺乏规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行引入扰动将违反“扰动模型必须来自原题本身”的硬性要求，极易退化为硬造对手或外层套二分。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.invariant.additivity 明确指出 'absence of shared constraints or coupling between queries allows the global objective to be solved by directly aggregating per-query local optima'；core_constraints 为确定性不等式 'φ(h_i) ≥ s_i'。原题无任何不确定性或对抗结构，不满足 eligibility.required_seed_properties 中的 '原题里本来就有顺序不确定、资源波动或局部选择差异'。",
+        "feedback": "该规则依赖种子题自带的不确定性或耦合结构。当前种子题为纯确定性独立优化，无法在不违背红线的前提下提取原生扰动模型。建议替换为具有内在顺序依赖、资源竞争或状态波动的题目（如带时间窗的调度、动态图匹配或含随机/对抗输入的DP/贪心题）后再尝试应用此规则。"
+      }
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "forbidden_seed_property",
+      "message": "原题目标为最小化总代价，且不变量明确指出问题具有完全可加性（additivity），每位玩家的最优梯子高度可独立通过二分或查表直接得出。输出规范解仅需收集各查询的独立最优值，属于规则声明中明确禁止的“原解只要顺手回溯就能拿到方案”情形，缺乏升级为带规范性构造输出的算法空间。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.25,
+        "risk_tags": [
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.invariant.invariants[0].description 明确指出 'The total minimum expenditure decomposes into the sum of independently computed minimum costs for each participant.'；seed_schema.objective.requires_solution 为 false；规则声明 forbidden_seed_properties 包含 '原解只要顺手回溯就能拿到方案'。",
+        "feedback": "该种子题的解空间高度解耦，规范解的提取与原题求值过程完全重合。若强行应用此规则，极易退化为仅修改输出格式的浅层变换。建议选用具有全局耦合约束、状态转移依赖历史选择或存在多解冲突需额外规范性剪枝的种子题。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "always_feasible_seed",
+      "message": "原题约束 φ(h_i) ≥ s_i 在正整数域内恒有解，不存在天然无解分支；强行构造不可行情形需引入与原核心规律无关的额外约束，违反全局红线且无法自然导出可局部检查的冲突证据。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints 定义 'φ(h_i) ≥ s_i, ∀i ∈ [1, n]'，且 invariant 明确指出 'absence of shared constraints or coupling' 与 'monotonicity'，表明各查询独立且搜索空间无界。规则 required_seed_properties 要求 '做不到的原因可以用局部证据表示'，但当前种子题数学结构天然排除无解情形，缺乏构造 obstruction 的语义基础。若强行添加不可行条件将触碰红线 '跟原核心规律无关的额外约束'。",
+        "feedback": "建议替换为具有天然不可行性（如容量限制、匹配冲突、图连通性破坏或强耦合资源竞争）的种子题；若坚持使用本题，需在不违反红线的前提下显式定义与原约束强耦合的硬性资源上限或互斥条件，否则无法通过冲突证书审查。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "forbidden_property_violation",
+      "message": "种子题核心约束 φ(h_i) ≥ s_i 对变量 h_i 无上界限制，导致满足条件的解空间天然无限，直接违反规则明确禁止的“解空间天然无限”条件。同时，原题独立最小化求和的结构缺乏明确的有限计数对象与等价类划分依据，无法支撑“定义清楚计数对象、有限性和去重规则”的核心义务。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.2,
+        "risk_tags": [
+          "infinite_solution_space",
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "规则 eligibility 中 forbidden_seed_properties 明确包含“解空间天然无限”，required_seed_properties 要求“解空间有限”与“不同解之间的等价关系能说清楚”。原题摘要 core_constraints 描述为“φ(h_i) ≥ s_i, ∀i ∈ [1, n]”，且 invariant 指出“absence of shared constraints... allows the global objective to be solved by directly aggregating per-query local optima”。该数学约束在自然数域内对 h_i 无上限，解集无限，且原题目标为独立最优值聚合，未提供可转化为有限计数单元的等价关系或边界条件。",
+        "feedback": "当前种子不具备改造为计数题的基础条件。强行引入人工上界或修改约束将触发全局红线（只改参数范围/状态结构不变）或导致语义断裂。建议放弃此规则对该种子的应用，或转向保留优化/判定性质的规则族。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation",
+      "message": "原题语义为完全确定性的独立查询优化（φ(h_i)≥s_i），具有强可加性与单调性，缺乏规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行引入扰动将违反“扰动模型必须来自原题本身”的硬性要求，极易退化为硬造对手或外层套二分。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.invariant.additivity 明确指出 'absence of shared constraints or coupling between queries allows the global objective to be solved by directly aggregating per-query local optima'；core_constraints 为确定性不等式 'φ(h_i) ≥ s_i'。原题无任何不确定性或对抗结构，不满足 eligibility.required_seed_properties 中的 '原题里本来就有顺序不确定、资源波动或局部选择差异'。",
+        "feedback": "该规则依赖种子题自带的不确定性或耦合结构。当前种子题为纯确定性独立优化，无法在不违背红线的前提下提取原生扰动模型。建议替换为具有内在顺序依赖、资源竞争或状态波动的题目（如带时间窗的调度、动态图匹配或含随机/对抗输入的DP/贪心题）后再尝试应用此规则。"
+      }
+    }
+  ],
+  "candidate_attempts": [],
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "没有规则通过资格校验。",
+    "feedback": "请更换种子题，或调整规则集合。"
+  }
+}
