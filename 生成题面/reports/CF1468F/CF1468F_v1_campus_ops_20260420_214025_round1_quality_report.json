@@ -1,0 +1,800 @@
+{
+  "overall": {
+    "status": "reject_as_retheme",
+    "quality_score": 20.0,
+    "divergence_score": 0.0,
+    "schema_distance": 0.0,
+    "generated_status": "difference_insufficient"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 1.0,
+        "rationale": "生成题面的所有核心字段（description、input_format、output_format、constraints）均为空字符串或空数组，new_schema 中明确规划的向量反向匹配约束、计数目标、等价类不变量及校园运营主题完全未落地到题面文本中。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.output_format",
+          "generated_problem.constraints",
+          "hard_checks.generated_status_ok"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 1.0,
+        "rationale": "题面缺失任务说明、输入输出格式、数据范围及样例等全部关键信息，读者无法获取任何解题所需的规则或边界条件，完全不具备独立做题的基础。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.output_format",
+          "generated_problem.constraints",
+          "hard_checks.sample_count"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 1.0,
+        "rationale": "由于题面各部分均为空，不存在任何有效信息可供交叉验证，字段数量、目标定义与格式声明全面缺失，属于严重的结构性断裂。",
+        "evidence_refs": [
+          "generated_problem.title",
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.output_format"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 1.0,
+        "rationale": "样例数组为空，数量为0，无任何输入输出对照或解释说明，无法覆盖关键结构或辅助理解题意。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks.sample_count"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 1.0,
+        "rationale": "题面标题、描述、格式说明均为空，状态标记为 difference_insufficient 并附带生成失败反馈，存在明显的管线中断污染，完全不符合 OJ 题面表达规范。",
+        "evidence_refs": [
+          "generated_problem.title",
+          "generated_problem.description",
+          "generated_problem.status",
+          "generated_problem.feedback"
+        ]
+      }
+    ],
+    "strengths": [
+      "new_schema 规划清晰，明确定义了向量反向匹配的几何约束、归一化等价类不变量以及顺序累加的计数策略，为后续题面生成提供了良好的算法骨架。",
+      "主题映射方向（校园运营/排队/视线交互）具有较好的现实贴合度，若成功落地可有效提升题面可读性与趣味性。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "distance_version": "v2",
+      "backend": "embedding",
+      "total": 0.0,
+      "axis_scores": {
+        "I": 0.0,
+        "C": 0.0,
+        "O": 0.0,
+        "V": 0.0
+      },
+      "components": {
+        "input_tree_distance": 0.0,
+        "constraint_match_distance": 0.0,
+        "objective_type_distance": 0.0,
+        "objective_text_distance": 0.0,
+        "invariant_match_distance": 0.0
+      }
+    },
+    "schema_distance": 0.0,
+    "changed_axes_planned": [],
+    "changed_axes_realized": [],
+    "semantic_difference": 0.0,
+    "solution_transfer_risk": 1.0,
+    "surface_retheme_risk": 1.0,
+    "verdict": "reject_as_retheme",
+    "rationale": "新题生成完全失败，generated_problem 核心字段均为空且状态标记为 difference_insufficient。new_schema 与 original_schema 在输入结构、核心约束、目标函数及不变量上完全一致，schema_distance 为 0.0，且 changed_axes_realized 为空，表明未进行任何实质性的规则或维度调整。hard_checks 明确拦截了 schema_distance_threshold 和 changed_axes_threshold。由于题目未实际产出，不存在任何语义差异，原题的标准解法（方向向量归一化+频次表统计相反向量对）可无条件直接迁移。表层换皮意图明确但执行彻底失败，属于典型的无效换皮/生成阻断案例。",
+    "evidence_refs": [
+      "snapshots.generated_problem.status",
+      "snapshots.generated_problem.description",
+      "divergence.schema_distance_breakdown",
+      "snapshots.difference_plan",
+      "hard_checks.generated_status_ok",
+      "hard_checks.schema_distance_threshold",
+      "hard_checks.changed_axes_threshold"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_problem_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 generated_problem。",
+      "evidence_refs": [
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "new_schema_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 new_schema 或兼容字段 new_schema_snapshot。",
+      "evidence_refs": [
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": false,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "生成产物状态为 difference_insufficient：没有规则通过资格校验。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "predicted_schema_distance_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 predicted_schema_distance。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "distance_breakdown_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 distance_breakdown。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "changed_axes_realized_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 changed_axes_realized。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": false,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.00，低于 0.35。 已接近同母题换皮（<0.25）。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": false,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "仅落地了 0 个核心差异轴：无。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题或题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": false,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=0。 少于 2 组。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "目标函数已经在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "generated status ok",
+      "detail": "生成产物状态为 difference_insufficient：没有规则通过资格校验。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ],
+      "fix_hint": "先修复生成阶段的 schema 或 difference 问题，再重新生成题面。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "schema distance threshold",
+      "detail": "schema_distance=0.00，低于 0.35。 已接近同母题换皮（<0.25）。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ],
+      "fix_hint": "提高输入、约束与目标的结构差异，避免停留在同母题换皮。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "changed axes threshold",
+      "detail": "仅落地了 0 个核心差异轴：无。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ],
+      "fix_hint": "至少让 I、C、O、V 中两个核心轴发生实质变化。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "sample count",
+      "detail": "样例数量=0。 少于 2 组。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ],
+      "fix_hint": "至少补齐两组可验证样例。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "生成管线完全失败，题面内容为空",
+      "detail": "generated_problem 的 title、description、input_format、output_format、constraints、samples 等核心字段全部为空字符串或空数组，且 status 为 difference_insufficient，表明规则未通过资格校验，未产出任何有效文本。",
+      "evidence_refs": [
+        "generated_problem.status",
+        "generated_problem.description",
+        "hard_checks.generated_status_ok"
+      ],
+      "fix_hint": "检查生成管线的规则过滤与文本渲染逻辑，确保在规则校验通过后能正确将 new_schema 映射为完整题面文本。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "核心差异轴未落地，Schema 距离为 0",
+      "detail": "hard_checks 显示 schema_distance=0.00 且 changed_axes_realized 为空，说明规划中的向量归一化、配对计数逻辑及校园主题映射均未在题面中体现，属于同母题未换皮或生成中断。",
+      "evidence_refs": [
+        "hard_checks.schema_distance_threshold",
+        "hard_checks.changed_axes_threshold",
+        "review_context.distance_breakdown"
+      ],
+      "fix_hint": "重新配置差异规则或调整种子题，确保至少有一个核心差异轴（如约束转化、主题映射、输入结构）被成功实例化到题面中。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "样例完全缺失",
+      "detail": "samples 字段为空数组，不满足 OJ 题面至少提供 2 组样例的基本要求，无法验证格式或逻辑。",
+      "evidence_refs": [
+        "generated_problem.samples",
+        "hard_checks.sample_count"
+      ],
+      "fix_hint": "根据 new_schema 的输入结构（多组测试用例、数组长度 1~1e5）和计数目标，构造至少 2 组覆盖基础匹配与边界情况的样例，并补充对应输出。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "solution transfer risk too high",
+      "detail": "新题生成完全失败，generated_problem 核心字段均为空且状态标记为 difference_insufficient。new_schema 与 original_schema 在输入结构、核心约束、目标函数及不变量上完全一致，schema_distance 为 0.0，且 changed_axes_realized 为空，表明未进行任何实质性的规则或维度调整。hard_checks 明确拦截了 schema_distance_threshold 和 changed_axes_threshold。由于题目未实际产出，不存在任何语义差异，原题的标准解法（方向向量归一化+频次表统计相反向量对）可无条件直接迁移。表层换皮意图明确但执行彻底失败，属于典型的无效换皮/生成阻断案例。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status",
+        "snapshots.generated_problem.description",
+        "divergence.schema_distance_breakdown",
+        "snapshots.difference_plan",
+        "hard_checks.generated_status_ok",
+        "hard_checks.schema_distance_threshold",
+        "hard_checks.changed_axes_threshold"
+      ],
+      "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+    }
+  ],
+  "suggested_revisions": [
+    "先修复生成阶段的 schema 或 difference 问题，再重新生成题面。",
+    "提高输入、约束与目标的结构差异，避免停留在同母题换皮。",
+    "至少让 I、C、O、V 中两个核心轴发生实质变化。",
+    "至少补齐两组可验证样例。",
+    "检查生成管线的规则过滤与文本渲染逻辑，确保在规则校验通过后能正确将 new_schema 映射为完整题面文本。",
+    "重新配置差异规则或调整种子题，确保至少有一个核心差异轴（如约束转化、主题映射、输入结构）被成功实例化到题面中。",
+    "根据 new_schema 的输入结构（多组测试用例、数组长度 1~1e5）和计数目标，构造至少 2 组覆盖基础匹配与边界情况的样例，并补充对应输出。",
+    "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+    "修复生成管线中断问题，确保规则校验通过后能输出完整的 Markdown 题面结构。",
+    "严格对照 new_schema 填充 description（融入校园排队/视线交互场景）、input_format（明确多组测试用例与数组范围）、output_format（明确输出配对总数）。",
+    "补充至少 2 组样例，包含无匹配、单组匹配及多组匹配情况，并附带简要解释说明向量归一化与反向匹配的计算过程。",
+    "清理 status 和 feedback 等调试字段，确保最终交付物仅包含标准 OJ 题面内容。",
+    "优先改写核心任务定义，而不是继续替换故事背景。"
+  ],
+  "revision_brief": {
+    "round_index": 1,
+    "overall_status": "reject_as_retheme",
+    "generated_status": "difference_insufficient",
+    "quality_score": 20.0,
+    "divergence_score": 0.0,
+    "failed_hard_checks": [
+      {
+        "check_id": "generated_status_ok",
+        "severity": "blocker",
+        "category": "retheme_issue",
+        "message": "生成产物状态为 difference_insufficient：没有规则通过资格校验。",
+        "evidence_refs": [
+          "snapshots.generated_problem.status"
+        ]
+      },
+      {
+        "check_id": "schema_distance_threshold",
+        "severity": "blocker",
+        "category": "retheme_issue",
+        "message": "schema_distance=0.00，低于 0.35。 已接近同母题换皮（<0.25）。",
+        "evidence_refs": [
+          "divergence.schema_distance_breakdown"
+        ]
+      },
+      {
+        "check_id": "changed_axes_threshold",
+        "severity": "blocker",
+        "category": "retheme_issue",
+        "message": "仅落地了 0 个核心差异轴：无。",
+        "evidence_refs": [
+          "snapshots.difference_plan",
+          "snapshots.new_schema"
+        ]
+      },
+      {
+        "check_id": "sample_count",
+        "severity": "major",
+        "category": "quality_issue",
+        "message": "样例数量=0。 少于 2 组。",
+        "evidence_refs": [
+          "snapshots.generated_problem.samples"
+        ]
+      }
+    ],
+    "issues": [
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "generated status ok",
+        "detail": "生成产物状态为 difference_insufficient：没有规则通过资格校验。",
+        "evidence_refs": [
+          "snapshots.generated_problem.status"
+        ],
+        "fix_hint": "先修复生成阶段的 schema 或 difference 问题，再重新生成题面。"
+      },
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "schema distance threshold",
+        "detail": "schema_distance=0.00，低于 0.35。 已接近同母题换皮（<0.25）。",
+        "evidence_refs": [
+          "divergence.schema_distance_breakdown"
+        ],
+        "fix_hint": "提高输入、约束与目标的结构差异，避免停留在同母题换皮。"
+      },
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "changed axes threshold",
+        "detail": "仅落地了 0 个核心差异轴：无。",
+        "evidence_refs": [
+          "snapshots.difference_plan",
+          "snapshots.new_schema"
+        ],
+        "fix_hint": "至少让 I、C、O、V 中两个核心轴发生实质变化。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "sample count",
+        "detail": "样例数量=0。 少于 2 组。",
+        "evidence_refs": [
+          "snapshots.generated_problem.samples"
+        ],
+        "fix_hint": "至少补齐两组可验证样例。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "生成管线完全失败，题面内容为空",
+        "detail": "generated_problem 的 title、description、input_format、output_format、constraints、samples 等核心字段全部为空字符串或空数组，且 status 为 difference_insufficient，表明规则未通过资格校验，未产出任何有效文本。",
+        "evidence_refs": [
+          "generated_problem.status",
+          "generated_problem.description",
+          "hard_checks.generated_status_ok"
+        ],
+        "fix_hint": "检查生成管线的规则过滤与文本渲染逻辑，确保在规则校验通过后能正确将 new_schema 映射为完整题面文本。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "核心差异轴未落地，Schema 距离为 0",
+        "detail": "hard_checks 显示 schema_distance=0.00 且 changed_axes_realized 为空，说明规划中的向量归一化、配对计数逻辑及校园主题映射均未在题面中体现，属于同母题未换皮或生成中断。",
+        "evidence_refs": [
+          "hard_checks.schema_distance_threshold",
+          "hard_checks.changed_axes_threshold",
+          "review_context.distance_breakdown"
+        ],
+        "fix_hint": "重新配置差异规则或调整种子题，确保至少有一个核心差异轴（如约束转化、主题映射、输入结构）被成功实例化到题面中。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "样例完全缺失",
+        "detail": "samples 字段为空数组，不满足 OJ 题面至少提供 2 组样例的基本要求，无法验证格式或逻辑。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks.sample_count"
+        ],
+        "fix_hint": "根据 new_schema 的输入结构（多组测试用例、数组长度 1~1e5）和计数目标，构造至少 2 组覆盖基础匹配与边界情况的样例，并补充对应输出。"
+      },
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "solution transfer risk too high",
+        "detail": "新题生成完全失败，generated_problem 核心字段均为空且状态标记为 difference_insufficient。new_schema 与 original_schema 在输入结构、核心约束、目标函数及不变量上完全一致，schema_distance 为 0.0，且 changed_axes_realized 为空，表明未进行任何实质性的规则或维度调整。hard_checks 明确拦截了 schema_distance_threshold 和 changed_axes_threshold。由于题目未实际产出，不存在任何语义差异，原题的标准解法（方向向量归一化+频次表统计相反向量对）可无条件直接迁移。表层换皮意图明确但执行彻底失败，属于典型的无效换皮/生成阻断案例。",
+        "evidence_refs": [
+          "snapshots.generated_problem.status",
+          "snapshots.generated_problem.description",
+          "divergence.schema_distance_breakdown",
+          "snapshots.difference_plan",
+          "hard_checks.generated_status_ok",
+          "hard_checks.schema_distance_threshold",
+          "hard_checks.changed_axes_threshold"
+        ],
+        "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+      }
+    ],
+    "suggested_revisions": [
+      "先修复生成阶段的 schema 或 difference 问题，再重新生成题面。",
+      "提高输入、约束与目标的结构差异，避免停留在同母题换皮。",
+      "至少让 I、C、O、V 中两个核心轴发生实质变化。",
+      "至少补齐两组可验证样例。",
+      "检查生成管线的规则过滤与文本渲染逻辑，确保在规则校验通过后能正确将 new_schema 映射为完整题面文本。",
+      "重新配置差异规则或调整种子题，确保至少有一个核心差异轴（如约束转化、主题映射、输入结构）被成功实例化到题面中。",
+      "根据 new_schema 的输入结构（多组测试用例、数组长度 1~1e5）和计数目标，构造至少 2 组覆盖基础匹配与边界情况的样例，并补充对应输出。",
+      "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+      "修复生成管线中断问题，确保规则校验通过后能输出完整的 Markdown 题面结构。",
+      "严格对照 new_schema 填充 description（融入校园排队/视线交互场景）、input_format（明确多组测试用例与数组范围）、output_format（明确输出配对总数）。",
+      "补充至少 2 组样例，包含无匹配、单组匹配及多组匹配情况，并附带简要解释说明向量归一化与反向匹配的计算过程。",
+      "清理 status 和 feedback 等调试字段，确保最终交付物仅包含标准 OJ 题面内容。",
+      "优先改写核心任务定义，而不是继续替换故事背景。"
+    ],
+    "strengths_to_keep": [
+      "new_schema 规划清晰，明确定义了向量反向匹配的几何约束、归一化等价类不变量以及顺序累加的计数策略，为后续题面生成提供了良好的算法骨架。",
+      "主题映射方向（校园运营/排队/视线交互）具有较好的现实贴合度，若成功落地可有效提升题面可读性与趣味性。"
+    ]
+  },
+  "snapshots": {
+    "paths": {
+      "schema_path": "D:\\AutoProblemGen\\四元组抽取\\output\\batch\\normalized\\CF1468F.json",
+      "artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1468F_v1_campus_ops_20260420_214025_round1.json",
+      "markdown_path": "D:\\AutoProblemGen\\生成题面\\output\\CF1468F_v1_campus_ops_20260420_214025_round1.md"
+    },
+    "original_problem": {
+      "selection_id": "sample_04",
+      "problem_id": "CF1468F",
+      "record_uid": "train-00021-of-00039-b257bf03d6876780__row_0031",
+      "statement_language": "english",
+      "title": "1468_F. Full Turn",
+      "description": "There are n persons located on a plane. The i-th person is located at the point (x_i, y_i) and initially looks at the point (u_i, v_i).\n\nAt the same moment of time, all persons will start to rotate clockwise synchronously with the same angular speed. They will rotate until they do one full 360-degree turn. \n\nIt is said that persons A and B made eye contact if person A looks in person B's direction at the same moment when person B looks in person A's direction. If there is a person C located between persons A and B, that will not obstruct A and B from making eye contact. A person can make eye contact with more than one person at the same time.\n\nCalculate the number of pairs of persons that will make eye contact at least once during the rotation (including the initial moment).\n\nInput\n\nThe first line contains one integer t (1 ≤ t ≤ 10^4) — the number of test cases.\n\nThe first line of each test case contains a single integer n (1 ≤ n ≤ 10^5) — the number of persons. The following n lines describe persons, each line containing four space-separated integers x_i, y_i, u_i, v_i (|x_i|, |y_i|, |u_i|, |v_i| ≤ 10^9; x_i ≠ u_i or y_i ≠ v_i), where (x_i, y_i) are the coordinates of the point where the i-th person is located and (u_i, v_i) are the coordinates of the point that the i-th person looks at initially. Each person's location is unique in each test case.\n\nThe sum of n over all test cases does not exceed 10^5.\n\nOutput\n\nFor each test case, print one integer — the number of pairs of persons who will make eye contact at least once during the rotation, including the initial moment.\n\nExample\n\nInput\n\n\n3\n2\n0 0 0 1\n1 0 2 0\n3\n0 0 1 1\n1 1 0 0\n1 0 2 0\n6\n0 0 0 1\n1 0 1 2\n2 0 2 3\n3 0 3 -5\n4 0 4 -5\n5 0 5 -5\n\n\nOutput\n\n\n0\n1\n9",
+      "public_tests": {
+        "input": [
+          "3\n2\n0 0 0 1\n1 0 2 0\n3\n0 0 1 1\n1 1 0 0\n1 0 2 0\n6\n0 0 0 1\n1 0 1 2\n2 0 2 3\n3 0 3 -5\n4 0 4 -5\n5 0 5 -5\n"
+        ],
+        "output": [
+          "\n0\n1\n9\n"
+        ]
+      },
+      "source": {
+        "split": "train",
+        "source_id": 2,
+        "source_name": "CODEFORCES",
+        "url": "https://codeforces.com/contest/1468/problem/F"
+      },
+      "difficulty": {
+        "difficulty_id": 12,
+        "difficulty_name": "F",
+        "difficulty_bucket": null,
+        "cf_rating": 1700,
+        "cf_points": 0.0,
+        "cf_contest_id": 1468,
+        "cf_index": "F",
+        "rating_bucket": "cf_mid"
+      },
+      "tags": [
+        "geometry",
+        "hashing",
+        "number theory"
+      ],
+      "limits": {
+        "time_limit": {
+          "seconds": 2,
+          "nanos": 0
+        },
+        "memory_limit_bytes": 512000000
+      },
+      "io_mode": {
+        "input_file": "",
+        "output_file": "",
+        "non_stdio": false
+      },
+      "translation": {
+        "is_description_translated": false,
+        "untranslated_description": ""
+      },
+      "reference_solution": {
+        "language_id": 3,
+        "language_guess": "python",
+        "code": "from math import gcd;from collections import Counter\nfor _ in range(int(input())):\n    n = int(input());A = [list(map(int, input().split())) for _ in range(n)];cnt = Counter();ans = 0\n    for a, b, c, d in A:x = c - a;y = d - b;g = gcd(x, y);x //= g;y //= g;ans += cnt[-x, -y];cnt[x, y] += 1\n    print(ans)",
+        "char_count": 306,
+        "line_count": 5
+      },
+      "artifact_counts": {
+        "public_tests": 1,
+        "private_tests": 7,
+        "generated_tests": 200,
+        "solutions": 117,
+        "incorrect_solutions": 234
+      },
+      "heuristic_profile": {
+        "tag_families": [
+          "strings",
+          "geometry",
+          "number_theory"
+        ],
+        "structure_candidates": [
+          "geometry",
+          "array"
+        ],
+        "objective_type": "count",
+        "coverage_features": [
+          "objective:count",
+          "rating:cf_mid",
+          "source:CODEFORCES",
+          "structure:array",
+          "structure:geometry",
+          "tag:geometry",
+          "tag:number_theory",
+          "tag:strings"
+        ],
+        "english_filter": {
+          "passed": true,
+          "score": 12
+        },
+        "notes": [
+          "selection favors source, difficulty, tag and structure coverage over sample count",
+          "heuristic_profile fields are inferred from metadata and statement text"
+        ]
+      }
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "不要暴露原题编号、出处或链接。",
+        "不要复写原题的叙事结构、输入输出关系或任务定义。"
+      ],
+      "rationale": "没有规则通过资格校验。",
+      "summary": "规则规划失败",
+      "mode": "single_seed_extension"
+    },
+    "new_schema": {
+      "problem_id": "CF1468F",
+      "source": "codeforces",
+      "input_structure": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 100000
+        },
+        "value_range": {
+          "min": null,
+          "max": null
+        },
+        "properties": {
+          "multiple_test_cases": true,
+          "ordered": true
+        }
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "orientation_constraint",
+            "description": "两人能够发生眼神交流的充要条件是他们的初始视线方向向量恰好相反（即夹角为180度,共线且反向）。由于所有人同步同速旋转360度,相对朝向保持不变,该条件与两人的具体坐标位置无关,仅取决于初始朝向的相对关系。",
+            "formal": "\\vec{d_i} = (u_i-x_i, v_i-y_i), \\vec{d_j} = (u_j-x_j, v_j-y_j), \\exists \\lambda > 0, \\vec{d_i} = -\\lambda \\vec{d_j}",
+            "source_sections": [
+              "description"
+            ]
+          }
+        ]
+      },
+      "objective": {
+        "type": "counting",
+        "description": "统计在同步旋转过程中满足相互注视条件的点对数量",
+        "target": "count",
+        "requires_solution": false
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "equivalence_class",
+            "description": "初始视线方向向量通过除以坐标最大公约数归一化为互质整数对,将共线同向的向量划分为等价类。几何接触条件被严格转化为等价类代表元互为相反数的代数匹配关系。",
+            "properties": {
+              "canonical_form": "primitive_integer_pair",
+              "equivalence_relation": "parallel_and_same_direction",
+              "complement_lookup": "coordinate_negation"
+            },
+            "evidence_source": "solution_code"
+          },
+          {
+            "name": "additivity",
+            "description": "目标配对总数可分解为按处理顺序逐个累加的独立贡献。遍历过程中,当前元素的贡献值等于已维护频次表中相反方向类的累计计数,通过先查询后插入的顺序保证每对组合恰好统计一次。",
+            "properties": {
+              "accumulation_mode": "sequential_one_pass",
+              "contribution_calculation": "frequency_of_negated_vector",
+              "uniqueness_guarantee": "query_before_update"
+            },
+            "evidence_source": "solution_code"
+          }
+        ]
+      },
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "Medium"
+    },
+    "generated_problem": {
+      "title": "",
+      "description": "",
+      "input_format": "",
+      "output_format": "",
+      "constraints": [],
+      "samples": [],
+      "notes": "",
+      "status": "difference_insufficient",
+      "error_reason": "没有规则通过资格校验。",
+      "feedback": "请更换种子题，或调整规则集合。"
+    },
+    "artifact_contract": {
+      "new_schema_present": true,
+      "new_schema_field_present": false,
+      "new_schema_snapshot_field_present": true,
+      "difference_plan_present": true,
+      "predicted_schema_distance_present": true,
+      "distance_breakdown_present": true,
+      "changed_axes_realized_present": true,
+      "generated_problem_present": true
+    },
+    "review_context": {
+      "difference_plan": {
+        "summary": "规则规划失败",
+        "mode": "single_seed_extension",
+        "changed_axes": []
+      },
+      "changed_axes_realized": [],
+      "distance_breakdown": {
+        "distance_version": "v2",
+        "backend": "embedding",
+        "total": 0.0,
+        "axis_scores": {
+          "I": 0.0,
+          "C": 0.0,
+          "O": 0.0,
+          "V": 0.0
+        },
+        "components": {
+          "input_tree_distance": 0.0,
+          "constraint_match_distance": 0.0,
+          "objective_type_distance": 0.0,
+          "objective_text_distance": 0.0,
+          "invariant_match_distance": 0.0
+        }
+      },
+      "applied_rule": "",
+      "applied_helpers": [],
+      "algorithmic_delta_claim": {},
+      "anti_shallow_rationale": ""
+    }
+  }
+}

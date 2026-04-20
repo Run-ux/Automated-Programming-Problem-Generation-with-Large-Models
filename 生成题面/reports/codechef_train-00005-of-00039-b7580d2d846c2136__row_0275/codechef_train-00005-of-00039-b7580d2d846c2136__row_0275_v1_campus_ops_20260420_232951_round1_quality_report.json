@@ -1,0 +1,808 @@
+{
+  "overall": {
+    "status": "reject_as_retheme",
+    "quality_score": 20.0,
+    "divergence_score": 0.0,
+    "schema_distance": 0.0,
+    "generated_status": "difference_insufficient"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 1.0,
+        "rationale": "generated_problem 所有核心文本字段均为空，new_schema 中定义的输入结构（data_array、query_list）、目标函数（max_min_difference）及校园运营主题均未在题面中体现，完全未落地。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "hard_checks.objective_alignment"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 1.0,
+        "rationale": "description、input_format、output_format、constraints 全部为空数组或空字符串，完全缺失独立解题所需的关键信息与边界条件。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.output_format",
+          "generated_problem.constraints"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 1.0,
+        "rationale": "由于题面各模块内容均为空，无法形成有效的逻辑关联与一致性校验，整体处于生成失败状态，无法支撑交叉验证。",
+        "evidence_refs": [
+          "generated_problem.status",
+          "generated_problem.description"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 1.0,
+        "rationale": "samples 数组为空，未提供任何输入输出对及解释，hard_checks.sample_count 明确失败，无法用于理解或验证任务。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks.sample_count"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 1.0,
+        "rationale": "标题、描述、格式说明均为空字符串，status 标记为 difference_insufficient，完全不符合 OJ 题面的基本排版与表达规范，无法阅读。",
+        "evidence_refs": [
+          "generated_problem.title",
+          "generated_problem.description",
+          "generated_problem.status"
+        ]
+      }
+    ],
+    "strengths": [
+      "new_schema 对输入结构、目标函数和主题包装的定义非常清晰，为后续生成提供了明确基准。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "distance_version": "v2",
+      "backend": "embedding",
+      "total": 0.0,
+      "axis_scores": {
+        "I": 0.0,
+        "C": 0.0,
+        "O": 0.0,
+        "V": 0.0
+      },
+      "components": {
+        "input_tree_distance": 0.0,
+        "constraint_match_distance": 0.0,
+        "objective_type_distance": 0.0,
+        "objective_text_distance": 0.0,
+        "invariant_match_distance": 0.0
+      }
+    },
+    "schema_distance": 0.0,
+    "changed_axes_planned": [],
+    "changed_axes_realized": [],
+    "semantic_difference": 0.0,
+    "solution_transfer_risk": 1.0,
+    "surface_retheme_risk": 1.0,
+    "verdict": "reject_as_retheme",
+    "rationale": "新题的 new_schema 与 original_schema 在输入结构、核心约束与目标函数上完全一致，schema_distance 为 0.0，且 changed_axes_realized 为空，表明未规划或落地任何关键差异轴。生成产物状态为 difference_insufficient，题面所有字段（title、description、samples 等）均为空，并明确报错“没有规则通过资格校验”。这说明生成流程未能产出有效题目，仅尝试在 schema 层添加表层主题（campus_ops）但未实际改写题面。在此情况下，原题的区间最值查询（RMQ/线段树/ST表）解法可 100% 直接迁移，无需任何建模调整或逻辑修改。综合结构距离、生成失败状态与硬检查失败项，该题属于典型的生成失败/纯换皮尝试，无实质语义差异。",
+    "evidence_refs": [
+      "snapshots.new_schema",
+      "snapshots.generated_problem.status",
+      "divergence.schema_distance_breakdown",
+      "hard_checks.schema_distance_threshold",
+      "hard_checks.changed_axes_threshold",
+      "hard_checks.generated_status_ok",
+      "hard_checks.objective_alignment"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_problem_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 generated_problem。",
+      "evidence_refs": [
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "new_schema_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 new_schema 或兼容字段 new_schema_snapshot。",
+      "evidence_refs": [
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": false,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "生成产物状态为 difference_insufficient：没有规则通过资格校验。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "predicted_schema_distance_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 predicted_schema_distance。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "distance_breakdown_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 distance_breakdown。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "changed_axes_realized_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 changed_axes_realized。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": false,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.00，低于 0.35。 已接近同母题换皮（<0.25）。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": false,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "仅落地了 0 个核心差异轴：无。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题或题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": false,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=0。 少于 2 组。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": false,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "数值目标未在题面中明确表达。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "generated status ok",
+      "detail": "生成产物状态为 difference_insufficient：没有规则通过资格校验。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ],
+      "fix_hint": "先修复生成阶段的 schema 或 difference 问题，再重新生成题面。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "schema distance threshold",
+      "detail": "schema_distance=0.00，低于 0.35。 已接近同母题换皮（<0.25）。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ],
+      "fix_hint": "提高输入、约束与目标的结构差异，避免停留在同母题换皮。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "changed axes threshold",
+      "detail": "仅落地了 0 个核心差异轴：无。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ],
+      "fix_hint": "至少让 I、C、O、V 中两个核心轴发生实质变化。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "sample count",
+      "detail": "样例数量=0。 少于 2 组。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ],
+      "fix_hint": "至少补齐两组可验证样例。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "blocker",
+      "title": "objective alignment",
+      "detail": "数值目标未在题面中明确表达。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ],
+      "fix_hint": "在 output_format 和 notes 中明确真实目标函数与必要的 tie-break。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "生成产物完全为空且状态异常",
+      "detail": "generated_problem 的 title、description、input_format 等核心字段均为空字符串，status 为 difference_insufficient，表明生成流程未产出有效题面文本。",
+      "evidence_refs": [
+        "generated_problem.title",
+        "generated_problem.description",
+        "generated_problem.status"
+      ],
+      "fix_hint": "检查生成管线或规则校验逻辑，确保在通过资格校验后输出完整、非空的题面文本。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "核心目标与输入结构未落地",
+      "detail": "new_schema 明确指定了计算区间最大最小值差值的目标及双数组输入结构，但题面中完全缺失对应描述，hard_checks.objective_alignment 已明确失败。",
+      "evidence_refs": [
+        "new_schema.objective",
+        "hard_checks.objective_alignment"
+      ],
+      "fix_hint": "在 description 和 output_format 中明确写出计算 max-min 差值的任务要求，并描述输入数组与查询区间的格式。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "样例数据缺失",
+      "detail": "samples 数组为空，hard_checks.sample_count 失败，无法提供基础验证与格式参考。",
+      "evidence_refs": [
+        "generated_problem.samples",
+        "hard_checks.sample_count"
+      ],
+      "fix_hint": "补充至少 2 组覆盖常规与边界情况的样例输入输出，并附带简要解释。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "solution transfer risk too high",
+      "detail": "新题的 new_schema 与 original_schema 在输入结构、核心约束与目标函数上完全一致，schema_distance 为 0.0，且 changed_axes_realized 为空，表明未规划或落地任何关键差异轴。生成产物状态为 difference_insufficient，题面所有字段（title、description、samples 等）均为空，并明确报错“没有规则通过资格校验”。这说明生成流程未能产出有效题目，仅尝试在 schema 层添加表层主题（campus_ops）但未实际改写题面。在此情况下，原题的区间最值查询（RMQ/线段树/ST表）解法可 100% 直接迁移，无需任何建模调整或逻辑修改。综合结构距离、生成失败状态与硬检查失败项，该题属于典型的生成失败/纯换皮尝试，无实质语义差异。",
+      "evidence_refs": [
+        "snapshots.new_schema",
+        "snapshots.generated_problem.status",
+        "divergence.schema_distance_breakdown",
+        "hard_checks.schema_distance_threshold",
+        "hard_checks.changed_axes_threshold",
+        "hard_checks.generated_status_ok",
+        "hard_checks.objective_alignment"
+      ],
+      "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+    }
+  ],
+  "suggested_revisions": [
+    "先修复生成阶段的 schema 或 difference 问题，再重新生成题面。",
+    "提高输入、约束与目标的结构差异，避免停留在同母题换皮。",
+    "至少让 I、C、O、V 中两个核心轴发生实质变化。",
+    "至少补齐两组可验证样例。",
+    "在 output_format 和 notes 中明确真实目标函数与必要的 tie-break。",
+    "检查生成管线或规则校验逻辑，确保在通过资格校验后输出完整、非空的题面文本。",
+    "在 description 和 output_format 中明确写出计算 max-min 差值的任务要求，并描述输入数组与查询区间的格式。",
+    "补充至少 2 组覆盖常规与边界情况的样例输入输出，并附带简要解释。",
+    "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+    "修复生成中断问题，确保输出非空且结构完整的题面文本。",
+    "严格对照 new_schema 填充 description、input/output format 和 constraints 字段。",
+    "补充符合题意与格式的样例数据，并添加必要的说明。",
+    "优先改写核心任务定义，而不是继续替换故事背景。"
+  ],
+  "revision_brief": {
+    "round_index": 1,
+    "overall_status": "reject_as_retheme",
+    "generated_status": "difference_insufficient",
+    "quality_score": 20.0,
+    "divergence_score": 0.0,
+    "failed_hard_checks": [
+      {
+        "check_id": "generated_status_ok",
+        "severity": "blocker",
+        "category": "retheme_issue",
+        "message": "生成产物状态为 difference_insufficient：没有规则通过资格校验。",
+        "evidence_refs": [
+          "snapshots.generated_problem.status"
+        ]
+      },
+      {
+        "check_id": "schema_distance_threshold",
+        "severity": "blocker",
+        "category": "retheme_issue",
+        "message": "schema_distance=0.00，低于 0.35。 已接近同母题换皮（<0.25）。",
+        "evidence_refs": [
+          "divergence.schema_distance_breakdown"
+        ]
+      },
+      {
+        "check_id": "changed_axes_threshold",
+        "severity": "blocker",
+        "category": "retheme_issue",
+        "message": "仅落地了 0 个核心差异轴：无。",
+        "evidence_refs": [
+          "snapshots.difference_plan",
+          "snapshots.new_schema"
+        ]
+      },
+      {
+        "check_id": "sample_count",
+        "severity": "major",
+        "category": "quality_issue",
+        "message": "样例数量=0。 少于 2 组。",
+        "evidence_refs": [
+          "snapshots.generated_problem.samples"
+        ]
+      },
+      {
+        "check_id": "objective_alignment",
+        "severity": "blocker",
+        "category": "quality_issue",
+        "message": "数值目标未在题面中明确表达。",
+        "evidence_refs": [
+          "snapshots.new_schema.objective",
+          "snapshots.generated_problem.output_format"
+        ]
+      }
+    ],
+    "issues": [
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "generated status ok",
+        "detail": "生成产物状态为 difference_insufficient：没有规则通过资格校验。",
+        "evidence_refs": [
+          "snapshots.generated_problem.status"
+        ],
+        "fix_hint": "先修复生成阶段的 schema 或 difference 问题，再重新生成题面。"
+      },
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "schema distance threshold",
+        "detail": "schema_distance=0.00，低于 0.35。 已接近同母题换皮（<0.25）。",
+        "evidence_refs": [
+          "divergence.schema_distance_breakdown"
+        ],
+        "fix_hint": "提高输入、约束与目标的结构差异，避免停留在同母题换皮。"
+      },
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "changed axes threshold",
+        "detail": "仅落地了 0 个核心差异轴：无。",
+        "evidence_refs": [
+          "snapshots.difference_plan",
+          "snapshots.new_schema"
+        ],
+        "fix_hint": "至少让 I、C、O、V 中两个核心轴发生实质变化。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "sample count",
+        "detail": "样例数量=0。 少于 2 组。",
+        "evidence_refs": [
+          "snapshots.generated_problem.samples"
+        ],
+        "fix_hint": "至少补齐两组可验证样例。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "blocker",
+        "title": "objective alignment",
+        "detail": "数值目标未在题面中明确表达。",
+        "evidence_refs": [
+          "snapshots.new_schema.objective",
+          "snapshots.generated_problem.output_format"
+        ],
+        "fix_hint": "在 output_format 和 notes 中明确真实目标函数与必要的 tie-break。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "生成产物完全为空且状态异常",
+        "detail": "generated_problem 的 title、description、input_format 等核心字段均为空字符串，status 为 difference_insufficient，表明生成流程未产出有效题面文本。",
+        "evidence_refs": [
+          "generated_problem.title",
+          "generated_problem.description",
+          "generated_problem.status"
+        ],
+        "fix_hint": "检查生成管线或规则校验逻辑，确保在通过资格校验后输出完整、非空的题面文本。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "核心目标与输入结构未落地",
+        "detail": "new_schema 明确指定了计算区间最大最小值差值的目标及双数组输入结构，但题面中完全缺失对应描述，hard_checks.objective_alignment 已明确失败。",
+        "evidence_refs": [
+          "new_schema.objective",
+          "hard_checks.objective_alignment"
+        ],
+        "fix_hint": "在 description 和 output_format 中明确写出计算 max-min 差值的任务要求，并描述输入数组与查询区间的格式。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "样例数据缺失",
+        "detail": "samples 数组为空，hard_checks.sample_count 失败，无法提供基础验证与格式参考。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks.sample_count"
+        ],
+        "fix_hint": "补充至少 2 组覆盖常规与边界情况的样例输入输出，并附带简要解释。"
+      },
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "solution transfer risk too high",
+        "detail": "新题的 new_schema 与 original_schema 在输入结构、核心约束与目标函数上完全一致，schema_distance 为 0.0，且 changed_axes_realized 为空，表明未规划或落地任何关键差异轴。生成产物状态为 difference_insufficient，题面所有字段（title、description、samples 等）均为空，并明确报错“没有规则通过资格校验”。这说明生成流程未能产出有效题目，仅尝试在 schema 层添加表层主题（campus_ops）但未实际改写题面。在此情况下，原题的区间最值查询（RMQ/线段树/ST表）解法可 100% 直接迁移，无需任何建模调整或逻辑修改。综合结构距离、生成失败状态与硬检查失败项，该题属于典型的生成失败/纯换皮尝试，无实质语义差异。",
+        "evidence_refs": [
+          "snapshots.new_schema",
+          "snapshots.generated_problem.status",
+          "divergence.schema_distance_breakdown",
+          "hard_checks.schema_distance_threshold",
+          "hard_checks.changed_axes_threshold",
+          "hard_checks.generated_status_ok",
+          "hard_checks.objective_alignment"
+        ],
+        "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+      }
+    ],
+    "suggested_revisions": [
+      "先修复生成阶段的 schema 或 difference 问题，再重新生成题面。",
+      "提高输入、约束与目标的结构差异，避免停留在同母题换皮。",
+      "至少让 I、C、O、V 中两个核心轴发生实质变化。",
+      "至少补齐两组可验证样例。",
+      "在 output_format 和 notes 中明确真实目标函数与必要的 tie-break。",
+      "检查生成管线或规则校验逻辑，确保在通过资格校验后输出完整、非空的题面文本。",
+      "在 description 和 output_format 中明确写出计算 max-min 差值的任务要求，并描述输入数组与查询区间的格式。",
+      "补充至少 2 组覆盖常规与边界情况的样例输入输出，并附带简要解释。",
+      "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+      "修复生成中断问题，确保输出非空且结构完整的题面文本。",
+      "严格对照 new_schema 填充 description、input/output format 和 constraints 字段。",
+      "补充符合题意与格式的样例数据，并添加必要的说明。",
+      "优先改写核心任务定义，而不是继续替换故事背景。"
+    ],
+    "strengths_to_keep": [
+      "new_schema 对输入结构、目标函数和主题包装的定义非常清晰，为后续生成提供了明确基准。"
+    ]
+  },
+  "snapshots": {
+    "paths": {
+      "schema_path": "D:\\AutoProblemGen\\四元组抽取\\output\\batch\\normalized\\codechef_train-00005-of-00039-b7580d2d846c2136__row_0275.json",
+      "artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\codechef_train-00005-of-00039-b7580d2d846c2136__row_0275_v1_campus_ops_20260420_232951_round1.json",
+      "markdown_path": "D:\\AutoProblemGen\\生成题面\\output\\codechef_train-00005-of-00039-b7580d2d846c2136__row_0275_v1_campus_ops_20260420_232951_round1.md"
+    },
+    "original_problem": {
+      "selection_id": "sample_10",
+      "problem_id": "codechef_train-00005-of-00039-b7580d2d846c2136__row_0275",
+      "record_uid": "train-00005-of-00039-b7580d2d846c2136__row_0275",
+      "statement_language": "english",
+      "title": "mqry",
+      "description": "One day maths teacher gave the following task for the students, only upon completion students will be taken out for a school fun trip.\nFirst you are a given a list of n numbers and q queries. For each query you are given two indices x and y , you have to report the between the maximum number and minimum number whose indices lie within x and y (both inclusive)\n\n \n\nInput\nFirst line of input has two integers n and q , denoting the size of list and number of queries\nNext line consists of n spaced integers denoting the elements of the array\nNext q lines consists of two integer x and y , denoting the leftmost and rightmost indices of the query\n\nNote : List is 0-indexed \n\n\nOutput\nFor each query , print the answer in a new line.\n\nConstraints\n0< n,q < 100000\n0< element of list < 1000000000\n0 < x,y < n\n\nExample\nInput:\n5 2\n1 2 3 4 5\n1 2\n4 4\n\n\nOutput:\n1\n0\n\n\nExplanation\nExample case .\n\nFirst query maximum number in given range is 3 and minimum number is 2 so difference 1\n\nSecond Query maximum and mimimum both are 5 ,difference is 0",
+      "public_tests": {
+        "input": [
+          "5 2\n1 2 3 4 5\n1 2\n4 4"
+        ],
+        "output": [
+          "1\n0"
+        ]
+      },
+      "source": {
+        "split": "train",
+        "source_id": 1,
+        "source_name": "CODECHEF",
+        "url": null
+      },
+      "difficulty": {
+        "difficulty_id": 6,
+        "difficulty_name": "EXTERNAL",
+        "difficulty_bucket": "external",
+        "cf_rating": 0,
+        "cf_points": 0.0,
+        "cf_contest_id": 0,
+        "cf_index": "",
+        "rating_bucket": null
+      },
+      "tags": [],
+      "limits": {
+        "time_limit": null,
+        "memory_limit_bytes": 0
+      },
+      "io_mode": {
+        "input_file": "",
+        "output_file": "",
+        "non_stdio": false
+      },
+      "translation": {
+        "is_description_translated": false,
+        "untranslated_description": ""
+      },
+      "reference_solution": {
+        "language_id": 1,
+        "language_guess": "unknown",
+        "code": "dic={}\nn, q = map(int, raw_input().split())\nli = map(int, raw_input().split())\nfor i in xrange(q):\n    l, r = map(int, raw_input().split())\n    tli=li[l:r+1]\n    s=str(l) + '+' + str(r)\n    if s not in dic:\n        dic[s] = max(tli) - min(tli)\n    print dic[s]",
+        "char_count": 260,
+        "line_count": 10
+      },
+      "artifact_counts": {
+        "public_tests": 1,
+        "private_tests": 0,
+        "generated_tests": 100,
+        "solutions": 3,
+        "incorrect_solutions": 0
+      },
+      "heuristic_profile": {
+        "tag_families": [],
+        "structure_candidates": [
+          "array"
+        ],
+        "objective_type": "optimize",
+        "coverage_features": [
+          "difficulty:external",
+          "objective:optimize",
+          "source:CODECHEF",
+          "special:untagged",
+          "structure:array"
+        ],
+        "english_filter": {
+          "passed": true,
+          "score": 17
+        },
+        "notes": [
+          "selection favors source, difficulty, tag and structure coverage over sample count",
+          "heuristic_profile fields are inferred from metadata and statement text"
+        ]
+      }
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "不要暴露原题编号、出处或链接。",
+        "不要复写原题的叙事结构、输入输出关系或任务定义。"
+      ],
+      "rationale": "没有规则通过资格校验。",
+      "summary": "规则规划失败",
+      "mode": "single_seed_extension"
+    },
+    "new_schema": {
+      "problem_id": "codechef_train-00005-of-00039-b7580d2d846c2136__row_0275",
+      "source": "codechef",
+      "input_structure": {
+        "type": "composite",
+        "length": {
+          "min": null,
+          "max": null
+        },
+        "value_range": {
+          "min": null,
+          "max": null
+        },
+        "properties": {},
+        "components": [
+          {
+            "role": "data_array",
+            "role_description": "Sequence of integers for range queries",
+            "type": "array",
+            "length": {
+              "min": 1,
+              "max": 99999
+            },
+            "value_range": {
+              "min": 1,
+              "max": 999999999
+            },
+            "properties": {
+              "ordered": true
+            }
+          },
+          {
+            "role": "query_list",
+            "role_description": "List of index pairs defining query ranges",
+            "type": "array",
+            "length": {
+              "min": 1,
+              "max": 99999
+            },
+            "value_range": {
+              "min": 0,
+              "max": 99999
+            },
+            "properties": {
+              "ordered": true
+            }
+          }
+        ]
+      },
+      "core_constraints": {
+        "constraints": []
+      },
+      "objective": {
+        "type": "value_computation",
+        "description": "计算给定区间内最大值与最小值的差值",
+        "target": "max_min_difference",
+        "requires_solution": false
+      },
+      "invariant": {
+        "invariants": []
+      },
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "Easy"
+    },
+    "generated_problem": {
+      "title": "",
+      "description": "",
+      "input_format": "",
+      "output_format": "",
+      "constraints": [],
+      "samples": [],
+      "notes": "",
+      "status": "difference_insufficient",
+      "error_reason": "没有规则通过资格校验。",
+      "feedback": "请更换种子题，或调整规则集合。"
+    },
+    "artifact_contract": {
+      "new_schema_present": true,
+      "new_schema_field_present": false,
+      "new_schema_snapshot_field_present": true,
+      "difference_plan_present": true,
+      "predicted_schema_distance_present": true,
+      "distance_breakdown_present": true,
+      "changed_axes_realized_present": true,
+      "generated_problem_present": true
+    },
+    "review_context": {
+      "difference_plan": {
+        "summary": "规则规划失败",
+        "mode": "single_seed_extension",
+        "changed_axes": []
+      },
+      "changed_axes_realized": [],
+      "distance_breakdown": {
+        "distance_version": "v2",
+        "backend": "embedding",
+        "total": 0.0,
+        "axis_scores": {
+          "I": 0.0,
+          "C": 0.0,
+          "O": 0.0,
+          "V": 0.0
+        },
+        "components": {
+          "input_tree_distance": 0.0,
+          "constraint_match_distance": 0.0,
+          "objective_type_distance": 0.0,
+          "objective_text_distance": 0.0,
+          "invariant_match_distance": 0.0
+        }
+      },
+      "applied_rule": "",
+      "applied_helpers": [],
+      "algorithmic_delta_claim": {},
+      "anti_shallow_rationale": ""
+    }
+  }
+}

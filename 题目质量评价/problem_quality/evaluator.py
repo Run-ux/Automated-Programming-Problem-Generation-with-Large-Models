@@ -8,13 +8,14 @@ from typing import Any
 
 GENERATION_DIR = Path(__file__).resolve().parents[2] / "生成题面"
 if str(GENERATION_DIR) not in sys.path:
-    sys.path.insert(0, str(GENERATION_DIR))
+    sys.path.append(str(GENERATION_DIR))
 
-from config import DEFAULT_API_KEY, DEFAULT_BASE_URL, DEFAULT_MODEL
+from config import DEFAULT_API_KEY, DEFAULT_BASE_URL, DEFAULT_MODEL, DEFAULT_TIMEOUT_S
 from qwen_client import QwenClient
 
 from .judges import ProblemQualityJudge, SourceDivergenceJudge
 from .models import DivergenceResult, EvaluationReport, HardCheckResult, Issue
+from .original_problem_catalog import OriginalProblemCatalog
 
 
 class ProblemEvaluator:
@@ -22,6 +23,8 @@ class ProblemEvaluator:
         self,
         client: Any | None = None,
         judge_client: Any | None = None,
+        original_problem_catalog: OriginalProblemCatalog | None = None,
+        original_problem_output_dir: str | Path | None = None,
     ):
         shared_client = judge_client or client or self._build_default_client()
         if shared_client is None:
@@ -32,18 +35,26 @@ class ProblemEvaluator:
         self.judge_client = shared_client
         self.quality_judge = ProblemQualityJudge(client=self.judge_client)
         self.divergence_judge = SourceDivergenceJudge(client=self.judge_client)
+        self.original_problem_catalog = original_problem_catalog or OriginalProblemCatalog(
+            output_dir=original_problem_output_dir
+        )
 
     def evaluate_problem(
         self,
         schema_path: str | Path,
         artifact_path: str | Path,
-        original_problem_override: dict[str, Any] | str | Path,
+        original_problem_override: dict[str, Any] | str | Path | None = None,
         markdown_path: str | Path | None = None,
+        round_index: int = 1,
     ) -> dict[str, Any]:
         source_schema = self._load_json(schema_path)
         artifact = self._load_json(artifact_path)
 
-        original_problem = self._resolve_original_problem(original_problem_override)
+        original_problem = self._resolve_original_problem(
+            original_problem_override=original_problem_override,
+            source_schema=source_schema,
+            artifact=artifact,
+        )
         generated_problem, generated_problem_present = self._normalize_generated_problem(artifact)
         (
             new_schema,
@@ -104,6 +115,7 @@ class ProblemEvaluator:
             quality_result=quality_result,
             divergence_result=divergence_result,
         )
+        issue_dicts = [asdict(item) if hasattr(item, "__dataclass_fields__") else item for item in issues]
         status = self._determine_status(
             original_problem=original_problem,
             generated_problem=generated_problem,
@@ -113,6 +125,17 @@ class ProblemEvaluator:
             divergence_result=divergence_result,
         )
         suggested_revisions = self._collect_suggestions(issues, quality_result, divergence_result)
+        revision_brief = self._build_revision_brief(
+            round_index=round_index,
+            status=status,
+            generated_status=generated_problem.get("status", "ok"),
+            quality_score=quality_score,
+            divergence_score=divergence_score,
+            hard_checks=hard_checks,
+            issues=issue_dicts,
+            suggested_revisions=suggested_revisions,
+            strengths=quality_result.get("strengths", []),
+        )
 
         report = EvaluationReport(
             overall={
@@ -131,8 +154,9 @@ class ProblemEvaluator:
                 **divergence_result,
             },
             hard_checks=hard_check_dicts,
-            issues=[asdict(item) if hasattr(item, "__dataclass_fields__") else item for item in issues],
+            issues=issue_dicts,
             suggested_revisions=suggested_revisions,
+            revision_brief=revision_brief,
             snapshots={
                 "paths": {
                     "schema_path": str(Path(schema_path)),
@@ -149,6 +173,48 @@ class ProblemEvaluator:
         )
         return asdict(report)
 
+    def _build_revision_brief(
+        self,
+        *,
+        round_index: int,
+        status: str,
+        generated_status: str,
+        quality_score: float,
+        divergence_score: float,
+        hard_checks: list[dict[str, Any]],
+        issues: list[dict[str, Any]],
+        suggested_revisions: list[str],
+        strengths: list[str],
+    ) -> dict[str, Any]:
+        failed_hard_checks: list[dict[str, Any]] = []
+        for item in hard_checks:
+            if hasattr(item, "__dataclass_fields__"):
+                raw_item = asdict(item)
+            else:
+                raw_item = dict(item)
+            if raw_item.get("passed"):
+                continue
+            failed_hard_checks.append(
+                {
+                    "check_id": str(raw_item.get("check_id", "")),
+                    "severity": str(raw_item.get("severity", "")),
+                    "category": str(raw_item.get("category", "")),
+                    "message": str(raw_item.get("message", "")),
+                    "evidence_refs": list(raw_item.get("evidence_refs", [])),
+                }
+            )
+        return {
+            "round_index": round_index,
+            "overall_status": status,
+            "generated_status": generated_status,
+            "quality_score": quality_score,
+            "divergence_score": divergence_score,
+            "failed_hard_checks": failed_hard_checks,
+            "issues": json.loads(json.dumps(issues, ensure_ascii=False)),
+            "suggested_revisions": list(suggested_revisions),
+            "strengths_to_keep": [str(item) for item in strengths],
+        }
+
     def _build_default_client(self) -> Any | None:
         if not DEFAULT_API_KEY:
             return None
@@ -156,6 +222,7 @@ class ProblemEvaluator:
             api_key=DEFAULT_API_KEY,
             model=DEFAULT_MODEL,
             base_url=DEFAULT_BASE_URL,
+            timeout_s=DEFAULT_TIMEOUT_S,
         )
 
     def _load_json(self, path: str | Path) -> dict[str, Any]:
@@ -165,13 +232,40 @@ class ProblemEvaluator:
 
     def _resolve_original_problem(
         self,
-        original_problem_override: dict[str, Any] | str | Path,
-    ) -> dict[str, Any]:
+        original_problem_override: dict[str, Any] | str | Path | None,
+        source_schema: dict[str, Any],
+        artifact: dict[str, Any],
+    ) -> dict[str, Any] | None:
         if isinstance(original_problem_override, dict):
             return original_problem_override
         if isinstance(original_problem_override, (str, Path)):
             return self._load_json(original_problem_override)
-        raise TypeError("original_problem_override 必须是原题字典或原题 JSON 路径。")
+        if original_problem_override is not None:
+            raise TypeError("original_problem_override 必须是原题字典、原题 JSON 路径或 None。")
+
+        for problem_id in self._extract_problem_id_candidates(source_schema=source_schema, artifact=artifact):
+            match = self.original_problem_catalog.get_by_problem_id(problem_id)
+            if match is not None:
+                return match
+        return None
+
+    def _extract_problem_id_candidates(
+        self,
+        source_schema: dict[str, Any],
+        artifact: dict[str, Any],
+    ) -> list[str]:
+        candidates: list[str] = []
+        source_problem_ids = artifact.get("source_problem_ids")
+        if isinstance(source_problem_ids, list) and source_problem_ids:
+            head = source_problem_ids[0]
+            if isinstance(head, str) and head.strip():
+                candidates.append(head.strip())
+        schema_problem_id = source_schema.get("problem_id")
+        if isinstance(schema_problem_id, str) and schema_problem_id.strip():
+            schema_id = schema_problem_id.strip()
+            if schema_id not in candidates:
+                candidates.append(schema_id)
+        return candidates
 
     def _normalize_generated_problem(
         self,

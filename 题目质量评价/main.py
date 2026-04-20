@@ -18,7 +18,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--schema", required=True, help="源 schema 路径")
     parser.add_argument("--artifact", required=True, help="生成题面的 artifact 路径")
     parser.add_argument("--markdown", help="生成题面的 Markdown 路径")
-    parser.add_argument("--original-problem", required=True, help="原题 JSON 路径")
+    parser.add_argument("--original-problem", help="原题 JSON 路径，用于覆盖自动查找结果")
     parser.add_argument("--output-json", help="评估报告 JSON 输出路径")
     parser.add_argument("--output-md", help="评估报告 Markdown 输出路径")
     return parser

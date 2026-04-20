@@ -1,0 +1,531 @@
+{
+  "problem_id": "campus_ops_tree_labeling_count",
+  "source_problem_ids": [
+    "atcoder_train-00020-of-00039-5d59387098675b73__row_0218"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "C",
+      "O",
+      "V"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "目标由求最值改为精确计数，约束增加偏序与根极值条件以锁定计数对象，不变量从线性加和转为组合乘积分解，彻底改变算法范式。",
+    "summary": "通过锁定最优解的结构特征，将问题转化为带重复元素的树偏序线性扩展计数，要求解法处理组合爆炸与等价类去重。",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.3986,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.3986,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.7797,
+      "O": 0.3435,
+      "V": 0.3941
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.7797,
+      "objective_type_distance": 0.2261,
+      "objective_text_distance": 0.5196,
+      "invariant_match_distance": 0.3941
+    }
+  },
+  "changed_axes_realized": [
+    "C",
+    "O",
+    "V"
+  ],
+  "objective": {
+    "type": "counting",
+    "description": "统计满足上述所有约束的不同顶点赋值方案总数。两个方案不同当且仅当至少一个顶点被分配了不同的值。结果对 10^9+7 取模。",
+    "target": "count",
+    "modulo": 1000000007,
+    "requires_solution": false
+  },
+  "rule_selection_reason": "existence_to_counting:种子题解空间为标号树顶点的有限排列集合，去重规则由顶点标号天然确定；且不变量揭示最优解仅依赖根节点取值，剩余节点可自由分配，具备明确的计数单元与可分解性，完全满足计数化改造的准入条件。",
+  "new_schema_snapshot": {
+    "problem_id": "campus_ops_tree_labeling_count",
+    "source": "single_seed_extension",
+    "input_structure": {
+      "type": "composite",
+      "components": [
+        {
+          "role": "tree_topology",
+          "role_description": "defines the rooted tree structure via edge connections, fixed root at vertex 1",
+          "type": "tree",
+          "length": {
+            "min": 2,
+            "max": 200000
+          },
+          "value_range": {
+            "min": null,
+            "max": null
+          },
+          "properties": {
+            "acyclic": true,
+            "connected": true,
+            "rooted_at": 1
+          }
+        },
+        {
+          "role": "value_multiset",
+          "role_description": "provides the multiset of integers to be assigned to vertices, may contain duplicates",
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 100000
+          },
+          "properties": {
+            "may_contain_duplicates": true
+          }
+        }
+      ]
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "bijection_constraint",
+          "description": "将多重集中的每个整数恰好分配给树的一个顶点，形成顶点到值的双射。",
+          "formal": "f: V -> C 是满射且单射"
+        },
+        {
+          "name": "heap_monotonicity",
+          "description": "以顶点1为根，对任意边(u,v)其中u是v的父节点，必须满足 val(u) >= val(v)。该约束确保每条边的较小值恒为子节点值。",
+          "formal": "\\forall (u,v) \\in E, parent(u)=v \\Rightarrow val(u) \\ge val(v)"
+        },
+        {
+          "name": "root_minimum_lock",
+          "description": "根节点必须分配多重集中的最小值，以锁定全局边权和达到理论最大的必要条件。",
+          "formal": "val(root) == min(C)"
+        }
+      ]
+    },
+    "objective": {
+      "type": "counting",
+      "description": "统计满足上述所有约束的不同顶点赋值方案总数。两个方案不同当且仅当至少一个顶点被分配了不同的值。结果对 10^9+7 取模。",
+      "target": "count",
+      "modulo": 1000000007,
+      "requires_solution": false
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "subtree_factorization",
+          "description": "合法方案数可严格分解为各子树规模决定的组合系数乘积。在根值固定为最小值的前提下，方案数等于 (N-1)! / (∏_{v≠root} size(v))，再除以各重复值频数的阶乘。",
+          "properties": {
+            "multiplicative_decomposition": true,
+            "duplicate_handling": "divide_by_factorial_of_frequencies"
+          },
+          "evidence_source": "combinatorial_proof"
+        },
+        {
+          "name": "poset_linear_extension",
+          "description": "约束条件等价于在树偏序集上求带重复元素的线性扩展数。局部子树的选择在剩余值池确定后相互独立，保证计数可自底向上汇总。",
+          "properties": {
+            "independence": "subtree_choices_independent_given_pool",
+            "finite_space": "bounded_by_N_factorial"
+          },
+          "evidence_source": "combinatorial_proof"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Hard"
+  },
+  "applied_rule": "existence_to_counting",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {
+    "seed_solver_core": "贪心排序+简单分配，直接取最大N-1个值求和，时间复杂度O(N log N)。",
+    "reusable_subroutines": "树的DFS遍历、子树大小计算、模逆元预处理、阶乘表构建。",
+    "new_solver_core": "组合数学计数。利用子树大小计算多重集在树偏序上的线性扩展数，核心公式为 `(N-1)! / (∏_{v≠root} size(v) * ∏ freq(x)!) mod P`，通过一次DFS聚合子树规模后O(1)计算。",
+    "new_proof_obligation": "需严格证明单调偏序约束下的赋值方案数与子树规模倒数乘积的等价性；需推导重复值频数阶乘除法的组合意义，证明其精确消除了因值相同导致的顶点映射重复计数；需证明根节点锁定最小值后，剩余N-1个值的分配空间与公式完全同构。",
+    "why_direct_reuse_fails": "原贪心算法仅构造单一最优解，无法枚举或统计所有满足偏序关系的合法排列；直接套用会遗漏大量等价但顶点映射不同的方案，且未处理多重集去重，导致计数结果严重偏大或逻辑断裂。"
+  },
+  "anti_shallow_rationale": "明确区分了‘求最值’与‘计数’的算法范式差异。新题强制要求处理组合爆炸与等价类去重，状态转移从‘维护当前最大和’变为‘累积子树组合系数’，核心逻辑从贪心选择重构为组合恒等式推导。非简单加模数或改输出格式，而是彻底替换了主导义务与状态聚合方式。",
+  "shared_core_summary": "树拓扑与多重集赋值的核心映射关系保持不变，但求解义务从寻找单一极值点转为遍历所有合法偏序扩展，共享的底层结构为树形偏序集。",
+  "shared_core_anchors": {
+    "shared_state": "顶点到值的多重集双射映射",
+    "shared_transition": "自底向上的子树规模聚合与值池分配",
+    "shared_decision_basis": "父节点权值不小于子节点权值的单调偏序约束"
+  },
+  "seed_contributions": {
+    "seed_a": "原最值目标已完全被计数目标替代，不再作为主导义务保留。",
+    "seed_b": "N/A (single seed mode)"
+  },
+  "fusion_ablation": {
+    "without_seed_a": "N/A",
+    "without_seed_b": "N/A"
+  },
+  "applied_helpers": [
+    {
+      "id": "counting_unit_definition",
+      "selection_reason": "规则要求明确计数对象与去重规则，本helper直接定义方案差异标准与模数。",
+      "affected_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "objective.type改为counting并加入modulo",
+        "core_constraints增加bijection与root_minimum_lock",
+        "invariant增加duplicate_handling属性"
+      ],
+      "innovation_reason": "将原题模糊的‘最优’转化为精确的‘合法偏序扩展数’，强制引入组合去重逻辑。",
+      "difficulty_reason": "要求解法处理多重集等价类，避免重复计数，显著提升组合推导门槛。"
+    },
+    {
+      "id": "state_factorization",
+      "selection_reason": "规则要求解空间可拆分汇总，本helper将树结构映射为子树规模乘积。",
+      "affected_axes": [
+        "C",
+        "V"
+      ],
+      "schema_changes": [
+        "core_constraints明确以顶点1为根的偏序方向",
+        "invariant引入subtree_factorization与multiplicative_decomposition"
+      ],
+      "innovation_reason": "让计数从主状态组织方式中自然长出来，利用树形DP的自底向上特性替代全局枚举。",
+      "difficulty_reason": "要求解法在分解与汇总层面重建主状态，必须理解子树规模与组合系数的映射关系。"
+    },
+    {
+      "id": "counting_obligation_lock",
+      "selection_reason": "规则要求计数责任锁进主目标，本helper彻底替换原最值目标。",
+      "affected_axes": [
+        "C",
+        "O"
+      ],
+      "schema_changes": [
+        "objective.target从sum改为count",
+        "core_constraints的heap_monotonicity直接服务于计数而非求和"
+      ],
+      "innovation_reason": "把原题主目标替换为新的计数义务，算法输出直接为方案数而非构造序列。",
+      "difficulty_reason": "要求算法同时承担计数正确性和去重正确性，禁止保留原判定主目标再顺手计数。"
+    }
+  ],
+  "planning_status": "ok",
+  "planning_error_reason": "",
+  "planning_feedback": "",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": false,
+      "score": 0.15,
+      "reason_code": "forbidden_seed_property",
+      "selection_reason": "种子题 schema 中 objective.requires_solution 为 true，明确表明原题已要求输出完整赋值方案，直接命中规则 eligibility.forbidden_seed_properties 中的硬性禁令（“原题本来就要求输出完整方案”）。此外，原题最优解空间高度非唯一（仅需根节点取最小值，其余节点满足单调性即可），强行增加规范性输出极易退化为字典序排序或后处理，无法满足 required_axis_changes 对 C/O/V 的实质性重构要求。",
+      "risk_tags": [
+        "low_novelty",
+        "shared_core_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.requires_solution == true；eligibility.forbidden_seed_properties 明确列出 '原题本来就要求输出完整方案'；seed_schema.invariant 中 max_score == sum(c) - min(c) 表明解空间高度冗余，规范性升级缺乏算法深度支撑。",
+        "feedback": "该种子题已具备方案输出要求，不符合 canonical_witness 规则‘从给答案/判定改为给规范解’的升级前提。建议替换为仅要求输出最优值或判定可行性的种子题。若需在此结构上强行应用，必须彻底重构核心约束使规范性成为状态转移的硬性条件，但当前 schema 的线性可加性不变量不支持该路径。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "missing_infeasibility_branch",
+      "selection_reason": "原题是纯最优化问题，任意排列均合法且存在闭式最优解，不存在“无解/做不到”的情形；规则强制要求输出局部冲突证据，但当前种子缺乏天然不可行分支，强行适配将导致失败语义退化为解释或需引入无关约束。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints仅含permutation_constraint，objective为maximize_value，invariant明确给出closed_form_maximum（max_score == sum(c) - min(c)）。这证明原题恒有解，不满足rule_under_review.eligibility.required_seed_properties中“做不到的原因可以用局部证据表示”的硬性前提。",
+        "feedback": "建议更换为本身带有强可行性约束或组合冲突的种子题（如匹配、覆盖、资源分配冲突）。若坚持使用此种子，需在规划阶段重构核心约束以产生可局部验证的阻碍结构，否则极易违反“不添加无关额外约束”红线或触发“退化成自然语言解释”的验证失败。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "finite_space_and_clear_deduplication",
+      "selection_reason": "种子题解空间为标号树顶点的有限排列集合，去重规则由顶点标号天然确定；且不变量揭示最优解仅依赖根节点取值，剩余节点可自由分配，具备明确的计数单元与可分解性，完全满足计数化改造的准入条件。",
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.invariant.additivity指出max_score==sum(c)-min(c)，证明最优解空间结构清晰且有限；input_structure定义tree_topology与vertex_values，顶点带标号，赋值排列天然满足'解空间有限'与'不同解之间的等价关系能说清楚'；符合rule.eligibility.required_seed_properties全部要求。",
+        "feedback": "规划时需明确计数目标（如统计最优方案数或满足特定单调性的方案数），并补充取模要求；注意避免计数公式退化为简单阶乘，应通过约束设计提升状态分解与汇总的算法难度。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.15,
+      "reason_code": "missing_native_perturbation",
+      "selection_reason": "原题语义为确定性树拓扑上的固定多重集分配优化，其不变量（单调性与可加性）直接导出闭式最优解 sum(c)-min(c)，完全缺乏规则 required_seed_properties 所要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源；强行套用将违反 validation_contract 中“扰动模型必须来自原题本身”及 redlines 中“不能凭背景硬造对手”的硬性要求。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.invariant 明确指出 max_score == sum(c) - min(c) 且依赖 parent_value >= child_value 的严格单调性，表明原题无内在不确定性；rule_under_review.required_seed_properties 明确要求原题自带顺序不确定或资源波动；rule_under_review.validation_contract 强调扰动模型必须来自原题本身。",
+        "feedback": "该种子题核心规律高度确定且已闭合，不具备放大原生扰动的语义基础。若坚持改造，需彻底重构输入结构（如引入动态边失效或值域随机化），但这将偏离原题核心规律并触碰全局红线。建议更换具备天然博弈/动态/容错语义的种子题，或改用结构强化类规则。"
+      },
+      "selected_for_attempt": false
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "forbidden_seed_property",
+      "message": "种子题 schema 中 objective.requires_solution 为 true，明确表明原题已要求输出完整赋值方案，直接命中规则 eligibility.forbidden_seed_properties 中的硬性禁令（“原题本来就要求输出完整方案”）。此外，原题最优解空间高度非唯一（仅需根节点取最小值，其余节点满足单调性即可），强行增加规范性输出极易退化为字典序排序或后处理，无法满足 required_axis_changes 对 C/O/V 的实质性重构要求。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.15,
+        "risk_tags": [
+          "low_novelty",
+          "shared_core_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.requires_solution == true；eligibility.forbidden_seed_properties 明确列出 '原题本来就要求输出完整方案'；seed_schema.invariant 中 max_score == sum(c) - min(c) 表明解空间高度冗余，规范性升级缺乏算法深度支撑。",
+        "feedback": "该种子题已具备方案输出要求，不符合 canonical_witness 规则‘从给答案/判定改为给规范解’的升级前提。建议替换为仅要求输出最优值或判定可行性的种子题。若需在此结构上强行应用，必须彻底重构核心约束使规范性成为状态转移的硬性条件，但当前 schema 的线性可加性不变量不支持该路径。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "missing_infeasibility_branch",
+      "message": "原题是纯最优化问题，任意排列均合法且存在闭式最优解，不存在“无解/做不到”的情形；规则强制要求输出局部冲突证据，但当前种子缺乏天然不可行分支，强行适配将导致失败语义退化为解释或需引入无关约束。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints仅含permutation_constraint，objective为maximize_value，invariant明确给出closed_form_maximum（max_score == sum(c) - min(c)）。这证明原题恒有解，不满足rule_under_review.eligibility.required_seed_properties中“做不到的原因可以用局部证据表示”的硬性前提。",
+        "feedback": "建议更换为本身带有强可行性约束或组合冲突的种子题（如匹配、覆盖、资源分配冲突）。若坚持使用此种子，需在规划阶段重构核心约束以产生可局部验证的阻碍结构，否则极易违反“不添加无关额外约束”红线或触发“退化成自然语言解释”的验证失败。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "finite_space_and_clear_deduplication",
+      "message": "种子题解空间为标号树顶点的有限排列集合，去重规则由顶点标号天然确定；且不变量揭示最优解仅依赖根节点取值，剩余节点可自由分配，具备明确的计数单元与可分解性，完全满足计数化改造的准入条件。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.97,
+        "risk_tags": [
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.invariant.additivity指出max_score==sum(c)-min(c)，证明最优解空间结构清晰且有限；input_structure定义tree_topology与vertex_values，顶点带标号，赋值排列天然满足'解空间有限'与'不同解之间的等价关系能说清楚'；符合rule.eligibility.required_seed_properties全部要求。",
+        "feedback": "规划时需明确计数目标（如统计最优方案数或满足特定单调性的方案数），并补充取模要求；注意避免计数公式退化为简单阶乘，应通过约束设计提升状态分解与汇总的算法难度。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation",
+      "message": "原题语义为确定性树拓扑上的固定多重集分配优化，其不变量（单调性与可加性）直接导出闭式最优解 sum(c)-min(c)，完全缺乏规则 required_seed_properties 所要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源；强行套用将违反 validation_contract 中“扰动模型必须来自原题本身”及 redlines 中“不能凭背景硬造对手”的硬性要求。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.15,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.invariant 明确指出 max_score == sum(c) - min(c) 且依赖 parent_value >= child_value 的严格单调性，表明原题无内在不确定性；rule_under_review.required_seed_properties 明确要求原题自带顺序不确定或资源波动；rule_under_review.validation_contract 强调扰动模型必须来自原题本身。",
+        "feedback": "该种子题核心规律高度确定且已闭合，不具备放大原生扰动的语义基础。若坚持改造，需彻底重构输入结构（如引入动态边失效或值域随机化），但这将偏离原题核心规律并触碰全局红线。建议更换具备天然博弈/动态/容错语义的种子题，或改用结构强化类规则。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "规划完整兑现了existence_to_counting规则的专属语义合同，成功将最值目标升级为明确计数对象、去重口径与取模约定的计数题，且三个helper均按要求落位至对应schema字段并避开所有redlines。",
+      "details": {
+        "review_role": "你扮演一名计数规划审查官，重点确认规划是否真正把目标升级为对象明确的计数任务。",
+        "review_brief": "确认规划是否定义了计数对象、去重口径、有限性来源，以及需要时的取模约定。",
+        "evidence": "1. counting_unit_definition：candidate_schema.objective明确定义去重口径（'两个方案不同当且仅当至少一个顶点被分配了不同的值'）与取模（10^9+7），invariant补充duplicate_handling，core_constraints增加bijection与root_minimum_lock，避开'只补模数/不定义不同'红线。2. state_factorization：core_constraints确立以1为根的偏序方向，invariant引入subtree_factorization与multiplicative_decomposition，明确按子树规模拆分汇总，避开'保持原状态/仅后处理'红线。3. counting_obligation_lock：objective.type/target彻底替换为counting/count，anti_shallow_rationale声明'彻底替换了主导义务'，避开'原判定主导/计数放备注'红线。4. 硬门槛全满足：解差异定义、有限性/取模、拆分汇总单元均在schema与payload中显式声明。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "counting_contract_fulfilled",
+      "message": "题面完整兑现计数目标转换、去重规则定义与模数约定，计数责任已完全锁定为主目标，无遗留判定义务。",
+      "details": {
+        "review_role": "你扮演一名计数题面审查官，重点确认题面是否完整兑现计数目标与去重规则。",
+        "review_brief": "确认题面是否明确写出统计对象、等价关系、不同答案的判定口径，以及必要的模数约定。",
+        "evidence": "题面目标明确为'统计满足上述所有规范的不同排班方案总数'，并在描述与备注中严格定义去重口径（'若两种方案中至少有一名成员被分配了不同的优先级数值，则视为不同方案'、'相同数值的交换不产生新方案'）。核心约束通过树拓扑、双射分配与父子偏序关系确立了可拆分的计数单元结构，且明确指定'结果对 10^9+7 取模'，完全满足规则对计数对象、有限性/取模、拆分汇总单元及去重口径的硬性要求。"
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "score": 0.97,
+      "accepted": true,
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "status": "ok",
+      "reason_code": "plan_validation_failed",
+      "reason": "",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "社团层级排班",
+    "description": "某高校学生会采用严格的树形组织架构进行日常运营。组织架构以会长为根节点，其余成员按上下级关系构成一棵有根树。新学期伊始，后勤部需要为 N 名成员分配 N 个值班优先级等级（给定一个包含 N 个正整数的序列，序列中可能存在重复数字）。分配过程需严格遵守以下运营规范：\n1. 精确匹配：每个优先级等级必须恰好分配给一名成员，不允许遗漏或重复使用。\n2. 层级约束：在任何上下级关系中，上级的值班优先级数值必须不大于其直接下级（即父节点分配的值 ≤ 子节点分配的值）。\n3. 核心锁定：会长（根节点）必须分配所有等级中的最小值，以确保全局调度基准的统一。\n\n后勤部希望评估排班方案的灵活性。请计算满足上述所有规范的不同排班方案总数。若两种方案中至少有一名成员被分配了不同的优先级数值，则视为不同方案。由于方案数可能极大，请将结果对 10^9+7 取模后输出。",
+    "input_format": "第一行包含一个正整数 N，表示社团成员总数。\n接下来 N-1 行，每行包含两个正整数 u 和 v，表示成员 u 与成员 v 之间存在直接的上下级关系（输入保证构成一棵以 1 号成员为根的树）。\n最后一行包含 N 个正整数 a_1, a_2, ..., a_N，表示后勤部提供的值班优先级等级序列。",
+    "output_format": "输出一个整数，表示满足所有规范的排班方案总数对 10^9+7 取模的结果。",
+    "constraints": [
+      "2 ≤ N ≤ 200000",
+      "1 ≤ a_i ≤ 100000",
+      "输入保证构成一棵以 1 为根的树",
+      "时间限制：1.0 秒",
+      "空间限制：256 MB"
+    ],
+    "samples": [
+      {
+        "input": "3\n1 2\n1 3\n1 2 2",
+        "output": "1",
+        "explanation": "根节点 1 必须分配最小值 1。剩余节点 2 和 3 只能分配两个 2。由于父节点值需不大于子节点值，且剩余值均为 2，仅存在唯一一种分配方式：1->1, 2->2, 3->2。"
+      },
+      {
+        "input": "4\n1 2\n1 3\n1 4\n1 2 2 3",
+        "output": "3",
+        "explanation": "根节点 1 固定分配 1。剩余节点 2,3,4 需分配 {2,2,3}。由于它们均为叶子节点，只需将这三个数全排列分配给它们即可。考虑到两个 2 不可区分，实际不同的分配方案为 3 种（即 3 在哪个节点上）。"
+      }
+    ],
+    "notes": "结果需对 10^9+7 取模。方案差异仅取决于顶点到数值的映射关系，相同数值的交换不产生新方案。输入数据保证树结构连通且无环，根节点固定为 1 号顶点。",
+    "status": "ok",
+    "error_reason": "",
+    "feedback": ""
+  },
+  "iteration": {
+    "run_id": "atcoder_train-00020-of-00039-5d59387098675b73__row_0218_v1_campus_ops_20260420_194304",
+    "round_index": 1,
+    "requested_rounds": 3,
+    "previous_artifact_path": "",
+    "previous_quality_report_path": "",
+    "revision_context_snapshot": {}
+  }
+}

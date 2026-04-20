@@ -1,0 +1,634 @@
+{
+  "overall": {
+    "status": "reject_as_retheme",
+    "quality_score": 81.0,
+    "divergence_score": 67.8,
+    "schema_distance": 0.4408,
+    "generated_status": "ok"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 5.0,
+        "rationale": "题面完整且准确地落地了 new_schema 中的所有核心要素：二叉树编号规则、X与Y的双射映射、min_max_boundary 约束、集合无序去重以及模数要求。主题包装（校园社团）与 schema 的 theme 字段高度一致，未出现偏离或遗漏。",
+        "evidence_refs": [
+          "new_schema.core_constraints",
+          "new_schema.objective",
+          "generated_problem.description",
+          "generated_problem.notes"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 4.0,
+        "rationale": "题面提供了独立解题所需的全部关键信息（任务说明、输入输出格式、数据范围、边界条件）。唯一可优化之处在于“存在一种分配方式”的表述略显隐晦，未显式强调 X 与 Y 之间必须是一一对应的双射关系，但在竞赛语境下通常可接受。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.constraints"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 3.0,
+        "rationale": "题面主体逻辑自洽，但样例 2 的解释存在严重内部矛盾：声称 $M_{\\min}=3$，却给出集合 $X=\\{1, 2, 3, 4\\}$（其最大值为 4），且数学上对于输入 $\\{4,5,6,7\\}$，$M_{\\min}$ 实际应为 4。该矛盾破坏了 description、constraints 与 samples 之间的一致性。",
+        "evidence_refs": [
+          "generated_problem.samples[1].explanation",
+          "generated_problem.description"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 3.0,
+        "rationale": "仅包含 2 个样例，且输出均为 1，未能覆盖本题核心的组合计数逻辑（乘法原理/路径交集分配）。样例 2 的解释不仅存在上述矛盾，且表述冗长晦涩（“等价子集调整”），缺乏对计数过程的清晰演示，对理解 Hard 难度下的算法增量帮助有限。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks[12].message"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 5.0,
+        "rationale": "题面结构规范，符合标准 OJ 排版习惯。语言简洁明确，无冗余噪声或来源污染。Notes 部分有效补充了集合无序性和严格边界条件，便于参赛者快速抓取核心规则。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.notes",
+          "generated_problem.input_format"
+        ]
+      }
+    ],
+    "strengths": [
+      "高度忠实于 new_schema 的变体设计，完整保留了二叉树结构、最小最大值边界锁定与模数计数目标。",
+      "主题包装自然流畅，将抽象的树形匹配与组合计数无缝融入“社团活动室分配”场景，符合日常轻松的基调。",
+      "题面排版规范，Notes 部分精准补充了集合无序性与严格边界条件，有效降低了歧义风险。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "distance_version": "v2",
+      "backend": "embedding",
+      "total": 0.4408,
+      "axis_scores": {
+        "I": 0.0,
+        "C": 0.6521,
+        "O": 0.5734,
+        "V": 0.5091
+      },
+      "components": {
+        "input_tree_distance": 0.0,
+        "constraint_match_distance": 0.6521,
+        "objective_type_distance": 0.6558,
+        "objective_text_distance": 0.4497,
+        "invariant_match_distance": 0.5091
+      }
+    },
+    "schema_distance": 0.4408,
+    "changed_axes_planned": [
+      "C",
+      "O",
+      "V"
+    ],
+    "changed_axes_realized": [
+      "C",
+      "O",
+      "V"
+    ],
+    "semantic_difference": 0.7,
+    "solution_transfer_risk": 0.45,
+    "surface_retheme_risk": 0.2,
+    "verdict": "pass",
+    "rationale": "新题在目标函数（O）与约束（C）上发生了实质性转变：原题要求构造一个使最大值最小的集合（优化/构造题），新题要求统计所有达到该理论最小最大值 $M_{min}$ 的合法集合数量（组合计数题）。这一变化迫使算法框架从原题的“贪心模拟+优先队列”重构为“两阶段求解”：第一阶段复用原题贪心确定边界 $M_{min}$，第二阶段必须引入树形路径匹配与组合计数逻辑（如按值域降序分配祖先、维护空位交集、乘法原理累乘）。原题解法仅能作为子程序，无法直接迁移至核心计数环节，状态设计与证明责任（单调性 vs 无后效性/去重）均发生根本改变。表层方面，背景故事替换为校园活动室分配，输入输出与样例独立设计，无文本或结构照搬痕迹。综合判断，语义差异真实成立，解法需实质性扩展，非简单换皮。",
+    "evidence_refs": [
+      "snapshots.new_schema.objective",
+      "snapshots.new_schema.core_constraints.constraints",
+      "snapshots.generated_problem.description",
+      "review_context.algorithmic_delta_claim",
+      "divergence.schema_distance_breakdown.axis_scores",
+      "snapshots.new_schema.invariant"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_problem_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 generated_problem。",
+      "evidence_refs": [
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "new_schema_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 new_schema 或兼容字段 new_schema_snapshot。",
+      "evidence_refs": [
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "生成状态正常。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "predicted_schema_distance_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 predicted_schema_distance。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "distance_breakdown_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 distance_breakdown。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "changed_axes_realized_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 changed_axes_realized。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.44，达到中等差异阈值。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "已落地核心差异轴：C, O, V。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题或题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=2。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "目标函数已经在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "样例2解释存在数学错误与内部矛盾",
+      "detail": "样例2解释中声称 $M_{\\min}=3$，但随后列出的集合为 $\\{1,2,3,4\\}$（最大值为4），前后矛盾。且根据二叉树祖先覆盖规则，覆盖 $\\{4,5,6,7\\}$ 至少需要4个不同节点，值域 $\\le 3$ 仅有 $\\{1,2,3\\}$ 三个节点，故 $M_{\\min}$ 必为 4。该错误会严重误导选手对边界条件的理解。",
+      "evidence_refs": [
+        "generated_problem.samples[1].explanation"
+      ],
+      "fix_hint": "修正样例2的 $M_{\\min}$ 值为 4，重写解释以清晰说明为何 $\\{1,2,3,4\\}$ 是唯一合法集合，并删除“等价子集调整”等模糊表述。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "样例缺乏对核心计数逻辑的覆盖",
+      "detail": "当前两个样例答案均为 1，完全无法体现 new_schema 中强调的“按y从大到小处理、祖先集合交集大小决定乘法因子”的组合计数特性。选手无法通过样例验证乘法原理或去重逻辑的正确性。",
+      "evidence_refs": [
+        "generated_problem.samples",
+        "new_schema.invariant.invariants[0].description"
+      ],
+      "fix_hint": "增加至少一个答案大于 1 的样例（例如目标节点存在路径重叠但可灵活分配祖先的情况），并在解释中逐步演示乘法因子的计算过程。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "双射关系表述可进一步显式化",
+      "detail": "description 中“存在一种分配方式，使得每个社团都能从其对应的初始活动室...到达”未明确点出 X 与 Y 必须构成大小相等的一一映射（双射），可能被误解为多对一或允许未分配。",
+      "evidence_refs": [
+        "generated_problem.description",
+        "new_schema.core_constraints.constraints[0].formal"
+      ],
+      "fix_hint": "在条件2中补充“即初始集合 X 与目标集合 Y 之间存在一一对应关系，且每个初始活动室仅分配给一个社团”。"
+    }
+  ],
+  "suggested_revisions": [
+    "修正样例2的 $M_{\\min}$ 值为 4，重写解释以清晰说明为何 $\\{1,2,3,4\\}$ 是唯一合法集合，并删除“等价子集调整”等模糊表述。",
+    "增加至少一个答案大于 1 的样例（例如目标节点存在路径重叠但可灵活分配祖先的情况），并在解释中逐步演示乘法因子的计算过程。",
+    "在条件2中补充“即初始集合 X 与目标集合 Y 之间存在一一对应关系，且每个初始活动室仅分配给一个社团”。",
+    "立即修正样例 2 的解释，纠正 $M_{\\min}$ 数值错误，消除内部矛盾，确保数学严谨性。",
+    "补充 1~2 个输出结果大于 1 的样例，重点展示路径重叠时的乘法计数过程，以匹配 Hard 难度与算法增量要求。",
+    "在 description 的条件列表中显式声明 X 与 Y 的双射对应关系，避免选手在匹配规则上产生歧义。"
+  ],
+  "revision_brief": {
+    "round_index": 1,
+    "overall_status": "reject_as_retheme",
+    "generated_status": "ok",
+    "quality_score": 81.0,
+    "divergence_score": 67.8,
+    "failed_hard_checks": [],
+    "issues": [
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "样例2解释存在数学错误与内部矛盾",
+        "detail": "样例2解释中声称 $M_{\\min}=3$，但随后列出的集合为 $\\{1,2,3,4\\}$（最大值为4），前后矛盾。且根据二叉树祖先覆盖规则，覆盖 $\\{4,5,6,7\\}$ 至少需要4个不同节点，值域 $\\le 3$ 仅有 $\\{1,2,3\\}$ 三个节点，故 $M_{\\min}$ 必为 4。该错误会严重误导选手对边界条件的理解。",
+        "evidence_refs": [
+          "generated_problem.samples[1].explanation"
+        ],
+        "fix_hint": "修正样例2的 $M_{\\min}$ 值为 4，重写解释以清晰说明为何 $\\{1,2,3,4\\}$ 是唯一合法集合，并删除“等价子集调整”等模糊表述。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "样例缺乏对核心计数逻辑的覆盖",
+        "detail": "当前两个样例答案均为 1，完全无法体现 new_schema 中强调的“按y从大到小处理、祖先集合交集大小决定乘法因子”的组合计数特性。选手无法通过样例验证乘法原理或去重逻辑的正确性。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "new_schema.invariant.invariants[0].description"
+        ],
+        "fix_hint": "增加至少一个答案大于 1 的样例（例如目标节点存在路径重叠但可灵活分配祖先的情况），并在解释中逐步演示乘法因子的计算过程。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "双射关系表述可进一步显式化",
+        "detail": "description 中“存在一种分配方式，使得每个社团都能从其对应的初始活动室...到达”未明确点出 X 与 Y 必须构成大小相等的一一映射（双射），可能被误解为多对一或允许未分配。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "new_schema.core_constraints.constraints[0].formal"
+        ],
+        "fix_hint": "在条件2中补充“即初始集合 X 与目标集合 Y 之间存在一一对应关系，且每个初始活动室仅分配给一个社团”。"
+      }
+    ],
+    "suggested_revisions": [
+      "修正样例2的 $M_{\\min}$ 值为 4，重写解释以清晰说明为何 $\\{1,2,3,4\\}$ 是唯一合法集合，并删除“等价子集调整”等模糊表述。",
+      "增加至少一个答案大于 1 的样例（例如目标节点存在路径重叠但可灵活分配祖先的情况），并在解释中逐步演示乘法因子的计算过程。",
+      "在条件2中补充“即初始集合 X 与目标集合 Y 之间存在一一对应关系，且每个初始活动室仅分配给一个社团”。",
+      "立即修正样例 2 的解释，纠正 $M_{\\min}$ 数值错误，消除内部矛盾，确保数学严谨性。",
+      "补充 1~2 个输出结果大于 1 的样例，重点展示路径重叠时的乘法计数过程，以匹配 Hard 难度与算法增量要求。",
+      "在 description 的条件列表中显式声明 X 与 Y 的双射对应关系，避免选手在匹配规则上产生歧义。"
+    ],
+    "strengths_to_keep": [
+      "高度忠实于 new_schema 的变体设计，完整保留了二叉树结构、最小最大值边界锁定与模数计数目标。",
+      "主题包装自然流畅，将抽象的树形匹配与组合计数无缝融入“社团活动室分配”场景，符合日常轻松的基调。",
+      "题面排版规范，Notes 部分精准补充了集合无序性与严格边界条件，有效降低了歧义风险。"
+    ]
+  },
+  "snapshots": {
+    "paths": {
+      "schema_path": "D:\\AutoProblemGen\\四元组抽取\\output\\batch\\normalized\\CF722D.json",
+      "artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF722D_v1_campus_ops_20260420_224959_round1.json",
+      "markdown_path": "D:\\AutoProblemGen\\生成题面\\output\\CF722D_v1_campus_ops_20260420_224959_round1.md"
+    },
+    "original_problem": {
+      "problem_id": "CF722D",
+      "title": "D. Generating Sets",
+      "description": "You are given a set Y of n distinct positive integers y 1, y 2, ..., y n.\n\nSet X of n distinct positive integers x 1, x 2, ..., x n is said to generate set Y if one can transform X to Y by applying some number of the following two operation to integers in X :\n\nNote that integers in X are not required to be distinct after each operation.\n\nTwo sets of distinct integers X and Y are equal if they are equal as sets. In other words, if we write elements of the sets in the array in the increasing order, these arrays would be equal.\n\nNote, that any set of integers (or its permutation) generates itself.\n\nYou are given a set Y and have to find a set X that generates Y and the maximum element of X is mininum possible.",
+      "input": "The first line of the input contains a single integer n (1 ≤ n ≤ 50 000) — the number of elements in Y. The second line contains n integers y 1, ..., y n (1 ≤ y i ≤ 10 9), that are guaranteed to be distinct.",
+      "output": "Print n integers — set of distinct integers that generate Y and the maximum element of which is minimum possible. If there are several such sets, print any of them.",
+      "constraints": "time limit per test 2 seconds\nmemory limit per test 256 megabytes",
+      "source": "codeforces",
+      "url": "https://codeforces.com/contest/722/problem/D",
+      "tags": [
+        "binary search",
+        "data structures",
+        "dfs and similar",
+        "greedy",
+        "strings",
+        "trees"
+      ],
+      "difficulty": "1900"
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "CF722D",
+        "D. Generating Sets",
+        "codeforces",
+        "https://codeforces.com/contest/722/problem/D",
+        "You are given a set Y of n distinct positive integers y 1, y 2, ..., y n. Set X of n distinct positive integers x 1, x 2, ..., x n is said to generate set Y if one can transform X to Y by applying some number of the f...",
+        "不要复写原题的叙事结构、任务定义或样例套路。",
+        "不要只替换实体名称后保留同样的输入输出关系。"
+      ],
+      "rationale": "目标从构造单一最优解转为计数(O)，约束增加最小最大值前提与去重/取模定义(C)，不变量从单调性贪心转为树路径独立性与组合乘法原理(V)。",
+      "summary": "通过锁定最小最大值边界，将问题转化为在受限二叉树中统计完美匹配方案数，状态表示与算法逻辑全面重构。",
+      "mode": "single_seed_extension"
+    },
+    "new_schema": {
+      "problem_id": "CampusOps_CountingSets",
+      "source": "CF722D_extended",
+      "input_structure": {
+        "type": "array",
+        "length": {
+          "min": 1,
+          "max": 50000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "distinct": true
+        },
+        "components": []
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "generation_rule",
+            "description": "校园社团活动场地按二叉树编号（父节点i对应子节点2i, 2i+1）。初始分配集合X与目标集合Y大小均为n且元素互异。Y中每个场地必须由X中唯一场地通过有限次‘升级至子场地’操作到达。",
+            "formal": "∃双射f:X→Y, ∀x∈X, f(x)可由x经操作序列v→2v或v→2v+1到达"
+          },
+          {
+            "name": "min_max_boundary",
+            "description": "仅统计满足max(X)等于理论最小可能值M_min的分配方案。",
+            "formal": "max(X) = min{max(X') | X'可生成Y}"
+          },
+          {
+            "name": "counting_dedup",
+            "description": "集合X视为无序集合，元素相同即视为同一方案。结果对10^9+7取模。",
+            "formal": "输出|{X | X满足上述条件}| mod (10^9+7)"
+          }
+        ]
+      },
+      "objective": {
+        "type": "count",
+        "description": "计算所有能生成Y且最大元素达到最小可能值的初始集合X的数量，结果对10^9+7取模。",
+        "target": "valid_set_count",
+        "requires_solution": false
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "tree_path_independence",
+            "description": "将值域映射为以1为根的完全二叉树。每个y∈Y对应一条到根的路径。在max(X)固定为M_min时，合法X的计数等价于为每个y分配路径上唯一祖先节点，且所有分配节点互异且≤M_min。按y从大到小处理时，可用祖先集合的交集大小决定乘法因子，保证计数无重复无遗漏。",
+            "properties": {
+              "decomposition_basis": "binary_tree_ancestors",
+              "counting_principle": "multiplicative_rule_with_slot_reservation",
+              "boundary_condition": "max_assigned_node_equals_M_min"
+            },
+            "evidence_source": "combinatorial_tree_matching"
+          }
+        ]
+      },
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "Hard"
+    },
+    "generated_problem": {
+      "title": "社团活动室分配",
+      "description": "校园社团联合会计划为 $n$ 个社团分配活动室。所有活动室按完全二叉树结构进行统一编号：根节点为 $1$ 号主厅，对于任意编号为 $i$ 的活动室，其左子活动室为 $2i$，右子活动室为 $2i+1$。\n\n每个社团都有一个指定的“目标活动室”（输入给出 $n$ 个互不相同的正整数 $y_1, y_2, \\dots, y_n$）。社团入驻时，必须先被分配到一个“初始活动室” $x$，随后只能沿着树边向下移动（即从 $i$ 移动到 $2i$ 或 $2i+1$），最终抵达其目标活动室。\n\n我们需要为这 $n$ 个社团确定一组初始活动室 $X = \\{x_1, x_2, \\dots, x_n\\}$，满足以下条件：\n1. $X$ 中的元素互不相同。\n2. 存在一种分配方式，使得每个社团都能从其对应的初始活动室通过若干次向下移动到达目标活动室。\n3. 集合 $X$ 中的最大编号 $\\max(X)$ 尽可能小。记该最小可能的最大值为 $M_{\\min}$。\n\n请计算满足上述所有条件且严格满足 $\\max(X) = M_{\\min}$ 的不同初始集合 $X$ 的数量。由于答案可能非常大，请输出对 $10^9+7$ 取模的结果。",
+      "input_format": "第一行包含一个正整数 $n$，表示社团数量。\n第二行包含 $n$ 个互不相同的正整数 $y_1, y_2, \\dots, y_n$，表示各社团的目标活动室编号。",
+      "output_format": "输出一个整数，表示满足条件的初始集合 $X$ 的数量对 $10^9+7$ 取模的结果。",
+      "constraints": [
+        "$1 \\le n \\le 50000$",
+        "$1 \\le y_i \\le 10^9$，且所有 $y_i$ 互不相同",
+        "时间限制：2.0 秒",
+        "空间限制：512 MB"
+      ],
+      "samples": [
+        {
+          "input": "3\n4 5 6",
+          "output": "1",
+          "explanation": "目标集合为 {4, 5, 6}。经分析，理论最小最大值 $M_{\\min}=3$。唯一满足 $\\max(X)=3$ 且能生成目标集合的初始集合为 $X=\\{1, 2, 3\\}$，故方案数为 1。"
+        },
+        {
+          "input": "4\n4 5 6 7",
+          "output": "1",
+          "explanation": "目标集合为 {4, 5, 6, 7}。理论最小最大值 $M_{\\min}=3$。唯一满足 $\\max(X)=3$ 且能生成目标集合的初始集合为 $X=\\{1, 2, 3, 4\\}$ 的等价子集调整，经校验仅 $\\{1, 2, 3\\}$ 扩展至 4 个元素时存在唯一合法组合，实际计算得方案数为 1。"
+        }
+      ],
+      "notes": "1. 集合 $X$ 视为无序集合，元素组成相同即视为同一方案，不区分分配顺序。\n2. 必须严格满足 $\\max(X) = M_{\\min}$，若 $\\max(X) < M_{\\min}$ 或 $\\max(X) > M_{\\min}$ 均不计入答案。\n3. 结果需对 $10^9+7$ 取模。",
+      "status": "ok",
+      "error_reason": "",
+      "feedback": ""
+    },
+    "artifact_contract": {
+      "new_schema_present": true,
+      "new_schema_field_present": false,
+      "new_schema_snapshot_field_present": true,
+      "difference_plan_present": true,
+      "predicted_schema_distance_present": true,
+      "distance_breakdown_present": true,
+      "changed_axes_realized_present": true,
+      "generated_problem_present": true
+    },
+    "review_context": {
+      "difference_plan": {
+        "summary": "通过锁定最小最大值边界，将问题转化为在受限二叉树中统计完美匹配方案数，状态表示与算法逻辑全面重构。",
+        "mode": "single_seed_extension",
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      },
+      "changed_axes_realized": [
+        "C",
+        "O",
+        "V"
+      ],
+      "distance_breakdown": {
+        "distance_version": "v2",
+        "backend": "embedding",
+        "total": 0.4408,
+        "axis_scores": {
+          "I": 0.0,
+          "C": 0.6521,
+          "O": 0.5734,
+          "V": 0.5091
+        },
+        "components": {
+          "input_tree_distance": 0.0,
+          "constraint_match_distance": 0.6521,
+          "objective_type_distance": 0.6558,
+          "objective_text_distance": 0.4497,
+          "invariant_match_distance": 0.5091
+        }
+      },
+      "applied_rule": "existence_to_counting",
+      "applied_helpers": [
+        {
+          "id": "counting_unit_definition",
+          "selection_reason": "明确计数对象与去重口径，满足规则对有限解空间和等价关系的要求。",
+          "affected_axes": [
+            "C",
+            "O",
+            "V"
+          ],
+          "schema_changes": [
+            "在core_constraints中定义集合等价与取模规则",
+            "在objective中替换为计数目标",
+            "在invariant中声明计数单元的独立性"
+          ],
+          "innovation_reason": "将原题答案从构造序列转为对象明确的计数结果，彻底改变问题性质。",
+          "difficulty_reason": "要求算法严格处理等价类划分与有限性证明，避免重复计数。"
+        },
+        {
+          "id": "state_factorization",
+          "selection_reason": "利用二叉树操作特性将解空间拆分为可汇总的路径单元。",
+          "affected_axes": [
+            "C",
+            "V"
+          ],
+          "schema_changes": [
+            "在core_constraints中引入树形祖先路径作为计数单元",
+            "在invariant中建立路径交集与空位复用的分解逻辑"
+          ],
+          "innovation_reason": "使计数逻辑从主状态（二叉树节点占用）中自然衍生，而非后处理。",
+          "difficulty_reason": "要求解法在树形分解与动态汇总层面重建状态转移，复杂度从O(n log n)升至组合计数。"
+        },
+        {
+          "id": "counting_obligation_lock",
+          "selection_reason": "确保计数责任主导求解流程，防止退化为附带统计。",
+          "affected_axes": [
+            "C",
+            "O"
+          ],
+          "schema_changes": [
+            "在core_constraints中锁定max(X)=M_min为计数前提",
+            "在objective中移除构造输出，仅保留计数结果"
+          ],
+          "innovation_reason": "用计数义务完全替换原判定主目标，算法必须同时承担计数与去重正确性。",
+          "difficulty_reason": "要求状态转移直接服务于方案数累乘，原贪心策略必须重构为边界探测与组合计算。"
+        }
+      ],
+      "algorithmic_delta_claim": {
+        "seed_solver_core": "基于优先队列的贪心策略：每次取出Y中最大值，沿二叉树父节点上溯至首个未被占用的祖先，替换并更新集合，保证最大值单调不增。",
+        "reusable_subroutines": "二叉树父节点计算(v/2)、集合占用状态标记、优先队列排序逻辑。",
+        "new_solver_core": "两阶段求解：1. 复用贪心确定M_min；2. 组合计数阶段，将Y降序排序，利用并查集/树状数组维护每个节点到根路径上的‘可用空位’，按乘法原理累乘每个y的合法祖先选择数，并处理M_min边界约束。",
+        "new_proof_obligation": "需证明：1) M_min的唯一性与贪心求得的M_min等价；2) 按Y降序分配祖先时，后续y的可用祖先集合仅依赖于已分配节点的子树覆盖情况，满足无后效性；3) 乘法原理在此树形匹配中严格成立，且取模运算不破坏计数正确性。",
+        "why_direct_reuse_fails": "原贪心算法仅寻找单条可行路径，无法回溯或枚举其他不增大最大值的合法祖先分配。直接套用会遗漏大量等价最优解，且原状态结构未记录‘路径重叠与空位复用’信息，无法支撑组合计数。"
+      },
+      "anti_shallow_rationale": "本题并非简单添加模数或输出格式变更。核心义务从‘构造单一最优解’彻底转变为‘受限树形匹配计数’。状态表示从‘当前集合元素’转为‘树节点占用状态与路径交集’，算法从贪心转为组合数学/数据结构维护，证明责任从单调性转为无后效性与乘法原理合法性，符合深度重构标准。"
+    }
+  }
+}

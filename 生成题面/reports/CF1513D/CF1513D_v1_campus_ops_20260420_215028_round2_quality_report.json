@@ -1,0 +1,660 @@
+{
+  "overall": {
+    "status": "reject_as_retheme",
+    "quality_score": 94.0,
+    "divergence_score": 61.7,
+    "schema_distance": 0.3956,
+    "generated_status": "ok"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 5.0,
+        "rationale": "题面完整且准确地实现了 new_schema 中定义的所有变体要素：输入结构（多组测试数据、n/p 参数、数组 a）、核心约束（单点成本 p、合法区间整除判定与最小值成本、全覆盖不重叠划分）、目标函数（最小成本下的方案数模 1e9+7）以及校园主题映射。无遗漏或曲解。",
+        "evidence_refs": [
+          "new_schema.input_structure",
+          "new_schema.core_constraints",
+          "new_schema.objective",
+          "generated_problem.description",
+          "generated_problem.input_format"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 5.0,
+        "rationale": "题面提供了独立解题所需的全部关键信息，包括明确的划分规则、目标定义、输入输出格式、数据范围限制以及方案差异的定义。约束条件完整，时间/空间限制清晰，选手无需猜测核心逻辑或边界处理方式。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.output_format",
+          "generated_problem.constraints"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 5.0,
+        "rationale": "Description、Input/Output Format、Constraints 与 Samples 之间高度一致。经手动验算，两个样例的输入输出与题面规则完全吻合，样例解释逻辑严密，符号含义在各部分保持一致，无矛盾或歧义。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.samples",
+          "generated_problem.constraints"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 3.0,
+        "rationale": "样例数量仅为 2 个，且两个样例的最优方案数均为 1。对于一道 Hard 难度的“最优方案计数”题，缺乏方案数大于 1 的样例来验证加法原理与模运算逻辑，也缺少边界情况（如 n=1 或 p 极小/极大时的权衡）覆盖，不足以充分展示计数维度的关键结构。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks.sample_count"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 5.0,
+        "rationale": "题面结构严格遵循标准 OJ 规范，分段清晰（背景、规则、任务、输入输出、约束、样例、备注）。数学符号使用准确，语言精炼无冗余，主题包装自然不干扰核心逻辑，便于参赛者快速提取关键信息。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.notes"
+        ]
+      }
+    ],
+    "strengths": [
+      "精准落地 new_schema 的核心约束与计数目标，规则定义无歧义。",
+      "题面排版规范，数学表达严谨，符合高质量 OJ 题面标准。",
+      "样例解释逐步推导，清晰展示了合法区间判定与成本计算过程。",
+      "成功将抽象的 DP 计数模型映射为贴近现实的“摊位规划”场景，主题融合自然。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "distance_version": "v2",
+      "backend": "embedding",
+      "total": 0.3956,
+      "axis_scores": {
+        "I": 0.0,
+        "C": 0.6427,
+        "O": 0.4505,
+        "V": 0.451
+      },
+      "components": {
+        "input_tree_distance": 0.0,
+        "constraint_match_distance": 0.6427,
+        "objective_type_distance": 0.4576,
+        "objective_text_distance": 0.4399,
+        "invariant_match_distance": 0.451
+      }
+    },
+    "schema_distance": 0.3956,
+    "changed_axes_planned": [
+      "C",
+      "O",
+      "V"
+    ],
+    "changed_axes_realized": [
+      "C",
+      "O",
+      "V"
+    ],
+    "semantic_difference": 0.65,
+    "solution_transfer_risk": 0.5,
+    "surface_retheme_risk": 0.3,
+    "verdict": "pass",
+    "rationale": "约束轴(C)与目标轴(O)发生实质变化：原题基于图论MST的割独立性贪心求解，新题重构为一维序列的连续区间划分，目标转为最小成本下的方案数统计。区间选择的强前后缀耦合彻底打破原题贪心前提，迫使建模转为前缀DP（同时维护最小成本与模意义方案数）。不变量轴(V)从独立割位单调扫描转为前缀最优子结构与加法原理。底层可复用部分：整除区间合法性判定、单调栈/双指针维护区间极值、合法转移点稀疏性分析等技巧可高度迁移。但主算法框架需从O(n)贪心重写为DP状态转移与计数累加，原题解法无法直接套用。表层叙事、任务定义与样例已完全重构，无文本复用痕迹。综合判断，语义差异真实成立，解法需实质性调整，予以通过。",
+    "evidence_refs": [
+      "snapshots.new_schema.objective",
+      "snapshots.new_schema.core_constraints",
+      "snapshots.generated_problem.description",
+      "review_context.algorithmic_delta_claim"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_problem_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 generated_problem。",
+      "evidence_refs": [
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "new_schema_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 new_schema 或兼容字段 new_schema_snapshot。",
+      "evidence_refs": [
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "生成状态正常。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "predicted_schema_distance_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 predicted_schema_distance。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "distance_breakdown_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 distance_breakdown。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "changed_axes_realized_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 changed_axes_realized。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.40，达到中等差异阈值。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "已落地核心差异轴：C, O, V。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题或题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=2。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "目标函数已经在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "n 的下界约束与 schema 不一致",
+      "detail": "new_schema 中定义 booth_sizes 长度最小值为 1，但 generated_problem.constraints 中写明 $2 \\le n$。虽然不影响主体逻辑，但可能导致边界测试用例缺失或判题数据与 schema 规划不符。",
+      "evidence_refs": [
+        "new_schema.input_structure.components[1].length.min",
+        "generated_problem.constraints"
+      ],
+      "fix_hint": "将约束调整为 $1 \\le n \\le 2 \\times 10^5$，或在题面中明确说明 n=1 时的特殊处理（通常直接输出 1）。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "样例缺乏多方案计数覆盖",
+      "detail": "当前两个样例的最优划分方案数均为 1，未能体现 objective 中要求的“方案数统计”与“模 1e9+7”特性。对于计数类 Hard 题，缺少 count > 1 的样例会降低选手验证 DP 转移正确性的效率。",
+      "evidence_refs": [
+        "generated_problem.samples",
+        "new_schema.objective"
+      ],
+      "fix_hint": "补充一个包含多个等价最优切割位置的样例（例如 a=[2,2,2], p=3，此时全分与合并成本可能相同或产生多种最优组合），并在 explanation 中明确列出不同方案。"
+    }
+  ],
+  "suggested_revisions": [
+    "将约束调整为 $1 \\le n \\le 2 \\times 10^5$，或在题面中明确说明 n=1 时的特殊处理（通常直接输出 1）。",
+    "补充一个包含多个等价最优切割位置的样例（例如 a=[2,2,2], p=3，此时全分与合并成本可能相同或产生多种最优组合），并在 explanation 中明确列出不同方案。",
+    "增加一个最优方案数大于 1 的样例，以覆盖计数逻辑与模运算验证。",
+    "统一 n 的取值范围下界，确保与 new_schema 规划一致。",
+    "可在 description 末尾补充一句“区间划分顺序固定为从左至右”，进一步消除潜在的结构歧义。"
+  ],
+  "revision_brief": {
+    "round_index": 2,
+    "overall_status": "reject_as_retheme",
+    "generated_status": "ok",
+    "quality_score": 94.0,
+    "divergence_score": 61.7,
+    "failed_hard_checks": [],
+    "issues": [
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "n 的下界约束与 schema 不一致",
+        "detail": "new_schema 中定义 booth_sizes 长度最小值为 1，但 generated_problem.constraints 中写明 $2 \\le n$。虽然不影响主体逻辑，但可能导致边界测试用例缺失或判题数据与 schema 规划不符。",
+        "evidence_refs": [
+          "new_schema.input_structure.components[1].length.min",
+          "generated_problem.constraints"
+        ],
+        "fix_hint": "将约束调整为 $1 \\le n \\le 2 \\times 10^5$，或在题面中明确说明 n=1 时的特殊处理（通常直接输出 1）。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "样例缺乏多方案计数覆盖",
+        "detail": "当前两个样例的最优划分方案数均为 1，未能体现 objective 中要求的“方案数统计”与“模 1e9+7”特性。对于计数类 Hard 题，缺少 count > 1 的样例会降低选手验证 DP 转移正确性的效率。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "new_schema.objective"
+        ],
+        "fix_hint": "补充一个包含多个等价最优切割位置的样例（例如 a=[2,2,2], p=3，此时全分与合并成本可能相同或产生多种最优组合），并在 explanation 中明确列出不同方案。"
+      }
+    ],
+    "suggested_revisions": [
+      "将约束调整为 $1 \\le n \\le 2 \\times 10^5$，或在题面中明确说明 n=1 时的特殊处理（通常直接输出 1）。",
+      "补充一个包含多个等价最优切割位置的样例（例如 a=[2,2,2], p=3，此时全分与合并成本可能相同或产生多种最优组合），并在 explanation 中明确列出不同方案。",
+      "增加一个最优方案数大于 1 的样例，以覆盖计数逻辑与模运算验证。",
+      "统一 n 的取值范围下界，确保与 new_schema 规划一致。",
+      "可在 description 末尾补充一句“区间划分顺序固定为从左至右”，进一步消除潜在的结构歧义。"
+    ],
+    "strengths_to_keep": [
+      "精准落地 new_schema 的核心约束与计数目标，规则定义无歧义。",
+      "题面排版规范，数学表达严谨，符合高质量 OJ 题面标准。",
+      "样例解释逐步推导，清晰展示了合法区间判定与成本计算过程。",
+      "成功将抽象的 DP 计数模型映射为贴近现实的“摊位规划”场景，主题融合自然。"
+    ]
+  },
+  "snapshots": {
+    "paths": {
+      "schema_path": "D:\\AutoProblemGen\\四元组抽取\\output\\batch\\normalized\\CF1513D.json",
+      "artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1513D_v1_campus_ops_20260420_215028_round2.json",
+      "markdown_path": "D:\\AutoProblemGen\\生成题面\\output\\CF1513D_v1_campus_ops_20260420_215028_round2.md"
+    },
+    "original_problem": {
+      "problem_id": "CF1513D",
+      "title": "D. GCD and MST",
+      "description": "You are given an array $a$ of $n$ ($n \\geq 2$) positive integers and an integer $p$. Consider an undirected weighted graph of $n$ vertices numbered from $1$ to $n$ for which the edges between the vertices $i$ and $j$ ($i<j$) are added in the following manner:\n\nHere $gcd(x, y, \\ldots)$ denotes the greatest common divisor (GCD) of integers $x$, $y$,....\n\nNote that there could be multiple edges between $i$ and $j$ if both of the above conditions are true, and if both the conditions fail for $i$ and $j$, then there is no edge between these vertices.\n\nThe goal is to find the weight of the minimum spanning tree of this graph.",
+      "input": "The first line contains a single integer $t$ ($1 \\leq t \\leq 10^4$) — the number of test cases. The first line of each test case contains two integers $n$ ($2 \\leq n \\leq 2 \\cdot 10^5$) and $p$ ($1 \\leq p \\leq 10^9$) — the number of nodes and the parameter $p$. The second line contains $n$ integers $a_1, a_2, a_3, \\dots, a_n$ ($1 \\leq a_i \\leq 10^9$). It is guaranteed that the sum of $n$ over all test cases does not exceed $2 \\cdot 10^5$.",
+      "output": "Output $t$ lines. For each test case print the weight of the corresponding graph.",
+      "constraints": "time limit per test 2 seconds\nmemory limit per test 256 megabytes",
+      "source": "codeforces",
+      "url": "https://codeforces.com/contest/1513/problem/D",
+      "tags": [
+        "constructive algorithms",
+        "dsu",
+        "graphs",
+        "greedy",
+        "number theory",
+        "sortings"
+      ],
+      "difficulty": "2000"
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "CF1513D",
+        "D. GCD and MST",
+        "codeforces",
+        "https://codeforces.com/contest/1513/problem/D",
+        "You are given an array $a$ of $n$ ($n \\geq 2$) positive integers and an integer $p$. Consider an undirected weighted graph of $n$ vertices numbered from $1$ to $n$ for which the edges between the vertices $i$ and $j$...",
+        "不要复写原题的叙事结构、任务定义或样例套路。",
+        "不要只替换实体名称后保留同样的输入输出关系。"
+      ],
+      "rationale": "目标从求和改为计数；约束从图边存在性改为区间划分合法性与全覆盖要求；不变量从割独立性改为前缀最优子结构与方案数加法原理。",
+      "summary": "重构为一维区间划分计数问题，彻底打破原题 MST 贪心框架，引入 DP 状态分解与模意义计数。",
+      "mode": "single_seed_extension"
+    },
+    "new_schema": {
+      "problem_id": "CAMPUS_DIV_COUNT",
+      "source": "custom",
+      "input_structure": {
+        "type": "composite",
+        "length": {
+          "min": null,
+          "max": null
+        },
+        "value_range": {
+          "min": null,
+          "max": null
+        },
+        "properties": {
+          "multiple_test_cases": true
+        },
+        "components": [
+          {
+            "role": "parameters",
+            "role_description": "number of booths and standard partition cost",
+            "type": "tuple",
+            "length": {
+              "min": 2,
+              "max": 2
+            },
+            "value_range": {
+              "min": 1,
+              "max": 1000000000
+            },
+            "properties": {}
+          },
+          {
+            "role": "booth_sizes",
+            "role_description": "sequence of positive integers representing booth capacities",
+            "type": "array",
+            "length": {
+              "min": 1,
+              "max": 200000
+            },
+            "value_range": {
+              "min": 1,
+              "max": 1000000000
+            },
+            "properties": {
+              "ordered": true
+            }
+          }
+        ]
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "valid_interval",
+            "description": "对于任意连续区间 [l, r]，若区间内最小值能整除区间内所有元素，则该区间可作为一次‘联合招新棚’覆盖，其建设成本为区间最小值。",
+            "formal": "min(a[l..r]) | a[k] for all k in [l, r] => cost = min(a[l..r])",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "base_partition",
+            "description": "任意单个摊位 [i, i] 均可独立划分，其基础运营成本固定为 p。",
+            "formal": "cost([i, i]) = p",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "partition_coverage",
+            "description": "必须将 1 到 n 的所有摊位划分为若干个互不重叠的连续区间，覆盖全部摊位。",
+            "formal": "Union of chosen intervals = [1, n], pairwise disjoint",
+            "source_sections": [
+              "description"
+            ]
+          }
+        ]
+      },
+      "objective": {
+        "type": "count_optimal",
+        "description": "计算所有能使总建设成本最小的划分方案数量，结果对 10^9+7 取模。",
+        "target": "count_mod_1e9_7",
+        "requires_solution": false
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "prefix_optimal_substructure",
+            "description": "前缀 i 的最小成本仅依赖于最后一个合法区间 [j+1, i] 的成本与前缀 j 的最小成本之和。方案数满足加法原理：cnt[i] = sum(cnt[j]) 对所有使总成本最小的 j 求和。",
+            "properties": {},
+            "evidence_source": "both"
+          },
+          {
+            "name": "monotonic_validity",
+            "description": "若区间 [l, r] 合法，则其子区间不一定合法，但固定右端点 r 时，合法左端点 l 的分布具有稀疏性，可通过单调栈或预处理快速定位转移点，避免 O(n^2) 枚举。",
+            "properties": {},
+            "evidence_source": "solution_code"
+          }
+        ]
+      },
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "Hard"
+    },
+    "generated_problem": {
+      "title": "社团招新摊位规划",
+      "description": "校园文化节即将开幕，学生会需要在一条直线上依次布置 $n$ 个社团招新摊位。每个摊位 $i$ 有一个基础容量值 $a_i$。为了节省搭建成本并方便管理，你需要将这 $n$ 个摊位划分成若干个连续的“联合展区”。\n\n划分规则如下：\n1. 任意单个摊位 $[i, i]$ 都可以作为一个独立的展区，其固定运营成本为 $p$。\n2. 对于任意长度大于 1 的连续区间 $[l, r]$，如果该区间内所有摊位的容量值都能被区间内的最小容量值整除，则该区间可以合并为一个联合展区。此时，该展区的建设成本等于该区间的最小容量值。\n3. 必须将 $1$ 到 $n$ 的所有摊位恰好划分一次，不允许遗漏或重叠。\n\n你的任务是：找出一种划分方案，使得所有展区的总成本最小。在此基础上，计算能够达到该最小总成本的不同划分方案数量。由于答案可能很大，请输出对 $10^9+7$ 取模的结果。\n\n两种划分方案不同，当且仅当存在至少一个切割位置（即某个区间的右端点）在两种方案中不同。",
+      "input_format": "第一行包含一个整数 $t$，表示测试用例的数量。\n每个测试用例的第一行包含两个整数 $n$ 和 $p$。\n第二行包含 $n$ 个正整数 $a_1, a_2, \\dots, a_n$。",
+      "output_format": "对于每个测试用例，输出一行一个整数，表示最小总成本下的划分方案数对 $10^9+7$ 取模的结果。",
+      "constraints": [
+        "$1 \\le t \\le 10^4$",
+        "$2 \\le n \\le 2 \\times 10^5$",
+        "$1 \\le p \\le 10^9$",
+        "$1 \\le a_i \\le 10^9$",
+        "所有测试用例的 $n$ 之和不超过 $2 \\times 10^5$",
+        "时间限制：2.0 秒",
+        "空间限制：256 MB"
+      ],
+      "samples": [
+        {
+          "input": "1\n3 5\n2 4 8",
+          "output": "1",
+          "explanation": "区间 $[1, 3]$ 的最小值为 2，且 2 能整除 2、4、8，因此可作为联合展区，成本为 2。其他划分方式的总成本均大于 2。最小成本为 2，对应方案数为 1。"
+        },
+        {
+          "input": "1\n4 4\n5 2 4 2",
+          "output": "1",
+          "explanation": "最优划分方案为 $[1, 1]$ 与 $[2, 4]$。$[1, 1]$ 为独立展区，成本为 $p=4$；$[2, 4]$ 的最小值为 2，且 2 能整除 2、4、2，成本为 2。总成本为 6。其他任何划分方式的总成本均不低于 10。因此最小成本为 6，方案数为 1。"
+        }
+      ],
+      "notes": "本题要求输出方案数对 $10^9+7$ 取模的结果。划分方案由切割位置唯一确定，不同切割序列视为不同方案。",
+      "status": "ok",
+      "error_reason": "",
+      "feedback": ""
+    },
+    "artifact_contract": {
+      "new_schema_present": true,
+      "new_schema_field_present": false,
+      "new_schema_snapshot_field_present": true,
+      "difference_plan_present": true,
+      "predicted_schema_distance_present": true,
+      "distance_breakdown_present": true,
+      "changed_axes_realized_present": true,
+      "generated_problem_present": true
+    },
+    "review_context": {
+      "difference_plan": {
+        "summary": "重构为一维区间划分计数问题，彻底打破原题 MST 贪心框架，引入 DP 状态分解与模意义计数。",
+        "mode": "single_seed_extension",
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      },
+      "changed_axes_realized": [
+        "C",
+        "O",
+        "V"
+      ],
+      "distance_breakdown": {
+        "distance_version": "v2",
+        "backend": "embedding",
+        "total": 0.3956,
+        "axis_scores": {
+          "I": 0.0,
+          "C": 0.6427,
+          "O": 0.4505,
+          "V": 0.451
+        },
+        "components": {
+          "input_tree_distance": 0.0,
+          "constraint_match_distance": 0.6427,
+          "objective_type_distance": 0.4576,
+          "objective_text_distance": 0.4399,
+          "invariant_match_distance": 0.451
+        }
+      },
+      "applied_rule": "existence_to_counting",
+      "applied_helpers": [
+        {
+          "id": "counting_unit_definition",
+          "selection_reason": "明确计数对象为最优划分方案，去重规则为切割位置序列不同即视为不同方案，直接响应规则对计数口径的要求。",
+          "affected_axes": [
+            "C",
+            "O",
+            "V"
+          ],
+          "schema_changes": [
+            "在 objective 中明确计数目标与取模要求",
+            "在 core_constraints 中定义区间合法性与覆盖完整性",
+            "在 invariant 中声明方案数加法原理"
+          ],
+          "innovation_reason": "将原题答案从单一数值替换为对象明确的计数结果，强制选手重新定义解空间结构。",
+          "difficulty_reason": "要求解法处理等价类划分与有限性证明，避免简单枚举或后处理统计。"
+        },
+        {
+          "id": "state_factorization",
+          "selection_reason": "将解空间按前缀位置拆分为可汇总的计数单元，使计数从主状态组织方式中自然生长。",
+          "affected_axes": [
+            "C",
+            "V"
+          ],
+          "schema_changes": [
+            "在 core_constraints 中规定区间必须互不重叠且全覆盖",
+            "在 invariant 中解释前缀状态如何无重复地汇总子方案"
+          ],
+          "innovation_reason": "打破原图论割独立性，引入一维前缀分解，要求重建主状态转移逻辑。",
+          "difficulty_reason": "要求算法在分解与汇总层面处理状态依赖，避免 O(n^2) 暴力转移。"
+        },
+        {
+          "id": "counting_obligation_lock",
+          "selection_reason": "将计数责任锁进主求解目标，确保算法同时承担最优性判定与方案数统计。",
+          "affected_axes": [
+            "C",
+            "O"
+          ],
+          "schema_changes": [
+            "在 objective 中主导状态转移目标",
+            "在 core_constraints 中移除原 MST 判定逻辑，替换为划分覆盖约束"
+          ],
+          "innovation_reason": "彻底替换原题主目标，禁止保留原判定过程再顺手计数。",
+          "difficulty_reason": "要求算法在单次扫描中同步维护最小成本与模意义方案数，增加状态维度与转移复杂度。"
+        }
+      ],
+      "algorithmic_delta_claim": {
+        "seed_solver_core": "原题基于 MST 割性质，利用单调栈/双指针维护整除区间，对每个相邻割位独立取最小边权并累加。",
+        "reusable_subroutines": "整除区间合法性判断、单调栈维护区间最小值、前缀极值扫描逻辑可复用。",
+        "new_solver_core": "动态规划状态转移 dp[i] = min(dp[j] + cost(j+1, i)) 与方案数累加 ways[i] = sum(ways[j])。需结合整除性质优化转移点枚举，使用数据结构维护 dp[j] - prefix_cost 的最小值及对应方案数和。",
+        "new_proof_obligation": "必须证明前缀最优子结构在模意义下的加法原理成立，且需严格论证合法转移点 j 的稀疏性/可维护性，确保 DP 转移不会因区间重叠或非法划分导致重复计数或漏计。同时需证明 cost 函数的非负性与最优解的有限性。",
+        "why_direct_reuse_fails": "原题贪心累加依赖图论割独立性，各割位决策互不影响；新题划分方案具有强耦合性（前一个区间的终点决定下一个区间的起点），贪心策略失效，必须转为全局 DP 计数，原 MST 算法框架无法直接套用。"
+      },
+      "anti_shallow_rationale": "彻底重构问题模型，从图论 MST 转向一维序列划分计数。核心约束从‘边权定义’变为‘区间合法性与覆盖完整性’，目标从‘求和’变为‘模意义计数’。状态转移从独立割位变为前缀依赖，算法范式从贪心转为 DP+数据结构优化，有效阻断原题解法迁移。"
+    }
+  }
+}

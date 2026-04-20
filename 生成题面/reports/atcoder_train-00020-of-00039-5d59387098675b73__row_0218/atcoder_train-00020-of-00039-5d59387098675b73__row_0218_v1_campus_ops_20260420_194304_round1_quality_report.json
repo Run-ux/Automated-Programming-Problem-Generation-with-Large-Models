@@ -1,0 +1,711 @@
+{
+  "overall": {
+    "status": "pass",
+    "quality_score": 88.0,
+    "divergence_score": 76.6,
+    "schema_distance": 0.3986,
+    "generated_status": "ok"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 4.0,
+        "rationale": "题面准确落地了树拓扑输入、多重集分配、计数目标及取模要求。但 new_schema 中 heap_monotonicity 的文字描述（父≥子）与形式化定义（子≥父）存在内部矛盾，生成题面采用了“父≤子”方向，结合根节点锁定最小值的约束，该方向在组合数学上构成合法的最小堆结构，逻辑自洽且修正了 schema 的歧义，故给予较高评价。",
+        "evidence_refs": [
+          "new_schema.core_constraints.constraints[1]",
+          "generated_problem.description",
+          "new_schema.objective"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 5.0,
+        "rationale": "题面提供了独立解题所需的全部关键信息：任务目标、输入输出格式、数据范围、取模规则、方案差异判定标准及树结构保证均清晰明确，参赛者无需猜测任何边界条件或核心规则。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.output_format",
+          "generated_problem.constraints",
+          "generated_problem.notes"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 5.0,
+        "rationale": "题面各部分高度一致。样例输入输出严格遵循描述的偏序约束与计数规则，字段数量、符号含义与格式要求无冲突，notes 中的补充说明与主描述完全对齐。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.samples",
+          "generated_problem.notes"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 3.0,
+        "rationale": "提供了2个样例，但均为星型树结构（根节点直接连接所有叶子）。在该结构下，非根节点的子树规模均为1，无法验证 subtree_factorization 不变量中“子树规模乘积”对组合系数的核心影响，样例覆盖度不足，未能体现树形结构对计数的关键作用。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "new_schema.invariant.invariants[0].description"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 5.0,
+        "rationale": "结构清晰标准，符合主流 OJ 题面规范。校园运营主题包装自然融入约束描述，无冗余噪声或来源污染，措辞明确，便于参赛者快速提取数学模型。",
+        "evidence_refs": [
+          "generated_problem"
+        ]
+      }
+    ],
+    "strengths": [
+      "主题包装（社团排班）与抽象约束（树偏序、多重集分配）映射自然，背景设定不干扰核心数学模型。",
+      "计数目标、取模要求及方案差异定义明确，严格遵循 Hard 难度组合计数题的命题范式。",
+      "约束条件完整，时间/空间限制与 N≤200000 的数据规模匹配，符合 O(N log N) 或 O(N) 解法的预期。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "distance_version": "v2",
+      "backend": "embedding",
+      "total": 0.3986,
+      "axis_scores": {
+        "I": 0.0,
+        "C": 0.7797,
+        "O": 0.3435,
+        "V": 0.3941
+      },
+      "components": {
+        "input_tree_distance": 0.0,
+        "constraint_match_distance": 0.7797,
+        "objective_type_distance": 0.2261,
+        "objective_text_distance": 0.5196,
+        "invariant_match_distance": 0.3941
+      }
+    },
+    "schema_distance": 0.3986,
+    "changed_axes_planned": [
+      "C",
+      "O",
+      "V"
+    ],
+    "changed_axes_realized": [
+      "C",
+      "O",
+      "V"
+    ],
+    "semantic_difference": 0.85,
+    "solution_transfer_risk": 0.15,
+    "surface_retheme_risk": 0.15,
+    "verdict": "pass",
+    "rationale": "原题核心为最优化/构造问题（最大化边端点最小值之和），标准解法为贪心排序（最小值置根，其余任意分配，答案为总和减最小值）。新题将目标彻底转为计数问题（统计满足堆单调性且根节点锁定最小值的合法赋值方案数），并引入多重集等价类去重与模运算。关键轴发生实质变化：O轴从maximize_value变为counting；C轴新增严格的父子单调约束与根值锁定；V轴从贪心加性不变量转为基于子树规模的组合分解（树偏序线性扩展计数）。原题的贪心构造逻辑无法直接迁移至计数场景，选手必须重新建模，使用DFS聚合子树大小、预处理阶乘与模逆元，并推导组合恒等式。表层叙事已完全重构为社团排班背景，输入输出格式与任务定义无文本复用痕迹。综合判断，语义差异显著，解法不可直接迁移，非换皮题。",
+    "evidence_refs": [
+      "snapshots.new_schema.objective",
+      "snapshots.generated_problem.description",
+      "review_context.algorithmic_delta_claim",
+      "divergence.schema_distance_breakdown"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_problem_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 generated_problem。",
+      "evidence_refs": [
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "new_schema_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 new_schema 或兼容字段 new_schema_snapshot。",
+      "evidence_refs": [
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "生成状态正常。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "predicted_schema_distance_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 predicted_schema_distance。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "distance_breakdown_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 distance_breakdown。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "changed_axes_realized_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 changed_axes_realized。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.40，达到中等差异阈值。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "已落地核心差异轴：C, O, V。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题或题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=2。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "目标函数已经在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "样例结构单一，未覆盖子树规模因子",
+      "detail": "当前两个样例均为星型树，非根节点子树大小均为1，导致组合公式中的 ∏size(v) 项恒为1。这无法验证题目核心不变量（子树规模乘积倒数）的正确性，选手可能误以为只需处理多重集排列。",
+      "evidence_refs": [
+        "generated_problem.samples",
+        "new_schema.invariant.invariants[0].description"
+      ],
+      "fix_hint": "增加一条深度≥2的树结构样例（如链状 1-2-3 或混合树），并搭配包含重复值的序列，使输出结果能明确体现子树规模对计数的影响。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "输入边方向表述可更严谨",
+      "detail": "input_format 中描述为“u 和 v 之间存在直接的上下级关系”，但未明确输入边是无向的。虽然 notes 中说明以 1 为根，但标准 OJ 题面通常会明确“输入 N-1 条无向边，逻辑上以 1 为根确定父子关系”。",
+      "evidence_refs": [
+        "generated_problem.input_format",
+        "generated_problem.notes"
+      ],
+      "fix_hint": "在 input_format 中补充说明“输入保证为无向边，树结构以 1 号节点为根进行逻辑定向”，避免实现时的歧义。"
+    }
+  ],
+  "suggested_revisions": [
+    "增加一条深度≥2的树结构样例（如链状 1-2-3 或混合树），并搭配包含重复值的序列，使输出结果能明确体现子树规模对计数的影响。",
+    "在 input_format 中补充说明“输入保证为无向边，树结构以 1 号节点为根进行逻辑定向”，避免实现时的歧义。",
+    "补充非星型树样例，确保样例能覆盖子树规模对组合系数的影响，提升样例的验证价值。",
+    "在 input_format 中明确边为无向输入，逻辑上以 1 为根，符合标准图论题面规范。",
+    "可在 notes 中简要提示“该约束等价于树形最小堆的线性扩展计数”，帮助选手快速建立组合模型，但不强制。"
+  ],
+  "revision_brief": {
+    "round_index": 1,
+    "overall_status": "pass",
+    "generated_status": "ok",
+    "quality_score": 88.0,
+    "divergence_score": 76.6,
+    "failed_hard_checks": [],
+    "issues": [
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "样例结构单一，未覆盖子树规模因子",
+        "detail": "当前两个样例均为星型树，非根节点子树大小均为1，导致组合公式中的 ∏size(v) 项恒为1。这无法验证题目核心不变量（子树规模乘积倒数）的正确性，选手可能误以为只需处理多重集排列。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "new_schema.invariant.invariants[0].description"
+        ],
+        "fix_hint": "增加一条深度≥2的树结构样例（如链状 1-2-3 或混合树），并搭配包含重复值的序列，使输出结果能明确体现子树规模对计数的影响。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "输入边方向表述可更严谨",
+        "detail": "input_format 中描述为“u 和 v 之间存在直接的上下级关系”，但未明确输入边是无向的。虽然 notes 中说明以 1 为根，但标准 OJ 题面通常会明确“输入 N-1 条无向边，逻辑上以 1 为根确定父子关系”。",
+        "evidence_refs": [
+          "generated_problem.input_format",
+          "generated_problem.notes"
+        ],
+        "fix_hint": "在 input_format 中补充说明“输入保证为无向边，树结构以 1 号节点为根进行逻辑定向”，避免实现时的歧义。"
+      }
+    ],
+    "suggested_revisions": [
+      "增加一条深度≥2的树结构样例（如链状 1-2-3 或混合树），并搭配包含重复值的序列，使输出结果能明确体现子树规模对计数的影响。",
+      "在 input_format 中补充说明“输入保证为无向边，树结构以 1 号节点为根进行逻辑定向”，避免实现时的歧义。",
+      "补充非星型树样例，确保样例能覆盖子树规模对组合系数的影响，提升样例的验证价值。",
+      "在 input_format 中明确边为无向输入，逻辑上以 1 为根，符合标准图论题面规范。",
+      "可在 notes 中简要提示“该约束等价于树形最小堆的线性扩展计数”，帮助选手快速建立组合模型，但不强制。"
+    ],
+    "strengths_to_keep": [
+      "主题包装（社团排班）与抽象约束（树偏序、多重集分配）映射自然，背景设定不干扰核心数学模型。",
+      "计数目标、取模要求及方案差异定义明确，严格遵循 Hard 难度组合计数题的命题范式。",
+      "约束条件完整，时间/空间限制与 N≤200000 的数据规模匹配，符合 O(N log N) 或 O(N) 解法的预期。"
+    ]
+  },
+  "snapshots": {
+    "paths": {
+      "schema_path": "D:\\AutoProblemGen\\四元组抽取\\output\\batch\\normalized\\atcoder_train-00020-of-00039-5d59387098675b73__row_0218.json",
+      "artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\atcoder_train-00020-of-00039-5d59387098675b73__row_0218_v1_campus_ops_20260420_194304_round1.json",
+      "markdown_path": "D:\\AutoProblemGen\\生成题面\\output\\atcoder_train-00020-of-00039-5d59387098675b73__row_0218_v1_campus_ops_20260420_194304_round1.md"
+    },
+    "original_problem": {
+      "selection_id": "sample_07",
+      "problem_id": "atcoder_train-00020-of-00039-5d59387098675b73__row_0218",
+      "record_uid": "train-00020-of-00039-5d59387098675b73__row_0218",
+      "statement_language": "english",
+      "title": "p03026 M-SOLUTIONS Programming Contest - Maximum Sum of Minimum",
+      "description": "You are given a tree with N vertices 1,2,\\ldots,N, and positive integers c_1,c_2,\\ldots,c_N. The i-th edge in the tree (1 \\leq i \\leq N-1) connects Vertex a_i and Vertex b_i.\n\nWe will write a positive integer on each vertex in T and calculate our score as follows:\n\n* On each edge, write the smaller of the integers written on the two endpoints.\n* Let our score be the sum of the integers written on all the edges.\n\n\n\nFind the maximum possible score when we write each of c_1,c_2,\\ldots,c_N on one vertex in T, and show one way to achieve it. If an integer occurs multiple times in c_1,c_2,\\ldots,c_N, we must use it that number of times.\n\nConstraints\n\n* 1 \\leq N \\leq 10000\n* 1 \\leq a_i,b_i \\leq N\n* 1 \\leq c_i \\leq 10^5\n* The given graph is a tree.\n\nInput\n\nInput is given from Standard Input in the following format:\n\n\nN\na_1 b_1\n:\na_{N-1} b_{N-1}\nc_1 \\ldots c_N\n\n\nOutput\n\nUse the following format:\n\n\nM\nd_1 \\ldots d_N\n\n\nwhere M is the maximum possible score, and d_i is the integer to write on Vertex i. d_1,d_2,\\ldots,d_N must be a permutation of c_1,c_2,\\ldots,c_N. If there are multiple ways to achieve the maximum score, any of them will be accepted.\n\nExamples\n\nInput\n\n5\n1 2\n2 3\n3 4\n4 5\n1 2 3 4 5\n\n\nOutput\n\n10\n1 2 3 4 5\n\n\nInput\n\n5\n1 2\n1 3\n1 4\n1 5\n3141 59 26 53 59\n\n\nOutput\n\n197\n59 26 3141 59 53",
+      "public_tests": {
+        "input": [
+          "5\n1 2\n1 3\n1 4\n1 5\n3141 59 26 53 59",
+          "5\n1 2\n2 3\n3 4\n4 5\n1 2 3 4 5"
+        ],
+        "output": [
+          "197\n59 26 3141 59 53",
+          "10\n1 2 3 4 5"
+        ]
+      },
+      "source": {
+        "split": "train",
+        "source_id": 5,
+        "source_name": "ATCODER",
+        "url": null
+      },
+      "difficulty": {
+        "difficulty_id": 0,
+        "difficulty_name": "UNKNOWN_DIFFICULTY",
+        "difficulty_bucket": "unknown",
+        "cf_rating": 0,
+        "cf_points": 0.0,
+        "cf_contest_id": 0,
+        "cf_index": "",
+        "rating_bucket": null
+      },
+      "tags": [],
+      "limits": {
+        "time_limit": {
+          "seconds": 2,
+          "nanos": 0
+        },
+        "memory_limit_bytes": 1073741824
+      },
+      "io_mode": {
+        "input_file": "",
+        "output_file": "",
+        "non_stdio": false
+      },
+      "translation": {
+        "is_description_translated": false,
+        "untranslated_description": ""
+      },
+      "reference_solution": {
+        "language_id": 3,
+        "language_guess": "python",
+        "code": "n,*t=map(int,open(0).read().split())\nc=sorted(t[-n:])\nq=[1]\nf=q*n\ne=[[]for _ in f+q]\nfor a,b in zip(t[:-n:2],t[1:-n:2]):e[a]+=b,;e[b]+=a,\nwhile q:v=q.pop();n-=1;f[v-1]=c[n];q+=[w for w in e[v]if f[w-1]<2]\nprint(sum(c[:-1]),*f)",
+        "char_count": 226,
+        "line_count": 8
+      },
+      "artifact_counts": {
+        "public_tests": 2,
+        "private_tests": 0,
+        "generated_tests": 100,
+        "solutions": 464,
+        "incorrect_solutions": 3134
+      },
+      "heuristic_profile": {
+        "tag_families": [],
+        "structure_candidates": [
+          "tree",
+          "graph",
+          "array"
+        ],
+        "objective_type": "optimize",
+        "coverage_features": [
+          "difficulty:unknown",
+          "objective:optimize",
+          "source:ATCODER",
+          "special:untagged",
+          "structure:array",
+          "structure:graph",
+          "structure:tree"
+        ],
+        "english_filter": {
+          "passed": true,
+          "score": 19
+        },
+        "notes": [
+          "selection favors source, difficulty, tag and structure coverage over sample count",
+          "heuristic_profile fields are inferred from metadata and statement text"
+        ]
+      }
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "不要暴露原题编号、出处或链接。",
+        "不要复写原题的叙事结构、输入输出关系或任务定义。"
+      ],
+      "rationale": "目标由求最值改为精确计数，约束增加偏序与根极值条件以锁定计数对象，不变量从线性加和转为组合乘积分解，彻底改变算法范式。",
+      "summary": "通过锁定最优解的结构特征，将问题转化为带重复元素的树偏序线性扩展计数，要求解法处理组合爆炸与等价类去重。",
+      "mode": "single_seed_extension"
+    },
+    "new_schema": {
+      "problem_id": "campus_ops_tree_labeling_count",
+      "source": "single_seed_extension",
+      "input_structure": {
+        "type": "composite",
+        "components": [
+          {
+            "role": "tree_topology",
+            "role_description": "defines the rooted tree structure via edge connections, fixed root at vertex 1",
+            "type": "tree",
+            "length": {
+              "min": 2,
+              "max": 200000
+            },
+            "value_range": {
+              "min": null,
+              "max": null
+            },
+            "properties": {
+              "acyclic": true,
+              "connected": true,
+              "rooted_at": 1
+            }
+          },
+          {
+            "role": "value_multiset",
+            "role_description": "provides the multiset of integers to be assigned to vertices, may contain duplicates",
+            "type": "array",
+            "length": {
+              "min": 2,
+              "max": 200000
+            },
+            "value_range": {
+              "min": 1,
+              "max": 100000
+            },
+            "properties": {
+              "may_contain_duplicates": true
+            }
+          }
+        ]
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "bijection_constraint",
+            "description": "将多重集中的每个整数恰好分配给树的一个顶点，形成顶点到值的双射。",
+            "formal": "f: V -> C 是满射且单射"
+          },
+          {
+            "name": "heap_monotonicity",
+            "description": "以顶点1为根，对任意边(u,v)其中u是v的父节点，必须满足 val(u) >= val(v)。该约束确保每条边的较小值恒为子节点值。",
+            "formal": "\\forall (u,v) \\in E, parent(u)=v \\Rightarrow val(u) \\ge val(v)"
+          },
+          {
+            "name": "root_minimum_lock",
+            "description": "根节点必须分配多重集中的最小值，以锁定全局边权和达到理论最大的必要条件。",
+            "formal": "val(root) == min(C)"
+          }
+        ]
+      },
+      "objective": {
+        "type": "counting",
+        "description": "统计满足上述所有约束的不同顶点赋值方案总数。两个方案不同当且仅当至少一个顶点被分配了不同的值。结果对 10^9+7 取模。",
+        "target": "count",
+        "modulo": 1000000007,
+        "requires_solution": false
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "subtree_factorization",
+            "description": "合法方案数可严格分解为各子树规模决定的组合系数乘积。在根值固定为最小值的前提下，方案数等于 (N-1)! / (∏_{v≠root} size(v))，再除以各重复值频数的阶乘。",
+            "properties": {
+              "multiplicative_decomposition": true,
+              "duplicate_handling": "divide_by_factorial_of_frequencies"
+            },
+            "evidence_source": "combinatorial_proof"
+          },
+          {
+            "name": "poset_linear_extension",
+            "description": "约束条件等价于在树偏序集上求带重复元素的线性扩展数。局部子树的选择在剩余值池确定后相互独立，保证计数可自底向上汇总。",
+            "properties": {
+              "independence": "subtree_choices_independent_given_pool",
+              "finite_space": "bounded_by_N_factorial"
+            },
+            "evidence_source": "combinatorial_proof"
+          }
+        ]
+      },
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "Hard"
+    },
+    "generated_problem": {
+      "title": "社团层级排班",
+      "description": "某高校学生会采用严格的树形组织架构进行日常运营。组织架构以会长为根节点，其余成员按上下级关系构成一棵有根树。新学期伊始，后勤部需要为 N 名成员分配 N 个值班优先级等级（给定一个包含 N 个正整数的序列，序列中可能存在重复数字）。分配过程需严格遵守以下运营规范：\n1. 精确匹配：每个优先级等级必须恰好分配给一名成员，不允许遗漏或重复使用。\n2. 层级约束：在任何上下级关系中，上级的值班优先级数值必须不大于其直接下级（即父节点分配的值 ≤ 子节点分配的值）。\n3. 核心锁定：会长（根节点）必须分配所有等级中的最小值，以确保全局调度基准的统一。\n\n后勤部希望评估排班方案的灵活性。请计算满足上述所有规范的不同排班方案总数。若两种方案中至少有一名成员被分配了不同的优先级数值，则视为不同方案。由于方案数可能极大，请将结果对 10^9+7 取模后输出。",
+      "input_format": "第一行包含一个正整数 N，表示社团成员总数。\n接下来 N-1 行，每行包含两个正整数 u 和 v，表示成员 u 与成员 v 之间存在直接的上下级关系（输入保证构成一棵以 1 号成员为根的树）。\n最后一行包含 N 个正整数 a_1, a_2, ..., a_N，表示后勤部提供的值班优先级等级序列。",
+      "output_format": "输出一个整数，表示满足所有规范的排班方案总数对 10^9+7 取模的结果。",
+      "constraints": [
+        "2 ≤ N ≤ 200000",
+        "1 ≤ a_i ≤ 100000",
+        "输入保证构成一棵以 1 为根的树",
+        "时间限制：1.0 秒",
+        "空间限制：256 MB"
+      ],
+      "samples": [
+        {
+          "input": "3\n1 2\n1 3\n1 2 2",
+          "output": "1",
+          "explanation": "根节点 1 必须分配最小值 1。剩余节点 2 和 3 只能分配两个 2。由于父节点值需不大于子节点值，且剩余值均为 2，仅存在唯一一种分配方式：1->1, 2->2, 3->2。"
+        },
+        {
+          "input": "4\n1 2\n1 3\n1 4\n1 2 2 3",
+          "output": "3",
+          "explanation": "根节点 1 固定分配 1。剩余节点 2,3,4 需分配 {2,2,3}。由于它们均为叶子节点，只需将这三个数全排列分配给它们即可。考虑到两个 2 不可区分，实际不同的分配方案为 3 种（即 3 在哪个节点上）。"
+        }
+      ],
+      "notes": "结果需对 10^9+7 取模。方案差异仅取决于顶点到数值的映射关系，相同数值的交换不产生新方案。输入数据保证树结构连通且无环，根节点固定为 1 号顶点。",
+      "status": "ok",
+      "error_reason": "",
+      "feedback": ""
+    },
+    "artifact_contract": {
+      "new_schema_present": true,
+      "new_schema_field_present": false,
+      "new_schema_snapshot_field_present": true,
+      "difference_plan_present": true,
+      "predicted_schema_distance_present": true,
+      "distance_breakdown_present": true,
+      "changed_axes_realized_present": true,
+      "generated_problem_present": true
+    },
+    "review_context": {
+      "difference_plan": {
+        "summary": "通过锁定最优解的结构特征，将问题转化为带重复元素的树偏序线性扩展计数，要求解法处理组合爆炸与等价类去重。",
+        "mode": "single_seed_extension",
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      },
+      "changed_axes_realized": [
+        "C",
+        "O",
+        "V"
+      ],
+      "distance_breakdown": {
+        "distance_version": "v2",
+        "backend": "embedding",
+        "total": 0.3986,
+        "axis_scores": {
+          "I": 0.0,
+          "C": 0.7797,
+          "O": 0.3435,
+          "V": 0.3941
+        },
+        "components": {
+          "input_tree_distance": 0.0,
+          "constraint_match_distance": 0.7797,
+          "objective_type_distance": 0.2261,
+          "objective_text_distance": 0.5196,
+          "invariant_match_distance": 0.3941
+        }
+      },
+      "applied_rule": "existence_to_counting",
+      "applied_helpers": [
+        {
+          "id": "counting_unit_definition",
+          "selection_reason": "规则要求明确计数对象与去重规则，本helper直接定义方案差异标准与模数。",
+          "affected_axes": [
+            "C",
+            "O",
+            "V"
+          ],
+          "schema_changes": [
+            "objective.type改为counting并加入modulo",
+            "core_constraints增加bijection与root_minimum_lock",
+            "invariant增加duplicate_handling属性"
+          ],
+          "innovation_reason": "将原题模糊的‘最优’转化为精确的‘合法偏序扩展数’，强制引入组合去重逻辑。",
+          "difficulty_reason": "要求解法处理多重集等价类，避免重复计数，显著提升组合推导门槛。"
+        },
+        {
+          "id": "state_factorization",
+          "selection_reason": "规则要求解空间可拆分汇总，本helper将树结构映射为子树规模乘积。",
+          "affected_axes": [
+            "C",
+            "V"
+          ],
+          "schema_changes": [
+            "core_constraints明确以顶点1为根的偏序方向",
+            "invariant引入subtree_factorization与multiplicative_decomposition"
+          ],
+          "innovation_reason": "让计数从主状态组织方式中自然长出来，利用树形DP的自底向上特性替代全局枚举。",
+          "difficulty_reason": "要求解法在分解与汇总层面重建主状态，必须理解子树规模与组合系数的映射关系。"
+        },
+        {
+          "id": "counting_obligation_lock",
+          "selection_reason": "规则要求计数责任锁进主目标，本helper彻底替换原最值目标。",
+          "affected_axes": [
+            "C",
+            "O"
+          ],
+          "schema_changes": [
+            "objective.target从sum改为count",
+            "core_constraints的heap_monotonicity直接服务于计数而非求和"
+          ],
+          "innovation_reason": "把原题主目标替换为新的计数义务，算法输出直接为方案数而非构造序列。",
+          "difficulty_reason": "要求算法同时承担计数正确性和去重正确性，禁止保留原判定主目标再顺手计数。"
+        }
+      ],
+      "algorithmic_delta_claim": {
+        "seed_solver_core": "贪心排序+简单分配，直接取最大N-1个值求和，时间复杂度O(N log N)。",
+        "reusable_subroutines": "树的DFS遍历、子树大小计算、模逆元预处理、阶乘表构建。",
+        "new_solver_core": "组合数学计数。利用子树大小计算多重集在树偏序上的线性扩展数，核心公式为 `(N-1)! / (∏_{v≠root} size(v) * ∏ freq(x)!) mod P`，通过一次DFS聚合子树规模后O(1)计算。",
+        "new_proof_obligation": "需严格证明单调偏序约束下的赋值方案数与子树规模倒数乘积的等价性；需推导重复值频数阶乘除法的组合意义，证明其精确消除了因值相同导致的顶点映射重复计数；需证明根节点锁定最小值后，剩余N-1个值的分配空间与公式完全同构。",
+        "why_direct_reuse_fails": "原贪心算法仅构造单一最优解，无法枚举或统计所有满足偏序关系的合法排列；直接套用会遗漏大量等价但顶点映射不同的方案，且未处理多重集去重，导致计数结果严重偏大或逻辑断裂。"
+      },
+      "anti_shallow_rationale": "明确区分了‘求最值’与‘计数’的算法范式差异。新题强制要求处理组合爆炸与等价类去重，状态转移从‘维护当前最大和’变为‘累积子树组合系数’，核心逻辑从贪心选择重构为组合恒等式推导。非简单加模数或改输出格式，而是彻底替换了主导义务与状态聚合方式。"
+    }
+  }
+}

@@ -1,0 +1,367 @@
+{
+  "problem_id": "aizu_train-00007-of-00039-05785de21e8b8429__row_0105",
+  "source_problem_ids": [
+    "aizu_train-00007-of-00039-05785de21e8b8429__row_0105"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "没有规则通过资格校验。",
+    "summary": "规则规划失败",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.0,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.0,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.0,
+      "O": 0.0,
+      "V": 0.0
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.0,
+      "objective_type_distance": 0.0,
+      "objective_text_distance": 0.0,
+      "invariant_match_distance": 0.0
+    }
+  },
+  "changed_axes_realized": [],
+  "objective": {
+    "type": "construction",
+    "description": "构造并输出从起点到终点的最短路径顶点序列",
+    "target": "shortest_path",
+    "requires_solution": true
+  },
+  "rule_selection_reason": "所有启用规则都被资格校验拒绝。",
+  "new_schema_snapshot": {
+    "problem_id": "aizu_train-00007-of-00039-05785de21e8b8429__row_0105",
+    "source": "aizu",
+    "input_structure": {
+      "type": "tuple",
+      "length": {
+        "min": 3,
+        "max": 3
+      },
+      "value_range": {
+        "min": 1,
+        "max": 300
+      },
+      "properties": {},
+      "components": []
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "operation_limit",
+          "description": "程序向评测系统询问任意两点间最短距离的交互操作次数上限为 5N 次,超过该限制将直接判定为错误答案。",
+          "formal": "\\text{query\\_count} \\leq 5N",
+          "source_sections": [
+            "description",
+            "constraints"
+          ]
+        },
+        {
+          "name": "path_constraint",
+          "description": "最终输出的顶点序列必须构成从 s 到 t 的最短路径,要求序列首元素为 s、末元素为 t,且序列中任意相邻两个顶点在隐藏图中存在直接相连的边。",
+          "formal": "x_1 = s, x_k = t, \\forall i \\in [1, k-1], (x_i, x_{i+1}) \\in E",
+          "source_sections": [
+            "description"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "construction",
+      "description": "构造并输出从起点到终点的最短路径顶点序列",
+      "target": "shortest_path",
+      "requires_solution": true
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "additivity",
+          "description": "最短路径距离满足可加性,即路径上任意顶点到起点与终点的距离之和恒等于起点到终点的最短距离。算法利用该性质精确筛选出所有位于最短路径上的候选顶点,并依据距起点的距离单调递增特性直接构造路径序列。",
+          "properties": {
+            "distance_decomposition": "dist(s, v) + dist(v, t) == dist(s, t) 当且仅当 v 在最短路径上",
+            "sequence_ordering": "路径顶点按 dist(s, v) 严格单调递增排列"
+          },
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Medium"
+  },
+  "applied_rule": "",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {},
+  "anti_shallow_rationale": "",
+  "shared_core_summary": "",
+  "shared_core_anchors": {},
+  "seed_contributions": {},
+  "fusion_ablation": {},
+  "applied_helpers": [],
+  "planning_status": "difference_insufficient",
+  "planning_error_reason": "没有规则通过资格校验。",
+  "planning_feedback": "请更换种子题，或调整规则集合。",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": false,
+      "score": 0.1,
+      "reason_code": "forbidden_seed_property_violation",
+      "selection_reason": "种子题目标已明确要求“构造并输出最短路径顶点序列”，直接命中规则声明中的禁止条件“原题本来就要求输出完整方案”，导致“从给答案改成给规范解”的核心转换无法成立，且无法满足必须改变 O 轴的要求。",
+      "risk_tags": [
+        "low_novelty",
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.description 明确为“构造并输出从起点到终点的最短路径顶点序列”；rule_under_review.eligibility.forbidden_seed_properties 明确列出“原题本来就要求输出完整方案”为禁止项；rule_under_review.required_axis_changes.must_change 要求 O 轴必须改变，但原题已为构造输出，仅加规范性要求属于表面修改。",
+        "feedback": "该种子题已是完整构造输出题，不符合本规则“将判定/求值题升级为规范解输出”的准入前提。建议替换为仅输出最短路径长度、可行性布尔值或任意解的种子题，以便引入规范性校验、主约束重构与验证责任转移。"
+      }
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "seed_incompatible_with_certificate",
+      "selection_reason": "种子题为交互型隐藏图最短路径构造题，默认路径存在且依赖查询交互；无解情形缺乏天然可局部验证的冲突证据结构，强行引入会破坏交互模型或导致证据需全局图信息才能校验，违反“局部检查”核心要求。",
+      "risk_tags": [
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要中 core_constraints 明确为交互查询限制（query_count <= 5N）与隐藏图最短路径构造，objective 为纯构造型且未定义无解分支。规则 required_seed_properties 要求“做不到的原因可以用局部证据表示”且“冲突证据可以从输出直接检查”，但在隐藏图交互模型下，证明无解需依赖全局连通性信息，无法压缩为仅凭输出即可局部校验的独立对象，与 helpers.local_certificate_design 和 helpers.obstruction_embedding 的 redlines（不能脱离主求解过程/不能退化为解释）直接冲突。",
+        "feedback": "建议更换为显式图结构或静态约束构造类种子题，确保无解情形能自然导出如“最小割集”、“奇环”或“矛盾约束子集”等可局部验证的证书结构。"
+      }
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "interactive_constraint_conflict",
+      "selection_reason": "种子题为交互式构造题，核心约束包含查询次数上限，解空间由查询策略与路径共同决定，无法满足规则要求的‘解空间有限、去重明确、可按单元拆分汇总’的纯计数前提；强行转换会导致交互机制与计数目标语义冲突，去重口径与汇总单元无法在现有约束下清晰定义。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "shared_core_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints 明确包含 operation_limit（交互查询上限 5N），objective.type 为 construction。规则 existence_to_counting 的 required_seed_properties 要求‘解空间有限’‘不同解等价关系清楚’‘可按单元拆分汇总’，但交互式查询策略的解空间边界受评测系统动态反馈影响，无法直接映射为静态可计数的有限对象集合，且 helpers 要求的 must_realize_in [core_constraints, objective] 无法在不破坏交互核心的前提下实现。",
+        "feedback": "该规则适用于静态图论、组合构造或动态规划类种子题。当前种子题的交互查询约束与计数化改造存在根本性冲突，建议更换为已知完整图结构或静态约束的构造/最优化题，或先剥离交互属性再评估。"
+      }
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "missing_native_perturbation",
+      "selection_reason": "原题语义为确定性交互最短路径构造，核心依赖隐藏图的固定结构与距离可加性不变量，缺乏规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源；强行引入扰动将违背“扰动必须来自原题本身”及“最坏情况落回原题语义”的硬性要求，易退化为硬造对手或外层二分。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints 明确限定 query_count ≤ 5N 与严格最短路径输出要求，invariant 强调 dist(s,v)+dist(v,t)==dist(s,t) 的确定性可加性。规则 required_seed_properties 要求原题自带顺序不确定或资源波动，但本题为固定隐藏图上的确定性交互构造，无原生扰动可放大；若强行套用将触发 helpers.redlines 中的“不能凭背景硬造对手”与 validation_contract 的“扰动模型必须来自原题本身”。",
+        "feedback": "该种子题缺乏可被规则放大的原生扰动源，不符合保底优化审查的准入条件。建议替换为具有明确动态性、容错需求或顺序依赖语义的题目，或改用不依赖扰动建模的规则族。"
+      }
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "forbidden_seed_property_violation",
+      "message": "种子题目标已明确要求“构造并输出最短路径顶点序列”，直接命中规则声明中的禁止条件“原题本来就要求输出完整方案”，导致“从给答案改成给规范解”的核心转换无法成立，且无法满足必须改变 O 轴的要求。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.1,
+        "risk_tags": [
+          "low_novelty",
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.description 明确为“构造并输出从起点到终点的最短路径顶点序列”；rule_under_review.eligibility.forbidden_seed_properties 明确列出“原题本来就要求输出完整方案”为禁止项；rule_under_review.required_axis_changes.must_change 要求 O 轴必须改变，但原题已为构造输出，仅加规范性要求属于表面修改。",
+        "feedback": "该种子题已是完整构造输出题，不符合本规则“将判定/求值题升级为规范解输出”的准入前提。建议替换为仅输出最短路径长度、可行性布尔值或任意解的种子题，以便引入规范性校验、主约束重构与验证责任转移。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "seed_incompatible_with_certificate",
+      "message": "种子题为交互型隐藏图最短路径构造题，默认路径存在且依赖查询交互；无解情形缺乏天然可局部验证的冲突证据结构，强行引入会破坏交互模型或导致证据需全局图信息才能校验，违反“局部检查”核心要求。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要中 core_constraints 明确为交互查询限制（query_count <= 5N）与隐藏图最短路径构造，objective 为纯构造型且未定义无解分支。规则 required_seed_properties 要求“做不到的原因可以用局部证据表示”且“冲突证据可以从输出直接检查”，但在隐藏图交互模型下，证明无解需依赖全局连通性信息，无法压缩为仅凭输出即可局部校验的独立对象，与 helpers.local_certificate_design 和 helpers.obstruction_embedding 的 redlines（不能脱离主求解过程/不能退化为解释）直接冲突。",
+        "feedback": "建议更换为显式图结构或静态约束构造类种子题，确保无解情形能自然导出如“最小割集”、“奇环”或“矛盾约束子集”等可局部验证的证书结构。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "interactive_constraint_conflict",
+      "message": "种子题为交互式构造题，核心约束包含查询次数上限，解空间由查询策略与路径共同决定，无法满足规则要求的‘解空间有限、去重明确、可按单元拆分汇总’的纯计数前提；强行转换会导致交互机制与计数目标语义冲突，去重口径与汇总单元无法在现有约束下清晰定义。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "shared_core_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints 明确包含 operation_limit（交互查询上限 5N），objective.type 为 construction。规则 existence_to_counting 的 required_seed_properties 要求‘解空间有限’‘不同解等价关系清楚’‘可按单元拆分汇总’，但交互式查询策略的解空间边界受评测系统动态反馈影响，无法直接映射为静态可计数的有限对象集合，且 helpers 要求的 must_realize_in [core_constraints, objective] 无法在不破坏交互核心的前提下实现。",
+        "feedback": "该规则适用于静态图论、组合构造或动态规划类种子题。当前种子题的交互查询约束与计数化改造存在根本性冲突，建议更换为已知完整图结构或静态约束的构造/最优化题，或先剥离交互属性再评估。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation",
+      "message": "原题语义为确定性交互最短路径构造，核心依赖隐藏图的固定结构与距离可加性不变量，缺乏规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源；强行引入扰动将违背“扰动必须来自原题本身”及“最坏情况落回原题语义”的硬性要求，易退化为硬造对手或外层二分。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints 明确限定 query_count ≤ 5N 与严格最短路径输出要求，invariant 强调 dist(s,v)+dist(v,t)==dist(s,t) 的确定性可加性。规则 required_seed_properties 要求原题自带顺序不确定或资源波动，但本题为固定隐藏图上的确定性交互构造，无原生扰动可放大；若强行套用将触发 helpers.redlines 中的“不能凭背景硬造对手”与 validation_contract 的“扰动模型必须来自原题本身”。",
+        "feedback": "该种子题缺乏可被规则放大的原生扰动源，不符合保底优化审查的准入条件。建议替换为具有明确动态性、容错需求或顺序依赖语义的题目，或改用不依赖扰动建模的规则族。"
+      }
+    }
+  ],
+  "candidate_attempts": [],
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "没有规则通过资格校验。",
+    "feedback": "请更换种子题，或调整规则集合。"
+  },
+  "iteration": {
+    "run_id": "aizu_train-00007-of-00039-05785de21e8b8429__row_0105_v1_campus_ops_20260420_193407",
+    "round_index": 1,
+    "requested_rounds": 3,
+    "previous_artifact_path": "",
+    "previous_quality_report_path": "",
+    "revision_context_snapshot": {}
+  }
+}

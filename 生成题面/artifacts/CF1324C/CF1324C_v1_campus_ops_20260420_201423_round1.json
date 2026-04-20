@@ -1,0 +1,512 @@
+{
+  "problem_id": "CampusCartNav_Ext",
+  "source_problem_ids": [
+    "CF1324C"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "C",
+      "O",
+      "V"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "将原题的标量最值求解改为双分支输出合同，约束轴引入固定容量D与证据定义，目标轴改为路径构造或冲突区间输出，不变量轴从间隙性质转为流瓶颈对偶性。",
+    "summary": "给定方向串与步长上限，要求输出可行路径或证明不可达的局部L段证据，实现成功与失败分支的对称输出责任。",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.4477,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.4477,
+    "axis_scores": {
+      "I": 0.1072,
+      "C": 0.6734,
+      "O": 0.5392,
+      "V": 0.4205
+    },
+    "components": {
+      "input_tree_distance": 0.1072,
+      "constraint_match_distance": 0.6734,
+      "objective_type_distance": 0.6874,
+      "objective_text_distance": 0.3168,
+      "invariant_match_distance": 0.4205
+    }
+  },
+  "changed_axes_realized": [
+    "C",
+    "O",
+    "V"
+  ],
+  "objective": {
+    "type": "construct_or_certify",
+    "description": "给定走廊方向串s与最大步长D，若存在合法路径，输出从0到n+1的落脚点序列；否则输出满足定义的局部冲突证据区间[l, r]。",
+    "target": "path_sequence_or_obstruction_interval",
+    "requires_solution": true
+  },
+  "rule_selection_reason": "construct_or_obstruction 完美契合种子题的核心不变量（最长连续 L 段决定可行性），将原优化目标转化为“构造合法路径或输出局部冲突证据”的双分支输出契约。相比 existence_to_counting 可能退化为标准路径计数 DP 且稀释原瓶颈洞察，该规则在不改变底层状态空间的前提下，强制算法同时承担成功构造与失败举证责任，创新度与结构贴合度更高。；创新度判断：将原题的单一标量优化（求最小 d）拉离为双义务输出：要么给出满足跨度 d 的完整跳跃序列，要么输出直接违反约束的局部证据（即长度超过 d-1 的连续 L 段及其边界）。失败语义从抽象解释变为可局部校验的结构化对象，彻底改变答案形态与校验逻辑。；难度判断：在主求解责任上，要求算法在同一框架内统一处理两类输出：成功时需按约束贪心或动态构造路径；失败时需精准定位并输出最大冲突间隙。这抬高了状态维护与分支决策的复杂度，避免单纯扫描求极值的线性解法直接套用。；风险判断：主要风险是失败分支可能被简化为“直接输出最长 L 段”，导致构造分支被弱化。该风险可控：通过强制规定输出格式互斥、要求证据必须与输入 d 严格绑定，并利用 obstruction_embedding 辅助器将证据生成嵌入主约束检查流程，可确保双分支均承担正式求解责任。",
+  "new_schema_snapshot": {
+    "problem_id": "CampusCartNav_Ext",
+    "source": "custom",
+    "input_structure": {
+      "type": "mixed",
+      "components": [
+        {
+          "name": "n",
+          "type": "integer",
+          "range": [
+            1,
+            200000
+          ]
+        },
+        {
+          "name": "D",
+          "type": "integer",
+          "range": [
+            1,
+            200001
+          ]
+        },
+        {
+          "name": "s",
+          "type": "string",
+          "length": "n",
+          "alphabet": [
+            "L",
+            "R"
+          ]
+        }
+      ],
+      "properties": {
+        "multiple_test_cases": true
+      }
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "directional_jump_rule",
+          "description": "校园推车从位置0出发前往n+1。在位置i(0≤i≤n)时，若i=0或s[i]=='R'，只能向右跳至j>i；若s[i]=='L'，只能向左跳至j<i。单次跳跃跨度|j-i|≤D。",
+          "formal": "∀ jump (u→v): (u=0 ∨ s[u]=='R') ⇒ v>u; s[u]=='L' ⇒ v<u; |v-u|≤D"
+        },
+        {
+          "name": "certificate_definition",
+          "description": "若无法到达n+1，必须输出一个局部冲突证据：一个区间[l, r]，满足∀k∈[l,r], s[k]=='L'且r-l+1≥D。该区间证明任何跨度≤D的跳跃均无法从左向右跨越此段。",
+          "formal": "∃ [l,r] ⊆ [1,n]: (∀k∈[l,r], s[k]=='L') ∧ (r-l+1 ≥ D)"
+        }
+      ]
+    },
+    "objective": {
+      "type": "construct_or_certify",
+      "description": "给定走廊方向串s与最大步长D，若存在合法路径，输出从0到n+1的落脚点序列；否则输出满足定义的局部冲突证据区间[l, r]。",
+      "target": "path_sequence_or_obstruction_interval",
+      "requires_solution": true
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "flow_bottleneck_duality",
+          "description": "路径存在性与最长连续L段长度严格对偶。当且仅当所有连续L段长度<D时可达；若存在长度≥D的L段，则首个此类L段即构成最小局部阻塞证据。该性质保证成功路径与失败证据共享同一状态扫描源，无需额外全局搜索。",
+          "properties": {
+            "safe_zones": "位置0及所有s[i]=='R'的索引",
+            "obstruction_condition": "max_consecutive_L_length ≥ D",
+            "certificate_minimality": "输出的[l,r]为极大连续L段，移除其中任意字符或D+1即可恢复局部连通"
+          },
+          "evidence_source": "constraint_analysis"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "hard"
+  },
+  "applied_rule": "construct_or_obstruction",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {
+    "seed_solver_core": "贪心扫描求最长连续L段长度，答案为其+1。",
+    "reusable_subroutines": "字符串线性遍历、方向状态判断、连续段长度计数器。",
+    "new_solver_core": "单次线性扫描维护当前落脚点与连续L段区间；若遇连续L段长度逼近D则记录区间；若成功抵达n+1则输出路径序列，否则输出记录的阻塞区间。",
+    "new_proof_obligation": "证明当且仅当存在长度≥D的连续L段时路径不可达，且输出的L段区间构成最小局部冲突证据（即该区间内任意子区间长度均不足以单独阻塞，但整体长度≥D直接违反跳跃约束）。需证明该证据不依赖全局回溯，仅凭局部方向与跨度约束即可在O(1)时间内验证。",
+    "why_direct_reuse_fails": "原解法仅返回标量最值，不维护路径序列或阻塞区间坐标；直接复用无法生成结构化输出，且缺乏对失败分支的显式构造与验证逻辑。"
+  },
+  "anti_shallow_rationale": "明确拒绝仅输出-1或改背景不换逻辑。通过强制双分支输出合同与局部证据结构化，改变了算法的状态维护目标与输出语义，要求解法在单次遍历中同时具备构造能力与冲突检测能力，非简单参数替换。",
+  "shared_core_summary": "基于方向约束的线性扫描与间隙分析，利用连续L段长度与步长阈值的对偶关系决定输出分支。",
+  "shared_core_anchors": {
+    "shared_state": "当前位置索引与连续L段起止坐标计数器",
+    "shared_transition": "按方向规则推进落脚点或累加连续L段长度",
+    "shared_decision_basis": "连续L段长度与给定步长D的比较阈值"
+  },
+  "seed_contributions": {
+    "seed_a": "必须准确计算最长连续L段以确定理论最小步长，奠定间隙瓶颈的数学基础。",
+    "seed_b": "必须同时生成合法路径序列或结构化阻塞区间，并保证双分支输出均满足局部可验证性。"
+  },
+  "fusion_ablation": {
+    "without_seed_a": "失去方向约束与间隙瓶颈的数学对偶性，退化为普通图搜索，丧失O(n)线性解法基础。",
+    "without_seed_b": "退化为原题的标量最值计算，丧失构造输出与局部证据校验能力，违反规则的双分支合同要求。"
+  },
+  "applied_helpers": [
+    {
+      "id": "local_certificate_design",
+      "selection_reason": "将无解原因压缩为可局部检查的坐标区间对象，满足规则对失败语义结构化的要求。",
+      "affected_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "在core_constraints中增加certificate_definition",
+        "在objective中明确双分支输出目标",
+        "在invariant中定义证据极小性"
+      ],
+      "innovation_reason": "让失败输出从抽象解释变为明确的结构化对象，建立可自动校验的失败分支。",
+      "difficulty_reason": "要求算法同时维护成功路径构造与失败证据提取逻辑，增加状态分支复杂度。"
+    },
+    {
+      "id": "failure_branch_symmetry",
+      "selection_reason": "确保成功与失败分支承担同等正式输出责任，避免失败分支沦为附属说明。",
+      "affected_axes": [
+        "C",
+        "O"
+      ],
+      "schema_changes": [
+        "在core_constraints中统一路径与证据的合法性判定标准",
+        "在objective中强制requires_solution为true并定义互斥输出格式"
+      ],
+      "innovation_reason": "将单目标输出改为双分支输出合同，统一输入语义下的不同输出对象。",
+      "difficulty_reason": "要求算法在同一框架下处理两类输出语义，禁止通过特判或默认值绕开主结构。"
+    },
+    {
+      "id": "obstruction_embedding",
+      "selection_reason": "使冲突证据直接源于主方向约束的不可兼容关系，而非外部附加条件。",
+      "affected_axes": [
+        "C",
+        "V"
+      ],
+      "schema_changes": [
+        "在core_constraints中将证据定义与跳跃跨度约束绑定",
+        "在invariant中确立流瓶颈对偶性作为状态共享基础"
+      ],
+      "innovation_reason": "让失败证据嵌入主约束内部，成功与失败分支共享同一状态信息来源。",
+      "difficulty_reason": "要求解法在同一线性扫描中同时解释成功构造与失败证据，状态机需具备双向推导能力。"
+    }
+  ],
+  "planning_status": "ok",
+  "planning_error_reason": "",
+  "planning_feedback": "",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "forbidden_seed_property",
+      "selection_reason": "种子题核心解法仅为扫描最长连续'L'段，最优跳跃路径可通过贪心顺手构造，直接命中规则声明的禁止属性“原解只要顺手回溯就能拿到方案”。其极简的间隙瓶颈结构缺乏支撑规范顺序进入主状态演化的复杂度，强行升级易导致C/O/V轴变化流于表面，违反全局红线。",
+      "risk_tags": [
+        "trivial_reconstruction",
+        "difference_insufficient",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "schema中objective.requires_solution为false，invariant明确指出最小d由最长连续'L'段长度加1决定。该结构下，给定最优d后，实际跳跃序列可通过从左到右贪心选择最远安全落脚点直接O(N)生成，完全符合规则eligibility.forbidden_seed_properties中的“原解只要顺手回溯就能拿到方案”。同时，核心约束仅为单向字符指示与跨度限制，缺乏让canonical_order_pressure或constraint_reweighting实质性改变主解法逻辑的内在张力。",
+        "feedback": "建议放弃将此题作为canonical_witness的种子。若需构造规范解输出题，应选择原解空间庞大、存在多解且天然具备复杂偏序关系或全局依赖的种子题（如带权匹配、复杂图遍历或组合构造），而非此类单瓶颈贪心题。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "obstruction_naturally_embedded",
+      "selection_reason": "种子题的瓶颈不变量（最长连续L段）天然定义了局部冲突结构，给定固定d时，该段可直接作为失败分支的证书输出，满足规则对失败语义对象化与局部可校验的硬性要求。",
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "eligible",
+        "evidence": "依据 schema_context.seed_schema.invariant.invariants[0].bottleneck_rule 指出“最小可行 d 等于所有 gap 的最大值加 1”，该 gap 结构即为规则 rule_under_review.eligibility.required_seed_properties 所要求的“可用局部证据表示”的冲突对象；且该证据仅依赖子串长度与位置，符合“冲突证据可以从输出直接检查”的条件。",
+        "feedback": "规划阶段需将原题求最小值改为给定阈值d的构造/证伪双分支；需明确定义证据输出格式（如区间索引），并确保校验器仅通过局部区间长度验证即可判定无解，避免依赖全局路径搜索。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": true,
+      "score": 0.92,
+      "reason_code": "finite_dag_structure_with_clear_counting_axes",
+      "selection_reason": "种子题的线性跳跃约束天然构成有限离散状态图，路径去重与计数单元拆分规则明确；规则声明强制变更O/C/V轴并通过helpers锁定计数责任，满足有限性与去重清晰度的准入标准。",
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.invariant 指出落脚点为起点、'R'索引与终点，形成有限线性状态；rule.required_axis_changes 强制修改 O/C/V 避免仅改参数范围；rule.helpers.state_factorization 与 counting_obligation_lock 明确要求将计数嵌入主状态转移，符合 validation_contract 中'必须说明按什么单元拆分和汇总'的硬检查。",
+        "feedback": "规划时需明确具体计数对象（如固定d的合法路径数或特定瓶颈长度的字符串数），避免退化为线性基础DP；需严格定义等价类与取模规则，落实 counting_unit_definition 的红线要求。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 2
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "missing_native_perturbation",
+      "selection_reason": "原题CF1324C为静态确定性字符串问题，跳跃方向与落脚点完全由输入固定，缺乏规则明确要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行套用将导致扰动模型脱离原题语义，违反“不能凭背景硬造对手”与“扰动模型必须来自原题本身”的硬性约束。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints 明确指出“转移目标必须严格遵循当前格字符指示的方向（s[i] 为 'L' 仅允许向左转移,s[i] 为 'R' 仅允许向右转移）”，且 seed_schema.invariant 给出确定性结论“最小可行 d 等于所有 gap 的最大值加 1”。该结构为完全静态，不满足 rule_under_review.eligibility.required_seed_properties 中“原题里本来就有顺序不确定、资源波动或局部选择差异”的准入条件。",
+        "feedback": "建议替换为具有动态序列、隐式顺序依赖或参数天然波动的种子题（如带时间窗的区间覆盖、动态图边权扰动或带对抗修改的排列问题），以支撑本规则的扰动建模与最坏情况不变量推导。"
+      },
+      "selected_for_attempt": false
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "forbidden_seed_property",
+      "message": "种子题核心解法仅为扫描最长连续'L'段，最优跳跃路径可通过贪心顺手构造，直接命中规则声明的禁止属性“原解只要顺手回溯就能拿到方案”。其极简的间隙瓶颈结构缺乏支撑规范顺序进入主状态演化的复杂度，强行升级易导致C/O/V轴变化流于表面，违反全局红线。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.2,
+        "risk_tags": [
+          "trivial_reconstruction",
+          "difference_insufficient",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "schema中objective.requires_solution为false，invariant明确指出最小d由最长连续'L'段长度加1决定。该结构下，给定最优d后，实际跳跃序列可通过从左到右贪心选择最远安全落脚点直接O(N)生成，完全符合规则eligibility.forbidden_seed_properties中的“原解只要顺手回溯就能拿到方案”。同时，核心约束仅为单向字符指示与跨度限制，缺乏让canonical_order_pressure或constraint_reweighting实质性改变主解法逻辑的内在张力。",
+        "feedback": "建议放弃将此题作为canonical_witness的种子。若需构造规范解输出题，应选择原解空间庞大、存在多解且天然具备复杂偏序关系或全局依赖的种子题（如带权匹配、复杂图遍历或组合构造），而非此类单瓶颈贪心题。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "pass",
+      "reason_code": "obstruction_naturally_embedded",
+      "message": "种子题的瓶颈不变量（最长连续L段）天然定义了局部冲突结构，给定固定d时，该段可直接作为失败分支的证书输出，满足规则对失败语义对象化与局部可校验的硬性要求。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.97,
+        "risk_tags": [
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "eligible",
+        "evidence": "依据 schema_context.seed_schema.invariant.invariants[0].bottleneck_rule 指出“最小可行 d 等于所有 gap 的最大值加 1”，该 gap 结构即为规则 rule_under_review.eligibility.required_seed_properties 所要求的“可用局部证据表示”的冲突对象；且该证据仅依赖子串长度与位置，符合“冲突证据可以从输出直接检查”的条件。",
+        "feedback": "规划阶段需将原题求最小值改为给定阈值d的构造/证伪双分支；需明确定义证据输出格式（如区间索引），并确保校验器仅通过局部区间长度验证即可判定无解，避免依赖全局路径搜索。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "finite_dag_structure_with_clear_counting_axes",
+      "message": "种子题的线性跳跃约束天然构成有限离散状态图，路径去重与计数单元拆分规则明确；规则声明强制变更O/C/V轴并通过helpers锁定计数责任，满足有限性与去重清晰度的准入标准。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.92,
+        "risk_tags": [
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.invariant 指出落脚点为起点、'R'索引与终点，形成有限线性状态；rule.required_axis_changes 强制修改 O/C/V 避免仅改参数范围；rule.helpers.state_factorization 与 counting_obligation_lock 明确要求将计数嵌入主状态转移，符合 validation_contract 中'必须说明按什么单元拆分和汇总'的硬检查。",
+        "feedback": "规划时需明确具体计数对象（如固定d的合法路径数或特定瓶颈长度的字符串数），避免退化为线性基础DP；需严格定义等价类与取模规则，落实 counting_unit_definition 的红线要求。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation",
+      "message": "原题CF1324C为静态确定性字符串问题，跳跃方向与落脚点完全由输入固定，缺乏规则明确要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行套用将导致扰动模型脱离原题语义，违反“不能凭背景硬造对手”与“扰动模型必须来自原题本身”的硬性约束。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints 明确指出“转移目标必须严格遵循当前格字符指示的方向（s[i] 为 'L' 仅允许向左转移,s[i] 为 'R' 仅允许向右转移）”，且 seed_schema.invariant 给出确定性结论“最小可行 d 等于所有 gap 的最大值加 1”。该结构为完全静态，不满足 rule_under_review.eligibility.required_seed_properties 中“原题里本来就有顺序不确定、资源波动或局部选择差异”的准入条件。",
+        "feedback": "建议替换为具有动态序列、隐式顺序依赖或参数天然波动的种子题（如带时间窗的区间覆盖、动态图边权扰动或带对抗修改的排列问题），以支撑本规则的扰动建模与最坏情况不变量推导。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "规划完整兑现了规则专属语义合同，成功将原题转化为构造/证明双分支输出，且三个helper均按要求落入指定schema组件并满足redlines。",
+      "details": {
+        "review_role": "你扮演一名阻碍证据规划审查官，重点确认规划是否同时定义了解分支和可局部检查的失败证据。",
+        "review_brief": "确认规划是否把无解分支写成可直接检查的局部阻碍证据，而不是解释性说明。",
+        "evidence": "1. 核心转换：candidate_schema的objective明确定义type为construct_or_certify，要求输出合法路径序列或局部冲突证据区间[l,r]，符合'输出合法方案或局部冲突证据'的合同。2. local_certificate_design：在core_constraints中新增certificate_definition（形式化定义区间全为L且长度≥D），在objective中明确双分支目标，在invariant中定义certificate_minimality，证据为结构化坐标对象而非自然语言解释。3. failure_branch_symmetry：在core_constraints中统一判定标准，在objective中设置requires_solution为true并定义互斥输出格式，成功与失败分支均承担正式输出责任。4. obstruction_embedding：在core_constraints中将证据定义与主跳跃跨度约束D绑定，在invariant中声明'成功路径与失败证据共享同一状态扫描源'，证据直接源于主约束不可兼容关系且未脱离主求解过程。5. 规划payload的algorithmic_delta_claim与anti_shallow_rationale确认了单次线性扫描中互斥触发双分支及O(1)局部验证逻辑，完全满足规则硬门槛。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "pass",
+      "reason_code": "rule_fulfilled",
+      "message": "题面明确定义了双分支输出合同，成功时输出路径序列，失败时输出结构化阻塞区间[l, r]。该证据满足局部可检查性（全为'L'且长度≥D），未退化为自然语言解释，且失败分支与成功分支承担同等正式输出责任，完全兑现规则专属语义。",
+      "details": {
+        "review_role": "你扮演一名阻碍证据题面审查官，重点确认题面是否写清失败输出和证据的检查语义。",
+        "review_brief": "确认题面是否要求在无解时输出一个可局部检查的冲突证据，而不是仅仅解释为什么无解。",
+        "evidence": "题面描述中明确要求：'若不能，请找出一个“阻塞区间” [l, r] 作为不可达的局部证据。该区间需满足：区间内所有检查点的指示牌均为 'L'，且区间长度 r - l + 1 ≥ D。' 输出格式规定失败时输出两个整数 l 和 r。Notes 中进一步强调阻塞区间必须对应连续 'L' 且长度≥D。这直接对应规则要求的局部冲突证据对象，满足 local_certificate_design、failure_branch_symmetry 和 obstruction_embedding 的语义承诺。"
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "score": 0.97,
+      "accepted": true,
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "status": "ok",
+      "reason_code": "plan_validation_failed",
+      "reason": "",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "校园推车调度",
+    "description": "校园后勤部需要调度一辆智能推车，将物资从仓库（位置 0）运送到终点广场（位置 n+1）。走廊被划分为 n 个连续的检查点，编号为 1 到 n。每个检查点 i 都设有一个单向指示牌，记录在字符串 s 中（s[i] 为 'L' 或 'R'）。\n\n推车在任意位置 i (0 ≤ i ≤ n) 准备出发时，必须遵守以下规则：\n1. 若 i = 0 或 s[i] == 'R'，推车只能向右跳跃至位置 j (j > i)。\n2. 若 s[i] == 'L'，推车只能向左跳跃至位置 j (j < i)。\n3. 无论方向如何，单次跳跃的跨度 |j - i| 不得超过给定的最大步长 D。\n\n推车一旦落在某个位置，就会根据该位置的指示牌决定下一次跳跃方向。你的任务是判断推车能否成功抵达 n+1。若能，请给出一条合法的落脚点序列；若不能，请找出一个“阻塞区间” [l, r] 作为不可达的局部证据。该区间需满足：区间内所有检查点的指示牌均为 'L'，且区间长度 r - l + 1 ≥ D。这表示任何跨度不超过 D 的跳跃都无法从左至右跨越该段。",
+    "input_format": "第一行包含一个整数 t，表示测试用例的数量。\n每个测试用例包含两行：\n第一行包含两个整数 n 和 D，分别表示检查点数量和最大跳跃步长。\n第二行包含一个长度为 n 的字符串 s，仅由字符 'L' 和 'R' 组成，表示 1 到 n 号检查点的指示方向。",
+    "output_format": "对于每个测试用例，输出一行结果：\n若存在合法路径，按顺序输出从 0 到 n+1 的落脚点编号，相邻数字间用空格分隔。\n若无法抵达，输出两个整数 l 和 r，表示阻塞区间的左右端点（1 ≤ l ≤ r ≤ n）。",
+    "constraints": [
+      "1 ≤ t ≤ 10^4",
+      "1 ≤ n ≤ 2×10^5",
+      "1 ≤ D ≤ n+1",
+      "所有测试用例的 n 之和不超过 2×10^5",
+      "时间限制：1.0 秒",
+      "空间限制：256 MB"
+    ],
+    "samples": [
+      {
+        "input": "2\n5 3\nRLLRL\n5 2\nRLLLR",
+        "output": "0 1 4 6\n2 4",
+        "explanation": "第一个用例中，最长连续 'L' 段为位置 2~3，长度为 2，小于 D=3，因此可达。一条合法路径为 0→1→4→6。\n第二个用例中，位置 2~4 均为 'L'，连续长度为 3，大于等于 D=2。任何从左侧出发的跳跃跨度均无法越过该区间，故输出阻塞区间 2 4。"
+      },
+      {
+        "input": "1\n3 2\nRRL",
+        "output": "0 2 4",
+        "explanation": "最长连续 'L' 段仅位置 3，长度为 1，小于 D=2。推车可从 0 跳至 2（跨度 2），再从 2 跳至 4（跨度 2），成功抵达终点。"
+      }
+    ],
+    "notes": "1. 路径序列必须严格递增，且首项为 0，末项为 n+1。\n2. 阻塞区间 [l, r] 必须对应原字符串中一段连续的 'L'，且满足 r - l + 1 ≥ D。若存在多个满足条件的区间，输出任意一个即可。\n3. 所有位置编号均基于 0 到 n+1 的整数索引，字符串 s 的索引对应 1 到 n。",
+    "status": "ok",
+    "error_reason": "",
+    "feedback": ""
+  },
+  "iteration": {
+    "run_id": "CF1324C_v1_campus_ops_20260420_201423",
+    "round_index": 1,
+    "requested_rounds": 3,
+    "previous_artifact_path": "",
+    "previous_quality_report_path": "",
+    "revision_context_snapshot": {}
+  }
+}

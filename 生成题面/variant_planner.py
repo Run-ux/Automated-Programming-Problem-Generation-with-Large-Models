@@ -91,6 +91,7 @@ class VariantPlanner:
         seed_a_problem: dict[str, Any] | None = None,
         seed_b_problem: dict[str, Any] | None = None,
         allowed_rule_ids: set[str] | None = None,
+        revision_context: dict[str, Any] | None = None,
     ) -> VariantPlan:
         if self.client is None:
             raise RuntimeError("未初始化 LLM 客户端，无法执行规则规划。")
@@ -106,6 +107,7 @@ class VariantPlanner:
                 variant_index=variant_index,
                 theme=theme,
                 allowed_rule_ids=allowed_rule_ids,
+                revision_context=revision_context,
             )
         if canonical_mode == "same_family_fusion":
             if seed_a_schema is None or seed_b_schema is None or seed_a_problem is None or seed_b_problem is None:
@@ -118,6 +120,7 @@ class VariantPlanner:
                 variant_index=variant_index,
                 theme=theme,
                 allowed_rule_ids=allowed_rule_ids,
+                revision_context=revision_context,
             )
         raise ValueError(f"Unsupported mode: {mode}")
 
@@ -129,6 +132,7 @@ class VariantPlanner:
         variant_index: int,
         theme: Theme,
         allowed_rule_ids: set[str] | None,
+        revision_context: dict[str, Any] | None,
     ) -> VariantPlan:
         return self._build_mode_plan(
             mode="single_seed_extension",
@@ -142,6 +146,7 @@ class VariantPlanner:
             theme=theme,
             variant_index=variant_index,
             forbidden_reuse=build_forbidden_reuse_list(original_problem),
+            revision_context=revision_context,
         )
 
     def _build_same_family_plan(
@@ -154,6 +159,7 @@ class VariantPlanner:
         variant_index: int,
         theme: Theme,
         allowed_rule_ids: set[str] | None,
+        revision_context: dict[str, Any] | None,
     ) -> VariantPlan:
         schema_context = {
             "seed_a_schema": seed_a_schema,
@@ -175,6 +181,7 @@ class VariantPlanner:
             theme=theme,
             variant_index=variant_index,
             forbidden_reuse=_merge_forbidden_reuse(seed_a_problem, seed_b_problem),
+            revision_context=revision_context,
         )
 
     def _build_mode_plan(
@@ -189,6 +196,7 @@ class VariantPlanner:
         theme: Theme,
         variant_index: int,
         forbidden_reuse: list[str],
+        revision_context: dict[str, Any] | None,
     ) -> VariantPlan:
         theme_payload = self._theme_payload(theme)
         if not rules:
@@ -213,6 +221,7 @@ class VariantPlanner:
             rules=rules,
             schema_context=schema_context,
             original_refs=original_refs,
+            revision_context=revision_context,
         )
         if not selection["accepted"]:
             return self._finalize_plan(
@@ -248,6 +257,7 @@ class VariantPlanner:
                 original_refs=original_refs,
                 source_schema=source_schema,
                 source_problem_ids=source_problem_ids,
+                revision_context=revision_context,
             )
             attempt = dict(plan_result["attempt"])
             attempt["attempt_index"] = attempt_index
@@ -312,6 +322,7 @@ class VariantPlanner:
         rules: list[dict[str, Any]],
         schema_context: dict[str, Any],
         original_refs: list[dict[str, Any]],
+        revision_context: dict[str, Any] | None,
     ) -> dict[str, Any]:
         selection_results: list[RuleSelectionResult] = []
         for rule in rules:
@@ -364,6 +375,7 @@ class VariantPlanner:
                     original_problem_references=original_refs,
                     global_constraints=self.rulebook.global_constraints(),
                     global_redlines=self.rulebook.global_redlines(),
+                    revision_context=revision_context,
                 ),
                 temperature=0.05,
             )
@@ -414,6 +426,7 @@ class VariantPlanner:
         original_refs: list[dict[str, Any]],
         source_schema: dict[str, Any],
         source_problem_ids: list[str],
+        revision_context: dict[str, Any] | None,
     ) -> dict[str, Any]:
         payload = self.client.chat_json(
             system_prompt=build_planner_system_prompt(),
@@ -425,6 +438,7 @@ class VariantPlanner:
                 original_problem_references=original_refs,
                 global_constraints=self.rulebook.global_constraints(),
                 global_redlines=self.rulebook.global_redlines(),
+                revision_context=revision_context,
             ),
             temperature=0.15,
         )

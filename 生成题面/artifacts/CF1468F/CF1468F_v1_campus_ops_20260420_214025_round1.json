@@ -1,0 +1,371 @@
+{
+  "problem_id": "CF1468F",
+  "source_problem_ids": [
+    "CF1468F"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "没有规则通过资格校验。",
+    "summary": "规则规划失败",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.0,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.0,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.0,
+      "O": 0.0,
+      "V": 0.0
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.0,
+      "objective_type_distance": 0.0,
+      "objective_text_distance": 0.0,
+      "invariant_match_distance": 0.0
+    }
+  },
+  "changed_axes_realized": [],
+  "objective": {
+    "type": "counting",
+    "description": "统计在同步旋转过程中满足相互注视条件的点对数量",
+    "target": "count",
+    "requires_solution": false
+  },
+  "rule_selection_reason": "所有启用规则都被资格校验拒绝。",
+  "new_schema_snapshot": {
+    "problem_id": "CF1468F",
+    "source": "codeforces",
+    "input_structure": {
+      "type": "array",
+      "length": {
+        "min": 1,
+        "max": 100000
+      },
+      "value_range": {
+        "min": null,
+        "max": null
+      },
+      "properties": {
+        "multiple_test_cases": true,
+        "ordered": true
+      }
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "orientation_constraint",
+          "description": "两人能够发生眼神交流的充要条件是他们的初始视线方向向量恰好相反（即夹角为180度,共线且反向）。由于所有人同步同速旋转360度,相对朝向保持不变,该条件与两人的具体坐标位置无关,仅取决于初始朝向的相对关系。",
+          "formal": "\\vec{d_i} = (u_i-x_i, v_i-y_i), \\vec{d_j} = (u_j-x_j, v_j-y_j), \\exists \\lambda > 0, \\vec{d_i} = -\\lambda \\vec{d_j}",
+          "source_sections": [
+            "description"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "counting",
+      "description": "统计在同步旋转过程中满足相互注视条件的点对数量",
+      "target": "count",
+      "requires_solution": false
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "equivalence_class",
+          "description": "初始视线方向向量通过除以坐标最大公约数归一化为互质整数对,将共线同向的向量划分为等价类。几何接触条件被严格转化为等价类代表元互为相反数的代数匹配关系。",
+          "properties": {
+            "canonical_form": "primitive_integer_pair",
+            "equivalence_relation": "parallel_and_same_direction",
+            "complement_lookup": "coordinate_negation"
+          },
+          "evidence_source": "solution_code"
+        },
+        {
+          "name": "additivity",
+          "description": "目标配对总数可分解为按处理顺序逐个累加的独立贡献。遍历过程中,当前元素的贡献值等于已维护频次表中相反方向类的累计计数,通过先查询后插入的顺序保证每对组合恰好统计一次。",
+          "properties": {
+            "accumulation_mode": "sequential_one_pass",
+            "contribution_calculation": "frequency_of_negated_vector",
+            "uniqueness_guarantee": "query_before_update"
+          },
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Medium"
+  },
+  "applied_rule": "",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {},
+  "anti_shallow_rationale": "",
+  "shared_core_summary": "",
+  "shared_core_anchors": {},
+  "seed_contributions": {},
+  "fusion_ablation": {},
+  "applied_helpers": [],
+  "planning_status": "difference_insufficient",
+  "planning_error_reason": "没有规则通过资格校验。",
+  "planning_feedback": "请更换种子题，或调整规则集合。",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "missing_canonical_object",
+      "selection_reason": "种子题为纯计数问题，核心不变量仅服务于数值统计，缺乏可输出或可定义规范顺序的构造对象，强制升级将违背规则对解对象自然顺序的要求。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "schema中objective.type为'counting'且requires_solution为false；invariants仅描述等价类匹配与顺序累加频次统计。规则required_seed_properties明确要求'原题本身有明确的解对象，或者答案可以恢复成方案'及'方案有自然顺序'，本题答案仅为整数，无法自然映射为带规范性的构造方案。",
+        "feedback": "该种子题不适用于canonical_witness规则。建议转向不依赖构造输出的规则族，或彻底重构题目目标以引入具有内在规范顺序的几何/组合对象。"
+      }
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "seed_property_mismatch",
+      "selection_reason": "原题CF1468F为纯计数问题，天然不存在无解分支，无法满足规则要求的“做不到的原因可用局部证据表示”这一核心准入条件。强行嫁接构造/阻碍输出需彻底替换原题的频次统计逻辑，导致冲突证据无法从原向量归一化与累加不变量中自然导出，违背冲突证书审查官对“局部可检查阻碍证据”的刚性要求。",
+      "risk_tags": [
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中objective.type为'counting'且requires_solution为false，core_constraints仅定义几何反向条件，无构造或可行性判定空间；规则eligibility.required_seed_properties明确要求'做不到的原因可以用局部证据表示'，但原题输出恒为非负整数，缺乏失败语义与局部冲突结构。",
+        "feedback": "该规则适用于具有天然判定/构造属性且存在明确不可行条件的种子题（如二分图匹配、区间覆盖、图连通性判定）。建议更换种子题，或调整规则目标以适配计数类问题的极值/边界证明变体。"
+      }
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": false,
+      "score": 0.1,
+      "reason_code": "seed_already_counting",
+      "selection_reason": "种子题（CF1468F）的 objective.type 已明确为 counting，且原题目标即为统计点对数量。该规则的核心定义是“从存在性或最优值改成计数”，应用于已为计数题的种子会导致目标轴（O）无法发生实质性转变，违反规则自身的 target_shift 与 required_axis_changes 要求，且必然触发 difference_insufficient 失败模板。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "schema_context.seed_schema.objective.type 为 'counting'，description 为 '统计在同步旋转过程中满足相互注视条件的点对数量'；规则声明中 target_shift 为 '从存在性或最优值改成计数'，required_axis_changes.must_change 包含 'O'。",
+        "feedback": "该规则仅适用于判定型（存在性）或单最优值型种子题。当前种子已是计数题，强行套用此规则无法产生有效的目标升级，建议更换为其他变换族的种子，或改用针对计数题内部结构优化的规则。"
+      }
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.1,
+      "reason_code": "missing_native_perturbation",
+      "selection_reason": "原题CF1468F为严格确定性几何计数，核心依赖精确的向量反向匹配与同步旋转不变性，缺乏规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行构造扰动将直接违反“扰动来源必须回到原题语义”与“不能凭背景硬造对手”的硬性约束。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中core_constraints明确“相对朝向保持不变,该条件与两人的具体坐标位置无关,仅取决于初始朝向的相对关系”，objective为确定性counting；规则eligibility明确要求“原题里本来就有顺序不确定、资源波动或局部选择差异”，两者冲突。",
+        "feedback": "该种子题语义刚性过强，无法自然衍生最坏情况扰动模型。建议替换为具有动态输入、容错阈值或资源竞争特性的题目，或改用非鲁棒优化类的变换规则。"
+      }
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "missing_canonical_object",
+      "message": "种子题为纯计数问题，核心不变量仅服务于数值统计，缺乏可输出或可定义规范顺序的构造对象，强制升级将违背规则对解对象自然顺序的要求。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "schema中objective.type为'counting'且requires_solution为false；invariants仅描述等价类匹配与顺序累加频次统计。规则required_seed_properties明确要求'原题本身有明确的解对象，或者答案可以恢复成方案'及'方案有自然顺序'，本题答案仅为整数，无法自然映射为带规范性的构造方案。",
+        "feedback": "该种子题不适用于canonical_witness规则。建议转向不依赖构造输出的规则族，或彻底重构题目目标以引入具有内在规范顺序的几何/组合对象。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "seed_property_mismatch",
+      "message": "原题CF1468F为纯计数问题，天然不存在无解分支，无法满足规则要求的“做不到的原因可用局部证据表示”这一核心准入条件。强行嫁接构造/阻碍输出需彻底替换原题的频次统计逻辑，导致冲突证据无法从原向量归一化与累加不变量中自然导出，违背冲突证书审查官对“局部可检查阻碍证据”的刚性要求。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中objective.type为'counting'且requires_solution为false，core_constraints仅定义几何反向条件，无构造或可行性判定空间；规则eligibility.required_seed_properties明确要求'做不到的原因可以用局部证据表示'，但原题输出恒为非负整数，缺乏失败语义与局部冲突结构。",
+        "feedback": "该规则适用于具有天然判定/构造属性且存在明确不可行条件的种子题（如二分图匹配、区间覆盖、图连通性判定）。建议更换种子题，或调整规则目标以适配计数类问题的极值/边界证明变体。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "seed_already_counting",
+      "message": "种子题（CF1468F）的 objective.type 已明确为 counting，且原题目标即为统计点对数量。该规则的核心定义是“从存在性或最优值改成计数”，应用于已为计数题的种子会导致目标轴（O）无法发生实质性转变，违反规则自身的 target_shift 与 required_axis_changes 要求，且必然触发 difference_insufficient 失败模板。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.1,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "schema_context.seed_schema.objective.type 为 'counting'，description 为 '统计在同步旋转过程中满足相互注视条件的点对数量'；规则声明中 target_shift 为 '从存在性或最优值改成计数'，required_axis_changes.must_change 包含 'O'。",
+        "feedback": "该规则仅适用于判定型（存在性）或单最优值型种子题。当前种子已是计数题，强行套用此规则无法产生有效的目标升级，建议更换为其他变换族的种子，或改用针对计数题内部结构优化的规则。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation",
+      "message": "原题CF1468F为严格确定性几何计数，核心依赖精确的向量反向匹配与同步旋转不变性，缺乏规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行构造扰动将直接违反“扰动来源必须回到原题语义”与“不能凭背景硬造对手”的硬性约束。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.1,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中core_constraints明确“相对朝向保持不变,该条件与两人的具体坐标位置无关,仅取决于初始朝向的相对关系”，objective为确定性counting；规则eligibility明确要求“原题里本来就有顺序不确定、资源波动或局部选择差异”，两者冲突。",
+        "feedback": "该种子题语义刚性过强，无法自然衍生最坏情况扰动模型。建议替换为具有动态输入、容错阈值或资源竞争特性的题目，或改用非鲁棒优化类的变换规则。"
+      }
+    }
+  ],
+  "candidate_attempts": [],
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "没有规则通过资格校验。",
+    "feedback": "请更换种子题，或调整规则集合。"
+  },
+  "iteration": {
+    "run_id": "CF1468F_v1_campus_ops_20260420_214025",
+    "round_index": 1,
+    "requested_rounds": 3,
+    "previous_artifact_path": "",
+    "previous_quality_report_path": "",
+    "revision_context_snapshot": {}
+  }
+}

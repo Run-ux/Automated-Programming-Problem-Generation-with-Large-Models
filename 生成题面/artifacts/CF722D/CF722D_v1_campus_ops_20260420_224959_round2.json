@@ -1,0 +1,477 @@
+{
+  "problem_id": "CF722D",
+  "source_problem_ids": [
+    "CF722D"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "CF722D",
+      "D. Generating Sets",
+      "codeforces",
+      "https://codeforces.com/contest/722/problem/D",
+      "You are given a set Y of n distinct positive integers y 1, y 2, ..., y n. Set X of n distinct positive integers x 1, x 2, ..., x n is said to generate set Y if one can transform X to Y by applying some number of the f...",
+      "不要复写原题的叙事结构、任务定义或样例套路。",
+      "不要只替换实体名称后保留同样的输入输出关系。"
+    ],
+    "rationale": "difference_plan.changed_axes 与 new_schema 的真实变化不一致。",
+    "summary": "选中的规则未能稳定落地",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.0,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.0,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.0,
+      "O": 0.0,
+      "V": 0.0
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.0,
+      "objective_type_distance": 0.0,
+      "objective_text_distance": 0.0,
+      "invariant_match_distance": 0.0
+    }
+  },
+  "changed_axes_realized": [],
+  "objective": {
+    "type": "minimize_value",
+    "description": "寻找能生成给定集合的初始集合,使其中的最大元素最小化",
+    "target": "max_element",
+    "requires_solution": true
+  },
+  "rule_selection_reason": "existence_to_counting:种子题的隐式二叉树结构与集合相等定义天然支持计数单元划分与去重，原优化目标提供的最大值边界可确保解空间有限，满足计数化改造的核心前提。",
+  "new_schema_snapshot": {
+    "problem_id": "CF722D",
+    "source": "codeforces",
+    "input_structure": {
+      "type": "array",
+      "length": {
+        "min": 1,
+        "max": 50000
+      },
+      "value_range": {
+        "min": 1,
+        "max": 1000000000
+      },
+      "properties": {
+        "distinct": true
+      },
+      "components": []
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "operation_type",
+          "description": "集合X变换为集合Y仅允许执行两种操作:将任意元素乘以2,或将任意元素乘以2后加1。Y中的每个元素必须由X中的某个元素经过若干次上述操作生成。",
+          "formal": "∀y∈Y, ∃x∈X, 使得y可通过有限次 v→2v 或 v→2v+1 操作从x推导得出",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "distinctness",
+          "description": "集合X与集合Y均由n个互不相同的正整数构成。",
+          "formal": "|X| = |Y| = n, 且X与Y内部元素两两互异",
+          "source_sections": [
+            "description",
+            "input"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "minimize_value",
+      "description": "寻找能生成给定集合的初始集合,使其中的最大元素最小化",
+      "target": "max_element",
+      "requires_solution": true
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "monotonicity",
+          "description": "算法在每次迭代中固定选取当前集合的最大元素,并沿二叉树父节点方向（整除2）连续下探,直至找到首个未出现在集合中的祖先位置进行替换。该策略保证集合的最大元素值在整个执行过程中单调不增,且每次有效替换均使优化目标严格下降或推进至不可再降的边界,从而确保最终结果满足最小化最大值的要求。",
+          "properties": {
+            "max_element_trend": "non_increasing",
+            "selection_policy": "always_current_maximum",
+            "replacement_rule": "deepest_unoccupied_ancestor",
+            "termination_condition": "ancestor_hits_zero_or_all_ancestors_occupied"
+          },
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Medium"
+  },
+  "applied_rule": "existence_to_counting",
+  "rejected_candidates": [
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "status": "ok",
+      "reason_code": "declared_axes_mismatch",
+      "reason": "difference_plan.changed_axes 与 new_schema 的真实变化不一致。"
+    }
+  ],
+  "algorithmic_delta_claim": {},
+  "anti_shallow_rationale": "",
+  "shared_core_summary": "",
+  "shared_core_anchors": {},
+  "seed_contributions": {},
+  "fusion_ablation": {},
+  "applied_helpers": [],
+  "planning_status": "difference_insufficient",
+  "planning_error_reason": "difference_plan.changed_axes 与 new_schema 的真实变化不一致。",
+  "planning_feedback": "已尝试 1 条候选规则，均未通过规划校验。",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": false,
+      "score": 0.1,
+      "reason_code": "forbidden_seed_property",
+      "selection_reason": "原题已明确要求输出完整方案集合，直接命中规则声明中的禁止条件。在此基础上追加规范性要求仅改变输出偏好，无法驱动核心约束与验证逻辑的实质性重构。",
+      "risk_tags": [
+        "low_novelty",
+        "surface_modification"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "原题输出摘要明确写明 'Print n integers — set of distinct integers that generate Y... If there are several such sets, print any of them.'，直接对应规则 `forbidden_seed_properties` 中的 '原题本来就要求输出完整方案'。同时原题解法（贪心选取最大值并沿二叉树回溯）已天然生成完整方案，改为规范输出仅需增加确定性分支或字典序比较，不满足 `required_axis_changes` 中 C、O、V 必须发生实质性变化的要求。",
+        "feedback": "该规则适用于原题仅要求输出最值、计数或可行性判定，且解空间存在明确偏序或可定义强规范性的种子。当前种子题已处于完整方案输出状态，不符合准入前提。建议更换为仅要求输出最优值或判定可行性的题目作为种子。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "seed_always_solvable",
+      "selection_reason": "种子题CF722D为确定性构造优化问题，其贪心策略与二叉树祖先替换机制保证对任意合法输入均存在解，不存在‘做不到’的实例。规则强制要求输出局部冲突证据，但种子缺乏无解边界，导致失败分支无法自然生成，强行构造将违背‘不添加无关约束’红线。",
+      "risk_tags": [
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中objective描述为‘寻找能生成给定集合的初始集合,使其中的最大元素最小化’，invariant指出‘该策略保证集合的最大元素值在整个执行过程中单调不增...确保最终结果满足最小化最大值的要求’。规则eligibility明确要求‘做不到的原因可以用局部证据表示’，但原题算法始终收敛至可行解，无失败情形可提取局部冲突证据。",
+        "feedback": "当前种子题不具备可行性判定边界，无法支撑construct_or_obstruction规则的双分支输出合同。建议替换为存在明确无解条件（如容量限制、奇偶性冲突、图结构不连通等）的种子题，或允许在规划阶段显式引入可行性约束以激活obstruction分支。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": true,
+      "score": 0.94,
+      "reason_code": "finite_space_and_clear_dedup",
+      "selection_reason": "种子题的隐式二叉树结构与集合相等定义天然支持计数单元划分与去重，原优化目标提供的最大值边界可确保解空间有限，满足计数化改造的核心前提。",
+      "risk_tags": [
+        "state_reconstruction_risk",
+        "counting_boundary_definition_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "原题摘要中operation_type约束'∀y∈Y, ∃x∈X, 使得y可通过有限次 v→2v 或 v→2v+1 操作从x推导得出'构建了明确的祖先树结构，支持按树节点拆分汇总；distinctness约束与集合相等定义明确了去重口径；objective的'minimize max_element'为解空间提供了天然有限边界。规则要求的O/C/V轴变更与counting_unit_definition、state_factorization辅助器均可在此结构上落地。",
+        "feedback": "规划阶段需严格锁定计数边界（如固定最优最大值或给定阈值M），并在core_constraints中显式声明取模规则与等价类定义，避免沿用原题贪心状态转移逻辑，确保计数责任主导新目标。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.15,
+      "reason_code": "missing_native_perturbation_source",
+      "selection_reason": "原题CF722D为确定性贪心构造问题，输入集合与操作规则均无内在不确定性，不满足规则要求的“原题里本来就有顺序不确定、资源波动或局部选择差异”准入条件。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "原题schema中`core_constraints`明确操作为确定性映射（v→2v或2v+1），`objective`为固定Y下的最小化最大值问题，无任何顺序或资源波动描述；规则`eligibility.required_seed_properties`强制要求种子自带此类扰动源，且`validation_contract.hard_checks`规定“扰动模型必须来自原题本身”。当前种子缺乏该语义基础，强行改造将直接触发“只能靠故事背景硬造对手”与“不能只是外面再套一层二分”红线。",
+        "feedback": "该规则不适用于确定性静态构造类题目。建议转向具有动态输入、随机到达或容量/时间窗波动的种子题，以自然引出最坏情况保底需求。"
+      },
+      "selected_for_attempt": false
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "forbidden_seed_property",
+      "message": "原题已明确要求输出完整方案集合，直接命中规则声明中的禁止条件。在此基础上追加规范性要求仅改变输出偏好，无法驱动核心约束与验证逻辑的实质性重构。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.1,
+        "risk_tags": [
+          "low_novelty",
+          "surface_modification"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "原题输出摘要明确写明 'Print n integers — set of distinct integers that generate Y... If there are several such sets, print any of them.'，直接对应规则 `forbidden_seed_properties` 中的 '原题本来就要求输出完整方案'。同时原题解法（贪心选取最大值并沿二叉树回溯）已天然生成完整方案，改为规范输出仅需增加确定性分支或字典序比较，不满足 `required_axis_changes` 中 C、O、V 必须发生实质性变化的要求。",
+        "feedback": "该规则适用于原题仅要求输出最值、计数或可行性判定，且解空间存在明确偏序或可定义强规范性的种子。当前种子题已处于完整方案输出状态，不符合准入前提。建议更换为仅要求输出最优值或判定可行性的题目作为种子。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "seed_always_solvable",
+      "message": "种子题CF722D为确定性构造优化问题，其贪心策略与二叉树祖先替换机制保证对任意合法输入均存在解，不存在‘做不到’的实例。规则强制要求输出局部冲突证据，但种子缺乏无解边界，导致失败分支无法自然生成，强行构造将违背‘不添加无关约束’红线。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中objective描述为‘寻找能生成给定集合的初始集合,使其中的最大元素最小化’，invariant指出‘该策略保证集合的最大元素值在整个执行过程中单调不增...确保最终结果满足最小化最大值的要求’。规则eligibility明确要求‘做不到的原因可以用局部证据表示’，但原题算法始终收敛至可行解，无失败情形可提取局部冲突证据。",
+        "feedback": "当前种子题不具备可行性判定边界，无法支撑construct_or_obstruction规则的双分支输出合同。建议替换为存在明确无解条件（如容量限制、奇偶性冲突、图结构不连通等）的种子题，或允许在规划阶段显式引入可行性约束以激活obstruction分支。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "finite_space_and_clear_dedup",
+      "message": "种子题的隐式二叉树结构与集合相等定义天然支持计数单元划分与去重，原优化目标提供的最大值边界可确保解空间有限，满足计数化改造的核心前提。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.94,
+        "risk_tags": [
+          "state_reconstruction_risk",
+          "counting_boundary_definition_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "原题摘要中operation_type约束'∀y∈Y, ∃x∈X, 使得y可通过有限次 v→2v 或 v→2v+1 操作从x推导得出'构建了明确的祖先树结构，支持按树节点拆分汇总；distinctness约束与集合相等定义明确了去重口径；objective的'minimize max_element'为解空间提供了天然有限边界。规则要求的O/C/V轴变更与counting_unit_definition、state_factorization辅助器均可在此结构上落地。",
+        "feedback": "规划阶段需严格锁定计数边界（如固定最优最大值或给定阈值M），并在core_constraints中显式声明取模规则与等价类定义，避免沿用原题贪心状态转移逻辑，确保计数责任主导新目标。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation_source",
+      "message": "原题CF722D为确定性贪心构造问题，输入集合与操作规则均无内在不确定性，不满足规则要求的“原题里本来就有顺序不确定、资源波动或局部选择差异”准入条件。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.15,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "原题schema中`core_constraints`明确操作为确定性映射（v→2v或2v+1），`objective`为固定Y下的最小化最大值问题，无任何顺序或资源波动描述；规则`eligibility.required_seed_properties`强制要求种子自带此类扰动源，且`validation_contract.hard_checks`规定“扰动模型必须来自原题本身”。当前种子缺乏该语义基础，强行改造将直接触发“只能靠故事背景硬造对手”与“不能只是外面再套一层二分”红线。",
+        "feedback": "该规则不适用于确定性静态构造类题目。建议转向具有动态输入、随机到达或容量/时间窗波动的种子题，以自然引出最坏情况保底需求。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "declared_axes_mismatch",
+      "message": "difference_plan.changed_axes 与实际变化轴不一致。",
+      "details": {
+        "declared_axes": [
+          "core_constraints",
+          "invariant",
+          "objective"
+        ],
+        "realized_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "score": 0.94,
+      "accepted": false,
+      "risk_tags": [
+        "state_reconstruction_risk",
+        "counting_boundary_definition_risk"
+      ],
+      "status": "ok",
+      "reason_code": "declared_axes_mismatch",
+      "reason": "difference_plan.changed_axes 与 new_schema 的真实变化不一致。",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "difference_plan.changed_axes 与 new_schema 的真实变化不一致。",
+    "feedback": "已尝试 1 条候选规则，均未通过规划校验。"
+  },
+  "iteration": {
+    "run_id": "CF722D_v1_campus_ops_20260420_224959",
+    "round_index": 2,
+    "requested_rounds": 3,
+    "previous_artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF722D_v1_campus_ops_20260420_224959_round1.json",
+    "previous_quality_report_path": "D:\\AutoProblemGen\\生成题面\\reports\\CF722D\\CF722D_v1_campus_ops_20260420_224959_round1_quality_report.json",
+    "revision_context_snapshot": {
+      "round_index": 1,
+      "overall_status": "reject_as_retheme",
+      "generated_status": "ok",
+      "quality_score": 81.0,
+      "divergence_score": 67.8,
+      "failed_hard_checks": [],
+      "issues": [
+        {
+          "issue_type": "quality_issue",
+          "severity": "major",
+          "title": "样例2解释存在数学错误与内部矛盾",
+          "detail": "样例2解释中声称 $M_{\\min}=3$，但随后列出的集合为 $\\{1,2,3,4\\}$（最大值为4），前后矛盾。且根据二叉树祖先覆盖规则，覆盖 $\\{4,5,6,7\\}$ 至少需要4个不同节点，值域 $\\le 3$ 仅有 $\\{1,2,3\\}$ 三个节点，故 $M_{\\min}$ 必为 4。该错误会严重误导选手对边界条件的理解。",
+          "evidence_refs": [
+            "generated_problem.samples[1].explanation"
+          ],
+          "fix_hint": "修正样例2的 $M_{\\min}$ 值为 4，重写解释以清晰说明为何 $\\{1,2,3,4\\}$ 是唯一合法集合，并删除“等价子集调整”等模糊表述。"
+        },
+        {
+          "issue_type": "quality_issue",
+          "severity": "major",
+          "title": "样例缺乏对核心计数逻辑的覆盖",
+          "detail": "当前两个样例答案均为 1，完全无法体现 new_schema 中强调的“按y从大到小处理、祖先集合交集大小决定乘法因子”的组合计数特性。选手无法通过样例验证乘法原理或去重逻辑的正确性。",
+          "evidence_refs": [
+            "generated_problem.samples",
+            "new_schema.invariant.invariants[0].description"
+          ],
+          "fix_hint": "增加至少一个答案大于 1 的样例（例如目标节点存在路径重叠但可灵活分配祖先的情况），并在解释中逐步演示乘法因子的计算过程。"
+        },
+        {
+          "issue_type": "quality_issue",
+          "severity": "minor",
+          "title": "双射关系表述可进一步显式化",
+          "detail": "description 中“存在一种分配方式，使得每个社团都能从其对应的初始活动室...到达”未明确点出 X 与 Y 必须构成大小相等的一一映射（双射），可能被误解为多对一或允许未分配。",
+          "evidence_refs": [
+            "generated_problem.description",
+            "new_schema.core_constraints.constraints[0].formal"
+          ],
+          "fix_hint": "在条件2中补充“即初始集合 X 与目标集合 Y 之间存在一一对应关系，且每个初始活动室仅分配给一个社团”。"
+        }
+      ],
+      "suggested_revisions": [
+        "修正样例2的 $M_{\\min}$ 值为 4，重写解释以清晰说明为何 $\\{1,2,3,4\\}$ 是唯一合法集合，并删除“等价子集调整”等模糊表述。",
+        "增加至少一个答案大于 1 的样例（例如目标节点存在路径重叠但可灵活分配祖先的情况），并在解释中逐步演示乘法因子的计算过程。",
+        "在条件2中补充“即初始集合 X 与目标集合 Y 之间存在一一对应关系，且每个初始活动室仅分配给一个社团”。",
+        "立即修正样例 2 的解释，纠正 $M_{\\min}$ 数值错误，消除内部矛盾，确保数学严谨性。",
+        "补充 1~2 个输出结果大于 1 的样例，重点展示路径重叠时的乘法计数过程，以匹配 Hard 难度与算法增量要求。",
+        "在 description 的条件列表中显式声明 X 与 Y 的双射对应关系，避免选手在匹配规则上产生歧义。"
+      ],
+      "strengths_to_keep": [
+        "高度忠实于 new_schema 的变体设计，完整保留了二叉树结构、最小最大值边界锁定与模数计数目标。",
+        "主题包装自然流畅，将抽象的树形匹配与组合计数无缝融入“社团活动室分配”场景，符合日常轻松的基调。",
+        "题面排版规范，Notes 部分精准补充了集合无序性与严格边界条件，有效降低了歧义风险。"
+      ]
+    }
+  }
+}

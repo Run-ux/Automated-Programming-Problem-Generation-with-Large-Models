@@ -1,0 +1,394 @@
+{
+  "problem_id": "CF1399E2",
+  "source_problem_ids": [
+    "CF1399E2"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "没有规则通过资格校验。",
+    "summary": "规则规划失败",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.0,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.0,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.0,
+      "O": 0.0,
+      "V": 0.0
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.0,
+      "objective_type_distance": 0.0,
+      "objective_text_distance": 0.0,
+      "invariant_match_distance": 0.0
+    }
+  },
+  "changed_axes_realized": [],
+  "objective": {
+    "type": "minimize_value",
+    "description": "Minimize the total cost of operations to ensure a defined aggregate weight sum does not exceed a given threshold.",
+    "target": "total_cost",
+    "requires_solution": false
+  },
+  "rule_selection_reason": "所有启用规则都被资格校验拒绝。",
+  "new_schema_snapshot": {
+    "problem_id": "CF1399E2",
+    "source": "codeforces",
+    "input_structure": {
+      "type": "tree",
+      "length": {
+        "min": 2,
+        "max": 100000
+      },
+      "value_range": {
+        "min": null,
+        "max": null
+      },
+      "properties": {
+        "weighted": true,
+        "rooted": true,
+        "connected": true,
+        "acyclic": true,
+        "multiple_test_cases": true
+      }
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "operation_type",
+          "description": "允许对树中的任意边执行向下取整的除以2操作,每次执行该操作需支付该边对应的固定代价 c_i。",
+          "formal": "w_i := \\lfloor w_i / 2 \\rfloor, \\text{cost} = c_i",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "sum_constraint",
+          "description": "经过若干次操作后,所有叶子节点到根节点的路径权重总和必须不超过给定阈值 S。",
+          "formal": "\\sum_{v \\in \\text{leaves}} w(\\text{root}, v) \\le S",
+          "source_sections": [
+            "description",
+            "output"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "minimize_value",
+      "description": "Minimize the total cost of operations to ensure a defined aggregate weight sum does not exceed a given threshold.",
+      "target": "total_cost",
+      "requires_solution": false
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "additivity",
+          "description": "目标函数（根到所有叶子路径权值和）的总减少量等于各次边权减半操作所产生减少量的线性累加。该性质允许将全局达标条件拆解为两类不同代价操作的独立贡献之和,从而支持枚举一类操作数量并组合验证另一类的策略。",
+          "properties": {
+            "contribution_independence": true,
+            "linear_sum_feasibility": true
+          },
+          "evidence_source": "solution_code"
+        },
+        {
+          "name": "exchange_argument",
+          "description": "在固定某类代价（1或2）的操作次数时,最优解必然由该代价下所有可能操作中单次减少量最大的若干个组成。同代价下将已选较小减少量替换为未选较大减少量可严格提升总收益且不改变总代价,故按降序选取构成稳定最优子集。",
+          "properties": {
+            "optimal_subset_by_magnitude": true,
+            "same_cost_swap_validity": true
+          },
+          "evidence_source": "solution_code"
+        },
+        {
+          "name": "monotonicity",
+          "description": "两类操作的累计减少量前缀和均随操作次数单调不减。由此导出满足目标减少量所需的最小第二类操作数量随第一类操作数量增加而单调不增,该单调关系支撑双指针单向推进扫描的正确性与线性复杂度。",
+          "properties": {
+            "prefix_sum_non_decreasing": true,
+            "feasible_boundary_monotone": true
+          },
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Hard"
+  },
+  "applied_rule": "",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {},
+  "anti_shallow_rationale": "",
+  "shared_core_summary": "",
+  "shared_core_anchors": {},
+  "seed_contributions": {},
+  "fusion_ablation": {},
+  "applied_helpers": [],
+  "planning_status": "difference_insufficient",
+  "planning_error_reason": "没有规则通过资格校验。",
+  "planning_feedback": "请更换种子题，或调整规则集合。",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "forbidden_property_violation",
+      "selection_reason": "种子题为贪心求值题，最优操作集可通过收益排序直接确定，方案恢复仅需保留索引，触发规则声明中的 forbidden_seed_properties。引入规范性要求极易退化为修改排序比较器或增加字典序描述，违反 helper 的 redlines，无法实质性改变 C/O/V 轴的核心解法结构。",
+      "risk_tags": [
+        "low_novelty",
+        "trivial_reconstruction",
+        "helper_redline_violation"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.requires_solution 为 false，且 invariant.exchange_argument 与 monotonicity 表明原解法为基于收益排序的贪心策略。该策略下最优操作集由排序直接决定，恢复具体边操作仅需在预处理时记录原始索引，属于规则明确禁止的“原解只要顺手回溯就能拿到方案”。同时，helpers 的 redlines 明确禁止“退化为输出后处理”和“只加字典序描述”，而本题引入规范解仅能作用于排序 tie-break，无法满足 required_axis_changes 对核心约束与验证责任的实质性重构。",
+        "feedback": "建议更换种子题。应选择原解法为纯数值计算或存在性判定，且方案空间庞大、恢复路径复杂（如需满足特定拓扑序或全局结构约束）的题目，以确保规范性要求能倒逼状态设计或主约束优先级重组，避免规则应用流于表面格式修改。"
+      }
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "semantic_mismatch",
+      "selection_reason": "种子题为全局求和优化问题，天然保证有解；其核心约束为全局路径权和阈值，违反该约束无法自然导出可局部检查的冲突证据，强行引入无解情形将破坏原题结构或导致证据退化为全局说明。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints 明确描述为全局累加约束（'所有叶子节点到根节点的路径权重总和必须不超过给定阈值 S'），且 objective.requires_solution 为 false；而规则 eligibility.required_seed_properties 要求'做不到的原因可以用局部证据表示'，validation_contract 强调'冲突证据必须能局部检查'。全局阈值违反与局部可验证证书存在结构性冲突，且原题无天然无解分支。",
+        "feedback": "建议更换具有天然局部可行性约束（如度数限制、局部匹配冲突或容量瓶颈）的种子题，或提供将全局路径和违反转化为局部可验证阻塞结构的具体映射方案，否则该规则在此题上难以满足局部检查的硬性要求。"
+      }
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": false,
+      "score": 0.25,
+      "reason_code": "post_processing_only",
+      "selection_reason": "改造仅是在贪心排序确定最优子集后附加组合统计，未重构主状态结构，违反规则中“不能把计数只当成结果后处理”的硬性红线，且未带来实质性算法责任升级。",
+      "risk_tags": [
+        "low_novelty",
+        "shared_core_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要的 invariant 明确指出核心依赖 exchange_argument（按降序选取构成稳定最优子集）与 monotonicity（双指针扫描）。规则 helpers.state_factorization 的红线明确要求“不能保持原状态结构不动”且“不能把计数只当成结果后处理”。当前种子题若改为计数，仅能在原有贪心流程末端追加组合数计算，主状态转移与约束组织方式未变，不符合 core_transformation.new_obligation 中“定义清楚计数对象、有限性和去重规则”需驱动状态重构的要求。",
+        "feedback": "建议放弃在此类强贪心/单调性最优值题目上直接叠加计数。应优先选择解空间本身具有强组合分支、等价类划分直接影响状态转移或约束满足条件的种子题，以确保计数义务能真正重塑算法核心。"
+      }
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "missing_native_perturbation",
+      "selection_reason": "原题CF1399E2为完全确定性树形优化问题，边权、操作代价与阈值S均固定，缺乏规则准入所必需的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行套用将导致扰动模型脱离原题语义，违反“不能凭背景硬造对手”与“扰动模型必须来自原题本身”的硬性约束。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "artificial_perturbation_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints明确操作为确定性w_i := floor(w_i/2)且目标为固定阈值S；seed_schema.invariant依赖确定性单调性与交换论证。而rule_under_review.eligibility.required_seed_properties要求“原题里本来就有顺序不确定、资源波动或局部选择差异”，validation_contract.hard_checks强调“扰动模型必须来自原题本身”。原题无内在不确定性，不满足准入条件。",
+        "feedback": "该规则高度依赖种子题自带的扰动或博弈结构。建议替换为具有动态参数、多智能体交互或输入区间不确定性的题目，或改用不依赖扰动放大的确定性优化规则。"
+      }
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "forbidden_property_violation",
+      "message": "种子题为贪心求值题，最优操作集可通过收益排序直接确定，方案恢复仅需保留索引，触发规则声明中的 forbidden_seed_properties。引入规范性要求极易退化为修改排序比较器或增加字典序描述，违反 helper 的 redlines，无法实质性改变 C/O/V 轴的核心解法结构。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.2,
+        "risk_tags": [
+          "low_novelty",
+          "trivial_reconstruction",
+          "helper_redline_violation"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.requires_solution 为 false，且 invariant.exchange_argument 与 monotonicity 表明原解法为基于收益排序的贪心策略。该策略下最优操作集由排序直接决定，恢复具体边操作仅需在预处理时记录原始索引，属于规则明确禁止的“原解只要顺手回溯就能拿到方案”。同时，helpers 的 redlines 明确禁止“退化为输出后处理”和“只加字典序描述”，而本题引入规范解仅能作用于排序 tie-break，无法满足 required_axis_changes 对核心约束与验证责任的实质性重构。",
+        "feedback": "建议更换种子题。应选择原解法为纯数值计算或存在性判定，且方案空间庞大、恢复路径复杂（如需满足特定拓扑序或全局结构约束）的题目，以确保规范性要求能倒逼状态设计或主约束优先级重组，避免规则应用流于表面格式修改。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "semantic_mismatch",
+      "message": "种子题为全局求和优化问题，天然保证有解；其核心约束为全局路径权和阈值，违反该约束无法自然导出可局部检查的冲突证据，强行引入无解情形将破坏原题结构或导致证据退化为全局说明。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints 明确描述为全局累加约束（'所有叶子节点到根节点的路径权重总和必须不超过给定阈值 S'），且 objective.requires_solution 为 false；而规则 eligibility.required_seed_properties 要求'做不到的原因可以用局部证据表示'，validation_contract 强调'冲突证据必须能局部检查'。全局阈值违反与局部可验证证书存在结构性冲突，且原题无天然无解分支。",
+        "feedback": "建议更换具有天然局部可行性约束（如度数限制、局部匹配冲突或容量瓶颈）的种子题，或提供将全局路径和违反转化为局部可验证阻塞结构的具体映射方案，否则该规则在此题上难以满足局部检查的硬性要求。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "post_processing_only",
+      "message": "改造仅是在贪心排序确定最优子集后附加组合统计，未重构主状态结构，违反规则中“不能把计数只当成结果后处理”的硬性红线，且未带来实质性算法责任升级。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.25,
+        "risk_tags": [
+          "low_novelty",
+          "shared_core_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要的 invariant 明确指出核心依赖 exchange_argument（按降序选取构成稳定最优子集）与 monotonicity（双指针扫描）。规则 helpers.state_factorization 的红线明确要求“不能保持原状态结构不动”且“不能把计数只当成结果后处理”。当前种子题若改为计数，仅能在原有贪心流程末端追加组合数计算，主状态转移与约束组织方式未变，不符合 core_transformation.new_obligation 中“定义清楚计数对象、有限性和去重规则”需驱动状态重构的要求。",
+        "feedback": "建议放弃在此类强贪心/单调性最优值题目上直接叠加计数。应优先选择解空间本身具有强组合分支、等价类划分直接影响状态转移或约束满足条件的种子题，以确保计数义务能真正重塑算法核心。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation",
+      "message": "原题CF1399E2为完全确定性树形优化问题，边权、操作代价与阈值S均固定，缺乏规则准入所必需的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行套用将导致扰动模型脱离原题语义，违反“不能凭背景硬造对手”与“扰动模型必须来自原题本身”的硬性约束。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "artificial_perturbation_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints明确操作为确定性w_i := floor(w_i/2)且目标为固定阈值S；seed_schema.invariant依赖确定性单调性与交换论证。而rule_under_review.eligibility.required_seed_properties要求“原题里本来就有顺序不确定、资源波动或局部选择差异”，validation_contract.hard_checks强调“扰动模型必须来自原题本身”。原题无内在不确定性，不满足准入条件。",
+        "feedback": "该规则高度依赖种子题自带的扰动或博弈结构。建议替换为具有动态参数、多智能体交互或输入区间不确定性的题目，或改用不依赖扰动放大的确定性优化规则。"
+      }
+    }
+  ],
+  "candidate_attempts": [],
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "没有规则通过资格校验。",
+    "feedback": "请更换种子题，或调整规则集合。"
+  },
+  "iteration": {
+    "run_id": "CF1399E2_v1_campus_ops_20260420_213512",
+    "round_index": 1,
+    "requested_rounds": 3,
+    "previous_artifact_path": "",
+    "previous_quality_report_path": "",
+    "revision_context_snapshot": {}
+  }
+}

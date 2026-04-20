@@ -1,0 +1,612 @@
+{
+  "problem_id": "CAMPUS_BOOTH_COUNT",
+  "source_problem_ids": [
+    "CF1513D"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "C",
+      "O",
+      "V"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "CF1513D",
+      "D. GCD and MST",
+      "codeforces",
+      "https://codeforces.com/contest/1513/problem/D",
+      "You are given an array $a$ of $n$ ($n \\geq 2$) positive integers and an integer $p$. Consider an undirected weighted graph of $n$ vertices numbered from $1$ to $n$ for which the edges between the vertices $i$ and $j$...",
+      "不要复写原题的叙事结构、任务定义或样例套路。",
+      "不要只替换实体名称后保留同样的输入输出关系。"
+    ],
+    "rationale": "目标从求最小值改为统计最优方案数；约束从图论边权定义改为区间划分合法性与成本计算；不变量从贪心切割独立性改为 DP 状态转移的方案数累加不变性。",
+    "summary": "重构问题为前缀最优划分计数，引入模运算与去重定义，状态从独立间隙贪心转为依赖前缀的 DP 汇总。",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.4216,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.4216,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.6853,
+      "O": 0.457,
+      "V": 0.509
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.6853,
+      "objective_type_distance": 0.4576,
+      "objective_text_distance": 0.4562,
+      "invariant_match_distance": 0.509
+    }
+  },
+  "changed_axes_realized": [
+    "C",
+    "O",
+    "V"
+  ],
+  "objective": {
+    "type": "count_optimal",
+    "description": "统计将 n 个摊位划分为连续区间，使得总成本最小的不同划分方案数。",
+    "target": "count_mod_1e9_7",
+    "requires_solution": true
+  },
+  "rule_selection_reason": "明确指出 existence_to_counting 优于 canonical_witness 的核心依据：原题的“可加性”不变量天然支持将最优解空间拆解为独立计数单元，且 revision_context 已验证该方向具备高质量落地基础（DP 计数模型已跑通）。canonical_witness 仅要求输出规范构造，极易退化为原题贪心逻辑的简单回溯或后处理，无法在算法范式上实现跃迁。；创新度判断：将原题“求单一最小权值”的贪心/扫描义务，彻底拉离为“统计所有达到全局最优的结构方案数”。要求重新定义计数对象（如最优割的等价组合或区间划分序列），并将去重口径与模运算直接写入主目标与约束，迫使解法从局部极值搜索转向全局组合结构枚举。；难度判断：在主求解责任上，从 O(n) 线性扫描/并查集升级为需设计状态转移、处理等价类去重、并维护模意义下累加的 DP/组合模型。同时需严格证明有限性与“相邻割独立性”在计数口径下的保持，显著抬高状态设计与边界分类难度。；风险判断：主要风险在于去重规则定义模糊导致多解歧义，或计数逻辑退化为原题贪心步骤的简单乘加。风险可控：通过 counting_unit_definition 强制明确“何为不同方案”，利用 state_factorization 将原题的割独立性转化为 DP 阶段划分，并严格遵循 counting_obligation_lock 将计数责任锁入主目标，可彻底规避后处理与伪融合。",
+  "new_schema_snapshot": {
+    "problem_id": "CAMPUS_BOOTH_COUNT",
+    "source": "CF1513D_extended",
+    "input_structure": {
+      "type": "composite",
+      "length": {
+        "min": null,
+        "max": null
+      },
+      "value_range": {
+        "min": null,
+        "max": null
+      },
+      "properties": {
+        "multiple_test_cases": true
+      },
+      "components": [
+        {
+          "role": "parameters",
+          "role_description": "n (摊位数量), p (基准间隙成本)",
+          "type": "tuple",
+          "length": {
+            "min": 2,
+            "max": 2
+          },
+          "value_range": {
+            "min": 2,
+            "max": 200000
+          },
+          "properties": {}
+        },
+        {
+          "role": "booth_values",
+          "role_description": "长度为 n 的正整数数组 a，表示各摊位热度",
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      ]
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "interval_divisibility",
+          "description": "区间 [l, r] 合法当且仅当 min(a[l..r]) 能整除区间内所有元素。合法区间合并成本为 min(a[l..r])，否则不可直接合并。",
+          "formal": "valid(l,r) ⇔ ∀k∈[l,r], a[k] % min(a[l..r]) == 0; cost(l,r) = min(a[l..r])",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "partition_baseline",
+          "description": "若区间不合法，则必须按相邻单元拆分，每单位间隙成本固定为 p。全局方案必须将 [1, n] 划分为若干连续子区间。",
+          "formal": "∀ partition blocks B_k, total_cost = Σ cost(B_k); if not valid(B_k), cost(B_k) = p * (|B_k|-1)",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "counting_distinctness",
+          "description": "两种划分方案不同当且仅当存在至少一个切割位置不同。计数对象为所有达成全局最小总成本的划分方案集合。",
+          "formal": "S1 ≠ S2 ⇔ ∃ cut position c ∈ S1 Δ S2",
+          "source_sections": [
+            "objective"
+          ]
+        },
+        {
+          "name": "modulo_arithmetic",
+          "description": "最终方案数对 10^9+7 取模输出。",
+          "formal": "output = |{optimal partitions}| mod (10^9+7)",
+          "source_sections": [
+            "objective"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "count_optimal",
+      "description": "统计将 n 个摊位划分为连续区间，使得总成本最小的不同划分方案数。",
+      "target": "count_mod_1e9_7",
+      "requires_solution": true
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "prefix_optimality",
+          "description": "前缀 i 的最小成本 dp[i] 仅依赖于前缀 j (j<i) 的最优成本与区间 (j+1..i) 的成本。方案数 cnt[i] 为所有使 dp[j]+cost(j+1..i) == dp[i] 的 cnt[j] 之和。",
+          "properties": {},
+          "evidence_source": "both"
+        },
+        {
+          "name": "non_overcounting",
+          "description": "由于划分方案由切割位置唯一确定，且 DP 转移严格按左端点递增汇总，不同转移路径对应不同切割集合，天然满足去重承诺。",
+          "properties": {},
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Hard"
+  },
+  "applied_rule": "existence_to_counting",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {
+    "seed_solver_core": "基于贪心与单调栈/双指针的间隙独立最小值计算，直接求和得 MST 权值。",
+    "reusable_subroutines": "区间最小值查询、整除合法性快速判定、前缀最优成本 DP 数组的构建逻辑。",
+    "new_solver_core": "将独立间隙贪心升级为前缀 DP 计数。对每个右端点 i，枚举所有合法左端点 j，若 dp[j] + cost(j+1..i) 等于当前最优值，则累加 cnt[j]。需结合单调栈优化转移范围，并在模意义下维护方案数。",
+    "new_proof_obligation": "必须证明：1) 区间划分模型与原图 MST 权值计算在最优成本上等价；2) DP 状态转移的无后效性与方案数累加不会因区间重叠产生重复计数（即不同 j 对应的划分方案切割位置集合互异）；3) 模运算下的加法同余性保证最终计数正确。",
+    "why_direct_reuse_fails": "原解法仅维护单一最小值并直接求和，缺乏状态分支记录能力。直接复用无法处理多路径汇聚时的方案数合并，且原贪心策略未定义等价类与去重边界，无法直接输出计数结果。"
+  },
+  "anti_shallow_rationale": "本题并非简单添加模数或替换输出格式。核心从‘求单一极值’重构为‘统计极值路径数’，强制要求算法维护分支状态并处理方案合并。约束中明确定义了划分单元、去重规则（切割位置差异）与模运算，彻底改变了状态转移的主导逻辑，符合 existence_to_counting 的深度改造要求。",
+  "shared_core_summary": "",
+  "shared_core_anchors": {
+    "shared_state": "",
+    "shared_transition": "",
+    "shared_decision_basis": ""
+  },
+  "seed_contributions": {
+    "seed_a": "",
+    "seed_b": ""
+  },
+  "fusion_ablation": {
+    "without_seed_a": "",
+    "without_seed_b": ""
+  },
+  "applied_helpers": [
+    {
+      "id": "counting_unit_definition",
+      "selection_reason": "明确计数对象与去重口径，解决原题答案形式单一问题。",
+      "affected_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "在 core_constraints 中定义划分切割位置为计数单元",
+        "在 objective 中锁定模意义下的计数目标",
+        "在 invariant 中声明不同切割集合互异"
+      ],
+      "innovation_reason": "把原题答案换成对象明确的计数结果，消除存在性/最优值歧义。",
+      "difficulty_reason": "要求解法处理等价类和有限性证明，增加去重逻辑负担。"
+    },
+    {
+      "id": "state_factorization",
+      "selection_reason": "将解空间拆分为可汇总的前缀状态，支撑计数累加。",
+      "affected_axes": [
+        "C",
+        "V"
+      ],
+      "schema_changes": [
+        "在 core_constraints 中说明按左端点拆分区间单元",
+        "在 invariant 中解释前缀状态如何避免重复计数"
+      ],
+      "innovation_reason": "让计数从主状态组织方式中自然长出来，替代原独立间隙贪心。",
+      "difficulty_reason": "要求解法在分解与汇总层面重建主状态，需处理状态转移的无后效性。"
+    },
+    {
+      "id": "counting_obligation_lock",
+      "selection_reason": "将计数责任锁进主目标，防止退化为附带统计。",
+      "affected_axes": [
+        "C",
+        "O"
+      ],
+      "schema_changes": [
+        "在 core_constraints 中规定划分合法性直接决定成本",
+        "在 objective 中移除原 MST 判定，完全由计数主导"
+      ],
+      "innovation_reason": "把原题主目标替换成新的计数义务，主导算法设计方向。",
+      "difficulty_reason": "要求算法同时承担计数正确性和去重正确性，无法沿用原贪心主流程。"
+    }
+  ],
+  "planning_status": "ok",
+  "planning_error_reason": "",
+  "planning_feedback": "",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": true,
+      "score": 0.82,
+      "reason_code": "canonical_upgrade_viable",
+      "selection_reason": "种子题仅输出MST总权值，解对象（边集）明确但未要求输出；MST天然存在多解性，引入规范序可强制改变贪心/并查集的状态转移与平局处理逻辑，非简单后处理，满足C/O/V三轴变更及非平凡回溯要求。",
+      "risk_tags": [
+        "post_processing_risk",
+        "shared_core_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "schema中objective.requires_solution为false，core_constraints定义了基于GCD与固定权值p的图结构，invariants指出解法依赖可加性与单向扫描。规则要求must_change[C,O,V]且禁止原解顺手回溯。当前标程为求和扫描，输出规范边集需重构状态以记录确定性选择并处理多解冲突，符合准入条件。",
+        "feedback": "规划阶段需明确规范序如何嵌入主扫描循环（例如规定区间扩展方向或边权相同时的索引优先级），严禁仅在原求和算法后附加排序或DFS回溯；验证合约必须包含对输出边集规范性、连通性及总权值最优性的联合校验。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 2
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.15,
+      "reason_code": "seed_lacks_failure_semantics",
+      "selection_reason": "原题CF1513D为恒有解的MST权值计算问题，相邻边恒存在保证图始终连通，缺乏规则要求的“无解/失败”语义基础。强行引入失败分支将脱离GCD整除核心约束，退化为平凡连通性判定或引入无关阈值，无法满足“冲突证据嵌入主约束”的辅助要求。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中objective.requires_solution为false，且core_constraints.adjacency_relation明确“任意相邻索引对应的顶点i与i+1之间始终存在一条边”，保证图恒连通；规则required_seed_properties要求“做不到的原因可以用局部证据表示”，与原题恒有解特性直接冲突。",
+        "feedback": "该规则适用于存在性判定或带硬约束的构造题。当前种子为纯优化计算题，无自然失败态。若坚持使用，需彻底重构约束（如移除恒连边并引入预算上限），但极易触碰“跟原核心规律无关的额外约束”红线。建议更换具备天然不可行分支的种子。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": true,
+      "score": 0.87,
+      "reason_code": "finite_decomposable_space",
+      "selection_reason": "种子题图结构有限，且invariant中明确给出additivity性质（MST权值可分解为n-1个相邻割的独立代价之和），为state_factorization提供了直接的结构依据；将优化目标转为计数目标后，解空间（不同边集或不同输入数组）天然有限，去重口径（集合差异或序列差异）明确，满足计数化改造的有限性与可分解要求。",
+      "risk_tags": [
+        "shared_core_risk",
+        "deduplication_complexity"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "schema_context.seed_schema.invariant.invariants[0].description 指出 'The minimum spanning tree weight decomposes into the sum of minimum costs required to cross each of the n-1 adjacent cuts... allowing the global optimum to be computed via direct summation.' 结合 core_constraints 中边权与整除条件的确定性定义，解空间有限且具备可加性拆分基础，符合 required_seed_properties 中的三项要求。",
+        "feedback": "规划阶段需明确计数对象是‘不同MST的边集数量’还是‘满足特定MST权值的输入数组数量’，并在core_constraints中严格限定值域或模数以控制复杂度；避免仅将原贪心过程包装为乘法计数，需体现状态重组或组合数学层面的新责任，确保O、C、V三轴发生实质性变化。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "missing_native_perturbation",
+      "selection_reason": "原题CF1513D为完全确定性构造，输入数组顺序固定且图构建规则严格依赖连续子数组的整除性质，不存在规则准入所要求的‘顺序不确定、资源波动或局部选择差异’等原生扰动来源。",
+      "risk_tags": [
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints 明确边存在性条件为 gcd(a_i, ..., a_j) = min(...) ⇔ edge，强依赖固定索引顺序；invariant 依赖单向扫描单调性。规则 eligibility.required_seed_properties 明确要求‘原题里本来就有顺序不确定、资源波动或局部选择差异’，原题语义中无任何此类特征，强行引入扰动将直接破坏原题核心规律，违反 validation_contract 中‘扰动模型必须来自原题本身’的硬性检查。",
+        "feedback": "该规则不适用于此种子题。建议转向本身带有动态序列、未知排列或参数区间波动的题目，以满足‘扰动模型必须来自原题本身’的硬性约束。"
+      },
+      "selected_for_attempt": false
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "canonical_upgrade_viable",
+      "message": "种子题仅输出MST总权值，解对象（边集）明确但未要求输出；MST天然存在多解性，引入规范序可强制改变贪心/并查集的状态转移与平局处理逻辑，非简单后处理，满足C/O/V三轴变更及非平凡回溯要求。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.82,
+        "risk_tags": [
+          "post_processing_risk",
+          "shared_core_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "schema中objective.requires_solution为false，core_constraints定义了基于GCD与固定权值p的图结构，invariants指出解法依赖可加性与单向扫描。规则要求must_change[C,O,V]且禁止原解顺手回溯。当前标程为求和扫描，输出规范边集需重构状态以记录确定性选择并处理多解冲突，符合准入条件。",
+        "feedback": "规划阶段需明确规范序如何嵌入主扫描循环（例如规定区间扩展方向或边权相同时的索引优先级），严禁仅在原求和算法后附加排序或DFS回溯；验证合约必须包含对输出边集规范性、连通性及总权值最优性的联合校验。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "seed_lacks_failure_semantics",
+      "message": "原题CF1513D为恒有解的MST权值计算问题，相邻边恒存在保证图始终连通，缺乏规则要求的“无解/失败”语义基础。强行引入失败分支将脱离GCD整除核心约束，退化为平凡连通性判定或引入无关阈值，无法满足“冲突证据嵌入主约束”的辅助要求。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.15,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中objective.requires_solution为false，且core_constraints.adjacency_relation明确“任意相邻索引对应的顶点i与i+1之间始终存在一条边”，保证图恒连通；规则required_seed_properties要求“做不到的原因可以用局部证据表示”，与原题恒有解特性直接冲突。",
+        "feedback": "该规则适用于存在性判定或带硬约束的构造题。当前种子为纯优化计算题，无自然失败态。若坚持使用，需彻底重构约束（如移除恒连边并引入预算上限），但极易触碰“跟原核心规律无关的额外约束”红线。建议更换具备天然不可行分支的种子。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "finite_decomposable_space",
+      "message": "种子题图结构有限，且invariant中明确给出additivity性质（MST权值可分解为n-1个相邻割的独立代价之和），为state_factorization提供了直接的结构依据；将优化目标转为计数目标后，解空间（不同边集或不同输入数组）天然有限，去重口径（集合差异或序列差异）明确，满足计数化改造的有限性与可分解要求。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.87,
+        "risk_tags": [
+          "shared_core_risk",
+          "deduplication_complexity"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "schema_context.seed_schema.invariant.invariants[0].description 指出 'The minimum spanning tree weight decomposes into the sum of minimum costs required to cross each of the n-1 adjacent cuts... allowing the global optimum to be computed via direct summation.' 结合 core_constraints 中边权与整除条件的确定性定义，解空间有限且具备可加性拆分基础，符合 required_seed_properties 中的三项要求。",
+        "feedback": "规划阶段需明确计数对象是‘不同MST的边集数量’还是‘满足特定MST权值的输入数组数量’，并在core_constraints中严格限定值域或模数以控制复杂度；避免仅将原贪心过程包装为乘法计数，需体现状态重组或组合数学层面的新责任，确保O、C、V三轴发生实质性变化。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation",
+      "message": "原题CF1513D为完全确定性构造，输入数组顺序固定且图构建规则严格依赖连续子数组的整除性质，不存在规则准入所要求的‘顺序不确定、资源波动或局部选择差异’等原生扰动来源。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints 明确边存在性条件为 gcd(a_i, ..., a_j) = min(...) ⇔ edge，强依赖固定索引顺序；invariant 依赖单向扫描单调性。规则 eligibility.required_seed_properties 明确要求‘原题里本来就有顺序不确定、资源波动或局部选择差异’，原题语义中无任何此类特征，强行引入扰动将直接破坏原题核心规律，违反 validation_contract 中‘扰动模型必须来自原题本身’的硬性检查。",
+        "feedback": "该规则不适用于此种子题。建议转向本身带有动态序列、未知排列或参数区间波动的题目，以满足‘扰动模型必须来自原题本身’的硬性约束。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "规划完整兑现了 existence_to_counting 规则合同，明确定义了计数对象（区间划分切割位置）、去重口径（切割位置集合差异）与有限性/取模约定，且三个 helper 均按要求落位至 core_constraints、objective 与 invariant，状态结构已从独立贪心重构为前缀 DP 汇总，计数责任完全主导主目标。",
+      "details": {
+        "review_role": "你扮演一名计数规划审查官，重点确认规划是否真正把目标升级为对象明确的计数任务。",
+        "review_brief": "确认规划是否定义了计数对象、去重口径、有限性来源，以及需要时的取模约定。",
+        "evidence": "1. counting_unit_definition 在 core_constraints.counting_distinctness 中明确定义 S1≠S2 当且仅当切割位置不同，在 objective 中锁定 count_optimal，在 invariant.non_overcounting 中声明去重逻辑，避开‘仅补模数’红线。2. state_factorization 在 core_constraints.partition_baseline 中规定按连续子区间拆分，在 invariant.prefix_optimality 中建立前缀 DP 汇总机制，替代原独立间隙贪心结构。3. counting_obligation_lock 将 objective 彻底替换为统计最优划分方案数，core_constraints 的成本计算直接服务于该计数目标，未保留原 MST 判定主导。4. 满足硬门槛：去重规则见 counting_distinctness，可数性/取模见 modulo_arithmetic 与有限 n 的划分空间，拆分汇总见 partition_baseline 与 prefix_optimality。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "题面完整兑现计数目标与去重规则，明确定义了计数对象（最优划分方案）、等价关系（切割位置集合不同即视为不同方案）及取模约定，且计数义务已完全替代原最优值目标。",
+      "details": {
+        "review_role": "你扮演一名计数题面审查官，重点确认题面是否完整兑现计数目标与去重规则。",
+        "review_brief": "确认题面是否明确写出统计对象、等价关系、不同答案的判定口径，以及必要的模数约定。",
+        "evidence": "题面描述明确写出：'请计算使总成本最小的划分方案数。由于答案可能很大，请输出对 10^9+7 取模的结果。' 并直接定义去重口径：'两种划分方案不同，当且仅当存在至少一个切割位置不同。' 输出格式与 Notes 再次锁定计数主目标，未保留原题判定逻辑，完全满足 existence_to_counting 规则对计数对象、有限性/取模、去重口径及主目标锁定的硬性校验。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "rule_fulfilled",
+      "message": "题面明确将主目标替换为最小成本划分方案计数，清晰定义了去重口径（切割位置集合不同即视为不同方案）与取模约定，计数义务完全主导问题定义，未退化为附带统计或仅补充模数，完整兑现计数目标与去重规则。",
+      "details": {
+        "review_role": "你扮演一名计数题面审查官，重点确认题面是否完整兑现计数目标与去重规则。",
+        "review_brief": "确认题面是否明确写出统计对象、等价关系、不同答案的判定口径，以及必要的模数约定。",
+        "evidence": "题面正文直接声明“请计算使总成本最小的不同划分方案数”，并在描述末尾明确去重规则“两种划分方案不同，当且仅当存在至少一个切割位置不同”，对应 `counting_unit_definition` 与 `counting_obligation_lock` 的核心承诺；输出格式与备注中锁定“对 $10^9+7$ 取模”，满足有限性与模数约定；划分对象“连续的管理区”天然构成可汇总的计数单元，符合 `state_factorization` 的拆分要求。所有关键语义均写实于题面正文，未依赖规划摘要补充。"
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "score": 0.87,
+      "accepted": true,
+      "risk_tags": [
+        "shared_core_risk",
+        "deduplication_complexity"
+      ],
+      "status": "ok",
+      "reason_code": "plan_validation_failed",
+      "reason": "",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "摊位分区规划",
+    "description": "校园文化节即将开幕，学生会需要将一条直道上的 $n$ 个社团摊位划分为若干个连续的管理区。每个摊位有一个热度值 $a_i$。\n\n对于任意一个划分出的连续区间 $[l, r]$，其管理成本计算规则如下：\n- 若区间内所有摊位的热度值均能被该区间的最小热度值整除，则称该区间为“和谐区间”，其管理成本等于该区间的最小热度值。\n- 否则，该区间为“松散区间”，其管理成本等于 $p \\times (r - l)$，即区间内相邻摊位对的数量乘以基准协调开销 $p$。\n\n整个划分方案的总成本为所有管理区成本之和。请计算使总成本最小的不同划分方案数。由于答案可能很大，请输出对 $10^9+7$ 取模的结果。\n\n注意：两种划分方案不同，当且仅当存在至少一个切割位置不同。",
+    "input_format": "第一行包含一个整数 $t$，表示测试用例的数量。\n每个测试用例的第一行包含两个整数 $n$ 和 $p$。\n第二行包含 $n$ 个整数 $a_1, a_2, \\dots, a_n$。",
+    "output_format": "对于每个测试用例，输出一行一个整数，表示最小总成本对应的划分方案数对 $10^9+7$ 取模的结果。",
+    "constraints": [
+      "$1 \\le t \\le 10^4$",
+      "$2 \\le n \\le 2 \\times 10^5$",
+      "$1 \\le p \\le 10^9$",
+      "$1 \\le a_i \\le 10^9$",
+      "所有测试用例的 $n$ 之和不超过 $2 \\times 10^5$。",
+      "时间限制：2 秒",
+      "空间限制：256 MB"
+    ],
+    "samples": [
+      {
+        "input": "1\n3 2\n4 2 4",
+        "output": "1",
+        "explanation": "样例1：最小总成本为 2。唯一最优方案为不切割，将整个区间 [1,3] 作为一个和谐区间。该区间最小值为 2，且 2 能整除 4、2、4，因此成本为 2。其他任何切割方式（如 [1,1] 与 [2,3]）的总成本均大于 2。"
+      },
+      {
+        "input": "1\n3 2\n2 3 2",
+        "output": "3",
+        "explanation": "样例2：最小总成本为 4。共有 3 种最优划分方案：\n1. 不切割：区间 [1,3] 为松散区间（最小值 2 不能整除 3），成本为 2*(3-1)=4。\n2. 在位置 1 后切割：区间 [1,1] 成本为 2；区间 [2,3] 为松散区间，成本为 2*(2-1)=2。总成本 4。\n3. 在位置 2 后切割：区间 [1,2] 为松散区间，成本为 2；区间 [3,3] 成本为 2。总成本 4。\n其他划分方式成本均大于 4，故答案为 3。"
+      }
+    ],
+    "notes": "方案数需对 $10^9+7$ 取模。划分方案由切割位置集合唯一确定，不同切割集合视为不同方案。单元素区间恒为和谐区间，其成本等于该元素的热度值。",
+    "status": "ok",
+    "error_reason": "",
+    "feedback": ""
+  },
+  "iteration": {
+    "run_id": "CF1513D_v1_campus_ops_20260420_215028",
+    "round_index": 3,
+    "requested_rounds": 3,
+    "previous_artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1513D_v1_campus_ops_20260420_215028_round2.json",
+    "previous_quality_report_path": "D:\\AutoProblemGen\\生成题面\\reports\\CF1513D\\CF1513D_v1_campus_ops_20260420_215028_round2_quality_report.json",
+    "revision_context_snapshot": {
+      "round_index": 2,
+      "overall_status": "reject_as_retheme",
+      "generated_status": "ok",
+      "quality_score": 94.0,
+      "divergence_score": 61.7,
+      "failed_hard_checks": [],
+      "issues": [
+        {
+          "issue_type": "quality_issue",
+          "severity": "minor",
+          "title": "n 的下界约束与 schema 不一致",
+          "detail": "new_schema 中定义 booth_sizes 长度最小值为 1，但 generated_problem.constraints 中写明 $2 \\le n$。虽然不影响主体逻辑，但可能导致边界测试用例缺失或判题数据与 schema 规划不符。",
+          "evidence_refs": [
+            "new_schema.input_structure.components[1].length.min",
+            "generated_problem.constraints"
+          ],
+          "fix_hint": "将约束调整为 $1 \\le n \\le 2 \\times 10^5$，或在题面中明确说明 n=1 时的特殊处理（通常直接输出 1）。"
+        },
+        {
+          "issue_type": "quality_issue",
+          "severity": "minor",
+          "title": "样例缺乏多方案计数覆盖",
+          "detail": "当前两个样例的最优划分方案数均为 1，未能体现 objective 中要求的“方案数统计”与“模 1e9+7”特性。对于计数类 Hard 题，缺少 count > 1 的样例会降低选手验证 DP 转移正确性的效率。",
+          "evidence_refs": [
+            "generated_problem.samples",
+            "new_schema.objective"
+          ],
+          "fix_hint": "补充一个包含多个等价最优切割位置的样例（例如 a=[2,2,2], p=3，此时全分与合并成本可能相同或产生多种最优组合），并在 explanation 中明确列出不同方案。"
+        }
+      ],
+      "suggested_revisions": [
+        "将约束调整为 $1 \\le n \\le 2 \\times 10^5$，或在题面中明确说明 n=1 时的特殊处理（通常直接输出 1）。",
+        "补充一个包含多个等价最优切割位置的样例（例如 a=[2,2,2], p=3，此时全分与合并成本可能相同或产生多种最优组合），并在 explanation 中明确列出不同方案。",
+        "增加一个最优方案数大于 1 的样例，以覆盖计数逻辑与模运算验证。",
+        "统一 n 的取值范围下界，确保与 new_schema 规划一致。",
+        "可在 description 末尾补充一句“区间划分顺序固定为从左至右”，进一步消除潜在的结构歧义。"
+      ],
+      "strengths_to_keep": [
+        "精准落地 new_schema 的核心约束与计数目标，规则定义无歧义。",
+        "题面排版规范，数学表达严谨，符合高质量 OJ 题面标准。",
+        "样例解释逐步推导，清晰展示了合法区间判定与成本计算过程。",
+        "成功将抽象的 DP 计数模型映射为贴近现实的“摊位规划”场景，主题融合自然。"
+      ]
+    }
+  }
+}

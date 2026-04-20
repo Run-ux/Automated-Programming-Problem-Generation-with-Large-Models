@@ -26,12 +26,14 @@ finiteness_verification
   -> 规则规划
   -> 实例化四元组
   -> 调用模型生成结构化题面
-  -> 输出 Markdown、artifact、过程报告
+  -> 可选进入质量闭环迭代
+  -> 输出 Markdown、artifact、质量报告、过程报告
 
 题目质量评价
   -> 消费规则决策轨迹与四轴距离
   -> 对生成结果做质量评分、反换皮判定、硬约束检查
   -> 判断是通过、需要返修，还是应直接拒绝
+  -> 输出 `revision_brief` 回流给下一轮生成
 ```
 
 另外两个目录属于历史原型或平行实验：
@@ -203,8 +205,10 @@ phase1 的标签集合
   -> variant_planner 排序并依次尝试前几条候选规则
   -> 通过代码级通用硬门槛和规则专属 LLM 规划审查后实例化新四元组
   -> problem_generator 让模型输出严格 JSON，并继续执行规则专属 LLM 题面审查
+  -> 可选调用题目质量评价，生成 `revision_brief`
+  -> 若状态允许，再把 `revision_brief` 回流给下一轮 planner 和 generator
   -> markdown_renderer 渲染为题面 Markdown
-  -> pipeline 保存 markdown、artifact、过程报告
+  -> pipeline 保存 markdown、artifact、质量报告、过程报告和迭代摘要
 ```
 
 当前只启用两个模式：
@@ -218,7 +222,7 @@ phase1 的标签集合
 
 1. 创新来源是规则选择加 planner，并把变化直接落实到实例化四元组。
 2. 差异控制仍围绕四轴 `I/C/O/V` 展开，但 `distance_breakdown` 已升级为结构化距离：顶层包含 `distance_version`、`backend`、`total`、`axis_scores`、`components`，artifact 会继续显式记录 `changed_axes_realized` 与 `difference_plan`。
-3. artifact 还会记录 `mode`、`source_problem_ids`、`applied_rule`、`rule_selection_reason`、`rejected_candidates`、`algorithmic_delta_claim`、`applied_helpers`，以及 `rule_version`、`selection_trace`、`validation_trace`、`candidate_attempts`。批量运行还会额外写出 `batch_*.json` 和 `batch_*.md` 汇总。
+3. artifact 还会记录 `mode`、`source_problem_ids`、`applied_rule`、`rule_selection_reason`、`rejected_candidates`、`algorithmic_delta_claim`、`applied_helpers`，以及 `rule_version`、`selection_trace`、`validation_trace`、`candidate_attempts`。启用质量闭环后，还会新增 `iteration` 元信息，并为每个 variant 生成 `*_iteration_summary.json`。批量运行还会额外写出 `batch_*.json` 和 `batch_*.md` 汇总。
 
 ### Schema Distance V2 各维度计算方法
 
@@ -312,6 +316,7 @@ total = 0.25 * I + 0.30 * C + 0.25 * O + 0.20 * V
   -> 评估题面完整性、可读性、样例质量、跨段一致性
   -> 比较规则决策轨迹、四轴 schema distance、语义差异、解法迁移风险
   -> 输出 JSON 和 Markdown 评估报告
+  -> 额外输出结构化 `revision_brief` 给生成侧回流
 ```
 
 当前口径里，`题目质量评价` 消费的是规则决策轨迹与四轴距离，而不是 `transform_space` 时代的第五维逻辑。这个模块的质量分并不是一个笼统的“好不好”，而是拆成五个维度分别打分，再按权重合成为总分：

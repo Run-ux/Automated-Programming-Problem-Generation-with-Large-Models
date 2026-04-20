@@ -10,6 +10,7 @@ def render_report_markdown(report: dict[str, Any]) -> str:
     hard_checks = report.get("hard_checks", [])
     issues = report.get("issues", [])
     snapshots = report.get("snapshots", {})
+    revision_brief = report.get("revision_brief", {})
 
     lines: list[str] = [
         "# 题目质量与反换皮评估报告",
@@ -70,6 +71,22 @@ def render_report_markdown(report: dict[str, Any]) -> str:
         lines.extend(["", "## 建议修改"])
         for item in revisions:
             lines.append(f"- {item}")
+
+    if revision_brief:
+        lines.extend(
+            [
+                "",
+                "## 回流摘要",
+                f"- round_index: {revision_brief.get('round_index', '')}",
+                f"- overall_status: {revision_brief.get('overall_status', '')}",
+                f"- generated_status: {revision_brief.get('generated_status', '')}",
+                f"- quality_score: {revision_brief.get('quality_score', '')}",
+                f"- divergence_score: {revision_brief.get('divergence_score', '')}",
+            ]
+        )
+        strengths = revision_brief.get("strengths_to_keep", [])
+        if strengths:
+            lines.append("- strengths_to_keep: " + "；".join(str(item) for item in strengths))
 
     lines.extend(
         [

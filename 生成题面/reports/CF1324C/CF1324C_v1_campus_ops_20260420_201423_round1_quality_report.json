@@ -1,0 +1,745 @@
+{
+  "overall": {
+    "status": "reject_as_retheme",
+    "quality_score": 97.0,
+    "divergence_score": 44.8,
+    "schema_distance": 0.4477,
+    "generated_status": "ok"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 5.0,
+        "rationale": "new_schema 中的输入结构(n, D, s)、跳跃方向约束(directional_jump_rule)、双分支目标(construct_or_certify)及证书定义(certificate_definition)均被精准落地到 generated_problem 的对应字段中。hard_checks 的 objective_alignment 与 structural_option_alignment 均通过，证明变体核心要素已完整实现。",
+        "evidence_refs": [
+          "new_schema.input_structure",
+          "new_schema.core_constraints",
+          "new_schema.objective",
+          "generated_problem.description",
+          "generated_problem.output_format",
+          "hard_checks.objective_alignment"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 5.0,
+        "rationale": "题面提供了独立解题所需的全部关键信息。任务说明、输入输出格式、数据范围、时间空间限制齐全。notes 部分明确补充了索引映射关系(0~n+1与1~n)、路径严格递增要求及多解处理策略，消除了边界歧义，读者无需猜测核心规则。",
+        "evidence_refs": [
+          "generated_problem.input_format",
+          "generated_problem.output_format",
+          "generated_problem.constraints",
+          "generated_problem.notes"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 5.0,
+        "rationale": "description 中的跳跃规则与 constraints 中的 D 限制逻辑自洽；output_format 的双分支输出与 description 的目标完全对应；样例输入输出严格遵循格式与规则，符号含义(位置编号、字符串索引)在各部分保持一致，无字段数量或定义冲突。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.output_format",
+          "generated_problem.samples",
+          "generated_problem.notes"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 4.0,
+        "rationale": "提供了成功与失败两个典型样例，解释清晰且能验证核心逻辑。但作为 hard 难度题，仅 2 个样例略显单薄，未覆盖 D=1、全 R 字符串或 D>n 等关键边界结构。hard_checks 中 sample_count=2 也提示数量处于基础水平，建议补充以增强鲁棒性。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks.sample_count"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 5.0,
+        "rationale": "题面结构严格遵循标准 OJ 规范，分段清晰，措辞准确。校园主题包装自然且未干扰核心算法约束的表达，无来源污染或冗余文本。参赛者能快速提取输入输出要求与判定规则，阅读体验良好。",
+        "evidence_refs": [
+          "generated_problem.title",
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.output_format"
+        ]
+      }
+    ],
+    "strengths": [
+      "双分支输出合同（路径序列/阻塞区间）定义严谨，与 schema 的 construct_or_certify 目标高度一致，成功与失败分支责任对等。",
+      "索引体系（位置 0~n+1 与字符串 s 的 1~n）在 description 和 notes 中交代清晰，有效规避了常见的 off-by-one 错误。",
+      "失败证据的数学定义（连续 L 段长度 ≥ D）与物理跳跃约束紧密结合，逻辑自洽且具备可验证性。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "distance_version": "v2",
+      "backend": "embedding",
+      "total": 0.4477,
+      "axis_scores": {
+        "I": 0.1072,
+        "C": 0.6734,
+        "O": 0.5392,
+        "V": 0.4205
+      },
+      "components": {
+        "input_tree_distance": 0.1072,
+        "constraint_match_distance": 0.6734,
+        "objective_type_distance": 0.6874,
+        "objective_text_distance": 0.3168,
+        "invariant_match_distance": 0.4205
+      }
+    },
+    "schema_distance": 0.4477,
+    "changed_axes_planned": [
+      "C",
+      "O",
+      "V"
+    ],
+    "changed_axes_realized": [
+      "C",
+      "O",
+      "V"
+    ],
+    "semantic_difference": 0.25,
+    "solution_transfer_risk": 0.85,
+    "surface_retheme_risk": 0.8,
+    "verdict": "reject_as_retheme",
+    "rationale": "新题在目标轴(O)和约束轴(C)上进行了形式化扩展，将原题的“求最小d”改为“给定D输出路径或阻塞区间”，并增加了失败分支的结构化输出要求。然而，核心不变量(V)与求解逻辑未发生实质改变：可达性依然严格等价于“最长连续L段长度 < D”。原题的标准线性扫描解法（维护上一个安全落脚点位置并计算间距）可直接迁移至新题，仅需将标量最值计算改为记录安全点索引序列。若相邻安全点间距超过D，该区间即为题目要求的阻塞证据；否则索引序列即为合法路径。状态定义、贪心策略、O(n)复杂度框架完全一致，选手无需重新建模或引入新算法。尽管增加了双分支输出合同与校园叙事包装，但算法内核高度同构，属于典型的输出格式扩展型换皮。",
+    "evidence_refs": [
+      "snapshots.new_schema.objective",
+      "snapshots.new_schema.core_constraints",
+      "snapshots.new_schema.invariant",
+      "review_context.algorithmic_delta_claim",
+      "divergence.schema_distance_breakdown"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_problem_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 generated_problem。",
+      "evidence_refs": [
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "new_schema_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 new_schema 或兼容字段 new_schema_snapshot。",
+      "evidence_refs": [
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "生成状态正常。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "predicted_schema_distance_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 predicted_schema_distance。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "distance_breakdown_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 distance_breakdown。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "changed_axes_realized_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 changed_axes_realized。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.45，达到中等差异阈值。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "已落地核心差异轴：C, O, V。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题或题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=2。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "目标函数已经在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "样例覆盖度不足",
+      "detail": "当前仅包含 2 个样例，虽覆盖成功与失败分支，但缺乏对极端边界条件（如 D=1、D=n+1、全 R 或全 L）的测试，不利于选手验证边界逻辑。",
+      "evidence_refs": [
+        "generated_problem.samples",
+        "hard_checks.sample_count"
+      ],
+      "fix_hint": "增加 1~2 个边界样例，例如 D=1 时全 R 可达的路径，或 D 极大时直接 0→n+1 的跳跃。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "多路径输出策略未显式声明",
+      "detail": "题面未明确说明当存在多条合法路径时是否允许输出任意一条。虽然 OJ 惯例如此，但显式声明可避免争议。",
+      "evidence_refs": [
+        "generated_problem.output_format",
+        "generated_problem.notes"
+      ],
+      "fix_hint": "在 output_format 或 notes 中补充“若存在多条合法路径，输出任意一条即可”的说明。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "solution transfer risk too high",
+      "detail": "新题在目标轴(O)和约束轴(C)上进行了形式化扩展，将原题的“求最小d”改为“给定D输出路径或阻塞区间”，并增加了失败分支的结构化输出要求。然而，核心不变量(V)与求解逻辑未发生实质改变：可达性依然严格等价于“最长连续L段长度 < D”。原题的标准线性扫描解法（维护上一个安全落脚点位置并计算间距）可直接迁移至新题，仅需将标量最值计算改为记录安全点索引序列。若相邻安全点间距超过D，该区间即为题目要求的阻塞证据；否则索引序列即为合法路径。状态定义、贪心策略、O(n)复杂度框架完全一致，选手无需重新建模或引入新算法。尽管增加了双分支输出合同与校园叙事包装，但算法内核高度同构，属于典型的输出格式扩展型换皮。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.new_schema.core_constraints",
+        "snapshots.new_schema.invariant",
+        "review_context.algorithmic_delta_claim",
+        "divergence.schema_distance_breakdown"
+      ],
+      "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+    }
+  ],
+  "suggested_revisions": [
+    "增加 1~2 个边界样例，例如 D=1 时全 R 可达的路径，或 D 极大时直接 0→n+1 的跳跃。",
+    "在 output_format 或 notes 中补充“若存在多条合法路径，输出任意一条即可”的说明。",
+    "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+    "补充覆盖 D=1、D>n 及全同字符边界的测试样例，提升样例对关键结构的覆盖率。",
+    "在 notes 中显式声明多解情况下的输出策略（如“输出任意合法路径/区间即可”）。",
+    "可考虑在 constraints 中补充说明 D 的取值范围与 n 的关系对直接跳跃的影响，使题意更直观。",
+    "优先改写核心任务定义，而不是继续替换故事背景。"
+  ],
+  "revision_brief": {
+    "round_index": 1,
+    "overall_status": "reject_as_retheme",
+    "generated_status": "ok",
+    "quality_score": 97.0,
+    "divergence_score": 44.8,
+    "failed_hard_checks": [],
+    "issues": [
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "样例覆盖度不足",
+        "detail": "当前仅包含 2 个样例，虽覆盖成功与失败分支，但缺乏对极端边界条件（如 D=1、D=n+1、全 R 或全 L）的测试，不利于选手验证边界逻辑。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks.sample_count"
+        ],
+        "fix_hint": "增加 1~2 个边界样例，例如 D=1 时全 R 可达的路径，或 D 极大时直接 0→n+1 的跳跃。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "多路径输出策略未显式声明",
+        "detail": "题面未明确说明当存在多条合法路径时是否允许输出任意一条。虽然 OJ 惯例如此，但显式声明可避免争议。",
+        "evidence_refs": [
+          "generated_problem.output_format",
+          "generated_problem.notes"
+        ],
+        "fix_hint": "在 output_format 或 notes 中补充“若存在多条合法路径，输出任意一条即可”的说明。"
+      },
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "solution transfer risk too high",
+        "detail": "新题在目标轴(O)和约束轴(C)上进行了形式化扩展，将原题的“求最小d”改为“给定D输出路径或阻塞区间”，并增加了失败分支的结构化输出要求。然而，核心不变量(V)与求解逻辑未发生实质改变：可达性依然严格等价于“最长连续L段长度 < D”。原题的标准线性扫描解法（维护上一个安全落脚点位置并计算间距）可直接迁移至新题，仅需将标量最值计算改为记录安全点索引序列。若相邻安全点间距超过D，该区间即为题目要求的阻塞证据；否则索引序列即为合法路径。状态定义、贪心策略、O(n)复杂度框架完全一致，选手无需重新建模或引入新算法。尽管增加了双分支输出合同与校园叙事包装，但算法内核高度同构，属于典型的输出格式扩展型换皮。",
+        "evidence_refs": [
+          "snapshots.new_schema.objective",
+          "snapshots.new_schema.core_constraints",
+          "snapshots.new_schema.invariant",
+          "review_context.algorithmic_delta_claim",
+          "divergence.schema_distance_breakdown"
+        ],
+        "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+      }
+    ],
+    "suggested_revisions": [
+      "增加 1~2 个边界样例，例如 D=1 时全 R 可达的路径，或 D 极大时直接 0→n+1 的跳跃。",
+      "在 output_format 或 notes 中补充“若存在多条合法路径，输出任意一条即可”的说明。",
+      "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+      "补充覆盖 D=1、D>n 及全同字符边界的测试样例，提升样例对关键结构的覆盖率。",
+      "在 notes 中显式声明多解情况下的输出策略（如“输出任意合法路径/区间即可”）。",
+      "可考虑在 constraints 中补充说明 D 的取值范围与 n 的关系对直接跳跃的影响，使题意更直观。",
+      "优先改写核心任务定义，而不是继续替换故事背景。"
+    ],
+    "strengths_to_keep": [
+      "双分支输出合同（路径序列/阻塞区间）定义严谨，与 schema 的 construct_or_certify 目标高度一致，成功与失败分支责任对等。",
+      "索引体系（位置 0~n+1 与字符串 s 的 1~n）在 description 和 notes 中交代清晰，有效规避了常见的 off-by-one 错误。",
+      "失败证据的数学定义（连续 L 段长度 ≥ D）与物理跳跃约束紧密结合，逻辑自洽且具备可验证性。"
+    ]
+  },
+  "snapshots": {
+    "paths": {
+      "schema_path": "D:\\AutoProblemGen\\四元组抽取\\output\\batch\\normalized\\CF1324C.json",
+      "artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1324C_v1_campus_ops_20260420_201423_round1.json",
+      "markdown_path": "D:\\AutoProblemGen\\生成题面\\output\\CF1324C_v1_campus_ops_20260420_201423_round1.md"
+    },
+    "original_problem": {
+      "selection_id": "sample_02",
+      "problem_id": "CF1324C",
+      "record_uid": "train-00032-of-00039-7b7d2068a3d9c359__row_0118",
+      "statement_language": "english",
+      "title": "1324_C. Frog Jumps",
+      "description": "There is a frog staying to the left of the string s = s_1 s_2 … s_n consisting of n characters (to be more precise, the frog initially stays at the cell 0). Each character of s is either 'L' or 'R'. It means that if the frog is staying at the i-th cell and the i-th character is 'L', the frog can jump only to the left. If the frog is staying at the i-th cell and the i-th character is 'R', the frog can jump only to the right. The frog can jump only to the right from the cell 0.\n\nNote that the frog can jump into the same cell twice and can perform as many jumps as it needs.\n\nThe frog wants to reach the n+1-th cell. The frog chooses some positive integer value d before the first jump (and cannot change it later) and jumps by no more than d cells at once. I.e. if the i-th character is 'L' then the frog can jump to any cell in a range [max(0, i - d); i - 1], and if the i-th character is 'R' then the frog can jump to any cell in a range [i + 1; min(n + 1; i + d)].\n\nThe frog doesn't want to jump far, so your task is to find the minimum possible value of d such that the frog can reach the cell n+1 from the cell 0 if it can jump by no more than d cells at once. It is guaranteed that it is always possible to reach n+1 from 0.\n\nYou have to answer t independent test cases.\n\nInput\n\nThe first line of the input contains one integer t (1 ≤ t ≤ 10^4) — the number of test cases.\n\nThe next t lines describe test cases. The i-th test case is described as a string s consisting of at least 1 and at most 2 ⋅ 10^5 characters 'L' and 'R'.\n\nIt is guaranteed that the sum of lengths of strings over all test cases does not exceed 2 ⋅ 10^5 (∑ |s| ≤ 2 ⋅ 10^5).\n\nOutput\n\nFor each test case, print the answer — the minimum possible value of d such that the frog can reach the cell n+1 from the cell 0 if it jumps by no more than d at once.\n\nExample\n\nInput\n\n\n6\nLRLRRLL\nL\nLLR\nRRRR\nLLLLLL\nR\n\n\nOutput\n\n\n3\n2\n3\n1\n7\n1\n\nNote\n\nThe picture describing the first test case of the example and one of the possible answers:\n\n<image>\n\nIn the second test case of the example, the frog can only jump directly from 0 to n+1.\n\nIn the third test case of the example, the frog can choose d=3, jump to the cell 3 from the cell 0 and then to the cell 4 from the cell 3.\n\nIn the fourth test case of the example, the frog can choose d=1 and jump 5 times to the right.\n\nIn the fifth test case of the example, the frog can only jump directly from 0 to n+1.\n\nIn the sixth test case of the example, the frog can choose d=1 and jump 2 times to the right.",
+      "public_tests": {
+        "input": [
+          "6\nLRLRRLL\nL\nLLR\nRRRR\nLLLLLL\nR\n"
+        ],
+        "output": [
+          "3\n2\n3\n1\n7\n1\n"
+        ]
+      },
+      "source": {
+        "split": "train",
+        "source_id": 2,
+        "source_name": "CODEFORCES",
+        "url": "https://codeforces.com/contest/1324/problem/C"
+      },
+      "difficulty": {
+        "difficulty_id": 9,
+        "difficulty_name": "C",
+        "difficulty_bucket": null,
+        "cf_rating": 1100,
+        "cf_points": 0.0,
+        "cf_contest_id": 1324,
+        "cf_index": "C",
+        "rating_bucket": "cf_low"
+      },
+      "tags": [
+        "binary search",
+        "data structures",
+        "dfs and similar",
+        "greedy",
+        "implementation"
+      ],
+      "limits": {
+        "time_limit": {
+          "seconds": 2,
+          "nanos": 0
+        },
+        "memory_limit_bytes": 256000000
+      },
+      "io_mode": {
+        "input_file": "",
+        "output_file": "",
+        "non_stdio": false
+      },
+      "translation": {
+        "is_description_translated": false,
+        "untranslated_description": ""
+      },
+      "reference_solution": {
+        "language_id": 3,
+        "language_guess": "python",
+        "code": "for _ in[0]*int(input()):print(max(map(len,input().split('R')))+1)",
+        "char_count": 66,
+        "line_count": 1
+      },
+      "artifact_counts": {
+        "public_tests": 1,
+        "private_tests": 0,
+        "generated_tests": 69,
+        "solutions": 1541,
+        "incorrect_solutions": 533
+      },
+      "heuristic_profile": {
+        "tag_families": [
+          "implementation",
+          "greedy",
+          "data_structures",
+          "graphs",
+          "binary_search"
+        ],
+        "structure_candidates": [
+          "string",
+          "grid",
+          "array"
+        ],
+        "objective_type": "decision",
+        "coverage_features": [
+          "objective:decision",
+          "rating:cf_low",
+          "source:CODEFORCES",
+          "structure:array",
+          "structure:grid",
+          "structure:string",
+          "tag:binary_search",
+          "tag:data_structures",
+          "tag:graphs",
+          "tag:greedy",
+          "tag:implementation"
+        ],
+        "english_filter": {
+          "passed": true,
+          "score": 15
+        },
+        "notes": [
+          "selection favors source, difficulty, tag and structure coverage over sample count",
+          "heuristic_profile fields are inferred from metadata and statement text"
+        ]
+      }
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "不要暴露原题编号、出处或链接。",
+        "不要复写原题的叙事结构、输入输出关系或任务定义。"
+      ],
+      "rationale": "将原题的标量最值求解改为双分支输出合同，约束轴引入固定容量D与证据定义，目标轴改为路径构造或冲突区间输出，不变量轴从间隙性质转为流瓶颈对偶性。",
+      "summary": "给定方向串与步长上限，要求输出可行路径或证明不可达的局部L段证据，实现成功与失败分支的对称输出责任。",
+      "mode": "single_seed_extension"
+    },
+    "new_schema": {
+      "problem_id": "CampusCartNav_Ext",
+      "source": "custom",
+      "input_structure": {
+        "type": "mixed",
+        "components": [
+          {
+            "name": "n",
+            "type": "integer",
+            "range": [
+              1,
+              200000
+            ]
+          },
+          {
+            "name": "D",
+            "type": "integer",
+            "range": [
+              1,
+              200001
+            ]
+          },
+          {
+            "name": "s",
+            "type": "string",
+            "length": "n",
+            "alphabet": [
+              "L",
+              "R"
+            ]
+          }
+        ],
+        "properties": {
+          "multiple_test_cases": true
+        }
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "directional_jump_rule",
+            "description": "校园推车从位置0出发前往n+1。在位置i(0≤i≤n)时，若i=0或s[i]=='R'，只能向右跳至j>i；若s[i]=='L'，只能向左跳至j<i。单次跳跃跨度|j-i|≤D。",
+            "formal": "∀ jump (u→v): (u=0 ∨ s[u]=='R') ⇒ v>u; s[u]=='L' ⇒ v<u; |v-u|≤D"
+          },
+          {
+            "name": "certificate_definition",
+            "description": "若无法到达n+1，必须输出一个局部冲突证据：一个区间[l, r]，满足∀k∈[l,r], s[k]=='L'且r-l+1≥D。该区间证明任何跨度≤D的跳跃均无法从左向右跨越此段。",
+            "formal": "∃ [l,r] ⊆ [1,n]: (∀k∈[l,r], s[k]=='L') ∧ (r-l+1 ≥ D)"
+          }
+        ]
+      },
+      "objective": {
+        "type": "construct_or_certify",
+        "description": "给定走廊方向串s与最大步长D，若存在合法路径，输出从0到n+1的落脚点序列；否则输出满足定义的局部冲突证据区间[l, r]。",
+        "target": "path_sequence_or_obstruction_interval",
+        "requires_solution": true
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "flow_bottleneck_duality",
+            "description": "路径存在性与最长连续L段长度严格对偶。当且仅当所有连续L段长度<D时可达；若存在长度≥D的L段，则首个此类L段即构成最小局部阻塞证据。该性质保证成功路径与失败证据共享同一状态扫描源，无需额外全局搜索。",
+            "properties": {
+              "safe_zones": "位置0及所有s[i]=='R'的索引",
+              "obstruction_condition": "max_consecutive_L_length ≥ D",
+              "certificate_minimality": "输出的[l,r]为极大连续L段，移除其中任意字符或D+1即可恢复局部连通"
+            },
+            "evidence_source": "constraint_analysis"
+          }
+        ]
+      },
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "hard"
+    },
+    "generated_problem": {
+      "title": "校园推车调度",
+      "description": "校园后勤部需要调度一辆智能推车，将物资从仓库（位置 0）运送到终点广场（位置 n+1）。走廊被划分为 n 个连续的检查点，编号为 1 到 n。每个检查点 i 都设有一个单向指示牌，记录在字符串 s 中（s[i] 为 'L' 或 'R'）。\n\n推车在任意位置 i (0 ≤ i ≤ n) 准备出发时，必须遵守以下规则：\n1. 若 i = 0 或 s[i] == 'R'，推车只能向右跳跃至位置 j (j > i)。\n2. 若 s[i] == 'L'，推车只能向左跳跃至位置 j (j < i)。\n3. 无论方向如何，单次跳跃的跨度 |j - i| 不得超过给定的最大步长 D。\n\n推车一旦落在某个位置，就会根据该位置的指示牌决定下一次跳跃方向。你的任务是判断推车能否成功抵达 n+1。若能，请给出一条合法的落脚点序列；若不能，请找出一个“阻塞区间” [l, r] 作为不可达的局部证据。该区间需满足：区间内所有检查点的指示牌均为 'L'，且区间长度 r - l + 1 ≥ D。这表示任何跨度不超过 D 的跳跃都无法从左至右跨越该段。",
+      "input_format": "第一行包含一个整数 t，表示测试用例的数量。\n每个测试用例包含两行：\n第一行包含两个整数 n 和 D，分别表示检查点数量和最大跳跃步长。\n第二行包含一个长度为 n 的字符串 s，仅由字符 'L' 和 'R' 组成，表示 1 到 n 号检查点的指示方向。",
+      "output_format": "对于每个测试用例，输出一行结果：\n若存在合法路径，按顺序输出从 0 到 n+1 的落脚点编号，相邻数字间用空格分隔。\n若无法抵达，输出两个整数 l 和 r，表示阻塞区间的左右端点（1 ≤ l ≤ r ≤ n）。",
+      "constraints": [
+        "1 ≤ t ≤ 10^4",
+        "1 ≤ n ≤ 2×10^5",
+        "1 ≤ D ≤ n+1",
+        "所有测试用例的 n 之和不超过 2×10^5",
+        "时间限制：1.0 秒",
+        "空间限制：256 MB"
+      ],
+      "samples": [
+        {
+          "input": "2\n5 3\nRLLRL\n5 2\nRLLLR",
+          "output": "0 1 4 6\n2 4",
+          "explanation": "第一个用例中，最长连续 'L' 段为位置 2~3，长度为 2，小于 D=3，因此可达。一条合法路径为 0→1→4→6。\n第二个用例中，位置 2~4 均为 'L'，连续长度为 3，大于等于 D=2。任何从左侧出发的跳跃跨度均无法越过该区间，故输出阻塞区间 2 4。"
+        },
+        {
+          "input": "1\n3 2\nRRL",
+          "output": "0 2 4",
+          "explanation": "最长连续 'L' 段仅位置 3，长度为 1，小于 D=2。推车可从 0 跳至 2（跨度 2），再从 2 跳至 4（跨度 2），成功抵达终点。"
+        }
+      ],
+      "notes": "1. 路径序列必须严格递增，且首项为 0，末项为 n+1。\n2. 阻塞区间 [l, r] 必须对应原字符串中一段连续的 'L'，且满足 r - l + 1 ≥ D。若存在多个满足条件的区间，输出任意一个即可。\n3. 所有位置编号均基于 0 到 n+1 的整数索引，字符串 s 的索引对应 1 到 n。",
+      "status": "ok",
+      "error_reason": "",
+      "feedback": ""
+    },
+    "artifact_contract": {
+      "new_schema_present": true,
+      "new_schema_field_present": false,
+      "new_schema_snapshot_field_present": true,
+      "difference_plan_present": true,
+      "predicted_schema_distance_present": true,
+      "distance_breakdown_present": true,
+      "changed_axes_realized_present": true,
+      "generated_problem_present": true
+    },
+    "review_context": {
+      "difference_plan": {
+        "summary": "给定方向串与步长上限，要求输出可行路径或证明不可达的局部L段证据，实现成功与失败分支的对称输出责任。",
+        "mode": "single_seed_extension",
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      },
+      "changed_axes_realized": [
+        "C",
+        "O",
+        "V"
+      ],
+      "distance_breakdown": {
+        "distance_version": "v2",
+        "backend": "embedding",
+        "total": 0.4477,
+        "axis_scores": {
+          "I": 0.1072,
+          "C": 0.6734,
+          "O": 0.5392,
+          "V": 0.4205
+        },
+        "components": {
+          "input_tree_distance": 0.1072,
+          "constraint_match_distance": 0.6734,
+          "objective_type_distance": 0.6874,
+          "objective_text_distance": 0.3168,
+          "invariant_match_distance": 0.4205
+        }
+      },
+      "applied_rule": "construct_or_obstruction",
+      "applied_helpers": [
+        {
+          "id": "local_certificate_design",
+          "selection_reason": "将无解原因压缩为可局部检查的坐标区间对象，满足规则对失败语义结构化的要求。",
+          "affected_axes": [
+            "C",
+            "O",
+            "V"
+          ],
+          "schema_changes": [
+            "在core_constraints中增加certificate_definition",
+            "在objective中明确双分支输出目标",
+            "在invariant中定义证据极小性"
+          ],
+          "innovation_reason": "让失败输出从抽象解释变为明确的结构化对象，建立可自动校验的失败分支。",
+          "difficulty_reason": "要求算法同时维护成功路径构造与失败证据提取逻辑，增加状态分支复杂度。"
+        },
+        {
+          "id": "failure_branch_symmetry",
+          "selection_reason": "确保成功与失败分支承担同等正式输出责任，避免失败分支沦为附属说明。",
+          "affected_axes": [
+            "C",
+            "O"
+          ],
+          "schema_changes": [
+            "在core_constraints中统一路径与证据的合法性判定标准",
+            "在objective中强制requires_solution为true并定义互斥输出格式"
+          ],
+          "innovation_reason": "将单目标输出改为双分支输出合同，统一输入语义下的不同输出对象。",
+          "difficulty_reason": "要求算法在同一框架下处理两类输出语义，禁止通过特判或默认值绕开主结构。"
+        },
+        {
+          "id": "obstruction_embedding",
+          "selection_reason": "使冲突证据直接源于主方向约束的不可兼容关系，而非外部附加条件。",
+          "affected_axes": [
+            "C",
+            "V"
+          ],
+          "schema_changes": [
+            "在core_constraints中将证据定义与跳跃跨度约束绑定",
+            "在invariant中确立流瓶颈对偶性作为状态共享基础"
+          ],
+          "innovation_reason": "让失败证据嵌入主约束内部，成功与失败分支共享同一状态信息来源。",
+          "difficulty_reason": "要求解法在同一线性扫描中同时解释成功构造与失败证据，状态机需具备双向推导能力。"
+        }
+      ],
+      "algorithmic_delta_claim": {
+        "seed_solver_core": "贪心扫描求最长连续L段长度，答案为其+1。",
+        "reusable_subroutines": "字符串线性遍历、方向状态判断、连续段长度计数器。",
+        "new_solver_core": "单次线性扫描维护当前落脚点与连续L段区间；若遇连续L段长度逼近D则记录区间；若成功抵达n+1则输出路径序列，否则输出记录的阻塞区间。",
+        "new_proof_obligation": "证明当且仅当存在长度≥D的连续L段时路径不可达，且输出的L段区间构成最小局部冲突证据（即该区间内任意子区间长度均不足以单独阻塞，但整体长度≥D直接违反跳跃约束）。需证明该证据不依赖全局回溯，仅凭局部方向与跨度约束即可在O(1)时间内验证。",
+        "why_direct_reuse_fails": "原解法仅返回标量最值，不维护路径序列或阻塞区间坐标；直接复用无法生成结构化输出，且缺乏对失败分支的显式构造与验证逻辑。"
+      },
+      "anti_shallow_rationale": "明确拒绝仅输出-1或改背景不换逻辑。通过强制双分支输出合同与局部证据结构化，改变了算法的状态维护目标与输出语义，要求解法在单次遍历中同时具备构造能力与冲突检测能力，非简单参数替换。"
+    }
+  }
+}

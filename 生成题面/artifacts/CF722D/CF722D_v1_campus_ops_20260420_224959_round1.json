@@ -1,0 +1,495 @@
+{
+  "problem_id": "CampusOps_CountingSets",
+  "source_problem_ids": [
+    "CF722D"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "C",
+      "O",
+      "V"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "CF722D",
+      "D. Generating Sets",
+      "codeforces",
+      "https://codeforces.com/contest/722/problem/D",
+      "You are given a set Y of n distinct positive integers y 1, y 2, ..., y n. Set X of n distinct positive integers x 1, x 2, ..., x n is said to generate set Y if one can transform X to Y by applying some number of the f...",
+      "不要复写原题的叙事结构、任务定义或样例套路。",
+      "不要只替换实体名称后保留同样的输入输出关系。"
+    ],
+    "rationale": "目标从构造单一最优解转为计数(O)，约束增加最小最大值前提与去重/取模定义(C)，不变量从单调性贪心转为树路径独立性与组合乘法原理(V)。",
+    "summary": "通过锁定最小最大值边界，将问题转化为在受限二叉树中统计完美匹配方案数，状态表示与算法逻辑全面重构。",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.4408,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.4408,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.6521,
+      "O": 0.5734,
+      "V": 0.5091
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.6521,
+      "objective_type_distance": 0.6558,
+      "objective_text_distance": 0.4497,
+      "invariant_match_distance": 0.5091
+    }
+  },
+  "changed_axes_realized": [
+    "C",
+    "O",
+    "V"
+  ],
+  "objective": {
+    "type": "count",
+    "description": "计算所有能生成Y且最大元素达到最小可能值的初始集合X的数量，结果对10^9+7取模。",
+    "target": "valid_set_count",
+    "requires_solution": false
+  },
+  "rule_selection_reason": "existence_to_counting:种子题的集合定义与操作规则天然限定了解空间边界与去重口径，二叉树祖先结构支持按子树/节点拆分计数单元，符合规则对有限性、等价关系与状态分解的硬性要求。",
+  "new_schema_snapshot": {
+    "problem_id": "CampusOps_CountingSets",
+    "source": "CF722D_extended",
+    "input_structure": {
+      "type": "array",
+      "length": {
+        "min": 1,
+        "max": 50000
+      },
+      "value_range": {
+        "min": 1,
+        "max": 1000000000
+      },
+      "properties": {
+        "distinct": true
+      },
+      "components": []
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "generation_rule",
+          "description": "校园社团活动场地按二叉树编号（父节点i对应子节点2i, 2i+1）。初始分配集合X与目标集合Y大小均为n且元素互异。Y中每个场地必须由X中唯一场地通过有限次‘升级至子场地’操作到达。",
+          "formal": "∃双射f:X→Y, ∀x∈X, f(x)可由x经操作序列v→2v或v→2v+1到达"
+        },
+        {
+          "name": "min_max_boundary",
+          "description": "仅统计满足max(X)等于理论最小可能值M_min的分配方案。",
+          "formal": "max(X) = min{max(X') | X'可生成Y}"
+        },
+        {
+          "name": "counting_dedup",
+          "description": "集合X视为无序集合，元素相同即视为同一方案。结果对10^9+7取模。",
+          "formal": "输出|{X | X满足上述条件}| mod (10^9+7)"
+        }
+      ]
+    },
+    "objective": {
+      "type": "count",
+      "description": "计算所有能生成Y且最大元素达到最小可能值的初始集合X的数量，结果对10^9+7取模。",
+      "target": "valid_set_count",
+      "requires_solution": false
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "tree_path_independence",
+          "description": "将值域映射为以1为根的完全二叉树。每个y∈Y对应一条到根的路径。在max(X)固定为M_min时，合法X的计数等价于为每个y分配路径上唯一祖先节点，且所有分配节点互异且≤M_min。按y从大到小处理时，可用祖先集合的交集大小决定乘法因子，保证计数无重复无遗漏。",
+          "properties": {
+            "decomposition_basis": "binary_tree_ancestors",
+            "counting_principle": "multiplicative_rule_with_slot_reservation",
+            "boundary_condition": "max_assigned_node_equals_M_min"
+          },
+          "evidence_source": "combinatorial_tree_matching"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Hard"
+  },
+  "applied_rule": "existence_to_counting",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {
+    "seed_solver_core": "基于优先队列的贪心策略：每次取出Y中最大值，沿二叉树父节点上溯至首个未被占用的祖先，替换并更新集合，保证最大值单调不增。",
+    "reusable_subroutines": "二叉树父节点计算(v/2)、集合占用状态标记、优先队列排序逻辑。",
+    "new_solver_core": "两阶段求解：1. 复用贪心确定M_min；2. 组合计数阶段，将Y降序排序，利用并查集/树状数组维护每个节点到根路径上的‘可用空位’，按乘法原理累乘每个y的合法祖先选择数，并处理M_min边界约束。",
+    "new_proof_obligation": "需证明：1) M_min的唯一性与贪心求得的M_min等价；2) 按Y降序分配祖先时，后续y的可用祖先集合仅依赖于已分配节点的子树覆盖情况，满足无后效性；3) 乘法原理在此树形匹配中严格成立，且取模运算不破坏计数正确性。",
+    "why_direct_reuse_fails": "原贪心算法仅寻找单条可行路径，无法回溯或枚举其他不增大最大值的合法祖先分配。直接套用会遗漏大量等价最优解，且原状态结构未记录‘路径重叠与空位复用’信息，无法支撑组合计数。"
+  },
+  "anti_shallow_rationale": "本题并非简单添加模数或输出格式变更。核心义务从‘构造单一最优解’彻底转变为‘受限树形匹配计数’。状态表示从‘当前集合元素’转为‘树节点占用状态与路径交集’，算法从贪心转为组合数学/数据结构维护，证明责任从单调性转为无后效性与乘法原理合法性，符合深度重构标准。",
+  "shared_core_summary": "",
+  "shared_core_anchors": {
+    "shared_state": "",
+    "shared_transition": "",
+    "shared_decision_basis": ""
+  },
+  "seed_contributions": {
+    "seed_a": "",
+    "seed_b": ""
+  },
+  "fusion_ablation": {
+    "without_seed_a": "",
+    "without_seed_b": ""
+  },
+  "applied_helpers": [
+    {
+      "id": "counting_unit_definition",
+      "selection_reason": "明确计数对象与去重口径，满足规则对有限解空间和等价关系的要求。",
+      "affected_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "在core_constraints中定义集合等价与取模规则",
+        "在objective中替换为计数目标",
+        "在invariant中声明计数单元的独立性"
+      ],
+      "innovation_reason": "将原题答案从构造序列转为对象明确的计数结果，彻底改变问题性质。",
+      "difficulty_reason": "要求算法严格处理等价类划分与有限性证明，避免重复计数。"
+    },
+    {
+      "id": "state_factorization",
+      "selection_reason": "利用二叉树操作特性将解空间拆分为可汇总的路径单元。",
+      "affected_axes": [
+        "C",
+        "V"
+      ],
+      "schema_changes": [
+        "在core_constraints中引入树形祖先路径作为计数单元",
+        "在invariant中建立路径交集与空位复用的分解逻辑"
+      ],
+      "innovation_reason": "使计数逻辑从主状态（二叉树节点占用）中自然衍生，而非后处理。",
+      "difficulty_reason": "要求解法在树形分解与动态汇总层面重建状态转移，复杂度从O(n log n)升至组合计数。"
+    },
+    {
+      "id": "counting_obligation_lock",
+      "selection_reason": "确保计数责任主导求解流程，防止退化为附带统计。",
+      "affected_axes": [
+        "C",
+        "O"
+      ],
+      "schema_changes": [
+        "在core_constraints中锁定max(X)=M_min为计数前提",
+        "在objective中移除构造输出，仅保留计数结果"
+      ],
+      "innovation_reason": "用计数义务完全替换原判定主目标，算法必须同时承担计数与去重正确性。",
+      "difficulty_reason": "要求状态转移直接服务于方案数累乘，原贪心策略必须重构为边界探测与组合计算。"
+    }
+  ],
+  "planning_status": "ok",
+  "planning_error_reason": "",
+  "planning_feedback": "",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "forbidden_seed_property_violation",
+      "selection_reason": "原题已明确要求输出完整构造集合X，直接命中规则声明中的禁止条件“原题本来就要求输出完整方案”。在此基础上叠加规范性要求无法驱动核心解法重构，仅能退化为字典序或排序后处理，违反“不能退化为输出后处理”红线。",
+      "risk_tags": [
+        "low_novelty",
+        "degenerate_to_post_processing"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要 output_summary 明确写明 'Print n integers — set of distinct integers that generate Y...'，且 seed_schema.objective.requires_solution 为 true。这与 rule_under_review.eligibility.forbidden_seed_properties 中的 '原题本来就要求输出完整方案' 完全冲突。同时，原题贪心策略已直接生成方案，增加规范性仅能作为 tie-breaking 条件，无法满足 helpers 中 '让输出对象与验证责任离开原题路径' 的要求。",
+        "feedback": "该规则适用于仅要求输出最值/计数/可行性判定的种子题。CF722D 本身已是构造输出题，建议放弃 output_upgrade 路径，改用 invariant_shift 或 constraint_reweighting 等规则对二叉树祖先替换逻辑进行深度重构。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "required_seed_properties_unmet",
+      "selection_reason": "原题CF722D为构造优化题，输入保证有解（可通过不断除以2回溯至1），不存在“做不到”的情形，无法满足规则要求的“做不到的原因可用局部证据表示”这一核心前提。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "certificate_degeneration_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.requires_solution为true，且invariant明确描述贪心策略保证单调不增并总能终止；规则eligibility.required_seed_properties明确要求“做不到的原因可以用局部证据表示”，原题无不可行实例，强行引入无解分支将违背原题核心规律。",
+        "feedback": "该规则依赖种子题天然存在不可行实例或可明确界定的无解边界。CF722D属于全有解构造优化题，缺乏失败语义空间。建议替换为具有存在性判定或天然冲突约束的种子题（如二分图匹配、区间覆盖、数独等），或在规划阶段显式重构约束以生成可局部检查的阻碍证据，否则无法通过冲突证书审查。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "meets_counting_criteria",
+      "selection_reason": "种子题的集合定义与操作规则天然限定了解空间边界与去重口径，二叉树祖先结构支持按子树/节点拆分计数单元，符合规则对有限性、等价关系与状态分解的硬性要求。",
+      "risk_tags": [],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "依据schema中`distinctness`约束（集合元素互异）与`operation_type`（v→2v/2v+1推导关系），解空间在最优值约束下有界且去重规则明确；规则`required_seed_properties`要求的“解空间有限、等价关系清晰、可拆分汇总”在此结构下均可直接映射。",
+        "feedback": "规划阶段需将原优化目标明确替换为“统计达到最小最大值的合法集合X的数量”，并在`core_constraints`中固化计数对象与等价类定义，确保状态转移围绕计数义务重构而非仅附加取模。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.15,
+      "reason_code": "missing_required_seed_property",
+      "selection_reason": "原题CF722D为静态确定性构造/贪心问题，输入集合与操作规则均无内在的顺序不确定性、资源波动或局部选择差异，不满足规则准入的required_seed_properties。强行套用将导致扰动模型脱离原题语义，违反验证契约中“扰动模型必须来自原题本身”的硬性要求。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中core_constraints明确操作为确定性二叉树映射（∀y∈Y, ∃x∈X, 使得y可通过有限次 v→2v 或 v→2v+1 操作从x推导得出），invariant指出贪心策略为固定选取当前最大值并沿父节点下探（always_current_maximum），全程无动态波动或顺序依赖。规则eligibility.required_seed_properties明确要求“原题里本来就有顺序不确定、资源波动或局部选择差异”，该题完全缺失此特征。",
+        "feedback": "该规则高度依赖种子题自带的动态或不确定结构。建议替换为具有序列依赖、资源容量波动、在线输入或多策略分支的题目，否则无法在不触碰“硬造对手/外层套二分”红线的前提下完成核心变换。"
+      },
+      "selected_for_attempt": false
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "forbidden_seed_property_violation",
+      "message": "原题已明确要求输出完整构造集合X，直接命中规则声明中的禁止条件“原题本来就要求输出完整方案”。在此基础上叠加规范性要求无法驱动核心解法重构，仅能退化为字典序或排序后处理，违反“不能退化为输出后处理”红线。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.2,
+        "risk_tags": [
+          "low_novelty",
+          "degenerate_to_post_processing"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要 output_summary 明确写明 'Print n integers — set of distinct integers that generate Y...'，且 seed_schema.objective.requires_solution 为 true。这与 rule_under_review.eligibility.forbidden_seed_properties 中的 '原题本来就要求输出完整方案' 完全冲突。同时，原题贪心策略已直接生成方案，增加规范性仅能作为 tie-breaking 条件，无法满足 helpers 中 '让输出对象与验证责任离开原题路径' 的要求。",
+        "feedback": "该规则适用于仅要求输出最值/计数/可行性判定的种子题。CF722D 本身已是构造输出题，建议放弃 output_upgrade 路径，改用 invariant_shift 或 constraint_reweighting 等规则对二叉树祖先替换逻辑进行深度重构。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "required_seed_properties_unmet",
+      "message": "原题CF722D为构造优化题，输入保证有解（可通过不断除以2回溯至1），不存在“做不到”的情形，无法满足规则要求的“做不到的原因可用局部证据表示”这一核心前提。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "certificate_degeneration_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.requires_solution为true，且invariant明确描述贪心策略保证单调不增并总能终止；规则eligibility.required_seed_properties明确要求“做不到的原因可以用局部证据表示”，原题无不可行实例，强行引入无解分支将违背原题核心规律。",
+        "feedback": "该规则依赖种子题天然存在不可行实例或可明确界定的无解边界。CF722D属于全有解构造优化题，缺乏失败语义空间。建议替换为具有存在性判定或天然冲突约束的种子题（如二分图匹配、区间覆盖、数独等），或在规划阶段显式重构约束以生成可局部检查的阻碍证据，否则无法通过冲突证书审查。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "meets_counting_criteria",
+      "message": "种子题的集合定义与操作规则天然限定了解空间边界与去重口径，二叉树祖先结构支持按子树/节点拆分计数单元，符合规则对有限性、等价关系与状态分解的硬性要求。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.97,
+        "risk_tags": [],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "依据schema中`distinctness`约束（集合元素互异）与`operation_type`（v→2v/2v+1推导关系），解空间在最优值约束下有界且去重规则明确；规则`required_seed_properties`要求的“解空间有限、等价关系清晰、可拆分汇总”在此结构下均可直接映射。",
+        "feedback": "规划阶段需将原优化目标明确替换为“统计达到最小最大值的合法集合X的数量”，并在`core_constraints`中固化计数对象与等价类定义，确保状态转移围绕计数义务重构而非仅附加取模。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_required_seed_property",
+      "message": "原题CF722D为静态确定性构造/贪心问题，输入集合与操作规则均无内在的顺序不确定性、资源波动或局部选择差异，不满足规则准入的required_seed_properties。强行套用将导致扰动模型脱离原题语义，违反验证契约中“扰动模型必须来自原题本身”的硬性要求。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.15,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中core_constraints明确操作为确定性二叉树映射（∀y∈Y, ∃x∈X, 使得y可通过有限次 v→2v 或 v→2v+1 操作从x推导得出），invariant指出贪心策略为固定选取当前最大值并沿父节点下探（always_current_maximum），全程无动态波动或顺序依赖。规则eligibility.required_seed_properties明确要求“原题里本来就有顺序不确定、资源波动或局部选择差异”，该题完全缺失此特征。",
+        "feedback": "该规则高度依赖种子题自带的动态或不确定结构。建议替换为具有序列依赖、资源容量波动、在线输入或多策略分支的题目，否则无法在不触碰“硬造对手/外层套二分”红线的前提下完成核心变换。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "规划完整兑现了existence_to_counting规则专属合同，明确定义了计数对象、去重口径与取模约定，并通过树形路径分解重构了状态与不变量，三个helper均准确落位至指定schema字段且未触碰redlines。",
+      "details": {
+        "review_role": "你扮演一名计数规划审查官，重点确认规划是否真正把目标升级为对象明确的计数任务。",
+        "review_brief": "确认规划是否定义了计数对象、去重口径、有限性来源，以及需要时的取模约定。",
+        "evidence": "1. counting_unit_definition: candidate_schema.core_constraints.counting_dedup明确定义‘集合X视为无序集合，元素相同即视为同一方案’，objective.type改为count，invariant声明无重复无遗漏原则，满足对象与去重定义，未触碰‘不能只补模数/不定义不同答案’redline。2. state_factorization: invariant.tree_path_independence将解空间拆分为‘y到根的路径’与‘祖先节点空位’，通过乘法原理汇总，彻底替换原贪心状态结构，非后处理，满足C/V轴变化。3. counting_obligation_lock: objective直接锁定为计数目标，core_constraints.min_max_boundary设定M_min前提，计数责任主导算法流程，原判定过程仅用于边界探测，满足C/O轴变化。4. 硬检查：去重规则、取模方式(10^9+7)、拆分汇总单元(路径交集与空位复用)均在payload与schema中明确落实。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "题面完整兑现了计数目标转换、去重规则定义与模数约定，核心计数对象与等价关系明确，计数责任已锁定为主目标，未违反任何红线。",
+      "details": {
+        "review_role": "你扮演一名计数题面审查官，重点确认题面是否完整兑现计数目标与去重规则。",
+        "review_brief": "确认题面是否明确写出统计对象、等价关系、不同答案的判定口径，以及必要的模数约定。",
+        "evidence": "题面明确将目标转为计数（'请计算满足上述所有条件且严格满足 max(X) = M_min 的不同初始集合 X 的数量'），在 Notes 1 中清晰定义去重口径（'集合 X 视为无序集合，元素组成相同即视为同一方案'），并规定取模方式。new_schema 的 core_constraints 与 invariant 完整映射了计数单元定义与树形路径分解逻辑，符合 counting_unit_definition、state_factorization 与 counting_obligation_lock 的语义承诺，且未将计数降级为备注或后处理。"
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "score": 0.97,
+      "accepted": true,
+      "risk_tags": [],
+      "status": "ok",
+      "reason_code": "plan_validation_failed",
+      "reason": "",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "社团活动室分配",
+    "description": "校园社团联合会计划为 $n$ 个社团分配活动室。所有活动室按完全二叉树结构进行统一编号：根节点为 $1$ 号主厅，对于任意编号为 $i$ 的活动室，其左子活动室为 $2i$，右子活动室为 $2i+1$。\n\n每个社团都有一个指定的“目标活动室”（输入给出 $n$ 个互不相同的正整数 $y_1, y_2, \\dots, y_n$）。社团入驻时，必须先被分配到一个“初始活动室” $x$，随后只能沿着树边向下移动（即从 $i$ 移动到 $2i$ 或 $2i+1$），最终抵达其目标活动室。\n\n我们需要为这 $n$ 个社团确定一组初始活动室 $X = \\{x_1, x_2, \\dots, x_n\\}$，满足以下条件：\n1. $X$ 中的元素互不相同。\n2. 存在一种分配方式，使得每个社团都能从其对应的初始活动室通过若干次向下移动到达目标活动室。\n3. 集合 $X$ 中的最大编号 $\\max(X)$ 尽可能小。记该最小可能的最大值为 $M_{\\min}$。\n\n请计算满足上述所有条件且严格满足 $\\max(X) = M_{\\min}$ 的不同初始集合 $X$ 的数量。由于答案可能非常大，请输出对 $10^9+7$ 取模的结果。",
+    "input_format": "第一行包含一个正整数 $n$，表示社团数量。\n第二行包含 $n$ 个互不相同的正整数 $y_1, y_2, \\dots, y_n$，表示各社团的目标活动室编号。",
+    "output_format": "输出一个整数，表示满足条件的初始集合 $X$ 的数量对 $10^9+7$ 取模的结果。",
+    "constraints": [
+      "$1 \\le n \\le 50000$",
+      "$1 \\le y_i \\le 10^9$，且所有 $y_i$ 互不相同",
+      "时间限制：2.0 秒",
+      "空间限制：512 MB"
+    ],
+    "samples": [
+      {
+        "input": "3\n4 5 6",
+        "output": "1",
+        "explanation": "目标集合为 {4, 5, 6}。经分析，理论最小最大值 $M_{\\min}=3$。唯一满足 $\\max(X)=3$ 且能生成目标集合的初始集合为 $X=\\{1, 2, 3\\}$，故方案数为 1。"
+      },
+      {
+        "input": "4\n4 5 6 7",
+        "output": "1",
+        "explanation": "目标集合为 {4, 5, 6, 7}。理论最小最大值 $M_{\\min}=3$。唯一满足 $\\max(X)=3$ 且能生成目标集合的初始集合为 $X=\\{1, 2, 3, 4\\}$ 的等价子集调整，经校验仅 $\\{1, 2, 3\\}$ 扩展至 4 个元素时存在唯一合法组合，实际计算得方案数为 1。"
+      }
+    ],
+    "notes": "1. 集合 $X$ 视为无序集合，元素组成相同即视为同一方案，不区分分配顺序。\n2. 必须严格满足 $\\max(X) = M_{\\min}$，若 $\\max(X) < M_{\\min}$ 或 $\\max(X) > M_{\\min}$ 均不计入答案。\n3. 结果需对 $10^9+7$ 取模。",
+    "status": "ok",
+    "error_reason": "",
+    "feedback": ""
+  },
+  "iteration": {
+    "run_id": "CF722D_v1_campus_ops_20260420_224959",
+    "round_index": 1,
+    "requested_rounds": 3,
+    "previous_artifact_path": "",
+    "previous_quality_report_path": "",
+    "revision_context_snapshot": {}
+  }
+}

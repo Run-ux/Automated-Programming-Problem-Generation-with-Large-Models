@@ -53,4 +53,5 @@ class EvaluationReport:
     hard_checks: list[dict[str, Any]]
     issues: list[dict[str, Any]]
     suggested_revisions: list[str]
+    revision_brief: dict[str, Any]
     snapshots: dict[str, Any]

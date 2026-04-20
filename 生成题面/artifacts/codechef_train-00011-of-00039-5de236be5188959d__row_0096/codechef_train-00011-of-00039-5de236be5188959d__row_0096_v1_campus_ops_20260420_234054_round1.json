@@ -1,0 +1,463 @@
+{
+  "problem_id": "codechef_train-00011-of-00039-5de236be5188959d__row_0096",
+  "source_problem_ids": [
+    "codechef_train-00011-of-00039-5de236be5188959d__row_0096"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "规划结果未达到硬门槛，预测距离=0.3493，落地轴=C, O, V。",
+    "summary": "选中的规则未能稳定落地",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.0,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.0,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.0,
+      "O": 0.0,
+      "V": 0.0
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.0,
+      "objective_type_distance": 0.0,
+      "objective_text_distance": 0.0,
+      "invariant_match_distance": 0.0
+    }
+  },
+  "changed_axes_realized": [],
+  "objective": {
+    "type": "value_computation",
+    "description": "计算按照给定确定性规则进行数值转移直至所有元素相等所需的操作步数,若过程无法收敛达成均分则返回-1",
+    "target": "steps",
+    "requires_solution": false
+  },
+  "rule_selection_reason": "原题在极值选择上明确允许“任选其一”，天然存在非确定性分支，非常适合引入规范顺序定义；而另一条规则要求原生扰动或资源波动，本题为确定性模拟过程，强行引入扰动易退化为硬造对手或外层二分，违反反换皮红线。；创新度判断：将原题的“计数/判定”义务拉离，转为要求输出并校验在特定规范（如字典序最小操作序列或固定极值索引优先级）下的完整执行轨迹，迫使解法从单纯数学推导转向状态构造与规范性证明。；难度判断：在主求解责任上，要求算法不仅计算步数，还需在状态转移中严格维护规范顺序，处理多极值冲突时的优先级剪枝或贪心证明，避免暴力模拟超时，从而在状态设计与不变量维护上显著抬高难度。；风险判断：主要风险是退化为“固定 tie-break 后的直接模拟”。但通过 canonical_order_pressure 将规范顺序嵌入合法性定义，并限制 N 较大时的直接模拟，可迫使选手使用频次桶/数学性质优化，风险可控。",
+  "new_schema_snapshot": {
+    "problem_id": "codechef_train-00011-of-00039-5de236be5188959d__row_0096",
+    "source": "codechef",
+    "input_structure": {
+      "type": "array",
+      "length": {
+        "min": 1,
+        "max": 3000
+      },
+      "value_range": {
+        "min": 0,
+        "max": 3000
+      },
+      "properties": {
+        "multiple_test_cases": true
+      },
+      "components": []
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "operation_type",
+          "description": "每次 redistribution 步骤必须严格选择当前 idli 数量最多和最少的两人（若存在多个极值则任选其一）,计算转移量 R = ceil((P - Q) / 2),并将 R 个 idli 从最多者转移给最少者；该过程持续进行直至所有元素值相等或判定无法收敛。",
+          "formal": "while max(A) != min(A): P = max(A), Q = min(A), R = ceil((P - Q) / 2), A[max_idx] -= R, A[min_idx] += R",
+          "source_sections": [
+            "description"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "value_computation",
+      "description": "计算按照给定确定性规则进行数值转移直至所有元素相等所需的操作步数,若过程无法收敛达成均分则返回-1",
+      "target": "steps",
+      "requires_solution": false
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "conservation",
+          "description": "The total sum of values across all elements remains strictly constant throughout the redistribution process. Each operation transfers a quantity between the current maximum and minimum elements while preserving their pairwise sum. This invariant is used to verify initial feasibility and guarantees that the process converges to a uniform distribution if the total sum is divisible by the count.",
+          "properties": {
+            "global_sum_constant": true,
+            "pairwise_sum_preservation": true
+          },
+          "evidence_source": "both"
+        },
+        {
+          "name": "monotonicity",
+          "description": "The pointers tracking the current minimum and maximum values in the frequency representation move strictly inward without backtracking. The minimum index only increments and the maximum index only decrements, ensuring that each value bucket is processed at most once as an extremum and enabling efficient simulation.",
+          "properties": {
+            "min_index_monotonic_increase": true,
+            "max_index_monotonic_decrease": true
+          },
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Medium"
+  },
+  "applied_rule": "canonical_witness",
+  "rejected_candidates": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "status": "ok",
+      "reason_code": "distance_gate_failed",
+      "reason": "规划结果未达到硬门槛，预测距离=0.3493，落地轴=C, O, V。"
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "status": "ok",
+      "reason_code": "declared_axes_mismatch",
+      "reason": "difference_plan.changed_axes 与 new_schema 的真实变化不一致。"
+    }
+  ],
+  "algorithmic_delta_claim": {},
+  "anti_shallow_rationale": "",
+  "shared_core_summary": "",
+  "shared_core_anchors": {},
+  "seed_contributions": {},
+  "fusion_ablation": {},
+  "applied_helpers": [],
+  "planning_status": "difference_insufficient",
+  "planning_error_reason": "规划结果未达到硬门槛，预测距离=0.3493，落地轴=C, O, V。",
+  "planning_feedback": "已尝试 2 条候选规则，均未通过规划校验。",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "canonical_space_exists_via_tie_breaking",
+      "selection_reason": "原题仅要求计算步数且极值选择允许任意性，存在明确的解对象（操作序列）与规范化空间。升级为输出规范解将强制引入确定性排序规则，实质性改变约束(C)、目标(O)与验证(V)，符合规则准入条件。",
+      "risk_tags": [
+        "shared_core_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.objective.requires_solution为false，且core_constraints明确'若存在多个极值则任选其一'，证明原题解空间存在非确定性分支，满足规则required_seed_properties中'能定义清楚的规范'的条件。同时原题未要求输出完整方案，不触发forbidden_seed_properties。",
+        "feedback": "规划阶段需利用canonical_order_pressure助手，将规范顺序（如极值索引优先级）深度嵌入状态转移合法性判定，避免退化为单纯的后处理排序。验证合约需明确规范解的校验逻辑与原题步数计算的算法差异。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "global_failure_only",
+      "selection_reason": "种子题的无解条件仅为全局算术校验（总和无法被n整除），缺乏可压缩为局部冲突证据的约束拓扑，直接违反规则要求的‘做不到的原因可以用局部证据表示’准入条件。",
+      "risk_tags": [
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "规则声明 eligibility.required_seed_properties 明确要求‘做不到的原因可以用局部证据表示’且 validation_contract.hard_checks 强调‘冲突证据必须能局部检查’。但 seed_schema.invariant.conservation 指出总和恒定，objective 的失败情形仅依赖全局条件 sum % n != 0 返回 -1。该全局算术性质无法自然退化为规则所需的局部阻碍证据，完全命中 failure_templates.not_applicable 描述。",
+        "feedback": "当前种子题失败语义过于单一且全局化，强行应用 construct_or_obstruction 会导致证书退化为全局求和校验，违反‘不能退化成一段解释’及‘局部检查’红线。建议替换为具有局部依赖或组合约束结构的种子题（如匹配、覆盖、图着色或区间调度等），以便失败分支能输出最小冲突子集或局部不可满足配置。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": false,
+      "score": 0.1,
+      "reason_code": "not_applicable",
+      "selection_reason": "原题核心为确定性模拟过程，解空间退化为单例或空集，缺乏组合分支与选择自由度，无法提供规则所要求的可计数对象与去重规则。强行套用将导致核心约束被彻底重构，不符合单种子扩展的保守准入标准。",
+      "risk_tags": [
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "原题 `core_constraints` 定义为严格确定性循环 `while max(A) != min(A): P = max(A), Q = min(A), R = ceil((P - Q) / 2)...`，`objective` 为计算唯一确定的步数 `steps`。规则 `eligibility.required_seed_properties` 明确要求“解空间有限”且“不同解之间的等价关系能说清楚”，但确定性模拟无分支路径，不存在需去重的等价类或可拆分的计数单元，直接触发 `failure_templates.not_applicable`。",
+        "feedback": "该种子不具备组合计数题的基础结构。若需应用此规则，必须先在种子阶段引入非确定性机制（如极值并列时的选择策略、转移量的参数化等）以构建多解空间，否则直接拒绝进入规划。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": true,
+      "score": 0.87,
+      "reason_code": "native_perturbation_present",
+      "selection_reason": "原题核心约束中明确包含“若存在多个极值则任选其一”的局部选择差异，构成可被放大的原生扰动来源；该扰动严格内嵌于原题 redistribution 规则中，最坏情况选择仍完全落回原题语义，满足规则对扰动模型与强化不变量的准入要求。",
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "eligible",
+        "evidence": "schema.core_constraints.description 明确指出“若存在多个极值则任选其一”，直接对应 eligibility.required_seed_properties 中的“原题里本来就有顺序不确定、资源波动或局部选择差异”；同时该选择差异未脱离原题 redistribution 过程，符合 forbidden_seed_properties 中“不能靠故事背景硬造对手”的排除条件。",
+        "feedback": "规划阶段需将极值选择的非确定性严格形式化为扰动模型，并构造与 redistribution 守恒律绑定的最坏情况不变量；需警惕 tie-breaking 对步数影响过弱导致题目退化为平凡模拟，应确保保底目标与主约束深度耦合，避免仅在外层包裹二分或阈值判断。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 2
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "canonical_space_exists_via_tie_breaking",
+      "message": "原题仅要求计算步数且极值选择允许任意性，存在明确的解对象（操作序列）与规范化空间。升级为输出规范解将强制引入确定性排序规则，实质性改变约束(C)、目标(O)与验证(V)，符合规则准入条件。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.97,
+        "risk_tags": [
+          "shared_core_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.objective.requires_solution为false，且core_constraints明确'若存在多个极值则任选其一'，证明原题解空间存在非确定性分支，满足规则required_seed_properties中'能定义清楚的规范'的条件。同时原题未要求输出完整方案，不触发forbidden_seed_properties。",
+        "feedback": "规划阶段需利用canonical_order_pressure助手，将规范顺序（如极值索引优先级）深度嵌入状态转移合法性判定，避免退化为单纯的后处理排序。验证合约需明确规范解的校验逻辑与原题步数计算的算法差异。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "global_failure_only",
+      "message": "种子题的无解条件仅为全局算术校验（总和无法被n整除），缺乏可压缩为局部冲突证据的约束拓扑，直接违反规则要求的‘做不到的原因可以用局部证据表示’准入条件。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "规则声明 eligibility.required_seed_properties 明确要求‘做不到的原因可以用局部证据表示’且 validation_contract.hard_checks 强调‘冲突证据必须能局部检查’。但 seed_schema.invariant.conservation 指出总和恒定，objective 的失败情形仅依赖全局条件 sum % n != 0 返回 -1。该全局算术性质无法自然退化为规则所需的局部阻碍证据，完全命中 failure_templates.not_applicable 描述。",
+        "feedback": "当前种子题失败语义过于单一且全局化，强行应用 construct_or_obstruction 会导致证书退化为全局求和校验，违反‘不能退化成一段解释’及‘局部检查’红线。建议替换为具有局部依赖或组合约束结构的种子题（如匹配、覆盖、图着色或区间调度等），以便失败分支能输出最小冲突子集或局部不可满足配置。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "not_applicable",
+      "message": "原题核心为确定性模拟过程，解空间退化为单例或空集，缺乏组合分支与选择自由度，无法提供规则所要求的可计数对象与去重规则。强行套用将导致核心约束被彻底重构，不符合单种子扩展的保守准入标准。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.1,
+        "risk_tags": [
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "原题 `core_constraints` 定义为严格确定性循环 `while max(A) != min(A): P = max(A), Q = min(A), R = ceil((P - Q) / 2)...`，`objective` 为计算唯一确定的步数 `steps`。规则 `eligibility.required_seed_properties` 明确要求“解空间有限”且“不同解之间的等价关系能说清楚”，但确定性模拟无分支路径，不存在需去重的等价类或可拆分的计数单元，直接触发 `failure_templates.not_applicable`。",
+        "feedback": "该种子不具备组合计数题的基础结构。若需应用此规则，必须先在种子阶段引入非确定性机制（如极值并列时的选择策略、转移量的参数化等）以构建多解空间，否则直接拒绝进入规划。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "pass",
+      "reason_code": "native_perturbation_present",
+      "message": "原题核心约束中明确包含“若存在多个极值则任选其一”的局部选择差异，构成可被放大的原生扰动来源；该扰动严格内嵌于原题 redistribution 规则中，最坏情况选择仍完全落回原题语义，满足规则对扰动模型与强化不变量的准入要求。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.87,
+        "risk_tags": [
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "eligible",
+        "evidence": "schema.core_constraints.description 明确指出“若存在多个极值则任选其一”，直接对应 eligibility.required_seed_properties 中的“原题里本来就有顺序不确定、资源波动或局部选择差异”；同时该选择差异未脱离原题 redistribution 过程，符合 forbidden_seed_properties 中“不能靠故事背景硬造对手”的排除条件。",
+        "feedback": "规划阶段需将极值选择的非确定性严格形式化为扰动模型，并构造与 redistribution 守恒律绑定的最坏情况不变量；需警惕 tie-breaking 对步数影响过弱导致题目退化为平凡模拟，应确保保底目标与主约束深度耦合，避免仅在外层包裹二分或阈值判断。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "distance_gate_failed",
+      "message": "规划结果未达到差异度或变化轴硬门槛。",
+      "details": {
+        "distance": {
+          "distance_version": "v2",
+          "backend": "embedding",
+          "total": 0.3493,
+          "axis_scores": {
+            "I": 0.0833,
+            "C": 0.3441,
+            "O": 0.5114,
+            "V": 0.487
+          },
+          "components": {
+            "input_tree_distance": 0.0833,
+            "constraint_match_distance": 0.3441,
+            "objective_type_distance": 0.6928,
+            "objective_text_distance": 0.2392,
+            "invariant_match_distance": 0.487
+          }
+        },
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "declared_axes_mismatch",
+      "message": "difference_plan.changed_axes 与实际变化轴不一致。",
+      "details": {
+        "declared_axes": [
+          "C",
+          "O",
+          "V"
+        ],
+        "realized_axes": [
+          "I",
+          "C",
+          "O",
+          "V"
+        ]
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "score": 0.97,
+      "accepted": false,
+      "risk_tags": [
+        "shared_core_risk"
+      ],
+      "status": "ok",
+      "reason_code": "distance_gate_failed",
+      "reason": "规划结果未达到硬门槛，预测距离=0.3493，落地轴=C, O, V。",
+      "attempt_index": 1
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "score": 0.87,
+      "accepted": false,
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "status": "ok",
+      "reason_code": "declared_axes_mismatch",
+      "reason": "difference_plan.changed_axes 与 new_schema 的真实变化不一致。",
+      "attempt_index": 2
+    }
+  ],
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "规划结果未达到硬门槛，预测距离=0.3493，落地轴=C, O, V。",
+    "feedback": "已尝试 2 条候选规则，均未通过规划校验。"
+  },
+  "iteration": {
+    "run_id": "codechef_train-00011-of-00039-5de236be5188959d__row_0096_v1_campus_ops_20260420_234054",
+    "round_index": 1,
+    "requested_rounds": 3,
+    "previous_artifact_path": "",
+    "previous_quality_report_path": "",
+    "revision_context_snapshot": {}
+  }
+}

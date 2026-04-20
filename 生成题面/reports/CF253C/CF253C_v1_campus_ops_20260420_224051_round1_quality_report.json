@@ -1,0 +1,898 @@
+{
+  "overall": {
+    "status": "reject_as_retheme",
+    "quality_score": 20.0,
+    "divergence_score": 0.0,
+    "schema_distance": 0.0,
+    "generated_status": "difference_insufficient"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 1.0,
+        "rationale": "生成题面所有核心字段均为空，new_schema 中定义的输入结构、状态转移约束、最小化目标及校园主题均未在题面中落地。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "hard_checks.generated_status_ok",
+          "hard_checks.objective_alignment"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 1.0,
+        "rationale": "题面缺失任务说明、输入输出格式、约束条件及样例，完全无法提供独立解题所需的关键信息，读者无法猜测任何规则。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.output_format",
+          "generated_problem.constraints"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 1.0,
+        "rationale": "由于题面内容全为空，各部分之间无任何实质内容可供校验一致性，属于严重缺失导致无法构成有效题面。",
+        "evidence_refs": [
+          "generated_problem"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 1.0,
+        "rationale": "样例数组为空，数量为0，无法覆盖任何关键结构或辅助理解，hard_checks 已明确报错。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks.sample_count"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 1.0,
+        "rationale": "标题、描述、格式等均为空字符串，且状态标记为失败，完全不符合 OJ 题面规范，无法阅读。",
+        "evidence_refs": [
+          "generated_problem.title",
+          "generated_problem.description",
+          "generated_problem.status"
+        ]
+      }
+    ],
+    "strengths": [
+      "无。生成产物处于失败状态，未产出有效题面内容。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "distance_version": "v2",
+      "backend": "embedding",
+      "total": 0.0,
+      "axis_scores": {
+        "I": 0.0,
+        "C": 0.0,
+        "O": 0.0,
+        "V": 0.0
+      },
+      "components": {
+        "input_tree_distance": 0.0,
+        "constraint_match_distance": 0.0,
+        "objective_type_distance": 0.0,
+        "objective_text_distance": 0.0,
+        "invariant_match_distance": 0.0
+      }
+    },
+    "schema_distance": 0.0,
+    "changed_axes_planned": [],
+    "changed_axes_realized": [],
+    "semantic_difference": 0.0,
+    "solution_transfer_risk": 1.0,
+    "surface_retheme_risk": 1.0,
+    "verdict": "reject_as_retheme",
+    "rationale": "new_schema 与 original_schema 在输入结构、核心约束、目标函数和不变量上完全一致，schema_distance 为 0.0，未改变任何关键求解轴。generated_problem 状态为 difference_insufficient，题面内容全空，hard_checks 明确报告 changed_axes_threshold 与 schema_distance_threshold 失败，且样例数为 0、目标未对齐。这表明生成流程未能落地任何差异规划，新题实质为原题的失败换皮。选手无需改变建模思路，原解法（垂直步数+列坐标单调夹逼后的水平步数）可直接迁移，语义差异为零。",
+    "evidence_refs": [
+      "snapshots.new_schema",
+      "snapshots.generated_problem.status",
+      "divergence.schema_distance_breakdown",
+      "snapshots.difference_plan",
+      "hard_checks.schema_distance_threshold",
+      "hard_checks.changed_axes_threshold",
+      "hard_checks.generated_status_ok"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_problem_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 generated_problem。",
+      "evidence_refs": [
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "new_schema_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 new_schema 或兼容字段 new_schema_snapshot。",
+      "evidence_refs": [
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": false,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "生成产物状态为 difference_insufficient：没有规则通过资格校验。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "predicted_schema_distance_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 predicted_schema_distance。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "distance_breakdown_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 distance_breakdown。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "changed_axes_realized_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 changed_axes_realized。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": false,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.00，低于 0.35。 已接近同母题换皮（<0.25）。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": false,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "仅落地了 0 个核心差异轴：无。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题或题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": false,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=0。 少于 2 组。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": false,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "数值目标未在题面中明确表达。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "generated status ok",
+      "detail": "生成产物状态为 difference_insufficient：没有规则通过资格校验。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ],
+      "fix_hint": "先修复生成阶段的 schema 或 difference 问题，再重新生成题面。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "schema distance threshold",
+      "detail": "schema_distance=0.00，低于 0.35。 已接近同母题换皮（<0.25）。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ],
+      "fix_hint": "提高输入、约束与目标的结构差异，避免停留在同母题换皮。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "changed axes threshold",
+      "detail": "仅落地了 0 个核心差异轴：无。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ],
+      "fix_hint": "至少让 I、C、O、V 中两个核心轴发生实质变化。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "sample count",
+      "detail": "样例数量=0。 少于 2 组。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ],
+      "fix_hint": "至少补齐两组可验证样例。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "blocker",
+      "title": "objective alignment",
+      "detail": "数值目标未在题面中明确表达。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ],
+      "fix_hint": "在 output_format 和 notes 中明确真实目标函数与必要的 tie-break。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "生成流程完全失败，题面内容为空",
+      "detail": "generated_problem 的 title, description, input_format, output_format, constraints, samples 均为空，status 为 difference_insufficient，error_reason 提示“没有规则通过资格校验”。",
+      "evidence_refs": [
+        "generated_problem.status",
+        "generated_problem.description",
+        "hard_checks.generated_status_ok"
+      ],
+      "fix_hint": "修复差异规则生成逻辑，确保至少有一条规则通过校验并填充完整题面字段。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "核心目标与约束未落地",
+      "detail": "new_schema 明确定义了光标移动的状态转移约束和最小化按键次数的目标，但 hard_checks.objective_alignment 失败，题面中未表达任何数值目标。",
+      "evidence_refs": [
+        "hard_checks.objective_alignment",
+        "new_schema.objective",
+        "new_schema.core_constraints"
+      ],
+      "fix_hint": "在 description 和 output_format 中明确写出“求最少按键次数”及光标移动规则。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "样例缺失",
+      "detail": "samples 数组为空，hard_checks.sample_count 明确报错样例数量少于2组。",
+      "evidence_refs": [
+        "generated_problem.samples",
+        "hard_checks.sample_count"
+      ],
+      "fix_hint": "补充至少2组符合输入输出格式的样例，并附带解释。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "变体距离为0，未实现规划差异",
+      "detail": "schema_distance=0.00，changed_axes_realized 为空，说明规划意图未落地，题面与原题无实质差异。",
+      "evidence_refs": [
+        "hard_checks.schema_distance_threshold",
+        "hard_checks.changed_axes_threshold",
+        "review_context.distance_breakdown"
+      ],
+      "fix_hint": "调整 difference_plan 规则，确保输入结构、约束或主题映射产生有效变化。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "solution transfer risk too high",
+      "detail": "new_schema 与 original_schema 在输入结构、核心约束、目标函数和不变量上完全一致，schema_distance 为 0.0，未改变任何关键求解轴。generated_problem 状态为 difference_insufficient，题面内容全空，hard_checks 明确报告 changed_axes_threshold 与 schema_distance_threshold 失败，且样例数为 0、目标未对齐。这表明生成流程未能落地任何差异规划，新题实质为原题的失败换皮。选手无需改变建模思路，原解法（垂直步数+列坐标单调夹逼后的水平步数）可直接迁移，语义差异为零。",
+      "evidence_refs": [
+        "snapshots.new_schema",
+        "snapshots.generated_problem.status",
+        "divergence.schema_distance_breakdown",
+        "snapshots.difference_plan",
+        "hard_checks.schema_distance_threshold",
+        "hard_checks.changed_axes_threshold",
+        "hard_checks.generated_status_ok"
+      ],
+      "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+    }
+  ],
+  "suggested_revisions": [
+    "先修复生成阶段的 schema 或 difference 问题，再重新生成题面。",
+    "提高输入、约束与目标的结构差异，避免停留在同母题换皮。",
+    "至少让 I、C、O、V 中两个核心轴发生实质变化。",
+    "至少补齐两组可验证样例。",
+    "在 output_format 和 notes 中明确真实目标函数与必要的 tie-break。",
+    "修复差异规则生成逻辑，确保至少有一条规则通过校验并填充完整题面字段。",
+    "在 description 和 output_format 中明确写出“求最少按键次数”及光标移动规则。",
+    "补充至少2组符合输入输出格式的样例，并附带解释。",
+    "调整 difference_plan 规则，确保输入结构、约束或主题映射产生有效变化。",
+    "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+    "重新运行生成管线，确保 difference_plan 能产出有效规则并填充所有题面字段。",
+    "严格按照 new_schema 的 input_structure 和 core_constraints 编写 description 与 input/output format。",
+    "补充符合校园主题（如教室/社团排队）的包装描述，并实现光标移动逻辑的清晰表述。",
+    "添加至少两组覆盖边界情况（如行首行尾、列越界截断）的样例及解释。",
+    "优先改写核心任务定义，而不是继续替换故事背景。"
+  ],
+  "revision_brief": {
+    "round_index": 1,
+    "overall_status": "reject_as_retheme",
+    "generated_status": "difference_insufficient",
+    "quality_score": 20.0,
+    "divergence_score": 0.0,
+    "failed_hard_checks": [
+      {
+        "check_id": "generated_status_ok",
+        "severity": "blocker",
+        "category": "retheme_issue",
+        "message": "生成产物状态为 difference_insufficient：没有规则通过资格校验。",
+        "evidence_refs": [
+          "snapshots.generated_problem.status"
+        ]
+      },
+      {
+        "check_id": "schema_distance_threshold",
+        "severity": "blocker",
+        "category": "retheme_issue",
+        "message": "schema_distance=0.00，低于 0.35。 已接近同母题换皮（<0.25）。",
+        "evidence_refs": [
+          "divergence.schema_distance_breakdown"
+        ]
+      },
+      {
+        "check_id": "changed_axes_threshold",
+        "severity": "blocker",
+        "category": "retheme_issue",
+        "message": "仅落地了 0 个核心差异轴：无。",
+        "evidence_refs": [
+          "snapshots.difference_plan",
+          "snapshots.new_schema"
+        ]
+      },
+      {
+        "check_id": "sample_count",
+        "severity": "major",
+        "category": "quality_issue",
+        "message": "样例数量=0。 少于 2 组。",
+        "evidence_refs": [
+          "snapshots.generated_problem.samples"
+        ]
+      },
+      {
+        "check_id": "objective_alignment",
+        "severity": "blocker",
+        "category": "quality_issue",
+        "message": "数值目标未在题面中明确表达。",
+        "evidence_refs": [
+          "snapshots.new_schema.objective",
+          "snapshots.generated_problem.output_format"
+        ]
+      }
+    ],
+    "issues": [
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "generated status ok",
+        "detail": "生成产物状态为 difference_insufficient：没有规则通过资格校验。",
+        "evidence_refs": [
+          "snapshots.generated_problem.status"
+        ],
+        "fix_hint": "先修复生成阶段的 schema 或 difference 问题，再重新生成题面。"
+      },
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "schema distance threshold",
+        "detail": "schema_distance=0.00，低于 0.35。 已接近同母题换皮（<0.25）。",
+        "evidence_refs": [
+          "divergence.schema_distance_breakdown"
+        ],
+        "fix_hint": "提高输入、约束与目标的结构差异，避免停留在同母题换皮。"
+      },
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "changed axes threshold",
+        "detail": "仅落地了 0 个核心差异轴：无。",
+        "evidence_refs": [
+          "snapshots.difference_plan",
+          "snapshots.new_schema"
+        ],
+        "fix_hint": "至少让 I、C、O、V 中两个核心轴发生实质变化。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "sample count",
+        "detail": "样例数量=0。 少于 2 组。",
+        "evidence_refs": [
+          "snapshots.generated_problem.samples"
+        ],
+        "fix_hint": "至少补齐两组可验证样例。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "blocker",
+        "title": "objective alignment",
+        "detail": "数值目标未在题面中明确表达。",
+        "evidence_refs": [
+          "snapshots.new_schema.objective",
+          "snapshots.generated_problem.output_format"
+        ],
+        "fix_hint": "在 output_format 和 notes 中明确真实目标函数与必要的 tie-break。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "生成流程完全失败，题面内容为空",
+        "detail": "generated_problem 的 title, description, input_format, output_format, constraints, samples 均为空，status 为 difference_insufficient，error_reason 提示“没有规则通过资格校验”。",
+        "evidence_refs": [
+          "generated_problem.status",
+          "generated_problem.description",
+          "hard_checks.generated_status_ok"
+        ],
+        "fix_hint": "修复差异规则生成逻辑，确保至少有一条规则通过校验并填充完整题面字段。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "核心目标与约束未落地",
+        "detail": "new_schema 明确定义了光标移动的状态转移约束和最小化按键次数的目标，但 hard_checks.objective_alignment 失败，题面中未表达任何数值目标。",
+        "evidence_refs": [
+          "hard_checks.objective_alignment",
+          "new_schema.objective",
+          "new_schema.core_constraints"
+        ],
+        "fix_hint": "在 description 和 output_format 中明确写出“求最少按键次数”及光标移动规则。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "样例缺失",
+        "detail": "samples 数组为空，hard_checks.sample_count 明确报错样例数量少于2组。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks.sample_count"
+        ],
+        "fix_hint": "补充至少2组符合输入输出格式的样例，并附带解释。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "变体距离为0，未实现规划差异",
+        "detail": "schema_distance=0.00，changed_axes_realized 为空，说明规划意图未落地，题面与原题无实质差异。",
+        "evidence_refs": [
+          "hard_checks.schema_distance_threshold",
+          "hard_checks.changed_axes_threshold",
+          "review_context.distance_breakdown"
+        ],
+        "fix_hint": "调整 difference_plan 规则，确保输入结构、约束或主题映射产生有效变化。"
+      },
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "solution transfer risk too high",
+        "detail": "new_schema 与 original_schema 在输入结构、核心约束、目标函数和不变量上完全一致，schema_distance 为 0.0，未改变任何关键求解轴。generated_problem 状态为 difference_insufficient，题面内容全空，hard_checks 明确报告 changed_axes_threshold 与 schema_distance_threshold 失败，且样例数为 0、目标未对齐。这表明生成流程未能落地任何差异规划，新题实质为原题的失败换皮。选手无需改变建模思路，原解法（垂直步数+列坐标单调夹逼后的水平步数）可直接迁移，语义差异为零。",
+        "evidence_refs": [
+          "snapshots.new_schema",
+          "snapshots.generated_problem.status",
+          "divergence.schema_distance_breakdown",
+          "snapshots.difference_plan",
+          "hard_checks.schema_distance_threshold",
+          "hard_checks.changed_axes_threshold",
+          "hard_checks.generated_status_ok"
+        ],
+        "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+      }
+    ],
+    "suggested_revisions": [
+      "先修复生成阶段的 schema 或 difference 问题，再重新生成题面。",
+      "提高输入、约束与目标的结构差异，避免停留在同母题换皮。",
+      "至少让 I、C、O、V 中两个核心轴发生实质变化。",
+      "至少补齐两组可验证样例。",
+      "在 output_format 和 notes 中明确真实目标函数与必要的 tie-break。",
+      "修复差异规则生成逻辑，确保至少有一条规则通过校验并填充完整题面字段。",
+      "在 description 和 output_format 中明确写出“求最少按键次数”及光标移动规则。",
+      "补充至少2组符合输入输出格式的样例，并附带解释。",
+      "调整 difference_plan 规则，确保输入结构、约束或主题映射产生有效变化。",
+      "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+      "重新运行生成管线，确保 difference_plan 能产出有效规则并填充所有题面字段。",
+      "严格按照 new_schema 的 input_structure 和 core_constraints 编写 description 与 input/output format。",
+      "补充符合校园主题（如教室/社团排队）的包装描述，并实现光标移动逻辑的清晰表述。",
+      "添加至少两组覆盖边界情况（如行首行尾、列越界截断）的样例及解释。",
+      "优先改写核心任务定义，而不是继续替换故事背景。"
+    ],
+    "strengths_to_keep": [
+      "无。生成产物处于失败状态，未产出有效题面内容。"
+    ]
+  },
+  "snapshots": {
+    "paths": {
+      "schema_path": "D:\\AutoProblemGen\\四元组抽取\\output\\batch\\normalized\\CF253C.json",
+      "artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF253C_v1_campus_ops_20260420_224051_round1.json",
+      "markdown_path": "D:\\AutoProblemGen\\生成题面\\output\\CF253C_v1_campus_ops_20260420_224051_round1.md"
+    },
+    "original_problem": {
+      "selection_id": "sample_06",
+      "problem_id": "CF253C",
+      "record_uid": "train-00027-of-00039-f8196766547533a2__row_0278",
+      "statement_language": "english",
+      "title": "253_C. Text Editor",
+      "description": "Vasya is pressing the keys on the keyboard reluctantly, squeezing out his ideas on the classical epos depicted in Homer's Odysseus... How can he explain to his literature teacher that he isn't going to become a writer? In fact, he is going to become a programmer. So, he would take great pleasure in writing a program, but none — in writing a composition.\n\nAs Vasya was fishing for a sentence in the dark pond of his imagination, he suddenly wondered: what is the least number of times he should push a key to shift the cursor from one position to another one?\n\nLet's describe his question more formally: to type a text, Vasya is using the text editor. He has already written n lines, the i-th line contains ai characters (including spaces). If some line contains k characters, then this line overall contains (k + 1) positions where the cursor can stand: before some character or after all characters (at the end of the line). Thus, the cursor's position is determined by a pair of integers (r, c), where r is the number of the line and c is the cursor's position in the line (the positions are indexed starting from one from the beginning of the line).\n\nVasya doesn't use the mouse to move the cursor. He uses keys \"Up\", \"Down\", \"Right\" and \"Left\". When he pushes each of these keys, the cursor shifts in the needed direction. Let's assume that before the corresponding key is pressed, the cursor was located in the position (r, c), then Vasya pushed key:\n\n  * \"Up\": if the cursor was located in the first line (r = 1), then it does not move. Otherwise, it moves to the previous line (with number r - 1), to the same position. At that, if the previous line was short, that is, the cursor couldn't occupy position c there, the cursor moves to the last position of the line with number r - 1;\n  * \"Down\": if the cursor was located in the last line (r = n), then it does not move. Otherwise, it moves to the next line (with number r + 1), to the same position. At that, if the next line was short, that is, the cursor couldn't occupy position c there, the cursor moves to the last position of the line with number r + 1;\n  * \"Right\": if the cursor can move to the right in this line (c < ar + 1), then it moves to the right (to position c + 1). Otherwise, it is located at the end of the line and doesn't move anywhere when Vasya presses the \"Right\" key;\n  * \"Left\": if the cursor can move to the left in this line (c > 1), then it moves to the left (to position c - 1). Otherwise, it is located at the beginning of the line and doesn't move anywhere when Vasya presses the \"Left\" key.\n\n\n\nYou've got the number of lines in the text file and the number of characters, written in each line of this file. Find the least number of times Vasya should push the keys, described above, to shift the cursor from position (r1, c1) to position (r2, c2).\n\nInput\n\nThe first line of the input contains an integer n (1 ≤ n ≤ 100) — the number of lines in the file. The second line contains n integers a1, a2, ..., an (0 ≤ ai ≤ 105), separated by single spaces. The third line contains four integers r1, c1, r2, c2 (1 ≤ r1, r2 ≤ n, 1 ≤ c1 ≤ ar1 + 1, 1 ≤ c2 ≤ ar2 + 1).\n\nOutput\n\nPrint a single integer — the minimum number of times Vasya should push a key to move the cursor from position (r1, c1) to position (r2, c2).\n\nExamples\n\nInput\n\n4\n2 1 6 4\n3 4 4 2\n\n\nOutput\n\n3\n\n\nInput\n\n4\n10 5 6 4\n1 11 4 2\n\n\nOutput\n\n6\n\n\nInput\n\n3\n10 1 10\n1 10 1 1\n\n\nOutput\n\n3\n\nNote\n\nIn the first sample the editor contains four lines. Let's represent the cursor's possible positions in the line as numbers. Letter s represents the cursor's initial position, letter t represents the last one. Then all possible positions of the cursor in the text editor are described by the following table.\n\n123\n\n12\n\n123s567\n\n1t345\n\nOne of the possible answers in the given sample is: \"Left\", \"Down\", \"Left\".",
+      "public_tests": {
+        "input": [
+          "3\n10 1 10\n1 10 1 1\n",
+          "4\n2 1 6 4\n3 4 4 2\n",
+          "4\n10 5 6 4\n1 11 4 2\n"
+        ],
+        "output": [
+          "3\n",
+          "3\n",
+          "6\n"
+        ]
+      },
+      "source": {
+        "split": "train",
+        "source_id": 2,
+        "source_name": "CODEFORCES",
+        "url": "https://codeforces.com/contest/253/problem/C"
+      },
+      "difficulty": {
+        "difficulty_id": 9,
+        "difficulty_name": "C",
+        "difficulty_bucket": null,
+        "cf_rating": 1600,
+        "cf_points": 1500.0,
+        "cf_contest_id": 253,
+        "cf_index": "C",
+        "rating_bucket": "cf_mid"
+      },
+      "tags": [
+        "data structures",
+        "dfs and similar",
+        "graphs",
+        "greedy",
+        "shortest paths"
+      ],
+      "limits": {
+        "time_limit": {
+          "seconds": 1,
+          "nanos": 0
+        },
+        "memory_limit_bytes": 256000000
+      },
+      "io_mode": {
+        "input_file": "input.txt",
+        "output_file": "output.txt",
+        "non_stdio": true
+      },
+      "translation": {
+        "is_description_translated": false,
+        "untranslated_description": ""
+      },
+      "reference_solution": {
+        "language_id": 4,
+        "language_guess": "unknown",
+        "code": "import\tjava.util.*;\nimport\tjava.io.*;\npublic\tclass\tMain{\n\tstatic\tint[]Z=new\tint[100];\n\tstatic\tint\tres(Pot2D\tP,int\tm){\n\t\tint\ts=0;\n\t\tfor(;m>P.x;P.y=Math.min(P.y,Z[++P.x]))\t++s;\n\t\tfor(;m<P.x;P.y=Math.min(P.y,Z[--P.x]))\t++s;\n\t\treturn\ts;\n\t}\n\tpublic\tstatic\tvoid\tmain(String[]args)throws\tException{\n\t\tScanner\tfin=new\tScanner(new\tFile(\"input.txt\"));\n\t\tPrintStream\tfout=new\tPrintStream(\"output.txt\");\n\t\tPot2D\tB=new\tPot2D(),E=new\tPot2D(),T=new\tPot2D();\n\t\tfor(int\ts,t,n;fin.hasNextInt();fout.println(s)){\n\t\t\tfor(n=fin.nextInt(),s=0;n>s;Z[s++]=fin.nextInt());\n\t\t\tB.x=fin.nextInt()-1;B.y=fin.nextInt()-1;\n\t\t\tE.x=fin.nextInt()-1;E.y=fin.nextInt()-1;\n\t\t\tfor(s=999999;0<n--;s=Math.min(s,Math.abs(E.y-T.y)+t)){\n\t\t\t\tT.x=B.x;T.y=B.y;t=res(T,n);t+=res(T,E.x);\n\t\t\t}\n\t\t}\n\t}\n}\nclass\tPot2D{int\tx,y;}",
+        "char_count": 775,
+        "line_count": 25
+      },
+      "artifact_counts": {
+        "public_tests": 3,
+        "private_tests": 33,
+        "generated_tests": 0,
+        "solutions": 105,
+        "incorrect_solutions": 325
+      },
+      "heuristic_profile": {
+        "tag_families": [
+          "greedy",
+          "data_structures",
+          "graphs"
+        ],
+        "structure_candidates": [
+          "grid",
+          "array"
+        ],
+        "objective_type": "optimize",
+        "coverage_features": [
+          "objective:optimize",
+          "rating:cf_mid",
+          "source:CODEFORCES",
+          "special:non_stdio",
+          "structure:array",
+          "structure:grid",
+          "tag:data_structures",
+          "tag:graphs",
+          "tag:greedy"
+        ],
+        "english_filter": {
+          "passed": true,
+          "score": 17
+        },
+        "notes": [
+          "selection favors source, difficulty, tag and structure coverage over sample count",
+          "heuristic_profile fields are inferred from metadata and statement text"
+        ]
+      }
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "不要暴露原题编号、出处或链接。",
+        "不要复写原题的叙事结构、输入输出关系或任务定义。"
+      ],
+      "rationale": "没有规则通过资格校验。",
+      "summary": "规则规划失败",
+      "mode": "single_seed_extension"
+    },
+    "new_schema": {
+      "problem_id": "CF253C",
+      "source": "codeforces",
+      "input_structure": {
+        "type": "composite",
+        "length": {
+          "min": null,
+          "max": null
+        },
+        "value_range": {
+          "min": null,
+          "max": null
+        },
+        "properties": {},
+        "components": [
+          {
+            "role": "scalar_count",
+            "role_description": "number of elements in the subsequent array",
+            "type": "integer",
+            "length": {
+              "min": null,
+              "max": null
+            },
+            "value_range": {
+              "min": 1,
+              "max": 100
+            },
+            "properties": {}
+          },
+          {
+            "role": "value_array",
+            "role_description": "sequence of numeric values indexed by position",
+            "type": "array",
+            "length": {
+              "min": 1,
+              "max": 100
+            },
+            "value_range": {
+              "min": 0,
+              "max": 100000
+            },
+            "properties": {}
+          },
+          {
+            "role": "coordinate_tuple",
+            "role_description": "fixed-length record of start and end indices",
+            "type": "tuple",
+            "length": {
+              "min": 4,
+              "max": 4
+            },
+            "value_range": {
+              "min": 1,
+              "max": null
+            },
+            "properties": {}
+          }
+        ]
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "state_transition",
+            "description": "光标状态由行号 r 和列号 c 唯一确定。每次执行 Up、Down、Left、Right 操作时,根据当前行列位置及对应行长度决定合法的下一状态；若目标位置超出当前行有效范围或触及文件首尾边界,则光标按规则调整至边界位置或保持不动。",
+            "formal": "设当前状态为 (r, c),行长度数组为 a。Up: r>1 时移至 (r-1, min(c, a[r-1]+1)),否则不变；Down: r<n 时移至 (r+1, min(c, a[r+1]+1)),否则不变；Left: c>1 时移至 (r, c-1),否则不变；Right: c < a[r]+1 时移至 (r, c+1),否则不变。",
+            "source_sections": [
+              "description"
+            ]
+          }
+        ]
+      },
+      "objective": {
+        "type": "minimize_value",
+        "description": "计算从起始光标位置移动到目标光标位置所需的最少按键次数",
+        "target": "key_presses",
+        "requires_solution": false
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "monotonicity",
+            "description": "在垂直方向移动光标遍历各行时,算法通过取最小值操作持续维护列坐标的非递增性质。当前列位置始终被约束为初始列坐标与路径上所有已遍历行最大允许列位置的最小值,该约束在上下移动过程中稳定保持且不可逆。",
+            "properties": {
+              "coordinate_update_rule": "non_increasing_clamping",
+              "path_bound_constraint": "min_of_initial_coordinate_and_encountered_line_capacities"
+            },
+            "evidence_source": "solution_code"
+          },
+          {
+            "name": "additivity",
+            "description": "光标移动的总代价可严格分解为垂直移动步数与水平移动步数之和。算法独立计算到达目标行的垂直步数及受行长度限制后的最终列位置,再叠加目标行内的水平调整距离,两部分代价互不干扰且可线性累加。",
+            "properties": {
+              "cost_decomposition": "vertical_steps_plus_horizontal_steps",
+              "component_independence": "vertical_path_cost_and_final_row_horizontal_distance"
+            },
+            "evidence_source": "solution_code"
+          }
+        ]
+      },
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "Medium"
+    },
+    "generated_problem": {
+      "title": "",
+      "description": "",
+      "input_format": "",
+      "output_format": "",
+      "constraints": [],
+      "samples": [],
+      "notes": "",
+      "status": "difference_insufficient",
+      "error_reason": "没有规则通过资格校验。",
+      "feedback": "请更换种子题，或调整规则集合。"
+    },
+    "artifact_contract": {
+      "new_schema_present": true,
+      "new_schema_field_present": false,
+      "new_schema_snapshot_field_present": true,
+      "difference_plan_present": true,
+      "predicted_schema_distance_present": true,
+      "distance_breakdown_present": true,
+      "changed_axes_realized_present": true,
+      "generated_problem_present": true
+    },
+    "review_context": {
+      "difference_plan": {
+        "summary": "规则规划失败",
+        "mode": "single_seed_extension",
+        "changed_axes": []
+      },
+      "changed_axes_realized": [],
+      "distance_breakdown": {
+        "distance_version": "v2",
+        "backend": "embedding",
+        "total": 0.0,
+        "axis_scores": {
+          "I": 0.0,
+          "C": 0.0,
+          "O": 0.0,
+          "V": 0.0
+        },
+        "components": {
+          "input_tree_distance": 0.0,
+          "constraint_match_distance": 0.0,
+          "objective_type_distance": 0.0,
+          "objective_text_distance": 0.0,
+          "invariant_match_distance": 0.0
+        }
+      },
+      "applied_rule": "",
+      "applied_helpers": [],
+      "algorithmic_delta_claim": {},
+      "anti_shallow_rationale": ""
+    }
+  }
+}

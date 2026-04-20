@@ -48,6 +48,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--temperature", type=float, default=DEFAULT_TEMPERATURE, help="采样温度")
     parser.add_argument("--seed", type=int, default=20260312, help="随机种子")
     parser.add_argument(
+        "--quality-iterations",
+        type=int,
+        default=0,
+        help="质量闭环迭代轮数，可选 0、1、2、3；0 表示关闭质量回流。",
+    )
+    parser.add_argument(
         "--rule-override",
         action="append",
         default=[],
@@ -97,6 +103,7 @@ def main() -> None:
         seed_b=args.seed_b,
         allowed_rule_ids=_normalize_rule_overrides(args.rule_override),
         batch_source_dir=batch_source_dir,
+        quality_iterations=args.quality_iterations,
     )
     _emit_progress("[main] 流水线执行完成。")
 
@@ -104,6 +111,8 @@ def main() -> None:
 def _validate_args(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
     if args.timeout <= 0:
         parser.error("--timeout 必须是正整数。")
+    if args.quality_iterations not in {0, 1, 2, 3}:
+        parser.error("--quality-iterations 只支持 0、1、2、3。")
     if args.mode == "single":
         if args.seed_a or args.seed_b:
             parser.error("single 模式不接受 --seed-a 或 --seed-b。")
@@ -118,6 +127,8 @@ def _validate_args(parser: argparse.ArgumentParser, args: argparse.Namespace) ->
         parser.error("same_family 模式必须同时提供 --seed-a 与 --seed-b。")
     if args.problem_ids:
         parser.error("same_family 模式不使用 --problem-ids。")
+    if args.quality_iterations:
+        parser.error("same_family 模式暂不支持质量闭环迭代。")
 
 
 def _target_problem_ids(args: argparse.Namespace) -> list[str]:

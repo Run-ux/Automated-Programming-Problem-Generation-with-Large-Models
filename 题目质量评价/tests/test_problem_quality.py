@@ -24,6 +24,7 @@ if MAIN_SPEC is None or MAIN_SPEC.loader is None:
     raise RuntimeError("无法加载题目质量评价 main.py")
 main = importlib.util.module_from_spec(MAIN_SPEC)
 MAIN_SPEC.loader.exec_module(main)
+from problem_quality.report_renderer import render_report_markdown
 
 
 class FakeJudgeClient:
@@ -118,6 +119,10 @@ class ProblemQualityTests(unittest.TestCase):
         self.assertEqual(report["overall"]["schema_distance"], artifact["predicted_schema_distance"])
         self.assertEqual(report["divergence"]["schema_distance_breakdown"], artifact["distance_breakdown"])
         self.assertEqual(report["divergence"]["changed_axes_realized"], artifact["changed_axes_realized"])
+        self.assertEqual(report["revision_brief"]["round_index"], 1)
+        self.assertEqual(report["revision_brief"]["overall_status"], "pass")
+        self.assertEqual(report["revision_brief"]["generated_status"], "ok")
+        self.assertEqual(report["revision_brief"]["strengths_to_keep"], ["题面基础结构完整"])
 
     def test_evaluator_can_separate_divergence_and_quality(self) -> None:
         evaluator = ProblemEvaluator(
@@ -135,6 +140,46 @@ class ProblemQualityTests(unittest.TestCase):
 
         self.assertEqual(report["overall"]["status"], "revise_quality")
         self.assertGreaterEqual(report["overall"]["divergence_score"], 70.0)
+
+    def test_evaluator_exposes_revision_brief_with_failed_checks_and_issues(self) -> None:
+        evaluator = ProblemEvaluator(
+            judge_client=FakeJudgeClient(
+                [self._quality_response(score=5), self._divergence_response(verdict="pass")]
+            )
+        )
+        artifact = self._artifact()
+        artifact["generated_problem"]["samples"] = artifact["generated_problem"]["samples"][:1]
+
+        report = self._evaluate(
+            evaluator=evaluator,
+            source_schema=self._source_schema(),
+            artifact=artifact,
+            original_problem=self._original_problem(),
+        )
+
+        self.assertEqual(report["overall"]["status"], "revise_quality")
+        self.assertTrue(any(item["check_id"] == "sample_count" for item in report["revision_brief"]["failed_hard_checks"]))
+        self.assertEqual(report["revision_brief"]["issues"], report["issues"])
+        self.assertEqual(report["revision_brief"]["suggested_revisions"], report["suggested_revisions"])
+
+    def test_render_report_markdown_includes_revision_brief_section(self) -> None:
+        evaluator = ProblemEvaluator(
+            judge_client=FakeJudgeClient(
+                [self._quality_response(score=5), self._divergence_response(verdict="pass")]
+            )
+        )
+        report = self._evaluate(
+            evaluator=evaluator,
+            source_schema=self._source_schema(),
+            artifact=self._artifact(),
+            original_problem=self._original_problem(),
+        )
+
+        markdown = render_report_markdown(report)
+
+        self.assertIn("## 回流摘要", markdown)
+        self.assertIn("- round_index: 1", markdown)
+        self.assertIn("- overall_status: pass", markdown)
 
     def test_evaluator_maps_difference_insufficient_to_retheme(self) -> None:
         evaluator = ProblemEvaluator(
@@ -275,10 +320,11 @@ class ProblemQualityTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             parser.parse_args(["--schema", "a.json", "--artifact", "b.json", "--disable-llm"])
 
-    def test_parser_requires_original_problem(self) -> None:
+    def test_parser_allows_missing_original_problem(self) -> None:
         parser = main.build_parser()
-        with self.assertRaises(SystemExit):
-            parser.parse_args(["--schema", "a.json", "--artifact", "b.json"])
+        args = parser.parse_args(["--schema", "a.json", "--artifact", "b.json"])
+
+        self.assertIsNone(args.original_problem)
 
     def test_parser_accepts_original_problem(self) -> None:
         parser = main.build_parser()
@@ -321,6 +367,138 @@ class ProblemQualityTests(unittest.TestCase):
         self.assertEqual(report["overall"]["status"], "pass")
         self.assertEqual(report["snapshots"]["original_problem"]["title"], "E. Seed Bridge")
 
+    def test_evaluator_auto_loads_original_problem_from_index(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            output_dir = Path(tempdir) / "output"
+            self._write_platform_index(
+                output_dir=output_dir,
+                platform="codeforces",
+                records=[self._catalog_problem(problem_id="CFX", title="Auto From Index")],
+            )
+            evaluator = ProblemEvaluator(
+                judge_client=FakeJudgeClient(
+                    [self._quality_response(score=5), self._divergence_response(verdict="pass")]
+                ),
+                original_problem_output_dir=output_dir,
+            )
+
+            report = self._evaluate(
+                evaluator=evaluator,
+                source_schema=self._source_schema(),
+                artifact=self._artifact(),
+            )
+
+        self.assertEqual(report["overall"]["status"], "pass")
+        self.assertEqual(report["snapshots"]["original_problem"]["title"], "Auto From Index")
+
+    def test_evaluator_auto_loads_original_problem_from_imandra_jsons(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            output_dir = Path(tempdir) / "output"
+            self._write_platform_index(output_dir=output_dir, platform="codeforces", records=[])
+            imandra_dir = output_dir / "imandra_curated_schema_inputs"
+            imandra_dir.mkdir(parents=True, exist_ok=True)
+            (imandra_dir / "manifest.json").write_text(
+                json.dumps({"meta": "ignore"}, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            (imandra_dir / "sample.json").write_text(
+                json.dumps(self._catalog_problem(problem_id="CFX", title="Auto From Imandra"), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+
+            evaluator = ProblemEvaluator(
+                judge_client=FakeJudgeClient(
+                    [self._quality_response(score=5), self._divergence_response(verdict="pass")]
+                ),
+                original_problem_output_dir=output_dir,
+            )
+
+            report = self._evaluate(
+                evaluator=evaluator,
+                source_schema=self._source_schema(),
+                artifact=self._artifact(),
+            )
+
+        self.assertEqual(report["overall"]["status"], "pass")
+        self.assertEqual(report["snapshots"]["original_problem"]["title"], "Auto From Imandra")
+
+    def test_evaluator_marks_invalid_when_original_problem_not_found(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            output_dir = Path(tempdir) / "output"
+            self._write_platform_index(output_dir=output_dir, platform="codeforces", records=[])
+            evaluator = ProblemEvaluator(
+                judge_client=FakeJudgeClient(
+                    [self._quality_response(score=5), self._divergence_response(verdict="pass")]
+                ),
+                original_problem_output_dir=output_dir,
+            )
+
+            report = self._evaluate(
+                evaluator=evaluator,
+                source_schema=self._source_schema(),
+                artifact=self._artifact(),
+            )
+
+        self.assertEqual(report["overall"]["status"], "reject_invalid")
+        source_resolved_checks = [
+            item for item in report["hard_checks"] if item["check_id"] == "source_problem_resolved"
+        ]
+        self.assertEqual(len(source_resolved_checks), 1)
+        self.assertFalse(source_resolved_checks[0]["passed"])
+
+    def test_evaluator_prefers_override_over_auto_lookup(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            output_dir = Path(tempdir) / "output"
+            self._write_platform_index(
+                output_dir=output_dir,
+                platform="codeforces",
+                records=[self._catalog_problem(problem_id="CFX", title="Auto From Index")],
+            )
+            evaluator = ProblemEvaluator(
+                judge_client=FakeJudgeClient(
+                    [self._quality_response(score=5), self._divergence_response(verdict="pass")]
+                ),
+                original_problem_output_dir=output_dir,
+            )
+
+            report = self._evaluate(
+                evaluator=evaluator,
+                source_schema=self._source_schema(),
+                artifact=self._artifact(),
+                original_problem=self._catalog_problem(problem_id="CFX", title="Manual Override"),
+            )
+
+        self.assertEqual(report["overall"]["status"], "pass")
+        self.assertEqual(report["snapshots"]["original_problem"]["title"], "Manual Override")
+
+    def test_evaluator_uses_source_problem_ids_before_schema_problem_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            output_dir = Path(tempdir) / "output"
+            self._write_platform_index(
+                output_dir=output_dir,
+                platform="codeforces",
+                records=[
+                    self._catalog_problem(problem_id="CFX", title="From Source Problem IDs"),
+                    self._catalog_problem(problem_id="OTHER", title="From Schema Problem ID"),
+                ],
+            )
+            evaluator = ProblemEvaluator(
+                judge_client=FakeJudgeClient(
+                    [self._quality_response(score=5), self._divergence_response(verdict="pass")]
+                ),
+                original_problem_output_dir=output_dir,
+            )
+            schema = self._source_schema()
+            schema["problem_id"] = "OTHER"
+
+            report = self._evaluate(
+                evaluator=evaluator,
+                source_schema=schema,
+                artifact=self._artifact(),
+            )
+
+        self.assertEqual(report["snapshots"]["original_problem"]["title"], "From Source Problem IDs")
+
     def _evaluate_missing_distance_field(self, field_name: str) -> dict[str, object]:
         evaluator = ProblemEvaluator(
             judge_client=FakeJudgeClient(
@@ -341,7 +519,7 @@ class ProblemQualityTests(unittest.TestCase):
         evaluator: ProblemEvaluator,
         source_schema: dict[str, object],
         artifact: dict[str, object],
-        original_problem: dict[str, object],
+        original_problem: dict[str, object] | None = None,
     ) -> dict[str, object]:
         with tempfile.TemporaryDirectory() as tempdir:
             temp = Path(tempdir)
@@ -354,6 +532,30 @@ class ProblemQualityTests(unittest.TestCase):
                 artifact_path=artifact_path,
                 original_problem_override=original_problem,
             )
+
+    def _write_platform_index(
+        self,
+        output_dir: Path,
+        platform: str,
+        records: list[dict[str, object]],
+    ) -> None:
+        platform_dir = output_dir / platform
+        platform_dir.mkdir(parents=True, exist_ok=True)
+        (platform_dir / "index.json").write_text(
+            json.dumps(records, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+    def _catalog_problem(self, problem_id: str, title: str) -> dict[str, object]:
+        return {
+            "problem_id": problem_id,
+            "title": title,
+            "description": "catalog description",
+            "input": "catalog input",
+            "output": "catalog output",
+            "constraints": "catalog constraints",
+            "source": "catalog",
+        }
 
     def _source_schema(self) -> dict[str, object]:
         return {

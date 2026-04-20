@@ -1,0 +1,715 @@
+{
+  "overall": {
+    "status": "reject_as_retheme",
+    "quality_score": 97.0,
+    "divergence_score": 50.2,
+    "schema_distance": 0.4127,
+    "generated_status": "ok"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 5.0,
+        "rationale": "题面精准落地了 new_schema 的核心变体：树结构、叶子路径异或为0、最小化不同权值数、按输入边序字典序最小。主题包装自然，未偏离算法内核，所有结构选项与目标函数均准确映射至 description 与 output_format。",
+        "evidence_refs": [
+          "snapshots.new_schema.core_constraints",
+          "snapshots.new_schema.objective",
+          "snapshots.generated_problem.description"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 5.0,
+        "rationale": "提供了独立解题所需的全部关键信息：任务定义、输入输出格式、数据范围、时间空间限制及叶子节点明确定义。无缺失或模糊地带，选手可直接基于题面开展算法设计。",
+        "evidence_refs": [
+          "snapshots.generated_problem.input_format",
+          "snapshots.generated_problem.output_format",
+          "snapshots.generated_problem.constraints"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 5.0,
+        "rationale": "描述、格式、约束与样例高度一致。样例1验证K_min=1情况，样例2验证K_min=3及字典序贪心，逻辑自洽，无符号、数量或目标定义冲突。",
+        "evidence_refs": [
+          "snapshots.generated_problem.description",
+          "snapshots.generated_problem.samples",
+          "snapshots.generated_problem.constraints"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 4.0,
+        "rationale": "两个样例分别覆盖了叶子深度奇偶性一致（K_min=1）与不一致（K_min=3）的核心分支，解释清晰且与题意匹配。但作为Hard难度构造题，仅2个样例对复杂分支结构下的字典序贪心与异或闭合冲突覆盖略显单薄。",
+        "evidence_refs": [
+          "snapshots.generated_problem.samples",
+          "hard_checks.sample_count"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 5.0,
+        "rationale": "符合标准OJ题面规范，结构清晰，术语准确（如末端活动室、字典序规范输出）。主题包装未引入干扰信息，无原题泄露痕迹，便于参赛者快速准确理解任务。",
+        "evidence_refs": [
+          "snapshots.generated_problem.title",
+          "snapshots.generated_problem.description",
+          "hard_checks.source_leakage"
+        ]
+      }
+    ],
+    "strengths": [
+      "核心约束（异或闭合、极值种类、字典序最小）表述严谨，与new_schema完全对齐。",
+      "主题包装（校园门禁密钥）与算法逻辑融合自然，未产生语义噪声或来源污染。",
+      "样例解释详细拆解了贪心策略与异或条件的推导过程，有效辅助理解构造逻辑。",
+      "输入输出格式与约束声明规范，符合主流OJ标准，字段数量与目标定义无歧义。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "distance_version": "v2",
+      "backend": "embedding",
+      "total": 0.4127,
+      "axis_scores": {
+        "I": 0.1429,
+        "C": 0.6118,
+        "O": 0.5049,
+        "V": 0.3362
+      },
+      "components": {
+        "input_tree_distance": 0.1429,
+        "constraint_match_distance": 0.6118,
+        "objective_type_distance": 0.6837,
+        "objective_text_distance": 0.2366,
+        "invariant_match_distance": 0.3362
+      }
+    },
+    "schema_distance": 0.4127,
+    "changed_axes_planned": [
+      "C",
+      "O",
+      "V"
+    ],
+    "changed_axes_realized": [
+      "C",
+      "O",
+      "V"
+    ],
+    "semantic_difference": 0.35,
+    "solution_transfer_risk": 0.65,
+    "surface_retheme_risk": 0.85,
+    "verdict": "reject_as_retheme",
+    "rationale": "新题仅将原题的“统计不同权值极值”目标扩展为“构造字典序最小的合法权值序列”，核心约束（叶子路径异或为0）与关键不变量（叶子深度奇偶性决定最小种类数）完全未变。变化轴主要体现在目标类型（O）与不变量验证责任（V），约束轴（C）仅增加字典序优先级但未改变异或闭合本质。原题的奇偶性分类与兄弟叶子合并策略（核心不变量）仍为解题绝对前提，树形DFS遍历框架可直接复用，仅需在原有统计逻辑上叠加按输入序的贪心赋值与局部异或状态维护。算法范式未发生本质跃迁，原题解法核心可高度迁移。结合表层叙事直接映射，判定为换皮。",
+    "evidence_refs": [
+      "snapshots.original_problem",
+      "snapshots.new_schema",
+      "snapshots.generated_problem",
+      "divergence.schema_distance_breakdown",
+      "review_context.algorithmic_delta_claim"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_problem_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 generated_problem。",
+      "evidence_refs": [
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "new_schema_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 new_schema 或兼容字段 new_schema_snapshot。",
+      "evidence_refs": [
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "生成状态正常。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "predicted_schema_distance_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 predicted_schema_distance。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "distance_breakdown_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 distance_breakdown。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "changed_axes_realized_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 changed_axes_realized。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.41，达到中等差异阈值。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "已落地核心差异轴：C, O, V。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题或题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=2。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "目标函数已经在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "样例数量对Hard构造题略显不足",
+      "detail": "当前仅包含2个样例，虽覆盖了K_min=1和K_min=3的奇偶性分类，但缺乏对深层树或多分支结构下字典序贪心与异或闭合冲突的直观展示，可能增加选手调试成本。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples",
+        "hard_checks.sample_count"
+      ],
+      "fix_hint": "增加一个N≥6、具有非对称分支结构的样例，展示前序边分配如何影响后续子树的权值预留与字典序最优性。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "solution transfer risk too high",
+      "detail": "新题仅将原题的“统计不同权值极值”目标扩展为“构造字典序最小的合法权值序列”，核心约束（叶子路径异或为0）与关键不变量（叶子深度奇偶性决定最小种类数）完全未变。变化轴主要体现在目标类型（O）与不变量验证责任（V），约束轴（C）仅增加字典序优先级但未改变异或闭合本质。原题的奇偶性分类与兄弟叶子合并策略（核心不变量）仍为解题绝对前提，树形DFS遍历框架可直接复用，仅需在原有统计逻辑上叠加按输入序的贪心赋值与局部异或状态维护。算法范式未发生本质跃迁，原题解法核心可高度迁移。结合表层叙事直接映射，判定为换皮。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.new_schema",
+        "snapshots.generated_problem",
+        "divergence.schema_distance_breakdown",
+        "review_context.algorithmic_delta_claim"
+      ],
+      "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+    }
+  ],
+  "suggested_revisions": [
+    "增加一个N≥6、具有非对称分支结构的样例，展示前序边分配如何影响后续子树的权值预留与字典序最优性。",
+    "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+    "补充第三个样例以覆盖更复杂的树形拓扑，增强对字典序贪心策略的测试覆盖度。",
+    "可在Notes中简要提示“理论最小值仅可能为1或3”，降低选手在奇偶性分类上的试错成本（可选，视难度定位而定）。",
+    "优先改写核心任务定义，而不是继续替换故事背景。"
+  ],
+  "revision_brief": {
+    "round_index": 1,
+    "overall_status": "reject_as_retheme",
+    "generated_status": "ok",
+    "quality_score": 97.0,
+    "divergence_score": 50.2,
+    "failed_hard_checks": [],
+    "issues": [
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "样例数量对Hard构造题略显不足",
+        "detail": "当前仅包含2个样例，虽覆盖了K_min=1和K_min=3的奇偶性分类，但缺乏对深层树或多分支结构下字典序贪心与异或闭合冲突的直观展示，可能增加选手调试成本。",
+        "evidence_refs": [
+          "snapshots.generated_problem.samples",
+          "hard_checks.sample_count"
+        ],
+        "fix_hint": "增加一个N≥6、具有非对称分支结构的样例，展示前序边分配如何影响后续子树的权值预留与字典序最优性。"
+      },
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "solution transfer risk too high",
+        "detail": "新题仅将原题的“统计不同权值极值”目标扩展为“构造字典序最小的合法权值序列”，核心约束（叶子路径异或为0）与关键不变量（叶子深度奇偶性决定最小种类数）完全未变。变化轴主要体现在目标类型（O）与不变量验证责任（V），约束轴（C）仅增加字典序优先级但未改变异或闭合本质。原题的奇偶性分类与兄弟叶子合并策略（核心不变量）仍为解题绝对前提，树形DFS遍历框架可直接复用，仅需在原有统计逻辑上叠加按输入序的贪心赋值与局部异或状态维护。算法范式未发生本质跃迁，原题解法核心可高度迁移。结合表层叙事直接映射，判定为换皮。",
+        "evidence_refs": [
+          "snapshots.original_problem",
+          "snapshots.new_schema",
+          "snapshots.generated_problem",
+          "divergence.schema_distance_breakdown",
+          "review_context.algorithmic_delta_claim"
+        ],
+        "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+      }
+    ],
+    "suggested_revisions": [
+      "增加一个N≥6、具有非对称分支结构的样例，展示前序边分配如何影响后续子树的权值预留与字典序最优性。",
+      "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+      "补充第三个样例以覆盖更复杂的树形拓扑，增强对字典序贪心策略的测试覆盖度。",
+      "可在Notes中简要提示“理论最小值仅可能为1或3”，降低选手在奇偶性分类上的试错成本（可选，视难度定位而定）。",
+      "优先改写核心任务定义，而不是继续替换故事背景。"
+    ],
+    "strengths_to_keep": [
+      "核心约束（异或闭合、极值种类、字典序最小）表述严谨，与new_schema完全对齐。",
+      "主题包装（校园门禁密钥）与算法逻辑融合自然，未产生语义噪声或来源污染。",
+      "样例解释详细拆解了贪心策略与异或条件的推导过程，有效辅助理解构造逻辑。",
+      "输入输出格式与约束声明规范，符合主流OJ标准，字段数量与目标定义无歧义。"
+    ]
+  },
+  "snapshots": {
+    "paths": {
+      "schema_path": "D:\\AutoProblemGen\\四元组抽取\\output\\batch\\normalized\\CF1339D.json",
+      "artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1339D_v1_campus_ops_20260420_211126_round1.json",
+      "markdown_path": "D:\\AutoProblemGen\\生成题面\\output\\CF1339D_v1_campus_ops_20260420_211126_round1.md"
+    },
+    "original_problem": {
+      "selection_id": "sample_13",
+      "problem_id": "CF1339D",
+      "record_uid": "train-00032-of-00039-7b7d2068a3d9c359__row_0014",
+      "statement_language": "english",
+      "title": "1339_D. Edge Weight Assignment",
+      "description": "You have unweighted tree of n vertices. You have to assign a positive weight to each edge so that the following condition would hold:\n\n  * For every two different leaves v_{1} and v_{2} of this tree, [bitwise XOR](https://en.wikipedia.org/wiki/Bitwise_operation#XOR) of weights of all edges on the simple path between v_{1} and v_{2} has to be equal to 0. \n\n\n\nNote that you can put very large positive integers (like 10^{(10^{10})}).\n\nIt's guaranteed that such assignment always exists under given constraints. Now let's define f as the number of distinct weights in assignment.\n\n<image> In this example, assignment is valid, because bitwise XOR of all edge weights between every pair of leaves is 0. f value is 2 here, because there are 2 distinct edge weights(4 and 5).\n\n<image> In this example, assignment is invalid, because bitwise XOR of all edge weights between vertex 1 and vertex 6 (3, 4, 5, 4) is not 0. \n\nWhat are the minimum and the maximum possible values of f for the given tree? Find and print both.\n\nInput\n\nThe first line contains integer n (3 ≤ n ≤ 10^{5}) — the number of vertices in given tree.\n\nThe i-th of the next n-1 lines contains two integers a_{i} and b_{i} (1 ≤ a_{i} < b_{i} ≤ n) — it means there is an edge between a_{i} and b_{i}. It is guaranteed that given graph forms tree of n vertices.\n\nOutput\n\nPrint two integers — the minimum and maximum possible value of f can be made from valid assignment of given tree. Note that it's always possible to make an assignment under given constraints.\n\nExamples\n\nInput\n\n\n6\n1 3\n2 3\n3 4\n4 5\n5 6\n\n\nOutput\n\n\n1 4\n\n\nInput\n\n\n6\n1 3\n2 3\n3 4\n4 5\n4 6\n\n\nOutput\n\n\n3 3\n\n\nInput\n\n\n7\n1 2\n2 7\n3 4\n4 7\n5 6\n6 7\n\n\nOutput\n\n\n1 6\n\nNote\n\nIn the first example, possible assignments for each minimum and maximum are described in picture below. Of course, there are multiple possible assignments for each minimum and maximum. \n\n<image>\n\nIn the second example, possible assignments for each minimum and maximum are described in picture below. The f value of valid assignment of this tree is always 3. \n\n<image>\n\nIn the third example, possible assignments for each minimum and maximum are described in picture below. Of course, there are multiple possible assignments for each minimum and maximum. \n\n<image>",
+      "public_tests": {
+        "input": [
+          "6\n1 3\n2 3\n3 4\n4 5\n5 6\n",
+          "6\n1 3\n2 3\n3 4\n4 5\n4 6\n",
+          "7\n1 2\n2 7\n3 4\n4 7\n5 6\n6 7\n"
+        ],
+        "output": [
+          "1 4\n",
+          "3 3\n",
+          "1 6\n"
+        ]
+      },
+      "source": {
+        "split": "train",
+        "source_id": 2,
+        "source_name": "CODEFORCES",
+        "url": "https://codeforces.com/contest/1339/problem/D"
+      },
+      "difficulty": {
+        "difficulty_id": 10,
+        "difficulty_name": "D",
+        "difficulty_bucket": null,
+        "cf_rating": 1800,
+        "cf_points": 1000.0,
+        "cf_contest_id": 1339,
+        "cf_index": "D",
+        "rating_bucket": "cf_mid"
+      },
+      "tags": [
+        "bitmasks",
+        "constructive algorithms",
+        "dfs and similar",
+        "greedy",
+        "math",
+        "trees"
+      ],
+      "limits": {
+        "time_limit": {
+          "seconds": 1,
+          "nanos": 0
+        },
+        "memory_limit_bytes": 256000000
+      },
+      "io_mode": {
+        "input_file": "",
+        "output_file": "",
+        "non_stdio": false
+      },
+      "translation": {
+        "is_description_translated": false,
+        "untranslated_description": ""
+      },
+      "reference_solution": {
+        "language_id": 2,
+        "language_guess": "cpp",
+        "code": "#include <bits/stdc++.h>\nusing namespace std;\nconst int N = 1e5 + 5;\nint n, x, y, i, s[2], ans1, ans2;\nvector<int> e[N];\nvoid dfs(int x, int fa, int d) {\n  if (e[x].size() == 1) ++s[d];\n  int lc = 0;\n  for (int y : e[x])\n    if (y != fa) dfs(y, x, d ^ 1), lc += e[y].size() == 1;\n  if (lc > 1) ans2 -= lc - 1;\n}\nint main() {\n  scanf(\"%d\", &n);\n  ans2 = n - 1;\n  for (i = 1; i < n; ++i)\n    scanf(\"%d%d\", &x, &y), e[x].push_back(y), e[y].push_back(x);\n  for (i = 1; i <= n; ++i)\n    if (e[i].size() > 1) break;\n  dfs(i, 0, 0);\n  ans1 = s[0] && s[1] ? 3 : 1;\n  printf(\"%d %d\\n\", ans1, ans2);\n}",
+        "char_count": 591,
+        "line_count": 23
+      },
+      "artifact_counts": {
+        "public_tests": 3,
+        "private_tests": 5,
+        "generated_tests": 74,
+        "solutions": 559,
+        "incorrect_solutions": 510
+      },
+      "heuristic_profile": {
+        "tag_families": [
+          "math",
+          "greedy",
+          "constructive",
+          "graphs",
+          "trees"
+        ],
+        "structure_candidates": [
+          "tree",
+          "graph",
+          "array"
+        ],
+        "objective_type": "construct",
+        "coverage_features": [
+          "objective:construct",
+          "rating:cf_mid",
+          "source:CODEFORCES",
+          "structure:array",
+          "structure:graph",
+          "structure:tree",
+          "tag:constructive",
+          "tag:graphs",
+          "tag:greedy",
+          "tag:math",
+          "tag:trees"
+        ],
+        "english_filter": {
+          "passed": true,
+          "score": 20
+        },
+        "notes": [
+          "selection favors source, difficulty, tag and structure coverage over sample count",
+          "heuristic_profile fields are inferred from metadata and statement text"
+        ]
+      }
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "不要暴露原题编号、出处或链接。",
+        "不要复写原题的叙事结构、输入输出关系或任务定义。"
+      ],
+      "rationale": "原约束仅关注异或和为0，现加入字典序最小与精确极值数量要求；目标从计数变为输出完整分配序列；不变量从奇偶分类扩展为包含字典序贪心可行性与局部权值预留的全局状态承诺。",
+      "summary": "通过引入规范序压力与约束重排，将原题的统计型解法重构为带证明责任的构造型解法。",
+      "mode": "single_seed_extension"
+    },
+    "new_schema": {
+      "problem_id": "CampusOps_CanonicalXOR",
+      "source": "derived_from_CF1339D",
+      "input_structure": {
+        "type": "tree",
+        "length": {
+          "min": 3,
+          "max": 100000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "connected": true,
+          "acyclic": true,
+          "edge_ordering": "input_sequence_index"
+        }
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "xor_path_zero",
+            "description": "任意两叶子节点间路径边权异或和必须为0",
+            "formal": "\\forall u,v \\in Leaves, u \\neq v \\implies \\bigoplus_{e \\in Path(u,v)} w(e) = 0",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "canonical_lex_min",
+            "description": "在所有满足异或约束且不同权值数等于理论最小值的方案中，按输入边序构成的权值序列必须字典序最小",
+            "formal": "\\min_{lex} [w(e_1), w(e_2), \\dots, w(e_{n-1})] \\text{ s.t. } |\\{w(e)\\}| = K_{min}",
+            "source_sections": [
+              "objective"
+            ]
+          }
+        ]
+      },
+      "objective": {
+        "type": "construct_canonical",
+        "description": "输出按输入边序排列的规范边权分配序列，该序列需同时满足全局异或零约束、极值数量约束与字典序最小规范",
+        "target": "canonical_weight_sequence",
+        "requires_solution": true
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "parity_class_canonical_anchor",
+            "description": "叶子深度奇偶性决定最小权值数K_min(1或3)。字典序最小性要求：在K_min=1时所有边权必须相同且取最小正整数；在K_min=3时，前序边必须优先分配最小可用权值，且兄弟叶子边合并策略必须严格遵循输入序贪心，以保证全局字典序最优且不破坏奇偶平衡。",
+            "properties": {
+              "partition_basis": "depth_parity_mod_2",
+              "canonical_guarantee": "greedy_prefix_minimality_with_sibling_merge"
+            },
+            "evidence_source": "canonical_construction_proof"
+          },
+          {
+            "name": "lexicographical_state_commitment",
+            "description": "构造过程中，已确定前缀的权值分配必须构成后续可行解的充分必要条件。任何局部权值选择若导致剩余子树无法在K_min限制下完成异或闭合，则该选择非法。状态需维护未闭合路径的异或需求与可用权值池的映射。",
+            "properties": {
+              "state_tracking": "pending_xor_demands_and_available_slots",
+              "proof_basis": "prefix_optimality_implies_global_canonical"
+            },
+            "evidence_source": "canonical_construction_proof"
+          }
+        ]
+      },
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "hard"
+    },
+    "generated_problem": {
+      "title": "校园社团密钥同步计划",
+      "description": "校园后勤部正在为各社团的活动室网络配置智能门禁系统。该网络由 $N$ 个活动室和 $N-1$ 条双向走廊组成，整体呈树状结构。为了简化物资流转的核验流程，系统要求为每条走廊分配一个正整数“通行密钥”。\n出于安全协议与存储成本的考量，分配方案必须同时满足以下三项硬性指标：\n1. **路径异或闭合**：对于网络中任意两个不同的“末端活动室”（即仅与一条走廊直接相连的活动室），它们之间唯一通路上的所有走廊密钥按位异或（XOR）的结果必须严格等于 $0$。\n2. **极值密钥种类**：在满足路径异或闭合的前提下，所使用的不同密钥种类数量必须达到理论最小值。\n3. **字典序规范输出**：在所有满足前两项指标的方案中，后勤部要求按照走廊的录入顺序（即输入数据中第 $1$ 条、第 $2$ 条……第 $N-1$ 条）提取出的密钥序列，其字典序必须最小。\n请你编写程序，为后勤部生成这套符合规范的密钥分配序列。",
+      "input_format": "第一行包含一个正整数 $N$，表示活动室的总数。\n接下来 $N-1$ 行，每行包含两个正整数 $u, v$，表示一条走廊连接的两个活动室编号。走廊将严格按照输入顺序被依次编号为 $1$ 至 $N-1$。",
+      "output_format": "输出一行，包含 $N-1$ 个正整数，表示按输入顺序分配的各条走廊密钥，相邻整数之间用空格分隔。",
+      "constraints": [
+        "$3 \\le N \\le 10^5$",
+        "保证输入数据构成一棵合法的树，且至少存在两个末端活动室。",
+        "分配的密钥必须为正整数，且不超过 $10^9$。",
+        "时间限制：1.0 秒，空间限制：256 MB。"
+      ],
+      "samples": [
+        {
+          "input": "4\n1 2\n1 3\n1 4",
+          "output": "1 1 1",
+          "explanation": "所有末端活动室（2, 3, 4）相对于任意根节点的深度奇偶性一致，理论最小不同密钥数为 1。为满足字典序最小，全部走廊均分配密钥 1，此时任意两末端路径异或和均为 0。"
+        },
+        {
+          "input": "5\n1 2\n2 3\n2 4\n4 5",
+          "output": "1 1 2 3",
+          "explanation": "末端活动室（1, 3, 5）的深度奇偶性存在差异，理论最小不同密钥数为 3。按输入顺序贪心分配：前两条边（连接末端 1 与 3）优先赋 1 以合并同类需求；第三条边赋 2；第四条边根据异或闭合条件必须为 3。序列 [1, 1, 2, 3] 为满足条件的字典序最小解。"
+        }
+      ],
+      "notes": "题目保证在给定约束下合法解一定存在。字典序比较规则为：从左至右依次比较序列元素，首个不同位置数值较小的序列字典序更小。构造过程中需严格保证前缀选择不会导致剩余子树无法在最小密钥种类限制下完成异或闭合。",
+      "status": "ok",
+      "error_reason": "",
+      "feedback": ""
+    },
+    "artifact_contract": {
+      "new_schema_present": true,
+      "new_schema_field_present": false,
+      "new_schema_snapshot_field_present": true,
+      "difference_plan_present": true,
+      "predicted_schema_distance_present": true,
+      "distance_breakdown_present": true,
+      "changed_axes_realized_present": true,
+      "generated_problem_present": true
+    },
+    "review_context": {
+      "difference_plan": {
+        "summary": "通过引入规范序压力与约束重排，将原题的统计型解法重构为带证明责任的构造型解法。",
+        "mode": "single_seed_extension",
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      },
+      "changed_axes_realized": [
+        "C",
+        "O",
+        "V"
+      ],
+      "distance_breakdown": {
+        "distance_version": "v2",
+        "backend": "embedding",
+        "total": 0.4127,
+        "axis_scores": {
+          "I": 0.1429,
+          "C": 0.6118,
+          "O": 0.5049,
+          "V": 0.3362
+        },
+        "components": {
+          "input_tree_distance": 0.1429,
+          "constraint_match_distance": 0.6118,
+          "objective_type_distance": 0.6837,
+          "objective_text_distance": 0.2366,
+          "invariant_match_distance": 0.3362
+        }
+      },
+      "applied_rule": "canonical_witness",
+      "applied_helpers": [
+        {
+          "id": "canonical_order_pressure",
+          "selection_reason": "将字典序规范嵌入主状态演化，避免输出沦为后处理。",
+          "affected_axes": [
+            "C",
+            "O",
+            "V"
+          ],
+          "schema_changes": [
+            "core_constraints新增字典序最小约束",
+            "objective改为输出规范序列",
+            "invariant增加前缀贪心可行性承诺"
+          ],
+          "innovation_reason": "使输出对象与验证责任脱离原题统计路径，转为全局结构依赖。",
+          "difficulty_reason": "状态转移需承担规范性证明，每一步贪心选择必须保证后续子树可闭合。"
+        },
+        {
+          "id": "proof_bearing_output",
+          "selection_reason": "将输出升级为带证明责任的规范解，强化校验契约。",
+          "affected_axes": [
+            "O",
+            "V"
+          ],
+          "schema_changes": [
+            "objective明确为可校验的规范分配序列",
+            "invariant增加局部选择与全局极值等价的证明锚点"
+          ],
+          "innovation_reason": "新题输出责任直接承接校验，要求构造过程自证合法性与最优性。",
+          "difficulty_reason": "解法必须解释为何规范解满足全局约束，增加构造正确性证明负担。"
+        },
+        {
+          "id": "constraint_reweighting",
+          "selection_reason": "重排约束优先级，使规范性要求主导状态设计。",
+          "affected_axes": [
+            "C",
+            "V"
+          ],
+          "schema_changes": [
+            "core_constraints将字典序优先级置于异或闭合之上",
+            "invariant反映新约束主次关系与资源预留机制"
+          ],
+          "innovation_reason": "规范性要求改变主约束优先级组织，打破原题对称性。",
+          "difficulty_reason": "迫使状态设计处理字典序优先与异或闭合的冲突，需引入动态需求池。"
+        }
+      ],
+      "algorithmic_delta_claim": {
+        "seed_solver_core": "基于叶子深度奇偶性分类，直接计算最小/最大不同权值数，无需构造具体分配。",
+        "reusable_subroutines": "叶子奇偶性判定、兄弟叶子边合并计数、树形DFS遍历框架。",
+        "new_solver_core": "带字典序贪心压力的树形构造。需在DFS过程中动态维护路径异或需求，按输入边序优先分配最小合法权值，并在K_min=3时精确控制三种权值的出现位置以满足全局异或闭合与字典序最小双重约束。",
+        "new_proof_obligation": "需证明按输入序贪心分配最小可用权值不会导致后续子树陷入无解状态；需证明在K_min=3时，兄弟叶子边的合并策略与字典序优先规则在数学上等价于全局最优规范解，且局部选择不会破坏奇偶类间的异或平衡。",
+        "why_direct_reuse_fails": "原题解法仅依赖奇偶性统计，无构造步骤。直接套用无法处理字典序最小带来的前缀依赖与局部权值预留问题，贪心策略需结合全局异或闭合条件进行严格可行性剪枝。"
+      },
+      "anti_shallow_rationale": "本题并非简单要求输出任意合法方案，而是强制要求输出字典序最小的规范解。规范序压力直接改变了状态转移的决策依据：算法必须在每一步权衡‘当前边取最小值’与‘保留权值供后续闭合’的矛盾。验证责任从单纯检查异或和升级为检查字典序极值性，迫使解法引入前缀最优性证明与动态需求池，彻底脱离原题的纯统计路径。"
+    }
+  }
+}

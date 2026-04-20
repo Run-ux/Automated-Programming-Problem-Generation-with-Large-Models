@@ -1,0 +1,444 @@
+{
+  "problem_id": "CF1399E1",
+  "source_problem_ids": [
+    "CF1399E1"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "规划结果未达到硬门槛，预测距离=0.3427，落地轴=C, O, V。",
+    "summary": "选中的规则未能稳定落地",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.0,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.0,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.0,
+      "O": 0.0,
+      "V": 0.0
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.0,
+      "objective_type_distance": 0.0,
+      "objective_text_distance": 0.0,
+      "invariant_match_distance": 0.0
+    }
+  },
+  "changed_axes_realized": [],
+  "objective": {
+    "type": "minimize_value",
+    "description": "最小化使根到所有叶子路径权重总和不超过给定阈值所需的操作次数",
+    "target": "operations",
+    "requires_solution": false
+  },
+  "rule_selection_reason": "existence_to_counting:种子题的离散整除操作与全局阈值约束天然划定有限解空间，且核心不变量中的可加性分解为按边/子树定义计数单元与去重规则提供了明确的结构基础，符合计数化准入条件。",
+  "new_schema_snapshot": {
+    "problem_id": "CF1399E1",
+    "source": "codeforces",
+    "input_structure": {
+      "type": "tree",
+      "length": {
+        "min": 2,
+        "max": 100000
+      },
+      "value_range": {
+        "min": null,
+        "max": null
+      },
+      "properties": {
+        "weighted": true,
+        "rooted": true,
+        "connected": true,
+        "acyclic": true,
+        "multiple_test_cases": true
+      },
+      "components": []
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "operation_type",
+          "description": "每次操作必须选择一条边,并将其权重更新为原权重除以 2 向下取整的值。",
+          "formal": "w_i := \\lfloor w_i / 2 \\rfloor",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "sum_constraint",
+          "description": "操作完成后,根节点到所有叶子节点的路径权重之和不得超过给定阈值 S。",
+          "formal": "\\sum_{v \\in \\text{leaves}} w(\\text{root}, v) \\le S",
+          "source_sections": [
+            "description",
+            "output"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "minimize_value",
+      "description": "最小化使根到所有叶子路径权重总和不超过给定阈值所需的操作次数",
+      "target": "operations",
+      "requires_solution": false
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "additivity",
+          "description": "全局路径权重总和可严格分解为各边权重与其覆盖叶子数量乘积的累加和。算法通过独立维护每条边的贡献值,并在每次操作后仅扣除该边的边际收益来更新全局总和,避免重复计算。",
+          "properties": {
+            "cost_decomposition": "total_cost = Σ (unit_weight * coverage_count)",
+            "delta_update": "total_cost -= current_reduction"
+          },
+          "evidence_source": "solution_code"
+        },
+        {
+          "name": "exchange_argument",
+          "description": "贪心策略的正确性建立在局部决策的可替换性上:任意时刻选择当前边际收益最大的候选项执行操作,其结果不会劣于选择其他候选项,次优决策可通过交换操作顺序融入最优解序列而不破坏全局最优性。",
+          "properties": {
+            "priority_criterion": "select_maximum_immediate_reduction",
+            "sequence_exchangeability": "operation_order_by_reduction_preserves_optimality"
+          },
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Medium"
+  },
+  "applied_rule": "existence_to_counting",
+  "rejected_candidates": [
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "status": "ok",
+      "reason_code": "distance_gate_failed",
+      "reason": "规划结果未达到硬门槛，预测距离=0.3427，落地轴=C, O, V。"
+    }
+  ],
+  "algorithmic_delta_claim": {},
+  "anti_shallow_rationale": "",
+  "shared_core_summary": "",
+  "shared_core_anchors": {},
+  "seed_contributions": {},
+  "fusion_ablation": {},
+  "applied_helpers": [],
+  "planning_status": "difference_insufficient",
+  "planning_error_reason": "规划结果未达到硬门槛，预测距离=0.3427，落地轴=C, O, V。",
+  "planning_feedback": "已尝试 1 条候选规则，均未通过规划校验。",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "forbidden_seed_property",
+      "selection_reason": "种子题为典型贪心求值题，最优操作序列可由优先队列执行过程直接记录，属于规则明确禁止的“原解只要顺手回溯就能拿到方案”情形；强行引入规范解极易退化为字典序后处理或比较器微调，无法实质性驱动C/O/V轴变化，违反“不能退化为输出后处理”与“不能只加字典序描述”红线。",
+      "risk_tags": [
+        "low_novelty",
+        "difference_insufficient"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "schema中objective.requires_solution为false，且invariants明确依赖exchange_argument与贪心边际收益排序；该贪心策略的执行轨迹天然构成操作方案，记录成本极低。规则声明的forbidden_seed_properties明确排除此类可顺手回溯的种子，且helpers红线条款禁止仅加字典序或退化为后处理。",
+        "feedback": "建议更换为解空间具有强组合结构、且求值与构造存在显著算法鸿沟的种子题（如DP计数转构造、或存在多解需强规范约束的图论/数论题），以支撑canonical_witness所需的规范性证明与状态重构。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "seed_lacks_natural_obstruction",
+      "selection_reason": "原题CF1399E1为纯贪心最小化问题，边权可无限折半至0，天然保证有解，不存在结构性的无解情形；强行引入失败分支需人为添加操作上限或边权下限等额外约束，违反全局红线，且无法自然导出可局部检查的冲突证据。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.type为'minimize_value'且未定义不可行条件；core_constraints仅包含折半操作与路径和阈值S，缺乏导致无解的硬性结构限制；规则required_seed_properties明确要求'做不到的原因可以用局部证据表示'，但本种子题的不可行性仅能退化为全局求和不等式（如全0仍超S），无法满足helpers.local_certificate_design中'让失败输出拥有明确结构'与'局部规则下直接检查'的硬性要求。",
+        "feedback": "建议更换具有天然结构性无解特征（如二分图匹配、流守恒、奇偶校验冲突）的种子题，或放弃本规则改用纯构造/优化类变换。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": true,
+      "score": 0.87,
+      "reason_code": "finite_decomposable_space",
+      "selection_reason": "种子题的离散整除操作与全局阈值约束天然划定有限解空间，且核心不变量中的可加性分解为按边/子树定义计数单元与去重规则提供了明确的结构基础，符合计数化准入条件。",
+      "risk_tags": [
+        "deduplication_ambiguity",
+        "algorithmic_shift_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.core_constraints.operation_type 定义 w_i := floor(w_i/2) 保证状态离散且单调收敛；seed_schema.core_constraints.sum_constraint 提供明确的全局边界；seed_schema.invariant.additivity 明确 total_cost = Σ (unit_weight * coverage_count)，证明解空间可按边独立拆分并汇总，直接满足 required_seed_properties 中的有限性、可拆分性与去重定义基础。",
+        "feedback": "规划阶段需严格界定计数口径（建议采用各边操作次数分配向量而非操作执行序列），在 objective 中显式声明取模方式与等价类判定逻辑，并确保 state_factorization 真正重构主状态转移，避免退化为原贪心策略的简单后处理或仅补充模数。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.15,
+      "reason_code": "missing_native_perturbation_source",
+      "selection_reason": "原题CF1399E1为确定性贪心优化问题，核心语义中不存在规则required_seed_properties所要求的‘顺序不确定、资源波动或局部选择差异’。强行套用该规则将导致扰动模型脱离原题语义，直接触发forbidden_seed_properties与validation_contract中的硬性红线。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema的core_constraints明确操作为确定性更新(w_i := floor(w_i/2))，invariant依赖exchange_argument证明贪心顺序无关性，表明原题无内在不确定性。规则eligibility.required_seed_properties明确要求‘原题里本来就有顺序不确定、资源波动或局部选择差异’，且forbidden_seed_properties禁止‘只能靠故事背景硬造对手’。当前种子题完全不具备该原生扰动基础。",
+        "feedback": "该规则高度依赖种子题自带的动态或不确定结构。建议更换具有天然扰动特征（如边权动态变化、请求序列未知、阈值区间波动）的题目作为种子，或改用不依赖最坏情况保证的变换族。"
+      },
+      "selected_for_attempt": false
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "forbidden_seed_property",
+      "message": "种子题为典型贪心求值题，最优操作序列可由优先队列执行过程直接记录，属于规则明确禁止的“原解只要顺手回溯就能拿到方案”情形；强行引入规范解极易退化为字典序后处理或比较器微调，无法实质性驱动C/O/V轴变化，违反“不能退化为输出后处理”与“不能只加字典序描述”红线。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.2,
+        "risk_tags": [
+          "low_novelty",
+          "difference_insufficient"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "schema中objective.requires_solution为false，且invariants明确依赖exchange_argument与贪心边际收益排序；该贪心策略的执行轨迹天然构成操作方案，记录成本极低。规则声明的forbidden_seed_properties明确排除此类可顺手回溯的种子，且helpers红线条款禁止仅加字典序或退化为后处理。",
+        "feedback": "建议更换为解空间具有强组合结构、且求值与构造存在显著算法鸿沟的种子题（如DP计数转构造、或存在多解需强规范约束的图论/数论题），以支撑canonical_witness所需的规范性证明与状态重构。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "seed_lacks_natural_obstruction",
+      "message": "原题CF1399E1为纯贪心最小化问题，边权可无限折半至0，天然保证有解，不存在结构性的无解情形；强行引入失败分支需人为添加操作上限或边权下限等额外约束，违反全局红线，且无法自然导出可局部检查的冲突证据。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.type为'minimize_value'且未定义不可行条件；core_constraints仅包含折半操作与路径和阈值S，缺乏导致无解的硬性结构限制；规则required_seed_properties明确要求'做不到的原因可以用局部证据表示'，但本种子题的不可行性仅能退化为全局求和不等式（如全0仍超S），无法满足helpers.local_certificate_design中'让失败输出拥有明确结构'与'局部规则下直接检查'的硬性要求。",
+        "feedback": "建议更换具有天然结构性无解特征（如二分图匹配、流守恒、奇偶校验冲突）的种子题，或放弃本规则改用纯构造/优化类变换。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "finite_decomposable_space",
+      "message": "种子题的离散整除操作与全局阈值约束天然划定有限解空间，且核心不变量中的可加性分解为按边/子树定义计数单元与去重规则提供了明确的结构基础，符合计数化准入条件。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.87,
+        "risk_tags": [
+          "deduplication_ambiguity",
+          "algorithmic_shift_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.core_constraints.operation_type 定义 w_i := floor(w_i/2) 保证状态离散且单调收敛；seed_schema.core_constraints.sum_constraint 提供明确的全局边界；seed_schema.invariant.additivity 明确 total_cost = Σ (unit_weight * coverage_count)，证明解空间可按边独立拆分并汇总，直接满足 required_seed_properties 中的有限性、可拆分性与去重定义基础。",
+        "feedback": "规划阶段需严格界定计数口径（建议采用各边操作次数分配向量而非操作执行序列），在 objective 中显式声明取模方式与等价类判定逻辑，并确保 state_factorization 真正重构主状态转移，避免退化为原贪心策略的简单后处理或仅补充模数。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation_source",
+      "message": "原题CF1399E1为确定性贪心优化问题，核心语义中不存在规则required_seed_properties所要求的‘顺序不确定、资源波动或局部选择差异’。强行套用该规则将导致扰动模型脱离原题语义，直接触发forbidden_seed_properties与validation_contract中的硬性红线。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.15,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema的core_constraints明确操作为确定性更新(w_i := floor(w_i/2))，invariant依赖exchange_argument证明贪心顺序无关性，表明原题无内在不确定性。规则eligibility.required_seed_properties明确要求‘原题里本来就有顺序不确定、资源波动或局部选择差异’，且forbidden_seed_properties禁止‘只能靠故事背景硬造对手’。当前种子题完全不具备该原生扰动基础。",
+        "feedback": "该规则高度依赖种子题自带的动态或不确定结构。建议更换具有天然扰动特征（如边权动态变化、请求序列未知、阈值区间波动）的题目作为种子，或改用不依赖最坏情况保证的变换族。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "distance_gate_failed",
+      "message": "规划结果未达到差异度或变化轴硬门槛。",
+      "details": {
+        "distance": {
+          "distance_version": "v2",
+          "backend": "embedding",
+          "total": 0.3427,
+          "axis_scores": {
+            "I": 0.0776,
+            "C": 0.5311,
+            "O": 0.2911,
+            "V": 0.4561
+          },
+          "components": {
+            "input_tree_distance": 0.0776,
+            "constraint_match_distance": 0.5311,
+            "objective_type_distance": 0.2585,
+            "objective_text_distance": 0.3399,
+            "invariant_match_distance": 0.4561
+          }
+        },
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "score": 0.87,
+      "accepted": false,
+      "risk_tags": [
+        "deduplication_ambiguity",
+        "algorithmic_shift_risk"
+      ],
+      "status": "ok",
+      "reason_code": "distance_gate_failed",
+      "reason": "规划结果未达到硬门槛，预测距离=0.3427，落地轴=C, O, V。",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "规划结果未达到硬门槛，预测距离=0.3427，落地轴=C, O, V。",
+    "feedback": "已尝试 1 条候选规则，均未通过规划校验。"
+  },
+  "iteration": {
+    "run_id": "CF1399E1_v1_campus_ops_20260420_212908",
+    "round_index": 1,
+    "requested_rounds": 3,
+    "previous_artifact_path": "",
+    "previous_quality_report_path": "",
+    "revision_context_snapshot": {}
+  }
+}

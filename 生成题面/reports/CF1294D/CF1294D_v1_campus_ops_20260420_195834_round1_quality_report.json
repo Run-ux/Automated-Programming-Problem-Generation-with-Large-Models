@@ -1,0 +1,727 @@
+{
+  "overall": {
+    "status": "pass",
+    "quality_score": 92.0,
+    "divergence_score": 71.8,
+    "schema_distance": 0.4246,
+    "generated_status": "ok"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 5.0,
+        "rationale": "题面完整且准确地实现了 new_schema 中定义的所有核心要素：输入结构（n, x, Δ 与数组 a_i）、三大核心约束（同余、非负、扰动预算）、鲁棒最坏情况目标函数以及校园运营主题。所有变体特征均无缝落地到 description 与 constraints 中。",
+        "evidence_refs": [
+          "new_schema.input_structure",
+          "new_schema.core_constraints",
+          "new_schema.objective",
+          "generated_problem.description"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 4.0,
+        "rationale": "题面提供了独立解题所需的关键信息，但名义数量 c_r 的定义在描述中为隐式推导，未显式给出其与输入数组 a_i 的数学映射关系。对于 Hard 难度题面，显式定义可避免选手在初始状态理解上产生不必要的歧义。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 5.0,
+        "rationale": "description、input_format、output_format、constraints 与 samples 之间高度一致。变量符号、取值范围、目标定义与样例逻辑完全对齐，无任何字段冲突或矛盾表述。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.constraints",
+          "generated_problem.samples"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 4.0,
+        "rationale": "提供了 2 个样例且附带详细解释，有效覆盖了 Δ=0 与 Δ>0 的核心逻辑。但针对 Hard 难度，样例数量偏少，缺乏对极端边界（如 Δ 极大导致 K=0，或 x 远大于 n 导致余数类稀疏）的覆盖，测试完备性略有欠缺。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks[12].message"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 5.0,
+        "rationale": "题面结构标准，分段清晰，措辞符合 OJ 规范。校园 WiFi 主题融入自然，无冗余背景噪声或来源污染，参赛者能快速提取数学模型与约束条件。",
+        "evidence_refs": [
+          "generated_problem.title",
+          "generated_problem.description",
+          "generated_problem.input_format"
+        ]
+      }
+    ],
+    "strengths": [
+      "准确落地了 new_schema 中的扰动预算约束与鲁棒最坏情况目标，将抽象的数学模型自然融入校园 WiFi 分配场景。",
+      "题面结构完整，输入输出格式规范，约束条件与时间空间限制清晰，符合标准 OJ 规范。",
+      "样例解释详细且切中要害，清晰展示了“对抗性扰动”与“保底阈值”的核心逻辑，有助于选手快速理解题意。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "distance_version": "v2",
+      "backend": "embedding",
+      "total": 0.4246,
+      "axis_scores": {
+        "I": 0.0682,
+        "C": 0.6068,
+        "O": 0.5283,
+        "V": 0.4673
+      },
+      "components": {
+        "input_tree_distance": 0.0682,
+        "constraint_match_distance": 0.6068,
+        "objective_type_distance": 0.5012,
+        "objective_text_distance": 0.5689,
+        "invariant_match_distance": 0.4673
+      }
+    },
+    "schema_distance": 0.4246,
+    "changed_axes_planned": [
+      "C",
+      "O",
+      "V"
+    ],
+    "changed_axes_realized": [
+      "C",
+      "O",
+      "V"
+    ],
+    "semantic_difference": 0.75,
+    "solution_transfer_risk": 0.3,
+    "surface_retheme_risk": 0.15,
+    "verdict": "pass",
+    "rationale": "新题在约束轴(C)、目标轴(O)和不变量轴(V)上实现了实质性变更。原题是在线查询下的确定性贪心填充，依赖单调指针维护模x余数计数；新题引入扰动预算Δ，将问题转化为离线鲁棒优化，要求在最坏对抗性计数偏移下保证前缀覆盖。原题的在线均摊贪心策略与单调指针在Δ扰动下完全失效，必须重构为二分答案K结合极值扰动校验的新框架（校验函数需分析Δ预算在关键余数类上的贪心削减）。尽管模x同余类的底层数学结构得以保留，但求解范式已从在线模拟跃迁至离线min-max分析，核心算法不可直接迁移。表层叙事、输入格式与样例设计均无复用痕迹。",
+    "evidence_refs": [
+      "snapshots.new_schema.core_constraints",
+      "snapshots.generated_problem.description",
+      "review_context.algorithmic_delta_claim",
+      "divergence.schema_distance_breakdown"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_problem_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 generated_problem。",
+      "evidence_refs": [
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "new_schema_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 new_schema 或兼容字段 new_schema_snapshot。",
+      "evidence_refs": [
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "生成状态正常。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "predicted_schema_distance_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 predicted_schema_distance。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "distance_breakdown_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 distance_breakdown。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "changed_axes_realized_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 changed_axes_realized。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.42，达到中等差异阈值。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "已落地核心差异轴：C, O, V。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题或题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=2。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "目标函数已经在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "名义数量 c_r 定义未显式给出",
+      "detail": "题面描述中直接使用了“名义数量 c_r”参与扰动预算约束，但未明确其与输入数组 a_i 的计算关系，可能导致部分选手对初始状态的理解产生歧义。",
+      "evidence_refs": [
+        "generated_problem.description"
+      ],
+      "fix_hint": "在描述中补充定义：“记名义统计中模 x 余 r 的设备数量为 c_r = ∑_{i=1}^n [a_i mod x = r]。”"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "样例覆盖度对 Hard 难度略显不足",
+      "detail": "当前仅有两个样例，虽覆盖了基础扰动情况，但缺乏对边界条件（如 Δ 极大迫使 K=0，或 x 较大时余数类分布不均）的测试，不利于选手验证极端逻辑。",
+      "evidence_refs": [
+        "generated_problem.samples",
+        "hard_checks[12].message"
+      ],
+      "fix_hint": "增加一个 Δ 较大导致 K=0 的样例，以及一个 x > n 的样例，以增强鲁棒性测试覆盖。"
+    }
+  ],
+  "suggested_revisions": [
+    "在描述中补充定义：“记名义统计中模 x 余 r 的设备数量为 c_r = ∑_{i=1}^n [a_i mod x = r]。”",
+    "增加一个 Δ 较大导致 K=0 的样例，以及一个 x > n 的样例，以增强鲁棒性测试覆盖。",
+    "显式定义名义计数 c_r 与输入数组 a_i 的映射关系，消除潜在歧义。",
+    "补充覆盖 K=0 边界情况及大 Δ 值的样例，提升 Hard 难度题面的测试完备性。",
+    "在 Notes 或描述中简要说明“覆盖 [0, K-1]”意味着需要为每个整数分配一个满足同余约束的独立设备，避免匹配逻辑上的误解。"
+  ],
+  "revision_brief": {
+    "round_index": 1,
+    "overall_status": "pass",
+    "generated_status": "ok",
+    "quality_score": 92.0,
+    "divergence_score": 71.8,
+    "failed_hard_checks": [],
+    "issues": [
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "名义数量 c_r 定义未显式给出",
+        "detail": "题面描述中直接使用了“名义数量 c_r”参与扰动预算约束，但未明确其与输入数组 a_i 的计算关系，可能导致部分选手对初始状态的理解产生歧义。",
+        "evidence_refs": [
+          "generated_problem.description"
+        ],
+        "fix_hint": "在描述中补充定义：“记名义统计中模 x 余 r 的设备数量为 c_r = ∑_{i=1}^n [a_i mod x = r]。”"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "样例覆盖度对 Hard 难度略显不足",
+        "detail": "当前仅有两个样例，虽覆盖了基础扰动情况，但缺乏对边界条件（如 Δ 极大迫使 K=0，或 x 较大时余数类分布不均）的测试，不利于选手验证极端逻辑。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks[12].message"
+        ],
+        "fix_hint": "增加一个 Δ 较大导致 K=0 的样例，以及一个 x > n 的样例，以增强鲁棒性测试覆盖。"
+      }
+    ],
+    "suggested_revisions": [
+      "在描述中补充定义：“记名义统计中模 x 余 r 的设备数量为 c_r = ∑_{i=1}^n [a_i mod x = r]。”",
+      "增加一个 Δ 较大导致 K=0 的样例，以及一个 x > n 的样例，以增强鲁棒性测试覆盖。",
+      "显式定义名义计数 c_r 与输入数组 a_i 的映射关系，消除潜在歧义。",
+      "补充覆盖 K=0 边界情况及大 Δ 值的样例，提升 Hard 难度题面的测试完备性。",
+      "在 Notes 或描述中简要说明“覆盖 [0, K-1]”意味着需要为每个整数分配一个满足同余约束的独立设备，避免匹配逻辑上的误解。"
+    ],
+    "strengths_to_keep": [
+      "准确落地了 new_schema 中的扰动预算约束与鲁棒最坏情况目标，将抽象的数学模型自然融入校园 WiFi 分配场景。",
+      "题面结构完整，输入输出格式规范，约束条件与时间空间限制清晰，符合标准 OJ 规范。",
+      "样例解释详细且切中要害，清晰展示了“对抗性扰动”与“保底阈值”的核心逻辑，有助于选手快速理解题意。"
+    ]
+  },
+  "snapshots": {
+    "paths": {
+      "schema_path": "D:\\AutoProblemGen\\四元组抽取\\output\\batch\\normalized\\CF1294D.json",
+      "artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1294D_v1_campus_ops_20260420_195834_round1.json",
+      "markdown_path": "D:\\AutoProblemGen\\生成题面\\output\\CF1294D_v1_campus_ops_20260420_195834_round1.md"
+    },
+    "original_problem": {
+      "selection_id": "sample_18",
+      "problem_id": "CF1294D",
+      "record_uid": "train-00001-of-00039-e092fe56fda18715__row_0302",
+      "statement_language": "english",
+      "title": "1294_D. MEX maximizing",
+      "description": "Recall that MEX of an array is a minimum non-negative integer that does not belong to the array. Examples:\n\n  * for the array [0, 0, 1, 0, 2] MEX equals to 3 because numbers 0, 1 and 2 are presented in the array and 3 is the minimum non-negative integer not presented in the array; \n  * for the array [1, 2, 3, 4] MEX equals to 0 because 0 is the minimum non-negative integer not presented in the array; \n  * for the array [0, 1, 4, 3] MEX equals to 2 because 2 is the minimum non-negative integer not presented in the array. \n\n\n\nYou are given an empty array a=[] (in other words, a zero-length array). You are also given a positive integer x.\n\nYou are also given q queries. The j-th query consists of one integer y_j and means that you have to append one element y_j to the array. The array length increases by 1 after a query.\n\nIn one move, you can choose any index i and set a_i := a_i + x or a_i := a_i - x (i.e. increase or decrease any element of the array by x). The only restriction is that a_i cannot become negative. Since initially the array is empty, you can perform moves only after the first query.\n\nYou have to maximize the MEX (minimum excluded) of the array if you can perform any number of such operations (you can even perform the operation multiple times with one element).\n\nYou have to find the answer after each of q queries (i.e. the j-th answer corresponds to the array of length j).\n\nOperations are discarded before each query. I.e. the array a after the j-th query equals to [y_1, y_2, ..., y_j].\n\nInput\n\nThe first line of the input contains two integers q, x (1 ≤ q, x ≤ 4 ⋅ 10^5) — the number of queries and the value of x.\n\nThe next q lines describe queries. The j-th query consists of one integer y_j (0 ≤ y_j ≤ 10^9) and means that you have to append one element y_j to the array.\n\nOutput\n\nPrint the answer to the initial problem after each query — for the query j print the maximum value of MEX after first j queries. Note that queries are dependent (the array changes after each query) but operations are independent between queries.\n\nExamples\n\nInput\n\n\n7 3\n0\n1\n2\n2\n0\n0\n10\n\n\nOutput\n\n\n1\n2\n3\n3\n4\n4\n7\n\n\nInput\n\n\n4 3\n1\n2\n1\n2\n\n\nOutput\n\n\n0\n0\n0\n0\n\nNote\n\nIn the first example:\n\n  * After the first query, the array is a=[0]: you don't need to perform any operations, maximum possible MEX is 1. \n  * After the second query, the array is a=[0, 1]: you don't need to perform any operations, maximum possible MEX is 2. \n  * After the third query, the array is a=[0, 1, 2]: you don't need to perform any operations, maximum possible MEX is 3. \n  * After the fourth query, the array is a=[0, 1, 2, 2]: you don't need to perform any operations, maximum possible MEX is 3 (you can't make it greater with operations). \n  * After the fifth query, the array is a=[0, 1, 2, 2, 0]: you can perform a[4] := a[4] + 3 = 3. The array changes to be a=[0, 1, 2, 2, 3]. Now MEX is maximum possible and equals to 4. \n  * After the sixth query, the array is a=[0, 1, 2, 2, 0, 0]: you can perform a[4] := a[4] + 3 = 0 + 3 = 3. The array changes to be a=[0, 1, 2, 2, 3, 0]. Now MEX is maximum possible and equals to 4. \n  * After the seventh query, the array is a=[0, 1, 2, 2, 0, 0, 10]. You can perform the following operations: \n    * a[3] := a[3] + 3 = 2 + 3 = 5, \n    * a[4] := a[4] + 3 = 0 + 3 = 3, \n    * a[5] := a[5] + 3 = 0 + 3 = 3, \n    * a[5] := a[5] + 3 = 3 + 3 = 6, \n    * a[6] := a[6] - 3 = 10 - 3 = 7, \n    * a[6] := a[6] - 3 = 7 - 3 = 4. \nThe resulting array will be a=[0, 1, 2, 5, 3, 6, 4]. Now MEX is maximum possible and equals to 7. ",
+      "public_tests": {
+        "input": [
+          "4 3\n1\n2\n1\n2\n",
+          "7 3\n0\n1\n2\n2\n0\n0\n10\n"
+        ],
+        "output": [
+          "0\n0\n0\n0\n",
+          "1\n2\n3\n3\n4\n4\n7\n"
+        ]
+      },
+      "source": {
+        "split": "train",
+        "source_id": 2,
+        "source_name": "CODEFORCES",
+        "url": "https://codeforces.com/contest/1294/problem/D"
+      },
+      "difficulty": {
+        "difficulty_id": 10,
+        "difficulty_name": "D",
+        "difficulty_bucket": null,
+        "cf_rating": 1600,
+        "cf_points": 0.0,
+        "cf_contest_id": 1294,
+        "cf_index": "D",
+        "rating_bucket": "cf_mid"
+      },
+      "tags": [
+        "data structures",
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "limits": {
+        "time_limit": {
+          "seconds": 3,
+          "nanos": 0
+        },
+        "memory_limit_bytes": 256000000
+      },
+      "io_mode": {
+        "input_file": "",
+        "output_file": "",
+        "non_stdio": false
+      },
+      "translation": {
+        "is_description_translated": false,
+        "untranslated_description": ""
+      },
+      "reference_solution": {
+        "language_id": 3,
+        "language_guess": "python",
+        "code": "q,x=map(int,input().split())\na,m,s=[0]*(x+1),0,\"\"\nwhile q>0:\n\tq-=1\n\ta[int(input())%x]+=1\n\twhile a[m%x]>0:\n\t\ta[m%x]-=1\n\t\tm+=1\n\ts+=(str(m)+\"\\n\")\nprint(s)",
+        "char_count": 151,
+        "line_count": 10
+      },
+      "artifact_counts": {
+        "public_tests": 2,
+        "private_tests": 0,
+        "generated_tests": 81,
+        "solutions": 641,
+        "incorrect_solutions": 448
+      },
+      "heuristic_profile": {
+        "tag_families": [
+          "implementation",
+          "math",
+          "greedy",
+          "data_structures"
+        ],
+        "structure_candidates": [
+          "array"
+        ],
+        "objective_type": "optimize",
+        "coverage_features": [
+          "objective:optimize",
+          "rating:cf_mid",
+          "source:CODEFORCES",
+          "structure:array",
+          "tag:data_structures",
+          "tag:greedy",
+          "tag:implementation",
+          "tag:math"
+        ],
+        "english_filter": {
+          "passed": true,
+          "score": 19
+        },
+        "notes": [
+          "selection favors source, difficulty, tag and structure coverage over sample count",
+          "heuristic_profile fields are inferred from metadata and statement text"
+        ]
+      }
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "不要暴露原题编号、出处或链接。",
+        "不要复写原题的叙事结构、输入输出关系或任务定义。"
+      ],
+      "rationale": "目标轴由在线实时最大化改为离线最坏情况保底；约束轴新增扰动预算与同余类偏移限制；值/结构轴由在线指针维护改为离线鲁棒计数与阈值耦合。三轴联动确保问题从确定性贪心跃迁至对抗性优化。",
+      "summary": "通过引入扰动预算Δ，将原题的确定性模类分配转化为鲁棒优化问题，要求算法在对抗性计数偏移下仍能保证MEX下限，求解逻辑从均摊维护转为二分校验与极值扰动分析。",
+      "mode": "single_seed_extension"
+    },
+    "new_schema": {
+      "problem_id": "CampusWiFi_RobustMEX",
+      "source": "custom",
+      "input_structure": {
+        "type": "composite",
+        "length": {
+          "min": 1,
+          "max": 200000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": false
+        },
+        "components": [
+          {
+            "role": "parameters",
+            "role_description": "设备数量n, 信道间隔x, 扰动预算Δ",
+            "type": "tuple",
+            "length": {
+              "min": 3,
+              "max": 3
+            },
+            "value_range": {
+              "min": 1,
+              "max": 200000
+            },
+            "properties": {}
+          },
+          {
+            "role": "base_frequencies",
+            "role_description": "n个设备的基准请求信道值",
+            "type": "array",
+            "length": {
+              "min": 1,
+              "max": 200000
+            },
+            "value_range": {
+              "min": 0,
+              "max": 1000000000
+            },
+            "properties": {
+              "ordered": false
+            }
+          }
+        ]
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "divisibility",
+            "description": "设备实际分配信道必须与基准请求模x同余，即信道调整步长固定为x。",
+            "formal": "assigned_i ≡ base_i (mod x)",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "non_negative",
+            "description": "分配信道必须为非负整数，符合物理频段限制。",
+            "formal": "assigned_i ≥ 0",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "perturbation_budget",
+            "description": "受校园网络抖动影响，各余数类r的实际可用设备数c_r'可能偏离名义统计c_r，但总偏移量受预算Δ限制。",
+            "formal": "∑_{r=0}^{x-1} |c_r' - c_r| ≤ Δ, c_r' ≥ 0",
+            "source_sections": [
+              "description"
+            ]
+          }
+        ]
+      },
+      "objective": {
+        "type": "maximize_guaranteed_threshold",
+        "description": "寻找最大整数K，使得在任意满足扰动预算Δ的合法计数分布下，均存在一种信道分配方案覆盖[0, K-1]的所有整数。",
+        "target": "robust_mex_threshold",
+        "requires_solution": false
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "robust_prefix_capacity",
+            "description": "对于任意目标前缀长度K，最坏扰动必然优先削减覆盖该前缀所需的瓶颈余数类。若扰动后各余数类对前缀K的总贡献仍≥K，则K可达。该容量不等式在任意Δ下保持单调。",
+            "properties": {},
+            "evidence_source": "robust_analysis"
+          },
+          {
+            "name": "monotonic_guarantee",
+            "description": "保底阈值K关于扰动预算Δ单调非增。若K在预算Δ下成立，则任意K'<K在相同预算下必然成立，支撑二分答案的正确性。",
+            "properties": {},
+            "evidence_source": "robust_analysis"
+          }
+        ]
+      },
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "Hard"
+    },
+    "generated_problem": {
+      "title": "校园WiFi信道鲁棒分配",
+      "description": "校园网管中心近期需要为 n 个学生社团集中分配 WiFi 信道。每个社团提交了一个基准请求频率 a_i。由于硬件滤波器的物理限制，实际分配给社团的信道频率必须与基准请求频率模 x 同余，且分配值必须为非负整数。\n\n近期校园网络出现周期性抖动，导致各余数类 r（0 ≤ r < x）的实际可用设备数量 c_r' 可能偏离网管中心统计的名义数量 c_r。已知抖动造成的总偏移量受预算 Δ 限制，即所有余数类的实际数量与名义数量之差的绝对值总和不超过 Δ（∑_{r=0}^{x-1} |c_r' - c_r| ≤ Δ），且实际数量 c_r' 保持非负。\n\n网管中心希望制定一个鲁棒的分配预案：寻找最大的整数 K，使得无论网络抖动如何分配（只要满足上述预算 Δ 约束），中心都能找到一种合法的设备分配方案，使得频率 0, 1, 2, ..., K-1 均被恰好一个社团占用。请计算这个最大的 K 值。",
+      "input_format": "第一行包含三个整数 n, x, Δ，分别表示社团数量、信道间隔模数和扰动预算。\n第二行包含 n 个整数 a_1, a_2, ..., a_n，表示各社团的基准请求频率。",
+      "output_format": "输出一个整数，表示满足条件的最大保底阈值 K。",
+      "constraints": [
+        "1 ≤ n, x ≤ 200000",
+        "0 ≤ Δ ≤ 10^9",
+        "0 ≤ a_i ≤ 10^9",
+        "时间限制：2.0 秒",
+        "空间限制：512 MB"
+      ],
+      "samples": [
+        {
+          "input": "5 3 1\n0 3 1 4 2",
+          "output": "2",
+          "explanation": "名义统计中，模 3 余 0 的设备有 2 个（0, 3），余 1 的有 2 个（1, 4），余 2 的有 1 个（2）。扰动预算 Δ=1。若尝试 K=3，需要各余数类至少 1 个设备。最坏情况下，抖动可能将余 2 类的 1 个设备全部削减（偏移量 1 ≤ Δ），导致余 2 类实际可用为 0，无法覆盖频率 2，故 K=3 不成立。对于 K=2，只需覆盖频率 0 和 1，分别需要余 0 和余 1 类各 1 个设备。即使抖动削减任意一类 1 个设备，剩余名义数量仍满足需求（2-1=1 ≥ 1）。因此最大保底 K 为 2。"
+        },
+        {
+          "input": "4 2 0\n0 0 1 1",
+          "output": "4",
+          "explanation": "扰动预算 Δ=0，表示无抖动，实际数量等于名义数量。模 2 余 0 有 2 个，余 1 有 2 个。覆盖 0,1,2,3 恰好需要余 0 类 2 个（对应 0,2），余 1 类 2 个（对应 1,3）。名义数量完全匹配，故 K=4 成立。"
+        }
+      ],
+      "notes": "本题要求的是最坏情况下的保底阈值，即对于所有满足 ∑|c_r' - c_r| ≤ Δ 的合法扰动分布，都必须存在覆盖 [0, K-1] 的分配方案。若不存在任何正整数 K 满足条件，请输出 0。所有运算均在整数范围内进行，无需取模。",
+      "status": "ok",
+      "error_reason": "",
+      "feedback": ""
+    },
+    "artifact_contract": {
+      "new_schema_present": true,
+      "new_schema_field_present": false,
+      "new_schema_snapshot_field_present": true,
+      "difference_plan_present": true,
+      "predicted_schema_distance_present": true,
+      "distance_breakdown_present": true,
+      "changed_axes_realized_present": true,
+      "generated_problem_present": true
+    },
+    "review_context": {
+      "difference_plan": {
+        "summary": "通过引入扰动预算Δ，将原题的确定性模类分配转化为鲁棒优化问题，要求算法在对抗性计数偏移下仍能保证MEX下限，求解逻辑从均摊维护转为二分校验与极值扰动分析。",
+        "mode": "single_seed_extension",
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      },
+      "changed_axes_realized": [
+        "C",
+        "O",
+        "V"
+      ],
+      "distance_breakdown": {
+        "distance_version": "v2",
+        "backend": "embedding",
+        "total": 0.4246,
+        "axis_scores": {
+          "I": 0.0682,
+          "C": 0.6068,
+          "O": 0.5283,
+          "V": 0.4673
+        },
+        "components": {
+          "input_tree_distance": 0.0682,
+          "constraint_match_distance": 0.6068,
+          "objective_type_distance": 0.5012,
+          "objective_text_distance": 0.5689,
+          "invariant_match_distance": 0.4673
+        }
+      },
+      "applied_rule": "minimum_guarantee_under_perturbation",
+      "applied_helpers": [
+        {
+          "id": "native_perturbation_model",
+          "selection_reason": "将原题隐含的在线顺序不确定性显式化为同余类计数扰动预算Δ，符合校园网络抖动语义。",
+          "affected_axes": [
+            "C",
+            "V"
+          ],
+          "schema_changes": [
+            "core_constraints新增perturbation_budget约束",
+            "invariant新增robust_prefix_capacity描述扰动下的容量守恒"
+          ],
+          "innovation_reason": "将隐藏的不确定性转化为正式约束来源，使问题从确定性分配跃迁至鲁棒优化。",
+          "difficulty_reason": "要求算法在最坏扰动分布下维持可行性，需处理对抗性计数偏移的极值分析。"
+        },
+        {
+          "id": "worst_case_invariant",
+          "selection_reason": "强化不变量以直接服务最坏情况保证，确保目标与扰动模型绑定。",
+          "affected_axes": [
+            "C",
+            "O",
+            "V"
+          ],
+          "schema_changes": [
+            "objective改为maximize_guaranteed_threshold",
+            "invariant新增monotonic_guarantee支撑二分单调性",
+            "core_constraints与目标联动定义保底责任"
+          ],
+          "innovation_reason": "让目标从可行扩成保底最优，不变量直接刻画扰动下的容量下界。",
+          "difficulty_reason": "要求算法证明强化不变量在任意扰动下成立，需构造严密的极值扰动分配策略。"
+        },
+        {
+          "id": "guarantee_threshold_coupling",
+          "selection_reason": "将保底阈值K与主约束深度耦合，避免外层简单二分。",
+          "affected_axes": [
+            "C",
+            "O"
+          ],
+          "schema_changes": [
+            "objective中K直接决定校验函数的计算范围",
+            "core_constraints中扰动预算Δ的分配逻辑随K动态变化"
+          ],
+          "innovation_reason": "让保底阈值成为新题主目标，阈值搜索与可行性结构深度融合。",
+          "difficulty_reason": "要求算法同时处理阈值搜索与扰动可行性结构，校验函数需O(x)或更优实现。"
+        }
+      ],
+      "algorithmic_delta_claim": {
+        "seed_solver_core": "在线维护模x余数计数数组，利用MEX单调性贪心填充，均摊O(1)处理每次查询。",
+        "reusable_subroutines": "模x余数统计逻辑、同余类到目标位置的映射计算、前缀容量累加校验框架。",
+        "new_solver_core": "二分答案K，对每个K计算最坏扰动下的最小可用容量。利用扰动预算Δ的贪心分配性质（将Δ优先用于削减覆盖前缀K所需的关键余数类），转化为带权前缀和校验，单次校验O(x)或O(√K)。",
+        "new_proof_obligation": "需严格证明最坏扰动分布的极值点必然落在覆盖前缀K的瓶颈余数类上，且扰动预算Δ的贪心削减策略满足子模性，从而保证二分答案的单调性与校验函数的正确性；同时需证明扰动模型不破坏模类独立性，使容量不等式可线性叠加。",
+        "why_direct_reuse_fails": "原在线贪心依赖实时查询顺序的确定性，无法处理离线对抗性扰动；直接套用会忽略Δ对关键余数类的针对性破坏，导致保底估计虚高。原单调指针维护在扰动下失效，必须重构为离线容量校验。"
+      },
+      "anti_shallow_rationale": "并非简单在外层套二分或修改阈值，而是将扰动预算Δ深度耦合进同余类容量计算中。最坏情况扰动改变了状态转移的依赖关系，必须重新推导鲁棒容量不等式，原单调指针维护完全失效，算法需从在线贪心转为离线极值分析与二分校验。"
+    }
+  }
+}

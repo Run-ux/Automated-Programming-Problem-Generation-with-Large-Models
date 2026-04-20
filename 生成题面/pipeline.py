@@ -17,8 +17,13 @@ from variant_planner import VariantPlanner
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+QUALITY_EVAL_DIR = PROJECT_ROOT / "题目质量评价"
+if str(QUALITY_EVAL_DIR) not in sys.path:
+    sys.path.insert(0, str(QUALITY_EVAL_DIR))
 
 from finiteness_verification.problem_repository import ProblemRepository
+from problem_quality import ProblemEvaluator
+from problem_quality.report_renderer import render_report_markdown as render_quality_report_markdown
 
 
 class GenerationPipeline:
@@ -31,6 +36,8 @@ class GenerationPipeline:
         generator: ProblemGenerator,
         planner: VariantPlanner,
         problem_repository: ProblemRepository | None = None,
+        quality_evaluator: Any | None = None,
+        quality_report_renderer: Callable[[dict[str, Any]], str] | None = None,
         progress_writer: Callable[[str], None] | None = None,
     ):
         self.loader = SchemaLoader(source_dir)
@@ -40,6 +47,8 @@ class GenerationPipeline:
         self.generator = generator
         self.planner = planner
         self.problem_repository = problem_repository or ProblemRepository()
+        self.quality_evaluator = quality_evaluator
+        self.quality_report_renderer = quality_report_renderer or render_quality_report_markdown
         self.progress_writer = progress_writer or _default_progress_writer
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.artifact_dir.mkdir(parents=True, exist_ok=True)
@@ -56,8 +65,11 @@ class GenerationPipeline:
         seed_b: str | None = None,
         allowed_rule_ids: set[str] | None = None,
         batch_source_dir: Path | None = None,
+        quality_iterations: int = 0,
     ) -> list[dict[str, Any]]:
         canonical_mode = _canonical_mode(mode)
+        if quality_iterations and canonical_mode != "single_seed_extension":
+            raise ValueError("质量闭环迭代当前只支持 single_seed_extension。")
         if canonical_mode == "single_seed_extension":
             return self._run_single(
                 problem_ids=problem_ids,
@@ -65,6 +77,7 @@ class GenerationPipeline:
                 theme_id=theme_id,
                 allowed_rule_ids=allowed_rule_ids,
                 batch_source_dir=batch_source_dir,
+                quality_iterations=quality_iterations,
             )
         return self._run_same_family(
             seed_a=seed_a,
@@ -82,6 +95,7 @@ class GenerationPipeline:
         theme_id: str | None,
         allowed_rule_ids: set[str] | None,
         batch_source_dir: Path | None,
+        quality_iterations: int,
     ) -> list[dict[str, Any]]:
         target_problem_ids = list(problem_ids) or self.loader.list_problem_ids()
         records: list[dict[str, Any]] = []
@@ -94,6 +108,7 @@ class GenerationPipeline:
                         variants=variants,
                         theme_id=theme_id,
                         allowed_rule_ids=allowed_rule_ids,
+                        quality_iterations=quality_iterations,
                     )
                 )
             self._emit_progress(f"[single] 全部完成，共生成 {len(records)} 个产物。")
@@ -116,6 +131,7 @@ class GenerationPipeline:
                     variants=variants,
                     theme_id=theme_id,
                     allowed_rule_ids=allowed_rule_ids,
+                    quality_iterations=quality_iterations,
                 )
             except Exception as exc:
                 batch_items.append(
@@ -164,6 +180,7 @@ class GenerationPipeline:
         variants: int,
         theme_id: str | None,
         allowed_rule_ids: set[str] | None,
+        quality_iterations: int,
     ) -> list[dict[str, Any]]:
         self._emit_progress(f"[problem] {problem_id}：读取 schema 与原题信息。")
         seed_schema = self.loader.load(problem_id)
@@ -172,36 +189,25 @@ class GenerationPipeline:
 
         problem_records: list[dict[str, Any]] = []
         for variant_index in range(1, variants + 1):
-            self._emit_progress(f"[problem] {problem_id}：variant {variant_index} 进入规划。")
-            plan = self.planner.build_plan(
-                mode="single_seed_extension",
-                variant_index=variant_index,
-                theme_id=theme_id,
-                seed_schema=seed_schema,
-                original_problem=original_problem,
-                allowed_rule_ids=allowed_rule_ids,
-            )
-            stem = self._build_stem(plan.source_problem_ids, plan.variant_index, plan.theme.theme_id)
-            self._emit_progress(
-                f"[problem] {problem_id}：variant {variant_index} 规划完成，规则={plan.applied_rule or '无'}。"
-            )
-            self._emit_progress(f"[problem] {problem_id}：variant {variant_index} 进入题面生成。")
-            generated = self.generator.generate(
-                {"seed_schema": seed_schema},
-                plan,
-                original_problems=[item for item in [original_problem] if item],
-            )
-            self._emit_progress(
-                f"[problem] {problem_id}：variant {variant_index} 生成完成，status={generated.status}。"
-            )
-            markdown = render_problem_markdown(generated, plan)
-            self._emit_progress(f"[problem] {problem_id}：variant {variant_index} 写入产物。")
-            record = self._save_outputs(
-                stem=stem,
-                plan=plan,
-                payload=generated.__dict__,
-                markdown=markdown,
-            )
+            if quality_iterations <= 0:
+                plan, generated, record = self._run_single_variant_once(
+                    problem_id=problem_id,
+                    variant_index=variant_index,
+                    theme_id=theme_id,
+                    seed_schema=seed_schema,
+                    original_problem=original_problem,
+                    allowed_rule_ids=allowed_rule_ids,
+                )
+            else:
+                plan, generated, record = self._run_single_variant_with_quality_iterations(
+                    problem_id=problem_id,
+                    variant_index=variant_index,
+                    theme_id=theme_id,
+                    seed_schema=seed_schema,
+                    original_problem=original_problem,
+                    allowed_rule_ids=allowed_rule_ids,
+                    requested_rounds=quality_iterations,
+                )
             problem_records.append(record)
             report_sections.extend(
                 self._build_single_variant_report_sections(
@@ -214,11 +220,180 @@ class GenerationPipeline:
             )
 
         self._emit_progress(f"[problem] {problem_id}：写入过程报告。")
-        report_path = self._write_problem_report(problem_id, report_sections)
+        report_path = self._write_problem_report(report_group=problem_id, report_name=problem_id, lines=report_sections)
         for record in problem_records:
             record["report_path"] = str(report_path)
         self._emit_progress(f"[problem] {problem_id}：完成。report={report_path}")
         return problem_records
+
+    def _run_single_variant_once(
+        self,
+        *,
+        problem_id: str,
+        variant_index: int,
+        theme_id: str | None,
+        seed_schema: dict[str, Any],
+        original_problem: dict[str, Any] | None,
+        allowed_rule_ids: set[str] | None,
+    ) -> tuple[VariantPlan, Any, dict[str, Any]]:
+        self._emit_progress(f"[problem] {problem_id}：variant {variant_index} 进入规划。")
+        plan = self.planner.build_plan(
+            mode="single_seed_extension",
+            variant_index=variant_index,
+            theme_id=theme_id,
+            seed_schema=seed_schema,
+            original_problem=original_problem,
+            allowed_rule_ids=allowed_rule_ids,
+        )
+        stem = self._build_stem(plan.source_problem_ids, plan.variant_index, plan.theme.theme_id)
+        self._emit_progress(
+            f"[problem] {problem_id}：variant {variant_index} 规划完成，规则={plan.applied_rule or '无'}。"
+        )
+        self._emit_progress(f"[problem] {problem_id}：variant {variant_index} 进入题面生成。")
+        generated = self.generator.generate(
+            {"seed_schema": seed_schema},
+            plan,
+            original_problems=[item for item in [original_problem] if item],
+        )
+        self._emit_progress(
+            f"[problem] {problem_id}：variant {variant_index} 生成完成，status={generated.status}。"
+        )
+        markdown = render_problem_markdown(generated, plan)
+        self._emit_progress(f"[problem] {problem_id}：variant {variant_index} 写入产物。")
+        record = self._save_outputs(
+            stem=stem,
+            plan=plan,
+            payload=generated.__dict__,
+            markdown=markdown,
+        )
+        return plan, generated, record
+
+    def _run_single_variant_with_quality_iterations(
+        self,
+        *,
+        problem_id: str,
+        variant_index: int,
+        theme_id: str | None,
+        seed_schema: dict[str, Any],
+        original_problem: dict[str, Any] | None,
+        allowed_rule_ids: set[str] | None,
+        requested_rounds: int,
+    ) -> tuple[VariantPlan, Any, dict[str, Any]]:
+        base_stem = ""
+        run_id = ""
+        previous_artifact_path = ""
+        previous_quality_report_path = ""
+        revision_context: dict[str, Any] | None = None
+        round_records: list[dict[str, Any]] = []
+        stop_reason = "reached_requested_rounds"
+        last_plan: VariantPlan | None = None
+        last_generated: Any | None = None
+        final_record: dict[str, Any] | None = None
+
+        for round_index in range(1, requested_rounds + 1):
+            self._emit_progress(f"[problem] {problem_id}：variant {variant_index} 第 {round_index} 轮进入规划。")
+            plan = self.planner.build_plan(
+                mode="single_seed_extension",
+                variant_index=variant_index,
+                theme_id=theme_id,
+                seed_schema=seed_schema,
+                original_problem=original_problem,
+                allowed_rule_ids=allowed_rule_ids,
+                revision_context=revision_context,
+            )
+            if not base_stem:
+                base_stem = self._build_stem(plan.source_problem_ids, plan.variant_index, plan.theme.theme_id)
+                run_id = base_stem
+            self._emit_progress(
+                f"[problem] {problem_id}：variant {variant_index} 第 {round_index} 轮规划完成，规则={plan.applied_rule or '无'}。"
+            )
+            self._emit_progress(f"[problem] {problem_id}：variant {variant_index} 第 {round_index} 轮进入题面生成。")
+            generated = self.generator.generate(
+                {"seed_schema": seed_schema},
+                plan,
+                original_problems=[item for item in [original_problem] if item],
+                revision_context=revision_context,
+            )
+            self._emit_progress(
+                f"[problem] {problem_id}：variant {variant_index} 第 {round_index} 轮生成完成，status={generated.status}。"
+            )
+            markdown = render_problem_markdown(generated, plan)
+            self._emit_progress(f"[problem] {problem_id}：variant {variant_index} 第 {round_index} 轮写入产物。")
+            record = self._save_outputs(
+                stem=base_stem,
+                plan=plan,
+                payload=generated.__dict__,
+                markdown=markdown,
+                round_index=round_index,
+                iteration_metadata={
+                    "run_id": run_id,
+                    "round_index": round_index,
+                    "requested_rounds": requested_rounds,
+                    "previous_artifact_path": previous_artifact_path,
+                    "previous_quality_report_path": previous_quality_report_path,
+                    "revision_context_snapshot": json.loads(
+                        json.dumps(revision_context or {}, ensure_ascii=False)
+                    ),
+                },
+            )
+            self._emit_progress(f"[problem] {problem_id}：variant {variant_index} 第 {round_index} 轮进入质量评测。")
+            quality_result = self._evaluate_quality_round(
+                problem_id=problem_id,
+                round_index=round_index,
+                schema_path=self.loader.source_dir / f"{problem_id}.json",
+                artifact_path=Path(record["artifact_path"]),
+                markdown_path=Path(record["markdown_path"]),
+                original_problem=original_problem,
+            )
+
+            round_record = {
+                "round_index": round_index,
+                "artifact_path": record["artifact_path"],
+                "markdown_path": record["markdown_path"],
+                "quality_report_json_path": quality_result["json_path"],
+                "quality_report_md_path": quality_result["md_path"],
+                "overall_status": quality_result["report"]["overall"]["status"],
+                "generated_status": quality_result["report"]["overall"]["generated_status"],
+                "quality_score": quality_result["report"]["overall"]["quality_score"],
+                "divergence_score": quality_result["report"]["overall"]["divergence_score"],
+            }
+            round_records.append(round_record)
+
+            record["quality_report_json_path"] = quality_result["json_path"]
+            record["quality_report_md_path"] = quality_result["md_path"]
+            record["final_round_index"] = round_index
+            record["round_records"] = list(round_records)
+
+            previous_artifact_path = record["artifact_path"]
+            previous_quality_report_path = quality_result["json_path"]
+            last_plan = plan
+            last_generated = generated
+            final_record = record
+
+            stop_reason = self._determine_quality_iteration_stop_reason(
+                generated_status=generated.status,
+                overall_status=str(quality_result["report"]["overall"]["status"]),
+                round_index=round_index,
+                requested_rounds=requested_rounds,
+            )
+            if stop_reason:
+                break
+            revision_context = quality_result["report"].get("revision_brief", {})
+
+        if last_plan is None or last_generated is None or final_record is None:
+            raise RuntimeError("质量闭环迭代未生成任何轮次产物。")
+
+        summary_path = self._write_iteration_summary(
+            stem=base_stem,
+            problem_group=self._build_problem_group(last_plan.source_problem_ids),
+            run_id=run_id,
+            requested_rounds=requested_rounds,
+            rounds=round_records,
+            final_round_index=int(final_record.get("final_round_index", 1)),
+            stop_reason=stop_reason,
+        )
+        final_record["iteration_summary_path"] = str(summary_path)
+        return last_plan, last_generated, final_record
 
     def _run_same_family(
         self,
@@ -284,7 +459,11 @@ class GenerationPipeline:
                 )
             )
 
-        report_path = self._write_problem_report(report_key, report_sections)
+        report_path = self._write_problem_report(
+            report_group=report_key,
+            report_name=report_key,
+            lines=report_sections,
+        )
         for record in records:
             record["report_path"] = str(report_path)
         return records
@@ -296,9 +475,13 @@ class GenerationPipeline:
         plan: VariantPlan,
         payload: dict[str, Any],
         markdown: str,
+        round_index: int | None = None,
+        iteration_metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        json_path = self.artifact_dir / f"{stem}.json"
-        md_path = self.output_dir / f"{stem}.md"
+        stem_with_round = f"{stem}_round{round_index}" if round_index is not None else stem
+        problem_group = self._build_problem_group(plan.source_problem_ids)
+        json_path = self._resolve_problem_group_dir(self.artifact_dir, problem_group) / f"{stem_with_round}.json"
+        md_path = self._resolve_problem_group_dir(self.output_dir, problem_group) / f"{stem_with_round}.md"
 
         artifact = {
             "problem_id": plan.problem_id,
@@ -335,6 +518,8 @@ class GenerationPipeline:
             "candidate_attempts": plan.candidate_attempts,
             "generated_problem": payload,
         }
+        if iteration_metadata is not None:
+            artifact["iteration"] = json.loads(json.dumps(iteration_metadata, ensure_ascii=False))
 
         with json_path.open("w", encoding="utf-8") as handle:
             json.dump(artifact, handle, ensure_ascii=False, indent=2)
@@ -627,8 +812,17 @@ class GenerationPipeline:
         )
         return lines
 
-    def _write_problem_report(self, report_name: str, lines: list[str]) -> Path:
-        report_path = self.report_dir / f"{report_name}.md"
+    def _build_problem_group(self, source_problem_ids: list[str]) -> str:
+        group = "__".join(problem_id for problem_id in source_problem_ids if problem_id)
+        return group or "unknown_problem"
+
+    def _resolve_problem_group_dir(self, base_dir: Path, problem_group: str) -> Path:
+        group_dir = base_dir / problem_group
+        group_dir.mkdir(parents=True, exist_ok=True)
+        return group_dir
+
+    def _write_problem_report(self, *, report_group: str, report_name: str, lines: list[str]) -> Path:
+        report_path = self._resolve_problem_group_dir(self.report_dir, report_group) / f"{report_name}.md"
         report_path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
         return report_path
 
@@ -664,6 +858,85 @@ class GenerationPipeline:
             encoding="utf-8",
         )
         return {"artifact_path": artifact_path}
+
+    def _get_quality_evaluator(self) -> Any:
+        if self.quality_evaluator is None:
+            self.quality_evaluator = ProblemEvaluator()
+        return self.quality_evaluator
+
+    def _evaluate_quality_round(
+        self,
+        *,
+        problem_id: str,
+        round_index: int,
+        schema_path: Path,
+        artifact_path: Path,
+        markdown_path: Path,
+        original_problem: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        report = self._get_quality_evaluator().evaluate_problem(
+            schema_path=schema_path,
+            artifact_path=artifact_path,
+            original_problem_override=original_problem,
+            markdown_path=markdown_path,
+            round_index=round_index,
+        )
+        report_group_dir = self._resolve_problem_group_dir(self.report_dir, problem_id)
+        report_stem = artifact_path.stem + "_quality_report"
+        json_path = report_group_dir / f"{report_stem}.json"
+        md_path = report_group_dir / f"{report_stem}.md"
+        json_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+        md_path.write_text(self.quality_report_renderer(report), encoding="utf-8")
+        self._emit_progress(
+            f"[problem] {problem_id}：第 {round_index} 轮质量评测完成，status={report['overall']['status']}。"
+        )
+        return {
+            "report": report,
+            "json_path": str(json_path),
+            "md_path": str(md_path),
+        }
+
+    def _determine_quality_iteration_stop_reason(
+        self,
+        *,
+        generated_status: str,
+        overall_status: str,
+        round_index: int,
+        requested_rounds: int,
+    ) -> str:
+        if generated_status in {"schema_insufficient", "difference_insufficient"}:
+            return generated_status
+        if overall_status == "pass":
+            return "pass"
+        if overall_status == "reject_invalid":
+            return "reject_invalid"
+        if round_index >= requested_rounds:
+            return "reached_requested_rounds"
+        if overall_status in {"revise_quality", "reject_as_retheme"} and generated_status == "ok":
+            return ""
+        return "reached_requested_rounds"
+
+    def _write_iteration_summary(
+        self,
+        *,
+        stem: str,
+        problem_group: str,
+        run_id: str,
+        requested_rounds: int,
+        rounds: list[dict[str, Any]],
+        final_round_index: int,
+        stop_reason: str,
+    ) -> Path:
+        summary_path = self._resolve_problem_group_dir(self.artifact_dir, problem_group) / f"{stem}_iteration_summary.json"
+        payload = {
+            "run_id": run_id,
+            "requested_rounds": requested_rounds,
+            "final_round_index": final_round_index,
+            "stop_reason": stop_reason,
+            "rounds": list(rounds),
+        }
+        summary_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        return summary_path
 
     def _safe_get_problem(
         self,

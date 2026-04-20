@@ -1,0 +1,680 @@
+{
+  "overall": {
+    "status": "reject_as_retheme",
+    "quality_score": 97.0,
+    "divergence_score": 46.5,
+    "schema_distance": 0.3894,
+    "generated_status": "ok"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 5.0,
+        "rationale": "题面精准实现了 new_schema 定义的所有核心要素：输入结构（t, n, p, a数组）、边权规则（相邻固定p，区间直达需满足最小值整除区间所有元素且权值为最小值）、目标函数（最小生成树方案数模10^9+7）以及去重口径（边集不同即视为不同方案）。主题映射自然，无偏离。",
+        "evidence_refs": [
+          "new_schema.input_structure",
+          "new_schema.core_constraints",
+          "new_schema.objective",
+          "generated_problem.description"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 5.0,
+        "rationale": "题面提供了独立解题所需的全部关键信息。任务说明清晰，输入输出格式规范，约束条件完整（包含多组数据n之和限制、时间/空间限制），模数与方案差异定义明确。Notes中补充了图连通性保证，无歧义或需猜测的边界条件。",
+        "evidence_refs": [
+          "generated_problem.input_format",
+          "generated_problem.output_format",
+          "generated_problem.constraints",
+          "generated_problem.notes"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 5.0,
+        "rationale": "description、input_format、output_format、constraints 与 samples 之间高度一致。变量符号（n, p, a_i）在各部分含义统一，边权定义与样例计算逻辑吻合，约束范围与输入格式匹配，未发现字段数量或逻辑冲突。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.constraints",
+          "generated_problem.samples"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 4.0,
+        "rationale": "提供了2个样例，覆盖了全等值完全图与等比数列场景，且输出与解释计算正确。但第二个样例的解释误标为“样例 3”，存在轻微笔误。此外，对于 Hard 难度题目，样例未显式覆盖“不同割位最优边数独立相乘”的核心组合结构，覆盖度略有欠缺。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks.sample_count"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 5.0,
+        "rationale": "题面结构符合标准 OJ 规范，分段清晰（标题、描述、输入、输出、约束、样例、备注）。措辞专业准确，校园主题包装自然且不干扰核心逻辑，无来源污染或冗余噪声，便于选手快速抓取关键条件。",
+        "evidence_refs": [
+          "generated_problem.title",
+          "generated_problem.description",
+          "generated_problem.constraints"
+        ]
+      }
+    ],
+    "strengths": [
+      "精准落地 new_schema 的边权定义、模意义计数目标与去重口径，无信息丢失或扭曲。",
+      "约束条件设计严谨，包含 Σn 限制与合理的时间/空间配额，符合算法竞赛出题规范。",
+      "题面结构标准、语言精炼，主题包装与抽象约束融合自然，无原题痕迹或干扰信息。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "distance_version": "v2",
+      "backend": "embedding",
+      "total": 0.3894,
+      "axis_scores": {
+        "I": 0.0,
+        "C": 0.5091,
+        "O": 0.5551,
+        "V": 0.4896
+      },
+      "components": {
+        "input_tree_distance": 0.0,
+        "constraint_match_distance": 0.5091,
+        "objective_type_distance": 0.6638,
+        "objective_text_distance": 0.392,
+        "invariant_match_distance": 0.4896
+      }
+    },
+    "schema_distance": 0.3894,
+    "changed_axes_planned": [
+      "C",
+      "O",
+      "V"
+    ],
+    "changed_axes_realized": [
+      "C",
+      "O",
+      "V"
+    ],
+    "semantic_difference": 0.45,
+    "solution_transfer_risk": 0.85,
+    "surface_retheme_risk": 0.85,
+    "verdict": "reject_as_retheme",
+    "rationale": "新题与原题在图构建规则、边权定义及核心约束上完全一致。原题利用割性质将MST权值分解为各相邻割位最小代价之和，新题仅将目标从‘求和最小权值’改为‘统计达到最小权值的生成树数量’。由于该图结构的特殊性（边仅跨越连续区间且相邻边固定），MST计数同样严格遵循割独立性，只需将原算法中每个割位的‘取最小值并累加’改为‘统计等于最小值的合法边数量并相乘取模’。核心状态设计（单调栈/双指针维护整除区间与最小值）、关键性质（割位独立决策）及主循环框架均可直接复用，仅需修改聚合逻辑与计数细节。表层叙事与变量名虽全面替换，但任务结构与样例设计高度对应原题，未引入实质性的建模障碍或算法范式转换。",
+    "evidence_refs": [
+      "snapshots.original_problem.description",
+      "snapshots.generated_problem.description",
+      "snapshots.new_schema.objective",
+      "snapshots.new_schema.invariant",
+      "review_context.algorithmic_delta_claim"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_problem_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 generated_problem。",
+      "evidence_refs": [
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "new_schema_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 new_schema 或兼容字段 new_schema_snapshot。",
+      "evidence_refs": [
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "生成状态正常。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "predicted_schema_distance_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 predicted_schema_distance。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "distance_breakdown_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 distance_breakdown。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "changed_axes_realized_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 changed_axes_realized。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.39，达到中等差异阈值。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "已落地核心差异轴：C, O, V。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题或题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=2。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "目标函数已经在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "样例解释编号笔误",
+      "detail": "第二个样例对象的 explanation 字段中误写为“样例 3”，实际应为“样例 2”，属于排版疏漏。",
+      "evidence_refs": [
+        "generated_problem.samples[1].explanation"
+      ],
+      "fix_hint": "将 explanation 开头的“样例 3：”更正为“样例 2：”。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "样例未充分展示核心组合结构",
+      "detail": "当前两个样例的图均退化为边权全等的完全图，未体现 review_context 中强调的“割位独立性”与“乘法聚合”特性。对于 Hard 难度，缺乏能直观展示不同割位最优边数相乘的样例。",
+      "evidence_refs": [
+        "generated_problem.samples",
+        "review_context.applied_helpers[1].schema_changes"
+      ],
+      "fix_hint": "增加第三个样例，构造 p 与部分直达边权竞争、且不同相邻割位的最优跨越边数量不同的场景，并在解释中明确乘积计算过程。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "solution transfer risk too high",
+      "detail": "新题与原题在图构建规则、边权定义及核心约束上完全一致。原题利用割性质将MST权值分解为各相邻割位最小代价之和，新题仅将目标从‘求和最小权值’改为‘统计达到最小权值的生成树数量’。由于该图结构的特殊性（边仅跨越连续区间且相邻边固定），MST计数同样严格遵循割独立性，只需将原算法中每个割位的‘取最小值并累加’改为‘统计等于最小值的合法边数量并相乘取模’。核心状态设计（单调栈/双指针维护整除区间与最小值）、关键性质（割位独立决策）及主循环框架均可直接复用，仅需修改聚合逻辑与计数细节。表层叙事与变量名虽全面替换，但任务结构与样例设计高度对应原题，未引入实质性的建模障碍或算法范式转换。",
+      "evidence_refs": [
+        "snapshots.original_problem.description",
+        "snapshots.generated_problem.description",
+        "snapshots.new_schema.objective",
+        "snapshots.new_schema.invariant",
+        "review_context.algorithmic_delta_claim"
+      ],
+      "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+    }
+  ],
+  "suggested_revisions": [
+    "将 explanation 开头的“样例 3：”更正为“样例 2：”。",
+    "增加第三个样例，构造 p 与部分直达边权竞争、且不同相邻割位的最优跨越边数量不同的场景，并在解释中明确乘积计算过程。",
+    "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+    "修正样例 2 解释文本中的序号标签错误。",
+    "补充一个体现“割位决策独立性”的样例，帮助选手理解乘法聚合的解题突破口。",
+    "可在 constraints 或 notes 中明确说明 a_i 为正整数（虽描述已提及，但约束区统一声明更严谨）。",
+    "优先改写核心任务定义，而不是继续替换故事背景。"
+  ],
+  "revision_brief": {
+    "round_index": 1,
+    "overall_status": "reject_as_retheme",
+    "generated_status": "ok",
+    "quality_score": 97.0,
+    "divergence_score": 46.5,
+    "failed_hard_checks": [],
+    "issues": [
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "样例解释编号笔误",
+        "detail": "第二个样例对象的 explanation 字段中误写为“样例 3”，实际应为“样例 2”，属于排版疏漏。",
+        "evidence_refs": [
+          "generated_problem.samples[1].explanation"
+        ],
+        "fix_hint": "将 explanation 开头的“样例 3：”更正为“样例 2：”。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "样例未充分展示核心组合结构",
+        "detail": "当前两个样例的图均退化为边权全等的完全图，未体现 review_context 中强调的“割位独立性”与“乘法聚合”特性。对于 Hard 难度，缺乏能直观展示不同割位最优边数相乘的样例。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "review_context.applied_helpers[1].schema_changes"
+        ],
+        "fix_hint": "增加第三个样例，构造 p 与部分直达边权竞争、且不同相邻割位的最优跨越边数量不同的场景，并在解释中明确乘积计算过程。"
+      },
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "solution transfer risk too high",
+        "detail": "新题与原题在图构建规则、边权定义及核心约束上完全一致。原题利用割性质将MST权值分解为各相邻割位最小代价之和，新题仅将目标从‘求和最小权值’改为‘统计达到最小权值的生成树数量’。由于该图结构的特殊性（边仅跨越连续区间且相邻边固定），MST计数同样严格遵循割独立性，只需将原算法中每个割位的‘取最小值并累加’改为‘统计等于最小值的合法边数量并相乘取模’。核心状态设计（单调栈/双指针维护整除区间与最小值）、关键性质（割位独立决策）及主循环框架均可直接复用，仅需修改聚合逻辑与计数细节。表层叙事与变量名虽全面替换，但任务结构与样例设计高度对应原题，未引入实质性的建模障碍或算法范式转换。",
+        "evidence_refs": [
+          "snapshots.original_problem.description",
+          "snapshots.generated_problem.description",
+          "snapshots.new_schema.objective",
+          "snapshots.new_schema.invariant",
+          "review_context.algorithmic_delta_claim"
+        ],
+        "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+      }
+    ],
+    "suggested_revisions": [
+      "将 explanation 开头的“样例 3：”更正为“样例 2：”。",
+      "增加第三个样例，构造 p 与部分直达边权竞争、且不同相邻割位的最优跨越边数量不同的场景，并在解释中明确乘积计算过程。",
+      "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+      "修正样例 2 解释文本中的序号标签错误。",
+      "补充一个体现“割位决策独立性”的样例，帮助选手理解乘法聚合的解题突破口。",
+      "可在 constraints 或 notes 中明确说明 a_i 为正整数（虽描述已提及，但约束区统一声明更严谨）。",
+      "优先改写核心任务定义，而不是继续替换故事背景。"
+    ],
+    "strengths_to_keep": [
+      "精准落地 new_schema 的边权定义、模意义计数目标与去重口径，无信息丢失或扭曲。",
+      "约束条件设计严谨，包含 Σn 限制与合理的时间/空间配额，符合算法竞赛出题规范。",
+      "题面结构标准、语言精炼，主题包装与抽象约束融合自然，无原题痕迹或干扰信息。"
+    ]
+  },
+  "snapshots": {
+    "paths": {
+      "schema_path": "D:\\AutoProblemGen\\四元组抽取\\output\\batch\\normalized\\CF1513D.json",
+      "artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1513D_v1_campus_ops_20260420_215028_round1.json",
+      "markdown_path": "D:\\AutoProblemGen\\生成题面\\output\\CF1513D_v1_campus_ops_20260420_215028_round1.md"
+    },
+    "original_problem": {
+      "problem_id": "CF1513D",
+      "title": "D. GCD and MST",
+      "description": "You are given an array $a$ of $n$ ($n \\geq 2$) positive integers and an integer $p$. Consider an undirected weighted graph of $n$ vertices numbered from $1$ to $n$ for which the edges between the vertices $i$ and $j$ ($i<j$) are added in the following manner:\n\nHere $gcd(x, y, \\ldots)$ denotes the greatest common divisor (GCD) of integers $x$, $y$,....\n\nNote that there could be multiple edges between $i$ and $j$ if both of the above conditions are true, and if both the conditions fail for $i$ and $j$, then there is no edge between these vertices.\n\nThe goal is to find the weight of the minimum spanning tree of this graph.",
+      "input": "The first line contains a single integer $t$ ($1 \\leq t \\leq 10^4$) — the number of test cases. The first line of each test case contains two integers $n$ ($2 \\leq n \\leq 2 \\cdot 10^5$) and $p$ ($1 \\leq p \\leq 10^9$) — the number of nodes and the parameter $p$. The second line contains $n$ integers $a_1, a_2, a_3, \\dots, a_n$ ($1 \\leq a_i \\leq 10^9$). It is guaranteed that the sum of $n$ over all test cases does not exceed $2 \\cdot 10^5$.",
+      "output": "Output $t$ lines. For each test case print the weight of the corresponding graph.",
+      "constraints": "time limit per test 2 seconds\nmemory limit per test 256 megabytes",
+      "source": "codeforces",
+      "url": "https://codeforces.com/contest/1513/problem/D",
+      "tags": [
+        "constructive algorithms",
+        "dsu",
+        "graphs",
+        "greedy",
+        "number theory",
+        "sortings"
+      ],
+      "difficulty": "2000"
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "CF1513D",
+        "D. GCD and MST",
+        "codeforces",
+        "https://codeforces.com/contest/1513/problem/D",
+        "You are given an array $a$ of $n$ ($n \\geq 2$) positive integers and an integer $p$. Consider an undirected weighted graph of $n$ vertices numbered from $1$ to $n$ for which the edges between the vertices $i$ and $j$...",
+        "不要复写原题的叙事结构、任务定义或样例套路。",
+        "不要只替换实体名称后保留同样的输入输出关系。"
+      ],
+      "rationale": "目标从求和最优值变为组合计数，需在约束中明确定义计数单元与等价类，在不变量中从加法可加性转为乘法独立性，彻底重构状态转移逻辑。",
+      "summary": "以割性质为核心，将全局最优值计算转化为各相邻割位最小代价边数量的乘积，完成从存在/最优到明确计数的范式升级。",
+      "mode": "single_seed_extension"
+    },
+    "new_schema": {
+      "problem_id": "CAMPUS_OPTIMAL_NETWORK_COUNT",
+      "source": "derived_from_CF1513D",
+      "input_structure": {
+        "type": "composite",
+        "length": {
+          "min": null,
+          "max": null
+        },
+        "value_range": {
+          "min": null,
+          "max": null
+        },
+        "properties": {
+          "multiple_test_cases": true
+        },
+        "components": [
+          {
+            "role": "parameters",
+            "role_description": "number of classrooms n and standard corridor maintenance cost p",
+            "type": "tuple",
+            "length": {
+              "min": 2,
+              "max": 2
+            },
+            "value_range": {
+              "min": 1,
+              "max": 1000000000
+            },
+            "properties": {}
+          },
+          {
+            "role": "classroom_factors",
+            "role_description": "sequence of positive integers representing maintenance factors for each classroom",
+            "type": "array",
+            "length": {
+              "min": 2,
+              "max": 200000
+            },
+            "value_range": {
+              "min": 1,
+              "max": 1000000000
+            },
+            "properties": {
+              "ordered": true
+            }
+          }
+        ]
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "edge_definition",
+            "description": "For any pair of classrooms i < j, a direct corridor exists if and only if min(a[i..j]) divides all elements in a[i..j]. Its maintenance cost is min(a[i..j]). Adjacent classrooms i and i+1 always have a corridor with fixed cost p.",
+            "formal": "edge(i,j) weight = min(a[i..j]) iff min(a[i..j]) | gcd(a[i..j]); edge(i,i+1) weight = p",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "counting_object_and_dedup",
+            "description": "Count the number of distinct spanning trees that achieve the absolute minimum total maintenance cost. Two spanning trees are considered different if their sets of selected corridors differ. Output the count modulo 10^9+7.",
+            "formal": "Count |{T ⊆ E | T is spanning tree, sum_{e∈T} w(e) = min_weight}| mod (10^9+7)",
+            "source_sections": [
+              "objective_upgrade"
+            ]
+          }
+        ]
+      },
+      "objective": {
+        "type": "count_modulo",
+        "description": "Calculate the number of distinct minimum-cost spanning trees modulo 10^9+7.",
+        "target": "mst_count",
+        "requires_solution": true
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "cut_independence",
+            "description": "The minimum cost to connect the left partition {1..i} and right partition {i+1..n} is uniquely determined by the cheapest valid edge crossing the cut. Any optimal spanning tree must pick exactly one such cheapest edge for each cut i. The choices for different cuts are independent, so the total number of optimal trees is the product of the number of cheapest crossing edges for each cut.",
+            "properties": {},
+            "evidence_source": "graph_theory"
+          },
+          {
+            "name": "multiplicative_aggregation",
+            "description": "The counting process decomposes into independent local decisions at each adjacent boundary. The global count is the product of local counts modulo 10^9+7, replacing the original additive weight summation.",
+            "properties": {},
+            "evidence_source": "solution_derivation"
+          }
+        ]
+      },
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "hard"
+    },
+    "generated_problem": {
+      "title": "校园最优网络方案数",
+      "description": "某大学新校区有 n 间教室沿主干道一字排开，编号为 1 到 n。为了保障师生通行与物资调度，后勤部计划在教室之间修建走廊。每间教室 i 有一个基础维护系数 a_i。走廊的修建与成本核算遵循以下规则：\n1. 标准走廊：任意相邻的两间教室 i 与 i+1 之间必定可以修建一条标准走廊，其维护成本固定为 p。\n2. 直达走廊：对于任意两间教室 i 与 j（i < j），若区间 [i, j] 内所有教室的维护系数均能被该区间的最小值整除，则允许在 i 与 j 之间修建一条直达走廊，其维护成本等于该区间的最小值。\n学校希望以最小的总维护成本将所有教室连通（即构成一棵生成树）。后勤部需要统计在总成本最小的前提下，共有多少种不同的走廊修建方案。两种方案被视为不同，当且仅当它们所选的走廊集合不完全相同。由于方案数可能极大，请输出结果对 10^9+7 取模的值。",
+      "input_format": "第一行包含一个正整数 t，表示测试用例的数量。\n接下来 t 行，每行描述一个测试用例：\n第一行包含两个正整数 n 和 p，分别表示教室数量和标准走廊的固定成本。\n第二行包含 n 个正整数 a_1, a_2, ..., a_n，表示各教室的维护系数。",
+      "output_format": "对于每个测试用例，输出一行一个整数，表示最优连通方案数对 10^9+7 取模的结果。",
+      "constraints": [
+        "1 ≤ t ≤ 10^4",
+        "2 ≤ n ≤ 2 × 10^5",
+        "1 ≤ p, a_i ≤ 10^9",
+        "所有测试用例的 n 之和不超过 2 × 10^5",
+        "时间限制：2.0 秒",
+        "空间限制：256 MB"
+      ],
+      "samples": [
+        {
+          "input": "2\n3 100\n2 2 2\n4 10\n2 4 8 16",
+          "output": "3\n16",
+          "explanation": "样例 1：所有合法直达走廊成本均为 2，低于标准走廊成本 100。在 3 个节点间任选 2 条成本为 2 的走廊即可构成最小生成树，共有 3 种方案。样例 2：所有合法直达走廊成本均为 2，图退化为边权全为 2 的完全图。4 个节点的完全图生成树数量为 16，均达到最小总成本。"
+        },
+        {
+          "input": "1\n3 5\n3 6 9",
+          "output": "1",
+          "explanation": "样例 3：合法直达走廊仅有 (1,2) 成本 3 和 (1,3) 成本 3，(2,3) 不满足整除条件。标准走廊成本为 5。最小总成本为 6，唯一方案为选择 (1,2) 与 (1,3)。"
+        }
+      ],
+      "notes": "本题要求计算最小总成本下的不同连通方案数。答案需对 10^9+7 取模。若存在多种方案达到相同最小成本，需全部统计。数据保证图始终连通。",
+      "status": "ok",
+      "error_reason": "",
+      "feedback": ""
+    },
+    "artifact_contract": {
+      "new_schema_present": true,
+      "new_schema_field_present": false,
+      "new_schema_snapshot_field_present": true,
+      "difference_plan_present": true,
+      "predicted_schema_distance_present": true,
+      "distance_breakdown_present": true,
+      "changed_axes_realized_present": true,
+      "generated_problem_present": true
+    },
+    "review_context": {
+      "difference_plan": {
+        "summary": "以割性质为核心，将全局最优值计算转化为各相邻割位最小代价边数量的乘积，完成从存在/最优到明确计数的范式升级。",
+        "mode": "single_seed_extension",
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      },
+      "changed_axes_realized": [
+        "C",
+        "O",
+        "V"
+      ],
+      "distance_breakdown": {
+        "distance_version": "v2",
+        "backend": "embedding",
+        "total": 0.3894,
+        "axis_scores": {
+          "I": 0.0,
+          "C": 0.5091,
+          "O": 0.5551,
+          "V": 0.4896
+        },
+        "components": {
+          "input_tree_distance": 0.0,
+          "constraint_match_distance": 0.5091,
+          "objective_type_distance": 0.6638,
+          "objective_text_distance": 0.392,
+          "invariant_match_distance": 0.4896
+        }
+      },
+      "applied_rule": "existence_to_counting",
+      "applied_helpers": [
+        {
+          "id": "counting_unit_definition",
+          "selection_reason": "明确计数对象与去重口径是存在转计数的第一步，防止答案口径模糊。",
+          "affected_axes": [
+            "C",
+            "O",
+            "V"
+          ],
+          "schema_changes": [
+            "在 core_constraints 中新增 counting_object_and_dedup 约束，明确定义边集差异为不同解。",
+            "在 objective 中将类型改为 count_modulo，目标锁定为方案数。",
+            "在 invariant 中补充等价类与有限性说明。"
+          ],
+          "innovation_reason": "将原题的数值最优答案替换为对象明确的组合计数结果，引入模运算与严格等价关系。",
+          "difficulty_reason": "要求解法必须处理等价类划分、有限性证明以及模意义下的乘法聚合，显著提升组合推理门槛。"
+        },
+        {
+          "id": "state_factorization",
+          "selection_reason": "计数必须从主状态组织方式中自然导出，避免后处理拼凑。",
+          "affected_axes": [
+            "C",
+            "V"
+          ],
+          "schema_changes": [
+            "在 core_constraints 中隐含割位拆分逻辑，要求按相邻索引边界组织状态。",
+            "在 invariant 中将原 additivity 替换为 cut_independence 与 multiplicative_aggregation，解释单元间如何避免重复并独立汇总。"
+          ],
+          "innovation_reason": "让全局计数从局部割位决策中自然生长，状态结构从线性累加转为乘积因子分解。",
+          "difficulty_reason": "要求解法在分解与汇总层面重建主状态，必须证明割位独立性并设计高效统计跨越边的方法，打破原线性扫描惯性。"
+        },
+        {
+          "id": "counting_obligation_lock",
+          "selection_reason": "确保计数责任主导整个求解流程，而非原判定目标的附带产物。",
+          "affected_axes": [
+            "C",
+            "O"
+          ],
+          "schema_changes": [
+            "在 objective 中彻底移除 minimize_value 类型，替换为 count_modulo。",
+            "在 core_constraints 中将计数义务写入主约束，禁止保留原权重求和作为主导目标。"
+          ],
+          "innovation_reason": "将原题主目标完全替换为计数义务，算法设计必须围绕方案数展开。",
+          "difficulty_reason": "要求算法同时承担计数正确性与去重正确性，状态转移必须直接输出乘积结果，无法依赖原最优值计算路径。"
+        }
+      ],
+      "algorithmic_delta_claim": {
+        "seed_solver_core": "贪心扫描确定每个相邻割位的最小跨越代价，直接累加得到全局最小生成树权重。",
+        "reusable_subroutines": "单调栈/双指针预处理区间最小值与整除合法性，快速定位跨越特定割位的候选边范围。",
+        "new_solver_core": "对每个相邻割位 i，统计所有满足 u ≤ i < v 且权重等于该割位最小代价的合法边数量。将各割位的合法边数量相乘并取模，得到全局最优生成树总数。",
+        "new_proof_obligation": "1. 证明每个相邻割位的最小跨越代价唯一，且任意最优生成树必须且仅能从中选取一条边；2. 证明各割位的选择相互独立（按割位各选一条最小边不会形成环）；3. 证明在 O(n log n) 或 O(n) 时间内统计合法跨越边数量的正确性，避免 O(n^2) 枚举，并处理取模下的乘法封闭性。",
+        "why_direct_reuse_fails": "原解法仅维护并累加每个割位的最小代价，完全丢弃了‘达到该代价的边数’这一组合信息。直接复用只能得到权重值，无法推导方案数。新题要求算法在状态转移中显式维护计数乘积，并重构区间合法边统计逻辑，原累加器无法直接转换为乘法计数器。"
+      },
+      "anti_shallow_rationale": "并非简单添加取模或统计后缀。原算法核心是‘求和最优值’，新题核心是‘乘法计数’。必须重新定义解的等价类（边集差异），将不变量从加法可加性彻底重构为乘法独立性，并在约束中锁定计数义务。算法需从贪心求值转为组合计数与区间合法边高效统计，无法通过原解法后处理或简单加计数器实现，彻底杜绝换皮。"
+    }
+  }
+}

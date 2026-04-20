@@ -1,0 +1,550 @@
+{
+  "problem_id": "CAMPUS_OPTIMAL_NETWORK_COUNT",
+  "source_problem_ids": [
+    "CF1513D"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "C",
+      "O",
+      "V"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "CF1513D",
+      "D. GCD and MST",
+      "codeforces",
+      "https://codeforces.com/contest/1513/problem/D",
+      "You are given an array $a$ of $n$ ($n \\geq 2$) positive integers and an integer $p$. Consider an undirected weighted graph of $n$ vertices numbered from $1$ to $n$ for which the edges between the vertices $i$ and $j$...",
+      "不要复写原题的叙事结构、任务定义或样例套路。",
+      "不要只替换实体名称后保留同样的输入输出关系。"
+    ],
+    "rationale": "目标从求和最优值变为组合计数，需在约束中明确定义计数单元与等价类，在不变量中从加法可加性转为乘法独立性，彻底重构状态转移逻辑。",
+    "summary": "以割性质为核心，将全局最优值计算转化为各相邻割位最小代价边数量的乘积，完成从存在/最优到明确计数的范式升级。",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.3894,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.3894,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.5091,
+      "O": 0.5551,
+      "V": 0.4896
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.5091,
+      "objective_type_distance": 0.6638,
+      "objective_text_distance": 0.392,
+      "invariant_match_distance": 0.4896
+    }
+  },
+  "changed_axes_realized": [
+    "C",
+    "O",
+    "V"
+  ],
+  "objective": {
+    "type": "count_modulo",
+    "description": "Calculate the number of distinct minimum-cost spanning trees modulo 10^9+7.",
+    "target": "mst_count",
+    "requires_solution": true
+  },
+  "rule_selection_reason": "existence_to_counting 能直接利用原题的“可加性不变量”将独立割边的最优选择转化为计数单元，使算法责任从“贪心找单一最小边”升级为“统计每段割边的最优方案数并处理组合依赖”，彻底改变求解范式；而 canonical_witness 仅要求输出规范 MST 边集，极易退化为原贪心逻辑的简单回溯与格式输出，创新度与难度提升有限。；创新度判断：将核心义务从“计算最小权值和”拉离至“定义并统计达到最小权值的合法边集数量”，要求重新刻画解空间的等价类与去重规则，使计数责任直接嵌入主状态转移与组合汇总中，打破原题仅关注单一最优值的局限。；难度判断：在主求解责任上，需从单次贪心扫描升级为对每个相邻割边独立统计满足 GCD 整除条件且权值等于局部最优的区间数量，并处理跨区间选择独立性证明与模意义下的乘法组合，显著增加数论性质分析与组合计数的双重负担。；风险判断：主要风险在于若原题结构导致每段割边的最优边唯一，则计数结果恒为 1，失去难度；但可通过调整 p 与数组值的分布范围，或明确多组最优边必然存在的构造约束来确保计数非平凡。该风险可通过 counting_unit_definition 辅助器明确去重与取模口径加以控制。",
+  "new_schema_snapshot": {
+    "problem_id": "CAMPUS_OPTIMAL_NETWORK_COUNT",
+    "source": "derived_from_CF1513D",
+    "input_structure": {
+      "type": "composite",
+      "length": {
+        "min": null,
+        "max": null
+      },
+      "value_range": {
+        "min": null,
+        "max": null
+      },
+      "properties": {
+        "multiple_test_cases": true
+      },
+      "components": [
+        {
+          "role": "parameters",
+          "role_description": "number of classrooms n and standard corridor maintenance cost p",
+          "type": "tuple",
+          "length": {
+            "min": 2,
+            "max": 2
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {}
+        },
+        {
+          "role": "classroom_factors",
+          "role_description": "sequence of positive integers representing maintenance factors for each classroom",
+          "type": "array",
+          "length": {
+            "min": 2,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 1,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      ]
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "edge_definition",
+          "description": "For any pair of classrooms i < j, a direct corridor exists if and only if min(a[i..j]) divides all elements in a[i..j]. Its maintenance cost is min(a[i..j]). Adjacent classrooms i and i+1 always have a corridor with fixed cost p.",
+          "formal": "edge(i,j) weight = min(a[i..j]) iff min(a[i..j]) | gcd(a[i..j]); edge(i,i+1) weight = p",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "counting_object_and_dedup",
+          "description": "Count the number of distinct spanning trees that achieve the absolute minimum total maintenance cost. Two spanning trees are considered different if their sets of selected corridors differ. Output the count modulo 10^9+7.",
+          "formal": "Count |{T ⊆ E | T is spanning tree, sum_{e∈T} w(e) = min_weight}| mod (10^9+7)",
+          "source_sections": [
+            "objective_upgrade"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "count_modulo",
+      "description": "Calculate the number of distinct minimum-cost spanning trees modulo 10^9+7.",
+      "target": "mst_count",
+      "requires_solution": true
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "cut_independence",
+          "description": "The minimum cost to connect the left partition {1..i} and right partition {i+1..n} is uniquely determined by the cheapest valid edge crossing the cut. Any optimal spanning tree must pick exactly one such cheapest edge for each cut i. The choices for different cuts are independent, so the total number of optimal trees is the product of the number of cheapest crossing edges for each cut.",
+          "properties": {},
+          "evidence_source": "graph_theory"
+        },
+        {
+          "name": "multiplicative_aggregation",
+          "description": "The counting process decomposes into independent local decisions at each adjacent boundary. The global count is the product of local counts modulo 10^9+7, replacing the original additive weight summation.",
+          "properties": {},
+          "evidence_source": "solution_derivation"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "hard"
+  },
+  "applied_rule": "existence_to_counting",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {
+    "seed_solver_core": "贪心扫描确定每个相邻割位的最小跨越代价，直接累加得到全局最小生成树权重。",
+    "reusable_subroutines": "单调栈/双指针预处理区间最小值与整除合法性，快速定位跨越特定割位的候选边范围。",
+    "new_solver_core": "对每个相邻割位 i，统计所有满足 u ≤ i < v 且权重等于该割位最小代价的合法边数量。将各割位的合法边数量相乘并取模，得到全局最优生成树总数。",
+    "new_proof_obligation": "1. 证明每个相邻割位的最小跨越代价唯一，且任意最优生成树必须且仅能从中选取一条边；2. 证明各割位的选择相互独立（按割位各选一条最小边不会形成环）；3. 证明在 O(n log n) 或 O(n) 时间内统计合法跨越边数量的正确性，避免 O(n^2) 枚举，并处理取模下的乘法封闭性。",
+    "why_direct_reuse_fails": "原解法仅维护并累加每个割位的最小代价，完全丢弃了‘达到该代价的边数’这一组合信息。直接复用只能得到权重值，无法推导方案数。新题要求算法在状态转移中显式维护计数乘积，并重构区间合法边统计逻辑，原累加器无法直接转换为乘法计数器。"
+  },
+  "anti_shallow_rationale": "并非简单添加取模或统计后缀。原算法核心是‘求和最优值’，新题核心是‘乘法计数’。必须重新定义解的等价类（边集差异），将不变量从加法可加性彻底重构为乘法独立性，并在约束中锁定计数义务。算法需从贪心求值转为组合计数与区间合法边高效统计，无法通过原解法后处理或简单加计数器实现，彻底杜绝换皮。",
+  "shared_core_summary": "单种子扩展模式，核心共享割性质与区间最小值整除判定逻辑，但目标范式已从求和最优转为乘法计数。",
+  "shared_core_anchors": {
+    "shared_state": "相邻索引割位 (i, i+1) 的连通状态",
+    "shared_transition": "基于区间最小值与整除条件的合法边筛选",
+    "shared_decision_basis": "割位最小代价唯一性保证"
+  },
+  "seed_contributions": {
+    "seed_a": "N/A (single_seed mode)",
+    "seed_b": "N/A (single_seed mode)"
+  },
+  "fusion_ablation": {
+    "without_seed_a": "N/A (single_seed mode)",
+    "without_seed_b": "N/A (single_seed mode)"
+  },
+  "applied_helpers": [
+    {
+      "id": "counting_unit_definition",
+      "selection_reason": "明确计数对象与去重口径是存在转计数的第一步，防止答案口径模糊。",
+      "affected_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "在 core_constraints 中新增 counting_object_and_dedup 约束，明确定义边集差异为不同解。",
+        "在 objective 中将类型改为 count_modulo，目标锁定为方案数。",
+        "在 invariant 中补充等价类与有限性说明。"
+      ],
+      "innovation_reason": "将原题的数值最优答案替换为对象明确的组合计数结果，引入模运算与严格等价关系。",
+      "difficulty_reason": "要求解法必须处理等价类划分、有限性证明以及模意义下的乘法聚合，显著提升组合推理门槛。"
+    },
+    {
+      "id": "state_factorization",
+      "selection_reason": "计数必须从主状态组织方式中自然导出，避免后处理拼凑。",
+      "affected_axes": [
+        "C",
+        "V"
+      ],
+      "schema_changes": [
+        "在 core_constraints 中隐含割位拆分逻辑，要求按相邻索引边界组织状态。",
+        "在 invariant 中将原 additivity 替换为 cut_independence 与 multiplicative_aggregation，解释单元间如何避免重复并独立汇总。"
+      ],
+      "innovation_reason": "让全局计数从局部割位决策中自然生长，状态结构从线性累加转为乘积因子分解。",
+      "difficulty_reason": "要求解法在分解与汇总层面重建主状态，必须证明割位独立性并设计高效统计跨越边的方法，打破原线性扫描惯性。"
+    },
+    {
+      "id": "counting_obligation_lock",
+      "selection_reason": "确保计数责任主导整个求解流程，而非原判定目标的附带产物。",
+      "affected_axes": [
+        "C",
+        "O"
+      ],
+      "schema_changes": [
+        "在 objective 中彻底移除 minimize_value 类型，替换为 count_modulo。",
+        "在 core_constraints 中将计数义务写入主约束，禁止保留原权重求和作为主导目标。"
+      ],
+      "innovation_reason": "将原题主目标完全替换为计数义务，算法设计必须围绕方案数展开。",
+      "difficulty_reason": "要求算法同时承担计数正确性与去重正确性，状态转移必须直接输出乘积结果，无法依赖原最优值计算路径。"
+    }
+  ],
+  "planning_status": "ok",
+  "planning_error_reason": "",
+  "planning_feedback": "",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": true,
+      "score": 0.87,
+      "reason_code": "seed_has_reconstructible_object_and_canonical_order_potential",
+      "selection_reason": "种子题仅要求输出MST总权值（requires_solution: false），未要求输出具体边集，且图结构由区间整除性质与固定边权明确定义，具备构造规范解（如字典序最小边集）的明确对象与排序依据；将目标从求值升级为输出规范MST可强制改变贪心/DSU过程中的平局处理与状态记录，满足C/O/V三轴变更要求。",
+      "risk_tags": [
+        "post_processing_degeneration_risk",
+        "canonical_tie_breaking_complexity"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "schema中objective.requires_solution为false，core_constraints明确定义了边存在条件与权重计算方式，符合规则required_seed_properties中'原题有明确解对象'与'方案能定义清楚规范'的要求；规则must_change要求C/O/V三轴变更，本规则通过引入规范输出可自然驱动目标(O)变更、约束(C)增加平局判定、验证(V)增加结构校验。",
+        "feedback": "规划阶段必须严格应用canonical_order_pressure与constraint_reweighting助手，确保规范性要求（如字典序最小或特定构造顺序）直接嵌入区间扫描或并查集合并的核心逻辑中，严禁退化为先计算权值再对边集排序的后处理步骤；需在new_schema中明确规范解的唯一性定义与校验器的验证路径。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 2
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "required_seed_properties_unmet",
+      "selection_reason": "原题因固定相邻边权约束保证图始终连通，MST必然存在，缺乏天然的无解分支以提取局部冲突证据，不满足规则要求的“做不到的原因可用局部证据表示”的种子属性。",
+      "risk_tags": [
+        "shared_core_risk",
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints.adjacency_relation 明确指出任意相邻顶点间始终存在权重为 p 的边，这保证了图始终连通，MST 必然存在。规则 required_seed_properties 要求“做不到的原因可以用局部证据表示”，但原题不存在无解情形，强行引入失败分支将破坏原题核心结构或退化为人为添加的边界特判。",
+        "feedback": "建议更换具有天然可满足性/不可满足性边界的种子题（如约束满足问题、匹配问题或带容量限制的构造题），或先对原题进行约束删减以引入明确的无解条件，再评估本规则的适用性。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "eligible_counting_structure",
+      "selection_reason": "种子题具备明确的有限图结构与边集定义，满足解空间有限性；其不变量直接揭示了按相邻割独立分解的加性规律，天然契合规则要求的‘按单元拆分汇总’与‘去重规则清晰’条件，具备向计数目标升级的坚实结构基础。",
+      "risk_tags": [
+        "shared_core_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.invariant.additivity 明确指出 'The minimum spanning tree weight decomposes into the sum of minimum costs required to cross each of the n-1 adjacent cuts'，证明解空间可按独立单元拆分；core_constraints 定义了基于整除条件的有限边集，保证计数对象（如生成树数量或合法边子集）有限且去重口径（边集差异）明确。",
+        "feedback": "规划阶段需严格锁定计数对象（如统计不同MST的边集数量或满足特定权重的数组构造数），避免仅对原贪心结果做简单乘法。必须在目标定义中显式声明取模基数，并在约束中明确‘何种边集/构造视为不同’，以符合 validation_contract 的硬检查。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "missing_native_perturbation",
+      "selection_reason": "原题CF1513D为完全确定性构造题，输入数组a与常数p固定，边集与MST权重由确定性整除规则唯一决定，不存在规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行引入扰动将直接违反“扰动模型必须来自原题本身”及“不能凭背景硬造对手”的硬性约束。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints明确边权由固定数组a和常数p通过确定性整除条件生成；objective为固定图上的MST最小值计算。rule_under_review.eligibility.required_seed_properties明确要求原题自带不确定性，但当前种子题无任何隐式波动或选择分支，不满足准入前提。",
+        "feedback": "该规则适用于具有内在调度顺序、动态资源或参数区间的题目。针对CF1513D，建议转向修改图连通性判定条件、引入多目标权衡或改变数组生成机制的规则，避免在确定性结构上硬套鲁棒优化框架。"
+      },
+      "selected_for_attempt": false
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "seed_has_reconstructible_object_and_canonical_order_potential",
+      "message": "种子题仅要求输出MST总权值（requires_solution: false），未要求输出具体边集，且图结构由区间整除性质与固定边权明确定义，具备构造规范解（如字典序最小边集）的明确对象与排序依据；将目标从求值升级为输出规范MST可强制改变贪心/DSU过程中的平局处理与状态记录，满足C/O/V三轴变更要求。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.87,
+        "risk_tags": [
+          "post_processing_degeneration_risk",
+          "canonical_tie_breaking_complexity"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "schema中objective.requires_solution为false，core_constraints明确定义了边存在条件与权重计算方式，符合规则required_seed_properties中'原题有明确解对象'与'方案能定义清楚规范'的要求；规则must_change要求C/O/V三轴变更，本规则通过引入规范输出可自然驱动目标(O)变更、约束(C)增加平局判定、验证(V)增加结构校验。",
+        "feedback": "规划阶段必须严格应用canonical_order_pressure与constraint_reweighting助手，确保规范性要求（如字典序最小或特定构造顺序）直接嵌入区间扫描或并查集合并的核心逻辑中，严禁退化为先计算权值再对边集排序的后处理步骤；需在new_schema中明确规范解的唯一性定义与校验器的验证路径。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "required_seed_properties_unmet",
+      "message": "原题因固定相邻边权约束保证图始终连通，MST必然存在，缺乏天然的无解分支以提取局部冲突证据，不满足规则要求的“做不到的原因可用局部证据表示”的种子属性。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "shared_core_risk",
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints.adjacency_relation 明确指出任意相邻顶点间始终存在权重为 p 的边，这保证了图始终连通，MST 必然存在。规则 required_seed_properties 要求“做不到的原因可以用局部证据表示”，但原题不存在无解情形，强行引入失败分支将破坏原题核心结构或退化为人为添加的边界特判。",
+        "feedback": "建议更换具有天然可满足性/不可满足性边界的种子题（如约束满足问题、匹配问题或带容量限制的构造题），或先对原题进行约束删减以引入明确的无解条件，再评估本规则的适用性。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "eligible_counting_structure",
+      "message": "种子题具备明确的有限图结构与边集定义，满足解空间有限性；其不变量直接揭示了按相邻割独立分解的加性规律，天然契合规则要求的‘按单元拆分汇总’与‘去重规则清晰’条件，具备向计数目标升级的坚实结构基础。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.97,
+        "risk_tags": [
+          "shared_core_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.invariant.additivity 明确指出 'The minimum spanning tree weight decomposes into the sum of minimum costs required to cross each of the n-1 adjacent cuts'，证明解空间可按独立单元拆分；core_constraints 定义了基于整除条件的有限边集，保证计数对象（如生成树数量或合法边子集）有限且去重口径（边集差异）明确。",
+        "feedback": "规划阶段需严格锁定计数对象（如统计不同MST的边集数量或满足特定权重的数组构造数），避免仅对原贪心结果做简单乘法。必须在目标定义中显式声明取模基数，并在约束中明确‘何种边集/构造视为不同’，以符合 validation_contract 的硬检查。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation",
+      "message": "原题CF1513D为完全确定性构造题，输入数组a与常数p固定，边集与MST权重由确定性整除规则唯一决定，不存在规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行引入扰动将直接违反“扰动模型必须来自原题本身”及“不能凭背景硬造对手”的硬性约束。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints明确边权由固定数组a和常数p通过确定性整除条件生成；objective为固定图上的MST最小值计算。rule_under_review.eligibility.required_seed_properties明确要求原题自带不确定性，但当前种子题无任何隐式波动或选择分支，不满足准入前提。",
+        "feedback": "该规则适用于具有内在调度顺序、动态资源或参数区间的题目。针对CF1513D，建议转向修改图连通性判定条件、引入多目标权衡或改变数组生成机制的规则，避免在确定性结构上硬套鲁棒优化框架。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "规划完整兑现了 existence_to_counting 规则合同，明确定义了计数对象（边集差异）、去重口径与取模约定，并通过割独立性将解空间拆分为可乘积汇总的计数单元，计数义务已完全锁定为主目标。",
+      "details": {
+        "review_role": "你扮演一名计数规划审查官，重点确认规划是否真正把目标升级为对象明确的计数任务。",
+        "review_brief": "确认规划是否定义了计数对象、去重口径、有限性来源，以及需要时的取模约定。",
+        "evidence": "1. counting_unit_definition 已落实：candidate_schema.core_constraints.counting_object_and_dedup 明确定义“Two spanning trees are considered different if their sets of selected corridors differ”，objective.type 升级为 count_modulo，规避了仅补模数或不定义差异的 redline。2. state_factorization 已落实：candidate_schema.invariant 将原 additivity 替换为 cut_independence 与 multiplicative_aggregation，明确按相邻割位拆分状态并以乘积汇总，打破原线性累加结构，计数非后处理。3. counting_obligation_lock 已落实：objective 彻底移除 minimize_value，core_constraints 写入计数义务，planner_payload.algorithmic_delta_claim.new_solver_core 证实新求解核心为各割位合法边数相乘，原判定过程不再主导。4. validation_contract 硬门槛全满足：解差异口径、有限性/取模、拆分汇总单元均在 schema 与 payload 中明确声明。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "题面完整兑现存在转计数的核心承诺：明确将主目标替换为最小生成树计数，严格定义了方案差异口径（边集不同即不同），给出了取模约定，且通过图论割性质在约束与不变量中自然导出了状态分解与乘法汇总逻辑，未保留原最优值判定主导。",
+      "details": {
+        "review_role": "你扮演一名计数题面审查官，重点确认题面是否完整兑现计数目标与去重规则。",
+        "review_brief": "确认题面是否明确写出统计对象、等价关系、不同答案的判定口径，以及必要的模数约定。",
+        "evidence": "题面描述明确写出“统计在总成本最小的前提下，共有多少种不同的走廊修建方案。两种方案被视为不同，当且仅当它们所选的走廊集合不完全相同。由于方案数可能极大，请输出结果对 10^9+7 取模的值。”，直接兑现了计数对象、去重规则与模数约定。new_schema 的 core_constraints 中新增 counting_object_and_dedup，objective 锁定为 count_modulo，invariant 中明确声明 cut_independence 与 multiplicative_aggregation，完全符合 helpers 的 must_realize_in 要求与 validation_contract 的三项硬检查，且未触犯“不能只补模数”“不能不定义不同答案”“不能把计数放进备注”等 redlines。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "counting_contract_fulfilled",
+      "message": "题面明确将目标升级为最小成本生成树的计数问题，清晰定义了等价关系（边集不同即方案不同）与取模约定，且计数义务已完全主导主目标，未保留原最优值判定逻辑，符合规则专属合同。",
+      "details": {
+        "review_role": "你扮演一名计数题面审查官，重点确认题面是否完整兑现计数目标与去重规则。",
+        "review_brief": "确认题面是否明确写出统计对象、等价关系、不同答案的判定口径，以及必要的模数约定。",
+        "evidence": "题面描述中明确写出“统计在总成本最小的前提下，共有多少种不同的走廊修建方案。两种方案被视为不同，当且仅当它们所选的走廊集合不完全相同。由于方案数可能极大，请输出结果对 10^9+7 取模的值。”；`new_schema` 的 `core_constraints` 包含 `counting_object_and_dedup`，`objective` 类型为 `count_modulo`，`invariant` 明确了割位独立性与乘法聚合逻辑，完整兑现了计数对象定义、去重口径与有限性/取模承诺。"
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "score": 0.97,
+      "accepted": true,
+      "risk_tags": [
+        "shared_core_risk"
+      ],
+      "status": "ok",
+      "reason_code": "plan_validation_failed",
+      "reason": "",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "校园最优网络方案数",
+    "description": "某大学新校区有 n 间教室沿主干道一字排开，编号为 1 到 n。为了保障师生通行与物资调度，后勤部计划在教室之间修建走廊。每间教室 i 有一个基础维护系数 a_i。走廊的修建与成本核算遵循以下规则：\n1. 标准走廊：任意相邻的两间教室 i 与 i+1 之间必定可以修建一条标准走廊，其维护成本固定为 p。\n2. 直达走廊：对于任意两间教室 i 与 j（i < j），若区间 [i, j] 内所有教室的维护系数均能被该区间的最小值整除，则允许在 i 与 j 之间修建一条直达走廊，其维护成本等于该区间的最小值。\n学校希望以最小的总维护成本将所有教室连通（即构成一棵生成树）。后勤部需要统计在总成本最小的前提下，共有多少种不同的走廊修建方案。两种方案被视为不同，当且仅当它们所选的走廊集合不完全相同。由于方案数可能极大，请输出结果对 10^9+7 取模的值。",
+    "input_format": "第一行包含一个正整数 t，表示测试用例的数量。\n接下来 t 行，每行描述一个测试用例：\n第一行包含两个正整数 n 和 p，分别表示教室数量和标准走廊的固定成本。\n第二行包含 n 个正整数 a_1, a_2, ..., a_n，表示各教室的维护系数。",
+    "output_format": "对于每个测试用例，输出一行一个整数，表示最优连通方案数对 10^9+7 取模的结果。",
+    "constraints": [
+      "1 ≤ t ≤ 10^4",
+      "2 ≤ n ≤ 2 × 10^5",
+      "1 ≤ p, a_i ≤ 10^9",
+      "所有测试用例的 n 之和不超过 2 × 10^5",
+      "时间限制：2.0 秒",
+      "空间限制：256 MB"
+    ],
+    "samples": [
+      {
+        "input": "2\n3 100\n2 2 2\n4 10\n2 4 8 16",
+        "output": "3\n16",
+        "explanation": "样例 1：所有合法直达走廊成本均为 2，低于标准走廊成本 100。在 3 个节点间任选 2 条成本为 2 的走廊即可构成最小生成树，共有 3 种方案。样例 2：所有合法直达走廊成本均为 2，图退化为边权全为 2 的完全图。4 个节点的完全图生成树数量为 16，均达到最小总成本。"
+      },
+      {
+        "input": "1\n3 5\n3 6 9",
+        "output": "1",
+        "explanation": "样例 3：合法直达走廊仅有 (1,2) 成本 3 和 (1,3) 成本 3，(2,3) 不满足整除条件。标准走廊成本为 5。最小总成本为 6，唯一方案为选择 (1,2) 与 (1,3)。"
+      }
+    ],
+    "notes": "本题要求计算最小总成本下的不同连通方案数。答案需对 10^9+7 取模。若存在多种方案达到相同最小成本，需全部统计。数据保证图始终连通。",
+    "status": "ok",
+    "error_reason": "",
+    "feedback": ""
+  },
+  "iteration": {
+    "run_id": "CF1513D_v1_campus_ops_20260420_215028",
+    "round_index": 1,
+    "requested_rounds": 3,
+    "previous_artifact_path": "",
+    "previous_quality_report_path": "",
+    "revision_context_snapshot": {}
+  }
+}

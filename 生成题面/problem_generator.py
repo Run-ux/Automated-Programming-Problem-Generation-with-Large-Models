@@ -30,6 +30,7 @@ class ProblemGenerator:
         schema_context: dict[str, Any],
         plan: VariantPlan,
         original_problems: list[dict[str, Any]] | None = None,
+        revision_context: dict[str, Any] | None = None,
     ) -> GeneratedProblem:
         if plan.planning_status != "ok":
             return GeneratedProblem(
@@ -74,6 +75,7 @@ class ProblemGenerator:
             schema_context,
             plan,
             original_problem_references=original_problems or [],
+            revision_context=revision_context,
         )
         last_errors: list[str] = []
         base_temperature = min(self.temperature, 0.3)
@@ -103,6 +105,7 @@ class ProblemGenerator:
                 errors,
                 attempt + 1,
                 original_problems or [],
+                revision_context,
             )
 
         raise RuntimeError("模型连续返回不合法题面，校验失败：" + "；".join(last_errors[:5]))
@@ -334,11 +337,13 @@ class ProblemGenerator:
         errors: list[str],
         next_attempt: int,
         original_problems: list[dict[str, Any]],
+        revision_context: dict[str, Any] | None,
     ) -> str:
         base_prompt = build_generation_user_prompt(
             schema_context,
             plan,
             original_problem_references=original_problems,
+            revision_context=revision_context,
         )
         error_lines = "\n".join(f"- {error}" for error in errors)
         invalid_payload = json.dumps(payload, ensure_ascii=False, indent=2)

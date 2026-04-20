@@ -1,0 +1,545 @@
+{
+  "problem_id": "CampusWiFi_RobustMEX",
+  "source_problem_ids": [
+    "CF1294D"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "C",
+      "O",
+      "V"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "目标轴由在线实时最大化改为离线最坏情况保底；约束轴新增扰动预算与同余类偏移限制；值/结构轴由在线指针维护改为离线鲁棒计数与阈值耦合。三轴联动确保问题从确定性贪心跃迁至对抗性优化。",
+    "summary": "通过引入扰动预算Δ，将原题的确定性模类分配转化为鲁棒优化问题，要求算法在对抗性计数偏移下仍能保证MEX下限，求解逻辑从均摊维护转为二分校验与极值扰动分析。",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.4246,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.4246,
+    "axis_scores": {
+      "I": 0.0682,
+      "C": 0.6068,
+      "O": 0.5283,
+      "V": 0.4673
+    },
+    "components": {
+      "input_tree_distance": 0.0682,
+      "constraint_match_distance": 0.6068,
+      "objective_type_distance": 0.5012,
+      "objective_text_distance": 0.5689,
+      "invariant_match_distance": 0.4673
+    }
+  },
+  "changed_axes_realized": [
+    "C",
+    "O",
+    "V"
+  ],
+  "objective": {
+    "type": "maximize_guaranteed_threshold",
+    "description": "寻找最大整数K，使得在任意满足扰动预算Δ的合法计数分布下，均存在一种信道分配方案覆盖[0, K-1]的所有整数。",
+    "target": "robust_mex_threshold",
+    "requires_solution": false
+  },
+  "rule_selection_reason": "对比两条规则，`canonical_witness` 在原题强贪心+模类计数的结构下极易退化为“记录并输出贪心构造”的浅层改动，难以触及核心算法责任；而 `minimum_guarantee_under_perturbation` 能将原题的在线查询与模类资源分配转化为最坏情况下的保底优化，迫使状态设计与不变量证明发生本质跃迁，在可落地前提下能最大化创新度与难度。；创新度判断：将原题的确定性最大MEX求解拉离，转为在扰动模型（如模类资源到达顺序对抗、±x操作步长波动或局部选择受限）下的最小保底MEX计算。核心义务从“单向贪心覆盖前缀”变为“维护抗扰动的鲁棒不变量”，彻底改变目标函数与约束的交互方式，使输出责任与验证逻辑脱离原题的确定性路径。；难度判断：在主求解责任上，算法需从简单的模类余量计数升级为最坏情形下的极值分析。求解器必须构造并证明强化不变量在任意合法扰动下均成立，同时处理保底阈值搜索与模类可行性结构的深度耦合，显著提升状态空间设计、对抗性推理与正确性证明的复杂度。；风险判断：主要风险在于扰动模型若脱离原题模类语义，会退化为外层套二分或纯背景包装。风险可控：通过 `native_perturbation_model` 助手将扰动严格绑定于原题的 ±x 操作空间与模类独立性，并利用 `worst_case_invariant` 强制不变量与保底目标耦合，可确保算法内核发生实质性重构而非表面增强。",
+  "new_schema_snapshot": {
+    "problem_id": "CampusWiFi_RobustMEX",
+    "source": "custom",
+    "input_structure": {
+      "type": "composite",
+      "length": {
+        "min": 1,
+        "max": 200000
+      },
+      "value_range": {
+        "min": 0,
+        "max": 1000000000
+      },
+      "properties": {
+        "ordered": false
+      },
+      "components": [
+        {
+          "role": "parameters",
+          "role_description": "设备数量n, 信道间隔x, 扰动预算Δ",
+          "type": "tuple",
+          "length": {
+            "min": 3,
+            "max": 3
+          },
+          "value_range": {
+            "min": 1,
+            "max": 200000
+          },
+          "properties": {}
+        },
+        {
+          "role": "base_frequencies",
+          "role_description": "n个设备的基准请求信道值",
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 200000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": false
+          }
+        }
+      ]
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "divisibility",
+          "description": "设备实际分配信道必须与基准请求模x同余，即信道调整步长固定为x。",
+          "formal": "assigned_i ≡ base_i (mod x)",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "non_negative",
+          "description": "分配信道必须为非负整数，符合物理频段限制。",
+          "formal": "assigned_i ≥ 0",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "perturbation_budget",
+          "description": "受校园网络抖动影响，各余数类r的实际可用设备数c_r'可能偏离名义统计c_r，但总偏移量受预算Δ限制。",
+          "formal": "∑_{r=0}^{x-1} |c_r' - c_r| ≤ Δ, c_r' ≥ 0",
+          "source_sections": [
+            "description"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "maximize_guaranteed_threshold",
+      "description": "寻找最大整数K，使得在任意满足扰动预算Δ的合法计数分布下，均存在一种信道分配方案覆盖[0, K-1]的所有整数。",
+      "target": "robust_mex_threshold",
+      "requires_solution": false
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "robust_prefix_capacity",
+          "description": "对于任意目标前缀长度K，最坏扰动必然优先削减覆盖该前缀所需的瓶颈余数类。若扰动后各余数类对前缀K的总贡献仍≥K，则K可达。该容量不等式在任意Δ下保持单调。",
+          "properties": {},
+          "evidence_source": "robust_analysis"
+        },
+        {
+          "name": "monotonic_guarantee",
+          "description": "保底阈值K关于扰动预算Δ单调非增。若K在预算Δ下成立，则任意K'<K在相同预算下必然成立，支撑二分答案的正确性。",
+          "properties": {},
+          "evidence_source": "robust_analysis"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Hard"
+  },
+  "applied_rule": "minimum_guarantee_under_perturbation",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {
+    "seed_solver_core": "在线维护模x余数计数数组，利用MEX单调性贪心填充，均摊O(1)处理每次查询。",
+    "reusable_subroutines": "模x余数统计逻辑、同余类到目标位置的映射计算、前缀容量累加校验框架。",
+    "new_solver_core": "二分答案K，对每个K计算最坏扰动下的最小可用容量。利用扰动预算Δ的贪心分配性质（将Δ优先用于削减覆盖前缀K所需的关键余数类），转化为带权前缀和校验，单次校验O(x)或O(√K)。",
+    "new_proof_obligation": "需严格证明最坏扰动分布的极值点必然落在覆盖前缀K的瓶颈余数类上，且扰动预算Δ的贪心削减策略满足子模性，从而保证二分答案的单调性与校验函数的正确性；同时需证明扰动模型不破坏模类独立性，使容量不等式可线性叠加。",
+    "why_direct_reuse_fails": "原在线贪心依赖实时查询顺序的确定性，无法处理离线对抗性扰动；直接套用会忽略Δ对关键余数类的针对性破坏，导致保底估计虚高。原单调指针维护在扰动下失效，必须重构为离线容量校验。"
+  },
+  "anti_shallow_rationale": "并非简单在外层套二分或修改阈值，而是将扰动预算Δ深度耦合进同余类容量计算中。最坏情况扰动改变了状态转移的依赖关系，必须重新推导鲁棒容量不等式，原单调指针维护完全失效，算法需从在线贪心转为离线极值分析与二分校验。",
+  "shared_core_summary": "保留原题模x同余类划分与非负分配的核心算术结构，所有扰动与保底逻辑均建立在该同余映射之上。",
+  "shared_core_anchors": {
+    "shared_state": "模x余数类计数数组",
+    "shared_transition": "同余类到目标整数位置的线性映射",
+    "shared_decision_basis": "容量守恒与贪心填充原则"
+  },
+  "seed_contributions": {
+    "seed_a": "必须严格维持模x同余类独立性，任何扰动分配不得破坏余数类间的资源隔离特性。",
+    "seed_b": "必须保证非负约束与扰动预算的兼容性，确保最坏情况扰动不产生非法负计数。"
+  },
+  "fusion_ablation": {
+    "without_seed_a": "若移除模x同余结构，扰动预算将退化为全局计数偏移，失去原题的算术划分特性，问题变为平凡的全局覆盖校验。",
+    "without_seed_b": "若移除扰动预算Δ，问题退化为原题的确定性离线MEX最大化，鲁棒保底责任消失，算法回归简单贪心。"
+  },
+  "applied_helpers": [
+    {
+      "id": "native_perturbation_model",
+      "selection_reason": "将原题隐含的在线顺序不确定性显式化为同余类计数扰动预算Δ，符合校园网络抖动语义。",
+      "affected_axes": [
+        "C",
+        "V"
+      ],
+      "schema_changes": [
+        "core_constraints新增perturbation_budget约束",
+        "invariant新增robust_prefix_capacity描述扰动下的容量守恒"
+      ],
+      "innovation_reason": "将隐藏的不确定性转化为正式约束来源，使问题从确定性分配跃迁至鲁棒优化。",
+      "difficulty_reason": "要求算法在最坏扰动分布下维持可行性，需处理对抗性计数偏移的极值分析。"
+    },
+    {
+      "id": "worst_case_invariant",
+      "selection_reason": "强化不变量以直接服务最坏情况保证，确保目标与扰动模型绑定。",
+      "affected_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "objective改为maximize_guaranteed_threshold",
+        "invariant新增monotonic_guarantee支撑二分单调性",
+        "core_constraints与目标联动定义保底责任"
+      ],
+      "innovation_reason": "让目标从可行扩成保底最优，不变量直接刻画扰动下的容量下界。",
+      "difficulty_reason": "要求算法证明强化不变量在任意扰动下成立，需构造严密的极值扰动分配策略。"
+    },
+    {
+      "id": "guarantee_threshold_coupling",
+      "selection_reason": "将保底阈值K与主约束深度耦合，避免外层简单二分。",
+      "affected_axes": [
+        "C",
+        "O"
+      ],
+      "schema_changes": [
+        "objective中K直接决定校验函数的计算范围",
+        "core_constraints中扰动预算Δ的分配逻辑随K动态变化"
+      ],
+      "innovation_reason": "让保底阈值成为新题主目标，阈值搜索与可行性结构深度融合。",
+      "difficulty_reason": "要求算法同时处理阈值搜索与扰动可行性结构，校验函数需O(x)或更优实现。"
+    }
+  ],
+  "planning_status": "ok",
+  "planning_error_reason": "",
+  "planning_feedback": "",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": true,
+      "score": 0.82,
+      "reason_code": "meets_required_properties_and_axis_shift",
+      "selection_reason": "种子题目标仅为求MEX最大值且requires_solution为false，未要求输出具体构造方案；同余类划分与单调性不变量为定义规范解提供明确结构基础，满足规则对解对象与自然规范序的要求；通过强制输出规范解可驱动状态设计从纯计数维护转向显式映射与校验，符合C/O/V轴必须变更的硬性条件。",
+      "risk_tags": [
+        "low_novelty",
+        "shared_core_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "schema中objective.requires_solution为false，仅要求maximize_value；core_constraints明确a_i' ≡ a_i (mod x)与a_i' ≥ 0，invariant.equivalence_class指出同余类独立管理，为定义规范解提供结构基础；规则required_seed_properties要求'原题本身有明确的解对象'与'方案有自然顺序'，本题可通过同余类填充顺序自然导出规范解，且原题不要求输出方案，未触发forbidden_seed_properties中的'原解只要顺手回溯就能拿到方案'；规则required_axis_changes要求C/O/V必须变化，本升级将目标从数值改为规范构造，验证责任同步转移，满足轴变更要求。",
+        "feedback": "规划阶段需严格应用canonical_order_pressure与proof_bearing_output辅助器，确保规范性要求（如字典序最小或特定贪心填充策略）深度融入主状态转移与合法性校验，避免退化为仅增加输出格式的表面修改；需明确新题的验证契约，确保输出方案可直接在线性时间内校验，并在difference_plan中清晰界定算法增量。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 2
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.15,
+      "reason_code": "objective_mismatch",
+      "selection_reason": "种子题为在线流式最大值优化问题，天然不存在无解或冲突分支；核心约束仅为操作允许范围而非硬性可满足条件。强行套用构造或阻碍证书将彻底改变原题求值语义，无法满足规则要求的局部冲突证据前提。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.type为'maximize_value'且requires_solution为false；core_constraints仅定义操作同余与非负限制，未包含任何可能导致无解的硬性冲突条件。与rule_under_review.eligibility.required_seed_properties['做不到的原因可以用局部证据表示']直接冲突。",
+        "feedback": "该规则强依赖可行性判定与冲突结构，不适用于纯极值优化类种子。建议更换为具有明确可满足性/判定性质的种子题（如匹配、覆盖、约束满足等），或调整规则为‘极值构造+紧界证明’变体。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "infinite_solution_space",
+      "selection_reason": "种子题为动态查询优化题，核心操作（加减x）在仅受非负约束下产生无界状态转移路径，缺乏规则要求的有限解空间与明确去重口径；在线流式结构无法直接映射为静态可计数的组合对象，强行转换将导致计数定义发散或违反去重红线。",
+      "risk_tags": [
+        "infinite_solution_space",
+        "deduplication_undefined",
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective为maximize_value(mex)，core_constraints仅限制a_i'≡a_i(mod x)与a_i'≥0，未提供操作次数或值域上界；invariant.equivalence_class仅说明模x分类，无法约束解空间有限性。规则eligibility.forbidden_seed_properties明确禁止'解空间天然无限'与'去重规则说不清楚'，当前种子不满足required_seed_properties中的'解空间有限'与'不同解之间的等价关系能说清楚'。",
+        "feedback": "建议更换为具有静态有限构造空间或明确组合边界的种子题；若需保留此题，需先引入强约束（如固定操作序列长度、限定值域范围或改为离线静态版本）以封闭解空间，否则不适合直接套用existence_to_counting规则。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": true,
+      "score": 0.87,
+      "reason_code": "eligible",
+      "selection_reason": "原题在线查询流与模x同余类分配机制天然提供顺序不确定与局部资源波动，完全匹配规则要求的原生扰动来源；将目标从最大化MEX转为最坏扰动下的最小保底阈值，可合法驱动O/C/V三轴重构，且扰动模型可直接内化于同余约束与在线到达过程，未违反红线。",
+      "risk_tags": [
+        "shared_core_risk",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.input_structure 中的 query_stream 与 ordered=true 提供顺序不确定性；seed_schema.core_constraints.divisibility (a_i' ≡ a_i mod x) 提供局部选择差异与资源波动空间；rule_under_review.eligibility.required_seed_properties 明确要求'原题里本来就有顺序不确定、资源波动或局部选择差异'，两者高度吻合。",
+        "feedback": "规划时需严格定义扰动集（如最坏到达序列或同余类内最劣分配策略），确保强化不变量直接约束最坏情形下的资源下界；严禁将新题设计为'原贪心算法外层套二分'，必须体现最坏情况责任对核心状态转移的结构性改变。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "meets_required_properties_and_axis_shift",
+      "message": "种子题目标仅为求MEX最大值且requires_solution为false，未要求输出具体构造方案；同余类划分与单调性不变量为定义规范解提供明确结构基础，满足规则对解对象与自然规范序的要求；通过强制输出规范解可驱动状态设计从纯计数维护转向显式映射与校验，符合C/O/V轴必须变更的硬性条件。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.82,
+        "risk_tags": [
+          "low_novelty",
+          "shared_core_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "schema中objective.requires_solution为false，仅要求maximize_value；core_constraints明确a_i' ≡ a_i (mod x)与a_i' ≥ 0，invariant.equivalence_class指出同余类独立管理，为定义规范解提供结构基础；规则required_seed_properties要求'原题本身有明确的解对象'与'方案有自然顺序'，本题可通过同余类填充顺序自然导出规范解，且原题不要求输出方案，未触发forbidden_seed_properties中的'原解只要顺手回溯就能拿到方案'；规则required_axis_changes要求C/O/V必须变化，本升级将目标从数值改为规范构造，验证责任同步转移，满足轴变更要求。",
+        "feedback": "规划阶段需严格应用canonical_order_pressure与proof_bearing_output辅助器，确保规范性要求（如字典序最小或特定贪心填充策略）深度融入主状态转移与合法性校验，避免退化为仅增加输出格式的表面修改；需明确新题的验证契约，确保输出方案可直接在线性时间内校验，并在difference_plan中清晰界定算法增量。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "objective_mismatch",
+      "message": "种子题为在线流式最大值优化问题，天然不存在无解或冲突分支；核心约束仅为操作允许范围而非硬性可满足条件。强行套用构造或阻碍证书将彻底改变原题求值语义，无法满足规则要求的局部冲突证据前提。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.15,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective.type为'maximize_value'且requires_solution为false；core_constraints仅定义操作同余与非负限制，未包含任何可能导致无解的硬性冲突条件。与rule_under_review.eligibility.required_seed_properties['做不到的原因可以用局部证据表示']直接冲突。",
+        "feedback": "该规则强依赖可行性判定与冲突结构，不适用于纯极值优化类种子。建议更换为具有明确可满足性/判定性质的种子题（如匹配、覆盖、约束满足等），或调整规则为‘极值构造+紧界证明’变体。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "infinite_solution_space",
+      "message": "种子题为动态查询优化题，核心操作（加减x）在仅受非负约束下产生无界状态转移路径，缺乏规则要求的有限解空间与明确去重口径；在线流式结构无法直接映射为静态可计数的组合对象，强行转换将导致计数定义发散或违反去重红线。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.2,
+        "risk_tags": [
+          "infinite_solution_space",
+          "deduplication_undefined",
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.objective为maximize_value(mex)，core_constraints仅限制a_i'≡a_i(mod x)与a_i'≥0，未提供操作次数或值域上界；invariant.equivalence_class仅说明模x分类，无法约束解空间有限性。规则eligibility.forbidden_seed_properties明确禁止'解空间天然无限'与'去重规则说不清楚'，当前种子不满足required_seed_properties中的'解空间有限'与'不同解之间的等价关系能说清楚'。",
+        "feedback": "建议更换为具有静态有限构造空间或明确组合边界的种子题；若需保留此题，需先引入强约束（如固定操作序列长度、限定值域范围或改为离线静态版本）以封闭解空间，否则不适合直接套用existence_to_counting规则。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "pass",
+      "reason_code": "eligible",
+      "message": "原题在线查询流与模x同余类分配机制天然提供顺序不确定与局部资源波动，完全匹配规则要求的原生扰动来源；将目标从最大化MEX转为最坏扰动下的最小保底阈值，可合法驱动O/C/V三轴重构，且扰动模型可直接内化于同余约束与在线到达过程，未违反红线。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.87,
+        "risk_tags": [
+          "shared_core_risk",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.input_structure 中的 query_stream 与 ordered=true 提供顺序不确定性；seed_schema.core_constraints.divisibility (a_i' ≡ a_i mod x) 提供局部选择差异与资源波动空间；rule_under_review.eligibility.required_seed_properties 明确要求'原题里本来就有顺序不确定、资源波动或局部选择差异'，两者高度吻合。",
+        "feedback": "规划时需严格定义扰动集（如最坏到达序列或同余类内最劣分配策略），确保强化不变量直接约束最坏情形下的资源下界；严禁将新题设计为'原贪心算法外层套二分'，必须体现最坏情况责任对核心状态转移的结构性改变。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "规划完整兑现了最小保底型优化规则，三轴变更明确，三个helper均按要求落位至对应schema组件，扰动模型源于原题同余结构，强化不变量与阈值深度耦合，且明确排除了外层简单二分的浅层改造。",
+      "details": {
+        "review_role": "你扮演一名保底优化规划审查官，重点确认规划是否把目标升级为真实的最坏情形保底优化。",
+        "review_brief": "确认规划是否给出了来源于原题语义的扰动模型，并把保底目标和强化不变量写进四元组。",
+        "evidence": "payload中applied_helpers逐条对应native_perturbation_model、worst_case_invariant与guarantee_threshold_coupling，并在candidate_schema的core_constraints中新增perturbation_budget（∑|c_r' - c_r| ≤ Δ），objective改为maximize_guaranteed_threshold，invariant补充robust_prefix_capacity与monotonic_guarantee。anti_shallow_rationale明确声明‘并非简单在外层套二分’，algorithmic_delta_claim指出校验函数需重构为带权前缀和极值分析，满足规则hard_checks与redlines要求。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "题面清晰定义了基于余数类计数偏移的扰动模型，明确阐述了最坏情况下的保底语义，并将阈值K与覆盖范围深度耦合，完整兑现了规则的核心承诺与helper语义。",
+      "details": {
+        "review_role": "你扮演一名保底优化题面审查官，重点确认题面是否清楚表达最坏情形或任意扰动下的保底语义。",
+        "review_brief": "确认题面是否写清扰动来源、最坏情况语义，以及要求求出最小保底值或等价的鲁棒目标。",
+        "evidence": "题面描述中明确写出扰动来源与形式化约束：'已知抖动造成的总偏移量受预算 Δ 限制，即所有余数类的实际数量与名义数量之差的绝对值总和不超过 Δ（∑_{r=0}^{x-1} |c_r' - c_r| ≤ Δ）'；最坏情况语义在目标与Notes中双重强调：'寻找最大的整数 K，使得无论网络抖动如何分配...都必须存在覆盖 [0, K-1] 的分配方案'；阈值耦合体现在K直接决定覆盖前缀长度，而非简单外层判定。"
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "score": 0.87,
+      "accepted": true,
+      "risk_tags": [
+        "shared_core_risk",
+        "low_novelty"
+      ],
+      "status": "ok",
+      "reason_code": "plan_validation_failed",
+      "reason": "",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "校园WiFi信道鲁棒分配",
+    "description": "校园网管中心近期需要为 n 个学生社团集中分配 WiFi 信道。每个社团提交了一个基准请求频率 a_i。由于硬件滤波器的物理限制，实际分配给社团的信道频率必须与基准请求频率模 x 同余，且分配值必须为非负整数。\n\n近期校园网络出现周期性抖动，导致各余数类 r（0 ≤ r < x）的实际可用设备数量 c_r' 可能偏离网管中心统计的名义数量 c_r。已知抖动造成的总偏移量受预算 Δ 限制，即所有余数类的实际数量与名义数量之差的绝对值总和不超过 Δ（∑_{r=0}^{x-1} |c_r' - c_r| ≤ Δ），且实际数量 c_r' 保持非负。\n\n网管中心希望制定一个鲁棒的分配预案：寻找最大的整数 K，使得无论网络抖动如何分配（只要满足上述预算 Δ 约束），中心都能找到一种合法的设备分配方案，使得频率 0, 1, 2, ..., K-1 均被恰好一个社团占用。请计算这个最大的 K 值。",
+    "input_format": "第一行包含三个整数 n, x, Δ，分别表示社团数量、信道间隔模数和扰动预算。\n第二行包含 n 个整数 a_1, a_2, ..., a_n，表示各社团的基准请求频率。",
+    "output_format": "输出一个整数，表示满足条件的最大保底阈值 K。",
+    "constraints": [
+      "1 ≤ n, x ≤ 200000",
+      "0 ≤ Δ ≤ 10^9",
+      "0 ≤ a_i ≤ 10^9",
+      "时间限制：2.0 秒",
+      "空间限制：512 MB"
+    ],
+    "samples": [
+      {
+        "input": "5 3 1\n0 3 1 4 2",
+        "output": "2",
+        "explanation": "名义统计中，模 3 余 0 的设备有 2 个（0, 3），余 1 的有 2 个（1, 4），余 2 的有 1 个（2）。扰动预算 Δ=1。若尝试 K=3，需要各余数类至少 1 个设备。最坏情况下，抖动可能将余 2 类的 1 个设备全部削减（偏移量 1 ≤ Δ），导致余 2 类实际可用为 0，无法覆盖频率 2，故 K=3 不成立。对于 K=2，只需覆盖频率 0 和 1，分别需要余 0 和余 1 类各 1 个设备。即使抖动削减任意一类 1 个设备，剩余名义数量仍满足需求（2-1=1 ≥ 1）。因此最大保底 K 为 2。"
+      },
+      {
+        "input": "4 2 0\n0 0 1 1",
+        "output": "4",
+        "explanation": "扰动预算 Δ=0，表示无抖动，实际数量等于名义数量。模 2 余 0 有 2 个，余 1 有 2 个。覆盖 0,1,2,3 恰好需要余 0 类 2 个（对应 0,2），余 1 类 2 个（对应 1,3）。名义数量完全匹配，故 K=4 成立。"
+      }
+    ],
+    "notes": "本题要求的是最坏情况下的保底阈值，即对于所有满足 ∑|c_r' - c_r| ≤ Δ 的合法扰动分布，都必须存在覆盖 [0, K-1] 的分配方案。若不存在任何正整数 K 满足条件，请输出 0。所有运算均在整数范围内进行，无需取模。",
+    "status": "ok",
+    "error_reason": "",
+    "feedback": ""
+  },
+  "iteration": {
+    "run_id": "CF1294D_v1_campus_ops_20260420_195834",
+    "round_index": 1,
+    "requested_rounds": 3,
+    "previous_artifact_path": "",
+    "previous_quality_report_path": "",
+    "revision_context_snapshot": {}
+  }
+}

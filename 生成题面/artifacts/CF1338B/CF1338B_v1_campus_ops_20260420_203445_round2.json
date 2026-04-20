@@ -1,0 +1,462 @@
+{
+  "problem_id": "CF1338B",
+  "source_problem_ids": [
+    "CF1338B"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "difference_plan.changed_axes 与 new_schema 的真实变化不一致。",
+    "summary": "选中的规则未能稳定落地",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.0,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.0,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.0,
+      "O": 0.0,
+      "V": 0.0
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.0,
+      "objective_type_distance": 0.0,
+      "objective_text_distance": 0.0,
+      "invariant_match_distance": 0.0
+    }
+  },
+  "changed_axes_realized": [],
+  "objective": {
+    "type": "maximize_value",
+    "description": "计算满足任意两叶子节点间路径边权异或和为0的约束下,不同边权数量的最小值与最大值。",
+    "target": "distinct_weight_count",
+    "requires_solution": false
+  },
+  "rule_selection_reason": "canonical_witness:原题仅要求输出极值统计结果（requires_solution: false），底层存在明确的边权分配方案；树边可按输入或DFS序定义严格的字典序规范，且原解法依赖奇偶类划分与父节点共享逻辑进行计数，无法直接顺手回溯出满足全局规范顺序的构造解，符合output_upgrade准入条件。",
+  "new_schema_snapshot": {
+    "problem_id": "CF1338B",
+    "source": "codeforces",
+    "input_structure": {
+      "type": "tree",
+      "length": {
+        "min": 3,
+        "max": 100000
+      },
+      "value_range": {
+        "min": null,
+        "max": null
+      },
+      "properties": {
+        "connected": true,
+        "acyclic": true
+      },
+      "components": []
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "path_constraint",
+          "description": "对于树中任意两个不同的叶子节点,连接它们的简单路径上所有边权的按位异或和必须等于0。",
+          "formal": "\\forall v_1, v_2 \\in \\text{Leaves}, v_1 \\neq v_2 \\implies \\bigoplus_{e \\in \\text{Path}(v_1, v_2)} w(e) = 0",
+          "source_sections": [
+            "description"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "maximize_value",
+      "description": "计算满足任意两叶子节点间路径边权异或和为0的约束下,不同边权数量的最小值与最大值。",
+      "target": "distinct_weight_count",
+      "requires_solution": false
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "equivalence_class",
+          "description": "叶子节点按到任意选定根节点的距离奇偶性被划分为等价类。算法在DFS过程中持续统计各奇偶类的叶子数量,利用该划分性质判定最小不同权值数:当且仅当所有叶子属于同一奇偶类时答案为1,否则为3。",
+          "properties": {},
+          "evidence_source": "solution_code"
+        },
+        {
+          "name": "conservation",
+          "description": "任意两叶子路径异或和为0等价于从固定根到所有叶子的路径异或前缀和保持恒定。该守恒性质在树结构上强制要求共享同一父节点的多个叶子边必须赋予相同权值,算法据此在遍历过程中对理论最大值进行确定性扣减。",
+          "properties": {},
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Medium"
+  },
+  "applied_rule": "canonical_witness",
+  "rejected_candidates": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "status": "ok",
+      "reason_code": "declared_axes_mismatch",
+      "reason": "difference_plan.changed_axes 与 new_schema 的真实变化不一致。"
+    }
+  ],
+  "algorithmic_delta_claim": {},
+  "anti_shallow_rationale": "",
+  "shared_core_summary": "",
+  "shared_core_anchors": {},
+  "seed_contributions": {},
+  "fusion_ablation": {},
+  "applied_helpers": [],
+  "planning_status": "difference_insufficient",
+  "planning_error_reason": "difference_plan.changed_axes 与 new_schema 的真实变化不一致。",
+  "planning_feedback": "已尝试 1 条候选规则，均未通过规划校验。",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "reconstructible_scheme_with_definable_canonical_order",
+      "selection_reason": "原题仅要求输出极值统计结果（requires_solution: false），底层存在明确的边权分配方案；树边可按输入或DFS序定义严格的字典序规范，且原解法依赖奇偶类划分与父节点共享逻辑进行计数，无法直接顺手回溯出满足全局规范顺序的构造解，符合output_upgrade准入条件。",
+      "risk_tags": [],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.objective.requires_solution为false；core_constraints定义任意两叶子路径异或和为0的边权约束；invariant指出叶子按到根距离奇偶性划分等价类及父节点共享边权扣减逻辑，证明方案可恢复且具备结构规律；规则eligibility要求'方案有自然顺序或能定义清楚规范'，树结构天然支持字典序等规范定义，满足must_change的C/O/V轴改造要求。",
+        "feedback": "规划时需严格通过canonical_order_pressure将规范顺序嵌入主状态演化，避免退化为先计算极值再局部贪心赋值的表面修改；需确保proof_bearing_output使校验责任直接绑定新构造目标。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "seed_lacks_impossibility_branch",
+      "selection_reason": "原题是纯结构优化题，在给定树结构下满足异或约束的边权赋值恒存在，缺乏“无解”分支的自然语义。强行引入冲突证据需额外发明前置约束，超出保守审查边界。",
+      "risk_tags": [
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要中 objective.type 为 maximize_value，requires_solution 为 false，且 core_constraints 仅描述输出需满足的全局异或条件。在任意合法输入树上，全赋0或按奇偶类赋值均可满足约束，不存在规则 required_seed_properties 所要求的“做不到的原因”。",
+        "feedback": "建议更换为本身具有可行性判定分支的种子题，或明确声明需引入部分边权固定/值域受限等前置条件以构造无解情形，否则无法将失败语义转化为可局部检查的冲突证据。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "infinite_solution_space",
+      "selection_reason": "种子题边权值域未限定（schema中value_range为null），导致满足异或约束的合法赋值方案天然无限，直接违反规则'解空间有限'的准入条件，无法建立明确的计数对象与去重规则。",
+      "risk_tags": [
+        "infinite_solution_space",
+        "deduplication_undefined"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "schema_context.seed_schema.input_structure.value_range.min/max均为null；规则eligibility.forbidden_seed_properties明确列出'解空间天然无限'为禁止项；validation_contract.hard_checks要求'必须说明为什么可数'。当前种子缺乏有限值域或离散化前提，计数转化无数学基础。",
+        "feedback": "若需推进，必须在种子阶段显式限定边权取值范围（如[0, 2^m-1]）或改变计数对象为有限结构（如叶子奇偶类划分方案数、树拓扑形态数）。否则直接套用existence_to_counting将导致解空间发散，无法通过后续规划审查。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "missing_native_perturbation",
+      "selection_reason": "原题CF1338B为静态树上的刚性代数约束问题，缺乏规则明确要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行套用将导致扰动模型脱离原题语义，违反“不能凭背景硬造对手”的禁令。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints规定‘任意两叶子路径异或和必须等于0’，invariant指出解法依赖‘奇偶类划分’与‘前缀异或守恒’，均为确定性静态结构。规则eligibility.required_seed_properties明确要求原题需含顺序/资源/局部差异，而helpers.native_perturbation_model.redlines强调‘扰动来源必须回到原题语义’。当前种子题无此类原生波动，不满足准入条件。",
+        "feedback": "该规则适用于具有天然动态性、顺序依赖或参数波动的种子题。建议替换为调度、图流或带状态转移的DP类题目，否则极易退化为外层二分或硬加阈值，触发validation_contract中的‘不能只是外面再套一层二分’红线。"
+      },
+      "selected_for_attempt": false
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "reconstructible_scheme_with_definable_canonical_order",
+      "message": "原题仅要求输出极值统计结果（requires_solution: false），底层存在明确的边权分配方案；树边可按输入或DFS序定义严格的字典序规范，且原解法依赖奇偶类划分与父节点共享逻辑进行计数，无法直接顺手回溯出满足全局规范顺序的构造解，符合output_upgrade准入条件。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.97,
+        "risk_tags": [],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.objective.requires_solution为false；core_constraints定义任意两叶子路径异或和为0的边权约束；invariant指出叶子按到根距离奇偶性划分等价类及父节点共享边权扣减逻辑，证明方案可恢复且具备结构规律；规则eligibility要求'方案有自然顺序或能定义清楚规范'，树结构天然支持字典序等规范定义，满足must_change的C/O/V轴改造要求。",
+        "feedback": "规划时需严格通过canonical_order_pressure将规范顺序嵌入主状态演化，避免退化为先计算极值再局部贪心赋值的表面修改；需确保proof_bearing_output使校验责任直接绑定新构造目标。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "seed_lacks_impossibility_branch",
+      "message": "原题是纯结构优化题，在给定树结构下满足异或约束的边权赋值恒存在，缺乏“无解”分支的自然语义。强行引入冲突证据需额外发明前置约束，超出保守审查边界。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "原题摘要中 objective.type 为 maximize_value，requires_solution 为 false，且 core_constraints 仅描述输出需满足的全局异或条件。在任意合法输入树上，全赋0或按奇偶类赋值均可满足约束，不存在规则 required_seed_properties 所要求的“做不到的原因”。",
+        "feedback": "建议更换为本身具有可行性判定分支的种子题，或明确声明需引入部分边权固定/值域受限等前置条件以构造无解情形，否则无法将失败语义转化为可局部检查的冲突证据。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "infinite_solution_space",
+      "message": "种子题边权值域未限定（schema中value_range为null），导致满足异或约束的合法赋值方案天然无限，直接违反规则'解空间有限'的准入条件，无法建立明确的计数对象与去重规则。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.2,
+        "risk_tags": [
+          "infinite_solution_space",
+          "deduplication_undefined"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "schema_context.seed_schema.input_structure.value_range.min/max均为null；规则eligibility.forbidden_seed_properties明确列出'解空间天然无限'为禁止项；validation_contract.hard_checks要求'必须说明为什么可数'。当前种子缺乏有限值域或离散化前提，计数转化无数学基础。",
+        "feedback": "若需推进，必须在种子阶段显式限定边权取值范围（如[0, 2^m-1]）或改变计数对象为有限结构（如叶子奇偶类划分方案数、树拓扑形态数）。否则直接套用existence_to_counting将导致解空间发散，无法通过后续规划审查。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation",
+      "message": "原题CF1338B为静态树上的刚性代数约束问题，缺乏规则明确要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行套用将导致扰动模型脱离原题语义，违反“不能凭背景硬造对手”的禁令。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints规定‘任意两叶子路径异或和必须等于0’，invariant指出解法依赖‘奇偶类划分’与‘前缀异或守恒’，均为确定性静态结构。规则eligibility.required_seed_properties明确要求原题需含顺序/资源/局部差异，而helpers.native_perturbation_model.redlines强调‘扰动来源必须回到原题语义’。当前种子题无此类原生波动，不满足准入条件。",
+        "feedback": "该规则适用于具有天然动态性、顺序依赖或参数波动的种子题。建议替换为调度、图流或带状态转移的DP类题目，否则极易退化为外层二分或硬加阈值，触发validation_contract中的‘不能只是外面再套一层二分’红线。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "declared_axes_mismatch",
+      "message": "difference_plan.changed_axes 与实际变化轴不一致。",
+      "details": {
+        "declared_axes": [
+          "C",
+          "O",
+          "V"
+        ],
+        "realized_axes": [
+          "I",
+          "C",
+          "O",
+          "V"
+        ]
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "score": 0.97,
+      "accepted": false,
+      "risk_tags": [],
+      "status": "ok",
+      "reason_code": "declared_axes_mismatch",
+      "reason": "difference_plan.changed_axes 与 new_schema 的真实变化不一致。",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "difference_plan.changed_axes 与 new_schema 的真实变化不一致。",
+    "feedback": "已尝试 1 条候选规则，均未通过规划校验。"
+  },
+  "iteration": {
+    "run_id": "CF1338B_v1_campus_ops_20260420_203445",
+    "round_index": 2,
+    "requested_rounds": 3,
+    "previous_artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1338B_v1_campus_ops_20260420_203445_round1.json",
+    "previous_quality_report_path": "D:\\AutoProblemGen\\生成题面\\reports\\CF1338B\\CF1338B_v1_campus_ops_20260420_203445_round1_quality_report.json",
+    "revision_context_snapshot": {
+      "round_index": 1,
+      "overall_status": "reject_as_retheme",
+      "generated_status": "ok",
+      "quality_score": 97.0,
+      "divergence_score": 52.4,
+      "failed_hard_checks": [],
+      "issues": [
+        {
+          "issue_type": "quality_issue",
+          "severity": "minor",
+          "title": "样例规模偏小，缺乏复杂分支验证",
+          "detail": "当前两个样例均为 N=4 的极小结构，虽覆盖了奇偶类划分的两种基线情况，但未能充分展示输入边序（1至N-1）在复杂树形中对字典序贪心决策的具体影响。",
+          "evidence_refs": [
+            "generated_problem.samples"
+          ],
+          "fix_hint": "建议补充一个 N>=6 且含非对称分支的样例，以直观体现边序字典序优先规则在局部冲突时的选择逻辑。"
+        },
+        {
+          "issue_type": "quality_issue",
+          "severity": "minor",
+          "title": "叶子节点定义可进一步形式化",
+          "detail": "Description 中提及“仅连接一条通道的叶子节点”，但在算法竞赛题面中，通常建议在 Constraints 或 Input Format 中显式补充“叶子节点定义为度数为 1 的节点”，以符合标准表述习惯。",
+          "evidence_refs": [
+            "generated_problem.description",
+            "generated_problem.constraints"
+          ],
+          "fix_hint": "在 constraints 列表中追加一条：'叶子节点定义为图中度数为 1 的节点。'"
+        },
+        {
+          "issue_type": "retheme_issue",
+          "severity": "blocker",
+          "title": "solution transfer risk too high",
+          "detail": "新题虽然在目标轴（O）和约束轴（C）上进行了形式化修改（从输出极值计数改为输出构造序列，并增加字典序最小化要求），但核心任务语义与原题高度一致。两者共享完全相同的底层数学不变量：叶子节点到根的距离奇偶性划分决定了最小不同权值数（1或3）。新题的字典序构造要求并未改变问题建模的本质，仅是在原题奇偶类判定框架上增加了一层标准的贪心赋值逻辑。熟悉原题的选手可直接复用相同的DFS奇偶校验状态设计与异或前缀守恒性质，仅需将最后的计数步骤替换为按输入边序的贪心分配即可。核心求解关注点、关键性质与算法框架未发生实质跃迁，属于典型的在原题骨架上附加输出格式与次要优化目标的换皮题。",
+          "evidence_refs": [
+            "snapshots.original_problem",
+            "snapshots.new_schema",
+            "snapshots.generated_problem",
+            "divergence.schema_distance_breakdown",
+            "review_context.changed_axes_realized"
+          ],
+          "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+        }
+      ],
+      "suggested_revisions": [
+        "建议补充一个 N>=6 且含非对称分支的样例，以直观体现边序字典序优先规则在局部冲突时的选择逻辑。",
+        "在 constraints 列表中追加一条：'叶子节点定义为图中度数为 1 的节点。'",
+        "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+        "增加一个 N=6 或 N=7 的样例，包含多分支结构，以更充分验证边序字典序贪心的正确性与鲁棒性。",
+        "在 Constraints 中显式补充“叶子节点指度数为 1 的节点”，提升定义严谨性。",
+        "可在 Notes 中简要提示“题目保证存在满足条件的正整数解，且权值在 32 位有符号整数范围内”，与 schema 的 value_range 呼应，方便选手选择数据类型。",
+        "优先改写核心任务定义，而不是继续替换故事背景。"
+      ],
+      "strengths_to_keep": [
+        "优化目标优先级表述极其清晰（先种类数后字典序），有效避免了构造题常见的多解歧义。",
+        "Constraints 中 N>=3 的设定逻辑严密，巧妙规避了 N=2 时单边异或和为 0 与正整数权值约束的潜在矛盾。",
+        "样例解释直接关联核心不变量（奇偶类划分），具有极强的教学与提示价值，帮助选手快速切入解题思路。",
+        "题面完全遵循 OJ 标准结构，无冗余文本，信息密度高且易于解析。"
+      ]
+    }
+  }
+}

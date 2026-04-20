@@ -1,0 +1,799 @@
+{
+  "problem_id": "campus_ops_canonical_wire_placement",
+  "source_problem_ids": [
+    "codechef_train-00003-of-00039-e3822fccad6e083a__row_0335"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "C",
+      "O",
+      "V"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "原题仅依赖全局极值区间进行可行性判定，新题要求输出具体规范排列，迫使约束从静态阈值转为动态预算跟踪，目标从求值转为构造，不变量从全局连续性转为前缀可行性。",
+    "summary": "通过规范解输出要求，将数学判定问题重构为带强约束的构造性问题，彻底改变算法核心路径。",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.371,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.371,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.4943,
+      "O": 0.61,
+      "V": 0.3513
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.4943,
+      "objective_type_distance": 0.6837,
+      "objective_text_distance": 0.4995,
+      "invariant_match_distance": 0.3513
+    }
+  },
+  "changed_axes_realized": [
+    "C",
+    "O",
+    "V"
+  ],
+  "objective": {
+    "type": "construct_canonical",
+    "description": "输出字典序最小的合法摊位搭建顺序P，使得总用线长度最小且不超过M。若无解输出-1。",
+    "target": "permutation_sequence",
+    "requires_solution": true
+  },
+  "rule_selection_reason": "原题核心依赖“总长度构成连续区间”的数学性质，将求解退化为O(1)边界比较。canonical_witness强制要求输出并校验一个规范排列（如字典序最小且满足线长约束的P），直接打破原题的纯数学观察路径，将求解责任从“计算区间端点”转移到“构造性组合设计”，在可落地前提下实现算法范式的根本跃迁。相比之下，minimum_guarantee_under_perturbation依赖的原生扰动在本题中仅为排列顺序，强行引入最坏情况保底易破坏原题优美的连续区间性质，或退化为外层二分/参数放大，不符合反浅改要求。；创新度判断：将核心义务从“利用连续区间性质直接判定/求值”拉离，转为“在满足线长约束的前提下，按规范顺序（如字典序）构造完整排列P”。输出对象从标量值变为结构化方案，验证责任从边界比较转为全局合法性与规范性校验，彻底改变原题的解题路径。；难度判断：在主求解责任上，要求算法不仅计算可行域，还需在状态转移或贪心策略中显式维护规范性顺序（如逐位确定P[i]并保证剩余部分仍能凑出合法线长）。这迫使解法处理组合构造中的前缀约束与剩余容量匹配，难度从数学推导跃升至构造性算法设计与可行性剪枝。；风险判断：主要风险在于规范排列的构造可能因连续区间性质而变得过于简单（如直接贪心填充）。但通过canonical_order_pressure和constraint_reweighting辅助器，可将规范性要求深度嵌入主约束（如要求前缀线长严格单调或特定分布），确保构造过程需动态规划或带剪枝的搜索，风险可控且不会退化为后处理。",
+  "new_schema_snapshot": {
+    "problem_id": "campus_ops_canonical_wire_placement",
+    "source": "codechef_train-00003-of-00039-e3822fccad6e083a__row_0335",
+    "input_structure": {
+      "type": "tuple",
+      "length": {
+        "min": 2,
+        "max": 2
+      },
+      "value_range": {
+        "min": 1,
+        "max": 1000
+      },
+      "properties": {
+        "multiple_test_cases": true
+      }
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "permutation_constraint",
+          "description": "社团摊位搭建顺序P为1到N的排列，每个摊位恰好搭建一次。",
+          "formal": "P \\in S_N",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "dynamic_budget_constraint",
+          "description": "按P顺序搭建时，每次连接最近已建摊位的线缆消耗累加不得超过初始预算M。且每一步选择必须保证剩余预算足以完成后续所有摊位的搭建。",
+          "formal": "\\sum_{k=1}^{N} \\text{cost}(P_k) \\le M \\land \\forall k, \\text{rem}_k \\in [L_{N-k}, R_{N-k}]",
+          "source_sections": [
+            "description",
+            "output"
+          ]
+        },
+        {
+          "name": "canonical_priority",
+          "description": "在所有满足预算约束且总用线长度最小的排列中，必须输出字典序最小的P。",
+          "formal": "P = \\min_{\\text{lex}} \\{ P' \\mid \\text{cost}(P') = \\min \\text{cost} \\le M \\}",
+          "source_sections": [
+            "objective"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "construct_canonical",
+      "description": "输出字典序最小的合法摊位搭建顺序P，使得总用线长度最小且不超过M。若无解输出-1。",
+      "target": "permutation_sequence",
+      "requires_solution": true
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "prefix_budget_invariant",
+          "description": "在构造排列的每一步，剩余可用线长必须落在剩余未放置位置所能产生的最小与最大线长区间内。该不变量作为贪心选择合法性的充要条件，确保局部字典序最小选择不会导致全局无解。",
+          "properties": {
+            "prefix_dependent_bounds": true,
+            "greedy_choice_validity": true,
+            "constructive_verification": true
+          },
+          "evidence_source": "both"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Hard"
+  },
+  "applied_rule": "canonical_witness",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {
+    "seed_solver_core": "基于预计算的极值区间[L_N, R_N]进行O(1)边界比对，直接判定可行性并计算最小剩余长度。",
+    "reusable_subroutines": "剩余k个位置的最小/最大线缆消耗预计算函数calc_min_max(k)。",
+    "new_solver_core": "贪心构造+可行性剪枝。从左到右依次尝试填入当前未使用的最小数字，利用前缀预算不变量验证填入后剩余预算是否仍在[L_{N-i}, R_{N-i}]内。若合法则固定该位并更新预算，否则尝试次小数字。",
+    "new_proof_obligation": "证明贪心策略的字典序最优性与前缀不变量的完备性。需严格论证：若当前最小可用数字满足区间约束，则放弃它选择更大数字绝不可能得到字典序更小的合法解；同时证明区间约束是剩余部分可构造的充要条件，避免无效搜索。",
+    "why_direct_reuse_fails": "原解法仅依赖全局数学性质进行标量计算，缺乏逐步构造状态与字典序优先级控制。直接套用原区间比对无法生成具体排列，而暴力回溯或全排列枚举在N=1000时必然超时，必须引入动态预算跟踪与贪心剪枝。"
+  },
+  "anti_shallow_rationale": "本题并非简单增加输出格式要求。原题解法完全依赖预计算的[L_N, R_N]区间进行边界比较，时间复杂度极低且无构造过程。新题强制要求字典序最小排列，使得静态区间性质失效，必须引入动态预算跟踪与前缀可行性验证。贪心策略的正确性依赖于严格的区间包含证明，无法通过原题解法微调或简单回溯实现，算法复杂度与逻辑结构发生本质跃迁。",
+  "shared_core_summary": "单种子扩展模式，核心逻辑聚焦于从静态区间判定到动态贪心构造的范式转换。",
+  "shared_core_anchors": {
+    "shared_state": "剩余未放置位置集合与当前累计线缆消耗",
+    "shared_transition": "尝试填入最小可用数字并验证预算区间约束",
+    "shared_decision_basis": "前缀预算不变量与字典序优先级的交集判定"
+  },
+  "seed_contributions": {
+    "seed_a": "",
+    "seed_b": ""
+  },
+  "fusion_ablation": {
+    "without_seed_a": "",
+    "without_seed_b": ""
+  },
+  "applied_helpers": [
+    {
+      "id": "canonical_order_pressure",
+      "selection_reason": "将字典序最小要求嵌入状态转移，迫使算法从纯数学判定转向构造性搜索。",
+      "affected_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "在",
+        "c",
+        "o",
+        "r",
+        "e",
+        "_",
+        "c",
+        "o",
+        "n",
+        "s",
+        "t",
+        "r",
+        "a",
+        "i",
+        "n",
+        "t",
+        "s",
+        "中",
+        "新",
+        "增",
+        "c",
+        "a",
+        "n",
+        "o",
+        "n",
+        "i",
+        "c",
+        "a",
+        "l",
+        "_",
+        "p",
+        "r",
+        "i",
+        "o",
+        "r",
+        "i",
+        "t",
+        "y",
+        "，",
+        "在",
+        "o",
+        "b",
+        "j",
+        "e",
+        "c",
+        "t",
+        "i",
+        "v",
+        "e",
+        "中",
+        "明",
+        "确",
+        "r",
+        "e",
+        "q",
+        "u",
+        "i",
+        "r",
+        "e",
+        "s",
+        "_",
+        "s",
+        "o",
+        "l",
+        "u",
+        "t",
+        "i",
+        "o",
+        "n",
+        "为",
+        "t",
+        "r",
+        "u",
+        "e",
+        "，",
+        "在",
+        "i",
+        "n",
+        "v",
+        "a",
+        "r",
+        "i",
+        "a",
+        "n",
+        "t",
+        "中",
+        "引",
+        "入",
+        "p",
+        "r",
+        "e",
+        "f",
+        "i",
+        "x",
+        "_",
+        "b",
+        "u",
+        "d",
+        "g",
+        "e",
+        "t",
+        "_",
+        "i",
+        "n",
+        "v",
+        "a",
+        "r",
+        "i",
+        "a",
+        "n",
+        "t",
+        "。"
+      ],
+      "innovation_reason": "规范顺序不再是输出后的排序，而是驱动每一步状态演化的核心决策依据。",
+      "difficulty_reason": "状态转移需实时维护字典序优先级与预算区间的交集，增加了贪心正确性证明与剪枝逻辑的复杂度。"
+    },
+    {
+      "id": "proof_bearing_output",
+      "selection_reason": "将输出对象升级为带自验证责任的规范解，确保解法具备可校验性。",
+      "affected_axes": [
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "o",
+        "b",
+        "j",
+        "e",
+        "c",
+        "t",
+        "i",
+        "v",
+        "e",
+        "类",
+        "型",
+        "改",
+        "为",
+        "c",
+        "o",
+        "n",
+        "s",
+        "t",
+        "r",
+        "u",
+        "c",
+        "t",
+        "_",
+        "c",
+        "a",
+        "n",
+        "o",
+        "n",
+        "i",
+        "c",
+        "a",
+        "l",
+        "，",
+        "i",
+        "n",
+        "v",
+        "a",
+        "r",
+        "i",
+        "a",
+        "n",
+        "t",
+        "强",
+        "调",
+        "c",
+        "o",
+        "n",
+        "s",
+        "t",
+        "r",
+        "u",
+        "c",
+        "t",
+        "i",
+        "v",
+        "e",
+        "_",
+        "v",
+        "e",
+        "r",
+        "i",
+        "f",
+        "i",
+        "c",
+        "a",
+        "t",
+        "i",
+        "o",
+        "n",
+        "属",
+        "性",
+        "。"
+      ],
+      "innovation_reason": "输出责任直接绑定全局约束满足性，要求算法在构造过程中同步完成正确性自证。",
+      "difficulty_reason": "解法必须内建验证逻辑，任何一步选择都需承担后续全局可行性的证明义务，排除了启发式或近似解法。"
+    },
+    {
+      "id": "constraint_reweighting",
+      "selection_reason": "重排线缆预算约束的优先级，使其从静态阈值变为动态主导变量。",
+      "affected_axes": [
+        "C",
+        "V"
+      ],
+      "schema_changes": [
+        "c",
+        "o",
+        "r",
+        "e",
+        "_",
+        "c",
+        "o",
+        "n",
+        "s",
+        "t",
+        "r",
+        "a",
+        "i",
+        "n",
+        "t",
+        "s",
+        "中",
+        "s",
+        "u",
+        "m",
+        "_",
+        "c",
+        "o",
+        "n",
+        "s",
+        "t",
+        "r",
+        "a",
+        "i",
+        "n",
+        "t",
+        "升",
+        "级",
+        "为",
+        "d",
+        "y",
+        "n",
+        "a",
+        "m",
+        "i",
+        "c",
+        "_",
+        "b",
+        "u",
+        "d",
+        "g",
+        "e",
+        "t",
+        "_",
+        "c",
+        "o",
+        "n",
+        "s",
+        "t",
+        "r",
+        "a",
+        "i",
+        "n",
+        "t",
+        "，",
+        "i",
+        "n",
+        "v",
+        "a",
+        "r",
+        "i",
+        "a",
+        "n",
+        "t",
+        "中",
+        "b",
+        "o",
+        "u",
+        "n",
+        "d",
+        "s",
+        "_",
+        "d",
+        "e",
+        "p",
+        "e",
+        "n",
+        "d",
+        "_",
+        "o",
+        "n",
+        "l",
+        "y",
+        "_",
+        "o",
+        "n",
+        "_",
+        "n",
+        "改",
+        "为",
+        "p",
+        "r",
+        "e",
+        "f",
+        "i",
+        "x",
+        "_",
+        "d",
+        "e",
+        "p",
+        "e",
+        "n",
+        "d",
+        "e",
+        "n",
+        "t",
+        "_",
+        "b",
+        "o",
+        "u",
+        "n",
+        "d",
+        "s",
+        "。"
+      ],
+      "innovation_reason": "约束主次关系反转，预算消耗成为决定排列顺序合法性的第一优先级，打破原题仅依赖N的静态区间假设。",
+      "difficulty_reason": "迫使状态设计处理动态预算与剩余极值区间的耦合，需精确计算每一步的可行域，大幅提升状态维护难度。"
+    }
+  ],
+  "planning_status": "ok",
+  "planning_error_reason": "",
+  "planning_feedback": "",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": true,
+      "score": 0.92,
+      "reason_code": "meets_required_properties_and_avoids_forbidden",
+      "selection_reason": "种子题目标为求值且明确标注requires_solution为false，解对象为排列P具备天然字典序可定义规范；当前解法依赖值域连续性不变量直接判定，无法顺手回溯构造，完全符合required_seed_properties并避开forbidden_seed_properties，升级将强制改变C/O/V轴。",
+      "risk_tags": [
+        "shared_core_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "schema.objective.requires_solution为false；schema.invariant.value_contiguity表明原解法仅需比较区间端点；rule.eligibility.required_seed_properties要求'方案有自然顺序'，排列P满足字典序规范；rule.forbidden_seed_properties中'原解只要顺手回溯就能拿到方案'不成立。",
+        "feedback": "规划阶段需明确规范解的严格定义（如字典序最小且满足线长约束的排列），并通过constraint_reweighting将规范性要求嵌入主状态转移，防止新题退化为原连续性结论的简单构造应用。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.1,
+      "reason_code": "semantic_mismatch",
+      "selection_reason": "种子题的无解判定完全依赖全局数值边界比较（M < L_N），缺乏可局部验证的结构化冲突对象；强行要求输出局部证书将必然退化为数值边界说明，直接违反规则硬检查与红线。",
+      "risk_tags": [
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.invariant.value_contiguity 明确指出算法仅需比较 M 与预计算区间端点 [L_N, R_N] 即可判定可行性，无解原因为全局数值下界不足；rule_under_review.validation_contract.hard_checks 强制要求冲突证据必须能局部检查且不能退化成解释。两者在语义与输出结构上存在根本冲突。",
+        "feedback": "该种子题属于纯数值边界判定型，其不可行性不具备局部结构特征，无法自然映射为可局部校验的冲突证书。建议替换为具有显式局部约束冲突（如图匹配、SAT、区间重叠、资源死锁等）的种子题，或放弃此规则对该类题目的适配。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "not_applicable",
+      "selection_reason": "种子题的核心不变量明确指出合法解对应的总长度构成连续整数区间，判定逻辑仅依赖区间端点比较。该结构缺乏可明确去重与拆分的计数单元，强行转换会导致计数目标退化为平凡区间长度计算，或需完全抛弃原状态结构，不符合规则要求的‘解空间有限且可拆分汇总’及‘必须带来新责任’。",
+      "risk_tags": [
+        "low_novelty",
+        "semantic_mismatch"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.invariant.value_contiguity 描述为‘所有合法排列对应的总用线长度集合恰好构成连续整数区间 [L_N, R_N]...仅通过比较给定线长 M 与预计算的区间端点即可直接确定最小剩余长度’；rule_under_review.required_seed_properties 要求‘可以按某种单元拆分并汇总’且 helpers.counting_obligation_lock.redlines 明确禁止‘继续由原题判定过程主导’。",
+        "feedback": "该种子题的数学性质已高度收敛于区间判定，不具备自然计数化的结构基础。建议更换具有明确组合对象或等价类划分特征的种子题，或改用 objective_upgrade 家族中更侧重状态重构的规则。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "native_perturbation_aligned",
+      "selection_reason": "原题核心约束明确包含排列顺序不确定性，且不变量指出所有排列对应的总长度构成连续区间[L_N, R_N]，天然具备可形式化的最坏情况扰动源，完全满足规则要求的“顺序不确定”与“最坏情况落回原题语义”条件。",
+      "risk_tags": [
+        "binary_search_overlay_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.core_constraints.permutation_constraint 明确说明放置次序由排列P决定；seed_schema.invariant.invariants[0] 指出所有合法排列对应的总长度集合构成连续区间 [L_N, R_N]。这直接提供了规则 eligibility.required_seed_properties 所需的原生顺序不确定性与最坏情况边界。",
+        "feedback": "规划阶段必须利用区间端点 R_N 显式构建 worst_case_invariant，将排列任意性转化为正式扰动模型。严禁仅对原可行性判定外层包裹二分搜索，需确保保底阈值与主约束状态深度耦合。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 2
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "meets_required_properties_and_avoids_forbidden",
+      "message": "种子题目标为求值且明确标注requires_solution为false，解对象为排列P具备天然字典序可定义规范；当前解法依赖值域连续性不变量直接判定，无法顺手回溯构造，完全符合required_seed_properties并避开forbidden_seed_properties，升级将强制改变C/O/V轴。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.92,
+        "risk_tags": [
+          "shared_core_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "schema.objective.requires_solution为false；schema.invariant.value_contiguity表明原解法仅需比较区间端点；rule.eligibility.required_seed_properties要求'方案有自然顺序'，排列P满足字典序规范；rule.forbidden_seed_properties中'原解只要顺手回溯就能拿到方案'不成立。",
+        "feedback": "规划阶段需明确规范解的严格定义（如字典序最小且满足线长约束的排列），并通过constraint_reweighting将规范性要求嵌入主状态转移，防止新题退化为原连续性结论的简单构造应用。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "semantic_mismatch",
+      "message": "种子题的无解判定完全依赖全局数值边界比较（M < L_N），缺乏可局部验证的结构化冲突对象；强行要求输出局部证书将必然退化为数值边界说明，直接违反规则硬检查与红线。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.1,
+        "risk_tags": [
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.invariant.value_contiguity 明确指出算法仅需比较 M 与预计算区间端点 [L_N, R_N] 即可判定可行性，无解原因为全局数值下界不足；rule_under_review.validation_contract.hard_checks 强制要求冲突证据必须能局部检查且不能退化成解释。两者在语义与输出结构上存在根本冲突。",
+        "feedback": "该种子题属于纯数值边界判定型，其不可行性不具备局部结构特征，无法自然映射为可局部校验的冲突证书。建议替换为具有显式局部约束冲突（如图匹配、SAT、区间重叠、资源死锁等）的种子题，或放弃此规则对该类题目的适配。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "not_applicable",
+      "message": "种子题的核心不变量明确指出合法解对应的总长度构成连续整数区间，判定逻辑仅依赖区间端点比较。该结构缺乏可明确去重与拆分的计数单元，强行转换会导致计数目标退化为平凡区间长度计算，或需完全抛弃原状态结构，不符合规则要求的‘解空间有限且可拆分汇总’及‘必须带来新责任’。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.2,
+        "risk_tags": [
+          "low_novelty",
+          "semantic_mismatch"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.invariant.value_contiguity 描述为‘所有合法排列对应的总用线长度集合恰好构成连续整数区间 [L_N, R_N]...仅通过比较给定线长 M 与预计算的区间端点即可直接确定最小剩余长度’；rule_under_review.required_seed_properties 要求‘可以按某种单元拆分并汇总’且 helpers.counting_obligation_lock.redlines 明确禁止‘继续由原题判定过程主导’。",
+        "feedback": "该种子题的数学性质已高度收敛于区间判定，不具备自然计数化的结构基础。建议更换具有明确组合对象或等价类划分特征的种子题，或改用 objective_upgrade 家族中更侧重状态重构的规则。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "pass",
+      "reason_code": "native_perturbation_aligned",
+      "message": "原题核心约束明确包含排列顺序不确定性，且不变量指出所有排列对应的总长度构成连续区间[L_N, R_N]，天然具备可形式化的最坏情况扰动源，完全满足规则要求的“顺序不确定”与“最坏情况落回原题语义”条件。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.97,
+        "risk_tags": [
+          "binary_search_overlay_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.core_constraints.permutation_constraint 明确说明放置次序由排列P决定；seed_schema.invariant.invariants[0] 指出所有合法排列对应的总长度集合构成连续区间 [L_N, R_N]。这直接提供了规则 eligibility.required_seed_properties 所需的原生顺序不确定性与最坏情况边界。",
+        "feedback": "规划阶段必须利用区间端点 R_N 显式构建 worst_case_invariant，将排列任意性转化为正式扰动模型。严禁仅对原可行性判定外层包裹二分搜索，需确保保底阈值与主约束状态深度耦合。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "规划完整兑现了canonical_witness规则专属合同，成功将原题标量判定升级为带字典序优先级的规范解构造，C/O/V三轴均发生实质性变化，且三个helper均按要求落入对应schema模块并驱动了算法核心路径的重构。",
+      "details": {
+        "review_role": "你扮演一名规范解规划审查官，重点确认规划是否真正把输出责任升级为可比较、可校验的规范解。",
+        "review_brief": "确认规划是否明确了规范解的定义、比较口径与校验方式，并且规范性会改变主要求解责任。",
+        "evidence": "1. 轴变化验证：changed_axes明确包含C/O/V。candidate_schema中objective由minimize_value改为construct_canonical（O变），core_constraints新增canonical_priority与dynamic_budget_constraint（C变），invariant由全局连续性value_contiguity改为前缀可行性prefix_budget_invariant（V变）。2. Helper逐条兑现：canonical_order_pressure在core_constraints/objective/invariant中均落地，通过canonical_priority与prefix_budget_invariant将字典序嵌入贪心状态转移，未退化为后处理；proof_bearing_output在objective/invariant中落地，通过construct_canonical与constructive_verification绑定输出与自证责任，未留白于题面备注；constraint_reweighting在core_constraints/invariant中落地，将静态sum_constraint升级为动态预算跟踪dynamic_budget_constraint，打破原题仅依赖N的静态区间假设，主约束优先级发生实质重排。3. 核心求解责任转移：algorithmic_delta_claim与anti_shallow_rationale明确指出解法从O(1)区间比对跃迁至O(N^2)贪心构造+可行性剪枝，规范性要求直接主导状态设计与证明义务，完全符合output_upgrade与witness校验的语义合同。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "题面明确将目标升级为输出满足预算约束的字典序最小排列，规范解要求直接嵌入主约束与构造过程，未退化为后处理或附加说明，完全兑现了规范解输出与校验责任。",
+      "details": {
+        "review_role": "你扮演一名规范解题面审查官，重点确认题面是否要求输出一个规范且可检查的构造。",
+        "review_brief": "确认题面是否写清规范解、字典序或统一比较规则，并要求输出一个可校验的构造方案。",
+        "evidence": "题面描述明确要求“找出满足预算限制的字典序最小的搭建顺序”，输出格式规定“输出 N 个用空格隔开的正整数，表示该顺序”，备注强调“若存在多个合法顺序，必须输出字典序最小的一个”。结合规划摘要中动态预算约束（dynamic_budget_constraint）与前缀不变量（prefix_budget_invariant）的设计，规范顺序已作为核心决策依据驱动状态演化，主约束从静态阈值转为动态预算跟踪，输出对象直接承接可校验的构造责任，符合 canonical_witness 规则对 C/O/V 轴变更及三大 helper 的语义承诺。"
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "score": 0.92,
+      "accepted": true,
+      "risk_tags": [
+        "shared_core_risk"
+      ],
+      "status": "ok",
+      "reason_code": "plan_validation_failed",
+      "reason": "",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "校园社团节布线规划",
+    "description": "校园社团节即将开幕，学生会需要在一条直线上编号为 1 到 N 的 N 个预留点位依次搭建社团摊位。为了保障供电与网络，每次搭建新摊位时，必须拉设一根线缆连接到距离该点位最近的、已经搭建好的摊位或位于 0 和 N+1 处的两个固定信号塔。线缆长度即为本次搭建的消耗。所有摊位搭建完毕后，总消耗为各次线缆长度之和。\n\n由于预算有限，总消耗不能超过给定的上限 M。同时，为了便于宣传与调度，学生会希望摊位的搭建顺序（即一个 1 到 N 的排列）在字典序上尽可能靠前。请找出满足预算限制的字典序最小的搭建顺序。若无论如何安排都会超出预算，请输出 -1。",
+    "input_format": "第一行包含一个正整数 T，表示测试用例的数量。\n接下来 T 行，每行包含两个正整数 N 和 M，分别表示预留点位的数量和预算上限。",
+    "output_format": "对于每个测试用例，输出一行。若存在满足条件的搭建顺序，输出 N 个用空格隔开的正整数，表示该顺序；否则输出 -1。",
+    "constraints": [
+      "1 ≤ T ≤ 10",
+      "1 ≤ N ≤ 1000",
+      "1 ≤ M ≤ 10^9",
+      "时间限制：1.0 秒",
+      "空间限制：256 MB"
+    ],
+    "samples": [
+      {
+        "input": "2\n3 3\n3 2",
+        "output": "1 2 3\n-1",
+        "explanation": "对于 N=3，最小总消耗为 3。当 M=3 时，顺序 1 2 3 的总消耗为 3，满足预算且字典序最小。当 M=2 时，任何顺序的消耗均大于 2，故无解。"
+      },
+      {
+        "input": "1\n4 4",
+        "output": "1 2 3 4",
+        "explanation": "当 N=4 时，最小总消耗为 4。预算 M=4 恰好满足最小消耗，顺序 1 2 3 4 的总消耗为 4，符合要求。"
+      }
+    ],
+    "notes": "距离定义为两点坐标差的绝对值。若存在多个距离相同的最近目标，任选其一连接，线缆长度相同。输出顺序需严格为 1 到 N 的排列。若存在多个合法顺序，必须输出字典序最小的一个。",
+    "status": "ok",
+    "error_reason": "",
+    "feedback": ""
+  },
+  "iteration": {
+    "run_id": "codechef_train-00003-of-00039-e3822fccad6e083a__row_0335_v1_campus_ops_20260420_232047",
+    "round_index": 1,
+    "requested_rounds": 3,
+    "previous_artifact_path": "",
+    "previous_quality_report_path": "",
+    "revision_context_snapshot": {}
+  }
+}

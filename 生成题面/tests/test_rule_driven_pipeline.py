@@ -1042,6 +1042,12 @@ class PipelineArtifactTests(unittest.TestCase):
 
             artifact_path = Path(records[0]["artifact_path"])
             artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+            markdown_path = Path(records[0]["markdown_path"])
+            report_path = Path(records[0]["report_path"])
+            self.assertEqual(artifact_path.parent.name, "A__B")
+            self.assertEqual(markdown_path.parent.name, "A__B")
+            self.assertEqual(report_path.parent.name, "A__B")
+            self.assertEqual(report_path.name, "A__B.md")
             report_text = Path(records[0]["report_path"]).read_text(encoding="utf-8")
 
         for key in (
@@ -1170,6 +1176,9 @@ class BatchPipelineTests(unittest.TestCase):
                 self.assertIn("batch_artifact_path", record)
                 self.assertNotIn("batch_report_path", record)
                 self.assertTrue(Path(record["batch_artifact_path"]).exists())
+                expected_group = "__".join(record["source_problem_ids"])
+                self.assertEqual(Path(record["artifact_path"]).parent.name, expected_group)
+                self.assertEqual(Path(record["markdown_path"]).parent.name, expected_group)
 
         self.assertEqual(batch_payload["status"], "completed")
         self.assertEqual(batch_payload["task_order"], ["A", "B"])
@@ -1212,7 +1221,8 @@ class BatchPipelineTests(unittest.TestCase):
             self.assertEqual(len(batch_artifacts), 1)
             self.assertEqual(len(batch_reports), 0)
             batch_payload = json.loads(batch_artifacts[0].read_text(encoding="utf-8"))
-            markdown_paths = sorted(path.name for path in output_dir.glob("*.md"))
+            markdown_paths = sorted(path.name for path in output_dir.rglob("*.md"))
+            markdown_parent_names = sorted(path.parent.name for path in output_dir.rglob("*.md"))
 
         self.assertEqual(batch_payload["status"], "failed")
         self.assertEqual(batch_payload["completed_count"], 2)
@@ -1221,6 +1231,7 @@ class BatchPipelineTests(unittest.TestCase):
         self.assertEqual([item["problem_id"] for item in batch_payload["items"]], ["A", "B", "C"])
         self.assertEqual([record["source_problem_ids"] for record in records], [["A"], ["C"]])
         self.assertEqual(len(markdown_paths), 2)
+        self.assertEqual(markdown_parent_names, ["A", "C"])
         self.assertTrue(markdown_paths[0].startswith("A_v1_campus_ops_"))
         self.assertTrue(markdown_paths[1].startswith("C_v1_campus_ops_"))
 
@@ -1270,6 +1281,295 @@ class BatchPipelineTests(unittest.TestCase):
         self.assertEqual([record["source_problem_ids"] for record in records], [["A"], ["C"]])
 
 
+class QualityIterationPipelineTests(unittest.TestCase):
+    def test_quality_iteration_stops_after_first_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            temp = Path(tempdir)
+            source_dir = temp / "schemas"
+            output_dir = temp / "output"
+            artifact_dir = temp / "artifacts"
+            report_dir = temp / "reports"
+            source_dir.mkdir(parents=True, exist_ok=True)
+            (source_dir / "A.json").write_text(
+                json.dumps(make_schema(problem_id="A"), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            planner = RevisionAwarePlanner()
+            generator = RevisionAwareGenerator()
+            evaluator = SequencedQualityEvaluator([make_quality_report_payload(overall_status="pass", round_index=1)])
+
+            pipeline = GenerationPipeline(
+                source_dir=source_dir,
+                output_dir=output_dir,
+                artifact_dir=artifact_dir,
+                report_dir=report_dir,
+                generator=generator,
+                planner=planner,
+                problem_repository=FakeProblemRepository(),
+                quality_evaluator=evaluator,
+            )
+            records = pipeline.run(
+                mode="single",
+                problem_ids=["A"],
+                variants=1,
+                theme_id="campus_ops",
+                quality_iterations=2,
+            )
+
+            summary_path = Path(records[0]["iteration_summary_path"])
+            summary_payload = json.loads(summary_path.read_text(encoding="utf-8"))
+            quality_json_path = Path(records[0]["quality_report_json_path"])
+            quality_md_path = Path(records[0]["quality_report_md_path"])
+            quality_json_exists = quality_json_path.exists()
+            quality_md_exists = quality_md_path.exists()
+            artifact_path = Path(records[0]["artifact_path"])
+            markdown_path = Path(records[0]["markdown_path"])
+
+        self.assertEqual(len(planner.calls), 1)
+        self.assertEqual(len(generator.calls), 1)
+        self.assertEqual(len(evaluator.calls), 1)
+        self.assertEqual(records[0]["final_round_index"], 1)
+        self.assertTrue(quality_json_exists)
+        self.assertTrue(quality_md_exists)
+        self.assertEqual(artifact_path.parent.name, "A")
+        self.assertEqual(markdown_path.parent.name, "A")
+        self.assertEqual(quality_json_path.parent.name, "A")
+        self.assertEqual(quality_md_path.parent.name, "A")
+        self.assertEqual(summary_path.parent.name, "A")
+        self.assertEqual(summary_payload["final_round_index"], 1)
+        self.assertEqual(summary_payload["stop_reason"], "pass")
+        self.assertEqual(len(summary_payload["rounds"]), 1)
+        self.assertTrue(summary_payload["rounds"][0]["artifact_path"].endswith("_round1.json"))
+        self.assertEqual(Path(summary_payload["rounds"][0]["artifact_path"]).parent.name, "A")
+        self.assertEqual(Path(summary_payload["rounds"][0]["markdown_path"]).parent.name, "A")
+
+    def test_quality_iteration_runs_second_round_for_revise_quality(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            temp = Path(tempdir)
+            source_dir = temp / "schemas"
+            output_dir = temp / "output"
+            artifact_dir = temp / "artifacts"
+            report_dir = temp / "reports"
+            source_dir.mkdir(parents=True, exist_ok=True)
+            (source_dir / "A.json").write_text(
+                json.dumps(make_schema(problem_id="A"), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            planner = RevisionAwarePlanner()
+            generator = RevisionAwareGenerator()
+            evaluator = SequencedQualityEvaluator(
+                [
+                    make_quality_report_payload(
+                        overall_status="revise_quality",
+                        round_index=1,
+                        suggested_revisions=["补齐样例解释。"],
+                        strengths=["约束表达稳定"],
+                    ),
+                    make_quality_report_payload(overall_status="pass", round_index=2),
+                ]
+            )
+
+            pipeline = GenerationPipeline(
+                source_dir=source_dir,
+                output_dir=output_dir,
+                artifact_dir=artifact_dir,
+                report_dir=report_dir,
+                generator=generator,
+                planner=planner,
+                problem_repository=FakeProblemRepository(),
+                quality_evaluator=evaluator,
+            )
+            records = pipeline.run(
+                mode="single",
+                problem_ids=["A"],
+                variants=1,
+                theme_id="campus_ops",
+                quality_iterations=2,
+            )
+
+            summary_path = Path(records[0]["iteration_summary_path"])
+            summary_payload = json.loads(summary_path.read_text(encoding="utf-8"))
+            quality_json_path = Path(records[0]["quality_report_json_path"])
+            quality_md_path = Path(records[0]["quality_report_md_path"])
+            artifact_path = Path(records[0]["artifact_path"])
+            markdown_path = Path(records[0]["markdown_path"])
+
+        self.assertEqual(len(planner.calls), 2)
+        self.assertEqual(len(generator.calls), 2)
+        self.assertEqual(planner.calls[0]["revision_context"], {})
+        self.assertEqual(
+            planner.calls[1]["revision_context"]["suggested_revisions"],
+            ["补齐样例解释。"],
+        )
+        self.assertEqual(
+            planner.calls[1]["revision_context"]["strengths_to_keep"],
+            ["约束表达稳定"],
+        )
+        self.assertEqual(
+            generator.calls[1]["revision_context"]["suggested_revisions"],
+            ["补齐样例解释。"],
+        )
+        self.assertEqual(records[0]["final_round_index"], 2)
+        self.assertEqual(artifact_path.parent.name, "A")
+        self.assertEqual(markdown_path.parent.name, "A")
+        self.assertEqual(quality_json_path.parent.name, "A")
+        self.assertEqual(quality_md_path.parent.name, "A")
+        self.assertEqual(summary_path.parent.name, "A")
+        self.assertEqual(summary_payload["stop_reason"], "pass")
+        self.assertEqual(len(summary_payload["rounds"]), 2)
+        self.assertTrue(summary_payload["rounds"][1]["artifact_path"].endswith("_round2.json"))
+        self.assertTrue(summary_payload["rounds"][1]["quality_report_json_path"].endswith("_round2_quality_report.json"))
+        self.assertEqual(Path(summary_payload["rounds"][0]["artifact_path"]).parent.name, "A")
+        self.assertEqual(Path(summary_payload["rounds"][1]["artifact_path"]).parent.name, "A")
+        self.assertEqual(Path(summary_payload["rounds"][0]["quality_report_json_path"]).parent.name, "A")
+        self.assertEqual(Path(summary_payload["rounds"][1]["quality_report_json_path"]).parent.name, "A")
+
+    def test_quality_iteration_can_run_third_round(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            temp = Path(tempdir)
+            source_dir = temp / "schemas"
+            output_dir = temp / "output"
+            artifact_dir = temp / "artifacts"
+            report_dir = temp / "reports"
+            source_dir.mkdir(parents=True, exist_ok=True)
+            (source_dir / "A.json").write_text(
+                json.dumps(make_schema(problem_id="A"), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            planner = RevisionAwarePlanner()
+            generator = RevisionAwareGenerator()
+            evaluator = SequencedQualityEvaluator(
+                [
+                    make_quality_report_payload(
+                        overall_status="revise_quality",
+                        round_index=1,
+                        suggested_revisions=["补齐样例解释。"],
+                        strengths=["约束表达稳定"],
+                    ),
+                    make_quality_report_payload(
+                        overall_status="reject_as_retheme",
+                        round_index=2,
+                        suggested_revisions=["拉开核心任务差异。"],
+                        strengths=["样例结构正确"],
+                    ),
+                    make_quality_report_payload(overall_status="pass", round_index=3),
+                ]
+            )
+
+            pipeline = GenerationPipeline(
+                source_dir=source_dir,
+                output_dir=output_dir,
+                artifact_dir=artifact_dir,
+                report_dir=report_dir,
+                generator=generator,
+                planner=planner,
+                problem_repository=FakeProblemRepository(),
+                quality_evaluator=evaluator,
+            )
+            records = pipeline.run(
+                mode="single",
+                problem_ids=["A"],
+                variants=1,
+                theme_id="campus_ops",
+                quality_iterations=3,
+            )
+
+            summary_path = Path(records[0]["iteration_summary_path"])
+            summary_payload = json.loads(summary_path.read_text(encoding="utf-8"))
+            quality_json_path = Path(records[0]["quality_report_json_path"])
+            quality_md_path = Path(records[0]["quality_report_md_path"])
+            artifact_path = Path(records[0]["artifact_path"])
+            markdown_path = Path(records[0]["markdown_path"])
+
+        self.assertEqual(len(planner.calls), 3)
+        self.assertEqual(len(generator.calls), 3)
+        self.assertEqual(
+            planner.calls[2]["revision_context"]["suggested_revisions"],
+            ["拉开核心任务差异。"],
+        )
+        self.assertEqual(records[0]["final_round_index"], 3)
+        self.assertEqual(artifact_path.parent.name, "A")
+        self.assertEqual(markdown_path.parent.name, "A")
+        self.assertEqual(quality_json_path.parent.name, "A")
+        self.assertEqual(quality_md_path.parent.name, "A")
+        self.assertEqual(summary_path.parent.name, "A")
+        self.assertEqual(summary_payload["stop_reason"], "pass")
+        self.assertEqual(len(summary_payload["rounds"]), 3)
+        self.assertTrue(summary_payload["rounds"][2]["artifact_path"].endswith("_round3.json"))
+        self.assertTrue(summary_payload["rounds"][2]["quality_report_json_path"].endswith("_round3_quality_report.json"))
+        self.assertEqual(Path(summary_payload["rounds"][0]["artifact_path"]).parent.name, "A")
+        self.assertEqual(Path(summary_payload["rounds"][1]["artifact_path"]).parent.name, "A")
+        self.assertEqual(Path(summary_payload["rounds"][2]["artifact_path"]).parent.name, "A")
+        self.assertEqual(Path(summary_payload["rounds"][0]["quality_report_json_path"]).parent.name, "A")
+        self.assertEqual(Path(summary_payload["rounds"][1]["quality_report_json_path"]).parent.name, "A")
+        self.assertEqual(Path(summary_payload["rounds"][2]["quality_report_json_path"]).parent.name, "A")
+
+    def test_quality_iteration_stops_after_difference_insufficient(self) -> None:
+        plan = make_validation_plan("canonical_witness")
+        plan.problem_id = "A_GEN"
+        plan.source_problem_ids = ["A"]
+        plan.new_schema_snapshot.problem_id = "A_GEN"
+        plan.applied_rule = ""
+        plan.planning_status = "difference_insufficient"
+        plan.planning_error_reason = "规则规划未达到有效差异门槛。"
+        plan.planning_feedback = "建议调整核心任务定义。"
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            temp = Path(tempdir)
+            source_dir = temp / "schemas"
+            output_dir = temp / "output"
+            artifact_dir = temp / "artifacts"
+            report_dir = temp / "reports"
+            source_dir.mkdir(parents=True, exist_ok=True)
+            (source_dir / "A.json").write_text(
+                json.dumps(make_schema(problem_id="A"), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            evaluator = SequencedQualityEvaluator(
+                [
+                    make_quality_report_payload(
+                        overall_status="reject_as_retheme",
+                        generated_status="difference_insufficient",
+                        round_index=1,
+                    )
+                ]
+            )
+
+            pipeline = GenerationPipeline(
+                source_dir=source_dir,
+                output_dir=output_dir,
+                artifact_dir=artifact_dir,
+                report_dir=report_dir,
+                generator=StatusGenerator(
+                    status="difference_insufficient",
+                    error_reason="规则规划未达到有效差异门槛。",
+                    feedback="建议调整核心任务定义。",
+                ),
+                planner=FixedPlanPlanner(plan),
+                problem_repository=FakeProblemRepository(),
+                quality_evaluator=evaluator,
+            )
+            records = pipeline.run(
+                mode="single",
+                problem_ids=["A"],
+                variants=1,
+                theme_id="campus_ops",
+                quality_iterations=2,
+            )
+
+            summary_path = Path(records[0]["iteration_summary_path"])
+            summary_payload = json.loads(summary_path.read_text(encoding="utf-8"))
+            artifact_path = Path(records[0]["artifact_path"])
+            markdown_path = Path(records[0]["markdown_path"])
+
+        self.assertEqual(records[0]["final_round_index"], 1)
+        self.assertEqual(artifact_path.parent.name, "A")
+        self.assertEqual(markdown_path.parent.name, "A")
+        self.assertEqual(summary_path.parent.name, "A")
+        self.assertEqual(summary_payload["stop_reason"], "difference_insufficient")
+        self.assertEqual(len(summary_payload["rounds"]), 1)
+
+
 class ReportRenderingTests(unittest.TestCase):
     def test_single_success_report_uses_quad_compare_tables(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -1301,8 +1601,11 @@ class ReportRenderingTests(unittest.TestCase):
             )
 
             report_text = Path(records[0]["report_path"]).read_text(encoding="utf-8")
+            report_path = Path(records[0]["report_path"])
 
         self.assertIn("# A 生成报告", report_text)
+        self.assertEqual(report_path.parent.name, "A")
+        self.assertEqual(report_path.name, "A.md")
         self.assertIn("### 四元组对比", report_text)
         self.assertIn("| 项目 | 原题 | 新题 | 变化判断 |", report_text)
         self.assertIn("#### 输入结构", report_text)
@@ -1376,8 +1679,11 @@ class ReportRenderingTests(unittest.TestCase):
             )
 
             report_text = Path(records[0]["report_path"]).read_text(encoding="utf-8")
+            report_path = Path(records[0]["report_path"])
 
         self.assertIn("### 失败原因", report_text)
+        self.assertEqual(report_path.parent.name, "A")
+        self.assertEqual(report_path.name, "A.md")
         self.assertIn("### 原题四元组", report_text)
         self.assertIn("### 候选规则结论", report_text)
         self.assertIn("### 建议方向", report_text)
@@ -1392,12 +1698,23 @@ class CliAndDocumentationTests(unittest.TestCase):
         parser = build_parser()
 
         single_args = parser.parse_args(
-            ["--mode", "single", "--problem-ids", "CF1", "CF2", "--timeout", "360"]
+            [
+                "--mode",
+                "single",
+                "--problem-ids",
+                "CF1",
+                "CF2",
+                "--timeout",
+                "360",
+                "--quality-iterations",
+                "3",
+            ]
         )
         _validate_args(parser, single_args)
         self.assertEqual(single_args.mode, "single")
         self.assertEqual(single_args.problem_ids, ["CF1", "CF2"])
         self.assertEqual(single_args.timeout, 360)
+        self.assertEqual(single_args.quality_iterations, 3)
 
         same_family_args = parser.parse_args(
             [
@@ -1418,6 +1735,28 @@ class CliAndDocumentationTests(unittest.TestCase):
             _normalize_rule_overrides(same_family_args.rule_override),
             {"interlocked_constraints", "shared_core_objective_upgrade"},
         )
+
+    def test_cli_rejects_invalid_quality_iteration_settings(self) -> None:
+        parser = build_parser()
+
+        with self.assertRaises(SystemExit):
+            args = parser.parse_args(["--mode", "single", "--problem-ids", "CF1", "--quality-iterations", "4"])
+            _validate_args(parser, args)
+
+        with self.assertRaises(SystemExit):
+            args = parser.parse_args(
+                [
+                    "--mode",
+                    "same_family",
+                    "--seed-a",
+                    "P1",
+                    "--seed-b",
+                    "P2",
+                    "--quality-iterations",
+                    "1",
+                ]
+            )
+            _validate_args(parser, args)
 
     def test_batch_source_dir_resolves_sorted_problem_ids(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -1642,7 +1981,13 @@ class FixedPlanPlanner:
 
 
 class FakeGenerator:
-    def generate(self, schema_context: dict, plan: VariantPlan, original_problems: list[dict] | None = None) -> GeneratedProblem:
+    def generate(
+        self,
+        schema_context: dict,
+        plan: VariantPlan,
+        original_problems: list[dict] | None = None,
+        revision_context: dict | None = None,
+    ) -> GeneratedProblem:
         return GeneratedProblem(
             title="融合后的新题",
             description="这是一道规则驱动生成的新题。",
@@ -1664,7 +2009,13 @@ class StatusGenerator:
         self.error_reason = error_reason
         self.feedback = feedback
 
-    def generate(self, schema_context: dict, plan: VariantPlan, original_problems: list[dict] | None = None) -> GeneratedProblem:
+    def generate(
+        self,
+        schema_context: dict,
+        plan: VariantPlan,
+        original_problems: list[dict] | None = None,
+        revision_context: dict | None = None,
+    ) -> GeneratedProblem:
         return GeneratedProblem(
             title=self.title,
             description="",
@@ -1683,11 +2034,17 @@ class FailingOnProblemGenerator(FakeGenerator):
     def __init__(self, fail_problem_id: str) -> None:
         self.fail_problem_id = fail_problem_id
 
-    def generate(self, schema_context: dict, plan: VariantPlan, original_problems: list[dict] | None = None) -> GeneratedProblem:
+    def generate(
+        self,
+        schema_context: dict,
+        plan: VariantPlan,
+        original_problems: list[dict] | None = None,
+        revision_context: dict | None = None,
+    ) -> GeneratedProblem:
         current_problem_id = str(schema_context.get("seed_schema", {}).get("problem_id", ""))
         if current_problem_id == self.fail_problem_id:
             raise RuntimeError(f"{current_problem_id} 生成失败")
-        return super().generate(schema_context, plan, original_problems)
+        return super().generate(schema_context, plan, original_problems, revision_context)
 
 
 class FakeProblemRepository:
@@ -1717,6 +2074,77 @@ class ProblemAwarePlanner:
         plan.new_schema_snapshot.problem_id = f"{source_problem_id}_GEN"
         plan.seed = 20260409
         return plan
+
+
+class RevisionAwarePlanner:
+    def __init__(self) -> None:
+        self.calls: list[dict[str, object]] = []
+
+    def build_plan(self, **kwargs: dict) -> VariantPlan:
+        revision_context = copy.deepcopy(dict(kwargs.get("revision_context") or {}))
+        seed_schema = dict(kwargs.get("seed_schema", {}))
+        source_problem_id = str(seed_schema.get("problem_id", "unknown"))
+        variant_index = int(kwargs.get("variant_index", 1))
+        round_index = len(self.calls) + 1
+        plan = copy.deepcopy(make_validation_plan("canonical_witness"))
+        plan.problem_id = f"{source_problem_id}_GEN_R{round_index}"
+        plan.variant_index = variant_index
+        plan.source_problem_ids = [source_problem_id]
+        plan.new_schema_snapshot.problem_id = f"{source_problem_id}_GEN_R{round_index}"
+        plan.seed = 20260409 + round_index
+        self.calls.append(
+            {
+                "round_index": round_index,
+                "revision_context": revision_context,
+                "problem_id": plan.problem_id,
+            }
+        )
+        return plan
+
+
+class RevisionAwareGenerator(FakeGenerator):
+    def __init__(self) -> None:
+        self.calls: list[dict[str, object]] = []
+
+    def generate(
+        self,
+        schema_context: dict,
+        plan: VariantPlan,
+        original_problems: list[dict] | None = None,
+        revision_context: dict | None = None,
+    ) -> GeneratedProblem:
+        round_index = len(self.calls) + 1
+        self.calls.append(
+            {
+                "round_index": round_index,
+                "revision_context": copy.deepcopy(revision_context or {}),
+                "plan_problem_id": plan.problem_id,
+            }
+        )
+        return GeneratedProblem(
+            title=f"第 {round_index} 轮新题",
+            description=f"这是第 {round_index} 轮生成结果。",
+            input_format="输入三行，每行一个整数。",
+            output_format="输出一个规范构造。",
+            constraints=["时间限制：2 秒。", "空间限制：256 MB。"],
+            samples=[
+                {"input": "1\n2\n3", "output": "3 2 1", "explanation": "样例一。"},
+                {"input": "2\n3\n4", "output": "4 3 2", "explanation": "样例二。"},
+            ],
+            notes="无",
+        )
+
+
+class SequencedQualityEvaluator:
+    def __init__(self, reports: list[dict[str, object]]) -> None:
+        self.reports = [copy.deepcopy(item) for item in reports]
+        self.calls: list[dict[str, object]] = []
+
+    def evaluate_problem(self, **kwargs: object) -> dict[str, object]:
+        self.calls.append(dict(kwargs))
+        if not self.reports:
+            raise AssertionError("unexpected evaluate_problem call")
+        return copy.deepcopy(self.reports.pop(0))
 
 
 class EmbeddingFailurePlanner:
@@ -1777,6 +2205,61 @@ def make_rule_selection_payload(rule_id: str) -> dict:
         "risk_reason": "需要控制换皮风险，但整体可落地。",
         "error_reason": "",
         "feedback": "",
+    }
+
+
+def make_quality_report_payload(
+    *,
+    overall_status: str,
+    generated_status: str = "ok",
+    round_index: int = 1,
+    quality_score: float = 91.0,
+    divergence_score: float = 82.0,
+    suggested_revisions: list[str] | None = None,
+    strengths: list[str] | None = None,
+) -> dict[str, object]:
+    revision_suggestions = list(suggested_revisions or [])
+    strengths_to_keep = list(strengths or ["题面基础结构完整"])
+    return {
+        "overall": {
+            "status": overall_status,
+            "quality_score": quality_score,
+            "divergence_score": divergence_score,
+            "schema_distance": 0.42,
+            "generated_status": generated_status,
+        },
+        "quality": {
+            "dimension_scores": [],
+            "strengths": strengths_to_keep,
+        },
+        "divergence": {
+            "schema_distance_breakdown": {},
+            "changed_axes_planned": ["C", "O"],
+            "changed_axes_realized": ["C", "O"],
+            "semantic_difference": 0.8,
+            "solution_transfer_risk": 0.2,
+            "surface_retheme_risk": 0.2,
+            "verdict": "pass" if overall_status != "reject_as_retheme" else "reject_as_retheme",
+            "rationale": "测试用差异说明。",
+        },
+        "hard_checks": [],
+        "issues": [],
+        "suggested_revisions": revision_suggestions,
+        "revision_brief": {
+            "round_index": round_index,
+            "overall_status": overall_status,
+            "generated_status": generated_status,
+            "quality_score": quality_score,
+            "divergence_score": divergence_score,
+            "failed_hard_checks": [],
+            "issues": [],
+            "suggested_revisions": revision_suggestions,
+            "strengths_to_keep": strengths_to_keep,
+        },
+        "snapshots": {
+            "original_problem": {"title": "Seed A"},
+            "difference_plan": {"rationale": "测试"},
+        },
     }
 
 

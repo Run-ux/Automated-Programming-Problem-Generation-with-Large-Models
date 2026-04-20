@@ -218,6 +218,7 @@ def build_rule_selection_user_prompt(
     original_problem_references: list[dict[str, Any]],
     global_constraints: dict[str, Any],
     global_redlines: list[str],
+    revision_context: dict[str, Any] | None = None,
 ) -> str:
     payload = {
         "mode": mode,
@@ -226,6 +227,7 @@ def build_rule_selection_user_prompt(
         "original_problem_references": original_problem_references,
         "global_constraints": global_constraints,
         "global_redlines": global_redlines,
+        "revision_context": revision_context or {},
     }
     return (
         "请在当前规则集中选择最适合当前 schema 的规则。"
@@ -237,6 +239,7 @@ def build_rule_selection_user_prompt(
         "- `innovation_reason` 要说明它会把哪些核心义务拉离原题。\n"
         "- `difficulty_reason` 要说明它会在哪个主求解责任上抬高难度。\n"
         "- `risk_reason` 要说明主要风险；如果风险可控，也要明确写出来。\n"
+        "- 如果提供了 `revision_context`，要优先修复其中涉及规则选择、结构差异和反换皮风险的问题，并保留 `strengths_to_keep`。\n"
         "- 如果没有规则满足条件，返回失败状态，不要勉强挑选。\n\n"
         f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
     )
@@ -321,6 +324,7 @@ def build_planner_user_prompt(
     original_problem_references: list[dict[str, Any]],
     global_constraints: dict[str, Any],
     global_redlines: list[str],
+    revision_context: dict[str, Any] | None = None,
 ) -> str:
     payload = {
         "mode": mode,
@@ -330,6 +334,7 @@ def build_planner_user_prompt(
         "original_problem_references": original_problem_references,
         "global_constraints": global_constraints,
         "global_redlines": global_redlines,
+        "revision_context": revision_context or {},
     }
     return (
         "请为当前规则生成一个规划候选。"
@@ -343,6 +348,7 @@ def build_planner_user_prompt(
         "- 必须应用当前规则声明的全部 `helpers`，并把它们完整写入 `applied_helpers`。\n"
         "- `applied_helpers` 中的每一项都要写清它作用到哪些变化轴、改变了哪些 schema 部分、怎样抬高创新度、怎样抬高难度。\n"
         "- 如果模式是 same_family_fusion，`shared_core_summary` 和三个 shared_core_anchors 不能为空。\n"
+        "- 如果提供了 `revision_context`，要优先修复其中涉及结构差异、目标定义、规则落地和反换皮风险的问题，并保留 `strengths_to_keep`。\n"
         "- 如果你认为该规则不适用或只能做浅改，请返回失败状态，不要硬套。\n\n"
         f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
     )
@@ -399,6 +405,7 @@ def build_generation_user_prompt(
     schema_context: dict[str, Any],
     plan: VariantPlan,
     original_problem_references: list[dict[str, Any]],
+    revision_context: dict[str, Any] | None = None,
 ) -> str:
     new_schema = dataclass_to_dict(plan.new_schema_snapshot)
     sample_shape_hint = _build_sample_shape_hint(new_schema)
@@ -427,6 +434,7 @@ def build_generation_user_prompt(
         "new_schema": new_schema,
         "schema_context": schema_context,
         "original_problem_references": original_problem_references,
+        "revision_context": revision_context or {},
     }
     return (
         "请基于以下规划生成完整题面。"
@@ -438,6 +446,7 @@ def build_generation_user_prompt(
         "- 如果熟悉原题的选手只需要小改状态、补一个后处理、外包一层二分或计数，就能沿用原解，请不要继续生成，直接返回 `difference_insufficient`。\n"
         "- `algorithmic_delta_claim.why_direct_reuse_fails` 必须能在题面定义里体现出来，而不是只写在规划字段里。\n"
         "- `applied_helpers` 里的每个 helper 都要在题面和 `new_schema` 中落地，不能只停留在规划说明里。\n"
+        "- 如果提供了 `revision_context`，要优先修复其中涉及题面完整性、跨段一致性、样例质量和可读性的问题，并保留 `strengths_to_keep`。\n"
         f"- {sample_shape_hint}\n"
         "- `notes` 用于补充模数、字典序、证书定义、失败输出约定等关键说明；没有则返回空字符串。\n\n"
         f"{json.dumps(payload, ensure_ascii=False, indent=2)}"

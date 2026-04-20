@@ -1,0 +1,418 @@
+{
+  "problem_id": "CF1339D",
+  "source_problem_ids": [
+    "CF1339D"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "没有规则通过资格校验。",
+    "summary": "规则规划失败",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.0,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.0,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.0,
+      "O": 0.0,
+      "V": 0.0
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.0,
+      "objective_type_distance": 0.0,
+      "objective_text_distance": 0.0,
+      "invariant_match_distance": 0.0
+    }
+  },
+  "changed_axes_realized": [],
+  "objective": {
+    "type": "minimize_value",
+    "description": "求解满足任意两叶子节点路径边权异或和为0的约束下,不同边权数量的最小值与最大值。",
+    "target": "distinct_weight_count",
+    "requires_solution": false
+  },
+  "rule_selection_reason": "所有启用规则都被资格校验拒绝。",
+  "new_schema_snapshot": {
+    "problem_id": "CF1339D",
+    "source": "codeforces",
+    "input_structure": {
+      "type": "tree",
+      "length": {
+        "min": 3,
+        "max": 100000
+      },
+      "value_range": {
+        "min": null,
+        "max": null
+      },
+      "properties": {
+        "connected": true,
+        "acyclic": true
+      }
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "path_constraint",
+          "description": "任意两个不同叶子节点之间的简单路径上所有边权的按位异或和必须等于 0。",
+          "formal": "\\forall v_1, v_2 \\in \\text{Leaves}, v_1 \\neq v_2 \\implies \\bigoplus_{e \\in \\text{Path}(v_1, v_2)} w(e) = 0",
+          "source_sections": [
+            "description"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "minimize_value",
+      "description": "求解满足任意两叶子节点路径边权异或和为0的约束下,不同边权数量的最小值与最大值。",
+      "target": "distinct_weight_count",
+      "requires_solution": false
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "equivalence_class",
+          "description": "叶子节点到根节点的路径深度奇偶性构成稳定的划分依据。该奇偶类决定了全局边权能否统一赋值为单一值以满足任意叶子对路径异或为零的条件；若叶子跨越两个奇偶类,则最小不同权值数被严格约束为三。",
+          "properties": {
+            "partition_basis": "depth_parity_mod_2",
+            "decision_threshold": "single_class_implies_1_else_3"
+          },
+          "evidence_source": "solution_code"
+        },
+        {
+          "name": "mergeability",
+          "description": "共享同一父节点的多个叶子边在异或路径约束下具备可合并性。将这些边分配相同权值不会破坏全局叶子对路径异或条件,且能通过固定规则稳定减少不同权值总数,算法在遍历过程中局部统计并累加该合并收益。",
+          "properties": {
+            "merge_scope": "sibling_leaf_edges",
+            "reduction_rule": "decrement_by_k_minus_1"
+          },
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Medium"
+  },
+  "applied_rule": "",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {},
+  "anti_shallow_rationale": "",
+  "shared_core_summary": "",
+  "shared_core_anchors": {},
+  "seed_contributions": {},
+  "fusion_ablation": {},
+  "applied_helpers": [],
+  "planning_status": "difference_insufficient",
+  "planning_error_reason": "没有规则通过资格校验。",
+  "planning_feedback": "请更换种子题，或调整规则集合。",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": false,
+      "score": 0.3,
+      "reason_code": "difference_insufficient",
+      "selection_reason": "原题核心解法依赖深度奇偶性不变量进行极值计数，具体边权分配仅为该结构性质的直接推演。引入规范解输出仅增加线性重建步骤，无法改变主状态演化或约束优先级，不满足‘规范要求要影响主要解法’的硬性准入条件。",
+      "risk_tags": [
+        "low_novelty",
+        "shared_core_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中objective.requires_solution为false，invariants明确‘叶子节点到根节点的路径深度奇偶性构成稳定的划分依据’，表明原算法核心为结构判定与计数。规则eligibility.forbidden_seed_properties明确禁止‘原解只要顺手回溯就能拿到方案’，且validation_contract.hard_checks要求‘规范要求要影响主要解法’。本题方案构造完全由奇偶类划分与兄弟边合并规则决定，规范输出要求无法触发算法核心重构，命中failure_templates.difference_insufficient。",
+        "feedback": "该种子题的解空间结构过于刚性，规范性要求无法渗透至核心状态机。建议转向原解法需维护复杂偏序关系或动态规划转移路径的题目，使规范输出能直接干预状态扩展顺序或剪枝逻辑。"
+      }
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": false,
+      "score": 0.1,
+      "reason_code": "semantic_mismatch",
+      "selection_reason": "种子题CF1339D的异或路径约束在任意树上恒有解，原题目标为最优化而非可行性判定。规则强制要求输出局部冲突证据，但种子缺乏天然的无解情形，导致失败分支无法从主约束中自然衍生，违背规则对种子属性的硬性要求。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "forced_structure"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "schema中objective.type为minimize_value且requires_solution为false，invariant仅描述奇偶类划分与边权合并收益，未定义任何可行性阈值或无解条件。规则eligibility.required_seed_properties明确要求做不到的原因可用局部证据表示，与种子恒有解的数学性质直接冲突。",
+        "feedback": "该规则适用于具有明确可行性边界或判定性质的种子题。建议替换为带硬性限制（如度数、容量、奇偶匹配）的构造题，或放弃证书输出范式，改用纯最优化/构造变体规则。"
+      }
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": false,
+      "score": 0.35,
+      "reason_code": "missing_finite_domain",
+      "selection_reason": "种子题未限定权值范围（value_range为null），不满足规则要求的“解空间有限”硬性前提；且原题依赖奇偶划分与贪心合并，直接转为计数极易退化为仅添加模数的浅层包装，缺乏算法责任升级。",
+      "risk_tags": [
+        "low_novelty",
+        "shared_core_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.input_structure.value_range 为 {min: null, max: null}，违反 eligibility.required_seed_properties 中的“解空间有限”；seed_schema.invariant 依赖 depth_parity_mod_2 与 sibling_leaf_edges 合并，属判定/优化结构，未提供可自然汇总的离散计数单元。",
+        "feedback": "若需推进，必须在规划阶段显式引入有限权值域（如 [0, 2^K-1]）或定义结构等价类，并严格重写目标函数以替代原最优化逻辑，否则将触发 global_redlines 中的“只改参数范围/状态结构不变”及规则红线的“不能只补一个模数”。"
+      }
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "missing_native_perturbation",
+      "selection_reason": "原题CF1339D为静态确定性树结构问题，核心约束与不变量完全依赖叶子深度奇偶性划分，缺乏规则明确要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行套用保底优化将导致扰动模型脱离原题语义，直接触发“不能凭背景硬造对手”与“跟原核心规律无关的额外约束”红线。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints明确为确定性异或路径约束；seed_schema.invariant指出解法严格依赖depth_parity_mod_2划分；rule_under_review.eligibility.required_seed_properties要求原题需含顺序/资源/局部选择的不确定性，且forbidden_seed_properties明确禁止硬造对手；validation_contract.hard_checks要求扰动模型必须来自原题本身。",
+        "feedback": "该规则适用于自带动态或不确定性的种子题（如调度、流网络、在线决策）。CF1339D的强确定性结构更适合结构变形、奇偶性推广或约束松弛类规则。建议更换规则族或重新评估种子题的扰动潜力。"
+      }
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "difference_insufficient",
+      "message": "原题核心解法依赖深度奇偶性不变量进行极值计数，具体边权分配仅为该结构性质的直接推演。引入规范解输出仅增加线性重建步骤，无法改变主状态演化或约束优先级，不满足‘规范要求要影响主要解法’的硬性准入条件。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.3,
+        "risk_tags": [
+          "low_novelty",
+          "shared_core_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema中objective.requires_solution为false，invariants明确‘叶子节点到根节点的路径深度奇偶性构成稳定的划分依据’，表明原算法核心为结构判定与计数。规则eligibility.forbidden_seed_properties明确禁止‘原解只要顺手回溯就能拿到方案’，且validation_contract.hard_checks要求‘规范要求要影响主要解法’。本题方案构造完全由奇偶类划分与兄弟边合并规则决定，规范输出要求无法触发算法核心重构，命中failure_templates.difference_insufficient。",
+        "feedback": "该种子题的解空间结构过于刚性，规范性要求无法渗透至核心状态机。建议转向原解法需维护复杂偏序关系或动态规划转移路径的题目，使规范输出能直接干预状态扩展顺序或剪枝逻辑。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "fail",
+      "reason_code": "semantic_mismatch",
+      "message": "种子题CF1339D的异或路径约束在任意树上恒有解，原题目标为最优化而非可行性判定。规则强制要求输出局部冲突证据，但种子缺乏天然的无解情形，导致失败分支无法从主约束中自然衍生，违背规则对种子属性的硬性要求。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.1,
+        "risk_tags": [
+          "semantic_mismatch",
+          "forced_structure"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "ineligible",
+        "evidence": "schema中objective.type为minimize_value且requires_solution为false，invariant仅描述奇偶类划分与边权合并收益，未定义任何可行性阈值或无解条件。规则eligibility.required_seed_properties明确要求做不到的原因可用局部证据表示，与种子恒有解的数学性质直接冲突。",
+        "feedback": "该规则适用于具有明确可行性边界或判定性质的种子题。建议替换为带硬性限制（如度数、容量、奇偶匹配）的构造题，或放弃证书输出范式，改用纯最优化/构造变体规则。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "missing_finite_domain",
+      "message": "种子题未限定权值范围（value_range为null），不满足规则要求的“解空间有限”硬性前提；且原题依赖奇偶划分与贪心合并，直接转为计数极易退化为仅添加模数的浅层包装，缺乏算法责任升级。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.35,
+        "risk_tags": [
+          "low_novelty",
+          "shared_core_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.input_structure.value_range 为 {min: null, max: null}，违反 eligibility.required_seed_properties 中的“解空间有限”；seed_schema.invariant 依赖 depth_parity_mod_2 与 sibling_leaf_edges 合并，属判定/优化结构，未提供可自然汇总的离散计数单元。",
+        "feedback": "若需推进，必须在规划阶段显式引入有限权值域（如 [0, 2^K-1]）或定义结构等价类，并严格重写目标函数以替代原最优化逻辑，否则将触发 global_redlines 中的“只改参数范围/状态结构不变”及规则红线的“不能只补一个模数”。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "missing_native_perturbation",
+      "message": "原题CF1339D为静态确定性树结构问题，核心约束与不变量完全依赖叶子深度奇偶性划分，缺乏规则明确要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行套用保底优化将导致扰动模型脱离原题语义，直接触发“不能凭背景硬造对手”与“跟原核心规律无关的额外约束”红线。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "seed_schema.core_constraints明确为确定性异或路径约束；seed_schema.invariant指出解法严格依赖depth_parity_mod_2划分；rule_under_review.eligibility.required_seed_properties要求原题需含顺序/资源/局部选择的不确定性，且forbidden_seed_properties明确禁止硬造对手；validation_contract.hard_checks要求扰动模型必须来自原题本身。",
+        "feedback": "该规则适用于自带动态或不确定性的种子题（如调度、流网络、在线决策）。CF1339D的强确定性结构更适合结构变形、奇偶性推广或约束松弛类规则。建议更换规则族或重新评估种子题的扰动潜力。"
+      }
+    }
+  ],
+  "candidate_attempts": [],
+  "generated_problem": {
+    "title": "",
+    "description": "",
+    "input_format": "",
+    "output_format": "",
+    "constraints": [],
+    "samples": [],
+    "notes": "",
+    "status": "difference_insufficient",
+    "error_reason": "没有规则通过资格校验。",
+    "feedback": "请更换种子题，或调整规则集合。"
+  },
+  "iteration": {
+    "run_id": "CF1339D_v1_campus_ops_20260420_211126",
+    "round_index": 2,
+    "requested_rounds": 3,
+    "previous_artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1339D_v1_campus_ops_20260420_211126_round1.json",
+    "previous_quality_report_path": "D:\\AutoProblemGen\\生成题面\\reports\\CF1339D\\CF1339D_v1_campus_ops_20260420_211126_round1_quality_report.json",
+    "revision_context_snapshot": {
+      "round_index": 1,
+      "overall_status": "reject_as_retheme",
+      "generated_status": "ok",
+      "quality_score": 97.0,
+      "divergence_score": 50.2,
+      "failed_hard_checks": [],
+      "issues": [
+        {
+          "issue_type": "quality_issue",
+          "severity": "minor",
+          "title": "样例数量对Hard构造题略显不足",
+          "detail": "当前仅包含2个样例，虽覆盖了K_min=1和K_min=3的奇偶性分类，但缺乏对深层树或多分支结构下字典序贪心与异或闭合冲突的直观展示，可能增加选手调试成本。",
+          "evidence_refs": [
+            "snapshots.generated_problem.samples",
+            "hard_checks.sample_count"
+          ],
+          "fix_hint": "增加一个N≥6、具有非对称分支结构的样例，展示前序边分配如何影响后续子树的权值预留与字典序最优性。"
+        },
+        {
+          "issue_type": "retheme_issue",
+          "severity": "blocker",
+          "title": "solution transfer risk too high",
+          "detail": "新题仅将原题的“统计不同权值极值”目标扩展为“构造字典序最小的合法权值序列”，核心约束（叶子路径异或为0）与关键不变量（叶子深度奇偶性决定最小种类数）完全未变。变化轴主要体现在目标类型（O）与不变量验证责任（V），约束轴（C）仅增加字典序优先级但未改变异或闭合本质。原题的奇偶性分类与兄弟叶子合并策略（核心不变量）仍为解题绝对前提，树形DFS遍历框架可直接复用，仅需在原有统计逻辑上叠加按输入序的贪心赋值与局部异或状态维护。算法范式未发生本质跃迁，原题解法核心可高度迁移。结合表层叙事直接映射，判定为换皮。",
+          "evidence_refs": [
+            "snapshots.original_problem",
+            "snapshots.new_schema",
+            "snapshots.generated_problem",
+            "divergence.schema_distance_breakdown",
+            "review_context.algorithmic_delta_claim"
+          ],
+          "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+        }
+      ],
+      "suggested_revisions": [
+        "增加一个N≥6、具有非对称分支结构的样例，展示前序边分配如何影响后续子树的权值预留与字典序最优性。",
+        "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+        "补充第三个样例以覆盖更复杂的树形拓扑，增强对字典序贪心策略的测试覆盖度。",
+        "可在Notes中简要提示“理论最小值仅可能为1或3”，降低选手在奇偶性分类上的试错成本（可选，视难度定位而定）。",
+        "优先改写核心任务定义，而不是继续替换故事背景。"
+      ],
+      "strengths_to_keep": [
+        "核心约束（异或闭合、极值种类、字典序最小）表述严谨，与new_schema完全对齐。",
+        "主题包装（校园门禁密钥）与算法逻辑融合自然，未产生语义噪声或来源污染。",
+        "样例解释详细拆解了贪心策略与异或条件的推导过程，有效辅助理解构造逻辑。",
+        "输入输出格式与约束声明规范，符合主流OJ标准，字段数量与目标定义无歧义。"
+      ]
+    }
+  }
+}
