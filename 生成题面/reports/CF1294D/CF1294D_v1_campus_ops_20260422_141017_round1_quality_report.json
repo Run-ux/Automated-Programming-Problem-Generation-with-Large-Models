@@ -1,0 +1,788 @@
+{
+  "overall": {
+    "status": "reject_as_retheme",
+    "quality_score": 92.0,
+    "divergence_score": 45.9,
+    "schema_distance": 0.4226,
+    "generated_status": "ok"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 5.0,
+        "rationale": "题面完整且准确地实现了 new_schema 中定义的核心变体要素。canonical_priority、divisibility、non_negative 三大约束在 description 中清晰表述；objective 从求值改为输出规范数组的要求在 output_format 中严格落地；校园主题映射自然且未干扰技术规则。",
+        "evidence_refs": [
+          "new_schema.core_constraints",
+          "new_schema.objective",
+          "generated_problem.description",
+          "generated_problem.output_format"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 4.0,
+        "rationale": "题面提供了独立解题所需的关键信息，但非 MEX 填充位置的字典序最小分配策略被放置在 notes 中而非主描述或约束区，增加了选手遗漏关键规则的风险。此外，在线查询时历史分配值是否允许重计算未显式声明，虽可由输出格式推断，但明确说明更佳。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.notes",
+          "generated_problem.output_format"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 5.0,
+        "rationale": "description、input_format、output_format、constraints 与 samples 之间高度一致。手动推演两个样例的分配过程与 MEX 推进逻辑，均与题面规则完全吻合，无字段数量、目标定义或符号含义的冲突。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.output_format",
+          "generated_problem.samples"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 4.0,
+        "rationale": "提供了 2 个样例，数量达到基础要求，且解释详细、逐步推演了同余类分配与 MEX 指针行为。但缺乏对边界条件（如 x=1、v_i 极大、同余类高度集中）的覆盖，对于 hard 难度题目略显单薄。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks[12].message"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 5.0,
+        "rationale": "题面结构符合标准 OJ 规范，分段清晰，术语准确。校园主题包装未引入冗余噪声，技术规则表达直接明确，便于参赛者快速提取核心模型与约束条件。",
+        "evidence_refs": [
+          "generated_problem.title",
+          "generated_problem.description",
+          "generated_problem.constraints"
+        ]
+      }
+    ],
+    "strengths": [
+      "准确落地了 new_schema 中的规范优先级约束与输出可校验目标，实现了从计数到结构分配的核心变体。",
+      "样例解释极具教学价值，逐步推演了 MEX 指针推进、同余类槽位消耗与字典序决策过程。",
+      "题面结构规范，输入输出格式与约束条件清晰，符合竞赛标准且无原题泄露痕迹。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "distance_version": "v2",
+      "backend": "embedding",
+      "total": 0.4226,
+      "axis_scores": {
+        "I": 0.0,
+        "C": 0.5755,
+        "O": 0.6168,
+        "V": 0.4786
+      },
+      "components": {
+        "input_tree_distance": 0.0,
+        "constraint_match_distance": 0.5755,
+        "objective_type_distance": 0.7386,
+        "objective_text_distance": 0.4341,
+        "invariant_match_distance": 0.4786
+      }
+    },
+    "schema_distance": 0.4226,
+    "changed_axes_planned": [
+      "C",
+      "O",
+      "V"
+    ],
+    "changed_axes_realized": [
+      "C",
+      "O",
+      "V"
+    ],
+    "semantic_difference": 0.35,
+    "solution_transfer_risk": 0.85,
+    "surface_retheme_risk": 0.85,
+    "verdict": "reject_as_retheme",
+    "rationale": "新题在核心数学建模与算法框架上并未脱离原题。原题的本质是按模 x 余数划分等价类，利用贪心策略单调推进 MEX 指针以填充 0,1,2...。新题仅在此基础上增加了“字典序最小”的次要优化目标与“输出完整分配数组”的格式要求。这一变化并未改变核心状态定义（仍为各余数类的可用资源池）与决策逻辑（贪心消耗最小可用值）。熟悉原题的选手只需将原题的计数器升级为记录原始索引的队列/桶（如 vector<int> buckets[x]），在 MEX 指针推进时按索引先后顺序分配值，剩余位置分配同余类中大于等于 MEX 的最小值，即可直接满足字典序要求并输出数组。生成器声称的“必须重构数据结构”“原计数器策略失效”属于过度夸大，实际只需在原解法上增加极小的索引映射与输出逻辑。背景叙事（校园社团资源）与输入输出结构、约束条件（模 x 同余、非负、在线查询）与原题高度同构，属于典型的表层换皮。",
+    "evidence_refs": [
+      "snapshots.original_problem",
+      "snapshots.generated_problem",
+      "snapshots.new_schema",
+      "review_context.algorithmic_delta_claim",
+      "divergence.schema_distance_breakdown"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_problem_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 generated_problem。",
+      "evidence_refs": [
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "new_schema_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 new_schema 或兼容字段 new_schema_snapshot。",
+      "evidence_refs": [
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "生成状态正常。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "predicted_schema_distance_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 predicted_schema_distance。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "distance_breakdown_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 distance_breakdown。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "changed_axes_realized_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 changed_axes_realized。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.42，达到中等差异阈值。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "已落地核心差异轴：C, O, V。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题或题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=2。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "目标函数已经在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "关键分配规则位置偏后",
+      "detail": "非 MEX 填充位置的字典序最小分配策略（即 notes 中的说明）未放入主描述或 constraints 中，选手可能因忽略 notes 而误解全局字典序最小化的具体实现方式。",
+      "evidence_refs": [
+        "generated_problem.notes"
+      ],
+      "fix_hint": "将 notes 中的分配策略移至 description 末尾或 constraints 中，明确表述为“若某位置未被用于填充 MEX 前缀，则分配其同余类中大于等于当前 MEX 的最小非负整数”。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "在线更新语义未显式声明",
+      "detail": "题面未明确说明新增社团时，历史社团的分配值是否允许被重新调整以维持全局最优。虽然 output_format 暗示每次输出前缀完整解，但明确声明可避免关于“分配是否不可变”的歧义。",
+      "evidence_refs": [
+        "generated_problem.description",
+        "generated_problem.output_format"
+      ],
+      "fix_hint": "在 description 中补充“每次查询后，系统会基于当前所有申请重新计算规范分配数组”或明确“历史分配值可被动态调整以满足当前最优性”。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "样例覆盖度可提升",
+      "detail": "仅有两个样例，未覆盖 x=1 或 v_i 模 x 结果相同的边界情况，难以验证极端条件下的 MEX 推进与字典序行为。",
+      "evidence_refs": [
+        "generated_problem.samples",
+        "hard_checks[12].message"
+      ],
+      "fix_hint": "增加一个 x=1 或所有 v_i 模 x 同余的样例，以强化对边界逻辑的验证。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "solution transfer risk too high",
+      "detail": "新题在核心数学建模与算法框架上并未脱离原题。原题的本质是按模 x 余数划分等价类，利用贪心策略单调推进 MEX 指针以填充 0,1,2...。新题仅在此基础上增加了“字典序最小”的次要优化目标与“输出完整分配数组”的格式要求。这一变化并未改变核心状态定义（仍为各余数类的可用资源池）与决策逻辑（贪心消耗最小可用值）。熟悉原题的选手只需将原题的计数器升级为记录原始索引的队列/桶（如 vector<int> buckets[x]），在 MEX 指针推进时按索引先后顺序分配值，剩余位置分配同余类中大于等于 MEX 的最小值，即可直接满足字典序要求并输出数组。生成器声称的“必须重构数据结构”“原计数器策略失效”属于过度夸大，实际只需在原解法上增加极小的索引映射与输出逻辑。背景叙事（校园社团资源）与输入输出结构、约束条件（模 x 同余、非负、在线查询）与原题高度同构，属于典型的表层换皮。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem",
+        "snapshots.new_schema",
+        "review_context.algorithmic_delta_claim",
+        "divergence.schema_distance_breakdown"
+      ],
+      "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+    }
+  ],
+  "suggested_revisions": [
+    "将 notes 中的分配策略移至 description 末尾或 constraints 中，明确表述为“若某位置未被用于填充 MEX 前缀，则分配其同余类中大于等于当前 MEX 的最小非负整数”。",
+    "在 description 中补充“每次查询后，系统会基于当前所有申请重新计算规范分配数组”或明确“历史分配值可被动态调整以满足当前最优性”。",
+    "增加一个 x=1 或所有 v_i 模 x 同余的样例，以强化对边界逻辑的验证。",
+    "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+    "将 notes 中的核心分配逻辑整合至主描述或约束部分，提升关键规则的可见性。",
+    "明确在线查询过程中历史分配值的可变性/重计算机制，消除实现歧义。",
+    "补充 1-2 个覆盖边界条件（如 x=1、大数值、同余类冲突）的样例，增强测试覆盖度。",
+    "优先改写核心任务定义，而不是继续替换故事背景。"
+  ],
+  "revision_brief": {
+    "round_index": 1,
+    "overall_status": "reject_as_retheme",
+    "generated_status": "ok",
+    "quality_score": 92.0,
+    "divergence_score": 45.9,
+    "failed_hard_checks": [],
+    "issues": [
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "关键分配规则位置偏后",
+        "detail": "非 MEX 填充位置的字典序最小分配策略（即 notes 中的说明）未放入主描述或 constraints 中，选手可能因忽略 notes 而误解全局字典序最小化的具体实现方式。",
+        "evidence_refs": [
+          "generated_problem.notes"
+        ],
+        "fix_hint": "将 notes 中的分配策略移至 description 末尾或 constraints 中，明确表述为“若某位置未被用于填充 MEX 前缀，则分配其同余类中大于等于当前 MEX 的最小非负整数”。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "在线更新语义未显式声明",
+        "detail": "题面未明确说明新增社团时，历史社团的分配值是否允许被重新调整以维持全局最优。虽然 output_format 暗示每次输出前缀完整解，但明确声明可避免关于“分配是否不可变”的歧义。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.output_format"
+        ],
+        "fix_hint": "在 description 中补充“每次查询后，系统会基于当前所有申请重新计算规范分配数组”或明确“历史分配值可被动态调整以满足当前最优性”。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "样例覆盖度可提升",
+        "detail": "仅有两个样例，未覆盖 x=1 或 v_i 模 x 结果相同的边界情况，难以验证极端条件下的 MEX 推进与字典序行为。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks[12].message"
+        ],
+        "fix_hint": "增加一个 x=1 或所有 v_i 模 x 同余的样例，以强化对边界逻辑的验证。"
+      },
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "solution transfer risk too high",
+        "detail": "新题在核心数学建模与算法框架上并未脱离原题。原题的本质是按模 x 余数划分等价类，利用贪心策略单调推进 MEX 指针以填充 0,1,2...。新题仅在此基础上增加了“字典序最小”的次要优化目标与“输出完整分配数组”的格式要求。这一变化并未改变核心状态定义（仍为各余数类的可用资源池）与决策逻辑（贪心消耗最小可用值）。熟悉原题的选手只需将原题的计数器升级为记录原始索引的队列/桶（如 vector<int> buckets[x]），在 MEX 指针推进时按索引先后顺序分配值，剩余位置分配同余类中大于等于 MEX 的最小值，即可直接满足字典序要求并输出数组。生成器声称的“必须重构数据结构”“原计数器策略失效”属于过度夸大，实际只需在原解法上增加极小的索引映射与输出逻辑。背景叙事（校园社团资源）与输入输出结构、约束条件（模 x 同余、非负、在线查询）与原题高度同构，属于典型的表层换皮。",
+        "evidence_refs": [
+          "snapshots.original_problem",
+          "snapshots.generated_problem",
+          "snapshots.new_schema",
+          "review_context.algorithmic_delta_claim",
+          "divergence.schema_distance_breakdown"
+        ],
+        "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+      }
+    ],
+    "suggested_revisions": [
+      "将 notes 中的分配策略移至 description 末尾或 constraints 中，明确表述为“若某位置未被用于填充 MEX 前缀，则分配其同余类中大于等于当前 MEX 的最小非负整数”。",
+      "在 description 中补充“每次查询后，系统会基于当前所有申请重新计算规范分配数组”或明确“历史分配值可被动态调整以满足当前最优性”。",
+      "增加一个 x=1 或所有 v_i 模 x 同余的样例，以强化对边界逻辑的验证。",
+      "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+      "将 notes 中的核心分配逻辑整合至主描述或约束部分，提升关键规则的可见性。",
+      "明确在线查询过程中历史分配值的可变性/重计算机制，消除实现歧义。",
+      "补充 1-2 个覆盖边界条件（如 x=1、大数值、同余类冲突）的样例，增强测试覆盖度。",
+      "优先改写核心任务定义，而不是继续替换故事背景。"
+    ],
+    "strengths_to_keep": [
+      "准确落地了 new_schema 中的规范优先级约束与输出可校验目标，实现了从计数到结构分配的核心变体。",
+      "样例解释极具教学价值，逐步推演了 MEX 指针推进、同余类槽位消耗与字典序决策过程。",
+      "题面结构规范，输入输出格式与约束条件清晰，符合竞赛标准且无原题泄露痕迹。"
+    ]
+  },
+  "snapshots": {
+    "paths": {
+      "schema_path": "D:\\AutoProblemGen\\四元组抽取\\output\\batch\\normalized\\CF1294D.json",
+      "artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1294D\\CF1294D_v1_campus_ops_20260422_141017_round1.json",
+      "markdown_path": "D:\\AutoProblemGen\\生成题面\\output\\CF1294D\\CF1294D_v1_campus_ops_20260422_141017_round1.md"
+    },
+    "original_problem": {
+      "selection_id": "sample_18",
+      "problem_id": "CF1294D",
+      "record_uid": "train-00001-of-00039-e092fe56fda18715__row_0302",
+      "statement_language": "english",
+      "title": "1294_D. MEX maximizing",
+      "description": "Recall that MEX of an array is a minimum non-negative integer that does not belong to the array. Examples:\n\n  * for the array [0, 0, 1, 0, 2] MEX equals to 3 because numbers 0, 1 and 2 are presented in the array and 3 is the minimum non-negative integer not presented in the array; \n  * for the array [1, 2, 3, 4] MEX equals to 0 because 0 is the minimum non-negative integer not presented in the array; \n  * for the array [0, 1, 4, 3] MEX equals to 2 because 2 is the minimum non-negative integer not presented in the array. \n\n\n\nYou are given an empty array a=[] (in other words, a zero-length array). You are also given a positive integer x.\n\nYou are also given q queries. The j-th query consists of one integer y_j and means that you have to append one element y_j to the array. The array length increases by 1 after a query.\n\nIn one move, you can choose any index i and set a_i := a_i + x or a_i := a_i - x (i.e. increase or decrease any element of the array by x). The only restriction is that a_i cannot become negative. Since initially the array is empty, you can perform moves only after the first query.\n\nYou have to maximize the MEX (minimum excluded) of the array if you can perform any number of such operations (you can even perform the operation multiple times with one element).\n\nYou have to find the answer after each of q queries (i.e. the j-th answer corresponds to the array of length j).\n\nOperations are discarded before each query. I.e. the array a after the j-th query equals to [y_1, y_2, ..., y_j].\n\nInput\n\nThe first line of the input contains two integers q, x (1 ≤ q, x ≤ 4 ⋅ 10^5) — the number of queries and the value of x.\n\nThe next q lines describe queries. The j-th query consists of one integer y_j (0 ≤ y_j ≤ 10^9) and means that you have to append one element y_j to the array.\n\nOutput\n\nPrint the answer to the initial problem after each query — for the query j print the maximum value of MEX after first j queries. Note that queries are dependent (the array changes after each query) but operations are independent between queries.\n\nExamples\n\nInput\n\n\n7 3\n0\n1\n2\n2\n0\n0\n10\n\n\nOutput\n\n\n1\n2\n3\n3\n4\n4\n7\n\n\nInput\n\n\n4 3\n1\n2\n1\n2\n\n\nOutput\n\n\n0\n0\n0\n0\n\nNote\n\nIn the first example:\n\n  * After the first query, the array is a=[0]: you don't need to perform any operations, maximum possible MEX is 1. \n  * After the second query, the array is a=[0, 1]: you don't need to perform any operations, maximum possible MEX is 2. \n  * After the third query, the array is a=[0, 1, 2]: you don't need to perform any operations, maximum possible MEX is 3. \n  * After the fourth query, the array is a=[0, 1, 2, 2]: you don't need to perform any operations, maximum possible MEX is 3 (you can't make it greater with operations). \n  * After the fifth query, the array is a=[0, 1, 2, 2, 0]: you can perform a[4] := a[4] + 3 = 3. The array changes to be a=[0, 1, 2, 2, 3]. Now MEX is maximum possible and equals to 4. \n  * After the sixth query, the array is a=[0, 1, 2, 2, 0, 0]: you can perform a[4] := a[4] + 3 = 0 + 3 = 3. The array changes to be a=[0, 1, 2, 2, 3, 0]. Now MEX is maximum possible and equals to 4. \n  * After the seventh query, the array is a=[0, 1, 2, 2, 0, 0, 10]. You can perform the following operations: \n    * a[3] := a[3] + 3 = 2 + 3 = 5, \n    * a[4] := a[4] + 3 = 0 + 3 = 3, \n    * a[5] := a[5] + 3 = 0 + 3 = 3, \n    * a[5] := a[5] + 3 = 3 + 3 = 6, \n    * a[6] := a[6] - 3 = 10 - 3 = 7, \n    * a[6] := a[6] - 3 = 7 - 3 = 4. \nThe resulting array will be a=[0, 1, 2, 5, 3, 6, 4]. Now MEX is maximum possible and equals to 7. ",
+      "public_tests": {
+        "input": [
+          "4 3\n1\n2\n1\n2\n",
+          "7 3\n0\n1\n2\n2\n0\n0\n10\n"
+        ],
+        "output": [
+          "0\n0\n0\n0\n",
+          "1\n2\n3\n3\n4\n4\n7\n"
+        ]
+      },
+      "source": {
+        "split": "train",
+        "source_id": 2,
+        "source_name": "CODEFORCES",
+        "url": "https://codeforces.com/contest/1294/problem/D"
+      },
+      "difficulty": {
+        "difficulty_id": 10,
+        "difficulty_name": "D",
+        "difficulty_bucket": null,
+        "cf_rating": 1600,
+        "cf_points": 0.0,
+        "cf_contest_id": 1294,
+        "cf_index": "D",
+        "rating_bucket": "cf_mid"
+      },
+      "tags": [
+        "data structures",
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "limits": {
+        "time_limit": {
+          "seconds": 3,
+          "nanos": 0
+        },
+        "memory_limit_bytes": 256000000
+      },
+      "io_mode": {
+        "input_file": "",
+        "output_file": "",
+        "non_stdio": false
+      },
+      "translation": {
+        "is_description_translated": false,
+        "untranslated_description": ""
+      },
+      "reference_solution": {
+        "language_id": 3,
+        "language_guess": "python",
+        "code": "q,x=map(int,input().split())\na,m,s=[0]*(x+1),0,\"\"\nwhile q>0:\n\tq-=1\n\ta[int(input())%x]+=1\n\twhile a[m%x]>0:\n\t\ta[m%x]-=1\n\t\tm+=1\n\ts+=(str(m)+\"\\n\")\nprint(s)",
+        "char_count": 151,
+        "line_count": 10
+      },
+      "artifact_counts": {
+        "public_tests": 2,
+        "private_tests": 0,
+        "generated_tests": 81,
+        "solutions": 641,
+        "incorrect_solutions": 448
+      },
+      "heuristic_profile": {
+        "tag_families": [
+          "implementation",
+          "math",
+          "greedy",
+          "data_structures"
+        ],
+        "structure_candidates": [
+          "array"
+        ],
+        "objective_type": "optimize",
+        "coverage_features": [
+          "objective:optimize",
+          "rating:cf_mid",
+          "source:CODEFORCES",
+          "structure:array",
+          "tag:data_structures",
+          "tag:greedy",
+          "tag:implementation",
+          "tag:math"
+        ],
+        "english_filter": {
+          "passed": true,
+          "score": 19
+        },
+        "notes": [
+          "selection favors source, difficulty, tag and structure coverage over sample count",
+          "heuristic_profile fields are inferred from metadata and statement text"
+        ]
+      }
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "不要暴露原题编号、出处或链接。",
+        "不要复写原题的叙事结构、输入输出关系或任务定义。"
+      ],
+      "rationale": "规则强制要求改变约束、目标与不变量。原题仅依赖余数计数与单调指针，新题需将规范顺序嵌入主约束，目标从求值转为输出可校验方案，不变量需反映规范分配下的结构保持性。",
+      "summary": "约束层加入规范优先级重排，目标层从求值改为输出规范解，不变量层从单调指针升级为规范分配的结构保持性，三者联动确保解法核心重构。",
+      "mode": "single_seed_extension"
+    },
+    "new_schema": {
+      "problem_id": "CAMPUS_CANONICAL_MEX",
+      "source": "derived_from_CF1294D",
+      "input_structure": {
+        "type": "composite",
+        "length": {
+          "min": 1,
+          "max": 400000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        },
+        "components": [
+          {
+            "role": "parameters",
+            "role_description": "query count and campus resource step value",
+            "type": "tuple",
+            "length": {
+              "min": 2,
+              "max": 2
+            },
+            "value_range": {
+              "min": 1,
+              "max": 400000
+            },
+            "properties": {}
+          },
+          {
+            "role": "query_stream",
+            "role_description": "sequence of new student club resource requests appended per query",
+            "type": "array",
+            "length": {
+              "min": 1,
+              "max": 400000
+            },
+            "value_range": {
+              "min": 0,
+              "max": 1000000000
+            },
+            "properties": {
+              "ordered": true
+            }
+          }
+        ]
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "canonical_priority",
+            "description": "分配方案必须严格遵循字典序最小规范：对于任意两个原始位置 i < j，若其分配值不同，则必须优先将较小的可用资源编号分配给 i。该规范成为主约束，覆盖原有的任意分配自由度。",
+            "formal": "∀i<j, if a_i' ≠ a_j', then the assignment sequence minimizes (a_1', a_2', ..., a_n') lexicographically.",
+            "source_sections": [
+              "canonical_order_pressure",
+              "constraint_reweighting"
+            ]
+          },
+          {
+            "name": "divisibility",
+            "description": "资源调整步长固定为 x，分配后的值必须与原请求值模 x 同余。",
+            "formal": "a_i' ≡ a_i (mod x)",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "non_negative",
+            "description": "分配资源编号必须为非负整数。",
+            "formal": "a_i' ≥ 0",
+            "source_sections": [
+              "description"
+            ]
+          }
+        ]
+      },
+      "objective": {
+        "type": "output_canonical_witness",
+        "description": "每次查询后，输出一个满足所有约束且使 MEX 最大化的规范分配数组。输出对象本身即为可校验的解，需直接体现字典序最小性与 MEX 最优性。",
+        "target": "canonical_assignment_array",
+        "requires_solution": true
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "canonical_greedy_frontier",
+            "description": "规范分配保证已覆盖的连续资源前缀 [0, mex-1] 严格按原始索引优先级填充。MEX 指针的推进仅当当前余数类中所有高优先级索引均被分配至该余数类的最小可用值时才发生，状态转移与规范顺序强绑定。",
+            "properties": {},
+            "evidence_source": "canonical_order_pressure"
+          },
+          {
+            "name": "proof_bearing_structure",
+            "description": "输出数组的字典序极小性隐含了全局约束的满足性。任意前缀的分配决策不会阻塞后续余数类的最优填充，验证责任由结构不变量直接承担，无需额外后处理。",
+            "properties": {},
+            "evidence_source": "proof_bearing_output"
+          }
+        ]
+      },
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "hard"
+    },
+    "generated_problem": {
+      "title": "校园社团资源调度",
+      "description": "校园社团联合会正在规划新学期的活动资源。初始时资源池为空。接下来会有 q 次社团入驻申请，每次申请会提交一个初始资源需求值 v_i。由于后勤仓库的物资调配机制，每个社团最终分配到的资源编号 v_i' 必须满足：v_i' >= 0，且 v_i' ≡ v_i (mod x)（x 为固定的调配步长）。\n为了公平与高效，联合会规定了一套规范分配原则：在所有满足上述同余与非负约束的分配方案中，必须选择能使当前已分配资源集合的 MEX（最小未出现非负整数）最大的方案；若存在多个方案均能使 MEX 最大，则必须选择字典序最小的分配序列 (v_1', v_2', ..., v_k')。该原则要求：对于任意两个原始位置 i < j，若其分配值不同，则必须优先将较小的可用资源编号分配给 i。规范顺序的优先级高于同余约束的自由度。\n你的任务是模拟这一过程：每次新社团入驻后，立即确定当前所有社团的规范分配值，并输出结果。",
+      "input_format": "第一行包含两个正整数 q 和 x，分别表示入驻申请次数与调配步长。\n接下来 q 行，每行包含一个非负整数 v_i，表示第 i 次申请提交的初始资源需求值。",
+      "output_format": "共输出 q 行。第 i 行包含 i 个非负整数，表示前 i 次申请对应的规范分配值 v_1', v_2', ..., v_i'，相邻整数之间用单个空格分隔。",
+      "constraints": [
+        "1 <= q <= 400000",
+        "1 <= x <= 400000",
+        "0 <= v_i <= 10^9",
+        "时间限制：2.0 秒",
+        "空间限制：512 MB",
+        "保证所有测试点的输出总字符数不超过 5×10^6，建议使用快速输入输出"
+      ],
+      "samples": [
+        {
+          "input": "3 2\n1\n0\n2",
+          "output": "1\n1 0\n1 0 2",
+          "explanation": "第一次申请需求为 1，模 2 余 1。当前 MEX 为 0，但余 0 类无可用位置，故 MEX 保持为 0。为满足字典序最小，位置 1 分配其同余类中最小合法值 1。第二次申请需求为 0，模 2 余 0。余 0 类有位置 2 可用，将其分配给 0，MEX 推进至 1。此时余 1 类无新位置，MEX 停止。位置 1 保持 1，位置 2 为 0。第三次申请需求为 2，模 2 余 0。余 1 类仍无位置，MEX 保持 1。位置 3 分配最小合法值 2。最终序列字典序最小且 MEX 最大。"
+        },
+        {
+          "input": "4 3\n0\n3\n1\n4",
+          "output": "0\n0 3\n0 3 1\n0 3 1 4",
+          "explanation": "第一次申请需求 0 模 3 余 0，位置 1 分配 0，MEX 推进至 1。第二次申请需求 3 模 3 余 0，余 1 类无位置，MEX 保持 1，位置 2 分配最小合法值 3。第三次申请需求 1 模 3 余 1，余 1 类有位置 3 可用，分配 1，MEX 推进至 2。第四次申请需求 4 模 3 余 1，余 2 类无位置，MEX 保持 2，位置 4 分配最小合法值 4。输出序列严格遵循字典序最小与 MEX 最大化原则。"
+        }
+      ],
+      "notes": "本题要求输出精确的规范分配数组，无需取模。字典序比较按从左到右顺序进行。分配值必须严格满足同余与非负条件。若某位置未被用于填充 MEX 前缀，则应分配其同余类中大于等于当前 MEX 的最小非负整数，以保证全局字典序最小。输出数组本身即为可校验的解，其结构隐含了全局约束的满足性。",
+      "status": "ok",
+      "error_reason": "",
+      "feedback": ""
+    },
+    "artifact_contract": {
+      "new_schema_present": true,
+      "new_schema_field_present": false,
+      "new_schema_snapshot_field_present": true,
+      "difference_plan_present": true,
+      "predicted_schema_distance_present": true,
+      "distance_breakdown_present": true,
+      "changed_axes_realized_present": true,
+      "generated_problem_present": true
+    },
+    "review_context": {
+      "difference_plan": {
+        "summary": "约束层加入规范优先级重排，目标层从求值改为输出规范解，不变量层从单调指针升级为规范分配的结构保持性，三者联动确保解法核心重构。",
+        "mode": "single_seed_extension",
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      },
+      "changed_axes_realized": [
+        "C",
+        "O",
+        "V"
+      ],
+      "distance_breakdown": {
+        "distance_version": "v2",
+        "backend": "embedding",
+        "total": 0.4226,
+        "axis_scores": {
+          "I": 0.0,
+          "C": 0.5755,
+          "O": 0.6168,
+          "V": 0.4786
+        },
+        "components": {
+          "input_tree_distance": 0.0,
+          "constraint_match_distance": 0.5755,
+          "objective_type_distance": 0.7386,
+          "objective_text_distance": 0.4341,
+          "invariant_match_distance": 0.4786
+        }
+      },
+      "applied_rule": "canonical_witness",
+      "applied_helpers": [
+        {
+          "id": "canonical_order_pressure",
+          "selection_reason": "规则要求将规范顺序推进到主状态演化，避免退化为后处理。",
+          "affected_axes": [
+            "C",
+            "O",
+            "V"
+          ],
+          "schema_changes": [
+            "core_constraints 新增 canonical_priority 主约束",
+            "objective 目标从求值改为输出规范数组",
+            "invariant 新增 canonical_greedy_frontier 描述顺序与指针的绑定"
+          ],
+          "innovation_reason": "将字典序规范从输出格式要求提升为驱动状态转移的核心规则，使解法路径彻底脱离原题的纯计数模式。",
+          "difficulty_reason": "状态转移必须同时维护余数类资源与索引优先级队列，贪心选择需证明局部最优不破坏全局 MEX 边界，复杂度与实现难度显著上升。"
+        },
+        {
+          "id": "proof_bearing_output",
+          "selection_reason": "规则要求输出对象直接承接校验责任，避免证明责任外置。",
+          "affected_axes": [
+            "O",
+            "V"
+          ],
+          "schema_changes": [
+            "objective 明确 requires_solution=true 且 target 为可校验方案",
+            "invariant 新增 proof_bearing_structure 保证输出自带合法性证明"
+          ],
+          "innovation_reason": "输出不再是被动结果，而是主动承担全局约束验证的载体，迫使算法设计时必须内建可验证性。",
+          "difficulty_reason": "解法必须在构造过程中同步维护可校验结构，任何分配决策都需满足不变量承诺，增加了状态一致性的维护成本。"
+        },
+        {
+          "id": "constraint_reweighting",
+          "selection_reason": "规则要求重排主约束优先级，让规范解要求进入主约束。",
+          "affected_axes": [
+            "C",
+            "V"
+          ],
+          "schema_changes": [
+            "core_constraints 将 canonical_priority 置于 divisibility 之前，改变约束主次",
+            "invariant 反映新约束主次关系，MEX 推进受规范顺序支配"
+          ],
+          "innovation_reason": "打破原题同余约束绝对主导的局面，引入规范优先级作为第一决策依据，重构了约束体系的权重分配。",
+          "difficulty_reason": "算法必须在规范优先级与同余限制之间进行动态权衡，状态设计需处理约束冲突的消解逻辑，显著提升思维与编码难度。"
+        }
+      ],
+      "algorithmic_delta_claim": {
+        "seed_solver_core": "基于余数类计数的贪心 MEX 追踪，维护单调递增指针与各类可用数量。",
+        "reusable_subroutines": "模 x 同余类划分逻辑、非负边界检查、MEX 指针单调推进的判定条件。",
+        "new_solver_core": "带优先级队列的规范分配状态机。每个余数类维护按原始索引排序的可用槽位，贪心分配时严格按索引优先级消耗槽位，同时动态更新 MEX 指针与全局字典序结构。",
+        "new_proof_obligation": "证明按原始索引优先级进行的字典序最小贪心分配，不会导致当前或未来查询的 MEX 值劣于理论最大值；需严格论证规范顺序与余数类资源消耗之间的单调性，确保输出方案的全局最优性与可校验性。",
+        "why_direct_reuse_fails": "原题解法仅维护计数与指针，丢失了具体分配位置信息。若直接回溯构造，无法保证字典序最小规范，且在线查询下回溯复杂度爆炸。必须将规范顺序内化为主状态转移逻辑，无法复用原计数器的单向推进策略。"
+      },
+      "anti_shallow_rationale": "本题并非简单换皮或格式修改。原题核心是值域计数，新题核心是顺序约束下的结构分配。规范优先级直接改变了状态定义与转移方程，输出对象从标量升级为带证明责任的向量，验证逻辑从隐式变为显式。直接套用原解法会导致规范顺序破坏或超时，必须重构数据结构与贪心策略。"
+    }
+  }
+}

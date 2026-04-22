@@ -1,0 +1,724 @@
+{
+  "overall": {
+    "status": "reject_as_retheme",
+    "quality_score": 100.0,
+    "divergence_score": 36.6,
+    "schema_distance": 0.4116,
+    "generated_status": "ok"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 5.0,
+        "rationale": "题面精准落地了 new_schema 定义的所有核心变体要素：在线流输入、模 x 同余约束、有界扰动模型（usable[r] = max(0, cnt[r] - delta)）、阈值耦合条件（slots(K, r) ≤ usable[r]）以及最大化保底 MEX 的目标。校园运营主题映射自然，未扭曲原始数学结构。",
+        "evidence_refs": [
+          "new_schema.input_structure",
+          "new_schema.core_constraints",
+          "new_schema.objective",
+          "generated_problem.description"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 5.0,
+        "rationale": "题面提供了独立解题所需的全部关键信息。输入输出格式明确，约束范围完整，核心数学概念（cnt[r]、usable[r]、slots(K, r)）均在描述中给出清晰定义，无需读者自行猜测边界或规则。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.output_format",
+          "generated_problem.constraints"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 5.0,
+        "rationale": "各部分高度一致。样例计算过程与描述中的规则完全吻合，输入行数与输出行数对应，约束范围与题意逻辑自洽。未发现字段数量、目标定义或符号含义的冲突。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.samples",
+          "generated_problem.input_format",
+          "generated_problem.output_format"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 5.0,
+        "rationale": "提供 2 个样例，分别覆盖 δ=0 与 δ>0 的典型场景，包含 K 从 0 起步、单调递增及受扰动限制保持不变的边界情况。样例解释逐步推演，清晰展示了 cnt、usable 与 slots 的交互逻辑，极具参考价值。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "hard_checks.sample_count"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 5.0,
+        "rationale": "严格遵循标准 OJ 题面结构，段落划分清晰，数学符号使用规范。主题包装（社团排期）仅作为背景引入，未干扰核心算法逻辑的表达，噪声极低，便于参赛者快速提取关键条件。",
+        "evidence_refs": [
+          "generated_problem.title",
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.output_format"
+        ]
+      }
+    ],
+    "strengths": [
+      "数学定义严谨，将抽象的 robust_mex 目标转化为直观的容量不等式组，降低了理解门槛。",
+      "样例解释采用逐步状态追踪的方式，完美契合在线流处理的题意，教学性强。",
+      "主题映射（场地分配/扰动阈值）与算法模型（同余类计数/最坏情况预留）高度同构，未产生语义割裂。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "distance_version": "v2",
+      "backend": "embedding",
+      "total": 0.4116,
+      "axis_scores": {
+        "I": 0.1538,
+        "C": 0.6084,
+        "O": 0.3971,
+        "V": 0.4569
+      },
+      "components": {
+        "input_tree_distance": 0.1538,
+        "constraint_match_distance": 0.6084,
+        "objective_type_distance": 0.39,
+        "objective_text_distance": 0.4077,
+        "invariant_match_distance": 0.4569
+      }
+    },
+    "schema_distance": 0.4116,
+    "changed_axes_planned": [
+      "C",
+      "O",
+      "V"
+    ],
+    "changed_axes_realized": [
+      "C",
+      "O",
+      "V"
+    ],
+    "semantic_difference": 0.15,
+    "solution_transfer_risk": 0.95,
+    "surface_retheme_risk": 0.85,
+    "verdict": "reject_as_retheme",
+    "rationale": "新题引入的‘有界扰动’约束在数学上严格等价于将原题各模x同余类的可用计数统一减去常数delta。原题求最大MEX的本质是寻找首个耗尽的同余类，其核心状态转移与闭式解为 min(cnt[r]*x + r)；新题求最大保底K的条件 slots(K,r) <= cnt[r]-delta 经推导后同样收敛为 min((cnt[r]-delta)*x + r)。两者状态定义、决策对象与最优性目标完全一致，仅多了一步常数偏移。熟悉原题的选手可直接复用贪心指针或瓶颈公式，仅需在维护计数时减去delta，无需review_context声称的二分或离线容量重构。表层叙事虽改为校园排期与扰动阈值，但I/O结构、在线流处理模式与核心约束映射高度对应，属于典型的背景替换与常数平移，未产生实质算法差异。",
+    "evidence_refs": [
+      "new_schema.core_constraints.bounded_perturbation",
+      "generated_problem.description",
+      "original_schema.invariant.equivalence_class",
+      "review_context.algorithmic_delta_claim"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_problem_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 generated_problem。",
+      "evidence_refs": [
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "new_schema_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 new_schema 或兼容字段 new_schema_snapshot。",
+      "evidence_refs": [
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "生成状态正常。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "predicted_schema_distance_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 predicted_schema_distance。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "distance_breakdown_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 distance_breakdown。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "changed_axes_realized_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 changed_axes_realized。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.41，达到中等差异阈值。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "已落地核心差异轴：C, O, V。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题或题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=2。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "目标函数已经在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "solution transfer risk too high",
+      "detail": "新题引入的‘有界扰动’约束在数学上严格等价于将原题各模x同余类的可用计数统一减去常数delta。原题求最大MEX的本质是寻找首个耗尽的同余类，其核心状态转移与闭式解为 min(cnt[r]*x + r)；新题求最大保底K的条件 slots(K,r) <= cnt[r]-delta 经推导后同样收敛为 min((cnt[r]-delta)*x + r)。两者状态定义、决策对象与最优性目标完全一致，仅多了一步常数偏移。熟悉原题的选手可直接复用贪心指针或瓶颈公式，仅需在维护计数时减去delta，无需review_context声称的二分或离线容量重构。表层叙事虽改为校园排期与扰动阈值，但I/O结构、在线流处理模式与核心约束映射高度对应，属于典型的背景替换与常数平移，未产生实质算法差异。",
+      "evidence_refs": [
+        "new_schema.core_constraints.bounded_perturbation",
+        "generated_problem.description",
+        "original_schema.invariant.equivalence_class",
+        "review_context.algorithmic_delta_claim"
+      ],
+      "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+    }
+  ],
+  "suggested_revisions": [
+    "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+    "可在 constraints 中补充说明 δ 的取值范围与 q 的关系（如 δ 可能大于 q，此时 usable[r] 恒为 0），以进一步消除极端边界歧义。",
+    "若面向初学者，可在 description 末尾补充 slots(K, r) 的闭式计算公式 ⌈(K - r)/x⌉ (当 r < K 时)，便于直接实现。",
+    "优先改写核心任务定义，而不是继续替换故事背景。"
+  ],
+  "revision_brief": {
+    "round_index": 1,
+    "overall_status": "reject_as_retheme",
+    "generated_status": "ok",
+    "quality_score": 100.0,
+    "divergence_score": 36.6,
+    "failed_hard_checks": [],
+    "issues": [
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "solution transfer risk too high",
+        "detail": "新题引入的‘有界扰动’约束在数学上严格等价于将原题各模x同余类的可用计数统一减去常数delta。原题求最大MEX的本质是寻找首个耗尽的同余类，其核心状态转移与闭式解为 min(cnt[r]*x + r)；新题求最大保底K的条件 slots(K,r) <= cnt[r]-delta 经推导后同样收敛为 min((cnt[r]-delta)*x + r)。两者状态定义、决策对象与最优性目标完全一致，仅多了一步常数偏移。熟悉原题的选手可直接复用贪心指针或瓶颈公式，仅需在维护计数时减去delta，无需review_context声称的二分或离线容量重构。表层叙事虽改为校园排期与扰动阈值，但I/O结构、在线流处理模式与核心约束映射高度对应，属于典型的背景替换与常数平移，未产生实质算法差异。",
+        "evidence_refs": [
+          "new_schema.core_constraints.bounded_perturbation",
+          "generated_problem.description",
+          "original_schema.invariant.equivalence_class",
+          "review_context.algorithmic_delta_claim"
+        ],
+        "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+      }
+    ],
+    "suggested_revisions": [
+      "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+      "可在 constraints 中补充说明 δ 的取值范围与 q 的关系（如 δ 可能大于 q，此时 usable[r] 恒为 0），以进一步消除极端边界歧义。",
+      "若面向初学者，可在 description 末尾补充 slots(K, r) 的闭式计算公式 ⌈(K - r)/x⌉ (当 r < K 时)，便于直接实现。",
+      "优先改写核心任务定义，而不是继续替换故事背景。"
+    ],
+    "strengths_to_keep": [
+      "数学定义严谨，将抽象的 robust_mex 目标转化为直观的容量不等式组，降低了理解门槛。",
+      "样例解释采用逐步状态追踪的方式，完美契合在线流处理的题意，教学性强。",
+      "主题映射（场地分配/扰动阈值）与算法模型（同余类计数/最坏情况预留）高度同构，未产生语义割裂。"
+    ]
+  },
+  "snapshots": {
+    "paths": {
+      "schema_path": "D:\\AutoProblemGen\\四元组抽取\\output\\batch\\normalized\\CF1294D.json",
+      "artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1294D\\CF1294D_v1_campus_ops_20260422_150145_round1.json",
+      "markdown_path": "D:\\AutoProblemGen\\生成题面\\output\\CF1294D\\CF1294D_v1_campus_ops_20260422_150145_round1.md"
+    },
+    "original_problem": {
+      "selection_id": "sample_18",
+      "problem_id": "CF1294D",
+      "record_uid": "train-00001-of-00039-e092fe56fda18715__row_0302",
+      "statement_language": "english",
+      "title": "1294_D. MEX maximizing",
+      "description": "Recall that MEX of an array is a minimum non-negative integer that does not belong to the array. Examples:\n\n  * for the array [0, 0, 1, 0, 2] MEX equals to 3 because numbers 0, 1 and 2 are presented in the array and 3 is the minimum non-negative integer not presented in the array; \n  * for the array [1, 2, 3, 4] MEX equals to 0 because 0 is the minimum non-negative integer not presented in the array; \n  * for the array [0, 1, 4, 3] MEX equals to 2 because 2 is the minimum non-negative integer not presented in the array. \n\n\n\nYou are given an empty array a=[] (in other words, a zero-length array). You are also given a positive integer x.\n\nYou are also given q queries. The j-th query consists of one integer y_j and means that you have to append one element y_j to the array. The array length increases by 1 after a query.\n\nIn one move, you can choose any index i and set a_i := a_i + x or a_i := a_i - x (i.e. increase or decrease any element of the array by x). The only restriction is that a_i cannot become negative. Since initially the array is empty, you can perform moves only after the first query.\n\nYou have to maximize the MEX (minimum excluded) of the array if you can perform any number of such operations (you can even perform the operation multiple times with one element).\n\nYou have to find the answer after each of q queries (i.e. the j-th answer corresponds to the array of length j).\n\nOperations are discarded before each query. I.e. the array a after the j-th query equals to [y_1, y_2, ..., y_j].\n\nInput\n\nThe first line of the input contains two integers q, x (1 ≤ q, x ≤ 4 ⋅ 10^5) — the number of queries and the value of x.\n\nThe next q lines describe queries. The j-th query consists of one integer y_j (0 ≤ y_j ≤ 10^9) and means that you have to append one element y_j to the array.\n\nOutput\n\nPrint the answer to the initial problem after each query — for the query j print the maximum value of MEX after first j queries. Note that queries are dependent (the array changes after each query) but operations are independent between queries.\n\nExamples\n\nInput\n\n\n7 3\n0\n1\n2\n2\n0\n0\n10\n\n\nOutput\n\n\n1\n2\n3\n3\n4\n4\n7\n\n\nInput\n\n\n4 3\n1\n2\n1\n2\n\n\nOutput\n\n\n0\n0\n0\n0\n\nNote\n\nIn the first example:\n\n  * After the first query, the array is a=[0]: you don't need to perform any operations, maximum possible MEX is 1. \n  * After the second query, the array is a=[0, 1]: you don't need to perform any operations, maximum possible MEX is 2. \n  * After the third query, the array is a=[0, 1, 2]: you don't need to perform any operations, maximum possible MEX is 3. \n  * After the fourth query, the array is a=[0, 1, 2, 2]: you don't need to perform any operations, maximum possible MEX is 3 (you can't make it greater with operations). \n  * After the fifth query, the array is a=[0, 1, 2, 2, 0]: you can perform a[4] := a[4] + 3 = 3. The array changes to be a=[0, 1, 2, 2, 3]. Now MEX is maximum possible and equals to 4. \n  * After the sixth query, the array is a=[0, 1, 2, 2, 0, 0]: you can perform a[4] := a[4] + 3 = 0 + 3 = 3. The array changes to be a=[0, 1, 2, 2, 3, 0]. Now MEX is maximum possible and equals to 4. \n  * After the seventh query, the array is a=[0, 1, 2, 2, 0, 0, 10]. You can perform the following operations: \n    * a[3] := a[3] + 3 = 2 + 3 = 5, \n    * a[4] := a[4] + 3 = 0 + 3 = 3, \n    * a[5] := a[5] + 3 = 0 + 3 = 3, \n    * a[5] := a[5] + 3 = 3 + 3 = 6, \n    * a[6] := a[6] - 3 = 10 - 3 = 7, \n    * a[6] := a[6] - 3 = 7 - 3 = 4. \nThe resulting array will be a=[0, 1, 2, 5, 3, 6, 4]. Now MEX is maximum possible and equals to 7. ",
+      "public_tests": {
+        "input": [
+          "4 3\n1\n2\n1\n2\n",
+          "7 3\n0\n1\n2\n2\n0\n0\n10\n"
+        ],
+        "output": [
+          "0\n0\n0\n0\n",
+          "1\n2\n3\n3\n4\n4\n7\n"
+        ]
+      },
+      "source": {
+        "split": "train",
+        "source_id": 2,
+        "source_name": "CODEFORCES",
+        "url": "https://codeforces.com/contest/1294/problem/D"
+      },
+      "difficulty": {
+        "difficulty_id": 10,
+        "difficulty_name": "D",
+        "difficulty_bucket": null,
+        "cf_rating": 1600,
+        "cf_points": 0.0,
+        "cf_contest_id": 1294,
+        "cf_index": "D",
+        "rating_bucket": "cf_mid"
+      },
+      "tags": [
+        "data structures",
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "limits": {
+        "time_limit": {
+          "seconds": 3,
+          "nanos": 0
+        },
+        "memory_limit_bytes": 256000000
+      },
+      "io_mode": {
+        "input_file": "",
+        "output_file": "",
+        "non_stdio": false
+      },
+      "translation": {
+        "is_description_translated": false,
+        "untranslated_description": ""
+      },
+      "reference_solution": {
+        "language_id": 3,
+        "language_guess": "python",
+        "code": "q,x=map(int,input().split())\na,m,s=[0]*(x+1),0,\"\"\nwhile q>0:\n\tq-=1\n\ta[int(input())%x]+=1\n\twhile a[m%x]>0:\n\t\ta[m%x]-=1\n\t\tm+=1\n\ts+=(str(m)+\"\\n\")\nprint(s)",
+        "char_count": 151,
+        "line_count": 10
+      },
+      "artifact_counts": {
+        "public_tests": 2,
+        "private_tests": 0,
+        "generated_tests": 81,
+        "solutions": 641,
+        "incorrect_solutions": 448
+      },
+      "heuristic_profile": {
+        "tag_families": [
+          "implementation",
+          "math",
+          "greedy",
+          "data_structures"
+        ],
+        "structure_candidates": [
+          "array"
+        ],
+        "objective_type": "optimize",
+        "coverage_features": [
+          "objective:optimize",
+          "rating:cf_mid",
+          "source:CODEFORCES",
+          "structure:array",
+          "tag:data_structures",
+          "tag:greedy",
+          "tag:implementation",
+          "tag:math"
+        ],
+        "english_filter": {
+          "passed": true,
+          "score": 19
+        },
+        "notes": [
+          "selection favors source, difficulty, tag and structure coverage over sample count",
+          "heuristic_profile fields are inferred from metadata and statement text"
+        ]
+      }
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "不要暴露原题编号、出处或链接。",
+        "不要复写原题的叙事结构、输入输出关系或任务定义。"
+      ],
+      "rationale": "O 从确定性在线最大化改为鲁棒保底优化；C 增加扰动损失约束与阈值耦合条件；V 从单调指针维护状态改为最坏情形下的同余类容量不等式与独立扰动验证。",
+      "summary": "通过有界扰动模型重构同余类资源分配，将在线贪心升级为鲁棒阈值搜索，确保算法在最坏到达序列下仍能保证 MEX 下限，彻底改变状态维护与决策逻辑。",
+      "mode": "single_seed_extension"
+    },
+    "new_schema": {
+      "problem_id": "CF1294D_robust_mex",
+      "source": "codeforces",
+      "input_structure": {
+        "type": "composite",
+        "length": {
+          "min": 1,
+          "max": 400000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true,
+          "online_stream": true,
+          "perturbation_bound": "delta"
+        },
+        "components": [
+          {
+            "role": "parameters",
+            "role_description": "query count, operation step x, and perturbation bound delta",
+            "type": "tuple",
+            "length": {
+              "min": 3,
+              "max": 3
+            },
+            "value_range": {
+              "min": 1,
+              "max": 400000
+            },
+            "properties": {}
+          },
+          {
+            "role": "query_stream",
+            "role_description": "sequence of integers appended in each query, subject to bounded per-residue loss",
+            "type": "array",
+            "length": {
+              "min": 1,
+              "max": 400000
+            },
+            "value_range": {
+              "min": 0,
+              "max": 1000000000
+            },
+            "properties": {
+              "ordered": true,
+              "residue_fluctuation": "bounded"
+            }
+          }
+        ]
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "divisibility",
+            "description": "元素变换后必须与原值模 x 同余。",
+            "formal": "a_i' ≡ a_i (mod x)",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "non_negative",
+            "description": "变换后值非负。",
+            "formal": "a_i' ≥ 0",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "bounded_perturbation",
+            "description": "每个模 x 剩余类的实际可用数量可能因扰动减少，但减少量不超过 delta。",
+            "formal": "usable[r] ≥ count[r] - delta, ∀ r ∈ [0, x-1]",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "threshold_coupling",
+            "description": "保底阈值 K 必须满足：对任意 r < K，覆盖 0..K-1 中余数为 r 的位置数不超过该类最坏可用量。",
+            "formal": "∀ r ∈ [0, x-1], slots(K, r) ≤ usable[r]",
+            "source_sections": [
+              "objective"
+            ]
+          }
+        ]
+      },
+      "objective": {
+        "type": "maximize_guaranteed_value",
+        "description": "寻找最大整数 K，使得在任意满足有界扰动条件的到达序列下，均能通过合法操作覆盖 0 到 K-1 的所有整数。",
+        "target": "robust_mex",
+        "requires_solution": false
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "robust_prefix_coverage",
+            "description": "对于候选阈值 K，其可行性等价于所有同余类 r 的需求量 slots(K, r) 均不超过 count[r] - delta。该不等式在扰动空间内单调，且构成保底 MEX 的充要条件。",
+            "properties": {},
+            "evidence_source": "derived_from_rule"
+          },
+          {
+            "name": "residue_independence",
+            "description": "不同余数类的资源分配与扰动相互独立，最坏情况可逐类独立计算并取交集，无需联合枚举扰动组合。",
+            "properties": {},
+            "evidence_source": "derived_from_seed"
+          }
+        ]
+      },
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "hard"
+    },
+    "generated_problem": {
+      "title": "稳健的社团排期",
+      "description": "某高校后勤中心负责统筹全校社团的活动场地分配。本学期共有 $q$ 批社团依次提交入驻申请，每批申请携带一个初始资源编号 $v$。为便于统一调度，中心规定所有社团在分配场地时，必须遵循“模 $x$ 同余编队”原则：即社团最终使用的场地编号 $v'$ 必须满足 $v' \\equiv v \\pmod x$，且场地编号必须为非负整数。\n\n然而，场地调度过程中难免出现临时变动（如设备维护、突发占用等）。中心经过历史数据评估，给出一个扰动阈值 $\\delta$：对于任意一个模 $x$ 的余数类 $r$，实际能够投入使用的场地数量，最多会比当前已收到的该余数类申请总数少 $\\delta$ 个。这意味着，若当前已收到余数为 $r$ 的申请共 $\\text{cnt}[r]$ 个，则最坏情况下的实际可用名额为 $\\text{usable}[r] = \\max(0, \\text{cnt}[r] - \\delta)$。\n\n中心希望制定一个稳健的排期计划。对于当前已经收到的所有申请，请计算一个最大的整数 $K$，使得**无论扰动如何发生**（只要满足上述损失上限），中心都能通过合法的场地分配，让编号为 $0, 1, 2, \\dots, K-1$ 的场地全部被成功占用。换言之，对于任意余数 $r \\in [0, x-1]$，区间 $[0, K-1]$ 中模 $x$ 余 $r$ 的整数个数 $\\text{slots}(K, r)$ 均不得超过该类最坏情况下的可用名额 $\\text{usable}[r]$。\n\n系统会严格按申请到达的顺序依次处理。你需要对每一批新到达的申请，实时基于累计收到的所有资源，计算并输出当前满足条件的最大 $K$。",
+      "input_format": "第一行包含三个整数 $q, x, \\delta$，分别表示申请批次数、同余编队步长和扰动阈值。\n接下来 $q$ 行，每行包含一个整数 $v_i$，表示第 $i$ 批社团的初始资源编号。输入按时间顺序给出，需依次处理。",
+      "output_format": "输出共 $q$ 行，第 $i$ 行包含一个整数，表示处理完前 $i$ 批申请后，当前最大的稳健保底编号上限 $K$。",
+      "constraints": [
+        "$1 \\le q, x \\le 400000$",
+        "$0 \\le \\delta \\le 10^9$",
+        "$0 \\le v_i \\le 10^9$",
+        "时间限制：2.0 秒",
+        "空间限制：512 MB"
+      ],
+      "samples": [
+        {
+          "input": "4 2 0\n0\n2\n1\n3",
+          "output": "1\n1\n3\n4",
+          "explanation": "第1批收到0，cnt=[1,0]，可用[1,0]。区间[0,0]中余0需1个，满足，K=1。\n第2批收到2(≡0)，cnt=[2,0]，可用[2,0]。若K=2，区间[0,1]中余1需1个，但可用为0，不满足，故K保持1。\n第3批收到1，cnt=[2,1]，可用[2,1]。K=3时，区间[0,2]中余0需2个，余1需1个，均满足，K=3。\n第4批收到3(≡1)，cnt=[2,2]，可用[2,2]。K=4时，余0需2个，余1需2个，均满足，K=4。"
+        },
+        {
+          "input": "5 3 1\n0\n3\n1\n4\n2",
+          "output": "0\n1\n1\n2\n2",
+          "explanation": "δ=1，每个余数类最坏损失1个名额。\n第1批：收到0，cnt=[1,0,0]，可用[0,0,0]。无法满足K≥1，K=0。\n第2批：收到3(≡0)，cnt=[2,0,0]，可用[1,0,0]。K=1满足，K=2时余1需1>0不满足，故K=1。\n第3批：收到1，cnt=[2,1,0]，可用[1,0,0]。K=2时余1需1>0，故K保持1。\n第4批：收到4(≡1)，cnt=[2,2,0]，可用[1,1,0]。K=2满足，K=3时余0需2>1不满足，故K=2。\n第5批：收到2，cnt=[2,2,1]，可用[1,1,0]。K=3时余0需2>1，故K保持2。"
+        }
+      ],
+      "notes": "",
+      "status": "ok",
+      "error_reason": "",
+      "feedback": ""
+    },
+    "artifact_contract": {
+      "new_schema_present": true,
+      "new_schema_field_present": false,
+      "new_schema_snapshot_field_present": true,
+      "difference_plan_present": true,
+      "predicted_schema_distance_present": true,
+      "distance_breakdown_present": true,
+      "changed_axes_realized_present": true,
+      "generated_problem_present": true
+    },
+    "review_context": {
+      "difference_plan": {
+        "summary": "通过有界扰动模型重构同余类资源分配，将在线贪心升级为鲁棒阈值搜索，确保算法在最坏到达序列下仍能保证 MEX 下限，彻底改变状态维护与决策逻辑。",
+        "mode": "single_seed_extension",
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      },
+      "changed_axes_realized": [
+        "C",
+        "O",
+        "V"
+      ],
+      "distance_breakdown": {
+        "distance_version": "v2",
+        "backend": "embedding",
+        "total": 0.4116,
+        "axis_scores": {
+          "I": 0.1538,
+          "C": 0.6084,
+          "O": 0.3971,
+          "V": 0.4569
+        },
+        "components": {
+          "input_tree_distance": 0.1538,
+          "constraint_match_distance": 0.6084,
+          "objective_type_distance": 0.39,
+          "objective_text_distance": 0.4077,
+          "invariant_match_distance": 0.4569
+        }
+      },
+      "applied_rule": "minimum_guarantee_under_perturbation",
+      "applied_helpers": [
+        {
+          "id": "native_perturbation_model",
+          "selection_reason": "原题在线流天然具备到达不确定性，需将其形式化为有界扰动以支撑鲁棒优化。",
+          "affected_axes": [
+            "C",
+            "V"
+          ],
+          "schema_changes": [
+            "core_constraints.bounded_perturbation",
+            "invariant.residue_independence"
+          ],
+          "innovation_reason": "将原题隐含的在线到达不确定性显式化为有界扰动模型，使问题从确定性分配转为鲁棒优化，引入对抗性视角。",
+          "difficulty_reason": "要求算法在构造解时预留扰动余量，打破原贪心策略的即时最优假设，增加状态预留与容量规划复杂度。"
+        },
+        {
+          "id": "worst_case_invariant",
+          "selection_reason": "保底目标需依赖严格的最坏情形不变量来保证可行性，避免经验性估计。",
+          "affected_axes": [
+            "C",
+            "O",
+            "V"
+          ],
+          "schema_changes": [
+            "objective.type",
+            "invariant.robust_prefix_coverage",
+            "core_constraints.threshold_coupling"
+          ],
+          "innovation_reason": "将目标从‘可达最大’提升为‘最坏保底’，迫使不变量直接刻画扰动极值下的容量边界，形成理论闭环。",
+          "difficulty_reason": "需严格证明不变量在任意扰动组合下的充分必要性，增加形式化验证负担与数学推导深度。"
+        },
+        {
+          "id": "guarantee_threshold_coupling",
+          "selection_reason": "防止保底阈值成为孤立输出，必须将其嵌入约束体系以驱动算法设计。",
+          "affected_axes": [
+            "C",
+            "O"
+          ],
+          "schema_changes": [
+            "core_constraints.threshold_coupling",
+            "objective.target"
+          ],
+          "innovation_reason": "保底阈值 K 不再是输出后验值，而是直接参与约束定义，形成目标-约束闭环，重构问题拓扑。",
+          "difficulty_reason": "要求同时处理阈值搜索与容量不等式组的单调性分析，禁止黑盒判定器嵌套，提升算法构造门槛。"
+        }
+      ],
+      "algorithmic_delta_claim": {
+        "seed_solver_core": "维护当前 MEX 指针，利用模 x 同余类计数贪心填补空缺，指针单调递增，依赖在线即时决策。",
+        "reusable_subroutines": "同余类计数统计、模运算映射、前缀需求计算 slots(K, r) = ⌈(K - r)/x⌉ (若 r < K)。",
+        "new_solver_core": "将问题转化为求解最大 K 满足 ∀r, slots(K, r) ≤ cnt[r] - delta。利用 slots(K, r) 关于 K 的分段线性单调性，结合二分答案或直接解析求解不等式组，避免在线贪心模拟。",
+        "new_proof_obligation": "需严格证明：1) 最坏扰动下可行性等价于逐类容量不等式，即扰动损失可被独立下界吸收；2) slots(K, r) 的单调性保证二分/解析解的全局最优性；3) 扰动边界 delta 与阈值 K 的耦合不会破坏同余类独立性，且最坏情况损失可被严格界定而不需指数级枚举扰动组合。",
+        "why_direct_reuse_fails": "原解依赖在线贪心与指针单调性，无法处理‘未来到达量可能减少’的对抗性扰动。直接复用会导致在扰动发生时指针回退或死锁，必须重构为全局容量不等式验证，决策基础从局部填补变为全局容量校验。"
+      },
+      "anti_shallow_rationale": "本题并非在原判定器外简单套二分。扰动模型直接改变了约束的数学结构（从等式/贪心填补变为带损耗的不等式组），阈值 K 与同余类容量深度耦合。算法必须显式处理最坏情况下的容量缺口，而非仅验证单一序列的可行性。这要求从在线模拟转向离线容量分析，彻底改变了主导逻辑，且二分仅作为求解单调不等式的工具，而非黑盒包装。"
+    }
+  }
+}

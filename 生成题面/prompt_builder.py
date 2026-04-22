@@ -240,6 +240,7 @@ def build_rule_selection_user_prompt(
         "- `difficulty_reason` 要说明它会在哪个主求解责任上抬高难度。\n"
         "- `risk_reason` 要说明主要风险；如果风险可控，也要明确写出来。\n"
         "- 如果提供了 `revision_context`，要优先修复其中涉及规则选择、结构差异和反换皮风险的问题，并保留 `strengths_to_keep`。\n"
+        "- 若 `revision_context` 包含 `revision_history` 或 `revision_summary`，必须综合此前所有轮次的有用信息，不要只依据最近一轮的修订建议。\n"
         "- 如果没有规则满足条件，返回失败状态，不要勉强挑选。\n\n"
         f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
     )
@@ -349,6 +350,7 @@ def build_planner_user_prompt(
         "- `applied_helpers` 中的每一项都要写清它作用到哪些变化轴、改变了哪些 schema 部分、怎样抬高创新度、怎样抬高难度。\n"
         "- 如果模式是 same_family_fusion，`shared_core_summary` 和三个 shared_core_anchors 不能为空。\n"
         "- 如果提供了 `revision_context`，要优先修复其中涉及结构差异、目标定义、规则落地和反换皮风险的问题，并保留 `strengths_to_keep`。\n"
+        "- 若 `revision_context` 包含 `revision_history` 或 `revision_summary`，必须综合此前所有轮次的有用信息，不要只依据最近一轮的修订建议。\n"
         "- 如果你认为该规则不适用或只能做浅改，请返回失败状态，不要硬套。\n\n"
         f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
     )
@@ -447,6 +449,9 @@ def build_generation_user_prompt(
         "- `algorithmic_delta_claim.why_direct_reuse_fails` 必须能在题面定义里体现出来，而不是只写在规划字段里。\n"
         "- `applied_helpers` 里的每个 helper 都要在题面和 `new_schema` 中落地，不能只停留在规划说明里。\n"
         "- 如果提供了 `revision_context`，要优先修复其中涉及题面完整性、跨段一致性、样例质量和可读性的问题，并保留 `strengths_to_keep`。\n"
+        "- 若 `revision_context` 包含 `revision_history` 或 `revision_summary`，必须综合此前所有轮次的有用信息，不要只依据最近一轮的修订建议。\n"
+        "- 如果 `revision_context.revision_mode` 是 `full_score_polish`，表示本轮只做题面打磨：可以重写 description、input_format、output_format、constraints、samples 和 notes，但必须复用同一个 `new_schema`，不得改变任务定义、输入输出语义、核心约束、差异计划或主要算法义务。\n"
+        "- 满分打磨时必须优先处理 `revision_context.non_full_dimensions`，并参考 `previous_generated_problem` 保留已经成立的结构与优点。\n"
         f"- {sample_shape_hint}\n"
         "- `notes` 用于补充模数、字典序、证书定义、失败输出约定等关键说明；没有则返回空字符串。\n\n"
         f"{json.dumps(payload, ensure_ascii=False, indent=2)}"

@@ -1,0 +1,662 @@
+{
+  "problem_id": "CAMPUS_SLOT_ASSIGNMENT",
+  "source_problem_ids": [
+    "CF1294D"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "C",
+      "O",
+      "V"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "原题仅依赖同余类计数单调性求极值；新题要求显式构造双射映射，并在不可行时输出基于同余类容量瓶颈的局部证据。目标从求值转为构造/证明，约束从隐式同余转为显式覆盖与互斥，不变量从单调性转为匹配可行性与证据极小性。",
+    "summary": "将在线MEX计算重构为在线区间覆盖分配问题，强制算法同时处理成功构造与失败证据生成，彻底打破原题贪心指针的直接复用路径。",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.4614,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.4614,
+    "axis_scores": {
+      "I": 0.0,
+      "C": 0.6808,
+      "O": 0.6196,
+      "V": 0.5114
+    },
+    "components": {
+      "input_tree_distance": 0.0,
+      "constraint_match_distance": 0.6808,
+      "objective_type_distance": 0.6657,
+      "objective_text_distance": 0.5505,
+      "invariant_match_distance": 0.5114
+    }
+  },
+  "changed_axes_realized": [
+    "C",
+    "O",
+    "V"
+  ],
+  "objective": {
+    "type": "construct_or_certify",
+    "description": "每次查询后，判定当前资源池能否在满足同余与非负约束下覆盖{0..K-1}。若能，输出每个槽位对应的资源ID映射；若不能，输出一个极小冲突余数类集合，证明无论如何分配均无法覆盖。",
+    "target": "assignment_map_or_obstruction_set",
+    "requires_solution": true
+  },
+  "rule_selection_reason": "上一轮因仅对同余类计数做常数偏移被判定为换皮，核心贪心公式未变。construct_or_obstruction 将原题的‘最大化MEX’优化目标彻底重构为‘判定目标K是否可达，并输出构造方案或局部冲突证据’的证书型任务，强制切断原题闭式解的直接迁移路径，最契合修订意见中‘优先改写核心任务定义’的要求。相比之下，existence_to_counting 在在线流与模x操作背景下极易退化为对原贪心结果的后处理统计，或引发状态爆炸，创新落地风险更高。；创新度判断：将原题的‘求最优值’核心义务拉离为‘双分支输出合同’：成功时输出具体操作分配序列，失败时输出可局部校验的同余类冲突证据（如指出导致前缀断裂的具体余数类及其容量缺口）。失败语义从抽象解释变为结构化输出对象，迫使状态设计从单向贪心指针转向构造与反例提取的统一框架。；难度判断：在主求解责任上，要求算法在同一套模x等价类计数状态中，同时承担成功分支的构造分配与失败分支的瓶颈定位责任。选手需证明并实现证据的局部可校验性，且失败分支不能靠特判绕开主结构，显著抬高了状态维护维度、分支逻辑统一性与实现复杂度。；风险判断：主要风险在于冲突证据若设计不严谨，可能退化为自然语言解释或依赖全局边界特判。但通过 obstruction_embedding 辅助器，可将证据严格绑定在主约束（模x剩余类容量与MEX前缀覆盖的充要条件）中，确保失败分支与成功分支共享同一状态源，风险完全可控。",
+  "new_schema_snapshot": {
+    "problem_id": "CAMPUS_SLOT_ASSIGNMENT",
+    "source": "custom",
+    "input_structure": {
+      "type": "composite",
+      "length": {
+        "min": 1,
+        "max": 400000
+      },
+      "value_range": {
+        "min": 0,
+        "max": 1000000000
+      },
+      "properties": {
+        "ordered": true
+      },
+      "components": [
+        {
+          "role": "parameters",
+          "role_description": "query count q, modulo step x, target coverage K",
+          "type": "tuple",
+          "length": {
+            "min": 3,
+            "max": 3
+          },
+          "value_range": {
+            "min": 1,
+            "max": 400000
+          },
+          "properties": {}
+        },
+        {
+          "role": "query_stream",
+          "role_description": "sequence of incoming resource IDs appended in each query",
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 400000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      ]
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "divisibility",
+          "description": "每个资源只能分配到与其初始ID模x同余的时段槽位，即分配值v必须满足v ≡ a_i (mod x)。",
+          "formal": "v ≡ a_i (mod x)",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "non_negative",
+          "description": "分配的时段槽位必须为非负整数，不允许负数时段。",
+          "formal": "v ≥ 0",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "distinct_assignment",
+          "description": "所有被分配的资源必须占据互不相同的时段槽位，同一槽位不可重复占用。",
+          "formal": "∀i≠j, v_i ≠ v_j",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "target_coverage",
+          "description": "成功分支要求恰好覆盖连续时段集合{0, 1, ..., K-1}，不允许遗漏或超出该区间。",
+          "formal": "assigned_values = {0, 1, ..., K-1}",
+          "source_sections": [
+            "description"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "construct_or_certify",
+      "description": "每次查询后，判定当前资源池能否在满足同余与非负约束下覆盖{0..K-1}。若能，输出每个槽位对应的资源ID映射；若不能，输出一个极小冲突余数类集合，证明无论如何分配均无法覆盖。",
+      "target": "assignment_map_or_obstruction_set",
+      "requires_solution": true
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "hall_condition_for_residues",
+          "description": "可行性充要条件为：对任意余数类子集S，S中可用资源总数必须不小于目标区间{0..K-1}中属于S的槽位需求数。该条件在每次查询后动态更新。",
+          "properties": {},
+          "evidence_source": "solution_code"
+        },
+        {
+          "name": "certificate_minimality",
+          "description": "失败分支输出的冲突集合必须满足极小性：该集合内总需求严格大于总供给，且移除集合中任意一个余数类后，剩余子集均满足供给≥需求。",
+          "properties": {},
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "hard"
+  },
+  "applied_rule": "construct_or_obstruction",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {
+    "seed_solver_core": "维护各余数类可用元素数量，利用单调性贪心推进MEX指针，闭式计算 min(cnt[r]*x + r)。",
+    "reusable_subroutines": "同余类计数维护、在线增量更新逻辑、非负边界过滤、模运算分组。",
+    "new_solver_core": "基于同余类容量与目标区间需求的贪心分配算法；失败时通过扫描余数类计算‘需求-供给’差值，提取极小瓶颈集合作为证书。",
+    "new_proof_obligation": "需证明输出的冲突集合满足局部可验证性（即该集合内总需求严格大于总供给，且任意真子集均满足供给≥需求），并证明分配方案在满足同余约束下无冲突且恰好覆盖目标区间。",
+    "why_direct_reuse_fails": "原题解法仅依赖全局最小瓶颈值，不关心具体元素到槽位的映射关系；新题要求显式输出分配方案，且失败时需输出极小冲突集，原题的闭式公式无法直接生成映射或证书结构，必须重构为匹配/流或带证书生成的贪心策略。"
+  },
+  "anti_shallow_rationale": "彻底摒弃了原题‘仅求值’的范式，引入显式构造与证书输出双分支。失败证据不再是自然语言解释，而是结构化的余数类集合，可直接通过容量不等式验证。输入虽保留流式特征，但目标固定为K，迫使算法处理精确覆盖而非单调极值，有效阻断常数平移或简单公式套用。",
+  "shared_core_summary": "",
+  "shared_core_anchors": {
+    "shared_state": "",
+    "shared_transition": "",
+    "shared_decision_basis": ""
+  },
+  "seed_contributions": {
+    "seed_a": "",
+    "seed_b": ""
+  },
+  "fusion_ablation": {
+    "without_seed_a": "",
+    "without_seed_b": ""
+  },
+  "applied_helpers": [
+    {
+      "id": "local_certificate_design",
+      "selection_reason": "将无解原因压缩为可局部检查的证据对象，满足规则对失败语义的结构化要求。",
+      "affected_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "objective 增加证书输出分支",
+        "invariant 增加 certificate_minimality",
+        "core_constraints 明确失败验证条件"
+      ],
+      "innovation_reason": "让失败语义从解释变成输出对象，提供可直接校验的极小冲突集。",
+      "difficulty_reason": "要求解法同时构造成功分支和失败证据分支，增加状态维护与极小性证明负担。"
+    },
+    {
+      "id": "failure_branch_symmetry",
+      "selection_reason": "确保成功与失败分支承担对等输出责任，避免失败分支退化为附属说明。",
+      "affected_axes": [
+        "C",
+        "O"
+      ],
+      "schema_changes": [
+        "objective 改为 construct_or_certify 类型",
+        "core_constraints 增加 target_coverage 与 distinct_assignment"
+      ],
+      "innovation_reason": "把单目标输出改成双分支输出合同，共享输入语义但承担不同输出对象。",
+      "difficulty_reason": "要求算法统一处理两类输出语义，失败分支不能靠特判绕开主匹配结构。"
+    },
+    {
+      "id": "obstruction_embedding",
+      "selection_reason": "使冲突证据直接源于主约束的不可兼容性，而非外部附加条件。",
+      "affected_axes": [
+        "C",
+        "V"
+      ],
+      "schema_changes": [
+        "core_constraints 嵌入同余容量瓶颈逻辑",
+        "invariant 增加 hall_condition_for_residues"
+      ],
+      "innovation_reason": "让失败证据嵌入主约束内部，成功与失败共享同一状态信息来源。",
+      "difficulty_reason": "要求解法在同一状态信息里同时解释成功构造与失败证据，提升状态推导复杂度。"
+    }
+  ],
+  "planning_status": "ok",
+  "planning_error_reason": "",
+  "planning_feedback": "",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "forbidden_seed_property",
+      "selection_reason": "种子题的MEX构造方案可由模x余数计数直接贪心推导，落入“原解顺手回溯即可拿到方案”的禁止范畴；且在线查询流结构使逐次输出完整规范解面临I/O与复杂度冲突，强行升级无法迫使核心状态机发生实质性重构。",
+      "risk_tags": [
+        "low_novelty",
+        "trivial_reconstruction",
+        "io_complexity_conflict"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "依据schema中`invariants.equivalence_class`（算法仅按余数维护可用元素数量，不同余数类独立）与`input_structure.query_stream`（在线查询模式），最大MEX对应的具体赋值方案无需改变主状态转移即可线性恢复。此特性直接触发规则声明中的`forbidden_seed_properties`，且难以满足`required_axis_changes`中C、O、V轴联动的深度改造要求，验证契约中的“规范要求要影响主要解法”无法成立。",
+        "feedback": "该种子题的解对象恢复成本过低，且在线结构限制了规范解输出的工程可行性。建议更换具有强组合结构或天然依赖规范顺序（如字典序/拓扑序强约束）的种子题，或彻底转为离线单次查询后再评估本规则适用性。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "modular_deficit_yields_local_certificate",
+      "selection_reason": "种子题的模x同余约束与等价类不变量天然将无解原因收敛为特定剩余类的数量缺口，该缺口可直接结构化为局部可验证的冲突证据，满足规则对失败语义对象化与局部可检查的硬性要求。",
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "eligible",
+        "evidence": "schema中core_constraints.divisibility(a_i' ≡ a_i mod x)与invariant.equivalence_class明确状态按余数独立划分；结合rule的required_seed_properties(做不到的原因可以用局部证据表示)与helpers.local_certificate_design(让失败输出拥有明确结构)，同余类资源不足可直接映射为具体数值对象，满足局部检查条件。",
+        "feedback": "规划时需严格定义冲突证据的序列化格式与校验器逻辑，确保失败分支与成功分支共享同一状态输入，且校验器仅依赖证据对象与局部约束即可完成验证，严禁退化为自然语言解释或全局重算。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": true,
+      "score": 0.87,
+      "reason_code": "modular_independence_supports_counting",
+      "selection_reason": "种子题不变量已明确给出模x同余等价类划分且各类独立，直接满足规则要求的等价关系清晰与可拆分汇总条件；通过引入取模或MEX值域截断可解决有限性问题，具备转化为计数题的结构基础。",
+      "risk_tags": [
+        "shared_core_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.invariant.equivalence_class 明确描述'划分为 x 个同余等价类...不同余数类之间的资源分配相互独立'，精准对应 rule.required_seed_properties 的'不同解之间的等价关系能说清楚'与'可以按某种单元拆分并汇总'；rule.helpers.state_factorization 要求拆分计数单元，该同余结构提供现成数学基础。",
+        "feedback": "规划时需严格定义计数口径（如统计达到最优MEX的合法赋值方案数），并显式声明取模方式以满足 validation_contract 的有限性要求；必须通过 counting_obligation_lock 将计数责任嵌入主状态转移，避免退化为原贪心策略的简单组合乘积。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 2
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": false,
+      "score": 0.2,
+      "reason_code": "semantic_mismatch",
+      "selection_reason": "原题已是最大化优化问题而非存在性问题，且输入序列固定、操作确定性高，缺乏规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行套用将导致人为构造对手或仅在外层包裹二分，违反规则红线。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "missing_native_perturbation",
+        "artificial_adversary_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "规则 eligibility.required_seed_properties 明确要求“原题里本来就有顺序不确定、资源波动或局部选择差异”，且 core_transformation.target_shift 为“从存在性改成最小保底”。但 seed_schema 中 objective.type 为 \"maximize_value\"，input_structure 的 query_stream 为固定有序数组，invariant.equivalence_class 指向确定性同余类分配，无原生不确定性可放大。",
+        "feedback": "该规则适用于具有显式对抗输入、调度时长波动或资源供给不确定的种子题。CF1294D 的确定性贪心结构不适合转化为最坏情况保底优化，建议更换为动态约束收紧或多目标权衡类规则。"
+      },
+      "selected_for_attempt": false
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "fail",
+      "reason_code": "forbidden_seed_property",
+      "message": "种子题的MEX构造方案可由模x余数计数直接贪心推导，落入“原解顺手回溯即可拿到方案”的禁止范畴；且在线查询流结构使逐次输出完整规范解面临I/O与复杂度冲突，强行升级无法迫使核心状态机发生实质性重构。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.2,
+        "risk_tags": [
+          "low_novelty",
+          "trivial_reconstruction",
+          "io_complexity_conflict"
+        ],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "ineligible",
+        "evidence": "依据schema中`invariants.equivalence_class`（算法仅按余数维护可用元素数量，不同余数类独立）与`input_structure.query_stream`（在线查询模式），最大MEX对应的具体赋值方案无需改变主状态转移即可线性恢复。此特性直接触发规则声明中的`forbidden_seed_properties`，且难以满足`required_axis_changes`中C、O、V轴联动的深度改造要求，验证契约中的“规范要求要影响主要解法”无法成立。",
+        "feedback": "该种子题的解对象恢复成本过低，且在线结构限制了规范解输出的工程可行性。建议更换具有强组合结构或天然依赖规范顺序（如字典序/拓扑序强约束）的种子题，或彻底转为离线单次查询后再评估本规则适用性。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "pass",
+      "reason_code": "modular_deficit_yields_local_certificate",
+      "message": "种子题的模x同余约束与等价类不变量天然将无解原因收敛为特定剩余类的数量缺口，该缺口可直接结构化为局部可验证的冲突证据，满足规则对失败语义对象化与局部可检查的硬性要求。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.97,
+        "risk_tags": [
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "eligible",
+        "evidence": "schema中core_constraints.divisibility(a_i' ≡ a_i mod x)与invariant.equivalence_class明确状态按余数独立划分；结合rule的required_seed_properties(做不到的原因可以用局部证据表示)与helpers.local_certificate_design(让失败输出拥有明确结构)，同余类资源不足可直接映射为具体数值对象，满足局部检查条件。",
+        "feedback": "规划时需严格定义冲突证据的序列化格式与校验器逻辑，确保失败分支与成功分支共享同一状态输入，且校验器仅依赖证据对象与局部约束即可完成验证，严禁退化为自然语言解释或全局重算。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "pass",
+      "reason_code": "modular_independence_supports_counting",
+      "message": "种子题不变量已明确给出模x同余等价类划分且各类独立，直接满足规则要求的等价关系清晰与可拆分汇总条件；通过引入取模或MEX值域截断可解决有限性问题，具备转化为计数题的结构基础。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.87,
+        "risk_tags": [
+          "shared_core_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.invariant.equivalence_class 明确描述'划分为 x 个同余等价类...不同余数类之间的资源分配相互独立'，精准对应 rule.required_seed_properties 的'不同解之间的等价关系能说清楚'与'可以按某种单元拆分并汇总'；rule.helpers.state_factorization 要求拆分计数单元，该同余结构提供现成数学基础。",
+        "feedback": "规划时需严格定义计数口径（如统计达到最优MEX的合法赋值方案数），并显式声明取模方式以满足 validation_contract 的有限性要求；必须通过 counting_obligation_lock 将计数责任嵌入主状态转移，避免退化为原贪心策略的简单组合乘积。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "fail",
+      "reason_code": "semantic_mismatch",
+      "message": "原题已是最大化优化问题而非存在性问题，且输入序列固定、操作确定性高，缺乏规则要求的“顺序不确定、资源波动或局部选择差异”等原生扰动来源。强行套用将导致人为构造对手或仅在外层包裹二分，违反规则红线。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.2,
+        "risk_tags": [
+          "semantic_mismatch",
+          "missing_native_perturbation",
+          "artificial_adversary_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "ineligible",
+        "evidence": "规则 eligibility.required_seed_properties 明确要求“原题里本来就有顺序不确定、资源波动或局部选择差异”，且 core_transformation.target_shift 为“从存在性改成最小保底”。但 seed_schema 中 objective.type 为 \"maximize_value\"，input_structure 的 query_stream 为固定有序数组，invariant.equivalence_class 指向确定性同余类分配，无原生不确定性可放大。",
+        "feedback": "该规则适用于具有显式对抗输入、调度时长波动或资源供给不确定的种子题。CF1294D 的确定性贪心结构不适合转化为最坏情况保底优化，建议更换为动态约束收紧或多目标权衡类规则。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "规划完整兑现了规则专属语义合同，成功将原题求值范式重构为双分支构造/证明范式，且三个helper均按声明落位并规避了所有redlines。",
+      "details": {
+        "review_role": "你扮演一名阻碍证据规划审查官，重点确认规划是否同时定义了解分支和可局部检查的失败证据。",
+        "review_brief": "确认规划是否把无解分支写成可直接检查的局部阻碍证据，而不是解释性说明。",
+        "evidence": "1. 轴变更：payload的changed_axes与candidate_schema的core_constraints(新增target_coverage/distinct_assignment)、objective(改为construct_or_certify)、invariant(新增hall_condition_for_residues/certificate_minimality)严格对应C/O/V三轴变更。2. local_certificate_design：objective明确输出assignment_map_or_obstruction_set，invariant通过certificate_minimality定义极小冲突集的数学校验结构（需求>供给且移除任意类后恢复平衡），彻底规避自然语言解释，符合redlines。3. failure_branch_symmetry：objective.type设为construct_or_certify，core_constraints以target_coverage划定成功边界，失败分支作为正式输出对象承担对等责任，未退化为附属说明。4. obstruction_embedding：invariant.hall_condition_for_residues将冲突证据直接锚定于同余类容量供需不等式，core_constraints的同余与非负约束天然支撑证据生成，证据未脱离主求解逻辑或依赖特判。所有helper均按must_realize_in要求落位，硬门槛校验通过。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "pass",
+      "reason_code": "rule_contract_fulfilled",
+      "message": "题面明确划分了成功与失败双分支的正式输出责任，失败语义被严格结构化为“极小冲突余数类集合”并附带可局部校验的数学条件，未退化为自然语言解释，且证据直接内嵌于同余主约束中，完全兑现规则专属合同。",
+      "details": {
+        "review_role": "你扮演一名阻碍证据题面审查官，重点确认题面是否写清失败输出和证据的检查语义。",
+        "review_brief": "确认题面是否要求在无解时输出一个可局部检查的冲突证据，而不是仅仅解释为什么无解。",
+        "evidence": "题面描述中明确规定：‘若不能，请输出一个极小冲突余数类集合……该集合需满足：集合内所有余数类对应的时段需求总数严格大于当前可用队伍总数，且从中移除任意一个余数类后，剩余部分的需求均不超过可用队伍数。’输出格式强制NO分支输出集合大小与具体余数类整数序列。Notes部分进一步形式化了极小性校验条件与字典序要求。该设计将失败输出转化为结构化对象，满足local_certificate_design（结构化证据）、failure_branch_symmetry（双分支对等输出）与obstruction_embedding（证据源于同余容量瓶颈）的全部语义承诺。"
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "score": 0.97,
+      "accepted": true,
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "status": "ok",
+      "reason_code": "plan_validation_failed",
+      "reason": "",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "校园时段调度",
+    "description": "大学社团联合会正在规划新学期的活动场地。现有 $K$ 个连续时段，编号为 $0, 1, \\dots, K-1$。同时，有若干支社团队伍陆续抵达，每支队伍携带一个唯一的资源编号 $a_i$。\n\n为了公平起见，调度规则规定：编号为 $a_i$ 的队伍只能被安排在时段 $v$，且必须满足 $v \\equiv a_i \\pmod x$（其中 $x$ 为给定的步长参数）。此外，每个时段最多只能容纳一支队伍，且所有队伍必须恰好填满 $0$ 到 $K-1$ 的每一个时段，不允许遗漏或重复。\n\n队伍会按顺序依次抵达。你需要在每支队伍抵达后，立即判断当前已抵达的队伍集合能否在满足上述规则的前提下，完成对 $0 \\sim K-1$ 时段的完美覆盖。\n\n若能完成，请输出一种具体的分配方案（即每个时段对应的队伍编号）；若不能，请输出一个“极小冲突余数类集合”，用于证明当前资源池无论如何分配都无法达成目标。该集合需满足：集合内所有余数类对应的时段需求总数严格大于当前可用队伍总数，且从中移除任意一个余数类后，剩余部分的需求均不超过可用队伍数。",
+    "input_format": "第一行包含三个正整数 $q, x, K$，分别表示查询次数、步长参数和目标时段总数。\n接下来 $q$ 行，每行包含一个非负整数 $a_i$，表示第 $i$ 次查询新增的队伍资源编号。",
+    "output_format": "对于每次查询，输出两行或三行：\n第一行输出 `YES` 或 `NO`，表示当前资源池能否完成覆盖。\n若为 `YES`，第二行输出 $K$ 个整数，第 $j$ 个整数表示时段 $j$ 分配到的队伍资源编号。\n若为 `NO`，第二行输出一个整数 $m$ 表示极小冲突集合的大小，第三行输出 $m$ 个互不相同的整数，表示冲突的余数类（按升序排列）。若存在多个满足条件的极小集合，输出字典序最小的一个即可。",
+    "constraints": [
+      "1 ≤ q, x, K ≤ 400000",
+      "0 ≤ a_i ≤ 10^9",
+      "时间限制：2.0 秒",
+      "空间限制：512 MB",
+      "数据保证所有输出 YES 的查询中 K 的总和不超过 400000"
+    ],
+    "samples": [
+      {
+        "input": "3 2 3\n2\n3\n4",
+        "output": "NO\n1\n0\nNO\n1\n0\nYES\n2 3 4",
+        "explanation": "第一次查询后仅有资源2（余数0），时段0,1,2的需求分别为余数0需2个、余数1需1个。余数0供给不足，输出极小冲突集{0}。第二次查询后资源2,3（余数0,1），余数0仍缺1个，冲突集仍为{0}。第三次查询后资源2,3,4（余数0,1,0），各余数供给均满足需求，成功分配。"
+      },
+      {
+        "input": "2 4 5\n5\n9",
+        "output": "NO\n1\n0\nNO\n1\n0",
+        "explanation": "目标时段0~4，步长4。各余数需求为：0需2个(0,4)，1需1个(1)，2需1个(2)，3需1个(3)。第一次查询资源5（余数1），余数0供给为0，不足，输出{0}。第二次查询资源9（余数1），余数0仍为0，不足，输出{0}。"
+      }
+    ],
+    "notes": "1. 极小冲突集定义：设集合 S 为若干余数类的集合，若 S 中所有余数类在 0~K-1 内的时段需求总数严格大于当前可用资源总数，且 S 的任意真子集均不满足该严格大于条件，则称 S 为极小冲突集。由于本题同余约束的独立性，任意一个供给不足的余数类均可单独构成极小冲突集，输出字典序最小的一个即可。\n2. 模运算定义：v ≡ a_i (mod x) 表示 v 与 a_i 除以 x 的余数相同，且 v ≥ 0。\n3. 输出方案时，第 j 个数字对应时段 j 分配的资源编号，资源编号需与输入完全一致。",
+    "status": "ok",
+    "error_reason": "",
+    "feedback": ""
+  },
+  "iteration": {
+    "run_id": "CF1294D_v1_campus_ops_20260422_150145",
+    "round_index": 2,
+    "requested_rounds": 3,
+    "iteration_phase": "normal",
+    "full_score_polish_round_index": 0,
+    "full_score_max_iterations": 10,
+    "previous_artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1294D\\CF1294D_v1_campus_ops_20260422_150145_round1.json",
+    "previous_quality_report_path": "D:\\AutoProblemGen\\生成题面\\reports\\CF1294D\\CF1294D_v1_campus_ops_20260422_150145_round1_quality_report.json",
+    "revision_context_snapshot": {
+      "round_index": 1,
+      "overall_status": "reject_as_retheme",
+      "generated_status": "ok",
+      "quality_score": 100.0,
+      "divergence_score": 36.6,
+      "failed_hard_checks": [],
+      "issues": [
+        {
+          "issue_type": "retheme_issue",
+          "severity": "blocker",
+          "title": "solution transfer risk too high",
+          "detail": "新题引入的‘有界扰动’约束在数学上严格等价于将原题各模x同余类的可用计数统一减去常数delta。原题求最大MEX的本质是寻找首个耗尽的同余类，其核心状态转移与闭式解为 min(cnt[r]*x + r)；新题求最大保底K的条件 slots(K,r) <= cnt[r]-delta 经推导后同样收敛为 min((cnt[r]-delta)*x + r)。两者状态定义、决策对象与最优性目标完全一致，仅多了一步常数偏移。熟悉原题的选手可直接复用贪心指针或瓶颈公式，仅需在维护计数时减去delta，无需review_context声称的二分或离线容量重构。表层叙事虽改为校园排期与扰动阈值，但I/O结构、在线流处理模式与核心约束映射高度对应，属于典型的背景替换与常数平移，未产生实质算法差异。",
+          "evidence_refs": [
+            "new_schema.core_constraints.bounded_perturbation",
+            "generated_problem.description",
+            "original_schema.invariant.equivalence_class",
+            "review_context.algorithmic_delta_claim"
+          ],
+          "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+        }
+      ],
+      "suggested_revisions": [
+        "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+        "可在 constraints 中补充说明 δ 的取值范围与 q 的关系（如 δ 可能大于 q，此时 usable[r] 恒为 0），以进一步消除极端边界歧义。",
+        "若面向初学者，可在 description 末尾补充 slots(K, r) 的闭式计算公式 ⌈(K - r)/x⌉ (当 r < K 时)，便于直接实现。",
+        "优先改写核心任务定义，而不是继续替换故事背景。"
+      ],
+      "strengths_to_keep": [
+        "数学定义严谨，将抽象的 robust_mex 目标转化为直观的容量不等式组，降低了理解门槛。",
+        "样例解释采用逐步状态追踪的方式，完美契合在线流处理的题意，教学性强。",
+        "主题映射（场地分配/扰动阈值）与算法模型（同余类计数/最坏情况预留）高度同构，未产生语义割裂。"
+      ],
+      "revision_history": [
+        {
+          "round_index": 1,
+          "iteration_phase": "normal",
+          "revision_brief": {
+            "round_index": 1,
+            "overall_status": "reject_as_retheme",
+            "generated_status": "ok",
+            "quality_score": 100.0,
+            "divergence_score": 36.6,
+            "failed_hard_checks": [],
+            "issues": [
+              {
+                "issue_type": "retheme_issue",
+                "severity": "blocker",
+                "title": "solution transfer risk too high",
+                "detail": "新题引入的‘有界扰动’约束在数学上严格等价于将原题各模x同余类的可用计数统一减去常数delta。原题求最大MEX的本质是寻找首个耗尽的同余类，其核心状态转移与闭式解为 min(cnt[r]*x + r)；新题求最大保底K的条件 slots(K,r) <= cnt[r]-delta 经推导后同样收敛为 min((cnt[r]-delta)*x + r)。两者状态定义、决策对象与最优性目标完全一致，仅多了一步常数偏移。熟悉原题的选手可直接复用贪心指针或瓶颈公式，仅需在维护计数时减去delta，无需review_context声称的二分或离线容量重构。表层叙事虽改为校园排期与扰动阈值，但I/O结构、在线流处理模式与核心约束映射高度对应，属于典型的背景替换与常数平移，未产生实质算法差异。",
+                "evidence_refs": [
+                  "new_schema.core_constraints.bounded_perturbation",
+                  "generated_problem.description",
+                  "original_schema.invariant.equivalence_class",
+                  "review_context.algorithmic_delta_claim"
+                ],
+                "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+              }
+            ],
+            "suggested_revisions": [
+              "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+              "可在 constraints 中补充说明 δ 的取值范围与 q 的关系（如 δ 可能大于 q，此时 usable[r] 恒为 0），以进一步消除极端边界歧义。",
+              "若面向初学者，可在 description 末尾补充 slots(K, r) 的闭式计算公式 ⌈(K - r)/x⌉ (当 r < K 时)，便于直接实现。",
+              "优先改写核心任务定义，而不是继续替换故事背景。"
+            ],
+            "strengths_to_keep": [
+              "数学定义严谨，将抽象的 robust_mex 目标转化为直观的容量不等式组，降低了理解门槛。",
+              "样例解释采用逐步状态追踪的方式，完美契合在线流处理的题意，教学性强。",
+              "主题映射（场地分配/扰动阈值）与算法模型（同余类计数/最坏情况预留）高度同构，未产生语义割裂。"
+            ]
+          }
+        }
+      ],
+      "revision_summary": {
+        "round_count": 1,
+        "latest_round_index": 1,
+        "latest_iteration_phase": "normal",
+        "latest_overall_status": "reject_as_retheme",
+        "latest_generated_status": "ok",
+        "latest_quality_score": 100.0,
+        "latest_divergence_score": 36.6,
+        "suggested_revisions": [
+          "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+          "可在 constraints 中补充说明 δ 的取值范围与 q 的关系（如 δ 可能大于 q，此时 usable[r] 恒为 0），以进一步消除极端边界歧义。",
+          "若面向初学者，可在 description 末尾补充 slots(K, r) 的闭式计算公式 ⌈(K - r)/x⌉ (当 r < K 时)，便于直接实现。",
+          "优先改写核心任务定义，而不是继续替换故事背景。"
+        ],
+        "issues": [
+          {
+            "issue_type": "retheme_issue",
+            "severity": "blocker",
+            "title": "solution transfer risk too high",
+            "detail": "新题引入的‘有界扰动’约束在数学上严格等价于将原题各模x同余类的可用计数统一减去常数delta。原题求最大MEX的本质是寻找首个耗尽的同余类，其核心状态转移与闭式解为 min(cnt[r]*x + r)；新题求最大保底K的条件 slots(K,r) <= cnt[r]-delta 经推导后同样收敛为 min((cnt[r]-delta)*x + r)。两者状态定义、决策对象与最优性目标完全一致，仅多了一步常数偏移。熟悉原题的选手可直接复用贪心指针或瓶颈公式，仅需在维护计数时减去delta，无需review_context声称的二分或离线容量重构。表层叙事虽改为校园排期与扰动阈值，但I/O结构、在线流处理模式与核心约束映射高度对应，属于典型的背景替换与常数平移，未产生实质算法差异。",
+            "evidence_refs": [
+              "new_schema.core_constraints.bounded_perturbation",
+              "generated_problem.description",
+              "original_schema.invariant.equivalence_class",
+              "review_context.algorithmic_delta_claim"
+            ],
+            "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+          }
+        ],
+        "strengths_to_keep": [
+          "数学定义严谨，将抽象的 robust_mex 目标转化为直观的容量不等式组，降低了理解门槛。",
+          "样例解释采用逐步状态追踪的方式，完美契合在线流处理的题意，教学性强。",
+          "主题映射（场地分配/扰动阈值）与算法模型（同余类计数/最坏情况预留）高度同构，未产生语义割裂。"
+        ],
+        "failed_hard_checks": []
+      }
+    }
+  }
+}

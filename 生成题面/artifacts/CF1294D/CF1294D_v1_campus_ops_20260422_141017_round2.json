@@ -1,0 +1,613 @@
+{
+  "problem_id": "CampusOps_CanonicalSchedule",
+  "source_problem_ids": [
+    "CF1294D"
+  ],
+  "variant_index": 1,
+  "seed": 20260313,
+  "mode": "single_seed_extension",
+  "rule_version": "2026-04-rules-v3",
+  "theme": {
+    "id": "campus_ops",
+    "name": "校园运营"
+  },
+  "difference_plan": {
+    "target_distance_band": {
+      "min": 0.35,
+      "max": 0.6
+    },
+    "changed_axes": [
+      "C",
+      "O",
+      "V"
+    ],
+    "same_family_allowed": true,
+    "forbidden_reuse": [
+      "不要暴露原题编号、出处或链接。",
+      "不要复写原题的叙事结构、输入输出关系或任务定义。"
+    ],
+    "rationale": "C轴：新增字典序最小化与槽位唯一性硬约束，重排主约束优先级；O轴：目标从输出单一MEX值改为输出完整分配向量；V轴：验证责任从检查数值最优升级为校验分配合法性、全局最优性与规范顺序一致性。",
+    "summary": "通过规范解输出要求彻底重构状态表示与转移逻辑，使解法必须处理精确槽位分配与优先级冲突，而非仅维护计数。",
+    "mode": "single_seed_extension"
+  },
+  "predicted_schema_distance": 0.4487,
+  "distance_breakdown": {
+    "distance_version": "v2",
+    "backend": "embedding",
+    "total": 0.4487,
+    "axis_scores": {
+      "I": 0.0833,
+      "C": 0.6056,
+      "O": 0.6614,
+      "V": 0.4043
+    },
+    "components": {
+      "input_tree_distance": 0.0833,
+      "constraint_match_distance": 0.6056,
+      "objective_type_distance": 0.7386,
+      "objective_text_distance": 0.5456,
+      "invariant_match_distance": 0.4043
+    }
+  },
+  "changed_axes_realized": [
+    "C",
+    "O",
+    "V"
+  ],
+  "objective": {
+    "type": "output_canonical_witness",
+    "description": "对每次查询，输出当前所有社团的规范分配时间数组。该数组需同时满足模x同余、互异非负、MEX最大化及字典序最小化。",
+    "target": "assignment_array",
+    "requires_solution": true
+  },
+  "rule_selection_reason": "原题被拒的核心原因是仅增加字典序输出和完整数组打印，核心贪心与同余类状态未变，属于表层换皮。canonical_witness 规则及其辅助器明确要求将规范性要求嵌入主约束与状态转移中，强制打破原题先求MEX再顺手分配的解法路径，直接针对 revision_context 中的 blocker 进行深度重构，而 construct_or_obstruction 不适用于最大化类问题，minimum_guarantee_under_perturbation 则可能引入与模x结构不协调的扰动模型。；创新度判断：将核心义务从单纯计算最大MEX值拉离为在模x同余类资源池受限的前提下构造满足严格全局规范顺序的完整分配方案。规范要求将直接决定同余类槽位的消耗顺序与指针推进策略，迫使状态设计从简单的计数器升级为带顺序约束的资源调度结构，彻底脱离原题仅维护可用数量的路径。；难度判断：在主求解责任上，算法必须同时维护MEX单调推进与规范顺序的强耦合。每次查询新增元素时，不能仅贪心填充最小可用值，而需验证或重构分配以满足全局规范，这要求引入更复杂的状态不变量与动态调整机制，显著抬高构造与正确性证明的难度。；风险判断：主要风险是规范顺序仍可能被实现为先跑原题贪心再对结果做局部排序的后处理。但规则红线条款明确禁止退化为输出后处理或仅加字典序描述，只要严格遵循 canonical_order_pressure 将规范序写入合法性定义并绑定到主约束优先级，风险完全可控。",
+  "new_schema_snapshot": {
+    "problem_id": "CampusOps_CanonicalSchedule",
+    "source": "custom",
+    "input_structure": {
+      "type": "composite",
+      "length": {
+        "min": 1,
+        "max": 400000
+      },
+      "value_range": {
+        "min": 0,
+        "max": 1000000000
+      },
+      "properties": {
+        "ordered": true,
+        "online_queries": true
+      },
+      "components": [
+        {
+          "role": "parameters",
+          "role_description": "query count and fixed cycle step x",
+          "type": "tuple",
+          "length": {
+            "min": 2,
+            "max": 2
+          },
+          "value_range": {
+            "min": 1,
+            "max": 400000
+          },
+          "properties": {}
+        },
+        {
+          "role": "query_stream",
+          "role_description": "sequence of club base times appended per query",
+          "type": "array",
+          "length": {
+            "min": 1,
+            "max": 400000
+          },
+          "value_range": {
+            "min": 0,
+            "max": 1000000000
+          },
+          "properties": {
+            "ordered": true
+          }
+        }
+      ]
+    },
+    "core_constraints": {
+      "constraints": [
+        {
+          "name": "divisibility",
+          "description": "每个社团i的分配时间t_i必须满足t_i ≡ v_i (mod x)，且t_i ≥ 0。",
+          "formal": "t_i ≡ v_i (mod x) ∧ t_i ≥ 0",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "distinct_assignment",
+          "description": "任意两个社团的分配时间必须互不相同，即所有t_i构成严格递增序列。",
+          "formal": "∀i≠j, t_i ≠ t_j",
+          "source_sections": [
+            "description"
+          ]
+        },
+        {
+          "name": "canonical_priority",
+          "description": "在达成全局最大MEX的前提下，分配数组[t_1, t_2, ..., t_q]必须字典序最小。每次查询后系统基于当前所有社团重新计算规范分配，历史分配值允许动态调整以满足当前最优性。",
+          "formal": "argmin_lex(t) s.t. MEX({t}) = max_possible",
+          "source_sections": [
+            "description",
+            "constraints"
+          ]
+        }
+      ]
+    },
+    "objective": {
+      "type": "output_canonical_witness",
+      "description": "对每次查询，输出当前所有社团的规范分配时间数组。该数组需同时满足模x同余、互异非负、MEX最大化及字典序最小化。",
+      "target": "assignment_array",
+      "requires_solution": true
+    },
+    "invariant": {
+      "invariants": [
+        {
+          "name": "canonical_frontier",
+          "description": "维护每个余数类r的下一个可用槽位指针next_free[r]。分配过程严格按社团ID升序进行，若目标槽位被占，则通过并查集/链表跳跃至同余类中下一个空闲位置。该指针单调不减，且保证已分配槽位集合始终构成规范前缀。",
+          "properties": {},
+          "evidence_source": "solution_code"
+        },
+        {
+          "name": "mex_optimality_preservation",
+          "description": "贪心分配策略不会破坏MEX最大化潜力。任何为追求字典序更小而提前占用高优先级槽位的操作，均会被同余类内的连续性约束拦截，确保0..MEX-1区间始终被最紧凑地填充。",
+          "properties": {},
+          "evidence_source": "solution_code"
+        }
+      ]
+    },
+    "theme": {
+      "id": "campus_ops",
+      "name": "校园运营",
+      "tone": "日常、轻松、贴近现实",
+      "keywords": [
+        "社团",
+        "教室",
+        "队伍",
+        "课表",
+        "仓库",
+        "窗口"
+      ],
+      "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+    },
+    "difficulty": "Hard"
+  },
+  "applied_rule": "canonical_witness",
+  "rejected_candidates": [],
+  "algorithmic_delta_claim": {
+    "seed_solver_core": "维护各余数类元素计数器，贪心推进MEX指针，仅输出标量最大值。",
+    "reusable_subroutines": "模x同余类划分计算、非负边界判定、在线查询流解析。",
+    "new_solver_core": "基于并查集/双向链表的精确槽位分配器。按社团ID顺序贪心分配最小合法槽位，冲突时利用DSU快速跳跃至同余类下一空闲位，动态维护全局MEX与字典序最优性。",
+    "new_proof_obligation": "需严格证明：在模x同余类划分下，按社团ID升序贪心分配最小可用槽位并配合DSU跳跃，所得分配方案在达成全局最大MEX的同时，其分配向量字典序严格最小。证明需涵盖：1) 贪心选择不会导致后续社团无法填补MEX前缀缺口；2) DSU跳跃操作保持同余类内槽位分配的连续性与规范性；3) 任何偏离该贪心策略的合法分配必然导致字典序增大或MEX减小。",
+    "why_direct_reuse_fails": "原计数器策略仅记录同余类资源数量，无法确定具体哪个社团占据哪个槽位，也无法处理字典序优先级冲突。直接套用会导致无法输出规范解或违反字典序约束，必须重构为精确槽位映射与冲突消解机制。"
+  },
+  "anti_shallow_rationale": "明确区分了仅输出任意解与输出规范解的算法鸿沟。规范解要求迫使数据结构从O(1)计数器升级为O(α(N))的DSU/链表，状态转移从标量累加变为精确槽位映射与动态重分配。原题解法无法处理字典序硬约束下的槽位抢占与跳跃逻辑，彻底打破直接迁移路径。",
+  "shared_core_summary": "本题继承种子题的模x同余类划分与在线查询框架，但将核心任务从标量计数升级为规范分配。共享的数学基础为同余类资源池模型，但决策逻辑从数量贪心转为精确槽位映射。",
+  "shared_core_anchors": {
+    "shared_state": "各余数类r的资源池与可用槽位指针next_free[r]",
+    "shared_transition": "新社团加入时，在其同余类中寻找最小合法槽位并标记占用",
+    "shared_decision_basis": "基于模x同余性质的资源分配可行性判定"
+  },
+  "seed_contributions": {
+    "seed_a": "必须证明按ID升序贪心分配配合DSU跳跃不会破坏MEX最大化潜力，即局部字典序最优选择与全局MEX最优兼容。",
+    "seed_b": "必须证明动态重分配机制在每次查询后仍能维持规范前缀的连续性，且DSU合并操作的时间复杂度均摊可控。"
+  },
+  "fusion_ablation": {
+    "without_seed_a": "若移除MEX最大化约束，问题退化为简单的同余类独立分配，失去全局连续性挑战，算法复杂度骤降。",
+    "without_seed_b": "若移除字典序最小化与规范输出要求，问题回归原题的标量计数模式，可直接套用原解法，丧失创新性与区分度。"
+  },
+  "applied_helpers": [
+    {
+      "id": "canonical_order_pressure",
+      "selection_reason": "将规范顺序推进到主状态演化，避免退化为后处理。",
+      "affected_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "在core_constraints中新增canonical_priority硬约束",
+        "在invariant中定义canonical_frontier状态指针",
+        "将输出目标绑定至全局字典序最小化"
+      ],
+      "innovation_reason": "让输出对象与验证责任离开原题路径，强制状态机按ID优先级演化。",
+      "difficulty_reason": "状态转移必须承担规范性证明，需引入DSU跳跃维护连续空闲槽位，显著提升实现复杂度。"
+    },
+    {
+      "id": "proof_bearing_output",
+      "selection_reason": "把输出对象升级成带证明责任的规范解，确保可校验性。",
+      "affected_axes": [
+        "O",
+        "V"
+      ],
+      "schema_changes": [
+        "objective类型改为output_canonical_witness",
+        "requires_solution设为true",
+        "验证责任明确包含合法性、最优性与规范性三重检查"
+      ],
+      "innovation_reason": "让新题输出责任变成可校验的解对象，输出数组本身即为最优性证书。",
+      "difficulty_reason": "要求解法在构造过程中同步解释为何规范解满足全局约束，禁止事后修补。"
+    },
+    {
+      "id": "constraint_reweighting",
+      "selection_reason": "重排主约束优先级，让规范解要求进入主约束。",
+      "affected_axes": [
+        "C",
+        "V"
+      ],
+      "schema_changes": [
+        "将MEX最大化与字典序最小化绑定为联合主约束",
+        "invariant中新增mex_optimality_preservation反映约束主次关系",
+        "明确历史分配可动态调整以维持当前规范"
+      ],
+      "innovation_reason": "让规范性要求改变主约束的优先级组织，迫使解法在状态设计里处理新的约束主次关系。",
+      "difficulty_reason": "迫使算法在贪心推进MEX与保持字典序最小之间寻找严格兼容的转移路径，增加状态维护维度。"
+    }
+  ],
+  "planning_status": "ok",
+  "planning_error_reason": "",
+  "planning_feedback": "",
+  "selection_trace": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "meets_required_properties_and_axis_changes",
+      "selection_reason": "原题仅要求输出最大MEX值（requires_solution为false），具备明确的解对象（模x同余类下的元素分配方案），且可通过定义按MEX填充顺序或字典序的规范解进行升级。规则要求的C/O/V轴变更可通过引入规范构造约束与验证责任实现，未触碰‘原题已要求输出方案’或‘顺手回溯即可’的禁令，符合准入条件。",
+      "risk_tags": [],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.objective.requires_solution为false，满足‘原题不要求输出完整方案’的准入前提；core_constraints.divisibility与invariant.equivalence_class为定义规范解（如按同余类贪心填充0,1,2...序列并规定全局序）提供了明确的数学结构；rule.eligibility.required_seed_properties中‘方案有自然顺序或能定义清楚的规范’在此题中可通过MEX单调递增特性与模x剩余类独立分配自然满足；rule.required_axis_changes要求C/O/V变更，可通过helpers中的canonical_order_pressure将规范性嵌入主状态转移，避免退化为后处理。",
+        "feedback": "规划阶段需明确定义规范解的具体排序规则（如操作序列字典序或元素分配索引序），并确保验证逻辑与模x同余类资源分配及MEX单调性强耦合，防止规范性要求被简化为独立的后置格式检查。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 1
+    },
+    {
+      "rule_id": "construct_or_obstruction",
+      "handler": "construct_or_obstruction",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "local_obstruction_feasible",
+      "selection_reason": "种子题的模x同余类计数结构天然支持将“无法达到目标MEX”的原因压缩为具体的缺失余数类或数量瓶颈，该证据可直接通过输入数组局部验证，符合规则对局部可检查冲突证据的要求。",
+      "risk_tags": [
+        "low_novelty"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "eligible",
+        "evidence": "schema中core_constraints.divisibility与invariant.equivalence_class明确指出元素受模x同余限制且状态按余数类独立维护。当无法构造更高MEX时，必然存在某余数类r的可用元素计数为0或不足，该计数瓶颈可直接作为输出对象，满足规则required_seed_properties中“做不到的原因可以用局部证据表示”及“冲突证据可以从输出直接检查”的硬性条件。",
+        "feedback": "规划阶段需严格定义失败分支的输出格式（如指定缺失的余数类索引及当前可用计数），并设计校验器以O(1)或O(log N)验证该证据与输入的一致性，防止退化为主观解释。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 3
+    },
+    {
+      "rule_id": "existence_to_counting",
+      "handler": "existence_to_counting",
+      "accepted": false,
+      "score": 0.15,
+      "reason_code": "forbidden_property_violation",
+      "selection_reason": "种子题CF1294D为在线贪心优化题，元素值域无上界导致合法配置集合无限，直接违反规则明确禁止的'解空间天然无限'条件；且原题依赖在线状态维护而非静态组合结构，无法提供规则要求的有限计数单元与清晰去重口径。",
+      "risk_tags": [
+        "semantic_mismatch",
+        "infinite_solution_space"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "schema中core_constraints仅限制'a_i' ≥ 0'与模x同余，未设值域上界；objective为最大化MEX。该设定下解空间天然无限，命中eligibility.forbidden_seed_properties['解空间天然无限']。同时，原题invariant依赖在线贪心指针与同余类余量，缺乏required_seed_properties['可以按某种单元拆分并汇总']所需的静态可分解结构。",
+        "feedback": "该种子题的在线无界特性与计数化改造的有限性要求存在根本冲突。强行改造需引入大量人工截断或重构状态定义，极易触碰'只改参数范围/状态结构不变'或'跟原核心规律无关的额外约束'红线。建议更换为值域有界、组合结构明确的静态种子题。"
+      },
+      "selected_for_attempt": false
+    },
+    {
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "handler": "minimum_guarantee_under_perturbation",
+      "accepted": true,
+      "score": 0.97,
+      "reason_code": "native_perturbation_aligned",
+      "selection_reason": "原题的模x同余类划分与在线查询流天然蕴含局部资源分配的不确定性，可直接形式化为最坏情况扰动模型，满足规则要求的“存在原生扰动来源”与“最坏情况落回原题语义”条件。",
+      "risk_tags": [
+        "perturbation_formalization_risk"
+      ],
+      "details": {
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.invariant.equivalence_class明确指出操作将整数划分为x个独立同余类，seed_schema.input_structure.properties.ordered为true且为query_stream，结合rule_under_review.required_seed_properties中的'局部选择差异'与'顺序不确定'，证明原题具备可放大的原生扰动基础。",
+        "feedback": "规划时需严格将扰动模型绑定于同余类内的资源分配或查询到达顺序，避免退化为外层二分套原判定逻辑；强化不变量需明确刻画最坏情形下MEX前缀的单调覆盖性质。"
+      },
+      "selected_for_attempt": true,
+      "attempt_rank": 2
+    }
+  ],
+  "validation_trace": [
+    {
+      "stage": "eligibility",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "meets_required_properties_and_axis_changes",
+      "message": "原题仅要求输出最大MEX值（requires_solution为false），具备明确的解对象（模x同余类下的元素分配方案），且可通过定义按MEX填充顺序或字典序的规范解进行升级。规则要求的C/O/V轴变更可通过引入规范构造约束与验证责任实现，未触碰‘原题已要求输出方案’或‘顺手回溯即可’的禁令，符合准入条件。",
+      "details": {
+        "handler": "canonical_witness",
+        "score": 0.97,
+        "risk_tags": [],
+        "mode": "single_seed_extension",
+        "family": "output_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "witness",
+          "output_contract"
+        ],
+        "review_role": "你扮演一名规范解审查官，重点判断种子题是否仍有空间升级为带规范性的构造输出。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.objective.requires_solution为false，满足‘原题不要求输出完整方案’的准入前提；core_constraints.divisibility与invariant.equivalence_class为定义规范解（如按同余类贪心填充0,1,2...序列并规定全局序）提供了明确的数学结构；rule.eligibility.required_seed_properties中‘方案有自然顺序或能定义清楚的规范’在此题中可通过MEX单调递增特性与模x剩余类独立分配自然满足；rule.required_axis_changes要求C/O/V变更，可通过helpers中的canonical_order_pressure将规范性嵌入主状态转移，避免退化为后处理。",
+        "feedback": "规划阶段需明确定义规范解的具体排序规则（如操作序列字典序或元素分配索引序），并确保验证逻辑与模x同余类资源分配及MEX单调性强耦合，防止规范性要求被简化为独立的后置格式检查。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "construct_or_obstruction",
+      "outcome": "pass",
+      "reason_code": "local_obstruction_feasible",
+      "message": "种子题的模x同余类计数结构天然支持将“无法达到目标MEX”的原因压缩为具体的缺失余数类或数量瓶颈，该证据可直接通过输入数组局部验证，符合规则对局部可检查冲突证据的要求。",
+      "details": {
+        "handler": "construct_or_obstruction",
+        "score": 0.97,
+        "risk_tags": [
+          "low_novelty"
+        ],
+        "mode": "single_seed_extension",
+        "family": "certificate_output",
+        "audit_tags": [
+          "single_seed",
+          "certificate",
+          "failure_semantics"
+        ],
+        "review_role": "你扮演一名冲突证书审查官，重点判断无解情形能否落成可局部检查的阻碍证据。",
+        "llm_status": "eligible",
+        "evidence": "schema中core_constraints.divisibility与invariant.equivalence_class明确指出元素受模x同余限制且状态按余数类独立维护。当无法构造更高MEX时，必然存在某余数类r的可用元素计数为0或不足，该计数瓶颈可直接作为输出对象，满足规则required_seed_properties中“做不到的原因可以用局部证据表示”及“冲突证据可以从输出直接检查”的硬性条件。",
+        "feedback": "规划阶段需严格定义失败分支的输出格式（如指定缺失的余数类索引及当前可用计数），并设计校验器以O(1)或O(log N)验证该证据与输入的一致性，防止退化为主观解释。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "existence_to_counting",
+      "outcome": "fail",
+      "reason_code": "forbidden_property_violation",
+      "message": "种子题CF1294D为在线贪心优化题，元素值域无上界导致合法配置集合无限，直接违反规则明确禁止的'解空间天然无限'条件；且原题依赖在线状态维护而非静态组合结构，无法提供规则要求的有限计数单元与清晰去重口径。",
+      "details": {
+        "handler": "existence_to_counting",
+        "score": 0.15,
+        "risk_tags": [
+          "semantic_mismatch",
+          "infinite_solution_space"
+        ],
+        "mode": "single_seed_extension",
+        "family": "objective_upgrade",
+        "audit_tags": [
+          "single_seed",
+          "counting",
+          "deduplication"
+        ],
+        "review_role": "你扮演一名计数化审查官，重点判断解空间、去重规则和有限性是否足够清晰。",
+        "llm_status": "ineligible",
+        "evidence": "schema中core_constraints仅限制'a_i' ≥ 0'与模x同余，未设值域上界；objective为最大化MEX。该设定下解空间天然无限，命中eligibility.forbidden_seed_properties['解空间天然无限']。同时，原题invariant依赖在线贪心指针与同余类余量，缺乏required_seed_properties['可以按某种单元拆分并汇总']所需的静态可分解结构。",
+        "feedback": "该种子题的在线无界特性与计数化改造的有限性要求存在根本冲突。强行改造需引入大量人工截断或重构状态定义，极易触碰'只改参数范围/状态结构不变'或'跟原核心规律无关的额外约束'红线。建议更换为值域有界、组合结构明确的静态种子题。"
+      }
+    },
+    {
+      "stage": "eligibility",
+      "rule_id": "minimum_guarantee_under_perturbation",
+      "outcome": "pass",
+      "reason_code": "native_perturbation_aligned",
+      "message": "原题的模x同余类划分与在线查询流天然蕴含局部资源分配的不确定性，可直接形式化为最坏情况扰动模型，满足规则要求的“存在原生扰动来源”与“最坏情况落回原题语义”条件。",
+      "details": {
+        "handler": "minimum_guarantee_under_perturbation",
+        "score": 0.97,
+        "risk_tags": [
+          "perturbation_formalization_risk"
+        ],
+        "mode": "single_seed_extension",
+        "family": "robust_optimization",
+        "audit_tags": [
+          "single_seed",
+          "guarantee",
+          "worst_case"
+        ],
+        "review_role": "你扮演一名保底优化审查官，重点判断原题语义中是否存在可被放大的原生扰动来源。",
+        "llm_status": "eligible",
+        "evidence": "seed_schema.invariant.equivalence_class明确指出操作将整数划分为x个独立同余类，seed_schema.input_structure.properties.ordered为true且为query_stream，结合rule_under_review.required_seed_properties中的'局部选择差异'与'顺序不确定'，证明原题具备可放大的原生扰动基础。",
+        "feedback": "规划时需严格将扰动模型绑定于同余类内的资源分配或查询到达顺序，避免退化为外层二分套原判定逻辑；强化不变量需明确刻画最坏情形下MEX前缀的单调覆盖性质。"
+      }
+    },
+    {
+      "stage": "plan_validation",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "contract_fulfilled",
+      "message": "规划完整兑现了canonical_witness规则的专属语义合同，C/O/V三轴均发生实质性变化，三个helper均精准落位至指定schema模块并严格避开redlines，输出责任与校验方式已明确升级且深刻重构了核心算法状态。",
+      "details": {
+        "review_role": "你扮演一名规范解规划审查官，重点确认规划是否真正把输出责任升级为可比较、可校验的规范解。",
+        "review_brief": "确认规划是否明确了规范解的定义、比较口径与校验方式，并且规范性会改变主要求解责任。",
+        "evidence": "1. 轴变化兑现：planner_payload.changed_axes明确列出['C','O','V']，与rule.required_axis_changes.must_change完全一致。2. canonical_order_pressure兑现：在candidate_schema.core_constraints中新增canonical_priority硬约束，在objective中绑定字典序最小化，在invariant中定义canonical_frontier状态指针；planner_payload明确指出该约束通过DSU/链表跳跃融入主状态演化，避开退化为后处理与仅加字典序描述的redlines。3. proof_bearing_output兑现：candidate_schema.objective.type升级为output_canonical_witness且requires_solution设为true，invariant新增mex_optimality_preservation承载证明责任；planner_payload明确验证责任包含合法性、最优性与规范性三重检查，避开留给说明文与仅要求任意方案的redlines。4. constraint_reweighting兑现：candidate_schema.core_constraints将MEX最大化与字典序最小化绑定为联合主约束canonical_priority，invariant通过mex_optimality_preservation反映约束主次关系；planner_payload指出原计数器策略被重构为精确槽位映射，避开仅加格式要求与原约束不动的redlines。5. 核心校验兑现：algorithmic_delta_claim明确说明解法从标量贪心推进重构为基于并查集的冲突消解，anti_shallow_rationale确认规范要求彻底改变主要求解责任，满足validation_contract全部hard_checks。"
+      }
+    },
+    {
+      "stage": "problem_validation",
+      "rule_id": "canonical_witness",
+      "outcome": "pass",
+      "reason_code": "canonical_witness_fulfilled",
+      "message": "题面明确将输出目标升级为完整分配向量，并将MEX最大化与字典序最小化绑定为联合主约束，彻底重构了原题的计数逻辑，符合规范解输出与校验的核心承诺。",
+      "details": {
+        "review_role": "你扮演一名规范解题面审查官，重点确认题面是否要求输出一个规范且可检查的构造。",
+        "review_brief": "确认题面是否写清规范解、字典序或统一比较规则，并要求输出一个可校验的构造方案。",
+        "evidence": "题面描述明确写出“在 MEX 达到最大的前提下，分配时间序列 [t_1, t_2, ..., t_k] 必须字典序最小”及“历史社团的分配时间允许被动态调整，以维持全局最优性”，将规范顺序直接嵌入主状态演化；输出格式要求“共 q 行。第 i 行输出 i 个非负整数”，落实 proof_bearing_output 的可校验承诺；Notes 第3点强调“必须采用精确槽位映射机制，按社团ID升序贪心分配最小合法槽位”，证实 constraint_reweighting 已改变主约束优先级，未退化为表面格式要求或后处理。"
+      }
+    }
+  ],
+  "candidate_attempts": [
+    {
+      "rule_id": "canonical_witness",
+      "handler": "canonical_witness",
+      "score": 0.97,
+      "accepted": true,
+      "risk_tags": [],
+      "status": "ok",
+      "reason_code": "plan_validation_failed",
+      "reason": "",
+      "attempt_index": 1
+    }
+  ],
+  "generated_problem": {
+    "title": "社团排期计划",
+    "description": "校园运营中心正在为各学生社团安排活动场地。现有 $q$ 个社团依次提交申请，第 $i$ 个社团提交的基础期望时间为 $v_i$。由于场地调度规则，每个社团最终被分配的时间 $t_i$ 必须满足 $t_i \\equiv v_i \\pmod x$ 且 $t_i \\ge 0$。此外，为了保证活动不冲突，任意两个社团的分配时间必须互不相同。\n\n运营中心希望所有社团的分配时间集合 $\\{t_1, t_2, \\dots, t_k\\}$ 的 MEX（即集合中未出现的最小非负整数）尽可能大。在 MEX 达到最大的前提下，分配时间序列 $[t_1, t_2, \\dots, t_k]$ 必须字典序最小。若某位置未被用于填充 MEX 前缀，则分配其同余类中大于等于当前 MEX 的最小非负整数。\n\n每当有新社团加入时，系统会基于当前所有已申请的社团重新计算满足上述条件的规范分配方案。历史社团的分配时间允许被动态调整，以维持全局最优性。你需要对每次查询（即每加入一个新社团后），输出当前所有社团的规范分配时间序列。",
+    "input_format": "第一行包含两个正整数 $q$ 和 $x$，分别表示社团申请总数和调度步长。\n接下来 $q$ 行，每行包含一个非负整数 $v_i$，表示第 $i$ 个社团的基础期望时间。",
+    "output_format": "共 $q$ 行。第 $i$ 行输出 $i$ 个非负整数，表示前 $i$ 个社团的规范分配时间 $t_1, t_2, \\dots, t_i$，相邻整数间用空格分隔。",
+    "constraints": [
+      "$1 \\le q \\le 400000$",
+      "$1 \\le x \\le 400000$",
+      "$0 \\le v_i \\le 10^9$",
+      "时间限制：2.0 秒",
+      "空间限制：512 MB"
+    ],
+    "samples": [
+      {
+        "input": "3 2\n0\n0\n1",
+        "output": "0\n0 2\n0 2 1",
+        "explanation": "第1个社团期望0，模2余0，分配最小非负值0。集合{0}，MEX=1，输出0。\n第2个社团期望0，模2余0，0已被占，分配同余类下一可用值2。集合{0,2}，MEX=1，字典序最小序列为[0,2]，输出0 2。\n第3个社团期望1，模2余1，分配最小非负值1。集合{0,1,2}，MEX=3，字典序最小序列为[0,2,1]，输出0 2 1。"
+      },
+      {
+        "input": "4 3\n1\n1\n1\n1",
+        "output": "1\n1 4\n1 4 7\n1 4 7 10",
+        "explanation": "所有社团期望模3均余1。只能分配1,4,7,10...。由于0始终无法被分配，MEX恒为0。为满足字典序最小，按顺序依次分配同余类中最小可用值。"
+      },
+      {
+        "input": "3 1\n5\n2\n8",
+        "output": "0\n0 1\n0 1 2",
+        "explanation": "步长x=1时，模1余数均为0，等价于分配任意非负整数。为最大化MEX并保证字典序最小，系统紧凑填充0,1,2。每次新增社团均填补当前MEX空缺。"
+      }
+    ],
+    "notes": "1. MEX 定义：给定非负整数集合中未出现的最小非负整数。\n2. 字典序比较：从左至右逐位比较，首次出现较小数值的一方字典序更小。\n3. 分配策略核心：本题要求输出完整的分配向量，仅维护同余类资源数量无法确定具体槽位归属。必须采用精确槽位映射机制，按社团ID升序贪心分配最小合法槽位，并在冲突时快速定位同余类下一空闲位置。\n4. 动态重计算：每次查询后，系统会全局重算规范解。历史分配值可能因新社团加入而调整，但算法可通过维护各余数类的连续空闲槽位指针实现均摊高效更新。",
+    "status": "ok",
+    "error_reason": "",
+    "feedback": ""
+  },
+  "iteration": {
+    "run_id": "CF1294D_v1_campus_ops_20260422_141017",
+    "round_index": 2,
+    "requested_rounds": 3,
+    "iteration_phase": "normal",
+    "full_score_polish_round_index": 0,
+    "full_score_max_iterations": 10,
+    "previous_artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1294D\\CF1294D_v1_campus_ops_20260422_141017_round1.json",
+    "previous_quality_report_path": "D:\\AutoProblemGen\\生成题面\\reports\\CF1294D\\CF1294D_v1_campus_ops_20260422_141017_round1_quality_report.json",
+    "revision_context_snapshot": {
+      "round_index": 1,
+      "overall_status": "reject_as_retheme",
+      "generated_status": "ok",
+      "quality_score": 92.0,
+      "divergence_score": 45.9,
+      "failed_hard_checks": [],
+      "issues": [
+        {
+          "issue_type": "quality_issue",
+          "severity": "minor",
+          "title": "关键分配规则位置偏后",
+          "detail": "非 MEX 填充位置的字典序最小分配策略（即 notes 中的说明）未放入主描述或 constraints 中，选手可能因忽略 notes 而误解全局字典序最小化的具体实现方式。",
+          "evidence_refs": [
+            "generated_problem.notes"
+          ],
+          "fix_hint": "将 notes 中的分配策略移至 description 末尾或 constraints 中，明确表述为“若某位置未被用于填充 MEX 前缀，则分配其同余类中大于等于当前 MEX 的最小非负整数”。"
+        },
+        {
+          "issue_type": "quality_issue",
+          "severity": "minor",
+          "title": "在线更新语义未显式声明",
+          "detail": "题面未明确说明新增社团时，历史社团的分配值是否允许被重新调整以维持全局最优。虽然 output_format 暗示每次输出前缀完整解，但明确声明可避免关于“分配是否不可变”的歧义。",
+          "evidence_refs": [
+            "generated_problem.description",
+            "generated_problem.output_format"
+          ],
+          "fix_hint": "在 description 中补充“每次查询后，系统会基于当前所有申请重新计算规范分配数组”或明确“历史分配值可被动态调整以满足当前最优性”。"
+        },
+        {
+          "issue_type": "quality_issue",
+          "severity": "minor",
+          "title": "样例覆盖度可提升",
+          "detail": "仅有两个样例，未覆盖 x=1 或 v_i 模 x 结果相同的边界情况，难以验证极端条件下的 MEX 推进与字典序行为。",
+          "evidence_refs": [
+            "generated_problem.samples",
+            "hard_checks[12].message"
+          ],
+          "fix_hint": "增加一个 x=1 或所有 v_i 模 x 同余的样例，以强化对边界逻辑的验证。"
+        },
+        {
+          "issue_type": "retheme_issue",
+          "severity": "blocker",
+          "title": "solution transfer risk too high",
+          "detail": "新题在核心数学建模与算法框架上并未脱离原题。原题的本质是按模 x 余数划分等价类，利用贪心策略单调推进 MEX 指针以填充 0,1,2...。新题仅在此基础上增加了“字典序最小”的次要优化目标与“输出完整分配数组”的格式要求。这一变化并未改变核心状态定义（仍为各余数类的可用资源池）与决策逻辑（贪心消耗最小可用值）。熟悉原题的选手只需将原题的计数器升级为记录原始索引的队列/桶（如 vector<int> buckets[x]），在 MEX 指针推进时按索引先后顺序分配值，剩余位置分配同余类中大于等于 MEX 的最小值，即可直接满足字典序要求并输出数组。生成器声称的“必须重构数据结构”“原计数器策略失效”属于过度夸大，实际只需在原解法上增加极小的索引映射与输出逻辑。背景叙事（校园社团资源）与输入输出结构、约束条件（模 x 同余、非负、在线查询）与原题高度同构，属于典型的表层换皮。",
+          "evidence_refs": [
+            "snapshots.original_problem",
+            "snapshots.generated_problem",
+            "snapshots.new_schema",
+            "review_context.algorithmic_delta_claim",
+            "divergence.schema_distance_breakdown"
+          ],
+          "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+        }
+      ],
+      "suggested_revisions": [
+        "将 notes 中的分配策略移至 description 末尾或 constraints 中，明确表述为“若某位置未被用于填充 MEX 前缀，则分配其同余类中大于等于当前 MEX 的最小非负整数”。",
+        "在 description 中补充“每次查询后，系统会基于当前所有申请重新计算规范分配数组”或明确“历史分配值可被动态调整以满足当前最优性”。",
+        "增加一个 x=1 或所有 v_i 模 x 同余的样例，以强化对边界逻辑的验证。",
+        "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+        "将 notes 中的核心分配逻辑整合至主描述或约束部分，提升关键规则的可见性。",
+        "明确在线查询过程中历史分配值的可变性/重计算机制，消除实现歧义。",
+        "补充 1-2 个覆盖边界条件（如 x=1、大数值、同余类冲突）的样例，增强测试覆盖度。",
+        "优先改写核心任务定义，而不是继续替换故事背景。"
+      ],
+      "strengths_to_keep": [
+        "准确落地了 new_schema 中的规范优先级约束与输出可校验目标，实现了从计数到结构分配的核心变体。",
+        "样例解释极具教学价值，逐步推演了 MEX 指针推进、同余类槽位消耗与字典序决策过程。",
+        "题面结构规范，输入输出格式与约束条件清晰，符合竞赛标准且无原题泄露痕迹。"
+      ]
+    }
+  }
+}

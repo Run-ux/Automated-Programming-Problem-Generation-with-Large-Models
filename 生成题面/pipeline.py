@@ -26,6 +26,15 @@ from problem_quality import ProblemEvaluator
 from problem_quality.report_renderer import render_report_markdown as render_quality_report_markdown
 
 
+QUALITY_DIMENSIONS = (
+    "variant_fidelity",
+    "spec_completeness",
+    "cross_section_consistency",
+    "sample_quality",
+    "oj_readability",
+)
+
+
 class GenerationPipeline:
     def __init__(
         self,
@@ -66,10 +75,13 @@ class GenerationPipeline:
         allowed_rule_ids: set[str] | None = None,
         batch_source_dir: Path | None = None,
         quality_iterations: int = 0,
+        quality_full_score_max_iterations: int = 10,
     ) -> list[dict[str, Any]]:
         canonical_mode = _canonical_mode(mode)
         if quality_iterations and canonical_mode != "single_seed_extension":
             raise ValueError("质量闭环迭代当前只支持 single_seed_extension。")
+        if quality_full_score_max_iterations < 1:
+            raise ValueError("满分打磨迭代上限必须是正整数。")
         if canonical_mode == "single_seed_extension":
             return self._run_single(
                 problem_ids=problem_ids,
@@ -78,6 +90,7 @@ class GenerationPipeline:
                 allowed_rule_ids=allowed_rule_ids,
                 batch_source_dir=batch_source_dir,
                 quality_iterations=quality_iterations,
+                quality_full_score_max_iterations=quality_full_score_max_iterations,
             )
         return self._run_same_family(
             seed_a=seed_a,
@@ -96,6 +109,7 @@ class GenerationPipeline:
         allowed_rule_ids: set[str] | None,
         batch_source_dir: Path | None,
         quality_iterations: int,
+        quality_full_score_max_iterations: int,
     ) -> list[dict[str, Any]]:
         target_problem_ids = list(problem_ids) or self.loader.list_problem_ids()
         records: list[dict[str, Any]] = []
@@ -109,6 +123,7 @@ class GenerationPipeline:
                         theme_id=theme_id,
                         allowed_rule_ids=allowed_rule_ids,
                         quality_iterations=quality_iterations,
+                        quality_full_score_max_iterations=quality_full_score_max_iterations,
                     )
                 )
             self._emit_progress(f"[single] 全部完成，共生成 {len(records)} 个产物。")
@@ -132,6 +147,7 @@ class GenerationPipeline:
                     theme_id=theme_id,
                     allowed_rule_ids=allowed_rule_ids,
                     quality_iterations=quality_iterations,
+                    quality_full_score_max_iterations=quality_full_score_max_iterations,
                 )
             except Exception as exc:
                 batch_items.append(
@@ -181,6 +197,7 @@ class GenerationPipeline:
         theme_id: str | None,
         allowed_rule_ids: set[str] | None,
         quality_iterations: int,
+        quality_full_score_max_iterations: int,
     ) -> list[dict[str, Any]]:
         self._emit_progress(f"[problem] {problem_id}：读取 schema 与原题信息。")
         seed_schema = self.loader.load(problem_id)
@@ -207,6 +224,7 @@ class GenerationPipeline:
                     original_problem=original_problem,
                     allowed_rule_ids=allowed_rule_ids,
                     requested_rounds=quality_iterations,
+                    full_score_max_iterations=quality_full_score_max_iterations,
                 )
             problem_records.append(record)
             report_sections.extend(
@@ -278,35 +296,53 @@ class GenerationPipeline:
         original_problem: dict[str, Any] | None,
         allowed_rule_ids: set[str] | None,
         requested_rounds: int,
+        full_score_max_iterations: int,
     ) -> tuple[VariantPlan, Any, dict[str, Any]]:
         base_stem = ""
         run_id = ""
         previous_artifact_path = ""
         previous_quality_report_path = ""
         revision_context: dict[str, Any] | None = None
+        revision_brief_history: list[dict[str, Any]] = []
         round_records: list[dict[str, Any]] = []
         stop_reason = "reached_requested_rounds"
         last_plan: VariantPlan | None = None
         last_generated: Any | None = None
         final_record: dict[str, Any] | None = None
+        round_index = 0
+        full_score_polish_rounds = 0
+        full_score_polish_mode = False
 
-        for round_index in range(1, requested_rounds + 1):
-            self._emit_progress(f"[problem] {problem_id}：variant {variant_index} 第 {round_index} 轮进入规划。")
-            plan = self.planner.build_plan(
-                mode="single_seed_extension",
-                variant_index=variant_index,
-                theme_id=theme_id,
-                seed_schema=seed_schema,
-                original_problem=original_problem,
-                allowed_rule_ids=allowed_rule_ids,
-                revision_context=revision_context,
-            )
-            if not base_stem:
-                base_stem = self._build_stem(plan.source_problem_ids, plan.variant_index, plan.theme.theme_id)
-                run_id = base_stem
-            self._emit_progress(
-                f"[problem] {problem_id}：variant {variant_index} 第 {round_index} 轮规划完成，规则={plan.applied_rule or '无'}。"
-            )
+        while True:
+            round_index += 1
+            polish_round_index = 0
+            iteration_phase = "full_score_polish" if full_score_polish_mode else "normal"
+            if full_score_polish_mode:
+                if last_plan is None:
+                    raise RuntimeError("满分打磨阶段缺少可复用的规划结果。")
+                full_score_polish_rounds += 1
+                polish_round_index = full_score_polish_rounds
+                plan = last_plan
+                self._emit_progress(
+                    f"[problem] {problem_id}：variant {variant_index} 第 {round_index} 轮进入满分打磨，复用上一轮规划。"
+                )
+            else:
+                self._emit_progress(f"[problem] {problem_id}：variant {variant_index} 第 {round_index} 轮进入规划。")
+                plan = self.planner.build_plan(
+                    mode="single_seed_extension",
+                    variant_index=variant_index,
+                    theme_id=theme_id,
+                    seed_schema=seed_schema,
+                    original_problem=original_problem,
+                    allowed_rule_ids=allowed_rule_ids,
+                    revision_context=revision_context,
+                )
+                if not base_stem:
+                    base_stem = self._build_stem(plan.source_problem_ids, plan.variant_index, plan.theme.theme_id)
+                    run_id = base_stem
+                self._emit_progress(
+                    f"[problem] {problem_id}：variant {variant_index} 第 {round_index} 轮规划完成，规则={plan.applied_rule or '无'}。"
+                )
             self._emit_progress(f"[problem] {problem_id}：variant {variant_index} 第 {round_index} 轮进入题面生成。")
             generated = self.generator.generate(
                 {"seed_schema": seed_schema},
@@ -329,6 +365,9 @@ class GenerationPipeline:
                     "run_id": run_id,
                     "round_index": round_index,
                     "requested_rounds": requested_rounds,
+                    "iteration_phase": iteration_phase,
+                    "full_score_polish_round_index": polish_round_index,
+                    "full_score_max_iterations": full_score_max_iterations,
                     "previous_artifact_path": previous_artifact_path,
                     "previous_quality_report_path": previous_quality_report_path,
                     "revision_context_snapshot": json.loads(
@@ -356,8 +395,18 @@ class GenerationPipeline:
                 "generated_status": quality_result["report"]["overall"]["generated_status"],
                 "quality_score": quality_result["report"]["overall"]["quality_score"],
                 "divergence_score": quality_result["report"]["overall"]["divergence_score"],
+                "quality_dimension_scores": self._extract_quality_dimension_scores(quality_result["report"]),
+                "iteration_phase": iteration_phase,
+                "full_score_polish_round_index": polish_round_index,
             }
             round_records.append(round_record)
+            revision_brief_history.append(
+                {
+                    "round_index": round_index,
+                    "iteration_phase": iteration_phase,
+                    "revision_brief": self._json_snapshot(quality_result["report"].get("revision_brief", {})),
+                }
+            )
 
             record["quality_report_json_path"] = quality_result["json_path"]
             record["quality_report_md_path"] = quality_result["md_path"]
@@ -375,10 +424,22 @@ class GenerationPipeline:
                 overall_status=str(quality_result["report"]["overall"]["status"]),
                 round_index=round_index,
                 requested_rounds=requested_rounds,
+                quality_report=quality_result["report"],
+                full_score_polish_mode=full_score_polish_mode,
+                full_score_polish_rounds=full_score_polish_rounds,
+                full_score_max_iterations=full_score_max_iterations,
             )
             if stop_reason:
                 break
-            revision_context = quality_result["report"].get("revision_brief", {})
+            if full_score_polish_mode or str(quality_result["report"]["overall"]["status"]) == "pass":
+                full_score_polish_mode = True
+                revision_context = self._build_full_score_polish_revision_context(
+                    quality_report=quality_result["report"],
+                    generated=generated,
+                    revision_brief_history=revision_brief_history,
+                )
+            else:
+                revision_context = self._build_accumulated_revision_context(revision_brief_history)
 
         if last_plan is None or last_generated is None or final_record is None:
             raise RuntimeError("质量闭环迭代未生成任何轮次产物。")
@@ -903,18 +964,217 @@ class GenerationPipeline:
         overall_status: str,
         round_index: int,
         requested_rounds: int,
+        quality_report: dict[str, Any],
+        full_score_polish_mode: bool,
+        full_score_polish_rounds: int,
+        full_score_max_iterations: int,
     ) -> str:
         if generated_status in {"schema_insufficient", "difference_insufficient"}:
             return generated_status
-        if overall_status == "pass":
-            return "pass"
         if overall_status == "reject_invalid":
             return "reject_invalid"
+
+        full_score = self._quality_dimensions_full_score(quality_report)
+        if overall_status == "pass" and full_score:
+            return "pass"
+        if (full_score_polish_mode or overall_status == "pass") and not full_score:
+            if full_score_polish_rounds >= full_score_max_iterations:
+                return "full_score_iteration_limit_reached"
+            return ""
+        if full_score_polish_mode:
+            if full_score_polish_rounds >= full_score_max_iterations:
+                return "full_score_iteration_limit_reached"
+            return ""
+
         if round_index >= requested_rounds:
             return "reached_requested_rounds"
         if overall_status in {"revise_quality", "reject_as_retheme"} and generated_status == "ok":
             return ""
         return "reached_requested_rounds"
+
+    def _quality_dimensions_full_score(self, quality_report: dict[str, Any]) -> bool:
+        scores = {
+            str(item.get("dimension", "")): item
+            for item in self._extract_quality_dimension_scores(quality_report)
+        }
+        for dimension in QUALITY_DIMENSIONS:
+            if dimension not in scores:
+                return False
+            if float(scores[dimension].get("score", 0.0)) != 5.0:
+                return False
+        return True
+
+    def _extract_quality_dimension_scores(self, quality_report: dict[str, Any]) -> list[dict[str, Any]]:
+        quality = quality_report.get("quality", {})
+        if not isinstance(quality, dict):
+            return []
+        raw_scores = quality.get("dimension_scores", [])
+        if not isinstance(raw_scores, list):
+            return []
+        normalized: list[dict[str, Any]] = []
+        for item in raw_scores:
+            if not isinstance(item, dict):
+                continue
+            normalized.append(json.loads(json.dumps(item, ensure_ascii=False)))
+        return normalized
+
+    def _non_full_quality_dimensions(self, quality_report: dict[str, Any]) -> list[dict[str, Any]]:
+        scores = {
+            str(item.get("dimension", "")): item
+            for item in self._extract_quality_dimension_scores(quality_report)
+        }
+        non_full: list[dict[str, Any]] = []
+        for dimension in QUALITY_DIMENSIONS:
+            item = scores.get(dimension)
+            if item is None:
+                non_full.append(
+                    {
+                        "dimension": dimension,
+                        "score": None,
+                        "rationale": "质量报告缺少该维度评分。",
+                        "evidence_refs": [],
+                    }
+                )
+                continue
+            score = float(item.get("score", 0.0))
+            if score != 5.0:
+                non_full.append(
+                    {
+                        "dimension": dimension,
+                        "score": score,
+                        "rationale": str(item.get("rationale", "")),
+                        "evidence_refs": list(item.get("evidence_refs", [])),
+                    }
+                )
+        return non_full
+
+    def _json_snapshot(self, value: Any) -> Any:
+        return json.loads(json.dumps(value, ensure_ascii=False))
+
+    def _unique_string_items(self, values: list[Any]) -> list[str]:
+        seen: set[str] = set()
+        result: list[str] = []
+        for value in values:
+            text = str(value).strip()
+            if not text or text in seen:
+                continue
+            seen.add(text)
+            result.append(text)
+        return result
+
+    def _unique_json_items(self, values: list[Any]) -> list[Any]:
+        seen: set[str] = set()
+        result: list[Any] = []
+        for value in values:
+            snapshot = self._json_snapshot(value)
+            marker = json.dumps(snapshot, ensure_ascii=False, sort_keys=True)
+            if marker in seen:
+                continue
+            seen.add(marker)
+            result.append(snapshot)
+        return result
+
+    def _list_items(self, value: Any) -> list[Any]:
+        return value if isinstance(value, list) else []
+
+    def _build_accumulated_revision_context(
+        self,
+        revision_brief_history: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        history = self._json_snapshot(revision_brief_history)
+        if not history:
+            return {}
+
+        latest_entry = history[-1]
+        latest_brief = latest_entry.get("revision_brief", {})
+        if not isinstance(latest_brief, dict):
+            latest_brief = {}
+
+        suggested_revisions: list[Any] = []
+        issues: list[Any] = []
+        strengths_to_keep: list[Any] = []
+        failed_hard_checks: list[Any] = []
+        for entry in history:
+            brief = entry.get("revision_brief", {})
+            if not isinstance(brief, dict):
+                continue
+            suggested_revisions.extend(self._list_items(brief.get("suggested_revisions", [])))
+            issues.extend(self._list_items(brief.get("issues", [])))
+            strengths_to_keep.extend(self._list_items(brief.get("strengths_to_keep", [])))
+            failed_hard_checks.extend(self._list_items(brief.get("failed_hard_checks", [])))
+
+        context = self._json_snapshot(latest_brief)
+        context.update(
+            {
+                "revision_history": history,
+                "revision_summary": {
+                    "round_count": len(history),
+                    "latest_round_index": latest_entry.get("round_index", latest_brief.get("round_index", 0)),
+                    "latest_iteration_phase": latest_entry.get("iteration_phase", ""),
+                    "latest_overall_status": str(latest_brief.get("overall_status", "")),
+                    "latest_generated_status": str(latest_brief.get("generated_status", "")),
+                    "latest_quality_score": latest_brief.get("quality_score", 0.0),
+                    "latest_divergence_score": latest_brief.get("divergence_score", 0.0),
+                    "suggested_revisions": self._unique_string_items(suggested_revisions),
+                    "issues": self._unique_json_items(issues),
+                    "strengths_to_keep": self._unique_string_items(strengths_to_keep),
+                    "failed_hard_checks": self._unique_json_items(failed_hard_checks),
+                },
+                "suggested_revisions": self._unique_string_items(suggested_revisions),
+                "issues": self._unique_json_items(issues),
+                "strengths_to_keep": self._unique_string_items(strengths_to_keep),
+                "failed_hard_checks": self._unique_json_items(failed_hard_checks),
+            }
+        )
+        return context
+
+    def _build_full_score_polish_revision_context(
+        self,
+        *,
+        quality_report: dict[str, Any],
+        generated: Any,
+        revision_brief_history: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        overall = quality_report.get("overall", {})
+        revision_brief = quality_report.get("revision_brief", {})
+        quality = quality_report.get("quality", {})
+        accumulated_context = self._build_accumulated_revision_context(revision_brief_history)
+        context = {
+            "revision_mode": "full_score_polish",
+            "instruction": "复用当前 new_schema，仅重写题面内容以修复未满分质量维度；不得改变任务定义、输入输出语义、核心约束或算法义务。",
+            "overall_status": str(overall.get("status", "")),
+            "generated_status": str(overall.get("generated_status", "")),
+            "quality_score": overall.get("quality_score", 0.0),
+            "divergence_score": overall.get("divergence_score", 0.0),
+            "non_full_dimensions": self._non_full_quality_dimensions(quality_report),
+            "suggested_revisions": list(
+                quality_report.get("suggested_revisions", revision_brief.get("suggested_revisions", []))
+            ),
+            "issues": json.loads(
+                json.dumps(quality_report.get("issues", revision_brief.get("issues", [])), ensure_ascii=False)
+            ),
+            "strengths_to_keep": list(
+                revision_brief.get(
+                    "strengths_to_keep",
+                    quality.get("strengths", []) if isinstance(quality, dict) else [],
+                )
+            ),
+            "previous_generated_problem": json.loads(json.dumps(generated.__dict__, ensure_ascii=False)),
+            "schema_lock": "必须使用本轮 plan.new_schema_snapshot，不允许重新规划或生成新的 new_schema。",
+        }
+        context["revision_history"] = accumulated_context.get("revision_history", [])
+        context["revision_summary"] = accumulated_context.get("revision_summary", {})
+        context["suggested_revisions"] = accumulated_context.get(
+            "suggested_revisions",
+            context["suggested_revisions"],
+        )
+        context["issues"] = accumulated_context.get("issues", context["issues"])
+        context["strengths_to_keep"] = accumulated_context.get(
+            "strengths_to_keep",
+            context["strengths_to_keep"],
+        )
+        context["failed_hard_checks"] = accumulated_context.get("failed_hard_checks", [])
+        return context
 
     def _write_iteration_summary(
         self,

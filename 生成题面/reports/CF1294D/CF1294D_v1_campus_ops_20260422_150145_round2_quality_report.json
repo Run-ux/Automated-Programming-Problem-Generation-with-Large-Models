@@ -1,0 +1,774 @@
+{
+  "overall": {
+    "status": "reject_as_retheme",
+    "quality_score": 97.0,
+    "divergence_score": 51.6,
+    "schema_distance": 0.4614,
+    "generated_status": "ok"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 5.0,
+        "rationale": "题面完整且准确地实现了 new_schema 中定义的所有核心要素：输入结构（q, x, K 参数与流式 a_i）、同余与非负约束、互异分配、目标覆盖区间 {0..K-1}，以及 construct_or_certify 的双分支输出目标。主题映射（校园社团/时段）自然贴合 schema 设定，未偏离规划意图。",
+        "evidence_refs": [
+          "new_schema.input_structure",
+          "new_schema.core_constraints",
+          "new_schema.objective",
+          "generated_problem.description",
+          "generated_problem.output_format"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 5.0,
+        "rationale": "题面提供了独立解题所需的全部关键信息。任务目标、输入输出格式、数据范围、时间空间限制均明确给出。Notes 部分补充了极小冲突集的定义与模运算规则，消除了潜在歧义。约束中关于 YES 查询 K 总和的限制合理控制了输出规模，满足独立做题要求。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.output_format",
+          "generated_problem.constraints",
+          "generated_problem.notes"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 5.0,
+        "rationale": "Description、Input、Output、Constraints 与 Samples 之间高度一致。样例输入严格遵循 q, x, K 及后续 q 行的格式；输出格式与样例展示完全对应（YES/NO 分支行数正确）；约束范围与 schema 定义的值域一致；符号含义（如 x, K, a_i, v）在各部分统一无冲突。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.output_format",
+          "generated_problem.constraints",
+          "generated_problem.samples"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 4.0,
+        "rationale": "提供了 2 个样例，覆盖了 NO（冲突）与 YES（成功）两种核心分支，且附带了清晰的余数需求与供给计算解释。不足之处在于两个样例的极小冲突集大小均为 1，未能展示多元素冲突集或字典序选择的边界情况，尽管 Notes 已说明单元素集在此结构下恒成立，但样例多样性略有欠缺。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "generated_problem.notes",
+          "hard_checks.sample_count"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 5.0,
+        "rationale": "题面结构符合标准 OJ 规范，分段清晰（Description/Input/Output/Constraints/Samples/Notes）。语言表述专业、无冗余噪声，校园运营主题融入自然。输出格式说明明确区分了 YES/NO 分支的行数与内容，便于选手快速解析与实现。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.output_format",
+          "generated_problem.notes"
+        ]
+      }
+    ],
+    "strengths": [
+      "精准落地了 new_schema 的 construct_or_certify 双分支目标与同余约束体系。",
+      "输入输出格式规范，分支逻辑（YES/NO 对应不同行数）描述清晰无歧义。",
+      "Notes 部分有效补充了模运算定义与极小性验证条件，降低了实现时的规则猜测成本。",
+      "校园主题包装自然，未引入无关背景噪声，符合 OJ 题面简洁性要求。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "distance_version": "v2",
+      "backend": "embedding",
+      "total": 0.4614,
+      "axis_scores": {
+        "I": 0.0,
+        "C": 0.6808,
+        "O": 0.6196,
+        "V": 0.5114
+      },
+      "components": {
+        "input_tree_distance": 0.0,
+        "constraint_match_distance": 0.6808,
+        "objective_type_distance": 0.6657,
+        "objective_text_distance": 0.5505,
+        "invariant_match_distance": 0.5114
+      }
+    },
+    "schema_distance": 0.4614,
+    "changed_axes_planned": [
+      "C",
+      "O",
+      "V"
+    ],
+    "changed_axes_realized": [
+      "C",
+      "O",
+      "V"
+    ],
+    "semantic_difference": 0.4,
+    "solution_transfer_risk": 0.8,
+    "surface_retheme_risk": 0.2,
+    "verdict": "reject_as_retheme",
+    "rationale": "新题将原题的‘动态最大化MEX’改为‘固定区间K的精确覆盖判定与构造/证书输出’，在目标函数(O)和约束(C)上做了表层重构。然而，核心求解框架高度可迁移：原题依赖的‘按模x余数维护资源计数’状态设计完全保留。新题的可行性判定仅需对比各余数类供给与固定需求，而题面Notes已明确指出‘任意一个供给不足的余数类均可单独构成极小冲突集’，这使得schema中声称的Hall条件与极小证书生成退化为简单的单余数类缺口查找。原题的贪心计数逻辑只需增加一次O(1)的供给达标计数维护与O(K)的平凡映射即可直接复用，并未真正打破原题解法路径。算法增量声明(why_direct_reuse_fails)与实际落地严重不符，属于典型的核心逻辑换皮。",
+    "evidence_refs": [
+      "snapshots.new_schema.core_constraints",
+      "snapshots.generated_problem.notes",
+      "snapshots.original_schema.invariant",
+      "review_context.algorithmic_delta_claim"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_problem_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 generated_problem。",
+      "evidence_refs": [
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "new_schema_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 new_schema 或兼容字段 new_schema_snapshot。",
+      "evidence_refs": [
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "生成状态正常。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "predicted_schema_distance_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 predicted_schema_distance。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "distance_breakdown_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 distance_breakdown。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "changed_axes_realized_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 changed_axes_realized。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.46，达到中等差异阈值。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "已落地核心差异轴：C, O, V。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题或题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=2。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "目标函数已经在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "队伍使用范围表述可更精确",
+      "detail": "Description 中“当前已抵达的队伍集合能否...完成完美覆盖”未显式说明是从已抵达队伍中“选出恰好 K 支”进行分配，还是必须使用全部队伍。虽结合上下文可推断为子集匹配，但明确写出“从中选出恰好 K 支队伍”可避免初学者误解。",
+      "evidence_refs": [
+        "generated_problem.description"
+      ],
+      "fix_hint": "在 description 中补充说明：‘你需要判断能否从当前已抵达的队伍中选出恰好 K 支，并为其分配互不相同的时段...’"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "极小冲突集性质说明可能弱化题目难度感知",
+      "detail": "Notes 第 1 点指出‘任意一个供给不足的余数类均可单独构成极小冲突集’。这在数学上对该特定划分结构是正确的，但直接点明会使得‘极小冲突集’的输出退化为寻找首个供给不足的余数类，可能削弱选手对 Hall 条件或更一般证书构造的思考。",
+      "evidence_refs": [
+        "generated_problem.notes",
+        "new_schema.invariant"
+      ],
+      "fix_hint": "可保留该结论但调整措辞，例如改为‘在本题的时段划分结构下，极小冲突集必然包含至少一个供给不足的余数类，输出字典序最小的满足条件的余数类集合即可’，或增加一个多元素冲突集的构造样例以展示一般性。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "solution transfer risk too high",
+      "detail": "新题将原题的‘动态最大化MEX’改为‘固定区间K的精确覆盖判定与构造/证书输出’，在目标函数(O)和约束(C)上做了表层重构。然而，核心求解框架高度可迁移：原题依赖的‘按模x余数维护资源计数’状态设计完全保留。新题的可行性判定仅需对比各余数类供给与固定需求，而题面Notes已明确指出‘任意一个供给不足的余数类均可单独构成极小冲突集’，这使得schema中声称的Hall条件与极小证书生成退化为简单的单余数类缺口查找。原题的贪心计数逻辑只需增加一次O(1)的供给达标计数维护与O(K)的平凡映射即可直接复用，并未真正打破原题解法路径。算法增量声明(why_direct_reuse_fails)与实际落地严重不符，属于典型的核心逻辑换皮。",
+      "evidence_refs": [
+        "snapshots.new_schema.core_constraints",
+        "snapshots.generated_problem.notes",
+        "snapshots.original_schema.invariant",
+        "review_context.algorithmic_delta_claim"
+      ],
+      "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+    }
+  ],
+  "suggested_revisions": [
+    "在 description 中补充说明：‘你需要判断能否从当前已抵达的队伍中选出恰好 K 支，并为其分配互不相同的时段...’",
+    "可保留该结论但调整措辞，例如改为‘在本题的时段划分结构下，极小冲突集必然包含至少一个供给不足的余数类，输出字典序最小的满足条件的余数类集合即可’，或增加一个多元素冲突集的构造样例以展示一般性。",
+    "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+    "在 Description 中明确分配方案是从已抵达队伍中选取子集（大小为 K），而非强制使用全部队伍。",
+    "考虑增加一个展示多余数类联合瓶颈或字典序比较的样例，以丰富测试覆盖并强化‘极小冲突集’概念的直观理解。",
+    "将约束中的‘数据保证所有输出 YES 的查询中 K 的总和不超过 400000’调整为更标准的 OJ 表述，如‘保证所有查询中输出 YES 时的 K 之和不超过 4×10^5’。",
+    "优先改写核心任务定义，而不是继续替换故事背景。"
+  ],
+  "revision_brief": {
+    "round_index": 2,
+    "overall_status": "reject_as_retheme",
+    "generated_status": "ok",
+    "quality_score": 97.0,
+    "divergence_score": 51.6,
+    "failed_hard_checks": [],
+    "issues": [
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "队伍使用范围表述可更精确",
+        "detail": "Description 中“当前已抵达的队伍集合能否...完成完美覆盖”未显式说明是从已抵达队伍中“选出恰好 K 支”进行分配，还是必须使用全部队伍。虽结合上下文可推断为子集匹配，但明确写出“从中选出恰好 K 支队伍”可避免初学者误解。",
+        "evidence_refs": [
+          "generated_problem.description"
+        ],
+        "fix_hint": "在 description 中补充说明：‘你需要判断能否从当前已抵达的队伍中选出恰好 K 支，并为其分配互不相同的时段...’"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "极小冲突集性质说明可能弱化题目难度感知",
+        "detail": "Notes 第 1 点指出‘任意一个供给不足的余数类均可单独构成极小冲突集’。这在数学上对该特定划分结构是正确的，但直接点明会使得‘极小冲突集’的输出退化为寻找首个供给不足的余数类，可能削弱选手对 Hall 条件或更一般证书构造的思考。",
+        "evidence_refs": [
+          "generated_problem.notes",
+          "new_schema.invariant"
+        ],
+        "fix_hint": "可保留该结论但调整措辞，例如改为‘在本题的时段划分结构下，极小冲突集必然包含至少一个供给不足的余数类，输出字典序最小的满足条件的余数类集合即可’，或增加一个多元素冲突集的构造样例以展示一般性。"
+      },
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "solution transfer risk too high",
+        "detail": "新题将原题的‘动态最大化MEX’改为‘固定区间K的精确覆盖判定与构造/证书输出’，在目标函数(O)和约束(C)上做了表层重构。然而，核心求解框架高度可迁移：原题依赖的‘按模x余数维护资源计数’状态设计完全保留。新题的可行性判定仅需对比各余数类供给与固定需求，而题面Notes已明确指出‘任意一个供给不足的余数类均可单独构成极小冲突集’，这使得schema中声称的Hall条件与极小证书生成退化为简单的单余数类缺口查找。原题的贪心计数逻辑只需增加一次O(1)的供给达标计数维护与O(K)的平凡映射即可直接复用，并未真正打破原题解法路径。算法增量声明(why_direct_reuse_fails)与实际落地严重不符，属于典型的核心逻辑换皮。",
+        "evidence_refs": [
+          "snapshots.new_schema.core_constraints",
+          "snapshots.generated_problem.notes",
+          "snapshots.original_schema.invariant",
+          "review_context.algorithmic_delta_claim"
+        ],
+        "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+      }
+    ],
+    "suggested_revisions": [
+      "在 description 中补充说明：‘你需要判断能否从当前已抵达的队伍中选出恰好 K 支，并为其分配互不相同的时段...’",
+      "可保留该结论但调整措辞，例如改为‘在本题的时段划分结构下，极小冲突集必然包含至少一个供给不足的余数类，输出字典序最小的满足条件的余数类集合即可’，或增加一个多元素冲突集的构造样例以展示一般性。",
+      "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+      "在 Description 中明确分配方案是从已抵达队伍中选取子集（大小为 K），而非强制使用全部队伍。",
+      "考虑增加一个展示多余数类联合瓶颈或字典序比较的样例，以丰富测试覆盖并强化‘极小冲突集’概念的直观理解。",
+      "将约束中的‘数据保证所有输出 YES 的查询中 K 的总和不超过 400000’调整为更标准的 OJ 表述，如‘保证所有查询中输出 YES 时的 K 之和不超过 4×10^5’。",
+      "优先改写核心任务定义，而不是继续替换故事背景。"
+    ],
+    "strengths_to_keep": [
+      "精准落地了 new_schema 的 construct_or_certify 双分支目标与同余约束体系。",
+      "输入输出格式规范，分支逻辑（YES/NO 对应不同行数）描述清晰无歧义。",
+      "Notes 部分有效补充了模运算定义与极小性验证条件，降低了实现时的规则猜测成本。",
+      "校园主题包装自然，未引入无关背景噪声，符合 OJ 题面简洁性要求。"
+    ]
+  },
+  "snapshots": {
+    "paths": {
+      "schema_path": "D:\\AutoProblemGen\\四元组抽取\\output\\batch\\normalized\\CF1294D.json",
+      "artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1294D\\CF1294D_v1_campus_ops_20260422_150145_round2.json",
+      "markdown_path": "D:\\AutoProblemGen\\生成题面\\output\\CF1294D\\CF1294D_v1_campus_ops_20260422_150145_round2.md"
+    },
+    "original_problem": {
+      "selection_id": "sample_18",
+      "problem_id": "CF1294D",
+      "record_uid": "train-00001-of-00039-e092fe56fda18715__row_0302",
+      "statement_language": "english",
+      "title": "1294_D. MEX maximizing",
+      "description": "Recall that MEX of an array is a minimum non-negative integer that does not belong to the array. Examples:\n\n  * for the array [0, 0, 1, 0, 2] MEX equals to 3 because numbers 0, 1 and 2 are presented in the array and 3 is the minimum non-negative integer not presented in the array; \n  * for the array [1, 2, 3, 4] MEX equals to 0 because 0 is the minimum non-negative integer not presented in the array; \n  * for the array [0, 1, 4, 3] MEX equals to 2 because 2 is the minimum non-negative integer not presented in the array. \n\n\n\nYou are given an empty array a=[] (in other words, a zero-length array). You are also given a positive integer x.\n\nYou are also given q queries. The j-th query consists of one integer y_j and means that you have to append one element y_j to the array. The array length increases by 1 after a query.\n\nIn one move, you can choose any index i and set a_i := a_i + x or a_i := a_i - x (i.e. increase or decrease any element of the array by x). The only restriction is that a_i cannot become negative. Since initially the array is empty, you can perform moves only after the first query.\n\nYou have to maximize the MEX (minimum excluded) of the array if you can perform any number of such operations (you can even perform the operation multiple times with one element).\n\nYou have to find the answer after each of q queries (i.e. the j-th answer corresponds to the array of length j).\n\nOperations are discarded before each query. I.e. the array a after the j-th query equals to [y_1, y_2, ..., y_j].\n\nInput\n\nThe first line of the input contains two integers q, x (1 ≤ q, x ≤ 4 ⋅ 10^5) — the number of queries and the value of x.\n\nThe next q lines describe queries. The j-th query consists of one integer y_j (0 ≤ y_j ≤ 10^9) and means that you have to append one element y_j to the array.\n\nOutput\n\nPrint the answer to the initial problem after each query — for the query j print the maximum value of MEX after first j queries. Note that queries are dependent (the array changes after each query) but operations are independent between queries.\n\nExamples\n\nInput\n\n\n7 3\n0\n1\n2\n2\n0\n0\n10\n\n\nOutput\n\n\n1\n2\n3\n3\n4\n4\n7\n\n\nInput\n\n\n4 3\n1\n2\n1\n2\n\n\nOutput\n\n\n0\n0\n0\n0\n\nNote\n\nIn the first example:\n\n  * After the first query, the array is a=[0]: you don't need to perform any operations, maximum possible MEX is 1. \n  * After the second query, the array is a=[0, 1]: you don't need to perform any operations, maximum possible MEX is 2. \n  * After the third query, the array is a=[0, 1, 2]: you don't need to perform any operations, maximum possible MEX is 3. \n  * After the fourth query, the array is a=[0, 1, 2, 2]: you don't need to perform any operations, maximum possible MEX is 3 (you can't make it greater with operations). \n  * After the fifth query, the array is a=[0, 1, 2, 2, 0]: you can perform a[4] := a[4] + 3 = 3. The array changes to be a=[0, 1, 2, 2, 3]. Now MEX is maximum possible and equals to 4. \n  * After the sixth query, the array is a=[0, 1, 2, 2, 0, 0]: you can perform a[4] := a[4] + 3 = 0 + 3 = 3. The array changes to be a=[0, 1, 2, 2, 3, 0]. Now MEX is maximum possible and equals to 4. \n  * After the seventh query, the array is a=[0, 1, 2, 2, 0, 0, 10]. You can perform the following operations: \n    * a[3] := a[3] + 3 = 2 + 3 = 5, \n    * a[4] := a[4] + 3 = 0 + 3 = 3, \n    * a[5] := a[5] + 3 = 0 + 3 = 3, \n    * a[5] := a[5] + 3 = 3 + 3 = 6, \n    * a[6] := a[6] - 3 = 10 - 3 = 7, \n    * a[6] := a[6] - 3 = 7 - 3 = 4. \nThe resulting array will be a=[0, 1, 2, 5, 3, 6, 4]. Now MEX is maximum possible and equals to 7. ",
+      "public_tests": {
+        "input": [
+          "4 3\n1\n2\n1\n2\n",
+          "7 3\n0\n1\n2\n2\n0\n0\n10\n"
+        ],
+        "output": [
+          "0\n0\n0\n0\n",
+          "1\n2\n3\n3\n4\n4\n7\n"
+        ]
+      },
+      "source": {
+        "split": "train",
+        "source_id": 2,
+        "source_name": "CODEFORCES",
+        "url": "https://codeforces.com/contest/1294/problem/D"
+      },
+      "difficulty": {
+        "difficulty_id": 10,
+        "difficulty_name": "D",
+        "difficulty_bucket": null,
+        "cf_rating": 1600,
+        "cf_points": 0.0,
+        "cf_contest_id": 1294,
+        "cf_index": "D",
+        "rating_bucket": "cf_mid"
+      },
+      "tags": [
+        "data structures",
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "limits": {
+        "time_limit": {
+          "seconds": 3,
+          "nanos": 0
+        },
+        "memory_limit_bytes": 256000000
+      },
+      "io_mode": {
+        "input_file": "",
+        "output_file": "",
+        "non_stdio": false
+      },
+      "translation": {
+        "is_description_translated": false,
+        "untranslated_description": ""
+      },
+      "reference_solution": {
+        "language_id": 3,
+        "language_guess": "python",
+        "code": "q,x=map(int,input().split())\na,m,s=[0]*(x+1),0,\"\"\nwhile q>0:\n\tq-=1\n\ta[int(input())%x]+=1\n\twhile a[m%x]>0:\n\t\ta[m%x]-=1\n\t\tm+=1\n\ts+=(str(m)+\"\\n\")\nprint(s)",
+        "char_count": 151,
+        "line_count": 10
+      },
+      "artifact_counts": {
+        "public_tests": 2,
+        "private_tests": 0,
+        "generated_tests": 81,
+        "solutions": 641,
+        "incorrect_solutions": 448
+      },
+      "heuristic_profile": {
+        "tag_families": [
+          "implementation",
+          "math",
+          "greedy",
+          "data_structures"
+        ],
+        "structure_candidates": [
+          "array"
+        ],
+        "objective_type": "optimize",
+        "coverage_features": [
+          "objective:optimize",
+          "rating:cf_mid",
+          "source:CODEFORCES",
+          "structure:array",
+          "tag:data_structures",
+          "tag:greedy",
+          "tag:implementation",
+          "tag:math"
+        ],
+        "english_filter": {
+          "passed": true,
+          "score": 19
+        },
+        "notes": [
+          "selection favors source, difficulty, tag and structure coverage over sample count",
+          "heuristic_profile fields are inferred from metadata and statement text"
+        ]
+      }
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "不要暴露原题编号、出处或链接。",
+        "不要复写原题的叙事结构、输入输出关系或任务定义。"
+      ],
+      "rationale": "原题仅依赖同余类计数单调性求极值；新题要求显式构造双射映射，并在不可行时输出基于同余类容量瓶颈的局部证据。目标从求值转为构造/证明，约束从隐式同余转为显式覆盖与互斥，不变量从单调性转为匹配可行性与证据极小性。",
+      "summary": "将在线MEX计算重构为在线区间覆盖分配问题，强制算法同时处理成功构造与失败证据生成，彻底打破原题贪心指针的直接复用路径。",
+      "mode": "single_seed_extension"
+    },
+    "new_schema": {
+      "problem_id": "CAMPUS_SLOT_ASSIGNMENT",
+      "source": "custom",
+      "input_structure": {
+        "type": "composite",
+        "length": {
+          "min": 1,
+          "max": 400000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        },
+        "components": [
+          {
+            "role": "parameters",
+            "role_description": "query count q, modulo step x, target coverage K",
+            "type": "tuple",
+            "length": {
+              "min": 3,
+              "max": 3
+            },
+            "value_range": {
+              "min": 1,
+              "max": 400000
+            },
+            "properties": {}
+          },
+          {
+            "role": "query_stream",
+            "role_description": "sequence of incoming resource IDs appended in each query",
+            "type": "array",
+            "length": {
+              "min": 1,
+              "max": 400000
+            },
+            "value_range": {
+              "min": 0,
+              "max": 1000000000
+            },
+            "properties": {
+              "ordered": true
+            }
+          }
+        ]
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "divisibility",
+            "description": "每个资源只能分配到与其初始ID模x同余的时段槽位，即分配值v必须满足v ≡ a_i (mod x)。",
+            "formal": "v ≡ a_i (mod x)",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "non_negative",
+            "description": "分配的时段槽位必须为非负整数，不允许负数时段。",
+            "formal": "v ≥ 0",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "distinct_assignment",
+            "description": "所有被分配的资源必须占据互不相同的时段槽位，同一槽位不可重复占用。",
+            "formal": "∀i≠j, v_i ≠ v_j",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "target_coverage",
+            "description": "成功分支要求恰好覆盖连续时段集合{0, 1, ..., K-1}，不允许遗漏或超出该区间。",
+            "formal": "assigned_values = {0, 1, ..., K-1}",
+            "source_sections": [
+              "description"
+            ]
+          }
+        ]
+      },
+      "objective": {
+        "type": "construct_or_certify",
+        "description": "每次查询后，判定当前资源池能否在满足同余与非负约束下覆盖{0..K-1}。若能，输出每个槽位对应的资源ID映射；若不能，输出一个极小冲突余数类集合，证明无论如何分配均无法覆盖。",
+        "target": "assignment_map_or_obstruction_set",
+        "requires_solution": true
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "hall_condition_for_residues",
+            "description": "可行性充要条件为：对任意余数类子集S，S中可用资源总数必须不小于目标区间{0..K-1}中属于S的槽位需求数。该条件在每次查询后动态更新。",
+            "properties": {},
+            "evidence_source": "solution_code"
+          },
+          {
+            "name": "certificate_minimality",
+            "description": "失败分支输出的冲突集合必须满足极小性：该集合内总需求严格大于总供给，且移除集合中任意一个余数类后，剩余子集均满足供给≥需求。",
+            "properties": {},
+            "evidence_source": "solution_code"
+          }
+        ]
+      },
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "hard"
+    },
+    "generated_problem": {
+      "title": "校园时段调度",
+      "description": "大学社团联合会正在规划新学期的活动场地。现有 $K$ 个连续时段，编号为 $0, 1, \\dots, K-1$。同时，有若干支社团队伍陆续抵达，每支队伍携带一个唯一的资源编号 $a_i$。\n\n为了公平起见，调度规则规定：编号为 $a_i$ 的队伍只能被安排在时段 $v$，且必须满足 $v \\equiv a_i \\pmod x$（其中 $x$ 为给定的步长参数）。此外，每个时段最多只能容纳一支队伍，且所有队伍必须恰好填满 $0$ 到 $K-1$ 的每一个时段，不允许遗漏或重复。\n\n队伍会按顺序依次抵达。你需要在每支队伍抵达后，立即判断当前已抵达的队伍集合能否在满足上述规则的前提下，完成对 $0 \\sim K-1$ 时段的完美覆盖。\n\n若能完成，请输出一种具体的分配方案（即每个时段对应的队伍编号）；若不能，请输出一个“极小冲突余数类集合”，用于证明当前资源池无论如何分配都无法达成目标。该集合需满足：集合内所有余数类对应的时段需求总数严格大于当前可用队伍总数，且从中移除任意一个余数类后，剩余部分的需求均不超过可用队伍数。",
+      "input_format": "第一行包含三个正整数 $q, x, K$，分别表示查询次数、步长参数和目标时段总数。\n接下来 $q$ 行，每行包含一个非负整数 $a_i$，表示第 $i$ 次查询新增的队伍资源编号。",
+      "output_format": "对于每次查询，输出两行或三行：\n第一行输出 `YES` 或 `NO`，表示当前资源池能否完成覆盖。\n若为 `YES`，第二行输出 $K$ 个整数，第 $j$ 个整数表示时段 $j$ 分配到的队伍资源编号。\n若为 `NO`，第二行输出一个整数 $m$ 表示极小冲突集合的大小，第三行输出 $m$ 个互不相同的整数，表示冲突的余数类（按升序排列）。若存在多个满足条件的极小集合，输出字典序最小的一个即可。",
+      "constraints": [
+        "1 ≤ q, x, K ≤ 400000",
+        "0 ≤ a_i ≤ 10^9",
+        "时间限制：2.0 秒",
+        "空间限制：512 MB",
+        "数据保证所有输出 YES 的查询中 K 的总和不超过 400000"
+      ],
+      "samples": [
+        {
+          "input": "3 2 3\n2\n3\n4",
+          "output": "NO\n1\n0\nNO\n1\n0\nYES\n2 3 4",
+          "explanation": "第一次查询后仅有资源2（余数0），时段0,1,2的需求分别为余数0需2个、余数1需1个。余数0供给不足，输出极小冲突集{0}。第二次查询后资源2,3（余数0,1），余数0仍缺1个，冲突集仍为{0}。第三次查询后资源2,3,4（余数0,1,0），各余数供给均满足需求，成功分配。"
+        },
+        {
+          "input": "2 4 5\n5\n9",
+          "output": "NO\n1\n0\nNO\n1\n0",
+          "explanation": "目标时段0~4，步长4。各余数需求为：0需2个(0,4)，1需1个(1)，2需1个(2)，3需1个(3)。第一次查询资源5（余数1），余数0供给为0，不足，输出{0}。第二次查询资源9（余数1），余数0仍为0，不足，输出{0}。"
+        }
+      ],
+      "notes": "1. 极小冲突集定义：设集合 S 为若干余数类的集合，若 S 中所有余数类在 0~K-1 内的时段需求总数严格大于当前可用资源总数，且 S 的任意真子集均不满足该严格大于条件，则称 S 为极小冲突集。由于本题同余约束的独立性，任意一个供给不足的余数类均可单独构成极小冲突集，输出字典序最小的一个即可。\n2. 模运算定义：v ≡ a_i (mod x) 表示 v 与 a_i 除以 x 的余数相同，且 v ≥ 0。\n3. 输出方案时，第 j 个数字对应时段 j 分配的资源编号，资源编号需与输入完全一致。",
+      "status": "ok",
+      "error_reason": "",
+      "feedback": ""
+    },
+    "artifact_contract": {
+      "new_schema_present": true,
+      "new_schema_field_present": false,
+      "new_schema_snapshot_field_present": true,
+      "difference_plan_present": true,
+      "predicted_schema_distance_present": true,
+      "distance_breakdown_present": true,
+      "changed_axes_realized_present": true,
+      "generated_problem_present": true
+    },
+    "review_context": {
+      "difference_plan": {
+        "summary": "将在线MEX计算重构为在线区间覆盖分配问题，强制算法同时处理成功构造与失败证据生成，彻底打破原题贪心指针的直接复用路径。",
+        "mode": "single_seed_extension",
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      },
+      "changed_axes_realized": [
+        "C",
+        "O",
+        "V"
+      ],
+      "distance_breakdown": {
+        "distance_version": "v2",
+        "backend": "embedding",
+        "total": 0.4614,
+        "axis_scores": {
+          "I": 0.0,
+          "C": 0.6808,
+          "O": 0.6196,
+          "V": 0.5114
+        },
+        "components": {
+          "input_tree_distance": 0.0,
+          "constraint_match_distance": 0.6808,
+          "objective_type_distance": 0.6657,
+          "objective_text_distance": 0.5505,
+          "invariant_match_distance": 0.5114
+        }
+      },
+      "applied_rule": "construct_or_obstruction",
+      "applied_helpers": [
+        {
+          "id": "local_certificate_design",
+          "selection_reason": "将无解原因压缩为可局部检查的证据对象，满足规则对失败语义的结构化要求。",
+          "affected_axes": [
+            "C",
+            "O",
+            "V"
+          ],
+          "schema_changes": [
+            "objective 增加证书输出分支",
+            "invariant 增加 certificate_minimality",
+            "core_constraints 明确失败验证条件"
+          ],
+          "innovation_reason": "让失败语义从解释变成输出对象，提供可直接校验的极小冲突集。",
+          "difficulty_reason": "要求解法同时构造成功分支和失败证据分支，增加状态维护与极小性证明负担。"
+        },
+        {
+          "id": "failure_branch_symmetry",
+          "selection_reason": "确保成功与失败分支承担对等输出责任，避免失败分支退化为附属说明。",
+          "affected_axes": [
+            "C",
+            "O"
+          ],
+          "schema_changes": [
+            "objective 改为 construct_or_certify 类型",
+            "core_constraints 增加 target_coverage 与 distinct_assignment"
+          ],
+          "innovation_reason": "把单目标输出改成双分支输出合同，共享输入语义但承担不同输出对象。",
+          "difficulty_reason": "要求算法统一处理两类输出语义，失败分支不能靠特判绕开主匹配结构。"
+        },
+        {
+          "id": "obstruction_embedding",
+          "selection_reason": "使冲突证据直接源于主约束的不可兼容性，而非外部附加条件。",
+          "affected_axes": [
+            "C",
+            "V"
+          ],
+          "schema_changes": [
+            "core_constraints 嵌入同余容量瓶颈逻辑",
+            "invariant 增加 hall_condition_for_residues"
+          ],
+          "innovation_reason": "让失败证据嵌入主约束内部，成功与失败共享同一状态信息来源。",
+          "difficulty_reason": "要求解法在同一状态信息里同时解释成功构造与失败证据，提升状态推导复杂度。"
+        }
+      ],
+      "algorithmic_delta_claim": {
+        "seed_solver_core": "维护各余数类可用元素数量，利用单调性贪心推进MEX指针，闭式计算 min(cnt[r]*x + r)。",
+        "reusable_subroutines": "同余类计数维护、在线增量更新逻辑、非负边界过滤、模运算分组。",
+        "new_solver_core": "基于同余类容量与目标区间需求的贪心分配算法；失败时通过扫描余数类计算‘需求-供给’差值，提取极小瓶颈集合作为证书。",
+        "new_proof_obligation": "需证明输出的冲突集合满足局部可验证性（即该集合内总需求严格大于总供给，且任意真子集均满足供给≥需求），并证明分配方案在满足同余约束下无冲突且恰好覆盖目标区间。",
+        "why_direct_reuse_fails": "原题解法仅依赖全局最小瓶颈值，不关心具体元素到槽位的映射关系；新题要求显式输出分配方案，且失败时需输出极小冲突集，原题的闭式公式无法直接生成映射或证书结构，必须重构为匹配/流或带证书生成的贪心策略。"
+      },
+      "anti_shallow_rationale": "彻底摒弃了原题‘仅求值’的范式，引入显式构造与证书输出双分支。失败证据不再是自然语言解释，而是结构化的余数类集合，可直接通过容量不等式验证。输入虽保留流式特征，但目标固定为K，迫使算法处理精确覆盖而非单调极值，有效阻断常数平移或简单公式套用。"
+    }
+  }
+}

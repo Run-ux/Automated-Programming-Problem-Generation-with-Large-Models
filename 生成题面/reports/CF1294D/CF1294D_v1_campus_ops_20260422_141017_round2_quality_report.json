@@ -1,0 +1,767 @@
+{
+  "overall": {
+    "status": "reject_as_retheme",
+    "quality_score": 95.0,
+    "divergence_score": 46.4,
+    "schema_distance": 0.4487,
+    "generated_status": "ok"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 5.0,
+        "rationale": "题面完整且准确地实现了new_schema中定义的所有变体要素：模x同余约束、互异性、MEX最大化与字典序最小化联合目标、在线查询流输入以及每次输出完整分配数组的要求。核心约束与目标函数在description和output_format中一一对应，无偏离。",
+        "evidence_refs": [
+          "new_schema.core_constraints",
+          "new_schema.objective",
+          "generated_problem.description",
+          "generated_problem.output_format"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 5.0,
+        "rationale": "题面提供了独立解题所需的全部关键信息，包括任务定义、输入输出格式、数据范围、MEX与字典序定义，以及动态重计算规则的明确说明。边界条件（如t_i≥0、互异）清晰，无歧义，选手可直接据此建模。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.output_format",
+          "generated_problem.constraints"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 5.0,
+        "rationale": "description、input/output format、constraints与samples之间高度一致。样例输入输出严格遵循模x同余、互异、MEX最大及字典序最小规则，符号含义与字段数量在各部分无冲突，逻辑自洽。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.output_format",
+          "generated_problem.samples"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 4.0,
+        "rationale": "提供了3个样例，覆盖了基础分配、同余类冲突及x=1退化情况，解释清晰。但缺少展示“历史分配值动态调整”（即早期社团的t_j因新社团加入而被迫改变）的样例，对理解动态重计算机制的直观性略有不足。",
+        "evidence_refs": [
+          "generated_problem.samples"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 4.0,
+        "rationale": "整体结构符合标准OJ规范，语言清晰，主题包装自然。但notes部分直接给出了“必须采用精确槽位映射机制...并查集/双向链表”的算法实现提示，属于解法泄露，不符合竞赛题面通常隐藏核心数据结构的惯例，可能削弱Hard难度的挑战性。",
+        "evidence_refs": [
+          "generated_problem.notes"
+        ]
+      }
+    ],
+    "strengths": [
+      "准确落地了new_schema中的联合优化目标（MEX最大+字典序最小）与在线查询流结构。",
+      "输入输出格式定义严谨，与constraints中的数据范围完全匹配。",
+      "样例解释逐步推演，清晰展示了模运算、冲突处理与MEX计算过程。",
+      "主题包装（校园社团排期）自然贴合抽象约束，无生硬拼接感。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "distance_version": "v2",
+      "backend": "embedding",
+      "total": 0.4487,
+      "axis_scores": {
+        "I": 0.0833,
+        "C": 0.6056,
+        "O": 0.6614,
+        "V": 0.4043
+      },
+      "components": {
+        "input_tree_distance": 0.0833,
+        "constraint_match_distance": 0.6056,
+        "objective_type_distance": 0.7386,
+        "objective_text_distance": 0.5456,
+        "invariant_match_distance": 0.4043
+      }
+    },
+    "schema_distance": 0.4487,
+    "changed_axes_planned": [
+      "C",
+      "O",
+      "V"
+    ],
+    "changed_axes_realized": [
+      "C",
+      "O",
+      "V"
+    ],
+    "semantic_difference": 0.3,
+    "solution_transfer_risk": 0.85,
+    "surface_retheme_risk": 0.75,
+    "verdict": "reject_as_retheme",
+    "rationale": "新题的核心数学模型与原题完全一致：均依赖模 x 同余类划分，通过贪心填充 0,1,2,... 来最大化 MEX。新增的“字典序最小分配序列”要求并未改变底层状态定义与最优性目标，仅是在原题计数器解法的基础上增加了一步基于同余类余量的贪心映射步骤。上游声称需要引入并查集/链表进行槽位跳跃（review_context.algorithmic_delta_claim），但实际只需维护各余数类计数并配合简单的可行性检查即可完成分配，原题的“计数+MEX指针”框架可直接复用。此外，新题要求每次查询输出长度为 O(i) 的完整数组，总输出规模达 O(q^2)，在 q≤4e5 下物理不可行，暴露出修改仅停留在表层任务定义与叙事包装，未进行实质性的算法重构。",
+    "evidence_refs": [
+      "snapshots.original_problem.description",
+      "snapshots.new_schema.core_constraints",
+      "snapshots.generated_problem.output_format",
+      "review_context.algorithmic_delta_claim"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_problem_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 generated_problem。",
+      "evidence_refs": [
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "new_schema_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 new_schema 或兼容字段 new_schema_snapshot。",
+      "evidence_refs": [
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "生成状态正常。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "predicted_schema_distance_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 predicted_schema_distance。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "distance_breakdown_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 distance_breakdown。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "changed_axes_realized_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 changed_axes_realized。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.45，达到中等差异阈值。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "已落地核心差异轴：C, O, V。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题或题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=3。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "目标函数已经在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "Notes部分泄露核心数据结构提示",
+      "detail": "题面notes中明确写出“必须采用精确槽位映射机制...并查集/双向链表”，直接暴露了Hard难度题的核心解法与数据结构选择，降低了选手的探索空间与思维难度。",
+      "evidence_refs": [
+        "generated_problem.notes"
+      ],
+      "fix_hint": "将notes中的算法实现细节移除或改为抽象描述，例如改为“需高效维护同余类空闲槽位以支持动态查询”，保留解题挑战。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "样例未覆盖动态重分配场景",
+      "detail": "当前3个样例中，历史社团的分配时间均未发生改变，未能直观体现schema中强调的“历史分配值允许动态调整”这一关键特性，可能让选手误以为分配是静态追加的。",
+      "evidence_refs": [
+        "generated_problem.samples",
+        "new_schema.core_constraints"
+      ],
+      "fix_hint": "补充一个样例，展示新社团加入后，为满足MEX最大或字典序最小，导致前面某个社团的t_j值发生跳变的情况，并附详细解释。"
+    },
+    {
+      "issue_type": "retheme_issue",
+      "severity": "blocker",
+      "title": "solution transfer risk too high",
+      "detail": "新题的核心数学模型与原题完全一致：均依赖模 x 同余类划分，通过贪心填充 0,1,2,... 来最大化 MEX。新增的“字典序最小分配序列”要求并未改变底层状态定义与最优性目标，仅是在原题计数器解法的基础上增加了一步基于同余类余量的贪心映射步骤。上游声称需要引入并查集/链表进行槽位跳跃（review_context.algorithmic_delta_claim），但实际只需维护各余数类计数并配合简单的可行性检查即可完成分配，原题的“计数+MEX指针”框架可直接复用。此外，新题要求每次查询输出长度为 O(i) 的完整数组，总输出规模达 O(q^2)，在 q≤4e5 下物理不可行，暴露出修改仅停留在表层任务定义与叙事包装，未进行实质性的算法重构。",
+      "evidence_refs": [
+        "snapshots.original_problem.description",
+        "snapshots.new_schema.core_constraints",
+        "snapshots.generated_problem.output_format",
+        "review_context.algorithmic_delta_claim"
+      ],
+      "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+    }
+  ],
+  "suggested_revisions": [
+    "将notes中的算法实现细节移除或改为抽象描述，例如改为“需高效维护同余类空闲槽位以支持动态查询”，保留解题挑战。",
+    "补充一个样例，展示新社团加入后，为满足MEX最大或字典序最小，导致前面某个社团的t_j值发生跳变的情况，并附详细解释。",
+    "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+    "移除notes中关于并查集/双向链表的具体算法提示，改为强调状态维护的复杂度要求。",
+    "增加一个体现“历史值动态调整”的样例，增强对动态重计算规则的理解。",
+    "在description中可进一步明确“字典序比较基于社团原始申请顺序[t_1, t_2, ..., t_k]”，避免与按时间排序混淆。",
+    "优先改写核心任务定义，而不是继续替换故事背景。"
+  ],
+  "revision_brief": {
+    "round_index": 2,
+    "overall_status": "reject_as_retheme",
+    "generated_status": "ok",
+    "quality_score": 95.0,
+    "divergence_score": 46.4,
+    "failed_hard_checks": [],
+    "issues": [
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "Notes部分泄露核心数据结构提示",
+        "detail": "题面notes中明确写出“必须采用精确槽位映射机制...并查集/双向链表”，直接暴露了Hard难度题的核心解法与数据结构选择，降低了选手的探索空间与思维难度。",
+        "evidence_refs": [
+          "generated_problem.notes"
+        ],
+        "fix_hint": "将notes中的算法实现细节移除或改为抽象描述，例如改为“需高效维护同余类空闲槽位以支持动态查询”，保留解题挑战。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "样例未覆盖动态重分配场景",
+        "detail": "当前3个样例中，历史社团的分配时间均未发生改变，未能直观体现schema中强调的“历史分配值允许动态调整”这一关键特性，可能让选手误以为分配是静态追加的。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "new_schema.core_constraints"
+        ],
+        "fix_hint": "补充一个样例，展示新社团加入后，为满足MEX最大或字典序最小，导致前面某个社团的t_j值发生跳变的情况，并附详细解释。"
+      },
+      {
+        "issue_type": "retheme_issue",
+        "severity": "blocker",
+        "title": "solution transfer risk too high",
+        "detail": "新题的核心数学模型与原题完全一致：均依赖模 x 同余类划分，通过贪心填充 0,1,2,... 来最大化 MEX。新增的“字典序最小分配序列”要求并未改变底层状态定义与最优性目标，仅是在原题计数器解法的基础上增加了一步基于同余类余量的贪心映射步骤。上游声称需要引入并查集/链表进行槽位跳跃（review_context.algorithmic_delta_claim），但实际只需维护各余数类计数并配合简单的可行性检查即可完成分配，原题的“计数+MEX指针”框架可直接复用。此外，新题要求每次查询输出长度为 O(i) 的完整数组，总输出规模达 O(q^2)，在 q≤4e5 下物理不可行，暴露出修改仅停留在表层任务定义与叙事包装，未进行实质性的算法重构。",
+        "evidence_refs": [
+          "snapshots.original_problem.description",
+          "snapshots.new_schema.core_constraints",
+          "snapshots.generated_problem.output_format",
+          "review_context.algorithmic_delta_claim"
+        ],
+        "fix_hint": "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。"
+      }
+    ],
+    "suggested_revisions": [
+      "将notes中的算法实现细节移除或改为抽象描述，例如改为“需高效维护同余类空闲槽位以支持动态查询”，保留解题挑战。",
+      "补充一个样例，展示新社团加入后，为满足MEX最大或字典序最小，导致前面某个社团的t_j值发生跳变的情况，并附详细解释。",
+      "增加输入、约束与目标的实质变化，降低原题解法的直接迁移性。",
+      "移除notes中关于并查集/双向链表的具体算法提示，改为强调状态维护的复杂度要求。",
+      "增加一个体现“历史值动态调整”的样例，增强对动态重计算规则的理解。",
+      "在description中可进一步明确“字典序比较基于社团原始申请顺序[t_1, t_2, ..., t_k]”，避免与按时间排序混淆。",
+      "优先改写核心任务定义，而不是继续替换故事背景。"
+    ],
+    "strengths_to_keep": [
+      "准确落地了new_schema中的联合优化目标（MEX最大+字典序最小）与在线查询流结构。",
+      "输入输出格式定义严谨，与constraints中的数据范围完全匹配。",
+      "样例解释逐步推演，清晰展示了模运算、冲突处理与MEX计算过程。",
+      "主题包装（校园社团排期）自然贴合抽象约束，无生硬拼接感。"
+    ]
+  },
+  "snapshots": {
+    "paths": {
+      "schema_path": "D:\\AutoProblemGen\\四元组抽取\\output\\batch\\normalized\\CF1294D.json",
+      "artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1294D\\CF1294D_v1_campus_ops_20260422_141017_round2.json",
+      "markdown_path": "D:\\AutoProblemGen\\生成题面\\output\\CF1294D\\CF1294D_v1_campus_ops_20260422_141017_round2.md"
+    },
+    "original_problem": {
+      "selection_id": "sample_18",
+      "problem_id": "CF1294D",
+      "record_uid": "train-00001-of-00039-e092fe56fda18715__row_0302",
+      "statement_language": "english",
+      "title": "1294_D. MEX maximizing",
+      "description": "Recall that MEX of an array is a minimum non-negative integer that does not belong to the array. Examples:\n\n  * for the array [0, 0, 1, 0, 2] MEX equals to 3 because numbers 0, 1 and 2 are presented in the array and 3 is the minimum non-negative integer not presented in the array; \n  * for the array [1, 2, 3, 4] MEX equals to 0 because 0 is the minimum non-negative integer not presented in the array; \n  * for the array [0, 1, 4, 3] MEX equals to 2 because 2 is the minimum non-negative integer not presented in the array. \n\n\n\nYou are given an empty array a=[] (in other words, a zero-length array). You are also given a positive integer x.\n\nYou are also given q queries. The j-th query consists of one integer y_j and means that you have to append one element y_j to the array. The array length increases by 1 after a query.\n\nIn one move, you can choose any index i and set a_i := a_i + x or a_i := a_i - x (i.e. increase or decrease any element of the array by x). The only restriction is that a_i cannot become negative. Since initially the array is empty, you can perform moves only after the first query.\n\nYou have to maximize the MEX (minimum excluded) of the array if you can perform any number of such operations (you can even perform the operation multiple times with one element).\n\nYou have to find the answer after each of q queries (i.e. the j-th answer corresponds to the array of length j).\n\nOperations are discarded before each query. I.e. the array a after the j-th query equals to [y_1, y_2, ..., y_j].\n\nInput\n\nThe first line of the input contains two integers q, x (1 ≤ q, x ≤ 4 ⋅ 10^5) — the number of queries and the value of x.\n\nThe next q lines describe queries. The j-th query consists of one integer y_j (0 ≤ y_j ≤ 10^9) and means that you have to append one element y_j to the array.\n\nOutput\n\nPrint the answer to the initial problem after each query — for the query j print the maximum value of MEX after first j queries. Note that queries are dependent (the array changes after each query) but operations are independent between queries.\n\nExamples\n\nInput\n\n\n7 3\n0\n1\n2\n2\n0\n0\n10\n\n\nOutput\n\n\n1\n2\n3\n3\n4\n4\n7\n\n\nInput\n\n\n4 3\n1\n2\n1\n2\n\n\nOutput\n\n\n0\n0\n0\n0\n\nNote\n\nIn the first example:\n\n  * After the first query, the array is a=[0]: you don't need to perform any operations, maximum possible MEX is 1. \n  * After the second query, the array is a=[0, 1]: you don't need to perform any operations, maximum possible MEX is 2. \n  * After the third query, the array is a=[0, 1, 2]: you don't need to perform any operations, maximum possible MEX is 3. \n  * After the fourth query, the array is a=[0, 1, 2, 2]: you don't need to perform any operations, maximum possible MEX is 3 (you can't make it greater with operations). \n  * After the fifth query, the array is a=[0, 1, 2, 2, 0]: you can perform a[4] := a[4] + 3 = 3. The array changes to be a=[0, 1, 2, 2, 3]. Now MEX is maximum possible and equals to 4. \n  * After the sixth query, the array is a=[0, 1, 2, 2, 0, 0]: you can perform a[4] := a[4] + 3 = 0 + 3 = 3. The array changes to be a=[0, 1, 2, 2, 3, 0]. Now MEX is maximum possible and equals to 4. \n  * After the seventh query, the array is a=[0, 1, 2, 2, 0, 0, 10]. You can perform the following operations: \n    * a[3] := a[3] + 3 = 2 + 3 = 5, \n    * a[4] := a[4] + 3 = 0 + 3 = 3, \n    * a[5] := a[5] + 3 = 0 + 3 = 3, \n    * a[5] := a[5] + 3 = 3 + 3 = 6, \n    * a[6] := a[6] - 3 = 10 - 3 = 7, \n    * a[6] := a[6] - 3 = 7 - 3 = 4. \nThe resulting array will be a=[0, 1, 2, 5, 3, 6, 4]. Now MEX is maximum possible and equals to 7. ",
+      "public_tests": {
+        "input": [
+          "4 3\n1\n2\n1\n2\n",
+          "7 3\n0\n1\n2\n2\n0\n0\n10\n"
+        ],
+        "output": [
+          "0\n0\n0\n0\n",
+          "1\n2\n3\n3\n4\n4\n7\n"
+        ]
+      },
+      "source": {
+        "split": "train",
+        "source_id": 2,
+        "source_name": "CODEFORCES",
+        "url": "https://codeforces.com/contest/1294/problem/D"
+      },
+      "difficulty": {
+        "difficulty_id": 10,
+        "difficulty_name": "D",
+        "difficulty_bucket": null,
+        "cf_rating": 1600,
+        "cf_points": 0.0,
+        "cf_contest_id": 1294,
+        "cf_index": "D",
+        "rating_bucket": "cf_mid"
+      },
+      "tags": [
+        "data structures",
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "limits": {
+        "time_limit": {
+          "seconds": 3,
+          "nanos": 0
+        },
+        "memory_limit_bytes": 256000000
+      },
+      "io_mode": {
+        "input_file": "",
+        "output_file": "",
+        "non_stdio": false
+      },
+      "translation": {
+        "is_description_translated": false,
+        "untranslated_description": ""
+      },
+      "reference_solution": {
+        "language_id": 3,
+        "language_guess": "python",
+        "code": "q,x=map(int,input().split())\na,m,s=[0]*(x+1),0,\"\"\nwhile q>0:\n\tq-=1\n\ta[int(input())%x]+=1\n\twhile a[m%x]>0:\n\t\ta[m%x]-=1\n\t\tm+=1\n\ts+=(str(m)+\"\\n\")\nprint(s)",
+        "char_count": 151,
+        "line_count": 10
+      },
+      "artifact_counts": {
+        "public_tests": 2,
+        "private_tests": 0,
+        "generated_tests": 81,
+        "solutions": 641,
+        "incorrect_solutions": 448
+      },
+      "heuristic_profile": {
+        "tag_families": [
+          "implementation",
+          "math",
+          "greedy",
+          "data_structures"
+        ],
+        "structure_candidates": [
+          "array"
+        ],
+        "objective_type": "optimize",
+        "coverage_features": [
+          "objective:optimize",
+          "rating:cf_mid",
+          "source:CODEFORCES",
+          "structure:array",
+          "tag:data_structures",
+          "tag:greedy",
+          "tag:implementation",
+          "tag:math"
+        ],
+        "english_filter": {
+          "passed": true,
+          "score": 19
+        },
+        "notes": [
+          "selection favors source, difficulty, tag and structure coverage over sample count",
+          "heuristic_profile fields are inferred from metadata and statement text"
+        ]
+      }
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "不要暴露原题编号、出处或链接。",
+        "不要复写原题的叙事结构、输入输出关系或任务定义。"
+      ],
+      "rationale": "C轴：新增字典序最小化与槽位唯一性硬约束，重排主约束优先级；O轴：目标从输出单一MEX值改为输出完整分配向量；V轴：验证责任从检查数值最优升级为校验分配合法性、全局最优性与规范顺序一致性。",
+      "summary": "通过规范解输出要求彻底重构状态表示与转移逻辑，使解法必须处理精确槽位分配与优先级冲突，而非仅维护计数。",
+      "mode": "single_seed_extension"
+    },
+    "new_schema": {
+      "problem_id": "CampusOps_CanonicalSchedule",
+      "source": "custom",
+      "input_structure": {
+        "type": "composite",
+        "length": {
+          "min": 1,
+          "max": 400000
+        },
+        "value_range": {
+          "min": 0,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true,
+          "online_queries": true
+        },
+        "components": [
+          {
+            "role": "parameters",
+            "role_description": "query count and fixed cycle step x",
+            "type": "tuple",
+            "length": {
+              "min": 2,
+              "max": 2
+            },
+            "value_range": {
+              "min": 1,
+              "max": 400000
+            },
+            "properties": {}
+          },
+          {
+            "role": "query_stream",
+            "role_description": "sequence of club base times appended per query",
+            "type": "array",
+            "length": {
+              "min": 1,
+              "max": 400000
+            },
+            "value_range": {
+              "min": 0,
+              "max": 1000000000
+            },
+            "properties": {
+              "ordered": true
+            }
+          }
+        ]
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "divisibility",
+            "description": "每个社团i的分配时间t_i必须满足t_i ≡ v_i (mod x)，且t_i ≥ 0。",
+            "formal": "t_i ≡ v_i (mod x) ∧ t_i ≥ 0",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "distinct_assignment",
+            "description": "任意两个社团的分配时间必须互不相同，即所有t_i构成严格递增序列。",
+            "formal": "∀i≠j, t_i ≠ t_j",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "canonical_priority",
+            "description": "在达成全局最大MEX的前提下，分配数组[t_1, t_2, ..., t_q]必须字典序最小。每次查询后系统基于当前所有社团重新计算规范分配，历史分配值允许动态调整以满足当前最优性。",
+            "formal": "argmin_lex(t) s.t. MEX({t}) = max_possible",
+            "source_sections": [
+              "description",
+              "constraints"
+            ]
+          }
+        ]
+      },
+      "objective": {
+        "type": "output_canonical_witness",
+        "description": "对每次查询，输出当前所有社团的规范分配时间数组。该数组需同时满足模x同余、互异非负、MEX最大化及字典序最小化。",
+        "target": "assignment_array",
+        "requires_solution": true
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "canonical_frontier",
+            "description": "维护每个余数类r的下一个可用槽位指针next_free[r]。分配过程严格按社团ID升序进行，若目标槽位被占，则通过并查集/链表跳跃至同余类中下一个空闲位置。该指针单调不减，且保证已分配槽位集合始终构成规范前缀。",
+            "properties": {},
+            "evidence_source": "solution_code"
+          },
+          {
+            "name": "mex_optimality_preservation",
+            "description": "贪心分配策略不会破坏MEX最大化潜力。任何为追求字典序更小而提前占用高优先级槽位的操作，均会被同余类内的连续性约束拦截，确保0..MEX-1区间始终被最紧凑地填充。",
+            "properties": {},
+            "evidence_source": "solution_code"
+          }
+        ]
+      },
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "Hard"
+    },
+    "generated_problem": {
+      "title": "社团排期计划",
+      "description": "校园运营中心正在为各学生社团安排活动场地。现有 $q$ 个社团依次提交申请，第 $i$ 个社团提交的基础期望时间为 $v_i$。由于场地调度规则，每个社团最终被分配的时间 $t_i$ 必须满足 $t_i \\equiv v_i \\pmod x$ 且 $t_i \\ge 0$。此外，为了保证活动不冲突，任意两个社团的分配时间必须互不相同。\n\n运营中心希望所有社团的分配时间集合 $\\{t_1, t_2, \\dots, t_k\\}$ 的 MEX（即集合中未出现的最小非负整数）尽可能大。在 MEX 达到最大的前提下，分配时间序列 $[t_1, t_2, \\dots, t_k]$ 必须字典序最小。若某位置未被用于填充 MEX 前缀，则分配其同余类中大于等于当前 MEX 的最小非负整数。\n\n每当有新社团加入时，系统会基于当前所有已申请的社团重新计算满足上述条件的规范分配方案。历史社团的分配时间允许被动态调整，以维持全局最优性。你需要对每次查询（即每加入一个新社团后），输出当前所有社团的规范分配时间序列。",
+      "input_format": "第一行包含两个正整数 $q$ 和 $x$，分别表示社团申请总数和调度步长。\n接下来 $q$ 行，每行包含一个非负整数 $v_i$，表示第 $i$ 个社团的基础期望时间。",
+      "output_format": "共 $q$ 行。第 $i$ 行输出 $i$ 个非负整数，表示前 $i$ 个社团的规范分配时间 $t_1, t_2, \\dots, t_i$，相邻整数间用空格分隔。",
+      "constraints": [
+        "$1 \\le q \\le 400000$",
+        "$1 \\le x \\le 400000$",
+        "$0 \\le v_i \\le 10^9$",
+        "时间限制：2.0 秒",
+        "空间限制：512 MB"
+      ],
+      "samples": [
+        {
+          "input": "3 2\n0\n0\n1",
+          "output": "0\n0 2\n0 2 1",
+          "explanation": "第1个社团期望0，模2余0，分配最小非负值0。集合{0}，MEX=1，输出0。\n第2个社团期望0，模2余0，0已被占，分配同余类下一可用值2。集合{0,2}，MEX=1，字典序最小序列为[0,2]，输出0 2。\n第3个社团期望1，模2余1，分配最小非负值1。集合{0,1,2}，MEX=3，字典序最小序列为[0,2,1]，输出0 2 1。"
+        },
+        {
+          "input": "4 3\n1\n1\n1\n1",
+          "output": "1\n1 4\n1 4 7\n1 4 7 10",
+          "explanation": "所有社团期望模3均余1。只能分配1,4,7,10...。由于0始终无法被分配，MEX恒为0。为满足字典序最小，按顺序依次分配同余类中最小可用值。"
+        },
+        {
+          "input": "3 1\n5\n2\n8",
+          "output": "0\n0 1\n0 1 2",
+          "explanation": "步长x=1时，模1余数均为0，等价于分配任意非负整数。为最大化MEX并保证字典序最小，系统紧凑填充0,1,2。每次新增社团均填补当前MEX空缺。"
+        }
+      ],
+      "notes": "1. MEX 定义：给定非负整数集合中未出现的最小非负整数。\n2. 字典序比较：从左至右逐位比较，首次出现较小数值的一方字典序更小。\n3. 分配策略核心：本题要求输出完整的分配向量，仅维护同余类资源数量无法确定具体槽位归属。必须采用精确槽位映射机制，按社团ID升序贪心分配最小合法槽位，并在冲突时快速定位同余类下一空闲位置。\n4. 动态重计算：每次查询后，系统会全局重算规范解。历史分配值可能因新社团加入而调整，但算法可通过维护各余数类的连续空闲槽位指针实现均摊高效更新。",
+      "status": "ok",
+      "error_reason": "",
+      "feedback": ""
+    },
+    "artifact_contract": {
+      "new_schema_present": true,
+      "new_schema_field_present": false,
+      "new_schema_snapshot_field_present": true,
+      "difference_plan_present": true,
+      "predicted_schema_distance_present": true,
+      "distance_breakdown_present": true,
+      "changed_axes_realized_present": true,
+      "generated_problem_present": true
+    },
+    "review_context": {
+      "difference_plan": {
+        "summary": "通过规范解输出要求彻底重构状态表示与转移逻辑，使解法必须处理精确槽位分配与优先级冲突，而非仅维护计数。",
+        "mode": "single_seed_extension",
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      },
+      "changed_axes_realized": [
+        "C",
+        "O",
+        "V"
+      ],
+      "distance_breakdown": {
+        "distance_version": "v2",
+        "backend": "embedding",
+        "total": 0.4487,
+        "axis_scores": {
+          "I": 0.0833,
+          "C": 0.6056,
+          "O": 0.6614,
+          "V": 0.4043
+        },
+        "components": {
+          "input_tree_distance": 0.0833,
+          "constraint_match_distance": 0.6056,
+          "objective_type_distance": 0.7386,
+          "objective_text_distance": 0.5456,
+          "invariant_match_distance": 0.4043
+        }
+      },
+      "applied_rule": "canonical_witness",
+      "applied_helpers": [
+        {
+          "id": "canonical_order_pressure",
+          "selection_reason": "将规范顺序推进到主状态演化，避免退化为后处理。",
+          "affected_axes": [
+            "C",
+            "O",
+            "V"
+          ],
+          "schema_changes": [
+            "在core_constraints中新增canonical_priority硬约束",
+            "在invariant中定义canonical_frontier状态指针",
+            "将输出目标绑定至全局字典序最小化"
+          ],
+          "innovation_reason": "让输出对象与验证责任离开原题路径，强制状态机按ID优先级演化。",
+          "difficulty_reason": "状态转移必须承担规范性证明，需引入DSU跳跃维护连续空闲槽位，显著提升实现复杂度。"
+        },
+        {
+          "id": "proof_bearing_output",
+          "selection_reason": "把输出对象升级成带证明责任的规范解，确保可校验性。",
+          "affected_axes": [
+            "O",
+            "V"
+          ],
+          "schema_changes": [
+            "objective类型改为output_canonical_witness",
+            "requires_solution设为true",
+            "验证责任明确包含合法性、最优性与规范性三重检查"
+          ],
+          "innovation_reason": "让新题输出责任变成可校验的解对象，输出数组本身即为最优性证书。",
+          "difficulty_reason": "要求解法在构造过程中同步解释为何规范解满足全局约束，禁止事后修补。"
+        },
+        {
+          "id": "constraint_reweighting",
+          "selection_reason": "重排主约束优先级，让规范解要求进入主约束。",
+          "affected_axes": [
+            "C",
+            "V"
+          ],
+          "schema_changes": [
+            "将MEX最大化与字典序最小化绑定为联合主约束",
+            "invariant中新增mex_optimality_preservation反映约束主次关系",
+            "明确历史分配可动态调整以维持当前规范"
+          ],
+          "innovation_reason": "让规范性要求改变主约束的优先级组织，迫使解法在状态设计里处理新的约束主次关系。",
+          "difficulty_reason": "迫使算法在贪心推进MEX与保持字典序最小之间寻找严格兼容的转移路径，增加状态维护维度。"
+        }
+      ],
+      "algorithmic_delta_claim": {
+        "seed_solver_core": "维护各余数类元素计数器，贪心推进MEX指针，仅输出标量最大值。",
+        "reusable_subroutines": "模x同余类划分计算、非负边界判定、在线查询流解析。",
+        "new_solver_core": "基于并查集/双向链表的精确槽位分配器。按社团ID顺序贪心分配最小合法槽位，冲突时利用DSU快速跳跃至同余类下一空闲位，动态维护全局MEX与字典序最优性。",
+        "new_proof_obligation": "需严格证明：在模x同余类划分下，按社团ID升序贪心分配最小可用槽位并配合DSU跳跃，所得分配方案在达成全局最大MEX的同时，其分配向量字典序严格最小。证明需涵盖：1) 贪心选择不会导致后续社团无法填补MEX前缀缺口；2) DSU跳跃操作保持同余类内槽位分配的连续性与规范性；3) 任何偏离该贪心策略的合法分配必然导致字典序增大或MEX减小。",
+        "why_direct_reuse_fails": "原计数器策略仅记录同余类资源数量，无法确定具体哪个社团占据哪个槽位，也无法处理字典序优先级冲突。直接套用会导致无法输出规范解或违反字典序约束，必须重构为精确槽位映射与冲突消解机制。"
+      },
+      "anti_shallow_rationale": "明确区分了仅输出任意解与输出规范解的算法鸿沟。规范解要求迫使数据结构从O(1)计数器升级为O(α(N))的DSU/链表，状态转移从标量累加变为精确槽位映射与动态重分配。原题解法无法处理字典序硬约束下的槽位抢占与跳跃逻辑，彻底打破直接迁移路径。"
+    }
+  }
+}

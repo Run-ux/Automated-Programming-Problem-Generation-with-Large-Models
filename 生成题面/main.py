@@ -54,6 +54,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="质量闭环迭代轮数，可选 0、1、2、3；0 表示关闭质量回流。",
     )
     parser.add_argument(
+        "--quality-full-score-max-iterations",
+        type=int,
+        default=10,
+        help="pass 后五维质量未满分时的题面打磨追加轮数上限。",
+    )
+    parser.add_argument(
         "--rule-override",
         action="append",
         default=[],
@@ -104,6 +110,7 @@ def main() -> None:
         allowed_rule_ids=_normalize_rule_overrides(args.rule_override),
         batch_source_dir=batch_source_dir,
         quality_iterations=args.quality_iterations,
+        quality_full_score_max_iterations=args.quality_full_score_max_iterations,
     )
     _emit_progress("[main] 流水线执行完成。")
 
@@ -113,6 +120,8 @@ def _validate_args(parser: argparse.ArgumentParser, args: argparse.Namespace) ->
         parser.error("--timeout 必须是正整数。")
     if args.quality_iterations not in {0, 1, 2, 3}:
         parser.error("--quality-iterations 只支持 0、1、2、3。")
+    if args.quality_full_score_max_iterations <= 0:
+        parser.error("--quality-full-score-max-iterations 必须是正整数。")
     if args.mode == "single":
         if args.seed_a or args.seed_b:
             parser.error("single 模式不接受 --seed-a 或 --seed-b。")

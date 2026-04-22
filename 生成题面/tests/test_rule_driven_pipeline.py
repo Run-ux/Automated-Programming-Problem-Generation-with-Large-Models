@@ -1343,6 +1343,191 @@ class QualityIterationPipelineTests(unittest.TestCase):
         self.assertEqual(Path(summary_payload["rounds"][0]["artifact_path"]).parent.name, "A")
         self.assertEqual(Path(summary_payload["rounds"][0]["markdown_path"]).parent.name, "A")
 
+    def test_quality_iteration_polishes_pass_until_all_dimensions_full(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            temp = Path(tempdir)
+            source_dir = temp / "schemas"
+            output_dir = temp / "output"
+            artifact_dir = temp / "artifacts"
+            report_dir = temp / "reports"
+            source_dir.mkdir(parents=True, exist_ok=True)
+            (source_dir / "A.json").write_text(
+                json.dumps(make_schema(problem_id="A"), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            planner = RevisionAwarePlanner()
+            generator = RevisionAwareGenerator()
+            evaluator = SequencedQualityEvaluator(
+                [
+                    make_quality_report_payload(
+                        overall_status="pass",
+                        round_index=1,
+                        quality_dimension_scores={"sample_quality": 4.0},
+                        suggested_revisions=["补强样例解释。"],
+                    ),
+                    make_quality_report_payload(overall_status="pass", round_index=2),
+                ]
+            )
+
+            pipeline = GenerationPipeline(
+                source_dir=source_dir,
+                output_dir=output_dir,
+                artifact_dir=artifact_dir,
+                report_dir=report_dir,
+                generator=generator,
+                planner=planner,
+                problem_repository=FakeProblemRepository(),
+                quality_evaluator=evaluator,
+            )
+            records = pipeline.run(
+                mode="single",
+                problem_ids=["A"],
+                variants=1,
+                theme_id="campus_ops",
+                quality_iterations=1,
+            )
+
+            summary_payload = json.loads(Path(records[0]["iteration_summary_path"]).read_text(encoding="utf-8"))
+            artifact_path = Path(records[0]["artifact_path"])
+
+        self.assertEqual(len(planner.calls), 1)
+        self.assertEqual(len(generator.calls), 2)
+        self.assertEqual(len(evaluator.calls), 2)
+        self.assertEqual(generator.calls[1]["plan_problem_id"], generator.calls[0]["plan_problem_id"])
+        self.assertEqual(generator.calls[1]["revision_context"]["revision_mode"], "full_score_polish")
+        self.assertEqual(
+            generator.calls[1]["revision_context"]["non_full_dimensions"][0]["dimension"],
+            "sample_quality",
+        )
+        self.assertEqual(len(generator.calls[1]["revision_context"]["revision_history"]), 1)
+        self.assertEqual(
+            generator.calls[1]["revision_context"]["revision_summary"]["suggested_revisions"],
+            ["补强样例解释。"],
+        )
+        self.assertEqual(records[0]["final_round_index"], 2)
+        self.assertEqual(summary_payload["stop_reason"], "pass")
+        self.assertEqual(summary_payload["rounds"][0]["iteration_phase"], "normal")
+        self.assertEqual(summary_payload["rounds"][1]["iteration_phase"], "full_score_polish")
+        self.assertTrue(str(artifact_path).endswith("_round2.json"))
+
+    def test_quality_iteration_stops_when_full_score_polish_limit_is_reached(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            temp = Path(tempdir)
+            source_dir = temp / "schemas"
+            output_dir = temp / "output"
+            artifact_dir = temp / "artifacts"
+            report_dir = temp / "reports"
+            source_dir.mkdir(parents=True, exist_ok=True)
+            (source_dir / "A.json").write_text(
+                json.dumps(make_schema(problem_id="A"), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            planner = RevisionAwarePlanner()
+            generator = RevisionAwareGenerator()
+            evaluator = SequencedQualityEvaluator(
+                [
+                    make_quality_report_payload(
+                        overall_status="pass",
+                        round_index=index,
+                        quality_dimension_scores={"oj_readability": 4.0},
+                    )
+                    for index in range(1, 12)
+                ]
+            )
+
+            pipeline = GenerationPipeline(
+                source_dir=source_dir,
+                output_dir=output_dir,
+                artifact_dir=artifact_dir,
+                report_dir=report_dir,
+                generator=generator,
+                planner=planner,
+                problem_repository=FakeProblemRepository(),
+                quality_evaluator=evaluator,
+            )
+            records = pipeline.run(
+                mode="single",
+                problem_ids=["A"],
+                variants=1,
+                theme_id="campus_ops",
+                quality_iterations=1,
+            )
+
+            summary_payload = json.loads(Path(records[0]["iteration_summary_path"]).read_text(encoding="utf-8"))
+
+        self.assertEqual(len(planner.calls), 1)
+        self.assertEqual(len(generator.calls), 11)
+        self.assertEqual(len(evaluator.calls), 11)
+        self.assertEqual(records[0]["final_round_index"], 11)
+        self.assertEqual(summary_payload["stop_reason"], "full_score_iteration_limit_reached")
+        self.assertEqual(summary_payload["rounds"][-1]["iteration_phase"], "full_score_polish")
+        self.assertEqual(summary_payload["rounds"][-1]["full_score_polish_round_index"], 10)
+
+    def test_quality_iteration_replans_before_pass_then_polishes_without_replanning(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            temp = Path(tempdir)
+            source_dir = temp / "schemas"
+            output_dir = temp / "output"
+            artifact_dir = temp / "artifacts"
+            report_dir = temp / "reports"
+            source_dir.mkdir(parents=True, exist_ok=True)
+            (source_dir / "A.json").write_text(
+                json.dumps(make_schema(problem_id="A"), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            planner = RevisionAwarePlanner()
+            generator = RevisionAwareGenerator()
+            evaluator = SequencedQualityEvaluator(
+                [
+                    make_quality_report_payload(
+                        overall_status="revise_quality",
+                        round_index=1,
+                        suggested_revisions=["补齐样例解释。"],
+                    ),
+                    make_quality_report_payload(
+                        overall_status="pass",
+                        round_index=2,
+                        quality_dimension_scores={"spec_completeness": 4.0},
+                    ),
+                    make_quality_report_payload(overall_status="pass", round_index=3),
+                ]
+            )
+
+            pipeline = GenerationPipeline(
+                source_dir=source_dir,
+                output_dir=output_dir,
+                artifact_dir=artifact_dir,
+                report_dir=report_dir,
+                generator=generator,
+                planner=planner,
+                problem_repository=FakeProblemRepository(),
+                quality_evaluator=evaluator,
+            )
+            records = pipeline.run(
+                mode="single",
+                problem_ids=["A"],
+                variants=1,
+                theme_id="campus_ops",
+                quality_iterations=2,
+            )
+
+            summary_payload = json.loads(Path(records[0]["iteration_summary_path"]).read_text(encoding="utf-8"))
+
+        self.assertEqual(len(planner.calls), 2)
+        self.assertEqual(len(generator.calls), 3)
+        self.assertEqual(generator.calls[2]["plan_problem_id"], generator.calls[1]["plan_problem_id"])
+        self.assertEqual(generator.calls[2]["revision_context"]["revision_mode"], "full_score_polish")
+        self.assertEqual(len(generator.calls[2]["revision_context"]["revision_history"]), 2)
+        self.assertEqual(
+            generator.calls[2]["revision_context"]["suggested_revisions"],
+            ["补齐样例解释。"],
+        )
+        self.assertEqual(records[0]["final_round_index"], 3)
+        self.assertEqual(summary_payload["stop_reason"], "pass")
+        self.assertEqual(summary_payload["rounds"][0]["iteration_phase"], "normal")
+        self.assertEqual(summary_payload["rounds"][1]["iteration_phase"], "normal")
+        self.assertEqual(summary_payload["rounds"][2]["iteration_phase"], "full_score_polish")
+
     def test_quality_iteration_runs_second_round_for_revise_quality(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
             temp = Path(tempdir)
@@ -1392,6 +1577,7 @@ class QualityIterationPipelineTests(unittest.TestCase):
             quality_json_path = Path(records[0]["quality_report_json_path"])
             quality_md_path = Path(records[0]["quality_report_md_path"])
             artifact_path = Path(records[0]["artifact_path"])
+            artifact_payload = json.loads(artifact_path.read_text(encoding="utf-8"))
             markdown_path = Path(records[0]["markdown_path"])
 
         self.assertEqual(len(planner.calls), 2)
@@ -1408,6 +1594,16 @@ class QualityIterationPipelineTests(unittest.TestCase):
         self.assertEqual(
             generator.calls[1]["revision_context"]["suggested_revisions"],
             ["补齐样例解释。"],
+        )
+        self.assertEqual(len(planner.calls[1]["revision_context"]["revision_history"]), 1)
+        self.assertEqual(planner.calls[1]["revision_context"]["revision_history"][0]["round_index"], 1)
+        self.assertEqual(
+            planner.calls[1]["revision_context"]["revision_summary"]["suggested_revisions"],
+            ["补齐样例解释。"],
+        )
+        self.assertEqual(
+            len(artifact_payload["iteration"]["revision_context_snapshot"]["revision_history"]),
+            1,
         )
         self.assertEqual(records[0]["final_round_index"], 2)
         self.assertEqual(artifact_path.parent.name, "A")
@@ -1479,13 +1675,30 @@ class QualityIterationPipelineTests(unittest.TestCase):
             quality_json_path = Path(records[0]["quality_report_json_path"])
             quality_md_path = Path(records[0]["quality_report_md_path"])
             artifact_path = Path(records[0]["artifact_path"])
+            artifact_payload = json.loads(artifact_path.read_text(encoding="utf-8"))
             markdown_path = Path(records[0]["markdown_path"])
 
         self.assertEqual(len(planner.calls), 3)
         self.assertEqual(len(generator.calls), 3)
         self.assertEqual(
             planner.calls[2]["revision_context"]["suggested_revisions"],
-            ["拉开核心任务差异。"],
+            ["补齐样例解释。", "拉开核心任务差异。"],
+        )
+        self.assertEqual(
+            planner.calls[2]["revision_context"]["strengths_to_keep"],
+            ["约束表达稳定", "样例结构正确"],
+        )
+        self.assertEqual(
+            [item["round_index"] for item in planner.calls[2]["revision_context"]["revision_history"]],
+            [1, 2],
+        )
+        self.assertEqual(
+            planner.calls[2]["revision_context"]["revision_summary"]["latest_overall_status"],
+            "reject_as_retheme",
+        )
+        self.assertEqual(
+            len(artifact_payload["iteration"]["revision_context_snapshot"]["revision_history"]),
+            2,
         )
         self.assertEqual(records[0]["final_round_index"], 3)
         self.assertEqual(artifact_path.parent.name, "A")
@@ -1715,6 +1928,7 @@ class CliAndDocumentationTests(unittest.TestCase):
         self.assertEqual(single_args.problem_ids, ["CF1", "CF2"])
         self.assertEqual(single_args.timeout, 360)
         self.assertEqual(single_args.quality_iterations, 3)
+        self.assertEqual(single_args.quality_full_score_max_iterations, 10)
 
         same_family_args = parser.parse_args(
             [
@@ -1754,6 +1968,19 @@ class CliAndDocumentationTests(unittest.TestCase):
                     "P2",
                     "--quality-iterations",
                     "1",
+                ]
+            )
+            _validate_args(parser, args)
+
+        with self.assertRaises(SystemExit):
+            args = parser.parse_args(
+                [
+                    "--mode",
+                    "single",
+                    "--problem-ids",
+                    "CF1",
+                    "--quality-full-score-max-iterations",
+                    "0",
                 ]
             )
             _validate_args(parser, args)
@@ -2217,9 +2444,11 @@ def make_quality_report_payload(
     divergence_score: float = 82.0,
     suggested_revisions: list[str] | None = None,
     strengths: list[str] | None = None,
+    quality_dimension_scores: dict[str, float] | None = None,
 ) -> dict[str, object]:
     revision_suggestions = list(suggested_revisions or [])
     strengths_to_keep = list(strengths or ["题面基础结构完整"])
+    dimension_scores = make_quality_dimension_scores(quality_dimension_scores)
     return {
         "overall": {
             "status": overall_status,
@@ -2229,7 +2458,7 @@ def make_quality_report_payload(
             "generated_status": generated_status,
         },
         "quality": {
-            "dimension_scores": [],
+            "dimension_scores": dimension_scores,
             "strengths": strengths_to_keep,
         },
         "divergence": {
@@ -2261,6 +2490,26 @@ def make_quality_report_payload(
             "difference_plan": {"rationale": "测试"},
         },
     }
+
+
+def make_quality_dimension_scores(overrides: dict[str, float] | None = None) -> list[dict[str, object]]:
+    scores = {
+        "variant_fidelity": 5.0,
+        "spec_completeness": 5.0,
+        "cross_section_consistency": 5.0,
+        "sample_quality": 5.0,
+        "oj_readability": 5.0,
+    }
+    scores.update(overrides or {})
+    return [
+        {
+            "dimension": dimension,
+            "score": score,
+            "rationale": f"{dimension} 测试评分为 {score}。",
+            "evidence_refs": [f"quality.dimension_scores.{dimension}"],
+        }
+        for dimension, score in scores.items()
+    ]
 
 
 def make_eligibility_payload(

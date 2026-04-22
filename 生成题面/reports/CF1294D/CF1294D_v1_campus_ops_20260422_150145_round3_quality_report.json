@@ -1,0 +1,725 @@
+{
+  "overall": {
+    "status": "pass",
+    "quality_score": 89.0,
+    "divergence_score": 78.4,
+    "schema_distance": 0.422,
+    "generated_status": "ok"
+  },
+  "quality": {
+    "dimension_scores": [
+      {
+        "dimension": "variant_fidelity",
+        "score": 5.0,
+        "rationale": "题面完整且准确地实现了 new_schema 中定义的所有核心要素：输入结构（周期x、操作流q）、相邻余数耦合约束（s ≡ a_i 或 a_i+1 mod x）、时段唯一性、以及双分支目标函数（YES输出方案/NO输出字典序最小冲突区间）。所有字段均严格对应，无遗漏或曲解。",
+        "evidence_refs": [
+          "new_schema.input_structure",
+          "new_schema.core_constraints",
+          "new_schema.objective",
+          "generated_problem.description",
+          "generated_problem.output_format"
+        ]
+      },
+      {
+        "dimension": "spec_completeness",
+        "score": 5.0,
+        "rationale": "题面提供了独立解题所需的全部关键信息。任务说明清晰，I/O格式精确，约束条件完整（含总和限制），Notes 部分对模运算定义、字典序规则及 Hall 区间性质进行了必要补充，选手无需猜测边界或输出规则。",
+        "evidence_refs": [
+          "generated_problem.description",
+          "generated_problem.input_format",
+          "generated_problem.output_format",
+          "generated_problem.constraints",
+          "generated_problem.notes"
+        ]
+      },
+      {
+        "dimension": "cross_section_consistency",
+        "score": 3.0,
+        "rationale": "整体结构一致，但存在明确的字段冲突：constraints 中声明 `1 ≤ a_i`，而样例1输入包含 `1 0`，且 new_schema 的 value_range.min 定义为 0。该矛盾直接影响边界条件的理解，属于可修复但需优先处理的一致性问题。",
+        "evidence_refs": [
+          "generated_problem.constraints",
+          "generated_problem.samples[0].input",
+          "new_schema.input_structure.components[1].value_range"
+        ]
+      },
+      {
+        "dimension": "sample_quality",
+        "score": 4.0,
+        "rationale": "样例覆盖了 YES 和 NO 两个分支，且解释清晰。但两个 NO 样例均因全局队伍数量不足导致冲突区间为完整的 `[0, K-1]`，未能展示 obstruction 分支的核心难点（即局部子区间 `[L, R] ⊂ [0, K-1]` 供给不足）。对于 Hard 难度题面，样例覆盖度略显不足。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "new_schema.objective"
+        ]
+      },
+      {
+        "dimension": "oj_readability",
+        "score": 5.0,
+        "rationale": "题面严格遵循标准 OJ 排版规范，分节清晰（Description/Input/Output/Constraints/Samples/Notes），术语准确，无来源污染或冗余描述。Notes 的补充说明有效消除了潜在歧义，便于参赛者快速建模。",
+        "evidence_refs": [
+          "generated_problem"
+        ]
+      }
+    ],
+    "strengths": [
+      "精准落地了 new_schema 的双分支目标（构造/阻碍）与相邻余数耦合约束，逻辑闭环完整。",
+      "Notes 部分对模运算、字典序及 Hall 定理区间性质的补充说明非常专业，有效降低了抽象约束的理解门槛。",
+      "题面结构规范，符合 OJ 标准表达习惯，无冗余信息或来源泄露，便于快速阅读与实现。"
+    ]
+  },
+  "divergence": {
+    "schema_distance_breakdown": {
+      "distance_version": "v2",
+      "backend": "embedding",
+      "total": 0.422,
+      "axis_scores": {
+        "I": 0.0455,
+        "C": 0.5551,
+        "O": 0.61,
+        "V": 0.4578
+      },
+      "components": {
+        "input_tree_distance": 0.0455,
+        "constraint_match_distance": 0.5551,
+        "objective_type_distance": 0.6528,
+        "objective_text_distance": 0.5459,
+        "invariant_match_distance": 0.4578
+      }
+    },
+    "schema_distance": 0.422,
+    "changed_axes_planned": [
+      "C",
+      "O",
+      "V"
+    ],
+    "changed_axes_realized": [
+      "C",
+      "O",
+      "V"
+    ],
+    "semantic_difference": 0.85,
+    "solution_transfer_risk": 0.15,
+    "surface_retheme_risk": 0.1,
+    "verdict": "pass",
+    "rationale": "核心约束轴(C)从原题的“模x同余类完全独立”变为新题的“相邻余数耦合(s ≡ a_i 或 a_i+1 mod x)”，彻底破坏了各余数类资源可独立分配与计数的性质。目标轴(O)从“在线贪心维护最大MEX”转为“判定区间[0,K-1]完美覆盖可行性，失败时输出Hall定理极小违反区间”，任务关注点从单向指针扫描变为匹配可行性判定与证书构造。不变量轴(V)从“单调指针+独立计数”升级为“前缀盈余数组+线段树极值维护”。原题的cnt[r]贪心指针解法在新题耦合约束下会因局部分配阻塞后续关键匹配而直接失效，必须重新建模为区间覆盖/流问题并引入数据结构维护全局盈余，解法无法直接迁移。表层叙事、I/O格式与查询交互模式均无复用痕迹，属于实质差异题。",
+    "evidence_refs": [
+      "snapshots.new_schema.core_constraints",
+      "snapshots.generated_problem.description",
+      "review_context.algorithmic_delta_claim",
+      "divergence.schema_distance_breakdown"
+    ]
+  },
+  "hard_checks": [
+    {
+      "check_id": "source_problem_resolved",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "已成功加载原题文本。",
+      "evidence_refs": [
+        "snapshots.original_problem"
+      ]
+    },
+    {
+      "check_id": "generated_problem_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 generated_problem。",
+      "evidence_refs": [
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "new_schema_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 new_schema 或兼容字段 new_schema_snapshot。",
+      "evidence_refs": [
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "difference_plan_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已持久化 difference_plan。",
+      "evidence_refs": [
+        "snapshots.difference_plan"
+      ]
+    },
+    {
+      "check_id": "generated_status_ok",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "生成状态正常。",
+      "evidence_refs": [
+        "snapshots.generated_problem.status"
+      ]
+    },
+    {
+      "check_id": "predicted_schema_distance_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 predicted_schema_distance。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "distance_breakdown_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 distance_breakdown。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "changed_axes_realized_present",
+      "passed": true,
+      "severity": "blocker",
+      "category": "invalid",
+      "message": "artifact 已包含 changed_axes_realized。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.artifact_contract"
+      ]
+    },
+    {
+      "check_id": "schema_distance_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "schema_distance=0.42，达到中等差异阈值。",
+      "evidence_refs": [
+        "divergence.schema_distance_breakdown"
+      ]
+    },
+    {
+      "check_id": "changed_axes_threshold",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "已落地核心差异轴：C, O, V。",
+      "evidence_refs": [
+        "snapshots.difference_plan",
+        "snapshots.new_schema"
+      ]
+    },
+    {
+      "check_id": "source_leakage",
+      "passed": true,
+      "severity": "blocker",
+      "category": "retheme_issue",
+      "message": "未发现原题标题或题源泄露。",
+      "evidence_refs": [
+        "snapshots.original_problem",
+        "snapshots.generated_problem"
+      ]
+    },
+    {
+      "check_id": "title_overlap",
+      "passed": true,
+      "severity": "major",
+      "category": "retheme_issue",
+      "message": "标题重合度=0.00。",
+      "evidence_refs": [
+        "snapshots.original_problem.title",
+        "snapshots.generated_problem.title"
+      ]
+    },
+    {
+      "check_id": "sample_count",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "样例数量=2。",
+      "evidence_refs": [
+        "snapshots.generated_problem.samples"
+      ]
+    },
+    {
+      "check_id": "sample_line_alignment",
+      "passed": true,
+      "severity": "major",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过样例行数检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "input_count_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "输入结构不是固定小数组，跳过输入项数量声明检查。",
+      "evidence_refs": []
+    },
+    {
+      "check_id": "objective_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "目标函数已经在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.objective",
+        "snapshots.generated_problem.output_format"
+      ]
+    },
+    {
+      "check_id": "structural_option_alignment",
+      "passed": true,
+      "severity": "blocker",
+      "category": "quality_issue",
+      "message": "结构选项已在题面中落地。",
+      "evidence_refs": [
+        "snapshots.new_schema.selected_structural_options",
+        "snapshots.generated_problem"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "quality_issue",
+      "severity": "major",
+      "title": "约束范围与样例输入及 Schema 定义冲突",
+      "detail": "generated_problem.constraints 明确声明 `1 ≤ a_i`，但 generated_problem.samples[0].input 中使用了 `1 0`（即 a_i=0）。同时 new_schema.input_structure.components[1].value_range.min 定义为 0。该矛盾会导致选手对合法输入边界产生困惑，可能引发 WA 或 RE。",
+      "evidence_refs": [
+        "generated_problem.constraints",
+        "generated_problem.samples[0].input",
+        "new_schema.input_structure.components[1].value_range"
+      ],
+      "fix_hint": "将 constraints 中的 `1 ≤ a_i` 统一修改为 `0 ≤ a_i ≤ 10^9`，以匹配样例与 Schema 定义。"
+    },
+    {
+      "issue_type": "quality_issue",
+      "severity": "minor",
+      "title": "样例未覆盖非平凡局部冲突区间",
+      "detail": "当前两个 NO 样例的冲突区间均为 `[0, K-1]`，属于全局供给不足。未体现 new_schema.objective 中要求的“字典序最小子区间 `[L, R]` 供给不足”这一核心 obstruction 逻辑，不利于选手验证线段树/前缀盈余极值定位算法的正确性。",
+      "evidence_refs": [
+        "generated_problem.samples",
+        "new_schema.objective"
+      ],
+      "fix_hint": "补充一个样例，构造全局队伍数 ≥ K，但因余数耦合导致中间某段 `[L, R]` 可用队伍数 < R-L+1 的情况，输出真子区间冲突。"
+    }
+  ],
+  "suggested_revisions": [
+    "将 constraints 中的 `1 ≤ a_i` 统一修改为 `0 ≤ a_i ≤ 10^9`，以匹配样例与 Schema 定义。",
+    "补充一个样例，构造全局队伍数 ≥ K，但因余数耦合导致中间某段 `[L, R]` 可用队伍数 < R-L+1 的情况，输出真子区间冲突。",
+    "修正 constraints 中 `a_i` 的下界为 0，消除与样例和 Schema 的冲突。",
+    "增加一个展示非平凡冲突区间 `[L, R] ⊂ [0, K-1]` 的样例，以覆盖 obstruction 分支的核心验证场景。",
+    "在 output_format 中显式声明输出方案中的时段 `s` 需满足 `0 ≤ s < K`，避免选手输出超出查询区间的合法时段引发格式争议。"
+  ],
+  "revision_brief": {
+    "round_index": 3,
+    "overall_status": "pass",
+    "generated_status": "ok",
+    "quality_score": 89.0,
+    "divergence_score": 78.4,
+    "failed_hard_checks": [],
+    "issues": [
+      {
+        "issue_type": "quality_issue",
+        "severity": "major",
+        "title": "约束范围与样例输入及 Schema 定义冲突",
+        "detail": "generated_problem.constraints 明确声明 `1 ≤ a_i`，但 generated_problem.samples[0].input 中使用了 `1 0`（即 a_i=0）。同时 new_schema.input_structure.components[1].value_range.min 定义为 0。该矛盾会导致选手对合法输入边界产生困惑，可能引发 WA 或 RE。",
+        "evidence_refs": [
+          "generated_problem.constraints",
+          "generated_problem.samples[0].input",
+          "new_schema.input_structure.components[1].value_range"
+        ],
+        "fix_hint": "将 constraints 中的 `1 ≤ a_i` 统一修改为 `0 ≤ a_i ≤ 10^9`，以匹配样例与 Schema 定义。"
+      },
+      {
+        "issue_type": "quality_issue",
+        "severity": "minor",
+        "title": "样例未覆盖非平凡局部冲突区间",
+        "detail": "当前两个 NO 样例的冲突区间均为 `[0, K-1]`，属于全局供给不足。未体现 new_schema.objective 中要求的“字典序最小子区间 `[L, R]` 供给不足”这一核心 obstruction 逻辑，不利于选手验证线段树/前缀盈余极值定位算法的正确性。",
+        "evidence_refs": [
+          "generated_problem.samples",
+          "new_schema.objective"
+        ],
+        "fix_hint": "补充一个样例，构造全局队伍数 ≥ K，但因余数耦合导致中间某段 `[L, R]` 可用队伍数 < R-L+1 的情况，输出真子区间冲突。"
+      }
+    ],
+    "suggested_revisions": [
+      "将 constraints 中的 `1 ≤ a_i` 统一修改为 `0 ≤ a_i ≤ 10^9`，以匹配样例与 Schema 定义。",
+      "补充一个样例，构造全局队伍数 ≥ K，但因余数耦合导致中间某段 `[L, R]` 可用队伍数 < R-L+1 的情况，输出真子区间冲突。",
+      "修正 constraints 中 `a_i` 的下界为 0，消除与样例和 Schema 的冲突。",
+      "增加一个展示非平凡冲突区间 `[L, R] ⊂ [0, K-1]` 的样例，以覆盖 obstruction 分支的核心验证场景。",
+      "在 output_format 中显式声明输出方案中的时段 `s` 需满足 `0 ≤ s < K`，避免选手输出超出查询区间的合法时段引发格式争议。"
+    ],
+    "strengths_to_keep": [
+      "精准落地了 new_schema 的双分支目标（构造/阻碍）与相邻余数耦合约束，逻辑闭环完整。",
+      "Notes 部分对模运算、字典序及 Hall 定理区间性质的补充说明非常专业，有效降低了抽象约束的理解门槛。",
+      "题面结构规范，符合 OJ 标准表达习惯，无冗余信息或来源泄露，便于快速阅读与实现。"
+    ]
+  },
+  "snapshots": {
+    "paths": {
+      "schema_path": "D:\\AutoProblemGen\\四元组抽取\\output\\batch\\normalized\\CF1294D.json",
+      "artifact_path": "D:\\AutoProblemGen\\生成题面\\artifacts\\CF1294D\\CF1294D_v1_campus_ops_20260422_150145_round3.json",
+      "markdown_path": "D:\\AutoProblemGen\\生成题面\\output\\CF1294D\\CF1294D_v1_campus_ops_20260422_150145_round3.md"
+    },
+    "original_problem": {
+      "selection_id": "sample_18",
+      "problem_id": "CF1294D",
+      "record_uid": "train-00001-of-00039-e092fe56fda18715__row_0302",
+      "statement_language": "english",
+      "title": "1294_D. MEX maximizing",
+      "description": "Recall that MEX of an array is a minimum non-negative integer that does not belong to the array. Examples:\n\n  * for the array [0, 0, 1, 0, 2] MEX equals to 3 because numbers 0, 1 and 2 are presented in the array and 3 is the minimum non-negative integer not presented in the array; \n  * for the array [1, 2, 3, 4] MEX equals to 0 because 0 is the minimum non-negative integer not presented in the array; \n  * for the array [0, 1, 4, 3] MEX equals to 2 because 2 is the minimum non-negative integer not presented in the array. \n\n\n\nYou are given an empty array a=[] (in other words, a zero-length array). You are also given a positive integer x.\n\nYou are also given q queries. The j-th query consists of one integer y_j and means that you have to append one element y_j to the array. The array length increases by 1 after a query.\n\nIn one move, you can choose any index i and set a_i := a_i + x or a_i := a_i - x (i.e. increase or decrease any element of the array by x). The only restriction is that a_i cannot become negative. Since initially the array is empty, you can perform moves only after the first query.\n\nYou have to maximize the MEX (minimum excluded) of the array if you can perform any number of such operations (you can even perform the operation multiple times with one element).\n\nYou have to find the answer after each of q queries (i.e. the j-th answer corresponds to the array of length j).\n\nOperations are discarded before each query. I.e. the array a after the j-th query equals to [y_1, y_2, ..., y_j].\n\nInput\n\nThe first line of the input contains two integers q, x (1 ≤ q, x ≤ 4 ⋅ 10^5) — the number of queries and the value of x.\n\nThe next q lines describe queries. The j-th query consists of one integer y_j (0 ≤ y_j ≤ 10^9) and means that you have to append one element y_j to the array.\n\nOutput\n\nPrint the answer to the initial problem after each query — for the query j print the maximum value of MEX after first j queries. Note that queries are dependent (the array changes after each query) but operations are independent between queries.\n\nExamples\n\nInput\n\n\n7 3\n0\n1\n2\n2\n0\n0\n10\n\n\nOutput\n\n\n1\n2\n3\n3\n4\n4\n7\n\n\nInput\n\n\n4 3\n1\n2\n1\n2\n\n\nOutput\n\n\n0\n0\n0\n0\n\nNote\n\nIn the first example:\n\n  * After the first query, the array is a=[0]: you don't need to perform any operations, maximum possible MEX is 1. \n  * After the second query, the array is a=[0, 1]: you don't need to perform any operations, maximum possible MEX is 2. \n  * After the third query, the array is a=[0, 1, 2]: you don't need to perform any operations, maximum possible MEX is 3. \n  * After the fourth query, the array is a=[0, 1, 2, 2]: you don't need to perform any operations, maximum possible MEX is 3 (you can't make it greater with operations). \n  * After the fifth query, the array is a=[0, 1, 2, 2, 0]: you can perform a[4] := a[4] + 3 = 3. The array changes to be a=[0, 1, 2, 2, 3]. Now MEX is maximum possible and equals to 4. \n  * After the sixth query, the array is a=[0, 1, 2, 2, 0, 0]: you can perform a[4] := a[4] + 3 = 0 + 3 = 3. The array changes to be a=[0, 1, 2, 2, 3, 0]. Now MEX is maximum possible and equals to 4. \n  * After the seventh query, the array is a=[0, 1, 2, 2, 0, 0, 10]. You can perform the following operations: \n    * a[3] := a[3] + 3 = 2 + 3 = 5, \n    * a[4] := a[4] + 3 = 0 + 3 = 3, \n    * a[5] := a[5] + 3 = 0 + 3 = 3, \n    * a[5] := a[5] + 3 = 3 + 3 = 6, \n    * a[6] := a[6] - 3 = 10 - 3 = 7, \n    * a[6] := a[6] - 3 = 7 - 3 = 4. \nThe resulting array will be a=[0, 1, 2, 5, 3, 6, 4]. Now MEX is maximum possible and equals to 7. ",
+      "public_tests": {
+        "input": [
+          "4 3\n1\n2\n1\n2\n",
+          "7 3\n0\n1\n2\n2\n0\n0\n10\n"
+        ],
+        "output": [
+          "0\n0\n0\n0\n",
+          "1\n2\n3\n3\n4\n4\n7\n"
+        ]
+      },
+      "source": {
+        "split": "train",
+        "source_id": 2,
+        "source_name": "CODEFORCES",
+        "url": "https://codeforces.com/contest/1294/problem/D"
+      },
+      "difficulty": {
+        "difficulty_id": 10,
+        "difficulty_name": "D",
+        "difficulty_bucket": null,
+        "cf_rating": 1600,
+        "cf_points": 0.0,
+        "cf_contest_id": 1294,
+        "cf_index": "D",
+        "rating_bucket": "cf_mid"
+      },
+      "tags": [
+        "data structures",
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "limits": {
+        "time_limit": {
+          "seconds": 3,
+          "nanos": 0
+        },
+        "memory_limit_bytes": 256000000
+      },
+      "io_mode": {
+        "input_file": "",
+        "output_file": "",
+        "non_stdio": false
+      },
+      "translation": {
+        "is_description_translated": false,
+        "untranslated_description": ""
+      },
+      "reference_solution": {
+        "language_id": 3,
+        "language_guess": "python",
+        "code": "q,x=map(int,input().split())\na,m,s=[0]*(x+1),0,\"\"\nwhile q>0:\n\tq-=1\n\ta[int(input())%x]+=1\n\twhile a[m%x]>0:\n\t\ta[m%x]-=1\n\t\tm+=1\n\ts+=(str(m)+\"\\n\")\nprint(s)",
+        "char_count": 151,
+        "line_count": 10
+      },
+      "artifact_counts": {
+        "public_tests": 2,
+        "private_tests": 0,
+        "generated_tests": 81,
+        "solutions": 641,
+        "incorrect_solutions": 448
+      },
+      "heuristic_profile": {
+        "tag_families": [
+          "implementation",
+          "math",
+          "greedy",
+          "data_structures"
+        ],
+        "structure_candidates": [
+          "array"
+        ],
+        "objective_type": "optimize",
+        "coverage_features": [
+          "objective:optimize",
+          "rating:cf_mid",
+          "source:CODEFORCES",
+          "structure:array",
+          "tag:data_structures",
+          "tag:greedy",
+          "tag:implementation",
+          "tag:math"
+        ],
+        "english_filter": {
+          "passed": true,
+          "score": 19
+        },
+        "notes": [
+          "selection favors source, difficulty, tag and structure coverage over sample count",
+          "heuristic_profile fields are inferred from metadata and statement text"
+        ]
+      }
+    },
+    "difference_plan": {
+      "target_distance_band": {
+        "min": 0.35,
+        "max": 0.6
+      },
+      "changed_axes": [
+        "C",
+        "O",
+        "V"
+      ],
+      "same_family_allowed": true,
+      "forbidden_reuse": [
+        "不要暴露原题编号、出处或链接。",
+        "不要复写原题的叙事结构、输入输出关系或任务定义。"
+      ],
+      "rationale": "引入相邻余数共享约束打破原题独立性，目标改为构造方案或输出极小冲突区间，不变量从单类计数单调性转为全局区间Hall条件，彻底改变状态维护与决策逻辑。",
+      "summary": "约束耦合化、目标双分支化、不变量区间化。",
+      "mode": "single_seed_extension"
+    },
+    "new_schema": {
+      "problem_id": "CAMPUS_COVER_CERT",
+      "source": "custom",
+      "input_structure": {
+        "type": "composite",
+        "length": {
+          "min": 1,
+          "max": 400000
+        },
+        "value_range": {
+          "min": 1,
+          "max": 1000000000
+        },
+        "properties": {
+          "ordered": true
+        },
+        "components": [
+          {
+            "role": "global_params",
+            "role_description": "period x and operation count q",
+            "type": "tuple",
+            "length": {
+              "min": 2,
+              "max": 2
+            },
+            "value_range": {
+              "min": 1,
+              "max": 400000
+            },
+            "properties": {}
+          },
+          {
+            "role": "operation_stream",
+            "role_description": "sequence of add-team or query-cover operations",
+            "type": "array",
+            "length": {
+              "min": 1,
+              "max": 400000
+            },
+            "value_range": {
+              "min": 0,
+              "max": 1000000000
+            },
+            "properties": {
+              "ordered": true
+            }
+          }
+        ]
+      },
+      "core_constraints": {
+        "constraints": [
+          {
+            "name": "adjacency_coverage",
+            "description": "每支队伍i抵达时携带基础时间a_i，仅可被分配至时段s，且s必须满足s ≡ a_i (mod x) 或 s ≡ a_i+1 (mod x)。",
+            "formal": "∀i, assigned_slot(i) ∈ {a_i mod x, (a_i+1) mod x}",
+            "source_sections": [
+              "description"
+            ]
+          },
+          {
+            "name": "slot_uniqueness",
+            "description": "目标覆盖区间[0, K-1]内的每个时段至多被分配一支队伍，且每支队伍至多使用一次。",
+            "formal": "∀s∈[0,K-1], |{i | assigned_slot(i)=s}| ≤ 1",
+            "source_sections": [
+              "description"
+            ]
+          }
+        ]
+      },
+      "objective": {
+        "type": "construct_or_obstruction",
+        "description": "对每次查询K，若存在合法分配方案，输出K对(队伍编号, 分配时段)；若不存在，输出字典序最小的冲突区间[L, R] (0≤L≤R<K)，使得能覆盖该区间的队伍总数严格小于区间长度。",
+        "target": "exact_cover_or_minimal_hall_violation",
+        "requires_solution": true
+      },
+      "invariant": {
+        "invariants": [
+          {
+            "name": "hall_interval_minimality",
+            "description": "在相邻耦合约束下，任意Hall条件违反必然蕴含一个连续子区间[L,R]的供给不足。极小冲突集具有区间连续性，可通过维护前缀盈余差值定位。",
+            "properties": {},
+            "evidence_source": "solution_code"
+          },
+          {
+            "name": "online_supply_monotonicity",
+            "description": "随着队伍不断抵达，任意区间[L,R]的可用队伍供给量单调不减。算法通过线段树维护区间盈余极值，已确认的瓶颈区间不会因后续新增队伍而失效，但需动态更新极值位置。",
+            "properties": {},
+            "evidence_source": "solution_code"
+          }
+        ]
+      },
+      "theme": {
+        "id": "campus_ops",
+        "name": "校园运营",
+        "tone": "日常、轻松、贴近现实",
+        "keywords": [
+          "社团",
+          "教室",
+          "队伍",
+          "课表",
+          "仓库",
+          "窗口"
+        ],
+        "mapping_hint": "把抽象约束映射成排队、分配、排课或借还流程。"
+      },
+      "difficulty": "hard"
+    },
+    "generated_problem": {
+      "title": "校园时段分配",
+      "description": "校园社团活动需要借用教室。现有 x 个循环时段（编号 0 到 x-1）。每支队伍 i 抵达时提交一个基础偏好时间 a_i。由于排课弹性，该队伍可以被安排到任意时段 s，只要满足 s ≡ a_i (mod x) 或 s ≡ a_i + 1 (mod x)。教务系统会不断收到新队伍的申请，并间歇性发起查询：给定一个目标区间长度 K，问能否从当前已抵达的队伍中选出恰好 K 支，为时段 0, 1, ..., K-1 各分配一支不同的队伍（即完美覆盖）。若能，输出具体方案；若不能，根据 Hall 定理，必然存在某个子区间 [L, R]（0 ≤ L ≤ R < K），其能覆盖的队伍总数严格小于区间长度 R - L + 1。此时需输出字典序最小的冲突区间 [L, R]。",
+      "input_format": "第一行包含两个正整数 x 和 q，分别表示时段周期长度与操作总数。\n接下来 q 行，每行描述一次操作：\n- 1 a_i：表示一支新队伍抵达，其基础偏好时间为 a_i。队伍编号按抵达顺序从 1 开始依次递增。\n- 2 K：表示一次覆盖查询，要求判断能否覆盖时段 0 至 K-1。",
+      "output_format": "对于每次 2 K 查询，输出一组结果：\n- 若存在合法分配方案，第一行输出 YES。随后 K 行，每行输出两个整数 id s，表示将编号为 id 的队伍分配至时段 s。任意合法方案均可。\n- 若不存在合法方案，第一行输出 NO。第二行输出两个整数 L R，表示字典序最小的冲突区间（即优先最小化 L，其次最小化 R）。",
+      "constraints": [
+        "1 ≤ x, q ≤ 4×10^5",
+        "1 ≤ a_i, K ≤ 10^9",
+        "时间限制：2.0 秒",
+        "空间限制：512 MB",
+        "保证所有输出 YES 的查询中 K 的总和不超过 4×10^5"
+      ],
+      "samples": [
+        {
+          "input": "3 4\n1 0\n1 1\n2 2\n2 3",
+          "output": "YES\n1 1\n2 0\nNO\n0 2",
+          "explanation": "队伍1偏好0，可覆盖时段0或1。队伍2偏好1，可覆盖时段1或2。查询K=2需覆盖[0,1]，分配1→1、2→0即可。查询K=3需覆盖[0,2]，仅2支队伍，任意长度为3的区间供给均不足，字典序最小冲突区间为[0,2]。"
+        },
+        {
+          "input": "4 5\n1 0\n1 2\n1 3\n2 3\n2 4",
+          "output": "YES\n3 0\n1 1\n2 2\nNO\n0 3",
+          "explanation": "前三支队伍分别偏好0、2、3。查询K=3时，队伍3→0、1→1、2→2可完美覆盖。查询K=4时，需覆盖[0,3]，但仅有3支队伍，全局供给不足，最小冲突区间为[0,3]。"
+        }
+      ],
+      "notes": "1. 模运算定义：s ≡ a (mod x) 表示 s 除以 x 的余数等于 a 除以 x 的余数。时段编号为非负整数。\n2. 字典序定义：区间 [L1, R1] 字典序小于 [L2, R2] 当且仅当 L1 < L2 或 L1 = L2 且 R1 < R2。\n3. 冲突区间性质：在本题的相邻余数耦合约束下，若无法完成覆盖，必然存在至少一个连续子区间 [L, R] 满足供给不足。输出要求保证该区间是字典序最小的极小违反集。\n4. 方案输出：当输出 YES 时，任意满足约束的分配方案均被接受，无需保证字典序或特定顺序。",
+      "status": "ok",
+      "error_reason": "",
+      "feedback": ""
+    },
+    "artifact_contract": {
+      "new_schema_present": true,
+      "new_schema_field_present": false,
+      "new_schema_snapshot_field_present": true,
+      "difference_plan_present": true,
+      "predicted_schema_distance_present": true,
+      "distance_breakdown_present": true,
+      "changed_axes_realized_present": true,
+      "generated_problem_present": true
+    },
+    "review_context": {
+      "difference_plan": {
+        "summary": "约束耦合化、目标双分支化、不变量区间化。",
+        "mode": "single_seed_extension",
+        "changed_axes": [
+          "C",
+          "O",
+          "V"
+        ]
+      },
+      "changed_axes_realized": [
+        "C",
+        "O",
+        "V"
+      ],
+      "distance_breakdown": {
+        "distance_version": "v2",
+        "backend": "embedding",
+        "total": 0.422,
+        "axis_scores": {
+          "I": 0.0455,
+          "C": 0.5551,
+          "O": 0.61,
+          "V": 0.4578
+        },
+        "components": {
+          "input_tree_distance": 0.0455,
+          "constraint_match_distance": 0.5551,
+          "objective_type_distance": 0.6528,
+          "objective_text_distance": 0.5459,
+          "invariant_match_distance": 0.4578
+        }
+      },
+      "applied_rule": "construct_or_obstruction",
+      "applied_helpers": [
+        {
+          "id": "local_certificate_design",
+          "selection_reason": "将无解原因压缩为可局部检查的区间对象[L,R]，满足规则对失败语义具象化的要求。",
+          "affected_axes": [
+            "C",
+            "O",
+            "V"
+          ],
+          "schema_changes": [
+            "objective改为双分支输出",
+            "invariant增加hall_interval_minimality",
+            "core_constraints明确区间覆盖定义"
+          ],
+          "innovation_reason": "让失败输出从抽象判定转为结构化区间对象，具备独立校验价值。",
+          "difficulty_reason": "要求算法同时维护构造路径与证书定位逻辑，增加状态分支复杂度。"
+        },
+        {
+          "id": "failure_branch_symmetry",
+          "selection_reason": "确保成功分配与失败证书承担同等输出责任，避免失败分支退化为附属备注。",
+          "affected_axes": [
+            "C",
+            "O"
+          ],
+          "schema_changes": [
+            "objective明确YES/NO分支格式",
+            "core_constraints统一覆盖与冲突判定标准"
+          ],
+          "innovation_reason": "将单目标输出重构为双分支输出合同，强制算法统一处理两类语义。",
+          "difficulty_reason": "要求解法在统一数据结构下无缝切换构造模式与瓶颈检测模式，增加实现严谨性。"
+        },
+        {
+          "id": "obstruction_embedding",
+          "selection_reason": "使冲突证据直接源于相邻余数耦合约束的不可兼容关系，而非外部附加条件。",
+          "affected_axes": [
+            "C",
+            "V"
+          ],
+          "schema_changes": [
+            "core_constraints引入adjacency_coverage",
+            "invariant绑定hall_interval_minimality"
+          ],
+          "innovation_reason": "让失败证据自然嵌入主约束内部，成功与失败共享同一区间盈余状态源。",
+          "difficulty_reason": "要求状态设计同时编码可用性与区间盈余，消除边界特判，提升抽象建模难度。"
+        }
+      ],
+      "algorithmic_delta_claim": {
+        "seed_solver_core": "维护各余数类独立计数cnt[r]，贪心指针单向扫描寻找首个cnt[r]=0的位置计算MEX。",
+        "reusable_subroutines": "在线流读取框架、模运算基础处理、输入输出缓冲优化。",
+        "new_solver_core": "将相邻余数耦合转化为区间覆盖问题，使用线段树/平衡树维护前缀盈余数组diff[i] = avail(0,i) - (i+1)，动态查询全局最小值。若min<0则定位极小违反区间[L,R]；否则通过贪心回溯或流式匹配构造方案。",
+        "new_proof_obligation": "证明在相邻余数耦合约束下，任意Hall条件违反必然蕴含一个连续区间[L,R]的供给不足，且该极小区间可通过维护前缀和差值数组的线段树在O(log x)内定位，而非依赖全局最大流；同时证明字典序最小冲突区间的提取逻辑与构造分支的互斥正确性。",
+        "why_direct_reuse_fails": "原题依赖余数类独立性与单调指针，新题因相邻耦合导致局部贪心分配可能阻塞后续关键匹配，独立计数公式失效。必须维护全局区间盈余并定位极小违反集，算法核心从O(1)闭式计算转为O(log x)数据结构维护与区间极值查询，彻底阻断常数平移或简单偏移的换皮路径。"
+      },
+      "anti_shallow_rationale": "原题解法依赖余数类独立性与单调指针，新题因相邻耦合导致局部贪心失效，必须维护全局区间盈余并定位极小违反集，算法核心从O(1)公式转为O(log x)数据结构维护，彻底阻断常数平移或简单偏移的换皮路径。失败证书直接嵌入主约束的不可满足性，非附加说明。"
+    }
+  }
+}
