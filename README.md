@@ -97,9 +97,9 @@ main.py 选择平台
 
 这个目录是整个项目的数据入口，也是 `finiteness_verification` Phase 2 做全量封闭分类时的重要输入来源。
 
-* **codeforces**：2201 道
-* **icpc**：3149 道
-* **luogu**：7903 道
+- **codeforces**：2201 道
+- **icpc**：3149 道
+- **luogu**：7903 道
 
 ## 3. `母题代码`
 
@@ -246,7 +246,6 @@ total = 0.25 * I + 0.30 * C + 0.25 * O + 0.20 * V
      - `section/property` 节点代价为 `0.6 * label_distance + 0.4 * value_distance`。
      - 其他文本节点代价为 `1 - similarity`。
   4. 最终 `I = min(1, tree_edit_distance / (size_left + size_right))`。
-
 - `C`（核心约束距离）
 
   把两侧 `constraints` 当作集合匹配问题，用匈牙利算法做最小代价一一匹配。
@@ -254,7 +253,6 @@ total = 0.25 * I + 0.30 * C + 0.25 * O + 0.20 * V
   - 单条约束代价：`0.35 * name_distance + 0.65 * description_distance`。
   - 当两侧数量不一致时，自动补齐虚拟项，未匹配项代价按 `1.0` 处理。
   - 最终 `C = min(1, total_match_cost / max(len(left), len(right)))`。
-
 - `O`（目标函数距离）
 
   由 `objective.type` 和 `objective.description` 组合：
@@ -264,7 +262,6 @@ total = 0.25 * I + 0.30 * C + 0.25 * O + 0.20 * V
   ```
 
   其中 `objective.type` 先映射到语义提示语再算距离，`objective.description` 直接按文本距离计算。
-
 - `V`（不变量距离）
 
   与 `C` 同一套集合匹配方法，输入从 `constraints` 换成 `invariants`：

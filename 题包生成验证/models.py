@@ -1,0 +1,100 @@
+from __future__ import annotations
+
+from dataclasses import asdict, dataclass, field
+from typing import Any
+
+
+@dataclass
+class ExecutionSpec:
+    problem_id: str
+    input_contract: dict[str, Any]
+    output_contract: dict[str, Any]
+    judge_type: str
+    oracle_limits: dict[str, Any]
+    test_buckets: list[dict[str, Any]]
+    sample_tests: list[dict[str, Any]] = field(default_factory=list)
+    performance_limits: dict[str, Any] = field(default_factory=dict)
+    ambiguity_notes: list[str] = field(default_factory=list)
+
+
+@dataclass
+class GeneratedCodeArtifact:
+    name: str
+    role: str
+    code: str
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class TestCase:
+    input: str
+    source: str
+    purpose: str
+    expect_oracle: bool = True
+    is_sample: bool = False
+    is_large: bool = False
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class WrongSolution:
+    solution_id: str
+    code: str
+    source: str
+    bug_type: str
+    expected_failure: str
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class ExecutionResult:
+    artifact_name: str
+    function_name: str
+    test_source: str
+    status: str
+    stdout: str = ""
+    stderr: str = ""
+    result: Any = None
+    elapsed_ms: int = 0
+    error_reason: str = ""
+
+
+@dataclass
+class FailureIssue:
+    category: str
+    severity: str
+    title: str
+    detail: str
+    evidence_refs: list[str] = field(default_factory=list)
+    fix_hint: str = ""
+
+
+@dataclass
+class ValidationReport:
+    overall: dict[str, Any]
+    issues: list[dict[str, Any]]
+    execution_matrix: list[dict[str, Any]]
+    wrong_solution_stats: dict[str, Any]
+    revision_context: dict[str, Any]
+
+
+@dataclass
+class IterationSummary:
+    run_id: str
+    problem_id: str
+    requested_rounds: int
+    final_status: str
+    final_round_index: int
+    stop_reason: str
+    rounds: list[dict[str, Any]]
+
+
+def to_dict(value: Any) -> Any:
+    if hasattr(value, "__dataclass_fields__"):
+        return asdict(value)
+    if isinstance(value, list):
+        return [to_dict(item) for item in value]
+    if isinstance(value, dict):
+        return {key: to_dict(item) for key, item in value.items()}
+    return value
+
