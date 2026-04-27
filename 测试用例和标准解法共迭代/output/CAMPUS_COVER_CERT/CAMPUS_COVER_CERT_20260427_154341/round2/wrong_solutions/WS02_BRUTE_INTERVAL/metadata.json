@@ -1,0 +1,18 @@
+{
+  "solution_id": "WS02_BRUTE_INTERVAL",
+  "code": "import sys\n\ndef solve(input_str: str) -> str:\n    tokens = input_str.split()\n    it = iter(tokens)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    out = []\n    tid = 1\n    for _ in range(q):\n        op = int(next(it))\n        if op == 1:\n            a = int(next(it))\n            teams.append((tid, a))\n            tid += 1\n        else:\n            K = int(next(it))\n            found = False\n            for L in range(K):\n                for R in range(L, K):\n                    cnt = 0\n                    for _, a_val in teams:\n                        r1, r2 = a_val % x, (a_val + 1) % x\n                        if (L <= r1 <= R) or (L <= r2 <= R):\n                            cnt += 1\n                    if cnt < R - L + 1:\n                        out.append(\"NO\")\n                        out.append(f\"{L} {R}\")\n                        found = True\n                        break\n                if found: break\n            if not found:\n                out.append(\"YES\")\n                for s in range(K):\n                    out.append(f\"1 {s}\")\n    return \"\\n\".join(out)",
+  "source": "weak_llm_player",
+  "bug_type": "复杂度误判",
+  "expected_failure": "使用双重循环枚举所有子区间 [L, R] 并暴力统计覆盖队伍数，时间复杂度高达 O(K^2 * N)。在 K=1e9 或较大规模查询时会直接 TLE，且区间覆盖判定仅比较余数与端点，未考虑周期性延伸。",
+  "metadata": {
+    "raw": {
+      "solution_id": "WS02_BRUTE_INTERVAL",
+      "code": "import sys\n\ndef solve(input_str: str) -> str:\n    tokens = input_str.split()\n    it = iter(tokens)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    out = []\n    tid = 1\n    for _ in range(q):\n        op = int(next(it))\n        if op == 1:\n            a = int(next(it))\n            teams.append((tid, a))\n            tid += 1\n        else:\n            K = int(next(it))\n            found = False\n            for L in range(K):\n                for R in range(L, K):\n                    cnt = 0\n                    for _, a_val in teams:\n                        r1, r2 = a_val % x, (a_val + 1) % x\n                        if (L <= r1 <= R) or (L <= r2 <= R):\n                            cnt += 1\n                    if cnt < R - L + 1:\n                        out.append(\"NO\")\n                        out.append(f\"{L} {R}\")\n                        found = True\n                        break\n                if found: break\n            if not found:\n                out.append(\"YES\")\n                for s in range(K):\n                    out.append(f\"1 {s}\")\n    return \"\\n\".join(out)",
+      "player_profile": "复杂度误判型",
+      "target_failure_bucket": "大规模复杂度",
+      "bug_type": "复杂度误判",
+      "expected_failure": "使用双重循环枚举所有子区间 [L, R] 并暴力统计覆盖队伍数，时间复杂度高达 O(K^2 * N)。在 K=1e9 或较大规模查询时会直接 TLE，且区间覆盖判定仅比较余数与端点，未考虑周期性延伸。",
+      "source": "weak_llm_player"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "validator",
+  "role": "validator",
+  "code": "def validate(input_str: str) -> bool:\n    try:\n        tokens = input_str.strip().split()\n        if not tokens:\n            return False\n        it = iter(tokens)\n        x = int(next(it))\n        q = int(next(it))\n        if not (1 <= x <= 400000 and 1 <= q <= 400000):\n            return False\n        for _ in range(q):\n            op = int(next(it))\n            if op == 1:\n                a = int(next(it))\n                if not (0 <= a <= 10**9):\n                    return False\n            elif op == 2:\n                K = int(next(it))\n                if not (1 <= K <= 10**9):\n                    return False\n            else:\n                return False\n        try:\n            next(it)\n            return False\n        except StopIteration:\n            return True\n    except Exception:\n        return False",
+  "metadata": {
+    "notes": "Validator strictly parses tokens, enforces 1≤x,q≤4e5, 0≤a_i≤1e9, 1≤K≤1e9, and exact operation count. Checker implements dual-branch verification: YES branch checks bijection, slot bounds, and modulo constraints; NO branch verifies 0≤L≤R<K, strict Hall violation (coverage count < length), and lexicographical minimality via bounded brute-force (K≤2000) to avoid TLE while preserving correctness guarantees. Test generator covers 5 buckets: basic_small (samples + trivial), boundary_values (x=1, max x, max a_i), random_mixed (balanced ops), adversarial_hall (crafted gaps), performance_large (max q, large K, sum K constraint). expect_oracle=True for K≤50 cases, False otherwise. All tools use only stdlib, avoid I/O, and maintain strict separation of concerns."
+  }
+}

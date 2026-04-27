@@ -33,14 +33,11 @@ def _get_env_float(name: str, default: float) -> float:
 
 
 DEFAULT_OUTPUT_DIR = BASE_DIR / "output"
-DEFAULT_MODEL = get_env_value("QWEN_MODEL", "qwen3.6-plus")
-DEFAULT_BASE_URL = get_env_value(
-    "QWEN_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1"
-)
-DEFAULT_API_KEY = get_env_value("QWEN_API_KEY") or get_env_value("DASHSCOPE_API_KEY")
-DEFAULT_TIMEOUT_S = _get_env_int("QWEN_TIMEOUT_S", 360)
+DEFAULT_MODEL = get_env_value("LLM_MODEL", "qwen3.6-plus")
+DEFAULT_BASE_URL = get_env_value("LLM_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+DEFAULT_API_KEY = get_env_value("LLM_API_KEY")
+DEFAULT_TIMEOUT_S = _get_env_int("LLM_TIMEOUT_S", 360)
 DEFAULT_ROUNDS = _get_env_int("PACKAGE_ITERATIONS", 3)
 DEFAULT_KILL_RATE_THRESHOLD = _get_env_float("WRONG_SOLUTION_KILL_RATE", 0.8)
 DEFAULT_RUN_TIMEOUT_S = _get_env_float("PACKAGE_RUN_TIMEOUT_S", 2.0)
 DEFAULT_LARGE_RUN_TIMEOUT_S = _get_env_float("PACKAGE_LARGE_RUN_TIMEOUT_S", 6.0)
-

@@ -1,0 +1,102 @@
+[
+  {
+    "mistake_id": "hall_intersection_misread",
+    "schema_basis": [
+      "output_contract.no_branch (teams whose valid slots intersect [L, R]), core_constraints.adjacency_coverage"
+    ],
+    "player_visible_misread": "选手可能将“覆盖区间”误解为队伍的两个合法时段都必须完全落在 [L, R] 内，或误以为是指实际被分配到该区间的队伍数，而非题面定义的“潜在可覆盖（存在交集）”队伍总数。",
+    "wrong_strategy": "在验证 Hall 条件时，仅统计 {a_i mod x, (a_i+1) mod x} ⊆ [L, R] 的队伍数量，或依赖局部贪心分配后的实际占用情况来判定冲突，导致供给计数偏低。",
+    "target_failure_bucket": "小规模反例",
+    "expected_counterexample_shape": "x=5, K=4。检查区间 [0, 1] 时，存在队伍 a_i=1（合法时段 {1, 2}）。该队伍与 [0, 1] 有交集（时段1），应计入供给。若选手要求双时段均在区间内，则供给计数少1，误判为冲突或输出错误的 [L, R]。",
+    "triviality_risk": "该策略仍能输出格式合法的区间，且在队伍偏好集中时表现正确，仅在边界交叉（一个时段在区间内，另一个在外）时触发逻辑错误，不会退化为空输出或固定输出。",
+    "raw": {
+      "mistake_id": "hall_intersection_misread",
+      "schema_basis": "output_contract.no_branch (teams whose valid slots intersect [L, R]), core_constraints.adjacency_coverage",
+      "player_visible_misread": "选手可能将“覆盖区间”误解为队伍的两个合法时段都必须完全落在 [L, R] 内，或误以为是指实际被分配到该区间的队伍数，而非题面定义的“潜在可覆盖（存在交集）”队伍总数。",
+      "wrong_strategy": "在验证 Hall 条件时，仅统计 {a_i mod x, (a_i+1) mod x} ⊆ [L, R] 的队伍数量，或依赖局部贪心分配后的实际占用情况来判定冲突，导致供给计数偏低。",
+      "target_failure_bucket": "小规模反例",
+      "expected_counterexample_shape": "x=5, K=4。检查区间 [0, 1] 时，存在队伍 a_i=1（合法时段 {1, 2}）。该队伍与 [0, 1] 有交集（时段1），应计入供给。若选手要求双时段均在区间内，则供给计数少1，误判为冲突或输出错误的 [L, R]。",
+      "triviality_risk": "该策略仍能输出格式合法的区间，且在队伍偏好集中时表现正确，仅在边界交叉（一个时段在区间内，另一个在外）时触发逻辑错误，不会退化为空输出或固定输出。"
+    }
+  },
+  {
+    "mistake_id": "lexicographical_vs_global_min",
+    "schema_basis": [
+      "output_contract.no_branch (lexicographically smallest), invariant.hall_interval_minimality"
+    ],
+    "player_visible_misread": "选手可能将“字典序最小”误解为“违反程度最大（盈余最小）”的区间，或在确定左端点 L 后，直接取使盈余最小的 R，而非满足违反条件的最小 R。",
+    "wrong_strategy": "使用线段树查询全局最小盈余位置得到 [L*, R*] 并直接输出；或固定 L 后二分查找使 diff[R] 最小的 R，而非从左到右扫描找到第一个使 count < len 的 R。",
+    "target_failure_bucket": "边界条件",
+    "expected_counterexample_shape": "存在多个冲突区间，如 [0, 2]（盈余-2）和 [0, 1]（盈余-1）。全局最小盈余对应 [0, 2]，但字典序最小应为 [0, 1]。选手输出 [0, 2] 被判错。",
+    "triviality_risk": "策略能正确识别无解并输出合法区间，仅在多解排序规则上偏离题面要求，可通过构造盈余梯度反例精准拦截，非低价值错误。",
+    "raw": {
+      "mistake_id": "lexicographical_vs_global_min",
+      "schema_basis": "output_contract.no_branch (lexicographically smallest), invariant.hall_interval_minimality",
+      "player_visible_misread": "选手可能将“字典序最小”误解为“违反程度最大（盈余最小）”的区间，或在确定左端点 L 后，直接取使盈余最小的 R，而非满足违反条件的最小 R。",
+      "wrong_strategy": "使用线段树查询全局最小盈余位置得到 [L*, R*] 并直接输出；或固定 L 后二分查找使 diff[R] 最小的 R，而非从左到右扫描找到第一个使 count < len 的 R。",
+      "target_failure_bucket": "边界条件",
+      "expected_counterexample_shape": "存在多个冲突区间，如 [0, 2]（盈余-2）和 [0, 1]（盈余-1）。全局最小盈余对应 [0, 2]，但字典序最小应为 [0, 1]。选手输出 [0, 2] 被判错。",
+      "triviality_risk": "策略能正确识别无解并输出合法区间，仅在多解排序规则上偏离题面要求，可通过构造盈余梯度反例精准拦截，非低价值错误。"
+    }
+  },
+  {
+    "mistake_id": "greedy_assignment_pitfall",
+    "schema_basis": [
+      "objective.requires_solution, core_constraints.slot_uniqueness, algorithmic_delta_claim.new_solver_core"
+    ],
+    "player_visible_misread": "选手认为只要 Hall 条件满足，按时段 0 到 K-1 顺序贪心分配（为当前时段选择任意一个未使用且能覆盖它的队伍）必然能构造出合法方案。",
+    "wrong_strategy": "遍历 s ∈ [0, K-1]，每次从可用队伍中任选一个覆盖 s 的队伍进行分配。若中途卡住则判定无解或简单回溯，未考虑队伍对后续时段的独占性影响。",
+    "target_failure_bucket": "小规模反例",
+    "expected_counterexample_shape": "x=3, K=2。队伍1覆盖 {0, 1}，队伍2覆盖 {0}，队伍3覆盖 {1}。贪心在 s=0 时选中队伍1，导致 s=1 时无队伍可用而失败。实际存在合法分配（队伍2→0，队伍3→1）。",
+    "triviality_risk": "贪心策略在随机数据下通过率极高，仅在“桥梁型”队伍出现时失效，代码结构完整且能通过基础样例，完全符合可运行但部分失败的特征。",
+    "raw": {
+      "mistake_id": "greedy_assignment_pitfall",
+      "schema_basis": "objective.requires_solution, core_constraints.slot_uniqueness, algorithmic_delta_claim.new_solver_core",
+      "player_visible_misread": "选手认为只要 Hall 条件满足，按时段 0 到 K-1 顺序贪心分配（为当前时段选择任意一个未使用且能覆盖它的队伍）必然能构造出合法方案。",
+      "wrong_strategy": "遍历 s ∈ [0, K-1]，每次从可用队伍中任选一个覆盖 s 的队伍进行分配。若中途卡住则判定无解或简单回溯，未考虑队伍对后续时段的独占性影响。",
+      "target_failure_bucket": "小规模反例",
+      "expected_counterexample_shape": "x=3, K=2。队伍1覆盖 {0, 1}，队伍2覆盖 {0}，队伍3覆盖 {1}。贪心在 s=0 时选中队伍1，导致 s=1 时无队伍可用而失败。实际存在合法分配（队伍2→0，队伍3→1）。",
+      "triviality_risk": "贪心策略在随机数据下通过率极高，仅在“桥梁型”队伍出现时失效，代码结构完整且能通过基础样例，完全符合可运行但部分失败的特征。"
+    }
+  },
+  {
+    "mistake_id": "periodic_surplus_fallacy",
+    "schema_basis": [
+      "execution_spec.input_contract (K ≤ 10^9), algorithmic_delta_claim.new_solver_core (diff[i] = avail(0,i) - (i+1)), invariant.online_supply_monotonicity"
+    ],
+    "player_visible_misread": "选手注意到时段属性以 x 为周期循环，误以为前缀盈余数组 diff[i] 也具有周期性或只需在 [0, x-1] 范围内检查即可，忽略了 K 远大于 x 时盈余的线性累积效应。",
+    "wrong_strategy": "仅维护长度为 x 的盈余数组，查询时将 K 映射到模 x 意义下，或假设若 [0, x-1] 无冲突则任意 [0, K-1] 均无冲突，直接输出 YES。",
+    "target_failure_bucket": "大规模复杂度",
+    "expected_counterexample_shape": "x=3, K=10。队伍分布使得每个周期净盈余为负，前3个时段盈余为0，但到第10个时段累积盈余为负。选手仅检查前3个时段输出 YES，实际应输出 NO 及对应长区间。",
+    "triviality_risk": "该策略在小 K 或 K 为 x 倍数时表现正常，仅在 K >> x 且存在跨周期累积赤字时暴露，逻辑自洽且非固定输出，需针对性构造长跨度反例拦截。",
+    "raw": {
+      "mistake_id": "periodic_surplus_fallacy",
+      "schema_basis": "execution_spec.input_contract (K ≤ 10^9), algorithmic_delta_claim.new_solver_core (diff[i] = avail(0,i) - (i+1)), invariant.online_supply_monotonicity",
+      "player_visible_misread": "选手注意到时段属性以 x 为周期循环，误以为前缀盈余数组 diff[i] 也具有周期性或只需在 [0, x-1] 范围内检查即可，忽略了 K 远大于 x 时盈余的线性累积效应。",
+      "wrong_strategy": "仅维护长度为 x 的盈余数组，查询时将 K 映射到模 x 意义下，或假设若 [0, x-1] 无冲突则任意 [0, K-1] 均无冲突，直接输出 YES。",
+      "target_failure_bucket": "大规模复杂度",
+      "expected_counterexample_shape": "x=3, K=10。队伍分布使得每个周期净盈余为负，前3个时段盈余为0，但到第10个时段累积盈余为负。选手仅检查前3个时段输出 YES，实际应输出 NO 及对应长区间。",
+      "triviality_risk": "该策略在小 K 或 K 为 x 倍数时表现正常，仅在 K >> x 且存在跨周期累积赤字时暴露，逻辑自洽且非固定输出，需针对性构造长跨度反例拦截。"
+    }
+  },
+  {
+    "mistake_id": "coordinate_compression_scope_error",
+    "schema_basis": [
+      "performance_limits (O(q log x) expected), algorithmic_delta_claim.new_solver_core (segment tree maintenance), execution_spec.input_contract (a_i ≤ 10^9)"
+    ],
+    "player_visible_misread": "选手试图对 a_i 进行离散化以压缩线段树规模，但错误地将离散化坐标直接等同于原始时段索引，导致查询 [L, R] 时无法正确映射回实际长度 R-L+1 和队伍覆盖关系。",
+    "wrong_strategy": "收集所有 a_i mod x 和 (a_i+1) mod x 进行离散化建线段树。查询时直接在离散化坐标上计算盈余，忽略离散化点之间的“空白时段”对区间长度和队伍供给的贡献。",
+    "target_failure_bucket": "最坏情况",
+    "expected_counterexample_shape": "x=1000，队伍偏好集中在 0, 100, 200。查询 K=500。离散化后点稀疏，选手计算的区间长度远小于实际 500，导致盈余计算严重失真，输出错误的 YES/NO 或区间。",
+    "triviality_risk": "离散化是常见优化手段，此误解源于对“区间长度”与“离散点数量”的混淆。在偏好密集时正确，在偏好稀疏且查询跨度大时必然失败，具备高隐蔽性。",
+    "raw": {
+      "mistake_id": "coordinate_compression_scope_error",
+      "schema_basis": "performance_limits (O(q log x) expected), algorithmic_delta_claim.new_solver_core (segment tree maintenance), execution_spec.input_contract (a_i ≤ 10^9)",
+      "player_visible_misread": "选手试图对 a_i 进行离散化以压缩线段树规模，但错误地将离散化坐标直接等同于原始时段索引，导致查询 [L, R] 时无法正确映射回实际长度 R-L+1 和队伍覆盖关系。",
+      "wrong_strategy": "收集所有 a_i mod x 和 (a_i+1) mod x 进行离散化建线段树。查询时直接在离散化坐标上计算盈余，忽略离散化点之间的“空白时段”对区间长度和队伍供给的贡献。",
+      "target_failure_bucket": "最坏情况",
+      "expected_counterexample_shape": "x=1000，队伍偏好集中在 0, 100, 200。查询 K=500。离散化后点稀疏，选手计算的区间长度远小于实际 500，导致盈余计算严重失真，输出错误的 YES/NO 或区间。",
+      "triviality_risk": "离散化是常见优化手段，此误解源于对“区间长度”与“离散点数量”的混淆。在偏好密集时正确，在偏好稀疏且查询跨度大时必然失败，具备高隐蔽性。"
+    }
+  }
+]

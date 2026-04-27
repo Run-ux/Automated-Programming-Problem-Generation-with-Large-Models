@@ -12,8 +12,8 @@ from config import (
     DEFAULT_ROUNDS,
     DEFAULT_TIMEOUT_S,
 )
+from llm_client import LlmClient
 from pipeline import PackageValidationPipeline
-from qwen_client import QwenClient
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -22,7 +22,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--markdown", type=Path, help="生成题面的 Markdown 题面路径。")
     parser.add_argument("--rounds", type=int, default=DEFAULT_ROUNDS, help="最多迭代轮数。")
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR, help="题包生成验证输出目录。")
-    parser.add_argument("--model", default=DEFAULT_MODEL, help="Qwen 模型名称。")
+    parser.add_argument("--model", default=DEFAULT_MODEL, help="LLM 模型名称。")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="兼容 OpenAI 的接口地址。")
     parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT_S, help="LLM 请求超时秒数。")
     parser.add_argument("--kill-rate-threshold", type=float, default=DEFAULT_KILL_RATE_THRESHOLD, help="错误解杀伤率阈值。")
@@ -39,7 +39,7 @@ def main() -> int:
     if args.markdown and not args.markdown.exists():
         parser.error(f"--markdown 不存在：{args.markdown}")
 
-    client = QwenClient(
+    client = LlmClient(
         api_key=DEFAULT_API_KEY or "",
         model=args.model,
         base_url=args.base_url,
@@ -62,4 +62,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

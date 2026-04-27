@@ -1,0 +1,18 @@
+{
+  "solution_id": "WS03_MOD_MISREAD",
+  "code": "import sys\n\ndef solve(input_str: str) -> str:\n    tokens = input_str.split()\n    it = iter(tokens)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    out = []\n    tid = 1\n    for _ in range(q):\n        op = int(next(it))\n        if op == 1:\n            a = int(next(it))\n            teams.append((tid, a))\n            tid += 1\n        else:\n            K = int(next(it))\n            covered = set()\n            for t_id, a_val in teams:\n                for p in [a_val, a_val + 1]:\n                    if p < K:\n                        covered.add((p, t_id))\n            if len(covered) < K:\n                out.append(\"NO\")\n                out.append(f\"0 {K-1}\")\n            else:\n                out.append(\"YES\")\n                assigned = {}\n                for p, t_id in sorted(covered):\n                    if p not in assigned:\n                        assigned[p] = t_id\n                for s in range(K):\n                    out.append(f\"{assigned.get(s, teams[0][0])} {s}\")\n    return \"\\n\".join(out)",
+  "source": "weak_llm_player",
+  "bug_type": "解析误读/模运算错误",
+  "expected_failure": "误将合法时段理解为绝对数值 {a_i, a_i+1}，完全忽略了题目中 s ≡ a_i (mod x) 的周期性定义。当 a_i >= K 或 x 较小时，队伍实际可覆盖的时段被严重低估，导致错误输出 NO 或分配错误。",
+  "metadata": {
+    "raw": {
+      "solution_id": "WS03_MOD_MISREAD",
+      "code": "import sys\n\ndef solve(input_str: str) -> str:\n    tokens = input_str.split()\n    it = iter(tokens)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    out = []\n    tid = 1\n    for _ in range(q):\n        op = int(next(it))\n        if op == 1:\n            a = int(next(it))\n            teams.append((tid, a))\n            tid += 1\n        else:\n            K = int(next(it))\n            covered = set()\n            for t_id, a_val in teams:\n                for p in [a_val, a_val + 1]:\n                    if p < K:\n                        covered.add((p, t_id))\n            if len(covered) < K:\n                out.append(\"NO\")\n                out.append(f\"0 {K-1}\")\n            else:\n                out.append(\"YES\")\n                assigned = {}\n                for p, t_id in sorted(covered):\n                    if p not in assigned:\n                        assigned[p] = t_id\n                for s in range(K):\n                    out.append(f\"{assigned.get(s, teams[0][0])} {s}\")\n    return \"\\n\".join(out)",
+      "player_profile": "边界粗心型",
+      "target_failure_bucket": "边界条件",
+      "bug_type": "解析误读/模运算错误",
+      "expected_failure": "误将合法时段理解为绝对数值 {a_i, a_i+1}，完全忽略了题目中 s ≡ a_i (mod x) 的周期性定义。当 a_i >= K 或 x 较小时，队伍实际可覆盖的时段被严重低估，导致错误输出 NO 或分配错误。",
+      "source": "weak_llm_player"
+    }
+  }
+}

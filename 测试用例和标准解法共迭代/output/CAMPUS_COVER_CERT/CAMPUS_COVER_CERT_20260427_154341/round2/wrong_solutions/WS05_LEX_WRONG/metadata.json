@@ -1,0 +1,18 @@
+{
+  "solution_id": "WS05_LEX_WRONG",
+  "code": "import sys\n\ndef solve(input_str: str) -> str:\n    tokens = input_str.split()\n    it = iter(tokens)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    out = []\n    tid = 1\n    for _ in range(q):\n        op = int(next(it))\n        if op == 1:\n            a = int(next(it))\n            teams.append((tid, a))\n            tid += 1\n        else:\n            K = int(next(it))\n            found = False\n            for R in range(K - 1, -1, -1):\n                for L in range(R + 1):\n                    cnt = 0\n                    for _, a_val in teams:\n                        r1, r2 = a_val % x, (a_val + 1) % x\n                        if (L <= r1 <= R) or (L <= r2 <= R) or (r1 + x <= R) or (r2 + x <= R):\n                            cnt += 1\n                    if cnt < R - L + 1:\n                        out.append(\"NO\")\n                        out.append(f\"{L} {R}\")\n                        found = True\n                        break\n                if found: break\n            if not found:\n                out.append(\"YES\")\n                for s in range(K):\n                    out.append(f\"1 {s}\")\n    return \"\\n\".join(out)",
+  "source": "weak_llm_player",
+  "bug_type": "字典序错误/搜索顺序反置",
+  "expected_failure": "寻找冲突区间时从 R=K-1 倒序枚举，导致优先找到右端点较大的区间。违背了题目要求的字典序最小（优先最小化 L，其次最小化 R）原则，在存在多个冲突区间时会输出非字典序最小的答案。",
+  "metadata": {
+    "raw": {
+      "solution_id": "WS05_LEX_WRONG",
+      "code": "import sys\n\ndef solve(input_str: str) -> str:\n    tokens = input_str.split()\n    it = iter(tokens)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    out = []\n    tid = 1\n    for _ in range(q):\n        op = int(next(it))\n        if op == 1:\n            a = int(next(it))\n            teams.append((tid, a))\n            tid += 1\n        else:\n            K = int(next(it))\n            found = False\n            for R in range(K - 1, -1, -1):\n                for L in range(R + 1):\n                    cnt = 0\n                    for _, a_val in teams:\n                        r1, r2 = a_val % x, (a_val + 1) % x\n                        if (L <= r1 <= R) or (L <= r2 <= R) or (r1 + x <= R) or (r2 + x <= R):\n                            cnt += 1\n                    if cnt < R - L + 1:\n                        out.append(\"NO\")\n                        out.append(f\"{L} {R}\")\n                        found = True\n                        break\n                if found: break\n            if not found:\n                out.append(\"YES\")\n                for s in range(K):\n                    out.append(f\"1 {s}\")\n    return \"\\n\".join(out)",
+      "player_profile": "实现细节薄弱型",
+      "target_failure_bucket": "小规模挑战",
+      "bug_type": "字典序错误/搜索顺序反置",
+      "expected_failure": "寻找冲突区间时从 R=K-1 倒序枚举，导致优先找到右端点较大的区间。违背了题目要求的字典序最小（优先最小化 L，其次最小化 R）原则，在存在多个冲突区间时会输出非字典序最小的答案。",
+      "source": "weak_llm_player"
+    }
+  }
+}

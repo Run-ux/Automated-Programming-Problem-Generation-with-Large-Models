@@ -8,6 +8,8 @@ from models import ExecutionSpec, GeneratedCodeArtifact, WrongSolution, to_dict
 from prompt_builder import (
     build_code_system_prompt,
     build_oracle_prompt,
+    build_schema_aware_wrong_solution_prompt,
+    build_schema_mistake_analysis_prompt,
     build_spec_system_prompt,
     build_spec_user_prompt,
     build_standard_solution_prompt,
@@ -150,42 +152,130 @@ class WeakPlayerGenerator:
         ]
 
 
-def build_rule_based_wrong_solutions(spec: ExecutionSpec, standard_code: str = "") -> list[WrongSolution]:
-    del standard_code
-    empty_output = """def solve(input_str: str) -> str:
-    return ""
-"""
-    first_token = """def solve(input_str: str) -> str:
-    data = input_str.strip().split()
-    return data[0] if data else ""
-"""
-    sample_only = """def solve(input_str: str) -> str:
-    # 低价值但常见的样例拟合错误：忽略输入结构，只返回固定答案。
-    return "0"
-"""
-    return [
-        WrongSolution(
-            solution_id=f"{spec.problem_id}_empty_output",
-            code=empty_output,
-            source="rule_based",
-            bug_type="empty_output",
-            expected_failure="输出合同通常不允许空输出。",
-        ),
-        WrongSolution(
-            solution_id=f"{spec.problem_id}_first_token",
-            code=first_token,
-            source="rule_based",
-            bug_type="format_misread",
-            expected_failure="误把输入首个 token 当成答案。",
-        ),
-        WrongSolution(
-            solution_id=f"{spec.problem_id}_sample_only",
-            code=sample_only,
-            source="rule_based",
-            bug_type="sample_fitting",
-            expected_failure="只返回固定答案，无法通过真实测试。",
-        ),
-    ]
+class SchemaMistakeAnalyzer:
+    def __init__(self, client: Any):
+        self.client = client
+
+    def generate(
+        self,
+        context: dict[str, Any],
+        spec: ExecutionSpec,
+        revision_context: dict[str, Any] | None = None,
+    ) -> list[dict[str, Any]]:
+        if not context.get("new_schema") or self.client is None:
+            return []
+
+        payload = self.client.chat_json(
+            system_prompt=build_code_system_prompt("SchemaMistakeAnalyzer"),
+            user_prompt=build_schema_mistake_analysis_prompt(context, to_dict(spec), revision_context),
+            temperature=0.35,
+        )
+        mistake_points = payload.get("mistake_points", [])
+        if not isinstance(mistake_points, list):
+            return []
+        return [
+            _normalize_mistake_point(item, index)
+            for index, item in enumerate(mistake_points, start=1)
+            if isinstance(item, dict)
+        ]
+
+
+class SchemaAwareWrongSolutionGenerator:
+    def __init__(self, client: Any):
+        self.client = client
+
+    def generate(
+        self,
+        context: dict[str, Any],
+        spec: ExecutionSpec,
+        mistake_points: list[dict[str, Any]],
+        revision_context: dict[str, Any] | None = None,
+    ) -> list[WrongSolution]:
+        if not context.get("new_schema") or not mistake_points or self.client is None:
+            return []
+
+        payload = self.client.chat_json(
+            system_prompt=build_code_system_prompt("SchemaAwareWrongSolutionGenerator"),
+            user_prompt=build_schema_aware_wrong_solution_prompt(context, to_dict(spec), mistake_points, revision_context),
+            temperature=0.65,
+        )
+        mistake_by_id = {str(item.get("mistake_id", "")).strip(): item for item in mistake_points}
+        default_schema_signals = _extract_schema_signal_names(context.get("new_schema"))
+        wrong_solutions: list[WrongSolution] = []
+        raw_items = payload.get("wrong_solutions", [])
+        if not isinstance(raw_items, list):
+            return wrong_solutions
+
+        for index, item in enumerate(raw_items, start=1):
+            if not isinstance(item, dict):
+                continue
+            mistake_id = str(item.get("mistake_id", "")).strip()
+            mistake_point = mistake_by_id.get(mistake_id, {})
+            schema_signals = item.get("schema_signals")
+            if not isinstance(schema_signals, list):
+                schema_signals = default_schema_signals
+            wrong_solutions.append(
+                WrongSolution(
+                    solution_id=str(item.get("solution_id", f"{spec.problem_id}_schema_wrong_{index}")),
+                    code=_clean_code(str(item.get("code", ""))),
+                    source="schema_aware_llm_player",
+                    bug_type=str(item.get("bug_type", "schema_misread")),
+                    expected_failure=str(item.get("expected_failure", "")),
+                    metadata={
+                        "mistake_id": mistake_id,
+                        "mistake_point": copy.deepcopy(mistake_point),
+                        "schema_signals": [str(signal) for signal in schema_signals if str(signal).strip()],
+                        "raw": copy.deepcopy(item),
+                    },
+                )
+            )
+        return wrong_solutions
+
+
+def _normalize_mistake_point(item: dict[str, Any], index: int) -> dict[str, Any]:
+    return {
+        "mistake_id": str(item.get("mistake_id", f"schema_mistake_{index}")).strip() or f"schema_mistake_{index}",
+        "schema_basis": _normalize_string_list(item.get("schema_basis")),
+        "player_visible_misread": str(item.get("player_visible_misread", "")).strip(),
+        "wrong_strategy": str(item.get("wrong_strategy", "")).strip(),
+        "target_failure_bucket": str(item.get("target_failure_bucket", "")).strip(),
+        "expected_counterexample_shape": str(item.get("expected_counterexample_shape", "")).strip(),
+        "triviality_risk": str(item.get("triviality_risk", "")).strip(),
+        "raw": copy.deepcopy(item),
+    }
+
+
+def _extract_schema_signal_names(new_schema: Any) -> list[str]:
+    if not isinstance(new_schema, dict):
+        return []
+    signals: list[str] = []
+    objective = new_schema.get("objective", {})
+    if isinstance(objective, dict):
+        objective_type = str(objective.get("type", "")).strip()
+        if objective_type:
+            signals.append(f"objective:{objective_type}")
+
+    constraints = new_schema.get("core_constraints", {}).get("constraints", [])
+    if isinstance(constraints, list):
+        for item in constraints:
+            if isinstance(item, dict) and str(item.get("name", "")).strip():
+                signals.append(f"constraint:{item['name']}")
+
+    invariants = new_schema.get("invariant", {}).get("invariants", [])
+    if isinstance(invariants, list):
+        for item in invariants:
+            if isinstance(item, dict) and str(item.get("name", "")).strip():
+                signals.append(f"invariant:{item['name']}")
+    return signals
+
+
+def _normalize_string_list(value: Any) -> list[str]:
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    if value is None:
+        return []
+    text = str(value).strip()
+    return [text] if text else []
 
 
 def _clean_code(text: str) -> str:

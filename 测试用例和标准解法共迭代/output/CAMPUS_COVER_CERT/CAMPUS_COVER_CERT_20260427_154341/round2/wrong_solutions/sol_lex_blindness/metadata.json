@@ -1,0 +1,53 @@
+{
+  "solution_id": "sol_lex_blindness",
+  "code": "import sys\n\ndef solve(input_str: str) -> str:\n    data = input_str.split()\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    out = []\n\n    for _ in range(q):\n        op = int(next(it))\n        val = int(next(it))\n        if op == 1:\n            teams.append((len(teams)+1, val))\n        else:\n            K = val\n            conflict_found = False\n            # 缺陷：仅检查 L=0 的前缀区间，忽略字典序最小要求\n            for R in range(K):\n                count = 0\n                for idx, a in teams:\n                    s1, s2 = a % x, (a + 1) % x\n                    if s1 <= R or s2 <= R:\n                        count += 1\n                if count < R + 1:\n                    out.append(\"NO\")\n                    out.append(f\"0 {R}\")\n                    conflict_found = True\n                    break\n            if not conflict_found:\n                out.append(\"YES\")\n                used = set()\n                for s in range(K):\n                    for idx, a in teams:\n                        if idx not in used and (s % x == a % x or s % x == (a + 1) % x):\n                            out.append(f\"{idx} {s}\")\n                            used.add(idx)\n                            break\n    return \"\\n\".join(out)",
+  "source": "schema_aware_llm_player",
+  "bug_type": "规范性遗漏",
+  "expected_failure": "当存在多个违反 Hall 条件的区间，且字典序最小的冲突区间起始点 L > 0 时（如 [1,1] 违反但 [0,2] 未违反），该策略会错误地输出 [0, R] 或判定为 YES，无法正确提取极小违反集。",
+  "metadata": {
+    "mistake_id": "hall_interval_lexicographical_blindness",
+    "mistake_point": {
+      "mistake_id": "hall_interval_lexicographical_blindness",
+      "schema_basis": [
+        "new_schema.objective",
+        "new_schema.invariant.hall_interval_minimality",
+        "execution_spec.output_contract.no_block.validity_rules"
+      ],
+      "player_visible_misread": "认为只要找到任意一个违反 Hall 条件的子区间 [L, R] 即可输出，或默认冲突区间必然从 L=0 开始，忽略题目要求的“字典序最小”约束。",
+      "wrong_strategy": "扫描时遇到第一个满足 avail(L,R) < R-L+1 的区间立即输出，或仅检查 L=0 的前缀区间，未全局比较或按字典序优先规则定位极小违反集。",
+      "target_failure_bucket": "边界条件",
+      "expected_counterexample_shape": "存在多个违反区间，如 [0,2] 和 [1,1] 均违反 Hall 条件。错误策略输出 [0,2]，但正确答案应为字典序更小的 [1,1]（L 更小）。",
+      "triviality_risk": "需构造多区间同时违反的场景，避免策略退化为固定输出 [0, K-1]。Checker 可通过独立验证字典序拦截。",
+      "raw": {
+        "mistake_id": "hall_interval_lexicographical_blindness",
+        "schema_basis": [
+          "new_schema.objective",
+          "new_schema.invariant.hall_interval_minimality",
+          "execution_spec.output_contract.no_block.validity_rules"
+        ],
+        "player_visible_misread": "认为只要找到任意一个违反 Hall 条件的子区间 [L, R] 即可输出，或默认冲突区间必然从 L=0 开始，忽略题目要求的“字典序最小”约束。",
+        "wrong_strategy": "扫描时遇到第一个满足 avail(L,R) < R-L+1 的区间立即输出，或仅检查 L=0 的前缀区间，未全局比较或按字典序优先规则定位极小违反集。",
+        "target_failure_bucket": "边界条件",
+        "expected_counterexample_shape": "存在多个违反区间，如 [0,2] 和 [1,1] 均违反 Hall 条件。错误策略输出 [0,2]，但正确答案应为字典序更小的 [1,1]（L 更小）。",
+        "triviality_risk": "需构造多区间同时违反的场景，避免策略退化为固定输出 [0, K-1]。Checker 可通过独立验证字典序拦截。"
+      }
+    },
+    "schema_signals": [
+      "hall_interval_minimality",
+      "objective"
+    ],
+    "raw": {
+      "solution_id": "sol_lex_blindness",
+      "mistake_id": "hall_interval_lexicographical_blindness",
+      "code": "import sys\n\ndef solve(input_str: str) -> str:\n    data = input_str.split()\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    out = []\n\n    for _ in range(q):\n        op = int(next(it))\n        val = int(next(it))\n        if op == 1:\n            teams.append((len(teams)+1, val))\n        else:\n            K = val\n            conflict_found = False\n            # 缺陷：仅检查 L=0 的前缀区间，忽略字典序最小要求\n            for R in range(K):\n                count = 0\n                for idx, a in teams:\n                    s1, s2 = a % x, (a + 1) % x\n                    if s1 <= R or s2 <= R:\n                        count += 1\n                if count < R + 1:\n                    out.append(\"NO\")\n                    out.append(f\"0 {R}\")\n                    conflict_found = True\n                    break\n            if not conflict_found:\n                out.append(\"YES\")\n                used = set()\n                for s in range(K):\n                    for idx, a in teams:\n                        if idx not in used and (s % x == a % x or s % x == (a + 1) % x):\n                            out.append(f\"{idx} {s}\")\n                            used.add(idx)\n                            break\n    return \"\\n\".join(out)",
+      "player_profile": "规范顺序忽略型",
+      "target_failure_bucket": "边界条件",
+      "bug_type": "规范性遗漏",
+      "expected_failure": "当存在多个违反 Hall 条件的区间，且字典序最小的冲突区间起始点 L > 0 时（如 [1,1] 违反但 [0,2] 未违反），该策略会错误地输出 [0, R] 或判定为 YES，无法正确提取极小违反集。",
+      "schema_signals": [
+        "hall_interval_minimality",
+        "objective"
+      ]
+    }
+  }
+}

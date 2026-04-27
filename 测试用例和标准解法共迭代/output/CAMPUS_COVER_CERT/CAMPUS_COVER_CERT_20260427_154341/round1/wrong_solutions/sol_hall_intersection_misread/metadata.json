@@ -1,0 +1,49 @@
+{
+  "solution_id": "sol_hall_intersection_misread",
+  "code": "def solve(input_str: str) -> str:\n    import sys\n    data = input_str.split()\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    ops = []\n    for _ in range(q):\n        ops.append((int(next(it)), int(next(it))))\n    \n    teams = []\n    team_id = 0\n    out = []\n    \n    for t, v in ops:\n        if t == 1:\n            team_id += 1\n            teams.append((team_id, v))\n        else:\n            K = v\n            # 简化处理：仅当 K 较小时进行区间检查，否则默认 YES（模拟选手对大数据范围的妥协）\n            limit = min(K, 500)\n            conflict = None\n            for L in range(limit):\n                if conflict: break\n                for R in range(L, limit):\n                    cnt = 0\n                    for tid, a in teams:\n                        r1 = a % x\n                        r2 = (a + 1) % x\n                        # 错误理解：要求队伍的两个合法时段都必须完全落在 [L, R] 内\n                        if r1 >= L and r1 <= R and r2 >= L and r2 <= R:\n                            cnt += 1\n                    if cnt < R - L + 1:\n                        conflict = (L, R)\n                        break\n            \n            if conflict:\n                out.append('NO')\n                out.append(f'{conflict[0]} {conflict[1]}')\n            else:\n                out.append('YES')\n                used_slots = set()\n                assigned_count = 0\n                for tid, a in teams:\n                    if assigned_count == K: break\n                    r1 = a % x\n                    r2 = (a + 1) % x\n                    for s in [r1, r2]:\n                        if s < K and s not in used_slots:\n                            out.append(f'{tid} {s}')\n                            used_slots.add(s)\n                            assigned_count += 1\n                            break\n    return '\\n'.join(out)",
+  "source": "schema_aware_llm_player",
+  "bug_type": "约束误判",
+  "expected_failure": "在检查区间覆盖时，错误地将“存在交集”理解为“完全包含”。当队伍合法时段仅有一个落在 [L, R] 内时，供给计数被低估，导致在无冲突时误报 NO，或输出错误的冲突区间。",
+  "metadata": {
+    "mistake_id": "hall_intersection_misread",
+    "mistake_point": {
+      "mistake_id": "hall_intersection_misread",
+      "schema_basis": [
+        "output_contract.no_branch (teams whose valid slots intersect [L, R]), core_constraints.adjacency_coverage"
+      ],
+      "player_visible_misread": "选手可能将“覆盖区间”误解为队伍的两个合法时段都必须完全落在 [L, R] 内，或误以为是指实际被分配到该区间的队伍数，而非题面定义的“潜在可覆盖（存在交集）”队伍总数。",
+      "wrong_strategy": "在验证 Hall 条件时，仅统计 {a_i mod x, (a_i+1) mod x} ⊆ [L, R] 的队伍数量，或依赖局部贪心分配后的实际占用情况来判定冲突，导致供给计数偏低。",
+      "target_failure_bucket": "小规模反例",
+      "expected_counterexample_shape": "x=5, K=4。检查区间 [0, 1] 时，存在队伍 a_i=1（合法时段 {1, 2}）。该队伍与 [0, 1] 有交集（时段1），应计入供给。若选手要求双时段均在区间内，则供给计数少1，误判为冲突或输出错误的 [L, R]。",
+      "triviality_risk": "该策略仍能输出格式合法的区间，且在队伍偏好集中时表现正确，仅在边界交叉（一个时段在区间内，另一个在外）时触发逻辑错误，不会退化为空输出或固定输出。",
+      "raw": {
+        "mistake_id": "hall_intersection_misread",
+        "schema_basis": "output_contract.no_branch (teams whose valid slots intersect [L, R]), core_constraints.adjacency_coverage",
+        "player_visible_misread": "选手可能将“覆盖区间”误解为队伍的两个合法时段都必须完全落在 [L, R] 内，或误以为是指实际被分配到该区间的队伍数，而非题面定义的“潜在可覆盖（存在交集）”队伍总数。",
+        "wrong_strategy": "在验证 Hall 条件时，仅统计 {a_i mod x, (a_i+1) mod x} ⊆ [L, R] 的队伍数量，或依赖局部贪心分配后的实际占用情况来判定冲突，导致供给计数偏低。",
+        "target_failure_bucket": "小规模反例",
+        "expected_counterexample_shape": "x=5, K=4。检查区间 [0, 1] 时，存在队伍 a_i=1（合法时段 {1, 2}）。该队伍与 [0, 1] 有交集（时段1），应计入供给。若选手要求双时段均在区间内，则供给计数少1，误判为冲突或输出错误的 [L, R]。",
+        "triviality_risk": "该策略仍能输出格式合法的区间，且在队伍偏好集中时表现正确，仅在边界交叉（一个时段在区间内，另一个在外）时触发逻辑错误，不会退化为空输出或固定输出。"
+      }
+    },
+    "schema_signals": [
+      "core_constraints.adjacency_coverage",
+      "output_contract.no_branch",
+      "hall_intersection_misread"
+    ],
+    "raw": {
+      "solution_id": "sol_hall_intersection_misread",
+      "mistake_id": "hall_intersection_misread",
+      "code": "def solve(input_str: str) -> str:\n    import sys\n    data = input_str.split()\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    ops = []\n    for _ in range(q):\n        ops.append((int(next(it)), int(next(it))))\n    \n    teams = []\n    team_id = 0\n    out = []\n    \n    for t, v in ops:\n        if t == 1:\n            team_id += 1\n            teams.append((team_id, v))\n        else:\n            K = v\n            # 简化处理：仅当 K 较小时进行区间检查，否则默认 YES（模拟选手对大数据范围的妥协）\n            limit = min(K, 500)\n            conflict = None\n            for L in range(limit):\n                if conflict: break\n                for R in range(L, limit):\n                    cnt = 0\n                    for tid, a in teams:\n                        r1 = a % x\n                        r2 = (a + 1) % x\n                        # 错误理解：要求队伍的两个合法时段都必须完全落在 [L, R] 内\n                        if r1 >= L and r1 <= R and r2 >= L and r2 <= R:\n                            cnt += 1\n                    if cnt < R - L + 1:\n                        conflict = (L, R)\n                        break\n            \n            if conflict:\n                out.append('NO')\n                out.append(f'{conflict[0]} {conflict[1]}')\n            else:\n                out.append('YES')\n                used_slots = set()\n                assigned_count = 0\n                for tid, a in teams:\n                    if assigned_count == K: break\n                    r1 = a % x\n                    r2 = (a + 1) % x\n                    for s in [r1, r2]:\n                        if s < K and s not in used_slots:\n                            out.append(f'{tid} {s}')\n                            used_slots.add(s)\n                            assigned_count += 1\n                            break\n    return '\\n'.join(out)",
+      "player_profile": "覆盖判定误读型",
+      "target_failure_bucket": "小规模反例",
+      "bug_type": "约束误判",
+      "expected_failure": "在检查区间覆盖时，错误地将“存在交集”理解为“完全包含”。当队伍合法时段仅有一个落在 [L, R] 内时，供给计数被低估，导致在无冲突时误报 NO，或输出错误的冲突区间。",
+      "schema_signals": [
+        "core_constraints.adjacency_coverage",
+        "output_contract.no_branch",
+        "hall_intersection_misread"
+      ]
+    }
+  }
+}

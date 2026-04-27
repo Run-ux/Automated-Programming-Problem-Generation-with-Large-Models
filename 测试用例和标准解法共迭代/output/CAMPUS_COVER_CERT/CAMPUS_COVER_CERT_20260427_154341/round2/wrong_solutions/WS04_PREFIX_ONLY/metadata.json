@@ -1,0 +1,18 @@
+{
+  "solution_id": "WS04_PREFIX_ONLY",
+  "code": "import sys\n\ndef solve(input_str: str) -> str:\n    tokens = input_str.split()\n    it = iter(tokens)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    out = []\n    tid = 1\n    for _ in range(q):\n        op = int(next(it))\n        if op == 1:\n            a = int(next(it))\n            teams.append((tid, a))\n            tid += 1\n        else:\n            K = int(next(it))\n            conflict_L, conflict_R = 0, K - 1\n            for R in range(K):\n                cnt = 0\n                for _, a_val in teams:\n                    r1, r2 = a_val % x, (a_val + 1) % x\n                    if r1 <= R or r2 <= R or r1 + x <= R or r2 + x <= R:\n                        cnt += 1\n                if cnt < R + 1:\n                    conflict_L, conflict_R = 0, R\n                    break\n            if conflict_L == 0 and conflict_R == K - 1 and len(teams) >= K:\n                out.append(\"YES\")\n                for s in range(K):\n                    out.append(f\"{teams[s % len(teams)][0]} {s}\")\n            else:\n                out.append(\"NO\")\n                out.append(f\"{conflict_L} {conflict_R}\")\n    return \"\\n\".join(out)",
+  "source": "weak_llm_player",
+  "bug_type": "逻辑不全/前缀误用",
+  "expected_failure": "错误地认为只需校验前缀区间 [0, R] 即可判定Hall条件。当冲突区间起始于 L > 0（例如中间某段时段缺乏队伍覆盖）时，该解法无法识别冲突，会错误输出YES及循环分配的非法方案。",
+  "metadata": {
+    "raw": {
+      "solution_id": "WS04_PREFIX_ONLY",
+      "code": "import sys\n\ndef solve(input_str: str) -> str:\n    tokens = input_str.split()\n    it = iter(tokens)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    out = []\n    tid = 1\n    for _ in range(q):\n        op = int(next(it))\n        if op == 1:\n            a = int(next(it))\n            teams.append((tid, a))\n            tid += 1\n        else:\n            K = int(next(it))\n            conflict_L, conflict_R = 0, K - 1\n            for R in range(K):\n                cnt = 0\n                for _, a_val in teams:\n                    r1, r2 = a_val % x, (a_val + 1) % x\n                    if r1 <= R or r2 <= R or r1 + x <= R or r2 + x <= R:\n                        cnt += 1\n                if cnt < R + 1:\n                    conflict_L, conflict_R = 0, R\n                    break\n            if conflict_L == 0 and conflict_R == K - 1 and len(teams) >= K:\n                out.append(\"YES\")\n                for s in range(K):\n                    out.append(f\"{teams[s % len(teams)][0]} {s}\")\n            else:\n                out.append(\"NO\")\n                out.append(f\"{conflict_L} {conflict_R}\")\n    return \"\\n\".join(out)",
+      "player_profile": "贪心过度自信型",
+      "target_failure_bucket": "最坏情况",
+      "bug_type": "逻辑不全/前缀误用",
+      "expected_failure": "错误地认为只需校验前缀区间 [0, R] 即可判定Hall条件。当冲突区间起始于 L > 0（例如中间某段时段缺乏队伍覆盖）时，该解法无法识别冲突，会错误输出YES及循环分配的非法方案。",
+      "source": "weak_llm_player"
+    }
+  }
+}

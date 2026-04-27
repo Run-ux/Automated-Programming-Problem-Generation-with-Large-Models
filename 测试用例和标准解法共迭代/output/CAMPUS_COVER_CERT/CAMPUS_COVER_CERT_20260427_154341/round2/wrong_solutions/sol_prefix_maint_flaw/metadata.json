@@ -1,0 +1,51 @@
+{
+  "solution_id": "sol_prefix_maint_flaw",
+  "code": "import sys\n\ndef solve(input_str: str) -> str:\n    data = input_str.split()\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    cnt = [0] * x\n    teams = []\n    out = []\n\n    for _ in range(q):\n        op = int(next(it))\n        val = int(next(it))\n        if op == 1:\n            teams.append(val)\n            cnt[val % x] += 1\n            cnt[(val + 1) % x] += 1\n        else:\n            K = val\n            # 缺陷：静态计算前缀盈余极值，错误地将周期盈余映射到线性区间，未正确维护动态极值位置\n            min_val = 0\n            min_idx = 0\n            cur = 0\n            for i in range(x):\n                cur += cnt[i] - 1\n                if cur < min_val:\n                    min_val = cur\n                    min_idx = i\n\n            if min_val < 0:\n                L = (min_idx + 1) % x\n                out.append(\"NO\")\n                out.append(f\"{L} {K-1}\")\n            else:\n                out.append(\"YES\")\n                used = set()\n                for s in range(K):\n                    for idx, a in enumerate(teams, 1):\n                        if idx not in used and (s % x == a % x or s % x == (a + 1) % x):\n                            out.append(f\"{idx} {s}\")\n                            used.add(idx)\n                            break\n    return \"\\n\".join(out)",
+  "source": "schema_aware_llm_player",
+  "bug_type": "状态维护错误",
+  "expected_failure": "在多次插入操作后，前缀盈余极值位置发生动态偏移。该策略因未正确下推/更新数据结构，始终返回基于初始或局部计算的极值位置，导致输出的冲突区间 [L, R] 长度过大或起点错误，无法通过字典序与有效性校验。",
+  "metadata": {
+    "mistake_id": "online_prefix_surplus_maintenance_flaw",
+    "mistake_point": {
+      "mistake_id": "online_prefix_surplus_maintenance_flaw",
+      "schema_basis": [
+        "new_schema.invariant.online_supply_monotonicity",
+        "algorithmic_delta_claim.new_solver_core"
+      ],
+      "player_visible_misread": "认为每次新增队伍只需更新全局队伍总数，或误以为前缀盈余数组的极值位置不会随插入动态改变，采用静态计算或错误的数据结构更新逻辑。",
+      "wrong_strategy": "每次查询重新计算所有前缀盈余 O(x)，或在线段树/平衡树更新时只修改单点未正确下推/维护区间最小值及对应索引，导致定位冲突区间时返回错误位置。",
+      "target_failure_bucket": "最坏情况",
+      "expected_counterexample_shape": "连续多次 1 a_i 操作交替插入不同余数类队伍后接 2 K 查询。错误维护的极值位置指向非最小违反区间，或漏判新增队伍填补的局部缺口，输出错误 L R。",
+      "triviality_risk": "涉及在线数据结构维护细节，非空输出或格式破坏。需特定操作序列触发状态漂移，具备算法深度区分价值。",
+      "raw": {
+        "mistake_id": "online_prefix_surplus_maintenance_flaw",
+        "schema_basis": [
+          "new_schema.invariant.online_supply_monotonicity",
+          "algorithmic_delta_claim.new_solver_core"
+        ],
+        "player_visible_misread": "认为每次新增队伍只需更新全局队伍总数，或误以为前缀盈余数组的极值位置不会随插入动态改变，采用静态计算或错误的数据结构更新逻辑。",
+        "wrong_strategy": "每次查询重新计算所有前缀盈余 O(x)，或在线段树/平衡树更新时只修改单点未正确下推/维护区间最小值及对应索引，导致定位冲突区间时返回错误位置。",
+        "target_failure_bucket": "最坏情况",
+        "expected_counterexample_shape": "连续多次 1 a_i 操作交替插入不同余数类队伍后接 2 K 查询。错误维护的极值位置指向非最小违反区间，或漏判新增队伍填补的局部缺口，输出错误 L R。",
+        "triviality_risk": "涉及在线数据结构维护细节，非空输出或格式破坏。需特定操作序列触发状态漂移，具备算法深度区分价值。"
+      }
+    },
+    "schema_signals": [
+      "online_supply_monotonicity",
+      "new_solver_core"
+    ],
+    "raw": {
+      "solution_id": "sol_prefix_maint_flaw",
+      "mistake_id": "online_prefix_surplus_maintenance_flaw",
+      "code": "import sys\n\ndef solve(input_str: str) -> str:\n    data = input_str.split()\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    cnt = [0] * x\n    teams = []\n    out = []\n\n    for _ in range(q):\n        op = int(next(it))\n        val = int(next(it))\n        if op == 1:\n            teams.append(val)\n            cnt[val % x] += 1\n            cnt[(val + 1) % x] += 1\n        else:\n            K = val\n            # 缺陷：静态计算前缀盈余极值，错误地将周期盈余映射到线性区间，未正确维护动态极值位置\n            min_val = 0\n            min_idx = 0\n            cur = 0\n            for i in range(x):\n                cur += cnt[i] - 1\n                if cur < min_val:\n                    min_val = cur\n                    min_idx = i\n\n            if min_val < 0:\n                L = (min_idx + 1) % x\n                out.append(\"NO\")\n                out.append(f\"{L} {K-1}\")\n            else:\n                out.append(\"YES\")\n                used = set()\n                for s in range(K):\n                    for idx, a in enumerate(teams, 1):\n                        if idx not in used and (s % x == a % x or s % x == (a + 1) % x):\n                            out.append(f\"{idx} {s}\")\n                            used.add(idx)\n                            break\n    return \"\\n\".join(out)",
+      "player_profile": "耦合约束简化型",
+      "target_failure_bucket": "最坏情况",
+      "bug_type": "状态维护错误",
+      "expected_failure": "在多次插入操作后，前缀盈余极值位置发生动态偏移。该策略因未正确下推/更新数据结构，始终返回基于初始或局部计算的极值位置，导致输出的冲突区间 [L, R] 长度过大或起点错误，无法通过字典序与有效性校验。",
+      "schema_signals": [
+        "online_supply_monotonicity",
+        "new_solver_core"
+      ]
+    }
+  }
+}

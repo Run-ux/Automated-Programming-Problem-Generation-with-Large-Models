@@ -1,0 +1,51 @@
+{
+  "solution_id": "sol_bound_violation",
+  "code": "import sys\n\ndef solve(input_str: str) -> str:\n    data = input_str.split()\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    out = []\n\n    for _ in range(q):\n        op = int(next(it))\n        val = int(next(it))\n        if op == 1:\n            teams.append((len(teams)+1, val))\n        else:\n            K = val\n            if len(teams) < K:\n                out.append(\"NO\")\n                out.append(f\"0 {K-1}\")\n            else:\n                out.append(\"YES\")\n                assigned_count = 0\n                # 缺陷：直接按余数分配，未严格校验 s < K 与时段唯一性\n                for idx, a in teams:\n                    if assigned_count >= K:\n                        break\n                    s = a % x\n                    if s >= K:\n                        s = (a + 1) % x\n                    # 未检查 s 是否已被当前查询的其他队伍占用，也未验证 s 是否真正满足同余条件与边界交集\n                    out.append(f\"{idx} {s}\")\n                    assigned_count += 1\n    return \"\\n\".join(out)",
+  "source": "schema_aware_llm_player",
+  "bug_type": "构造遗漏",
+  "expected_failure": "在 K 较小且余数分布集中时，会输出重复的时段 s 或 s >= K 的非法分配。Checker 将因违反时段唯一性或边界约束而拒绝输出。",
+  "metadata": {
+    "mistake_id": "yes_assignment_slot_bound_violation",
+    "mistake_point": {
+      "mistake_id": "yes_assignment_slot_bound_violation",
+      "schema_basis": [
+        "new_schema.core_constraints.slot_uniqueness",
+        "execution_spec.output_contract.yes_block.validity_rules"
+      ],
+      "player_visible_misread": "认为输出时段 s 只需满足模 x 同余条件即可，忽略 s 必须严格落在查询区间 [0, K-1] 内且全局互不相同的硬性限制。",
+      "wrong_strategy": "贪心分配时直接将 s 设为 a_i % x 或 (a_i+1)%x，未校验 s < K，或在多支队伍同余时分配相同 s，导致输出越界或重复时段。",
+      "target_failure_bucket": "小规模挑战",
+      "expected_counterexample_shape": "K=3, x=5，队伍 a=4 可覆盖时段 4 和 0。若直接分配 s=4，则 s >= K 违规；若两支 a=0 队伍均分配 s=0，则违反时段唯一性。",
+      "triviality_risk": "错误策略会输出语法正确的 YES 块，但内容违反区间边界或唯一性约束，需 Checker 严格校验 s 的范围与去重逻辑。",
+      "raw": {
+        "mistake_id": "yes_assignment_slot_bound_violation",
+        "schema_basis": [
+          "new_schema.core_constraints.slot_uniqueness",
+          "execution_spec.output_contract.yes_block.validity_rules"
+        ],
+        "player_visible_misread": "认为输出时段 s 只需满足模 x 同余条件即可，忽略 s 必须严格落在查询区间 [0, K-1] 内且全局互不相同的硬性限制。",
+        "wrong_strategy": "贪心分配时直接将 s 设为 a_i % x 或 (a_i+1)%x，未校验 s < K，或在多支队伍同余时分配相同 s，导致输出越界或重复时段。",
+        "target_failure_bucket": "小规模挑战",
+        "expected_counterexample_shape": "K=3, x=5，队伍 a=4 可覆盖时段 4 和 0。若直接分配 s=4，则 s >= K 违规；若两支 a=0 队伍均分配 s=0，则违反时段唯一性。",
+        "triviality_risk": "错误策略会输出语法正确的 YES 块，但内容违反区间边界或唯一性约束，需 Checker 严格校验 s 的范围与去重逻辑。"
+      }
+    },
+    "schema_signals": [
+      "slot_uniqueness",
+      "yes_block.validity_rules"
+    ],
+    "raw": {
+      "solution_id": "sol_bound_violation",
+      "mistake_id": "yes_assignment_slot_bound_violation",
+      "code": "import sys\n\ndef solve(input_str: str) -> str:\n    data = input_str.split()\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    out = []\n\n    for _ in range(q):\n        op = int(next(it))\n        val = int(next(it))\n        if op == 1:\n            teams.append((len(teams)+1, val))\n        else:\n            K = val\n            if len(teams) < K:\n                out.append(\"NO\")\n                out.append(f\"0 {K-1}\")\n            else:\n                out.append(\"YES\")\n                assigned_count = 0\n                # 缺陷：直接按余数分配，未严格校验 s < K 与时段唯一性\n                for idx, a in teams:\n                    if assigned_count >= K:\n                        break\n                    s = a % x\n                    if s >= K:\n                        s = (a + 1) % x\n                    # 未检查 s 是否已被当前查询的其他队伍占用，也未验证 s 是否真正满足同余条件与边界交集\n                    out.append(f\"{idx} {s}\")\n                    assigned_count += 1\n    return \"\\n\".join(out)",
+      "player_profile": "构造义务漏读型",
+      "target_failure_bucket": "小规模挑战",
+      "bug_type": "构造遗漏",
+      "expected_failure": "在 K 较小且余数分布集中时，会输出重复的时段 s 或 s >= K 的非法分配。Checker 将因违反时段唯一性或边界约束而拒绝输出。",
+      "schema_signals": [
+        "slot_uniqueness",
+        "yes_block.validity_rules"
+      ]
+    }
+  }
+}

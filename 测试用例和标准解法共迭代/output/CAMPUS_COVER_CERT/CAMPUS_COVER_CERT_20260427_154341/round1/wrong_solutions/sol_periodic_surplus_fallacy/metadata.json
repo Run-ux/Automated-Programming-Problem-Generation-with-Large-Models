@@ -1,0 +1,51 @@
+{
+  "solution_id": "sol_periodic_surplus_fallacy",
+  "code": "def solve(input_str: str) -> str:\n    import sys\n    data = input_str.split()\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    ops = []\n    for _ in range(q):\n        ops.append((int(next(it)), int(next(it))))\n    \n    teams = []\n    team_id = 0\n    out = []\n    \n    for t, v in ops:\n        if t == 1:\n            team_id += 1\n            teams.append((team_id, v))\n        else:\n            K = v\n            # 错误理解：认为周期性质意味着只需检查前 x 个时段，忽略 K >> x 时的累积赤字\n            limit = min(K, x)\n            conflict = None\n            for L in range(limit):\n                if conflict: break\n                for R in range(L, limit):\n                    cnt = 0\n                    for tid, a in teams:\n                        r1 = a % x\n                        r2 = (a + 1) % x\n                        if (r1 >= L and r1 <= R) or (r2 >= L and r2 <= R):\n                            cnt += 1\n                    if cnt < R - L + 1:\n                        conflict = (L, R)\n                        break\n            \n            if conflict:\n                out.append('NO')\n                out.append(f'{conflict[0]} {conflict[1]}')\n            else:\n                out.append('YES')\n                # 简单构造输出，可能因未考虑全局而失败，但主要错误在 NO 分支误判为 YES\n                used_slots = set()\n                for s in range(K):\n                    for tid, a in teams:\n                        r1 = a % x\n                        r2 = (a + 1) % x\n                        if s == r1 or s == r2:\n                            if s not in used_slots:\n                                out.append(f'{tid} {s}')\n                                used_slots.add(s)\n                                break\n    return '\\n'.join(out)",
+  "source": "schema_aware_llm_player",
+  "bug_type": "边界误判",
+  "expected_failure": "仅在前 x 个时段内寻找冲突区间。当 K 远大于 x 且跨周期累积导致总供给不足时，会错误地输出 YES，而实际上应输出 NO 及跨越多个周期的长冲突区间。",
+  "metadata": {
+    "mistake_id": "periodic_surplus_fallacy",
+    "mistake_point": {
+      "mistake_id": "periodic_surplus_fallacy",
+      "schema_basis": [
+        "execution_spec.input_contract (K ≤ 10^9), algorithmic_delta_claim.new_solver_core (diff[i] = avail(0,i) - (i+1)), invariant.online_supply_monotonicity"
+      ],
+      "player_visible_misread": "选手注意到时段属性以 x 为周期循环，误以为前缀盈余数组 diff[i] 也具有周期性或只需在 [0, x-1] 范围内检查即可，忽略了 K 远大于 x 时盈余的线性累积效应。",
+      "wrong_strategy": "仅维护长度为 x 的盈余数组，查询时将 K 映射到模 x 意义下，或假设若 [0, x-1] 无冲突则任意 [0, K-1] 均无冲突，直接输出 YES。",
+      "target_failure_bucket": "大规模复杂度",
+      "expected_counterexample_shape": "x=3, K=10。队伍分布使得每个周期净盈余为负，前3个时段盈余为0，但到第10个时段累积盈余为负。选手仅检查前3个时段输出 YES，实际应输出 NO 及对应长区间。",
+      "triviality_risk": "该策略在小 K 或 K 为 x 倍数时表现正常，仅在 K >> x 且存在跨周期累积赤字时暴露，逻辑自洽且非固定输出，需针对性构造长跨度反例拦截。",
+      "raw": {
+        "mistake_id": "periodic_surplus_fallacy",
+        "schema_basis": "execution_spec.input_contract (K ≤ 10^9), algorithmic_delta_claim.new_solver_core (diff[i] = avail(0,i) - (i+1)), invariant.online_supply_monotonicity",
+        "player_visible_misread": "选手注意到时段属性以 x 为周期循环，误以为前缀盈余数组 diff[i] 也具有周期性或只需在 [0, x-1] 范围内检查即可，忽略了 K 远大于 x 时盈余的线性累积效应。",
+        "wrong_strategy": "仅维护长度为 x 的盈余数组，查询时将 K 映射到模 x 意义下，或假设若 [0, x-1] 无冲突则任意 [0, K-1] 均无冲突，直接输出 YES。",
+        "target_failure_bucket": "大规模复杂度",
+        "expected_counterexample_shape": "x=3, K=10。队伍分布使得每个周期净盈余为负，前3个时段盈余为0，但到第10个时段累积盈余为负。选手仅检查前3个时段输出 YES，实际应输出 NO 及对应长区间。",
+        "triviality_risk": "该策略在小 K 或 K 为 x 倍数时表现正常，仅在 K >> x 且存在跨周期累积赤字时暴露，逻辑自洽且非固定输出，需针对性构造长跨度反例拦截。"
+      }
+    },
+    "schema_signals": [
+      "execution_spec.input_contract",
+      "algorithmic_delta_claim.new_solver_core",
+      "invariant.online_supply_monotonicity",
+      "periodic_surplus_fallacy"
+    ],
+    "raw": {
+      "solution_id": "sol_periodic_surplus_fallacy",
+      "mistake_id": "periodic_surplus_fallacy",
+      "code": "def solve(input_str: str) -> str:\n    import sys\n    data = input_str.split()\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    ops = []\n    for _ in range(q):\n        ops.append((int(next(it)), int(next(it))))\n    \n    teams = []\n    team_id = 0\n    out = []\n    \n    for t, v in ops:\n        if t == 1:\n            team_id += 1\n            teams.append((team_id, v))\n        else:\n            K = v\n            # 错误理解：认为周期性质意味着只需检查前 x 个时段，忽略 K >> x 时的累积赤字\n            limit = min(K, x)\n            conflict = None\n            for L in range(limit):\n                if conflict: break\n                for R in range(L, limit):\n                    cnt = 0\n                    for tid, a in teams:\n                        r1 = a % x\n                        r2 = (a + 1) % x\n                        if (r1 >= L and r1 <= R) or (r2 >= L and r2 <= R):\n                            cnt += 1\n                    if cnt < R - L + 1:\n                        conflict = (L, R)\n                        break\n            \n            if conflict:\n                out.append('NO')\n                out.append(f'{conflict[0]} {conflict[1]}')\n            else:\n                out.append('YES')\n                # 简单构造输出，可能因未考虑全局而失败，但主要错误在 NO 分支误判为 YES\n                used_slots = set()\n                for s in range(K):\n                    for tid, a in teams:\n                        r1 = a % x\n                        r2 = (a + 1) % x\n                        if s == r1 or s == r2:\n                            if s not in used_slots:\n                                out.append(f'{tid} {s}')\n                                used_slots.add(s)\n                                break\n    return '\\n'.join(out)",
+      "player_profile": "耦合约束简化型",
+      "target_failure_bucket": "大规模复杂度",
+      "bug_type": "边界误判",
+      "expected_failure": "仅在前 x 个时段内寻找冲突区间。当 K 远大于 x 且跨周期累积导致总供给不足时，会错误地输出 YES，而实际上应输出 NO 及跨越多个周期的长冲突区间。",
+      "schema_signals": [
+        "execution_spec.input_contract",
+        "algorithmic_delta_claim.new_solver_core",
+        "invariant.online_supply_monotonicity",
+        "periodic_surplus_fallacy"
+      ]
+    }
+  }
+}

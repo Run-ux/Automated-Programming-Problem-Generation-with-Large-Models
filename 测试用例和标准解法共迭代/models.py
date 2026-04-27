@@ -66,6 +66,7 @@ class FailureIssue:
     title: str
     detail: str
     evidence_refs: list[str] = field(default_factory=list)
+    evidence: dict[str, Any] = field(default_factory=dict)
     fix_hint: str = ""
 
 
@@ -76,6 +77,7 @@ class ValidationReport:
     execution_matrix: list[dict[str, Any]]
     wrong_solution_stats: dict[str, Any]
     revision_context: dict[str, Any]
+    base_consistency: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -87,6 +89,10 @@ class IterationSummary:
     final_round_index: int
     stop_reason: str
     rounds: list[dict[str, Any]]
+    active_issue_count: int = 0
+    new_issue_count: int = 0
+    resolved_issue_count: int = 0
+    carried_issue_count: int = 0
 
 
 def to_dict(value: Any) -> Any:
@@ -97,4 +103,3 @@ def to_dict(value: Any) -> Any:
     if isinstance(value, dict):
         return {key: to_dict(item) for key, item in value.items()}
     return value
-
