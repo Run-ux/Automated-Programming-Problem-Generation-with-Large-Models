@@ -10,14 +10,19 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from prompt_builder import (  # noqa: E402
+    build_checker_prompt,
     build_code_system_prompt,
     build_oracle_prompt,
+    build_revision_advisor_system_prompt,
+    build_revision_advisor_user_prompt,
     build_schema_aware_wrong_solution_prompt,
     build_schema_mistake_analysis_prompt,
     build_spec_system_prompt,
     build_spec_user_prompt,
     build_standard_solution_prompt,
+    build_test_generator_prompt,
     build_tools_prompt,
+    build_validator_prompt,
     build_weak_player_prompt,
 )
 
@@ -78,6 +83,14 @@ class PromptBuilderTests(unittest.TestCase):
                         "title": "标准解与 oracle 不一致",
                         "detail": "测试 basic 上标准解与 oracle 输出不同。",
                         "fix_hint": "定位反例。",
+                        "advisor_revision": {
+                            "root_cause": "标准解在 basic 输入上少累计了一个数。",
+                            "revision_advice": "修改 StandardSolutionGenerator 的累加路径，用 basic 输入验证输出必须从 5 变为 6。",
+                            "target_roles": ["StandardSolutionGenerator"],
+                            "evidence_used": ["basic", "首个不同 token"],
+                            "confidence": "high",
+                            "risk_notes": "",
+                        },
                         "target_roles": ["StandardSolutionGenerator", "OracleGenerator"],
                         "evidence": {"test": {"source": "basic"}},
                         "diff": {
@@ -185,6 +198,40 @@ class PromptBuilderTests(unittest.TestCase):
         self.assertIn("先模拟错误理解路径", weak_prompt)
         self.assertNotEqual(standard_prompt, oracle_prompt)
 
+        validator_prompt = build_code_system_prompt("ValidatorGenerator")
+        checker_prompt = build_code_system_prompt("CheckerGenerator")
+        test_generator_prompt = build_code_system_prompt("TestGenerator")
+
+        self.assertIn("只生成 validator", validator_prompt)
+        self.assertIn("不做求解、不校验输出", validator_prompt)
+        self.assertIn("只生成 checker", checker_prompt)
+        self.assertIn("严格服从 execution_spec.judge_type", checker_prompt)
+        self.assertIn("只生成 test_generator", test_generator_prompt)
+        self.assertIn("默认所有生成输入都应被 validator 接受", test_generator_prompt)
+
+    def test_revision_advisor_prompts_require_specific_json_advice(self) -> None:
+        system_prompt = build_revision_advisor_system_prompt()
+        user_prompt = build_revision_advisor_user_prompt(
+            {
+                "diagnostic": {
+                    "category": "standard_oracle_mismatch",
+                    "severity": "blocker",
+                    "title": "标准解与 oracle 不一致",
+                    "detail": "basic 上输出不同。",
+                    "target_roles": ["StandardSolutionGenerator", "OracleGenerator"],
+                },
+                "evidence": {"test": {"source": "basic"}, "input": {"content": "3\n1 2 3\n"}},
+                "diff": {"first_different_token": {"index": 0, "standard": "5", "oracle": "6"}},
+            }
+        )
+
+        self.assertIn("错误回流修订顾问", system_prompt)
+        self.assertIn("禁止泛泛建议", system_prompt)
+        self.assertIn("root_cause", user_prompt)
+        self.assertIn("revision_advice", user_prompt)
+        self.assertIn("必须具体说明改什么、为什么、用哪个证据验证", user_prompt)
+        self.assertIn("first_different_token", user_prompt)
+
     def test_build_standard_solution_prompt_emphasizes_contract_reasoning_and_revision(self) -> None:
         prompt = build_standard_solution_prompt(self.context, self.spec, self.revision_context)
 
@@ -199,6 +246,8 @@ class PromptBuilderTests(unittest.TestCase):
         guidance = prompt.split("输入上下文", 1)[0]
         self.assertIn("StandardSolutionGenerator 定向诊断", guidance)
         self.assertIn("测试 basic 上标准解与 oracle 输出不同。", guidance)
+        self.assertIn("advisor修订建议", guidance)
+        self.assertIn("用 basic 输入验证输出必须从 5 变为 6", guidance)
         self.assertNotIn("oracle 在 small_random 上漏掉重复元素情况。", guidance)
 
     def test_incremental_revision_prompt_mentions_active_context_and_current_artifact(self) -> None:
@@ -259,6 +308,62 @@ class PromptBuilderTests(unittest.TestCase):
         self.assertIn("测试覆盖按基础、边界、随机、对抗、性能逐项判断是否相关", prompt)
         self.assertIn("若 oracle_limits 支持，应显式标注哪些测试 expect_oracle=True", prompt)
         self.assertIn("validator 拒绝了 test_generator 生成的边界测试。", prompt)
+
+    def test_split_tool_prompts_have_separate_output_contracts_and_tool_diagnostics(self) -> None:
+        validator_prompt = build_validator_prompt(self.context, self.spec, self.revision_context)
+        checker_prompt = build_checker_prompt(
+            self.context,
+            self.spec,
+            {
+                "name": "validator",
+                "role": "validator",
+                "code": "def validate(input_str: str) -> bool:\n    return True\n",
+                "metadata": {"notes": "validator notes", "stage": "validator"},
+            },
+            self.revision_context,
+        )
+        test_generator_prompt = build_test_generator_prompt(
+            self.context,
+            self.spec,
+            {
+                "name": "validator",
+                "role": "validator",
+                "code": "def validate(input_str: str) -> bool:\n    return True\n",
+                "metadata": {"notes": "validator notes", "stage": "validator"},
+            },
+            {
+                "name": "checker",
+                "role": "checker",
+                "code": "def check(input_str: str, output_str: str, expected_str: str | None) -> bool:\n    return True\n",
+                "metadata": {"notes": "checker notes", "stage": "checker"},
+            },
+            self.revision_context,
+        )
+
+        validator_contract = validator_prompt.split("硬约束：", 1)[0]
+        checker_contract = checker_prompt.split("硬约束：", 1)[0]
+        test_generator_contract = test_generator_prompt.split("硬约束：", 1)[0]
+
+        self.assertIn("validator_code", validator_contract)
+        self.assertNotIn("checker_code", validator_contract)
+        self.assertNotIn("test_generator_code", validator_contract)
+        self.assertIn("ToolGenerator 定向诊断", validator_prompt)
+        self.assertIn("validator 拒绝了 test_generator 生成的边界测试。", validator_prompt)
+
+        self.assertIn("checker_code", checker_contract)
+        self.assertNotIn("validator_code", checker_contract)
+        self.assertNotIn("test_generator_code", checker_contract)
+        self.assertIn("validator_artifact", checker_prompt)
+        self.assertIn("validator notes", checker_prompt)
+        self.assertIn("ToolGenerator 定向诊断", checker_prompt)
+
+        self.assertIn("test_generator_code", test_generator_contract)
+        self.assertNotIn("validator_code", test_generator_contract)
+        self.assertNotIn("checker_code", test_generator_contract)
+        self.assertIn("validator_artifact", test_generator_prompt)
+        self.assertIn("checker_artifact", test_generator_prompt)
+        self.assertIn("checker notes", test_generator_prompt)
+        self.assertIn("仍存活的错误解详情：surviving_wrong_1", test_generator_prompt)
 
     def test_build_weak_player_prompt_emphasizes_realistic_wrong_reasoning(self) -> None:
         prompt = build_weak_player_prompt(

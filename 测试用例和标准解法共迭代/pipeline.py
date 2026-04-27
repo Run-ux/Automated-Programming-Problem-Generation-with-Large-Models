@@ -13,6 +13,7 @@ from curation import WrongSolutionCurator
 from execution_spec import normalize_tests
 from generators import (
     OracleGenerator,
+    RevisionAdvisor,
     SchemaAwareWrongSolutionGenerator,
     SchemaMistakeAnalyzer,
     SpecExtractor,
@@ -51,6 +52,7 @@ class PackageValidationPipeline:
         weak_player_generator: WeakPlayerGenerator | None = None,
         schema_mistake_analyzer: SchemaMistakeAnalyzer | None = None,
         schema_wrong_solution_generator: SchemaAwareWrongSolutionGenerator | None = None,
+        revision_advisor: Any | None = None,
         progress_writer: Any | None = None,
     ):
         self.client = client
@@ -66,6 +68,7 @@ class PackageValidationPipeline:
         self.weak_player_generator = weak_player_generator or WeakPlayerGenerator(client)
         self.schema_mistake_analyzer = schema_mistake_analyzer or SchemaMistakeAnalyzer(client)
         self.schema_wrong_solution_generator = schema_wrong_solution_generator or SchemaAwareWrongSolutionGenerator(client)
+        self.revision_advisor = revision_advisor if revision_advisor is not None else (RevisionAdvisor(client) if client is not None else None)
         self.progress_writer = progress_writer or (lambda message: print(message, flush=True))
 
     def run(
@@ -73,7 +76,7 @@ class PackageValidationPipeline:
         *,
         artifact_path: Path,
         markdown_path: Path | None = None,
-        rounds: int = 3,
+        rounds: int = 6,
     ) -> dict[str, Any]:
         artifact = _read_json(artifact_path)
         markdown = markdown_path.read_text(encoding="utf-8") if markdown_path and markdown_path.exists() else ""
@@ -82,6 +85,7 @@ class PackageValidationPipeline:
         run_id = _build_run_id(problem_id)
         run_dir = self.output_dir / problem_id / run_id
         run_dir.mkdir(parents=True, exist_ok=True)
+        self._emit(f"[启动] 题目 {problem_id}：最多迭代 {rounds} 轮，输出目录 {run_dir}。")
 
         active_revision_context: dict[str, Any] = {}
         revision_audit_history: list[dict[str, Any]] = []
@@ -95,7 +99,7 @@ class PackageValidationPipeline:
         previous_high_value_count = -1
 
         for round_index in range(1, rounds + 1):
-            self._emit(f"[package] 第 {round_index}/{rounds} 轮：生成题包组件。")
+            self._emit(f"[轮次] 第 {round_index}/{rounds} 轮：准备修订上下文。")
             round_dir = run_dir / f"round{round_index}"
             round_dir.mkdir(parents=True, exist_ok=True)
             generation_revision_context = _build_generation_revision_context(
@@ -105,18 +109,27 @@ class PackageValidationPipeline:
                 round_index=round_index,
             )
             if current_package is None:
+                self._emit(f"[生成] 第 {round_index}/{rounds} 轮：全量生成题包组件。")
                 package = self._generate_round_package(context, generation_revision_context)
             else:
+                self._emit(f"[生成] 第 {round_index}/{rounds} 轮：基于上一轮结果增量修订题包。")
                 package = self._generate_incremental_round_package(context, current_package, generation_revision_context)
+            self._emit(f"[写入] 第 {round_index}/{rounds} 轮：写入题包产物。")
             self._write_round_package(round_dir, package)
 
-            self._emit(f"[package] 第 {round_index}/{rounds} 轮：执行验证矩阵。")
-            report = self._validate_package(package)
+            self._emit(f"[验证] 第 {round_index}/{rounds} 轮：执行验证矩阵。")
+            report = self._validate_package(package, previous_active_context=active_revision_context)
+            self._emit(f"[写入] 第 {round_index}/{rounds} 轮：写入执行报告。")
             self._write_report(round_dir, report)
             revision_audit_history.append({"round_index": round_index, "revision_context": report.revision_context})
             active_revision_context, context_stats = _update_active_revision_context(
                 active_revision_context,
                 report.revision_context,
+            )
+            self._emit(
+                f"[回流] 第 {round_index}/{rounds} 轮：active={context_stats['active_issue_count']}，"
+                f"新增={context_stats['new_issue_count']}，解决={context_stats['resolved_issue_count']}，"
+                f"延续={context_stats['carried_issue_count']}。"
             )
 
             high_value_count = len([item for item in report.issues if item.get("severity") in {"blocker", "high"}])
@@ -137,19 +150,27 @@ class PackageValidationPipeline:
                 **context_stats,
             }
             round_records.append(round_record)
+            self._emit(
+                f"[轮次] 第 {round_index}/{rounds} 轮完成：状态={report.overall['status']}，"
+                f"问题数={report.overall['issue_count']}，杀伤率={report.wrong_solution_stats.get('kill_rate')}。"
+            )
 
             if report.overall["status"] == "pass":
                 final_status = "pass"
                 stop_reason = "all_checks_passed"
+                self._emit(f"[停止] 第 {round_index}/{rounds} 轮：全部检查通过。")
                 break
             if no_new_high_value_failures >= 1 and round_index >= 2:
                 final_status = "not_deliverable"
                 stop_reason = "no_new_high_value_failure_samples"
+                self._emit(f"[停止] 第 {round_index}/{rounds} 轮：高价值失败样本未继续增加。")
                 break
 
         if current_package is not None:
             final_dir = run_dir / "final"
+            self._emit(f"[写入] 写入最终题包产物：{final_dir}。")
             self._write_round_package(final_dir, current_package)
+        self._emit("[写入] 写入修订审计历史。")
         (run_dir / "revision_audit_history.json").write_text(
             json.dumps(revision_audit_history, ensure_ascii=False, indent=2),
             encoding="utf-8",
@@ -170,6 +191,7 @@ class PackageValidationPipeline:
         )
         summary_path = run_dir / "iteration_summary.json"
         summary_path.write_text(json.dumps(to_dict(summary), ensure_ascii=False, indent=2), encoding="utf-8")
+        self._emit(f"[完成] 迭代结束：final_status={final_status}，stop_reason={stop_reason}，摘要 {summary_path}。")
         return {"run_dir": str(run_dir), "summary_path": str(summary_path), "summary": to_dict(summary)}
 
     def _generate_incremental_round_package(
@@ -181,7 +203,9 @@ class PackageValidationPipeline:
         package = copy.deepcopy(current_package)
         roles = _target_roles_for_revision(revision_context)
         if not roles:
+            self._emit("[生成] 增量修订：未命中需要重生成的角色，沿用当前题包。")
             return package
+        self._emit(f"[生成] 增量修订：命中角色 {', '.join(sorted(roles))}。")
 
         if "SpecExtractor" in roles:
             roles.update(
@@ -193,6 +217,7 @@ class PackageValidationPipeline:
                     "SchemaAwareWrongSolutionGenerator",
                 }
             )
+            self._emit("[生成] 增量修订：重生成 execution_spec，并级联重生成依赖组件。")
             package["execution_spec"] = self.spec_extractor.generate(
                 context,
                 _revision_context_for_roles(revision_context, {"SpecExtractor"}, current_package),
@@ -200,18 +225,21 @@ class PackageValidationPipeline:
 
         spec = package["execution_spec"]
         if "StandardSolutionGenerator" in roles:
+            self._emit("[生成] 增量修订：重生成标准解。")
             package["standard_solution"] = self.standard_generator.generate(
                 context,
                 spec,
                 _revision_context_for_roles(revision_context, {"StandardSolutionGenerator"}, current_package),
             )
         if "OracleGenerator" in roles:
+            self._emit("[生成] 增量修订：重生成 oracle。")
             package["oracle_solution"] = self.oracle_generator.generate(
                 context,
                 spec,
                 _revision_context_for_roles(revision_context, {"OracleGenerator"}, current_package),
             )
         if "ToolGenerator" in roles:
+            self._emit("[生成] 增量修订：重生成 validator、checker 和 test_generator。")
             tools = self.tool_generator.generate(
                 context,
                 spec,
@@ -223,36 +251,54 @@ class PackageValidationPipeline:
 
         weak_wrong, schema_wrong = _split_wrong_solutions(package.get("wrong_solutions", []))
         if "WeakPlayerGenerator" in roles:
+            self._emit("[生成] 增量修订：重生成弱选手错误解。")
             weak_wrong = self.weak_player_generator.generate(
                 _statement_only_context(context),
                 _revision_context_for_roles(revision_context, {"WeakPlayerGenerator"}, current_package),
             )
+            self._emit(f"[生成] 增量修订：弱选手错误解 {len(weak_wrong)} 个。")
         if "SchemaMistakeAnalyzer" in roles:
+            self._emit("[生成] 增量修订：重新分析 schema 误解点。")
             package["schema_mistake_points"] = self.schema_mistake_analyzer.generate(
                 context,
                 spec,
                 _revision_context_for_roles(revision_context, {"SchemaMistakeAnalyzer"}, current_package),
             )
+            self._emit(f"[生成] 增量修订：schema 误解点 {len(package['schema_mistake_points'])} 个。")
             roles.add("SchemaAwareWrongSolutionGenerator")
         if "SchemaAwareWrongSolutionGenerator" in roles:
+            self._emit("[生成] 增量修订：重生成 schema-aware 错误解。")
             schema_wrong = self.schema_wrong_solution_generator.generate(
                 context,
                 spec,
                 package.get("schema_mistake_points", []),
                 _revision_context_for_roles(revision_context, {"SchemaAwareWrongSolutionGenerator"}, current_package),
             )
+            self._emit(f"[生成] 增量修订：schema-aware 错误解 {len(schema_wrong)} 个。")
         package["wrong_solutions"] = [*weak_wrong, *schema_wrong]
+        self._emit(f"[生成] 增量修订完成：错误解候选共 {len(package['wrong_solutions'])} 个。")
         return package
 
     def _generate_round_package(self, context: dict[str, Any], revision_context: dict[str, Any]) -> dict[str, Any]:
+        self._emit("[生成] 抽取 execution_spec。")
         spec = self.spec_extractor.generate(context, revision_context)
+        self._emit("[生成] 生成标准解。")
         standard = self.standard_generator.generate(context, spec, revision_context)
+        self._emit("[生成] 生成 oracle。")
         oracle = self.oracle_generator.generate(context, spec, revision_context)
+        self._emit("[生成] 生成 validator、checker 和 test_generator。")
         tools = self.tool_generator.generate(context, spec, revision_context)
+        self._emit("[生成] 生成弱选手错误解。")
         weak_wrong = self.weak_player_generator.generate(_statement_only_context(context), revision_context)
+        self._emit(f"[生成] 弱选手错误解 {len(weak_wrong)} 个。")
+        self._emit("[生成] 分析 schema 误解点。")
         mistake_points = self.schema_mistake_analyzer.generate(context, spec, revision_context)
+        self._emit(f"[生成] schema 误解点 {len(mistake_points)} 个。")
+        self._emit("[生成] 生成 schema-aware 错误解。")
         schema_wrong = self.schema_wrong_solution_generator.generate(context, spec, mistake_points, revision_context)
+        self._emit(f"[生成] schema-aware 错误解 {len(schema_wrong)} 个。")
         wrong_solutions = [*weak_wrong, *schema_wrong]
+        self._emit(f"[生成] 全量题包生成完成：错误解候选共 {len(wrong_solutions)} 个。")
         return {
             "context": context,
             "execution_spec": spec,
@@ -265,7 +311,11 @@ class PackageValidationPipeline:
             "wrong_solutions": wrong_solutions,
         }
 
-    def _validate_package(self, package: dict[str, Any]) -> ValidationReport:
+    def _validate_package(
+        self,
+        package: dict[str, Any],
+        previous_active_context: dict[str, Any] | None = None,
+    ) -> ValidationReport:
         spec: ExecutionSpec = package["execution_spec"]
         standard: GeneratedCodeArtifact = package["standard_solution"]
         oracle: GeneratedCodeArtifact = package["oracle_solution"]
@@ -286,6 +336,7 @@ class PackageValidationPipeline:
             "wrong_solution_curation_skipped": False,
         }
 
+        self._emit("[验证] 运行 test_generator，生成测试用例。")
         generated_tests_result = self.runner.run_generate_tests(
             artifact_name=test_generator.name,
             code=test_generator.code,
@@ -317,6 +368,7 @@ class PackageValidationPipeline:
                     )
                 )
                 tests = []
+        self._emit(f"[验证] 可执行测试用例数量：{len(tests)}。")
         if not tests:
             issues.append(
                 FailureIssue(
@@ -328,7 +380,9 @@ class PackageValidationPipeline:
                 )
             )
 
-        for test in tests:
+        for test_index, test in enumerate(tests, start=1):
+            test_label = _progress_test_label(test)
+            self._emit(f"[验证] 测试 {test_index}/{len(tests)}（{test_label}）：运行 validator。")
             validation = self.runner.run_validate(
                 artifact_name=validator.name,
                 code=validator.code,
@@ -353,6 +407,7 @@ class PackageValidationPipeline:
             base_checks["validated_test_count"] += 1
 
             timeout = self.large_run_timeout_s if test.is_large else self.run_timeout_s
+            self._emit(f"[验证] 测试 {test_index}/{len(tests)}（{test_label}）：运行标准解。")
             standard_result = self.runner.run_solve(
                 artifact_name=standard.name,
                 code=standard.code,
@@ -380,6 +435,7 @@ class PackageValidationPipeline:
             oracle_result = None
             oracle_mismatch = False
             if test.expect_oracle and not test.is_large:
+                self._emit(f"[验证] 测试 {test_index}/{len(tests)}（{test_label}）：运行 oracle。")
                 oracle_result = self.runner.run_solve(
                     artifact_name=oracle.name,
                     code=oracle.code,
@@ -409,6 +465,7 @@ class PackageValidationPipeline:
                     if spec.judge_type == "exact" and _normalize_output(oracle_expected) != _normalize_output(str(standard_result.result)):
                         oracle_mismatch = True
 
+            self._emit(f"[验证] 测试 {test_index}/{len(tests)}（{test_label}）：运行 checker 校验标准解输出。")
             checker_result = self.runner.run_check(
                 artifact_name=checker.name,
                 code=checker.code,
@@ -457,6 +514,7 @@ class PackageValidationPipeline:
                 base_checks["standard_checked_count"] += 1
 
             if spec.judge_type == "checker" and oracle_expected is not None:
+                self._emit(f"[验证] 测试 {test_index}/{len(tests)}（{test_label}）：运行 checker 校验 oracle 输出。")
                 oracle_checker_result = self.runner.run_check(
                     artifact_name=checker.name,
                     code=checker.code,
@@ -499,6 +557,9 @@ class PackageValidationPipeline:
                 "independent_solutions": [],
                 "matrix": [],
             }
+            self._emit(
+                f"[筛选] 基础自洽失败，跳过错误解筛选；候选错误解 {len(wrong_solutions)} 个。"
+            )
             wrong_stats = _skipped_wrong_solution_stats(
                 candidate_count=len(wrong_solutions),
                 kill_rate_threshold=self.kill_rate_threshold,
@@ -513,6 +574,7 @@ class PackageValidationPipeline:
                 )
             )
         else:
+            self._emit(f"[筛选] 开始错误解筛选：候选错误解 {len(wrong_solutions)} 个，测试 {len(tests)} 个。")
             curator = WrongSolutionCurator(runner=self.runner, kill_rate_threshold=self.kill_rate_threshold)
             curation = curator.curate(
                 candidates=wrong_solutions,
@@ -524,6 +586,10 @@ class PackageValidationPipeline:
             wrong_stats = curation["stats"]
             wrong_stats["valid"] = True
             wrong_stats["skip_reason"] = ""
+            self._emit(
+                f"[筛选] 错误解筛选完成：杀伤率={wrong_stats['kill_rate']}，"
+                f"阈值={wrong_stats['kill_rate_threshold']}，达标={wrong_stats['passed_threshold']}。"
+            )
             if not wrong_stats["passed_threshold"]:
                 issues.append(
                     FailureIssue(
@@ -536,7 +602,13 @@ class PackageValidationPipeline:
                 )
 
         status = "pass" if not [item for item in issues if item.severity in {"blocker", "high"}] else "revise"
-        revision_context = _build_revision_context(issues, curation)
+        revision_context = _build_revision_context(
+            issues,
+            curation,
+            revision_advisor=self.revision_advisor,
+            current_package=package,
+            previous_active_context=previous_active_context,
+        )
         report = ValidationReport(
             overall={
                 "status": status,
@@ -586,6 +658,13 @@ class PackageValidationPipeline:
 
     def _emit(self, message: str) -> None:
         self.progress_writer(message)
+
+
+def _progress_test_label(test: TestCase) -> str:
+    source = str(test.source or "unknown").replace("\n", " ").strip()
+    if len(source) <= 60:
+        return source
+    return f"{source[:57]}..."
 
 
 def _build_context(
@@ -807,16 +886,33 @@ _TARGET_ROLES_BY_CATEGORY = {
 }
 
 _ROLE_DIAGNOSTIC_LIMIT_PER_CATEGORY = 3
+_ADVISOR_DIAGNOSTIC_LIMIT_PER_CATEGORY = 3
 _FULL_EVIDENCE_TEXT_LIMIT = 1800
 _TRUNCATED_TEXT_EDGE = 700
 _DIFF_WINDOW = 3
 
 
-def _build_revision_context(issues: list[FailureIssue], curation: dict[str, Any]) -> dict[str, Any]:
+def _build_revision_context(
+    issues: list[FailureIssue],
+    curation: dict[str, Any],
+    *,
+    revision_advisor: Any | None = None,
+    current_package: dict[str, Any] | None = None,
+    previous_active_context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     diagnostics_by_category: dict[str, list[dict[str, Any]]] = {}
     for issue in issues:
         diagnostic = _build_diagnostic(issue)
         diagnostics_by_category.setdefault(issue.category, []).append(diagnostic)
+
+    if revision_advisor is not None:
+        _enrich_diagnostics_with_advisor(
+            diagnostics_by_category,
+            revision_advisor=revision_advisor,
+            current_package=current_package,
+            curation=curation,
+            previous_active_context=previous_active_context,
+        )
 
     role_diagnostics: dict[str, list[dict[str, Any]]] = {}
     for diagnostics in diagnostics_by_category.values():
@@ -836,6 +932,111 @@ def _build_revision_context(issues: list[FailureIssue], curation: dict[str, Any]
         "role_diagnostics": role_diagnostics,
         "failed_hard_checks": _dedupe([issue.category for issue in issues if issue.severity == "blocker"]),
         "surviving_wrong_solution_details": _surviving_wrong_solution_details(curation),
+    }
+
+
+def _enrich_diagnostics_with_advisor(
+    diagnostics_by_category: dict[str, list[dict[str, Any]]],
+    *,
+    revision_advisor: Any,
+    current_package: dict[str, Any] | None,
+    curation: dict[str, Any],
+    previous_active_context: dict[str, Any] | None,
+) -> None:
+    previous_by_fingerprint = _diagnostics_by_fingerprint(previous_active_context or {})
+    survivor_details = _surviving_wrong_solution_details(curation)
+    for category, diagnostics in diagnostics_by_category.items():
+        representative_count = min(len(diagnostics), _ADVISOR_DIAGNOSTIC_LIMIT_PER_CATEGORY)
+        representative_revisions: list[dict[str, Any]] = []
+        for diagnostic in diagnostics[:representative_count]:
+            packet = _build_failure_packet(
+                diagnostic,
+                current_package=current_package,
+                survivor_details=survivor_details,
+                previous_by_fingerprint=previous_by_fingerprint,
+                category_issue_count=len(diagnostics),
+                representative_count=representative_count,
+            )
+            try:
+                advisor_revision = revision_advisor.generate(packet)
+            except Exception as exc:
+                raise RuntimeError(
+                    f"RevisionAdvisor 生成修订建议失败：category={category}; "
+                    f"fingerprint={diagnostic.get('issue_fingerprint', '')}; error={exc}"
+                ) from exc
+            diagnostic["advisor_revision"] = _normalize_advisor_payload(advisor_revision, diagnostic)
+            representative_revisions.append(copy.deepcopy(diagnostic["advisor_revision"]))
+
+        if not representative_revisions:
+            continue
+        for index, diagnostic in enumerate(diagnostics[representative_count:], start=representative_count):
+            reused = copy.deepcopy(representative_revisions[index % len(representative_revisions)])
+            reused["cluster_reused"] = True
+            reused["cluster_representative_count"] = representative_count
+            diagnostic["advisor_revision"] = reused
+
+
+def _build_failure_packet(
+    diagnostic: dict[str, Any],
+    *,
+    current_package: dict[str, Any] | None,
+    survivor_details: list[dict[str, Any]],
+    previous_by_fingerprint: dict[str, dict[str, Any]],
+    category_issue_count: int,
+    representative_count: int,
+) -> dict[str, Any]:
+    target_roles = {str(role) for role in diagnostic.get("target_roles", [])}
+    fingerprint = str(diagnostic.get("issue_fingerprint", "")).strip()
+    previous_diagnostic = previous_by_fingerprint.get(fingerprint, {})
+    packet: dict[str, Any] = {
+        "diagnostic": {
+            "category": diagnostic.get("category", ""),
+            "severity": diagnostic.get("severity", ""),
+            "title": diagnostic.get("title", ""),
+            "detail": diagnostic.get("detail", ""),
+            "target_roles": list(diagnostic.get("target_roles", [])),
+            "issue_fingerprint": fingerprint,
+        },
+        "evidence": copy.deepcopy(diagnostic.get("evidence", {})),
+        "diff": copy.deepcopy(diagnostic.get("diff", {})),
+        "current_artifact": _current_artifact_summary(current_package, target_roles) if current_package else {},
+        "cluster": {
+            "category_issue_count": category_issue_count,
+            "advisor_representative_count": representative_count,
+        },
+    }
+    if diagnostic.get("fix_hint"):
+        packet["legacy_fix_hint"] = diagnostic.get("fix_hint", "")
+    previous_advice = previous_diagnostic.get("advisor_revision") if isinstance(previous_diagnostic, dict) else None
+    if isinstance(previous_advice, dict) and previous_advice:
+        packet["previous_advice"] = copy.deepcopy(previous_advice)
+    if diagnostic.get("category") == "wrong_solution_survived":
+        packet["surviving_wrong_solution_details"] = copy.deepcopy(survivor_details)
+    return packet
+
+
+def _normalize_advisor_payload(payload: Any, diagnostic: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(payload, dict):
+        raise ValueError("RevisionAdvisor 必须返回 JSON 对象。")
+    allowed_roles = {str(role) for role in diagnostic.get("target_roles", [])}
+    target_roles = [str(role) for role in payload.get("target_roles", []) if str(role) in allowed_roles] if isinstance(payload.get("target_roles"), list) else []
+    if not target_roles:
+        target_roles = sorted(allowed_roles)
+    confidence = str(payload.get("confidence", "medium")).strip().lower()
+    if confidence not in {"low", "medium", "high"}:
+        confidence = "medium"
+    revision_advice = str(payload.get("revision_advice", "")).strip()
+    if not revision_advice:
+        raise ValueError("RevisionAdvisor 返回缺少 revision_advice。")
+    return {
+        "root_cause": str(payload.get("root_cause", "")).strip(),
+        "revision_advice": revision_advice,
+        "target_roles": target_roles,
+        "evidence_used": [str(item).strip() for item in payload.get("evidence_used", []) if str(item).strip()]
+        if isinstance(payload.get("evidence_used"), list)
+        else [],
+        "confidence": confidence,
+        "risk_notes": str(payload.get("risk_notes", "")).strip(),
     }
 
 

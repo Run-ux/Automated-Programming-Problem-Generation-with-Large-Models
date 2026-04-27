@@ -12,7 +12,7 @@ if str(MODULE_DIR) not in sys.path:
     sys.path.insert(0, str(MODULE_DIR))
 
 from curation import WrongSolutionCurator
-from generators import SchemaAwareWrongSolutionGenerator, SchemaMistakeAnalyzer
+from generators import SchemaAwareWrongSolutionGenerator, SchemaMistakeAnalyzer, ToolGenerator
 from models import ExecutionSpec, FailureIssue, GeneratedCodeArtifact, TestCase, WrongSolution
 from pipeline import PackageValidationPipeline, _build_revision_context, _update_active_revision_context
 from runners import CodeRunner
@@ -174,6 +174,83 @@ class FakeSchemaClient:
     def chat_json(self, *, system_prompt, user_prompt, temperature):
         self.prompts.append({"system": system_prompt, "user": user_prompt, "temperature": temperature})
         return self.responses.pop(0)
+
+
+class ToolGeneratorTests(unittest.TestCase):
+    def test_tool_generator_calls_three_split_prompts_in_order(self) -> None:
+        client = FakeSchemaClient(
+            [
+                {"validator_code": VALIDATOR, "notes": "validator notes"},
+                {"checker_code": CHECKER, "notes": "checker notes"},
+                {"test_generator_code": TEST_GENERATOR, "notes": "test generator notes"},
+            ]
+        )
+        generator = ToolGenerator(client)
+
+        result = generator.generate(
+            {"problem_id": "SUM", "statement_markdown": "给定若干整数，输出它们的和。"},
+            FakeSpecExtractor().generate({}),
+            {"role_diagnostics": {"ToolGenerator": [{"category": "validator_rejects_generated_case"}]}},
+        )
+
+        self.assertEqual(list(result), ["validator", "checker", "test_generator"])
+        self.assertEqual(result["validator"].code, VALIDATOR.strip())
+        self.assertEqual(result["checker"].code, CHECKER.strip())
+        self.assertEqual(result["test_generator"].code, TEST_GENERATOR.strip())
+        self.assertEqual(result["validator"].metadata["stage"], "validator")
+        self.assertEqual(result["checker"].metadata["stage"], "checker")
+        self.assertEqual(result["test_generator"].metadata["stage"], "test_generator")
+
+        self.assertEqual(len(client.prompts), 3)
+        self.assertIn("当前角色是 ValidatorGenerator", client.prompts[0]["system"])
+        self.assertIn("validator_code", client.prompts[0]["user"])
+        self.assertIn("当前角色是 CheckerGenerator", client.prompts[1]["system"])
+        self.assertIn("validator_artifact", client.prompts[1]["user"])
+        self.assertIn("validator notes", client.prompts[1]["user"])
+        self.assertIn("当前角色是 TestGenerator", client.prompts[2]["system"])
+        self.assertIn("validator_artifact", client.prompts[2]["user"])
+        self.assertIn("checker_artifact", client.prompts[2]["user"])
+        self.assertIn("checker notes", client.prompts[2]["user"])
+
+    def test_split_tool_generator_outputs_are_executable(self) -> None:
+        client = FakeSchemaClient(
+            [
+                {"validator_code": VALIDATOR, "notes": "validator notes"},
+                {"checker_code": CHECKER, "notes": "checker notes"},
+                {"test_generator_code": TEST_GENERATOR, "notes": "test generator notes"},
+            ]
+        )
+        tools = ToolGenerator(client).generate(
+            {"problem_id": "SUM", "statement_markdown": "给定若干整数，输出它们的和。"},
+            FakeSpecExtractor().generate({}),
+        )
+        runner = CodeRunner(timeout_s=1)
+
+        validation = runner.run_validate(
+            artifact_name="validator",
+            code=tools["validator"].code,
+            input_data="1 2",
+            test_source="unit",
+        )
+        check = runner.run_check(
+            artifact_name="checker",
+            code=tools["checker"].code,
+            input_data="1 2",
+            output_data="3",
+            expected_data="3",
+            test_source="unit",
+        )
+        generated = runner.run_generate_tests(
+            artifact_name="test_generator",
+            code=tools["test_generator"].code,
+        )
+
+        self.assertEqual(validation.status, "ok")
+        self.assertTrue(validation.result)
+        self.assertEqual(check.status, "ok")
+        self.assertTrue(check.result)
+        self.assertEqual(generated.status, "ok")
+        self.assertIsInstance(generated.result, list)
 
 
 class SchemaAwareGeneratorTests(unittest.TestCase):
@@ -419,6 +496,100 @@ class RevisionContextTests(unittest.TestCase):
         self.assertGreater(large_diag["evidence"]["input"]["original_length"], 1800)
         self.assertIn("ToolGenerator", large_diag["target_roles"])
 
+    def test_revision_context_enriches_diagnostics_with_advisor_revision(self) -> None:
+        advisor = RecordingRevisionAdvisor(
+            {
+                "root_cause": "标准解少累计了最后一个整数。",
+                "revision_advice": "修改 StandardSolutionGenerator 的求和循环，使用 basic 输入验证输出从 3 修正为 4。",
+                "target_roles": ["StandardSolutionGenerator"],
+                "evidence_used": ["basic", "standard_output=3", "oracle_output=4"],
+                "confidence": "high",
+                "risk_notes": "",
+            }
+        )
+        package = _fake_package()
+        revision_context = _build_revision_context(
+            [
+                FailureIssue(
+                    category="standard_oracle_mismatch",
+                    severity="blocker",
+                    title="标准解与 oracle 不一致",
+                    detail="basic 上输出不同。",
+                    evidence={
+                        "test": {"source": "basic", "purpose": "基础反例", "metadata": {}},
+                        "input": "2\n1 2\n",
+                        "standard_output": "3\n",
+                        "oracle_output": "4\n",
+                    },
+                    fix_hint="旧模板建议。",
+                )
+            ],
+            {"independent_solutions": []},
+            revision_advisor=advisor,
+            current_package=package,
+        )
+
+        diagnostic = revision_context["diagnostics_by_category"]["standard_oracle_mismatch"][0]
+        self.assertEqual(diagnostic["advisor_revision"]["revision_advice"], "修改 StandardSolutionGenerator 的求和循环，使用 basic 输入验证输出从 3 修正为 4。")
+        self.assertEqual(diagnostic["advisor_revision"]["confidence"], "high")
+        role_diag = revision_context["role_diagnostics"]["StandardSolutionGenerator"][0]
+        self.assertEqual(role_diag["advisor_revision"]["root_cause"], "标准解少累计了最后一个整数。")
+        self.assertEqual(len(advisor.packets), 1)
+        self.assertIn("standard_solution", advisor.packets[0]["current_artifact"])
+        self.assertEqual(advisor.packets[0]["legacy_fix_hint"], "旧模板建议。")
+
+    def test_revision_advisor_limits_repeated_category_calls(self) -> None:
+        advisor = RecordingRevisionAdvisor(
+            {
+                "root_cause": "validator 与测试生成器约束不一致。",
+                "revision_advice": "对每个被拒绝的生成输入，统一 validator 与 test_generator 的输入范围。",
+                "target_roles": ["ToolGenerator"],
+                "evidence_used": ["validator_result"],
+                "confidence": "medium",
+                "risk_notes": "",
+            }
+        )
+        issues = [
+            FailureIssue(
+                category="validator_rejects_generated_case",
+                severity="high",
+                title="validator 拒绝测试",
+                detail=f"case_{index} 未通过输入合法性检查。",
+                evidence={"test": {"source": f"case_{index}", "purpose": "重复失败"}, "input": f"{index}\n"},
+            )
+            for index in range(5)
+        ]
+
+        revision_context = _build_revision_context(
+            issues,
+            {"independent_solutions": []},
+            revision_advisor=advisor,
+            current_package=_fake_package(),
+        )
+
+        diagnostics = revision_context["diagnostics_by_category"]["validator_rejects_generated_case"]
+        self.assertEqual(len(advisor.packets), 3)
+        self.assertTrue(all("advisor_revision" in item for item in diagnostics))
+        self.assertTrue(diagnostics[3]["advisor_revision"]["cluster_reused"])
+        self.assertEqual(len(revision_context["role_diagnostics"]["ToolGenerator"]), 3)
+
+    def test_revision_advisor_failure_raises(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "RevisionAdvisor 生成修订建议失败"):
+            _build_revision_context(
+                [
+                    FailureIssue(
+                        category="standard_solution_failed",
+                        severity="blocker",
+                        title="标准解执行失败",
+                        detail="运行异常。",
+                        evidence={"test": {"source": "runtime"}},
+                    )
+                ],
+                {"independent_solutions": []},
+                revision_advisor=RaisingRevisionAdvisor(),
+                current_package=_fake_package(),
+            )
+
     def test_revision_context_aggregates_duplicates_and_limits_role_diagnostics(self) -> None:
         issues = [
             FailureIssue(
@@ -638,6 +809,44 @@ class CountingToolGenerator(FakeToolGenerator):
         return super().generate(context, spec, revision_context)
 
 
+class RecordingRevisionAdvisor:
+    def __init__(self, response: dict):
+        self.response = response
+        self.packets: list[dict] = []
+
+    def generate(self, failure_packet):
+        self.packets.append(failure_packet)
+        return dict(self.response)
+
+
+class RaisingRevisionAdvisor:
+    def generate(self, failure_packet):
+        del failure_packet
+        raise RuntimeError("advisor unavailable")
+
+
+def _fake_package() -> dict:
+    return {
+        "context": {"problem_id": "SUM"},
+        "execution_spec": FakeSpecExtractor().generate({}),
+        "standard_solution": GeneratedCodeArtifact(name="standard_solution", role="standard_solution", code=SUM_SOLUTION),
+        "oracle_solution": GeneratedCodeArtifact(name="oracle_solution", role="oracle_solution", code=BAD_ORACLE),
+        "validator": GeneratedCodeArtifact(name="validator", role="validator", code=VALIDATOR),
+        "checker": GeneratedCodeArtifact(name="checker", role="checker", code=CHECKER),
+        "test_generator": GeneratedCodeArtifact(name="test_generator", role="test_generator", code=TEST_GENERATOR),
+        "schema_mistake_points": [dict(SCHEMA_MISTAKE_POINT)],
+        "wrong_solutions": [
+            WrongSolution(
+                solution_id="first_token",
+                code=FIRST_TOKEN_WRONG,
+                source="weak_llm_player",
+                bug_type="format_misread",
+                expected_failure="只能过部分用例。",
+            )
+        ],
+    }
+
+
 class PipelineTests(unittest.TestCase):
     def test_pipeline_can_produce_pass_package(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -686,6 +895,44 @@ class PipelineTests(unittest.TestCase):
             wrong_dirs = {item.name for item in Path(result["run_dir"], "round1", "wrong_solutions").iterdir()}
             self.assertIn("SUM_schema_ignore_contract", wrong_dirs)
             self.assertNotIn("SUM_empty_output", wrong_dirs)
+
+    def test_pipeline_emits_detailed_progress_messages(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            artifact_path = Path(tempdir) / "artifact.json"
+            artifact_path.write_text(
+                json.dumps(
+                    {
+                        "problem_id": "SUM",
+                        "generated_problem": {"title": "求和", "samples": []},
+                        "new_schema_snapshot": {"problem_id": "SUM"},
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            messages: list[str] = []
+            pipeline = PackageValidationPipeline(
+                client=None,
+                output_dir=Path(tempdir) / "out",
+                spec_extractor=FakeSpecExtractor(),
+                standard_generator=FakeStandardGenerator(),
+                oracle_generator=FakeOracleGenerator(),
+                tool_generator=FakeToolGenerator(),
+                weak_player_generator=FakeWeakPlayerGenerator(),
+                schema_mistake_analyzer=FakeSchemaMistakeAnalyzer(),
+                schema_wrong_solution_generator=FakeSchemaWrongSolutionGenerator(),
+                progress_writer=messages.append,
+                kill_rate_threshold=0.5,
+            )
+
+            pipeline.run(artifact_path=artifact_path, rounds=1)
+
+            self.assertTrue(any("[启动] 题目 SUM" in message for message in messages), messages)
+            self.assertTrue(any("[生成] 抽取 execution_spec" in message for message in messages), messages)
+            self.assertTrue(any("[验证] 可执行测试用例数量：" in message for message in messages), messages)
+            self.assertTrue(any("[筛选] 开始错误解筛选" in message for message in messages), messages)
+            self.assertTrue(any("[筛选] 错误解筛选完成" in message for message in messages), messages)
+            self.assertTrue(any("[完成] 迭代结束" in message for message in messages), messages)
 
     def test_incremental_round_regenerates_only_active_roles(self) -> None:
         standard_generator = SequenceStandardGenerator([SUM_SOLUTION])

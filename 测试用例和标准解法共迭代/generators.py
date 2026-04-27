@@ -6,16 +6,33 @@ from typing import Any
 from execution_spec import normalize_execution_spec
 from models import ExecutionSpec, GeneratedCodeArtifact, WrongSolution, to_dict
 from prompt_builder import (
+    build_checker_prompt,
     build_code_system_prompt,
     build_oracle_prompt,
+    build_revision_advisor_system_prompt,
+    build_revision_advisor_user_prompt,
     build_schema_aware_wrong_solution_prompt,
     build_schema_mistake_analysis_prompt,
     build_spec_system_prompt,
     build_spec_user_prompt,
     build_standard_solution_prompt,
-    build_tools_prompt,
+    build_test_generator_prompt,
+    build_validator_prompt,
     build_weak_player_prompt,
 )
+
+
+class RevisionAdvisor:
+    def __init__(self, client: Any):
+        self.client = client
+
+    def generate(self, failure_packet: dict[str, Any]) -> dict[str, Any]:
+        payload = self.client.chat_json(
+            system_prompt=build_revision_advisor_system_prompt(),
+            user_prompt=build_revision_advisor_user_prompt(failure_packet),
+            temperature=0.1,
+        )
+        return _normalize_advisor_revision(payload, failure_packet)
 
 
 class SpecExtractor:
@@ -97,30 +114,53 @@ class ToolGenerator:
         spec: ExecutionSpec,
         revision_context: dict[str, Any] | None = None,
     ) -> dict[str, GeneratedCodeArtifact]:
-        payload = self.client.chat_json(
-            system_prompt=build_code_system_prompt("ToolGenerator"),
-            user_prompt=build_tools_prompt(context, to_dict(spec), revision_context),
+        spec_payload = to_dict(spec)
+        validator_payload = self.client.chat_json(
+            system_prompt=build_code_system_prompt("ValidatorGenerator"),
+            user_prompt=build_validator_prompt(context, spec_payload, revision_context),
             temperature=0.1,
         )
+        validator = GeneratedCodeArtifact(
+            name="validator",
+            role="validator",
+            code=_clean_code(str(validator_payload.get("validator_code", ""))),
+            metadata={"notes": validator_payload.get("notes", ""), "stage": "validator"},
+        )
+
+        checker_payload = self.client.chat_json(
+            system_prompt=build_code_system_prompt("CheckerGenerator"),
+            user_prompt=build_checker_prompt(context, spec_payload, to_dict(validator), revision_context),
+            temperature=0.1,
+        )
+        checker = GeneratedCodeArtifact(
+            name="checker",
+            role="checker",
+            code=_clean_code(str(checker_payload.get("checker_code", ""))),
+            metadata={"notes": checker_payload.get("notes", ""), "stage": "checker"},
+        )
+
+        test_generator_payload = self.client.chat_json(
+            system_prompt=build_code_system_prompt("TestGenerator"),
+            user_prompt=build_test_generator_prompt(
+                context,
+                spec_payload,
+                to_dict(validator),
+                to_dict(checker),
+                revision_context,
+            ),
+            temperature=0.1,
+        )
+        test_generator = GeneratedCodeArtifact(
+            name="test_generator",
+            role="test_generator",
+            code=_clean_code(str(test_generator_payload.get("test_generator_code", ""))),
+            metadata={"notes": test_generator_payload.get("notes", ""), "stage": "test_generator"},
+        )
+
         return {
-            "validator": GeneratedCodeArtifact(
-                name="validator",
-                role="validator",
-                code=_clean_code(str(payload.get("validator_code", ""))),
-                metadata={"notes": payload.get("notes", "")},
-            ),
-            "checker": GeneratedCodeArtifact(
-                name="checker",
-                role="checker",
-                code=_clean_code(str(payload.get("checker_code", ""))),
-                metadata={"notes": payload.get("notes", "")},
-            ),
-            "test_generator": GeneratedCodeArtifact(
-                name="test_generator",
-                role="test_generator",
-                code=_clean_code(str(payload.get("test_generator_code", ""))),
-                metadata={"notes": payload.get("notes", "")},
-            ),
+            "validator": validator,
+            "checker": checker,
+            "test_generator": test_generator,
         }
 
 
@@ -276,6 +316,25 @@ def _normalize_string_list(value: Any) -> list[str]:
         return []
     text = str(value).strip()
     return [text] if text else []
+
+
+def _normalize_advisor_revision(payload: dict[str, Any], failure_packet: dict[str, Any]) -> dict[str, Any]:
+    diagnostic = failure_packet.get("diagnostic") if isinstance(failure_packet.get("diagnostic"), dict) else {}
+    allowed_roles = {str(role) for role in diagnostic.get("target_roles", [])}
+    target_roles = [role for role in _normalize_string_list(payload.get("target_roles")) if role in allowed_roles]
+    if not target_roles:
+        target_roles = sorted(allowed_roles)
+    confidence = str(payload.get("confidence", "medium")).strip().lower()
+    if confidence not in {"low", "medium", "high"}:
+        confidence = "medium"
+    return {
+        "root_cause": str(payload.get("root_cause", "")).strip(),
+        "revision_advice": str(payload.get("revision_advice", "")).strip(),
+        "target_roles": target_roles,
+        "evidence_used": _normalize_string_list(payload.get("evidence_used")),
+        "confidence": confidence,
+        "risk_notes": str(payload.get("risk_notes", "")).strip(),
+    }
 
 
 def _clean_code(text: str) -> str:

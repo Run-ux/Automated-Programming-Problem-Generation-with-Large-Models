@@ -73,6 +73,48 @@ def build_code_system_prompt(role: str) -> str:
     )
 
 
+def build_revision_advisor_system_prompt() -> str:
+    return "\n\n".join(
+        [
+            "任务目标：\n你是一名错误回流修订顾问。你只根据 failure_packet 中的失败证据，输出能直接指导下一轮生成器修复的具体 revision 建议。",
+            "硬约束：\n" + _build_json_hard_constraints(include_code_rules=False),
+            "\n".join(
+                [
+                    "执行准则：",
+                    "1. 最高优先级是基于证据定位失败机制，禁止泛泛建议。",
+                    "2. revision_advice 必须指出应修改的对象、触发失败的具体输入/输出/状态、建议修改方向和验证方式。",
+                    "3. 如果证据不足以唯一定位根因，必须说明不可确认点，并给出保守但可执行的下一步修订建议。",
+                    "4. 不要要求生成器改动 failure_packet 未命中的角色或已冻结合同，除非证据明确指向接口合同错误。",
+                    "5. 禁止输出“检查边界”“修复逻辑”“确认实现”等空泛表述，必须落到具体数据形状、分支、接口或输出义务。",
+                ]
+            ),
+        ]
+    )
+
+
+def build_revision_advisor_user_prompt(failure_packet: dict[str, Any]) -> str:
+    return _compose_prompt(
+        intro="请为该失败诊断输出定向 revision 建议。",
+        output_contracts={
+            "root_cause": "根据证据判断的失败机制；若不能唯一确定，说明最可能原因和不确定点。",
+            "revision_advice": "可直接执行的修订建议，必须具体说明改什么、为什么、用哪个证据验证。",
+            "target_roles": "建议作用的生成器角色列表，必须来自 failure_packet.diagnostic.target_roles。",
+            "evidence_used": "实际使用的关键信息列表，例如测试来源、输入摘要、输出差异、异常类型或幸存错误解 ID。",
+            "confidence": "只能是 low、medium 或 high。",
+            "risk_notes": "可能误判、证据不足或改动风险；没有则返回空字符串。",
+        },
+        extra_sections=[
+            "建议质量要求：",
+            "1. 针对运行错误，指出异常类型、触发输入和应修正的解析/分支/数据结构路径。",
+            "2. 针对输出不一致，指出首个不同 token/行、相关输入结构，并说明应优先核对标准解还是 oracle。",
+            "3. 针对 checker/validator/test_generator，指出接口合同、输入合法性或输出合法性谓词的具体冲突。",
+            "4. 针对错误解存活，指出幸存错误模式和应新增的反例形状，而不是只说提高覆盖率。",
+            "5. 若存在 previous_advice，需要判断新证据是否仍支持该建议；不支持时说明应改用的新建议。",
+        ],
+        payload={"failure_packet": failure_packet},
+    )
+
+
 def build_standard_solution_prompt(
     context: dict[str, Any],
     spec: dict[str, Any],
@@ -166,6 +208,108 @@ def build_tools_prompt(
                 revision_context,
                 role="ToolGenerator",
                 fallback="若 revision_context 为空，优先生成接口正确、职责分离且测试覆盖清晰的工具代码。",
+            ),
+        ],
+        payload=payload,
+    )
+
+
+def build_validator_prompt(
+    context: dict[str, Any],
+    spec: dict[str, Any],
+    revision_context: dict[str, Any] | None = None,
+) -> str:
+    payload = {"context": context, "execution_spec": spec, "revision_context": revision_context or {}}
+    return _compose_prompt(
+        intro="请生成 validator。此阶段只负责输入合法性校验，不生成 checker 或 test_generator。",
+        output_contracts={
+            "validator_code": "完整可运行的 Python 代码字符串，必须实现 validate(input_str: str) -> bool。",
+            "notes": "说明输入合同、边界处理和保守假设，不要重复题意。",
+        },
+        extra_sections=[
+            "validator 职责要求：",
+            "1. 只验证输入是否合法，不做求解，不验证输出，不依赖隐藏条件。",
+            "2. 严格服从 execution_spec.input_contract、performance_limits 与题面明示约束；信息不足时采用保守校验并在 notes 说明。",
+            "3. 非法输入、解析失败、字段数量不匹配、范围越界或异常路径必须返回 False。",
+            "4. 合法输入返回 True；函数内部自行捕获可恢复解析异常，禁止静默接受格式错误。",
+            "5. 输出前自检 validate(input_str: str) -> bool 接口、异常路径和样例输入是否一致。",
+            _build_revision_guidance(
+                revision_context,
+                role="ToolGenerator",
+                fallback="若 revision_context 为空，优先生成接口正确、边界清晰且保守的 validator。",
+            ),
+        ],
+        payload=payload,
+    )
+
+
+def build_checker_prompt(
+    context: dict[str, Any],
+    spec: dict[str, Any],
+    validator_artifact: dict[str, Any],
+    revision_context: dict[str, Any] | None = None,
+) -> str:
+    payload = {
+        "context": context,
+        "execution_spec": spec,
+        "validator_artifact": _artifact_context(validator_artifact),
+        "revision_context": revision_context or {},
+    }
+    return _compose_prompt(
+        intro="请生成 checker。此阶段必须基于已生成 validator 的输入合同口径，只生成 checker。",
+        output_contracts={
+            "checker_code": "完整可运行的 Python 代码字符串，必须实现 check(input_str: str, output_str: str, expected_str: str | None) -> bool。",
+            "notes": "说明判题语义、输出合法性谓词和与 validator 的合同衔接。",
+        },
+        extra_sections=[
+            "checker 职责要求：",
+            "1. 必须服从 execution_spec.judge_type：exact 题基于 expected_str 做规范化比较；checker 题校验输出格式和答案合法性。",
+            "2. 不要把完整标准解算法塞进 checker；只实现判题必须的解析、格式和证书合法性校验。",
+            "3. input_str 的解析口径必须与 validator_artifact 保持一致；若输入不合法或输出非法，返回 False。",
+            "4. expected_str 为 None 时，只能在 checker 题或确有合法性谓词时忽略标准输出；exact 题缺少 expected_str 应返回 False。",
+            "5. 输出前自检 check(input_str, output_str, expected_str) 接口、空输出、多余 token、格式错误和多解语义。",
+            _build_revision_guidance(
+                revision_context,
+                role="ToolGenerator",
+                fallback="若 revision_context 为空，优先生成判题语义明确、与 validator 输入合同一致的 checker。",
+            ),
+        ],
+        payload=payload,
+    )
+
+
+def build_test_generator_prompt(
+    context: dict[str, Any],
+    spec: dict[str, Any],
+    validator_artifact: dict[str, Any],
+    checker_artifact: dict[str, Any],
+    revision_context: dict[str, Any] | None = None,
+) -> str:
+    payload = {
+        "context": context,
+        "execution_spec": spec,
+        "validator_artifact": _artifact_context(validator_artifact),
+        "checker_artifact": _artifact_context(checker_artifact),
+        "revision_context": revision_context or {},
+    }
+    return _compose_prompt(
+        intro="请生成 test_generator。此阶段必须基于已生成 validator 与 checker 的合同，只生成测试生成器。",
+        output_contracts={
+            "test_generator_code": "完整可运行的 Python 代码字符串，必须实现 generate_tests() -> list[dict]。",
+            "notes": "说明测试桶覆盖、oracle 标注和与 validator/checker 的合同衔接。",
+        },
+        extra_sections=[
+            "test_generator 职责要求：",
+            "1. 必须使用 execution_spec.test_buckets，产出 input、source、purpose、expect_oracle、is_sample、is_large、metadata。",
+            "2. 默认生成的每个 input 都应能被 validator_artifact 接受；若生成非法输入用于负测，必须在 metadata 中显式标记。",
+            "3. 测试覆盖按基础、边界、随机、对抗、性能逐项判断是否相关；不要为了数量生成重复或低价值用例。",
+            "4. 若 oracle_limits 支持，应显式标注哪些测试 expect_oracle=True；大规模或超出 oracle_scope 的测试标注 expect_oracle=False。",
+            "5. 存在 surviving_wrong_solution_details 时，优先补能区分这些错误模式的定向反例。",
+            "6. 输出前自检 generate_tests() 返回 list[dict]，且字段、输入格式、规模标记与 validator/checker 合同一致。",
+            _build_revision_guidance(
+                revision_context,
+                role="ToolGenerator",
+                fallback="若 revision_context 为空，优先生成覆盖清晰、可被 validator 接受且 oracle 标注准确的测试生成器。",
             ),
         ],
         payload=payload,
@@ -379,6 +523,15 @@ def _build_role_goal(role: str) -> str:
         "ToolGenerator": (
             "生成职责分离的 validator、checker、test_generator。先在内部拆分三者职责，再确定覆盖矩阵和判题语义；不要把题解逻辑塞进工具代码。"
         ),
+        "ValidatorGenerator": (
+            "只生成 validator。严格校验输入格式、字段数量、边界和显式约束；不做求解、不校验输出，非法输入或异常必须返回 False。"
+        ),
+        "CheckerGenerator": (
+            "只生成 checker。严格服从 execution_spec.judge_type，校验输出格式和答案合法性；不得隐含完整标准解算法，并与 validator 的输入解析口径保持一致。"
+        ),
+        "TestGenerator": (
+            "只生成 test_generator。围绕 execution_spec.test_buckets 构造高价值测试，默认所有生成输入都应被 validator 接受，并正确标注 oracle 与大规模测试。"
+        ),
         "WeakPlayerGenerator": (
             "生成像真实参赛选手会写出的错误解：先模拟错误理解路径，再写出接口正确、语法正确但逻辑有缺陷的代码，并让这些缺陷能被针对性测试击中。"
         ),
@@ -390,6 +543,17 @@ def _build_role_goal(role: str) -> str:
         ),
     }
     return role_goals.get(role, "生成满足接口合同、与上下文一致且可执行的结果。")
+
+
+def _artifact_context(value: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        return {}
+    return {
+        "name": value.get("name", ""),
+        "role": value.get("role", ""),
+        "code": value.get("code", ""),
+        "metadata": value.get("metadata", {}),
+    }
 
 
 def _build_output_contract_section(output_contracts: dict[str, str]) -> str:
@@ -493,6 +657,7 @@ def _format_diagnostic(diagnostic: dict[str, Any]) -> str:
     title = str(diagnostic.get("title", "")).strip()
     detail = str(diagnostic.get("detail", "")).strip()
     fix_hint = str(diagnostic.get("fix_hint", "")).strip()
+    advisor_text = _format_advisor_revision(diagnostic.get("advisor_revision"))
     evidence = diagnostic.get("evidence") if isinstance(diagnostic.get("evidence"), dict) else {}
     test = evidence.get("test") if isinstance(evidence.get("test"), dict) else {}
     source = str(test.get("source") or evidence.get("test_source") or "").strip()
@@ -502,9 +667,28 @@ def _format_diagnostic(diagnostic: dict[str, Any]) -> str:
         parts.append(f"测试来源：{source}")
     if diff_text:
         parts.append(diff_text)
-    if fix_hint:
+    if advisor_text:
+        parts.append("advisor修订建议：" + advisor_text)
+    elif fix_hint and "advisor_revision" not in diagnostic:
         parts.append("修复建议：" + fix_hint)
     return "，".join(parts)
+
+
+def _format_advisor_revision(value: Any) -> str:
+    if not isinstance(value, dict):
+        return ""
+    advice = str(value.get("revision_advice", "")).strip()
+    if not advice:
+        return ""
+    root_cause = str(value.get("root_cause", "")).strip()
+    confidence = str(value.get("confidence", "")).strip()
+    parts = []
+    if root_cause:
+        parts.append("根因：" + root_cause)
+    parts.append("建议：" + advice)
+    if confidence:
+        parts.append("置信度：" + confidence)
+    return "；".join(parts)
 
 
 def _format_diff(diff: Any) -> str:

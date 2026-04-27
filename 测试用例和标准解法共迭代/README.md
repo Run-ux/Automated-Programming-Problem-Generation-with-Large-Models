@@ -11,14 +11,22 @@ LLM_API_KEY=你的_百炼_API_Key
 LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 LLM_MODEL=qwen3.6-plus
 LLM_TIMEOUT_S=360
+
+# 可选：RevisionAdvisor 独立模型；留空时复用主 LLM 配置。
+REVISION_ADVISOR_LLM_API_KEY=
+REVISION_ADVISOR_LLM_BASE_URL=
+REVISION_ADVISOR_LLM_MODEL=
+REVISION_ADVISOR_LLM_TIMEOUT_S=360
 ```
 
 ```bash
 python main.py ^
   --artifact D:\AutoProblemGen\生成题面\artifacts\...\round1.json ^
   --markdown D:\AutoProblemGen\生成题面\output\...\round1.md ^
-  --rounds 3
+  --rounds 6
 ```
+
+运行时终端会输出当前轮次、生成子步骤、验证矩阵、错误解筛选和最终摘要写入等阶段进度。
 
 默认输出到：
 
@@ -76,6 +84,11 @@ python main.py ^
 - `target_roles`：下一轮应消费该诊断的生成器角色
 - `evidence`：失败测试、输入摘要、执行结果、标准输出、oracle 输出、checker 结果等结构化证据
 - `diff`：仅在标准解输出与 oracle 输出不一致时出现，记录首个不同 token/行和差异窗口
+- `advisor_revision`：由 RevisionAdvisor 基于失败证据包生成的定向修订建议，包含 `root_cause`、`revision_advice`、`target_roles`、`evidence_used`、`confidence` 和 `risk_notes`。
+
+RevisionAdvisor 会在验证矩阵生成结构化诊断后运行。它接收的失败证据包包括诊断身份、失败现场、输出差异、命中角色相关的当前工作副本、幸存错误解详情，以及 carried issue 的上一轮建议。生成器 prompt 会优先使用 `advisor_revision.revision_advice` 作为回流上下文；`fix_hint` 仅保留为报告中的原始模板线索。若 RevisionAdvisor 调用失败或返回缺少 `revision_advice`，本轮流程会直接失败暴露错误，不继续使用旧模板建议回流。
+
+同一失败类别出现大量重复样本时，RevisionAdvisor 最多分析 3 个代表诊断；其余同类诊断复用代表建议并标记 `cluster_reused`，避免重复消耗 LLM 调用。
 
 证据保留策略：
 
