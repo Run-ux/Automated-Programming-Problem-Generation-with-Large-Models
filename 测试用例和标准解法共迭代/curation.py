@@ -6,6 +6,12 @@ from models import ExecutionResult, TestCase, WrongSolution, to_dict
 from runners import CodeRunner
 
 
+def is_unexpected_correct_candidate(candidate: dict[str, Any]) -> bool:
+    bug_type = str(candidate.get("bug_type", "")).strip().lower()
+    expected_failure = str(candidate.get("expected_failure", "")).strip()
+    return bug_type == "unexpected_correct" and expected_failure in {"", "无"}
+
+
 class WrongSolutionCurator:
     def __init__(self, *, runner: CodeRunner, kill_rate_threshold: float = 0.8):
         self.runner = runner
@@ -42,15 +48,21 @@ class WrongSolutionCurator:
         total = len(valuable) + len(independent)
         killed = len(valuable)
         kill_rate = killed / total if total else 0.0
+        unexpected_correct = [item for item in independent if is_unexpected_correct_candidate(item)]
+        high_value_survivors = [item for item in independent if not is_unexpected_correct_candidate(item)]
         return {
             "valuable_wrong_solutions": valuable,
             "independent_solutions": independent,
+            "high_value_survivors": high_value_survivors,
+            "unexpected_correct_candidates": unexpected_correct,
             "rejected_candidates": rejected,
             "matrix": matrix,
             "stats": {
                 "candidate_count": len(candidates),
                 "valuable_count": len(valuable),
                 "independent_count": len(independent),
+                "high_value_survivor_count": len(high_value_survivors),
+                "unexpected_correct_count": len(unexpected_correct),
                 "rejected_count": len(rejected),
                 "kill_rate": round(kill_rate, 4),
                 "kill_rate_threshold": self.kill_rate_threshold,
@@ -150,4 +162,3 @@ def _candidate_record(
         "metadata": dict(candidate.metadata),
         "matrix": matrix,
     }
-

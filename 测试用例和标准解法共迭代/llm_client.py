@@ -31,6 +31,8 @@ class LlmClient:
         user_prompt: str,
         temperature: float = 0.2,
         max_retries: int = 3,
+        timeout_s: int | None = None,
+        request_name: str = "chat_json",
     ) -> dict[str, Any]:
         payload = {
             "model": self.model,
@@ -41,18 +43,47 @@ class LlmClient:
             "temperature": temperature,
             "response_format": {"type": "json_object"},
         }
-        raw = self._post_json(url=f"{self.base_url}/chat/completions", payload=payload, max_retries=max_retries)
-        content = json.loads(raw)["choices"][0]["message"]["content"]
+        raw = self._post_json(
+            url=f"{self.base_url}/chat/completions",
+            payload=payload,
+            max_retries=max_retries,
+            timeout_s=timeout_s or self.timeout_s,
+            request_name=request_name,
+        )
+        try:
+            response_payload = json.loads(raw)
+            content = response_payload["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError, json.JSONDecodeError) as exc:
+            preview = raw[:500].replace("\n", "\\n")
+            raise RuntimeError(
+                f"LLM 返回解析失败：request={request_name}; model={self.model}; "
+                f"response_preview={preview}; error={exc}"
+            ) from exc
         return _extract_json_object(content)
 
-    def _post_json(self, *, url: str, payload: dict[str, Any], max_retries: int) -> str:
+    def _post_json(
+        self,
+        *,
+        url: str,
+        payload: dict[str, Any],
+        max_retries: int,
+        timeout_s: int,
+        request_name: str,
+    ) -> str:
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
         payload_json = json.dumps(payload, ensure_ascii=False)
         last_error: Exception | None = None
+        last_error_kind = "unknown"
+        payload_bytes = len(payload_json.encode("utf-8"))
         for attempt in range(1, max_retries + 1):
+            started_at = time.perf_counter()
+            self._log(
+                f"[LLM] request={request_name} model={self.model} attempt={attempt}/{max_retries} "
+                f"timeout_s={timeout_s} payload_bytes={payload_bytes} url={url}"
+            )
             try:
                 request = urllib.request.Request(
                     url=url,
@@ -60,19 +91,59 @@ class LlmClient:
                     headers=headers,
                     method="POST",
                 )
-                with urllib.request.urlopen(request, timeout=self.timeout_s) as response:
-                    return response.read().decode("utf-8")
+                with urllib.request.urlopen(request, timeout=timeout_s) as response:
+                    body = response.read().decode("utf-8")
+                elapsed_ms = int((time.perf_counter() - started_at) * 1000)
+                self._log(
+                    f"[LLM] success request={request_name} model={self.model} attempt={attempt}/{max_retries} "
+                    f"elapsed_ms={elapsed_ms} response_bytes={len(body.encode('utf-8'))}"
+                )
+                return body
+            except (TimeoutError, socket.timeout) as exc:
+                last_error = exc
+                last_error_kind = "timeout"
+                elapsed_ms = int((time.perf_counter() - started_at) * 1000)
+                self._log(
+                    f"[LLM] timeout request={request_name} model={self.model} attempt={attempt}/{max_retries} "
+                    f"elapsed_ms={elapsed_ms} timeout_s={timeout_s} error={exc}"
+                )
+            except urllib.error.HTTPError as exc:
+                last_error = exc
+                last_error_kind = "http_error"
+                elapsed_ms = int((time.perf_counter() - started_at) * 1000)
+                body = ""
+                try:
+                    body = exc.read().decode("utf-8", errors="replace")
+                except Exception:
+                    body = ""
+                preview = body[:500].replace("\n", "\\n")
+                self._log(
+                    f"[LLM] http_error request={request_name} model={self.model} attempt={attempt}/{max_retries} "
+                    f"elapsed_ms={elapsed_ms} status={exc.code} reason={exc.reason} body_preview={preview}"
+                )
             except (
-                TimeoutError,
-                socket.timeout,
                 urllib.error.URLError,
-                urllib.error.HTTPError,
                 KeyError,
                 ValueError,
             ) as exc:
                 last_error = exc
+                last_error_kind = type(exc).__name__
+                elapsed_ms = int((time.perf_counter() - started_at) * 1000)
+                self._log(
+                    f"[LLM] failure request={request_name} model={self.model} attempt={attempt}/{max_retries} "
+                    f"elapsed_ms={elapsed_ms} error_type={type(exc).__name__} error={exc}"
+                )
                 time.sleep(1.5 * attempt)
-        raise RuntimeError(f"调用 LLM 失败：model={self.model}; url={url}; error={last_error}")
+                continue
+            time.sleep(1.5 * attempt)
+        raise RuntimeError(
+            f"调用 LLM 失败：request={request_name}; model={self.model}; url={url}; "
+            f"timeout_s={timeout_s}; max_retries={max_retries}; payload_bytes={payload_bytes}; "
+            f"error_kind={last_error_kind}; error={last_error}"
+        )
+
+    def _log(self, message: str) -> None:
+        print(message, flush=True)
 
 
 def _extract_json_object(text: str) -> dict[str, Any]:

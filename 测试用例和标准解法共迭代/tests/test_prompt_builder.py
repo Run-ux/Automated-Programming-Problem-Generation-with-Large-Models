@@ -34,10 +34,22 @@ class PromptBuilderTests(unittest.TestCase):
             "statement_markdown": "给定 n 个整数，输出它们的和。",
             "generated_problem": {
                 "title": "求和",
+                "constraints": "1 <= n <= 2e5",
                 "samples": [{"input": "3\n1 2 3\n", "output": "6\n"}],
+                "editorial_blob": "E" * 1600,
             },
-            "new_schema": {"problem_id": "SUM"},
+            "new_schema": {
+                "problem_id": "SUM",
+                "objective": {"type": "sum_all_values", "details": "value" * 80},
+                "raw_blob": "S" * 1600,
+            },
             "algorithmic_delta_claim": {"new_solver_core": "线性扫描累加"},
+            "difference_plan": {
+                "changed_axes": ["目标函数", "数据约束"],
+                "summary": "保留求和主任务，但加大数据范围并强化线性复杂度要求。",
+                "debug_blob": "D" * 1600,
+            },
+            "applied_rule": "campus_ops",
         }
         self.spec = {
             "problem_id": "SUM",
@@ -250,6 +262,19 @@ class PromptBuilderTests(unittest.TestCase):
         self.assertIn("用 basic 输入验证输出必须从 5 变为 6", guidance)
         self.assertNotIn("oracle 在 small_random 上漏掉重复元素情况。", guidance)
 
+    def test_code_generation_prompt_keeps_markdown_and_raw_schema_fields(self) -> None:
+        prompt = build_standard_solution_prompt(self.context, self.spec, self.revision_context)
+
+        self.assertIn("statement_markdown", prompt)
+        self.assertIn("\"new_schema\"", prompt)
+        self.assertIn("\"difference_plan\"", prompt)
+        self.assertIn("\"algorithmic_delta_claim\"", prompt)
+        self.assertIn("campus_ops", prompt)
+        self.assertNotIn("generated_problem_summary", prompt)
+        self.assertNotIn("editorial_blob", prompt)
+        self.assertIn("raw_blob", prompt)
+        self.assertIn("debug_blob", prompt)
+
     def test_incremental_revision_prompt_mentions_active_context_and_current_artifact(self) -> None:
         revision_context = {
             **self.revision_context,
@@ -280,6 +305,23 @@ class PromptBuilderTests(unittest.TestCase):
         self.assertIn("最小必要修改", guidance)
         self.assertIn("已通过路径的冻结合同", guidance)
         self.assertIn("输出仍需是完整替换产物", guidance)
+
+    def test_baseline_repair_mode_prompts_only_fix_baseline_not_kill_rate(self) -> None:
+        revision_context = {
+            **self.revision_context,
+            "active_revision_context": self.revision_context,
+            "revision_mode": "incremental_patch",
+            "baseline_repair_mode": True,
+        }
+
+        standard_prompt = build_standard_solution_prompt(self.context, self.spec, revision_context)
+        tools_prompt = build_tools_prompt(self.context, self.spec, revision_context)
+
+        for prompt in (standard_prompt, tools_prompt):
+            guidance = prompt.split("输入上下文", 1)[0]
+            self.assertIn("当前基线未通过", guidance)
+            self.assertIn("只修复基础自洽相关的 blocker/high 问题", guidance)
+            self.assertIn("不要为了提高 kill_rate 或扩展错误解覆盖去改动未命中的组件", guidance)
 
     def test_build_oracle_prompt_emphasizes_scope_and_independence(self) -> None:
         prompt = build_oracle_prompt(self.context, self.spec, self.revision_context)
@@ -347,7 +389,7 @@ class PromptBuilderTests(unittest.TestCase):
         self.assertIn("validator_code", validator_contract)
         self.assertNotIn("checker_code", validator_contract)
         self.assertNotIn("test_generator_code", validator_contract)
-        self.assertIn("ToolGenerator 定向诊断", validator_prompt)
+        self.assertIn("ValidatorGenerator 定向诊断", validator_prompt)
         self.assertIn("validator 拒绝了 test_generator 生成的边界测试。", validator_prompt)
 
         self.assertIn("checker_code", checker_contract)
@@ -355,7 +397,7 @@ class PromptBuilderTests(unittest.TestCase):
         self.assertNotIn("test_generator_code", checker_contract)
         self.assertIn("validator_artifact", checker_prompt)
         self.assertIn("validator notes", checker_prompt)
-        self.assertIn("ToolGenerator 定向诊断", checker_prompt)
+        self.assertIn("CheckerGenerator 定向诊断", checker_prompt)
 
         self.assertIn("test_generator_code", test_generator_contract)
         self.assertNotIn("validator_code", test_generator_contract)

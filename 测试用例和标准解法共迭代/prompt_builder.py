@@ -120,7 +120,11 @@ def build_standard_solution_prompt(
     spec: dict[str, Any],
     revision_context: dict[str, Any] | None = None,
 ) -> str:
-    payload = {"context": context, "execution_spec": spec, "revision_context": revision_context or {}}
+    payload = {
+        "context": _build_code_generation_context(context),
+        "execution_spec": spec,
+        "revision_context": revision_context or {},
+    }
     return _compose_prompt(
         intro="请生成标准解法。",
         output_contracts={
@@ -154,7 +158,11 @@ def build_oracle_prompt(
     spec: dict[str, Any],
     revision_context: dict[str, Any] | None = None,
 ) -> str:
-    payload = {"context": context, "execution_spec": spec, "revision_context": revision_context or {}}
+    payload = {
+        "context": _build_code_generation_context(context),
+        "execution_spec": spec,
+        "revision_context": revision_context or {},
+    }
     return _compose_prompt(
         intro="请生成小规模暴力 oracle。",
         output_contracts={
@@ -186,7 +194,11 @@ def build_tools_prompt(
     spec: dict[str, Any],
     revision_context: dict[str, Any] | None = None,
 ) -> str:
-    payload = {"context": context, "execution_spec": spec, "revision_context": revision_context or {}}
+    payload = {
+        "context": _build_code_generation_context(context),
+        "execution_spec": spec,
+        "revision_context": revision_context or {},
+    }
     return _compose_prompt(
         intro="请生成 validator、checker、test_generator。",
         output_contracts={
@@ -219,7 +231,11 @@ def build_validator_prompt(
     spec: dict[str, Any],
     revision_context: dict[str, Any] | None = None,
 ) -> str:
-    payload = {"context": context, "execution_spec": spec, "revision_context": revision_context or {}}
+    payload = {
+        "context": _build_code_generation_context(context),
+        "execution_spec": spec,
+        "revision_context": revision_context or {},
+    }
     return _compose_prompt(
         intro="请生成 validator。此阶段只负责输入合法性校验，不生成 checker 或 test_generator。",
         output_contracts={
@@ -235,7 +251,7 @@ def build_validator_prompt(
             "5. 输出前自检 validate(input_str: str) -> bool 接口、异常路径和样例输入是否一致。",
             _build_revision_guidance(
                 revision_context,
-                role="ToolGenerator",
+                role="ValidatorGenerator",
                 fallback="若 revision_context 为空，优先生成接口正确、边界清晰且保守的 validator。",
             ),
         ],
@@ -250,7 +266,7 @@ def build_checker_prompt(
     revision_context: dict[str, Any] | None = None,
 ) -> str:
     payload = {
-        "context": context,
+        "context": _build_code_generation_context(context),
         "execution_spec": spec,
         "validator_artifact": _artifact_context(validator_artifact),
         "revision_context": revision_context or {},
@@ -270,7 +286,7 @@ def build_checker_prompt(
             "5. 输出前自检 check(input_str, output_str, expected_str) 接口、空输出、多余 token、格式错误和多解语义。",
             _build_revision_guidance(
                 revision_context,
-                role="ToolGenerator",
+                role="CheckerGenerator",
                 fallback="若 revision_context 为空，优先生成判题语义明确、与 validator 输入合同一致的 checker。",
             ),
         ],
@@ -286,7 +302,7 @@ def build_test_generator_prompt(
     revision_context: dict[str, Any] | None = None,
 ) -> str:
     payload = {
-        "context": context,
+        "context": _build_code_generation_context(context),
         "execution_spec": spec,
         "validator_artifact": _artifact_context(validator_artifact),
         "checker_artifact": _artifact_context(checker_artifact),
@@ -308,7 +324,7 @@ def build_test_generator_prompt(
             "6. 输出前自检 generate_tests() 返回 list[dict]，且字段、输入格式、规模标记与 validator/checker 合同一致。",
             _build_revision_guidance(
                 revision_context,
-                role="ToolGenerator",
+                role="TestGenerator",
                 fallback="若 revision_context 为空，优先生成覆盖清晰、可被 validator 接受且 oracle 标注准确的测试生成器。",
             ),
         ],
@@ -428,6 +444,26 @@ def build_weak_player_prompt(
         ],
         payload=payload,
     )
+
+
+def _build_code_generation_context(context: dict[str, Any]) -> dict[str, Any]:
+    compact_context = {
+        "problem_id": context.get("problem_id", ""),
+        "statement_markdown": str(context.get("statement_markdown", "")).strip(),
+    }
+    new_schema = context.get("new_schema")
+    if isinstance(new_schema, dict) and new_schema:
+        compact_context["new_schema"] = new_schema
+    algorithmic_delta_claim = context.get("algorithmic_delta_claim")
+    if algorithmic_delta_claim:
+        compact_context["algorithmic_delta_claim"] = algorithmic_delta_claim
+    difference_plan = context.get("difference_plan")
+    if isinstance(difference_plan, dict) and difference_plan:
+        compact_context["difference_plan"] = difference_plan
+    applied_rule = str(context.get("applied_rule", "")).strip()
+    if applied_rule:
+        compact_context["applied_rule"] = applied_rule
+    return compact_context
 
 
 def _compose_prompt(
@@ -575,7 +611,7 @@ def _build_revision_guidance(
         key in revision_context for key in ("summary", "role_diagnostics", "surviving_wrong_solution_details")
     ):
         merged_context = dict(active_revision_context)
-        for key in ("revision_mode", "current_artifact", "frozen_contract_summary"):
+        for key in ("revision_mode", "baseline_repair_mode", "current_artifact", "frozen_contract_summary"):
             if key in revision_context:
                 merged_context[key] = revision_context[key]
         revision_context = merged_context
@@ -585,7 +621,11 @@ def _build_revision_guidance(
     guidance: list[str] = []
     if revision_context.get("revision_mode") == "incremental_patch":
         guidance.append(
-            "当前是增量修订轮：只处理 active_revision_context 中仍未解决的问题；已解决历史问题不得再次作为修改依据；输出仍需是完整替换产物。"
+            "当前是增量修订轮：你不是重做题包，只能修 active_revision_context 中仍未解决的问题，且只能处理命中当前角色的问题；已解决历史问题不得再次作为修改依据；输出仍需是完整替换产物。"
+        )
+    if revision_context.get("baseline_repair_mode") is True:
+        guidance.append(
+            "当前基线未通过；只修复基础自洽相关的 blocker/high 问题，错误解池、schema 误解点和非命中工具组件视为冻结，不要为了提高 kill_rate 或扩展错误解覆盖去改动未命中的组件。"
         )
 
     failed_hard_checks = _dedupe_strings(_stringify_items(revision_context.get("failed_hard_checks")))
@@ -601,7 +641,7 @@ def _build_revision_guidance(
         guidance.append(f"{role} 定向诊断：" + "；".join(_format_diagnostic(item) for item in role_items))
 
     survivor_text = _format_surviving_wrong_solution_details(revision_context.get("surviving_wrong_solution_details"))
-    if survivor_text and role in {"ToolGenerator", "WeakPlayerGenerator", "SchemaMistakeAnalyzer", "SchemaAwareWrongSolutionGenerator"}:
+    if survivor_text and role in {"ToolGenerator", "TestGenerator", "WeakPlayerGenerator", "SchemaMistakeAnalyzer", "SchemaAwareWrongSolutionGenerator"}:
         guidance.append("仍存活的错误解详情：" + survivor_text + "。请优先针对这些错误模式补足区分度。")
 
     current_artifact_text = _format_current_artifact(revision_context.get("current_artifact"))
@@ -612,10 +652,14 @@ def _build_revision_guidance(
     if frozen_contract_text:
         guidance.append("已通过路径的冻结合同：" + frozen_contract_text + "。除非 active 诊断明确要求，不要改变这些接口语义。")
 
+    known_good_text = _format_known_good_case_summaries(revision_context.get("known_good_case_summaries"))
+    if known_good_text:
+        guidance.append("known-good 回归合同：" + known_good_text + "。候选必须保持这些已通过路径全部通过。")
+
     if not guidance:
         return "修订上下文要求：\n" + f"- 当前没有可执行修订项；{fallback}"
 
-    guidance.append("语义上只修 active 诊断命中的问题，保持已经正确的接口、字段和已通过路径不变。")
+    guidance.append("语义上只修 active 诊断命中的问题，未命中行为视为冻结合同；无法在不改接口/合同的情况下修复时，在 notes 中返回结构性诊断，不要硬改既有接口。")
     return "修订上下文要求：\n" + "\n".join(f"- {item}" for item in guidance)
 
 
@@ -631,6 +675,8 @@ def _diagnostics_for_role(revision_context: dict[str, Any], role: str) -> list[d
     if not isinstance(role_diagnostics, dict):
         return []
     items = role_diagnostics.get(role, [])
+    if not items and role in {"ValidatorGenerator", "CheckerGenerator", "TestGenerator"}:
+        items = role_diagnostics.get("ToolGenerator", [])
     return [item for item in items if isinstance(item, dict)]
 
 
@@ -743,8 +789,13 @@ def _format_current_artifact(value: Any) -> str:
             continue
         item = value.get(key)
         if isinstance(item, dict):
+            code_length = item.get("code_length")
             code = str(item.get("code", ""))
-            code_text = f"，代码长度={len(code)}" if code else ""
+            if code_length is None:
+                code_length = len(code)
+            code_text = f"，代码长度={code_length}" if code_length else ""
+            if item.get("code_truncated"):
+                code_text += "，已截断"
             parts.append(f"{key}({item.get('name') or item.get('problem_id') or '已存在'}{code_text})")
         elif isinstance(item, list):
             parts.append(f"{key}(数量={len(item)})")
@@ -761,6 +812,29 @@ def _format_frozen_contract(value: Any) -> str:
         if key in value:
             text = json.dumps(value.get(key), ensure_ascii=False, sort_keys=True)
             parts.append(f"{key}={text[:180]}")
+    return "；".join(parts)
+
+
+def _format_known_good_case_summaries(value: Any) -> str:
+    if not isinstance(value, list):
+        return ""
+    parts: list[str] = []
+    for item in value[:5]:
+        if not isinstance(item, dict):
+            continue
+        source = str(item.get("source", "")).strip()
+        purpose = str(item.get("purpose", "")).strip()
+        flags = []
+        if item.get("is_sample"):
+            flags.append("sample")
+        if item.get("is_large"):
+            flags.append("large")
+        if item.get("expect_oracle"):
+            flags.append("oracle")
+        label = source or purpose
+        if label:
+            flag_text = f" [{' / '.join(flags)}]" if flags else ""
+            parts.append(f"{label}{flag_text}")
     return "；".join(parts)
 
 

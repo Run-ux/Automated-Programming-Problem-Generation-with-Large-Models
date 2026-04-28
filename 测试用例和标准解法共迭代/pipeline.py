@@ -8,7 +8,14 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from config import DEFAULT_KILL_RATE_THRESHOLD, DEFAULT_LARGE_RUN_TIMEOUT_S, DEFAULT_OUTPUT_DIR, DEFAULT_RUN_TIMEOUT_S
+from config import (
+    DEFAULT_KILL_RATE_THRESHOLD,
+    DEFAULT_LARGE_RUN_TIMEOUT_S,
+    DEFAULT_MAX_REVISION_CONTEXT_BYTES,
+    DEFAULT_OUTPUT_DIR,
+    DEFAULT_RUN_TIMEOUT_S,
+    DEFAULT_STALLING_BASELINE_ROUNDS,
+)
 from curation import WrongSolutionCurator
 from execution_spec import normalize_tests
 from generators import (
@@ -54,6 +61,8 @@ class PackageValidationPipeline:
         schema_wrong_solution_generator: SchemaAwareWrongSolutionGenerator | None = None,
         revision_advisor: Any | None = None,
         progress_writer: Any | None = None,
+        max_revision_context_bytes: int = DEFAULT_MAX_REVISION_CONTEXT_BYTES,
+        stalling_baseline_rounds: int = DEFAULT_STALLING_BASELINE_ROUNDS,
     ):
         self.client = client
         self.output_dir = output_dir
@@ -70,6 +79,17 @@ class PackageValidationPipeline:
         self.schema_wrong_solution_generator = schema_wrong_solution_generator or SchemaAwareWrongSolutionGenerator(client)
         self.revision_advisor = revision_advisor if revision_advisor is not None else (RevisionAdvisor(client) if client is not None else None)
         self.progress_writer = progress_writer or (lambda message: print(message, flush=True))
+        self.max_revision_context_bytes = max_revision_context_bytes
+        self.stalling_baseline_rounds = max(1, stalling_baseline_rounds)
+        self._regression_cases: list[TestCase] = []
+        self._known_good_cases: list[TestCase] = []
+        self._component_gate_results: dict[str, Any] = {}
+        self._component_gate_issues: list[FailureIssue] = []
+        self._candidate_package_gate_results: dict[str, Any] = {}
+        self._candidate_gate_history: list[dict[str, Any]] = []
+        self._previous_report: ValidationReport | None = None
+        self._candidate_gate_rejection_count = 0
+        self._regression_prevention_count = 0
 
     def run(
         self,
@@ -95,22 +115,62 @@ class PackageValidationPipeline:
         stop_reason = "reached_requested_rounds"
         final_round_index = 0
         current_package: dict[str, Any] | None = None
-        no_new_high_value_failures = 0
-        previous_high_value_count = -1
+        baseline_repair_mode = False
+        baseline_failure_streak = 0
+        previous_concrete_baseline_fingerprints: set[str] = set()
+        previous_baseline_signature = ""
+        prompt_payload_bytes_by_round: list[dict[str, Any]] = []
+        semantic_gate_status = "not_evaluated"
+        deliverable_dir = ""
+        last_attempt_dir = ""
+        self._regression_cases = []
+        self._known_good_cases = []
+        self._component_gate_results = {}
+        self._component_gate_issues = []
+        self._candidate_package_gate_results = {}
+        self._candidate_gate_history = []
+        self._previous_report = None
+        self._candidate_gate_rejection_count = 0
+        self._regression_prevention_count = 0
+        previous_report: ValidationReport | None = None
 
         for round_index in range(1, rounds + 1):
             self._emit(f"[轮次] 第 {round_index}/{rounds} 轮：准备修订上下文。")
             round_dir = run_dir / f"round{round_index}"
             round_dir.mkdir(parents=True, exist_ok=True)
+            self._component_gate_results = {}
+            self._component_gate_issues = []
+            self._candidate_package_gate_results = {}
+            self._previous_report = previous_report
             generation_revision_context = _build_generation_revision_context(
                 active_revision_context=active_revision_context,
                 revision_audit_history=revision_audit_history,
                 current_package=current_package,
                 round_index=round_index,
+                baseline_repair_mode=baseline_repair_mode,
+                regression_cases=self._regression_cases,
+                known_good_cases=self._known_good_cases,
             )
+            prompt_payload_size = _json_size(generation_revision_context)
+            prompt_payload_bytes_by_round.append(
+                {"round_index": round_index, "revision_context_bytes": prompt_payload_size}
+            )
+            if prompt_payload_size > self.max_revision_context_bytes:
+                self._component_gate_issues.append(
+                    FailureIssue(
+                        category="revision_payload_too_large",
+                        severity="high",
+                        title="修订上下文过大",
+                        detail=(
+                            f"当前 revision_context 约 {prompt_payload_size} 字节，"
+                            f"超过阈值 {self.max_revision_context_bytes}。"
+                        ),
+                        fix_hint="压缩 active 诊断、历史审计和当前产物摘要后再进入下一轮生成。",
+                    )
+                )
             if current_package is None:
                 self._emit(f"[生成] 第 {round_index}/{rounds} 轮：全量生成题包组件。")
-                package = self._generate_round_package(context, generation_revision_context)
+                package = self._generate_round_package(context, generation_revision_context, include_wrong_solutions=False)
             else:
                 self._emit(f"[生成] 第 {round_index}/{rounds} 轮：基于上一轮结果增量修订题包。")
                 package = self._generate_incremental_round_package(context, current_package, generation_revision_context)
@@ -119,25 +179,61 @@ class PackageValidationPipeline:
 
             self._emit(f"[验证] 第 {round_index}/{rounds} 轮：执行验证矩阵。")
             report = self._validate_package(package, previous_active_context=active_revision_context)
+            if report.base_consistency.get("passed") and not package.get("wrong_solutions"):
+                self._emit(f"[生成] 第 {round_index}/{rounds} 轮：基础自洽已通过，生成错误解池。")
+                package = self._generate_wrong_solution_components(context, package, generation_revision_context)
+                self._write_round_package(round_dir, package)
+                self._emit(f"[验证] 第 {round_index}/{rounds} 轮：错误解池生成后重新执行验证矩阵。")
+                report = self._validate_package(package, previous_active_context=active_revision_context)
             self._emit(f"[写入] 第 {round_index}/{rounds} 轮：写入执行报告。")
             self._write_report(round_dir, report)
+            self._known_good_cases = _merge_known_good_cases(
+                self._known_good_cases,
+                _extract_known_good_cases(report),
+            )
+            self._regression_cases = _merge_regression_cases(
+                self._regression_cases,
+                _extract_regression_cases(report),
+            )
+            (run_dir / "known_good_cases.json").write_text(
+                json.dumps([to_dict(item) for item in self._known_good_cases], ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            (run_dir / "regression_cases.json").write_text(
+                json.dumps([to_dict(item) for item in self._regression_cases], ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            (run_dir / "candidate_gate_history.json").write_text(
+                json.dumps(self._candidate_gate_history, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
             revision_audit_history.append({"round_index": round_index, "revision_context": report.revision_context})
             active_revision_context, context_stats = _update_active_revision_context(
                 active_revision_context,
                 report.revision_context,
             )
+            baseline_passed = bool(report.base_consistency.get("passed", False))
+            baseline_failed_categories = _dedupe([str(item) for item in report.base_consistency.get("failed_categories", [])])
+            semantic_gate_status = report.overall.get("semantic_gate_status", semantic_gate_status)
+            if baseline_passed:
+                baseline_failure_streak = 0
+                previous_concrete_baseline_fingerprints = set()
+                previous_baseline_signature = ""
+            else:
+                concrete_fingerprints = _concrete_baseline_fingerprints(report)
+                baseline_signature = _baseline_stall_signature(report)
+                if concrete_fingerprints == previous_concrete_baseline_fingerprints or baseline_signature == previous_baseline_signature:
+                    baseline_failure_streak += 1
+                else:
+                    baseline_failure_streak = 1
+                previous_concrete_baseline_fingerprints = concrete_fingerprints
+                previous_baseline_signature = baseline_signature
+            baseline_repair_mode = not baseline_passed
             self._emit(
                 f"[回流] 第 {round_index}/{rounds} 轮：active={context_stats['active_issue_count']}，"
                 f"新增={context_stats['new_issue_count']}，解决={context_stats['resolved_issue_count']}，"
                 f"延续={context_stats['carried_issue_count']}。"
             )
-
-            high_value_count = len([item for item in report.issues if item.get("severity") in {"blocker", "high"}])
-            if high_value_count == previous_high_value_count:
-                no_new_high_value_failures += 1
-            else:
-                no_new_high_value_failures = 0
-            previous_high_value_count = high_value_count
 
             final_round_index = round_index
             current_package = package
@@ -147,6 +243,14 @@ class PackageValidationPipeline:
                 "status": report.overall["status"],
                 "issue_count": report.overall["issue_count"],
                 "kill_rate": report.wrong_solution_stats.get("kill_rate", 0.0),
+                "baseline_passed": baseline_passed,
+                "baseline_failed_categories": baseline_failed_categories,
+                "baseline_failure_streak": baseline_failure_streak,
+                "semantic_gate_status": report.overall.get("semantic_gate_status", "not_evaluated"),
+                "regression_case_count": len(self._regression_cases),
+                "known_good_case_count": len(self._known_good_cases),
+                "candidate_gate_rejection_count": self._candidate_gate_rejection_count,
+                "regression_prevention_count": self._regression_prevention_count,
                 **context_stats,
             }
             round_records.append(round_record)
@@ -160,16 +264,38 @@ class PackageValidationPipeline:
                 stop_reason = "all_checks_passed"
                 self._emit(f"[停止] 第 {round_index}/{rounds} 轮：全部检查通过。")
                 break
-            if no_new_high_value_failures >= 1 and round_index >= 2:
+            if report.semantic_gate_issues:
                 final_status = "not_deliverable"
-                stop_reason = "no_new_high_value_failure_samples"
-                self._emit(f"[停止] 第 {round_index}/{rounds} 轮：高价值失败样本未继续增加。")
+                stop_reason = "semantic_gate_failed"
+                self._emit(f"[停止] 第 {round_index}/{rounds} 轮：语义门禁未通过，停止盲目迭代。")
                 break
+            if baseline_failure_streak >= self.stalling_baseline_rounds and report.wrong_solution_stats.get("kill_rate") is None:
+                final_status = "not_deliverable"
+                stop_reason = "stalled_on_baseline"
+                self._emit(f"[停止] 第 {round_index}/{rounds} 轮：基础自洽问题连续两轮无实质变化。")
+                break
+            previous_report = report
 
         if current_package is not None:
-            final_dir = run_dir / "final"
-            self._emit(f"[写入] 写入最终题包产物：{final_dir}。")
-            self._write_round_package(final_dir, current_package)
+            if final_status == "pass":
+                final_dir = run_dir / "final"
+                deliverable_dir = str(final_dir)
+                self._emit(f"[写入] 写入最终题包产物：{final_dir}。")
+                self._write_round_package(final_dir, current_package)
+            else:
+                last_attempt = run_dir / "last_attempt"
+                last_attempt_dir = str(last_attempt)
+                self._emit(f"[写入] 写入未交付最后尝试产物：{last_attempt}。")
+                self._write_round_package(last_attempt, current_package)
+                (run_dir / "NOT_DELIVERABLE.md").write_text(
+                    _render_not_deliverable_note(
+                        final_status=final_status,
+                        stop_reason=stop_reason,
+                        final_round_index=final_round_index,
+                        regression_case_count=len(self._regression_cases),
+                    ),
+                    encoding="utf-8",
+                )
         self._emit("[写入] 写入修订审计历史。")
         (run_dir / "revision_audit_history.json").write_text(
             json.dumps(revision_audit_history, ensure_ascii=False, indent=2),
@@ -188,6 +314,14 @@ class PackageValidationPipeline:
             new_issue_count=context_stats["new_issue_count"],
             resolved_issue_count=context_stats["resolved_issue_count"],
             carried_issue_count=context_stats["carried_issue_count"],
+            deliverable_dir=deliverable_dir,
+            last_attempt_dir=last_attempt_dir,
+            semantic_gate_status=semantic_gate_status,
+            prompt_payload_bytes_by_round=prompt_payload_bytes_by_round,
+            regression_case_count=len(self._regression_cases),
+            known_good_case_count=len(self._known_good_cases),
+            candidate_gate_rejection_count=self._candidate_gate_rejection_count,
+            regression_prevention_count=self._regression_prevention_count,
         )
         summary_path = run_dir / "iteration_summary.json"
         summary_path.write_text(json.dumps(to_dict(summary), ensure_ascii=False, indent=2), encoding="utf-8")
@@ -212,7 +346,9 @@ class PackageValidationPipeline:
                 {
                     "StandardSolutionGenerator",
                     "OracleGenerator",
-                    "ToolGenerator",
+                    "ValidatorGenerator",
+                    "CheckerGenerator",
+                    "TestGenerator",
                     "SchemaMistakeAnalyzer",
                     "SchemaAwareWrongSolutionGenerator",
                 }
@@ -226,18 +362,20 @@ class PackageValidationPipeline:
         spec = package["execution_spec"]
         if "StandardSolutionGenerator" in roles:
             self._emit("[生成] 增量修订：重生成标准解。")
-            package["standard_solution"] = self.standard_generator.generate(
+            candidate = self.standard_generator.generate(
                 context,
                 spec,
                 _revision_context_for_roles(revision_context, {"StandardSolutionGenerator"}, current_package),
             )
+            self._promote_component_candidate(package, current_package, "standard_solution", candidate, revision_context)
         if "OracleGenerator" in roles:
             self._emit("[生成] 增量修订：重生成 oracle。")
-            package["oracle_solution"] = self.oracle_generator.generate(
+            candidate = self.oracle_generator.generate(
                 context,
                 spec,
                 _revision_context_for_roles(revision_context, {"OracleGenerator"}, current_package),
             )
+            self._promote_component_candidate(package, current_package, "oracle_solution", candidate, revision_context)
         if "ToolGenerator" in roles:
             self._emit("[生成] 增量修订：重生成 validator、checker 和 test_generator。")
             tools = self.tool_generator.generate(
@@ -245,19 +383,48 @@ class PackageValidationPipeline:
                 spec,
                 _revision_context_for_roles(revision_context, {"ToolGenerator"}, current_package),
             )
-            package["validator"] = tools["validator"]
-            package["checker"] = tools["checker"]
-            package["test_generator"] = tools["test_generator"]
+            self._promote_component_candidate(package, current_package, "validator", tools["validator"], revision_context)
+            self._promote_component_candidate(package, current_package, "checker", tools["checker"], revision_context)
+            self._promote_component_candidate(package, current_package, "test_generator", tools["test_generator"], revision_context)
+        else:
+            if "ValidatorGenerator" in roles:
+                self._emit("[生成] 增量修订：只重生成 validator。")
+                candidate = self._generate_validator_component(
+                    context,
+                    spec,
+                    _revision_context_for_roles(revision_context, {"ValidatorGenerator"}, current_package),
+                )
+                self._promote_component_candidate(package, current_package, "validator", candidate, revision_context)
+            if "CheckerGenerator" in roles:
+                self._emit("[生成] 增量修订：只重生成 checker。")
+                candidate = self._generate_checker_component(
+                    context,
+                    spec,
+                    package["validator"],
+                    _revision_context_for_roles(revision_context, {"CheckerGenerator"}, current_package),
+                )
+                self._promote_component_candidate(package, current_package, "checker", candidate, revision_context)
+            if "TestGenerator" in roles:
+                self._emit("[生成] 增量修订：只重生成 test_generator。")
+                candidate = self._generate_test_generator_component(
+                    context,
+                    spec,
+                    package["validator"],
+                    package["checker"],
+                    _revision_context_for_roles(revision_context, {"TestGenerator"}, current_package),
+                )
+                self._promote_component_candidate(package, current_package, "test_generator", candidate, revision_context)
 
         weak_wrong, schema_wrong = _split_wrong_solutions(package.get("wrong_solutions", []))
-        if "WeakPlayerGenerator" in roles:
+        skip_wrong_revision = bool(revision_context.get("baseline_repair_mode", False))
+        if "WeakPlayerGenerator" in roles and not skip_wrong_revision:
             self._emit("[生成] 增量修订：重生成弱选手错误解。")
             weak_wrong = self.weak_player_generator.generate(
                 _statement_only_context(context),
                 _revision_context_for_roles(revision_context, {"WeakPlayerGenerator"}, current_package),
             )
             self._emit(f"[生成] 增量修订：弱选手错误解 {len(weak_wrong)} 个。")
-        if "SchemaMistakeAnalyzer" in roles:
+        if "SchemaMistakeAnalyzer" in roles and not skip_wrong_revision:
             self._emit("[生成] 增量修订：重新分析 schema 误解点。")
             package["schema_mistake_points"] = self.schema_mistake_analyzer.generate(
                 context,
@@ -266,7 +433,7 @@ class PackageValidationPipeline:
             )
             self._emit(f"[生成] 增量修订：schema 误解点 {len(package['schema_mistake_points'])} 个。")
             roles.add("SchemaAwareWrongSolutionGenerator")
-        if "SchemaAwareWrongSolutionGenerator" in roles:
+        if "SchemaAwareWrongSolutionGenerator" in roles and not skip_wrong_revision:
             self._emit("[生成] 增量修订：重生成 schema-aware 错误解。")
             schema_wrong = self.schema_wrong_solution_generator.generate(
                 context,
@@ -275,11 +442,19 @@ class PackageValidationPipeline:
                 _revision_context_for_roles(revision_context, {"SchemaAwareWrongSolutionGenerator"}, current_package),
             )
             self._emit(f"[生成] 增量修订：schema-aware 错误解 {len(schema_wrong)} 个。")
+        if skip_wrong_revision:
+            self._emit("[生成] 增量修订：当前处于基础自洽修复模式，跳过错误解池改动。")
         package["wrong_solutions"] = [*weak_wrong, *schema_wrong]
         self._emit(f"[生成] 增量修订完成：错误解候选共 {len(package['wrong_solutions'])} 个。")
         return package
 
-    def _generate_round_package(self, context: dict[str, Any], revision_context: dict[str, Any]) -> dict[str, Any]:
+    def _generate_round_package(
+        self,
+        context: dict[str, Any],
+        revision_context: dict[str, Any],
+        *,
+        include_wrong_solutions: bool = True,
+    ) -> dict[str, Any]:
         self._emit("[生成] 抽取 execution_spec。")
         spec = self.spec_extractor.generate(context, revision_context)
         self._emit("[生成] 生成标准解。")
@@ -288,6 +463,31 @@ class PackageValidationPipeline:
         oracle = self.oracle_generator.generate(context, spec, revision_context)
         self._emit("[生成] 生成 validator、checker 和 test_generator。")
         tools = self.tool_generator.generate(context, spec, revision_context)
+        package = {
+            "context": context,
+            "execution_spec": spec,
+            "standard_solution": standard,
+            "oracle_solution": oracle,
+            "validator": tools["validator"],
+            "checker": tools["checker"],
+            "test_generator": tools["test_generator"],
+            "schema_mistake_points": [],
+            "wrong_solutions": [],
+        }
+        if include_wrong_solutions:
+            package = self._generate_wrong_solution_components(context, package, revision_context)
+        else:
+            self._emit("[生成] 基础组件生成完成；错误解池将在基础自洽通过后生成。")
+        return package
+
+    def _generate_wrong_solution_components(
+        self,
+        context: dict[str, Any],
+        package: dict[str, Any],
+        revision_context: dict[str, Any],
+    ) -> dict[str, Any]:
+        package = copy.deepcopy(package)
+        spec = package["execution_spec"]
         self._emit("[生成] 生成弱选手错误解。")
         weak_wrong = self.weak_player_generator.generate(_statement_only_context(context), revision_context)
         self._emit(f"[生成] 弱选手错误解 {len(weak_wrong)} 个。")
@@ -297,24 +497,275 @@ class PackageValidationPipeline:
         self._emit("[生成] 生成 schema-aware 错误解。")
         schema_wrong = self.schema_wrong_solution_generator.generate(context, spec, mistake_points, revision_context)
         self._emit(f"[生成] schema-aware 错误解 {len(schema_wrong)} 个。")
-        wrong_solutions = [*weak_wrong, *schema_wrong]
-        self._emit(f"[生成] 全量题包生成完成：错误解候选共 {len(wrong_solutions)} 个。")
-        return {
-            "context": context,
-            "execution_spec": spec,
-            "standard_solution": standard,
-            "oracle_solution": oracle,
-            "validator": tools["validator"],
-            "checker": tools["checker"],
-            "test_generator": tools["test_generator"],
-            "schema_mistake_points": mistake_points,
-            "wrong_solutions": wrong_solutions,
+        package["schema_mistake_points"] = mistake_points
+        package["wrong_solutions"] = [*weak_wrong, *schema_wrong]
+        self._emit(f"[生成] 错误解池生成完成：候选共 {len(package['wrong_solutions'])} 个。")
+        return package
+
+    def _generate_validator_component(
+        self,
+        context: dict[str, Any],
+        spec: ExecutionSpec,
+        revision_context: dict[str, Any],
+    ) -> GeneratedCodeArtifact:
+        generator = getattr(self.tool_generator, "generate_validator", None)
+        if callable(generator):
+            return generator(context, spec, revision_context)
+        return self.tool_generator.generate(context, spec, revision_context)["validator"]
+
+    def _generate_checker_component(
+        self,
+        context: dict[str, Any],
+        spec: ExecutionSpec,
+        validator: GeneratedCodeArtifact,
+        revision_context: dict[str, Any],
+    ) -> GeneratedCodeArtifact:
+        generator = getattr(self.tool_generator, "generate_checker", None)
+        if callable(generator):
+            return generator(context, spec, validator, revision_context)
+        return self.tool_generator.generate(context, spec, revision_context)["checker"]
+
+    def _generate_test_generator_component(
+        self,
+        context: dict[str, Any],
+        spec: ExecutionSpec,
+        validator: GeneratedCodeArtifact,
+        checker: GeneratedCodeArtifact,
+        revision_context: dict[str, Any],
+    ) -> GeneratedCodeArtifact:
+        generator = getattr(self.tool_generator, "generate_test_generator", None)
+        if callable(generator):
+            return generator(context, spec, validator, checker, revision_context)
+        return self.tool_generator.generate(context, spec, revision_context)["test_generator"]
+
+    def _promote_component_candidate(
+        self,
+        package: dict[str, Any],
+        current_package: dict[str, Any],
+        component_key: str,
+        candidate: GeneratedCodeArtifact,
+        revision_context: dict[str, Any],
+    ) -> None:
+        passed, result, issue = self._gate_component_candidate(package, component_key, candidate)
+        self._component_gate_results[component_key] = result
+        if not passed:
+            self._candidate_gate_rejection_count += 1
+            package[component_key] = current_package[component_key]
+            if issue is not None:
+                self._component_gate_issues.append(issue)
+            return
+
+        candidate_package = copy.deepcopy(package)
+        candidate_package[component_key] = candidate
+        package_gate_result, package_gate_issue = self._gate_candidate_package(
+            candidate_package,
+            component_key=component_key,
+            revision_context=revision_context,
+        )
+        self._candidate_package_gate_results[component_key] = package_gate_result
+        self._candidate_gate_history.append(copy.deepcopy(package_gate_result))
+        if package_gate_result.get("passed"):
+            package[component_key] = candidate
+            return
+
+        self._candidate_gate_rejection_count += 1
+        if package_gate_result.get("regression_detected"):
+            self._regression_prevention_count += 1
+        package[component_key] = current_package[component_key]
+        if package_gate_issue is not None:
+            self._component_gate_issues.append(package_gate_issue)
+
+    def _gate_component_candidate(
+        self,
+        package: dict[str, Any],
+        component_key: str,
+        candidate: GeneratedCodeArtifact,
+    ) -> tuple[bool, dict[str, Any], FailureIssue | None]:
+        candidate_package = copy.deepcopy(package)
+        candidate_package[component_key] = candidate
+        checks = _component_gate_inputs(candidate_package, self._regression_cases)
+        result: dict[str, Any] = {
+            "component": component_key,
+            "passed": True,
+            "checks": [],
         }
+
+        def fail(detail: str, execution: Any | None = None) -> tuple[bool, dict[str, Any], FailureIssue]:
+            result["passed"] = False
+            if execution is not None:
+                result["checks"].append(to_dict(execution))
+            issue = FailureIssue(
+                category="component_gate_failed",
+                severity="blocker",
+                title=f"{component_key} 候选组件未通过晋级门禁",
+                detail=detail,
+                evidence={"component": component_key, "gate_result": result},
+                fix_hint="保留上一轮组件，并将该候选失败原因回流给对应生成器。",
+            )
+            return False, result, issue
+
+        if component_key in {"standard_solution", "oracle_solution"}:
+            artifact_name = candidate.name
+            for test in checks:
+                if component_key == "oracle_solution" and (test.is_large or not test.expect_oracle):
+                    continue
+                execution = self.runner.run_solve(
+                    artifact_name=artifact_name,
+                    code=candidate.code,
+                    input_data=test.input,
+                    test_source=test.source,
+                    timeout_s=self.large_run_timeout_s if test.is_large else self.run_timeout_s,
+                )
+                result["checks"].append(to_dict(execution))
+                if execution.status != "ok":
+                    return fail(f"{component_key} 在门禁用例 {test.source} 上执行失败：{execution.error_reason or execution.status}")
+            return True, result, None
+
+        if component_key == "validator":
+            for test in checks:
+                execution = self.runner.run_validate(
+                    artifact_name=candidate.name,
+                    code=candidate.code,
+                    input_data=test.input,
+                    test_source=test.source,
+                    timeout_s=self.run_timeout_s,
+                )
+                result["checks"].append(to_dict(execution))
+                if execution.status != "ok" or execution.result is not True:
+                    return fail(f"validator 候选拒绝门禁用例 {test.source}。")
+            return True, result, None
+
+        if component_key == "checker":
+            for test in checks:
+                expected_output = str((test.metadata or {}).get("sample_output", "")).strip()
+                if not expected_output:
+                    continue
+                execution = self.runner.run_check(
+                    artifact_name=candidate.name,
+                    code=candidate.code,
+                    input_data=test.input,
+                    output_data=expected_output,
+                    expected_data=expected_output,
+                    test_source=test.source,
+                    timeout_s=self.run_timeout_s,
+                )
+                result["checks"].append(to_dict(execution))
+                if execution.status != "ok" or execution.result is not True:
+                    return fail(f"checker 候选拒绝样例门禁输出 {test.source}。")
+            if not result["checks"]:
+                syntax_check = self.runner.run_check(
+                    artifact_name=candidate.name,
+                    code=candidate.code,
+                    input_data="",
+                    output_data="",
+                    expected_data=None,
+                    test_source="component_gate_syntax",
+                    timeout_s=self.run_timeout_s,
+                )
+                result["checks"].append(to_dict(syntax_check))
+                if syntax_check.status == "compile_error" or syntax_check.status == "invalid_interface":
+                    return fail(f"checker 候选接口或语法错误：{syntax_check.error_reason or syntax_check.status}")
+            return True, result, None
+
+        if component_key == "test_generator":
+            execution = self.runner.run_generate_tests(
+                artifact_name=candidate.name,
+                code=candidate.code,
+                timeout_s=self.run_timeout_s,
+            )
+            result["checks"].append(to_dict(execution))
+            if execution.status != "ok":
+                return fail(f"test_generator 候选执行失败：{execution.error_reason or execution.status}")
+            try:
+                generated_tests = normalize_tests(execution.result, candidate_package["execution_spec"])
+            except ValueError as exc:
+                return fail(f"test_generator 候选返回结构非法：{exc}")
+            if not generated_tests:
+                return fail("test_generator 候选未生成任何可执行测试。")
+            validator = candidate_package["validator"]
+            for test in generated_tests[:3]:
+                validation = self.runner.run_validate(
+                    artifact_name=validator.name,
+                    code=validator.code,
+                    input_data=test.input,
+                    test_source=test.source,
+                    timeout_s=self.run_timeout_s,
+                )
+                result["checks"].append(to_dict(validation))
+                if validation.status != "ok" or validation.result is not True:
+                    return fail(f"test_generator 候选生成了 validator 拒绝的用例 {test.source}。")
+            return True, result, None
+
+        return True, result, None
+
+    def _gate_candidate_package(
+        self,
+        candidate_package: dict[str, Any],
+        *,
+        component_key: str,
+        revision_context: dict[str, Any],
+    ) -> tuple[dict[str, Any], FailureIssue | None]:
+        previous_report = self._previous_report
+        if previous_report is None:
+            result = {
+                "component": component_key,
+                "passed": True,
+                "status": "skipped_no_previous_report",
+                "rejection_reasons": [],
+                "regression_detected": False,
+            }
+            return result, None
+
+        active_cases = _extract_active_failure_cases(previous_report)
+        candidate_report = self._validate_package(
+            candidate_package,
+            previous_active_context=previous_report.revision_context,
+            regression_cases=self._regression_cases,
+            known_good_cases=self._known_good_cases,
+            active_cases=active_cases,
+            component_gate_issues=[],
+            component_gate_results={},
+            candidate_package_gate_results={},
+            build_revision_advice=False,
+        )
+        score = _score_candidate_package(
+            previous_report=previous_report,
+            candidate_report=candidate_report,
+        )
+        result = {
+            "component": component_key,
+            "passed": score["passed"],
+            "status": "passed" if score["passed"] else "rejected",
+            "rejection_reasons": score["rejection_reasons"],
+            "regression_detected": score["regression_detected"],
+            "fixed_issue_fingerprints": score["fixed_issue_fingerprints"],
+            "introduced_blocker_high_categories": score["introduced_blocker_high_categories"],
+            "known_good_failed_sources": score["known_good_failed_sources"],
+            "previous_overall": copy.deepcopy(previous_report.overall),
+            "candidate_overall": copy.deepcopy(candidate_report.overall),
+            "previous_wrong_solution_stats": copy.deepcopy(previous_report.wrong_solution_stats),
+            "candidate_wrong_solution_stats": copy.deepcopy(candidate_report.wrong_solution_stats),
+            "candidate_known_good_results": copy.deepcopy(candidate_report.known_good_results),
+            "candidate_semantic_gate_issue_count": len(candidate_report.semantic_gate_issues),
+            "previous_semantic_gate_issue_count": len(previous_report.semantic_gate_issues),
+            "active_case_count": len(active_cases),
+        }
+        if score["passed"]:
+            return result, None
+        return result, _build_candidate_gate_issue(component_key, result)
 
     def _validate_package(
         self,
         package: dict[str, Any],
         previous_active_context: dict[str, Any] | None = None,
+        *,
+        regression_cases: list[TestCase] | None = None,
+        known_good_cases: list[TestCase] | None = None,
+        active_cases: list[TestCase] | None = None,
+        component_gate_issues: list[FailureIssue] | None = None,
+        component_gate_results: dict[str, Any] | None = None,
+        candidate_package_gate_results: dict[str, Any] | None = None,
+        build_revision_advice: bool = True,
     ) -> ValidationReport:
         spec: ExecutionSpec = package["execution_spec"]
         standard: GeneratedCodeArtifact = package["standard_solution"]
@@ -324,9 +775,38 @@ class PackageValidationPipeline:
         test_generator: GeneratedCodeArtifact = package["test_generator"]
         wrong_solutions: list[WrongSolution] = package["wrong_solutions"]
 
-        issues: list[FailureIssue] = []
+        effective_regression_cases = self._regression_cases if regression_cases is None else regression_cases
+        effective_known_good_cases = self._known_good_cases if known_good_cases is None else known_good_cases
+        effective_active_cases = active_cases or []
+        effective_component_gate_issues = self._component_gate_issues if component_gate_issues is None else component_gate_issues
+        effective_component_gate_results = (
+            self._component_gate_results if component_gate_results is None else component_gate_results
+        )
+        effective_candidate_package_gate_results = (
+            self._candidate_package_gate_results
+            if candidate_package_gate_results is None
+            else candidate_package_gate_results
+        )
+
+        issues: list[FailureIssue] = list(effective_component_gate_issues)
         matrix: list[dict[str, Any]] = []
         expected_outputs: dict[str, str] = {}
+        regression_results: dict[str, Any] = {
+            "configured_count": len(effective_regression_cases),
+            "executed_count": 0,
+            "sources": [item.source for item in effective_regression_cases[:10]],
+        }
+        known_good_results: dict[str, Any] = {
+            "configured_count": len(effective_known_good_cases),
+            "executed_count": 0,
+            "passed_count": 0,
+            "failed_count": 0,
+            "sources": [item.source for item in effective_known_good_cases[:10]],
+            "failed_sources": [],
+            "passed_cases": [],
+        }
+        semantic_gate_issues = _evaluate_semantic_gate(spec, checker)
+        issues.extend(semantic_gate_issues)
         base_checks: dict[str, Any] = {
             "passed": True,
             "failed_categories": [],
@@ -368,6 +848,13 @@ class PackageValidationPipeline:
                     )
                 )
                 tests = []
+        if effective_regression_cases:
+            tests = _prepend_priority_cases(_mark_case_group(effective_regression_cases, "regression"), tests)
+            regression_results["executed_count"] = len(effective_regression_cases)
+        if effective_active_cases:
+            tests = _prepend_priority_cases(_mark_case_group(effective_active_cases, "active"), tests)
+        if effective_known_good_cases:
+            tests = _prepend_priority_cases(_mark_case_group(effective_known_good_cases, "known_good"), tests)
         self._emit(f"[验证] 可执行测试用例数量：{len(tests)}。")
         if not tests:
             issues.append(
@@ -380,7 +867,30 @@ class PackageValidationPipeline:
                 )
             )
 
+        known_good_failure_keys: set[str] = set()
+
+        def append_issue_for_test(issue: FailureIssue, test: TestCase, *, failed: bool = True) -> bool:
+            issues.append(issue)
+            if failed and _is_known_good_case(test):
+                key = _case_identity(test)
+                if key not in known_good_failure_keys:
+                    known_good_failure_keys.add(key)
+                    issues.append(_build_known_good_failure_issue(test, issue))
+            return True
+
+        def finalize_case(test: TestCase, *, failed: bool) -> None:
+            if _is_known_good_case(test):
+                known_good_results["executed_count"] += 1
+                if failed:
+                    known_good_results["failed_count"] += 1
+                    known_good_results["failed_sources"].append(test.source)
+                else:
+                    known_good_results["passed_count"] += 1
+            if not failed and _should_record_known_good_case(test):
+                known_good_results["passed_cases"].append(to_dict(_as_known_good_case(test)))
+
         for test_index, test in enumerate(tests, start=1):
+            test_failed = False
             test_label = _progress_test_label(test)
             self._emit(f"[验证] 测试 {test_index}/{len(tests)}（{test_label}）：运行 validator。")
             validation = self.runner.run_validate(
@@ -392,7 +902,7 @@ class PackageValidationPipeline:
             )
             matrix.append(to_dict(validation))
             if validation.status != "ok" or validation.result is not True:
-                issues.append(
+                test_failed = append_issue_for_test(
                     FailureIssue(
                         category="validator_rejects_generated_case",
                         severity="high",
@@ -401,8 +911,10 @@ class PackageValidationPipeline:
                         evidence_refs=[test.source],
                         evidence=_build_failure_evidence(test=test, validator_result=validation),
                         fix_hint="回流 ToolGenerator 或测试生成器，修正输入约束或测试生成逻辑。",
-                    )
+                    ),
+                    test,
                 )
+                finalize_case(test, failed=test_failed)
                 continue
             base_checks["validated_test_count"] += 1
 
@@ -417,7 +929,7 @@ class PackageValidationPipeline:
             )
             matrix.append(to_dict(standard_result))
             if standard_result.status != "ok":
-                issues.append(
+                test_failed = append_issue_for_test(
                     FailureIssue(
                         category="performance_failure" if standard_result.status == "timeout" or test.is_large else "standard_solution_failed",
                         severity="blocker",
@@ -426,13 +938,14 @@ class PackageValidationPipeline:
                         evidence_refs=[test.source],
                         evidence=_build_failure_evidence(test=test, standard_result=standard_result),
                         fix_hint="回流 StandardSolutionGenerator，修正实现或复杂度。",
-                    )
+                    ),
+                    test,
                 )
+                finalize_case(test, failed=test_failed)
                 continue
             expected_outputs[test.source] = str(standard_result.result)
 
             oracle_expected: str | None = None
-            oracle_result = None
             oracle_mismatch = False
             if test.expect_oracle and not test.is_large:
                 self._emit(f"[验证] 测试 {test_index}/{len(tests)}（{test_label}）：运行 oracle。")
@@ -445,7 +958,7 @@ class PackageValidationPipeline:
                 )
                 matrix.append(to_dict(oracle_result))
                 if oracle_result.status != "ok":
-                    issues.append(
+                    test_failed = append_issue_for_test(
                         FailureIssue(
                             category="oracle_failed",
                             severity="high",
@@ -458,7 +971,8 @@ class PackageValidationPipeline:
                                 oracle_result=oracle_result,
                             ),
                             fix_hint="回流 OracleGenerator，修正暴力逻辑或适用范围。",
-                        )
+                        ),
+                        test,
                     )
                 else:
                     oracle_expected = str(oracle_result.result)
@@ -477,7 +991,7 @@ class PackageValidationPipeline:
             )
             matrix.append(to_dict(checker_result))
             if oracle_mismatch:
-                issues.append(
+                test_failed = append_issue_for_test(
                     FailureIssue(
                         category="standard_oracle_mismatch",
                         severity="blocker",
@@ -491,10 +1005,11 @@ class PackageValidationPipeline:
                             checker_result=checker_result,
                         ),
                         fix_hint="回流 StandardSolutionGenerator 与 OracleGenerator，定位反例。",
-                    )
+                    ),
+                    test,
                 )
             if checker_result.status != "ok" or checker_result.result is not True:
-                issues.append(
+                test_failed = append_issue_for_test(
                     FailureIssue(
                         category="checker_rejects_standard_output",
                         severity="blocker",
@@ -508,7 +1023,8 @@ class PackageValidationPipeline:
                             checker_result=checker_result,
                         ),
                         fix_hint="回流 ToolGenerator 和 StandardSolutionGenerator，确认 checker 合法性谓词与标准解输出。",
-                    )
+                    ),
+                    test,
                 )
             else:
                 base_checks["standard_checked_count"] += 1
@@ -526,7 +1042,7 @@ class PackageValidationPipeline:
                 )
                 matrix.append(to_dict(oracle_checker_result))
                 if oracle_checker_result.status != "ok" or oracle_checker_result.result is not True:
-                    issues.append(
+                    test_failed = append_issue_for_test(
                         FailureIssue(
                             category="oracle_output_rejected_by_checker",
                             severity="blocker",
@@ -543,18 +1059,27 @@ class PackageValidationPipeline:
                                 checker_result=oracle_checker_result,
                             ),
                             fix_hint="回流 ToolGenerator 和 OracleGenerator，确认 checker 合法性谓词与 oracle 输出。",
-                        )
+                        ),
+                        test,
                     )
                 else:
                     base_checks["oracle_checked_count"] += 1
 
-        baseline_issues = [item for item in issues if item.severity in {"blocker", "high"}]
+            finalize_case(test, failed=test_failed)
+
+        baseline_issues = [
+            item
+            for item in issues
+            if item.severity in {"blocker", "high"} and item.category not in CANDIDATE_GATE_DIAGNOSTIC_CATEGORIES
+        ]
         if baseline_issues:
             base_checks["passed"] = False
             base_checks["failed_categories"] = [item.category for item in baseline_issues]
             base_checks["wrong_solution_curation_skipped"] = True
             curation = {
                 "independent_solutions": [],
+                "high_value_survivors": [],
+                "unexpected_correct_candidates": [],
                 "matrix": [],
             }
             self._emit(
@@ -590,22 +1115,29 @@ class PackageValidationPipeline:
                 f"[筛选] 错误解筛选完成：杀伤率={wrong_stats['kill_rate']}，"
                 f"阈值={wrong_stats['kill_rate_threshold']}，达标={wrong_stats['passed_threshold']}。"
             )
-            if not wrong_stats["passed_threshold"]:
+            high_value_survivors = list(curation.get("high_value_survivors", []))
+            unexpected_correct_candidates = list(curation.get("unexpected_correct_candidates", []))
+            if high_value_survivors or not wrong_stats["passed_threshold"]:
                 issues.append(
                     FailureIssue(
                         category="wrong_solution_survived",
                         severity="high",
-                        title="错误解杀伤率不足",
-                        detail=f"当前杀伤率 {wrong_stats['kill_rate']}，低于阈值 {wrong_stats['kill_rate_threshold']}。",
+                        title="错误解筛选未满足严格通过条件",
+                        detail=_build_wrong_solution_gate_detail(
+                            wrong_stats=wrong_stats,
+                            high_value_survivors=high_value_survivors,
+                            unexpected_correct_candidates=unexpected_correct_candidates,
+                        ),
                         fix_hint="回流测试生成器，针对幸存错误解补充反例。",
                     )
                 )
 
         status = "pass" if not [item for item in issues if item.severity in {"blocker", "high"}] else "revise"
+        semantic_gate_status = "failed" if semantic_gate_issues else "passed"
         revision_context = _build_revision_context(
             issues,
             curation,
-            revision_advisor=self.revision_advisor,
+            revision_advisor=self.revision_advisor if build_revision_advice else None,
             current_package=package,
             previous_active_context=previous_active_context,
         )
@@ -614,12 +1146,19 @@ class PackageValidationPipeline:
                 "status": status,
                 "issue_count": len(issues),
                 "stop_reason": "" if status == "pass" else "validation_failed",
+                "semantic_gate_status": semantic_gate_status,
             },
             issues=[to_dict(item) for item in issues],
             execution_matrix=matrix,
             wrong_solution_stats=wrong_stats,
             revision_context=revision_context,
             base_consistency=base_checks,
+            component_gate_results=copy.deepcopy(effective_component_gate_results),
+            regression_results=regression_results,
+            semantic_gate_issues=[to_dict(item) for item in semantic_gate_issues],
+            candidate_package_gate_results=copy.deepcopy(effective_candidate_package_gate_results),
+            known_good_results=known_good_results,
+            candidate_delta_summary=_candidate_delta_summary_from_gate_results(effective_candidate_package_gate_results),
         )
         return report
 
@@ -708,26 +1247,166 @@ def _empty_context_stats() -> dict[str, int]:
     }
 
 
+def _json_size(value: Any) -> int:
+    return len(json.dumps(to_dict(value), ensure_ascii=False, sort_keys=True).encode("utf-8"))
+
+
+def _compact_text(text: Any, *, limit: int = 1200) -> str:
+    value = "" if text is None else str(text)
+    if len(value) <= limit:
+        return value
+    edge = max(200, limit // 2)
+    return value[:edge] + "\n...<truncated>...\n" + value[-edge:]
+
+
+def _compact_revision_context(revision_context: Any) -> dict[str, Any]:
+    if not isinstance(revision_context, dict) or not revision_context:
+        return {}
+    diagnostics = [_compact_diagnostic(item) for item in _flatten_diagnostics(revision_context)]
+    compact_by_category: dict[str, list[dict[str, Any]]] = {}
+    for item in diagnostics:
+        category = str(item.get("category", ""))
+        if not category:
+            continue
+        compact_by_category.setdefault(category, [])
+        if len(compact_by_category[category]) < _ROLE_DIAGNOSTIC_LIMIT_PER_CATEGORY:
+            compact_by_category[category].append(item)
+    role_diagnostics: dict[str, list[dict[str, Any]]] = {}
+    for items in compact_by_category.values():
+        for item in items:
+            if _is_non_routing_diagnostic(item):
+                continue
+            for role in item.get("target_roles", []):
+                role_diagnostics.setdefault(str(role), []).append(copy.deepcopy(item))
+    return {
+        "summary": copy.deepcopy(revision_context.get("summary", []))[:6],
+        "diagnostics_by_category": compact_by_category,
+        "role_diagnostics": role_diagnostics,
+        "failed_hard_checks": copy.deepcopy(revision_context.get("failed_hard_checks", []))[:8],
+        "surviving_wrong_solution_details": copy.deepcopy(revision_context.get("surviving_wrong_solution_details", []))[:5],
+        "context_management": copy.deepcopy(revision_context.get("context_management", {})),
+    }
+
+
+def _compact_diagnostic(diagnostic: dict[str, Any]) -> dict[str, Any]:
+    evidence = diagnostic.get("evidence") if isinstance(diagnostic.get("evidence"), dict) else {}
+    compact = {
+        "category": diagnostic.get("category", ""),
+        "severity": diagnostic.get("severity", ""),
+        "title": diagnostic.get("title", ""),
+        "detail": _compact_text(diagnostic.get("detail", ""), limit=600),
+        "fix_hint": _compact_text(diagnostic.get("fix_hint", ""), limit=600),
+        "target_roles": list(diagnostic.get("target_roles", [])),
+        "issue_fingerprint": diagnostic.get("issue_fingerprint", ""),
+        "evidence": _compact_evidence_for_prompt(evidence),
+    }
+    if diagnostic.get("diff"):
+        compact["diff"] = copy.deepcopy(diagnostic.get("diff"))
+    if diagnostic.get("advisor_revision"):
+        advisor = copy.deepcopy(diagnostic.get("advisor_revision"))
+        if isinstance(advisor, dict):
+            advisor["revision_advice"] = _compact_text(advisor.get("revision_advice", ""), limit=1200)
+            advisor["root_cause"] = _compact_text(advisor.get("root_cause", ""), limit=800)
+        compact["advisor_revision"] = advisor
+    return compact
+
+
+def _compact_evidence_for_prompt(evidence: dict[str, Any]) -> dict[str, Any]:
+    compact: dict[str, Any] = {}
+    for key in ("test", "test_source"):
+        if key in evidence:
+            compact[key] = copy.deepcopy(evidence[key])
+    for key in ("input", "standard_output", "oracle_output"):
+        if key in evidence:
+            compact[key] = _compact_text(evidence[key], limit=1000)
+    for key, value in evidence.items():
+        if key.endswith("_result") and isinstance(value, dict):
+            compact[key] = {
+                "status": value.get("status", ""),
+                "result": value.get("result", None),
+                "error_reason": _compact_text(value.get("error_reason", ""), limit=600),
+                "elapsed_ms": value.get("elapsed_ms", 0),
+            }
+    return compact
+
+
+def _compact_revision_history(revision_audit_history: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    history = []
+    for item in revision_audit_history[-3:]:
+        revision_context = item.get("revision_context", {}) if isinstance(item, dict) else {}
+        history.append(
+            {
+                "round_index": item.get("round_index", 0) if isinstance(item, dict) else 0,
+                "summary": copy.deepcopy(revision_context.get("summary", []))[:6]
+                if isinstance(revision_context, dict)
+                else [],
+                "failed_hard_checks": copy.deepcopy(revision_context.get("failed_hard_checks", []))[:8]
+                if isinstance(revision_context, dict)
+                else [],
+            }
+        )
+    return history
+
+
+def _regression_case_summaries(regression_cases: list[TestCase]) -> list[dict[str, Any]]:
+    summaries = []
+    for case in regression_cases[:5]:
+        summaries.append(
+            {
+                "source": case.source,
+                "purpose": case.purpose,
+                "is_large": case.is_large,
+                "expect_oracle": case.expect_oracle,
+                "metadata": dict(case.metadata),
+                "input_excerpt": _compact_text(case.input, limit=500),
+            }
+        )
+    return summaries
+
+
+def _known_good_case_summaries(known_good_cases: list[TestCase]) -> list[dict[str, Any]]:
+    summaries = []
+    for case in known_good_cases[:5]:
+        summaries.append(
+            {
+                "source": case.source,
+                "purpose": case.purpose,
+                "is_sample": case.is_sample,
+                "is_large": case.is_large,
+                "expect_oracle": case.expect_oracle,
+                "metadata": dict(case.metadata),
+                "input_excerpt": _compact_text(case.input, limit=500),
+            }
+        )
+    return summaries
+
+
 def _build_generation_revision_context(
     *,
     active_revision_context: dict[str, Any],
     revision_audit_history: list[dict[str, Any]],
     current_package: dict[str, Any] | None,
     round_index: int,
+    baseline_repair_mode: bool = False,
+    regression_cases: list[TestCase] | None = None,
+    known_good_cases: list[TestCase] | None = None,
 ) -> dict[str, Any]:
     if not active_revision_context:
         return {}
-    context = copy.deepcopy(active_revision_context)
+    context = _compact_revision_context(active_revision_context)
     context.update(
         {
-            "active_revision_context": copy.deepcopy(active_revision_context),
-            "latest_revision": copy.deepcopy(revision_audit_history[-1]["revision_context"]) if revision_audit_history else {},
-            "revision_history": copy.deepcopy(revision_audit_history),
+            "active_revision_context": _compact_revision_context(active_revision_context),
+            "latest_revision": _compact_revision_context(revision_audit_history[-1]["revision_context"]) if revision_audit_history else {},
+            "revision_history": _compact_revision_history(revision_audit_history),
             "revision_mode": "incremental_patch",
+            "baseline_repair_mode": bool(baseline_repair_mode),
             "baseline_round": 1,
             "current_round": round_index,
             "current_artifact": _current_artifact_summary(current_package, None),
             "frozen_contract_summary": _frozen_contract_summary(current_package),
+            "regression_case_summaries": _regression_case_summaries(regression_cases or []),
+            "known_good_case_summaries": _known_good_case_summaries(known_good_cases or []),
         }
     )
     return context
@@ -768,7 +1447,58 @@ def _target_roles_for_revision(revision_context: dict[str, Any]) -> set[str]:
     role_diagnostics = revision_context.get("role_diagnostics")
     if not isinstance(role_diagnostics, dict):
         return set()
-    return {str(role) for role, diagnostics in role_diagnostics.items() if diagnostics}
+    roles: set[str] = set()
+    for role, diagnostics in role_diagnostics.items():
+        if not isinstance(diagnostics, list):
+            continue
+        if any(isinstance(item, dict) and not _is_non_routing_diagnostic(item) for item in diagnostics):
+            roles.add(str(role))
+    return roles
+
+
+def _concrete_baseline_fingerprints(report: ValidationReport) -> set[str]:
+    failed_categories = {
+        str(category)
+        for category in report.base_consistency.get("failed_categories", [])
+        if str(category) and str(category) not in DERIVED_NON_ROUTING_CATEGORIES
+    }
+    fingerprints: set[str] = set()
+    for diagnostic in _flatten_diagnostics(report.revision_context):
+        category = str(diagnostic.get("category", ""))
+        if category not in failed_categories or _is_non_routing_diagnostic(diagnostic):
+            continue
+        fingerprint = str(diagnostic.get("issue_fingerprint", "")).strip()
+        if fingerprint:
+            fingerprints.add(fingerprint)
+    return fingerprints
+
+
+def _baseline_stall_signature(report: ValidationReport) -> str:
+    categories = sorted(
+        str(category)
+        for category in report.base_consistency.get("failed_categories", [])
+        if str(category) and str(category) not in DERIVED_NON_ROUTING_CATEGORIES
+    )
+    diagnostics = []
+    for item in _flatten_diagnostics(report.revision_context):
+        category = str(item.get("category", ""))
+        if category not in categories:
+            continue
+        evidence = item.get("evidence", {}) if isinstance(item.get("evidence"), dict) else {}
+        test = evidence.get("test") if isinstance(evidence.get("test"), dict) else {}
+        diagnostics.append(
+            {
+                "category": category,
+                "status": {
+                    key: value.get("status")
+                    for key, value in evidence.items()
+                    if key.endswith("_result") and isinstance(value, dict)
+                },
+                "diff": _fingerprint_diff_shape(item.get("diff", {})),
+            }
+        )
+    basis = {"categories": categories, "diagnostics": diagnostics[:12]}
+    return hashlib.sha1(json.dumps(basis, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()[:16]
 
 
 def _revision_context_for_roles(
@@ -779,7 +1509,7 @@ def _revision_context_for_roles(
     diagnostics = [
         diagnostic
         for diagnostic in _flatten_diagnostics(revision_context)
-        if roles & {str(role) for role in diagnostic.get("target_roles", [])}
+        if not _is_non_routing_diagnostic(diagnostic) and roles & {str(role) for role in diagnostic.get("target_roles", [])}
     ]
     filtered = _revision_context_from_diagnostics(
         diagnostics,
@@ -788,13 +1518,16 @@ def _revision_context_for_roles(
     filtered.update(
         {
             "active_revision_context": copy.deepcopy(filtered),
-            "latest_revision": copy.deepcopy(revision_context.get("latest_revision", {})),
-            "revision_history": copy.deepcopy(revision_context.get("revision_history", [])),
+            "latest_revision": _compact_revision_context(revision_context.get("latest_revision", {})),
+            "revision_history": copy.deepcopy(revision_context.get("revision_history", []))[:3],
             "revision_mode": revision_context.get("revision_mode", "incremental_patch"),
+            "baseline_repair_mode": bool(revision_context.get("baseline_repair_mode", False)),
             "baseline_round": revision_context.get("baseline_round", 1),
             "current_round": revision_context.get("current_round", 0),
             "current_artifact": _current_artifact_summary(current_package, roles),
             "frozen_contract_summary": _frozen_contract_summary(current_package),
+            "regression_case_summaries": copy.deepcopy(revision_context.get("regression_case_summaries", []))[:3],
+            "known_good_case_summaries": copy.deepcopy(revision_context.get("known_good_case_summaries", []))[:3],
         }
     )
     return filtered
@@ -822,9 +1555,11 @@ def _current_artifact_summary(current_package: dict[str, Any] | None, roles: set
         summary["standard_solution"] = _code_artifact_for_context(current_package.get("standard_solution"))
     if include_all or "OracleGenerator" in roles:
         summary["oracle_solution"] = _code_artifact_for_context(current_package.get("oracle_solution"))
-    if include_all or "ToolGenerator" in roles:
+    if include_all or {"ToolGenerator", "ValidatorGenerator"} & roles:
         summary["validator"] = _code_artifact_for_context(current_package.get("validator"))
+    if include_all or {"ToolGenerator", "CheckerGenerator"} & roles:
         summary["checker"] = _code_artifact_for_context(current_package.get("checker"))
+    if include_all or {"ToolGenerator", "TestGenerator"} & roles:
         summary["test_generator"] = _code_artifact_for_context(current_package.get("test_generator"))
     if include_all or "SchemaMistakeAnalyzer" in roles:
         summary["schema_mistake_points"] = to_dict(current_package.get("schema_mistake_points", []))
@@ -848,7 +1583,9 @@ def _code_artifact_for_context(value: Any) -> dict[str, Any]:
     return {
         "name": value.name,
         "role": value.role,
-        "code": value.code,
+        "code_excerpt": _compact_text(value.code, limit=6000),
+        "code_length": len(value.code),
+        "code_truncated": len(value.code) > 6000,
         "metadata": value.metadata,
     }
 
@@ -872,24 +1609,56 @@ def _frozen_contract_summary(current_package: dict[str, Any] | None) -> dict[str
 _SEVERITY_RANK = {"info": 0, "low": 1, "medium": 2, "high": 3, "blocker": 4}
 
 _TARGET_ROLES_BY_CATEGORY = {
-    "test_generator_failed": ["ToolGenerator"],
-    "test_suite_empty": ["ToolGenerator"],
-    "validator_rejects_generated_case": ["ToolGenerator"],
-    "checker_rejects_standard_output": ["ToolGenerator", "StandardSolutionGenerator"],
+    "test_generator_failed": ["TestGenerator"],
+    "test_suite_empty": ["TestGenerator"],
+    "validator_rejects_generated_case": ["ValidatorGenerator", "TestGenerator"],
+    "checker_rejects_standard_output": ["CheckerGenerator", "StandardSolutionGenerator"],
     "standard_solution_failed": ["StandardSolutionGenerator"],
     "performance_failure": ["StandardSolutionGenerator"],
     "oracle_failed": ["OracleGenerator"],
-    "oracle_output_rejected_by_checker": ["ToolGenerator", "OracleGenerator"],
+    "oracle_output_rejected_by_checker": ["CheckerGenerator", "OracleGenerator"],
     "standard_oracle_mismatch": ["StandardSolutionGenerator", "OracleGenerator"],
-    "wrong_solution_survived": ["ToolGenerator", "WeakPlayerGenerator", "SchemaMistakeAnalyzer", "SchemaAwareWrongSolutionGenerator"],
-    "kill_rate_skipped_due_to_invalid_baseline": ["ToolGenerator", "StandardSolutionGenerator", "OracleGenerator"],
+    "wrong_solution_survived": ["TestGenerator", "WeakPlayerGenerator", "SchemaMistakeAnalyzer", "SchemaAwareWrongSolutionGenerator"],
+    "kill_rate_skipped_due_to_invalid_baseline": ["TestGenerator", "StandardSolutionGenerator", "OracleGenerator"],
+    "component_gate_failed": ["ValidatorGenerator", "CheckerGenerator", "TestGenerator", "StandardSolutionGenerator", "OracleGenerator"],
+    "revision_payload_too_large": ["TestGenerator", "StandardSolutionGenerator", "OracleGenerator"],
+    "semantic_kernel_required": ["CheckerGenerator", "SpecExtractor"],
+    "statement_revision_required": ["SpecExtractor"],
+    "candidate_regression_detected": ["ValidatorGenerator", "CheckerGenerator", "TestGenerator", "StandardSolutionGenerator", "OracleGenerator"],
+    "known_good_case_failed": ["ValidatorGenerator", "CheckerGenerator", "TestGenerator", "StandardSolutionGenerator", "OracleGenerator"],
+    "candidate_not_better_than_current": ["ValidatorGenerator", "CheckerGenerator", "TestGenerator", "StandardSolutionGenerator", "OracleGenerator"],
 }
+
+DERIVED_NON_ROUTING_CATEGORIES = {"kill_rate_skipped_due_to_invalid_baseline"}
+CANDIDATE_GATE_DIAGNOSTIC_CATEGORIES = {"candidate_regression_detected", "candidate_not_better_than_current"}
 
 _ROLE_DIAGNOSTIC_LIMIT_PER_CATEGORY = 3
 _ADVISOR_DIAGNOSTIC_LIMIT_PER_CATEGORY = 3
 _FULL_EVIDENCE_TEXT_LIMIT = 1800
 _TRUNCATED_TEXT_EDGE = 700
 _DIFF_WINDOW = 3
+
+
+def _is_non_routing_diagnostic(diagnostic: dict[str, Any]) -> bool:
+    return str(diagnostic.get("category", "")) in DERIVED_NON_ROUTING_CATEGORIES
+
+
+def _advisor_target_roles(diagnostic: dict[str, Any]) -> list[str]:
+    advisor_revision = diagnostic.get("advisor_revision")
+    if not isinstance(advisor_revision, dict):
+        return []
+    target_roles = advisor_revision.get("target_roles")
+    if not isinstance(target_roles, list):
+        return []
+    return [str(role) for role in target_roles if str(role)]
+
+
+def _apply_advisor_target_roles(diagnostics_by_category: dict[str, list[dict[str, Any]]]) -> None:
+    for diagnostics in diagnostics_by_category.values():
+        for diagnostic in diagnostics:
+            advisor_roles = _advisor_target_roles(diagnostic)
+            if advisor_roles:
+                diagnostic["target_roles"] = advisor_roles
 
 
 def _build_revision_context(
@@ -913,11 +1682,14 @@ def _build_revision_context(
             curation=curation,
             previous_active_context=previous_active_context,
         )
+    _apply_advisor_target_roles(diagnostics_by_category)
 
     role_diagnostics: dict[str, list[dict[str, Any]]] = {}
     for diagnostics in diagnostics_by_category.values():
         by_role_category_count: dict[tuple[str, str], int] = {}
         for diagnostic in diagnostics:
+            if _is_non_routing_diagnostic(diagnostic):
+                continue
             category = str(diagnostic.get("category", ""))
             for role in diagnostic.get("target_roles", []):
                 key = (role, category)
@@ -930,7 +1702,13 @@ def _build_revision_context(
         "summary": _build_revision_summary(diagnostics_by_category),
         "diagnostics_by_category": diagnostics_by_category,
         "role_diagnostics": role_diagnostics,
-        "failed_hard_checks": _dedupe([issue.category for issue in issues if issue.severity == "blocker"]),
+        "failed_hard_checks": _dedupe(
+            [
+                issue.category
+                for issue in issues
+                if issue.severity == "blocker" and issue.category not in DERIVED_NON_ROUTING_CATEGORIES
+            ]
+        ),
         "surviving_wrong_solution_details": _surviving_wrong_solution_details(curation),
     }
 
@@ -1054,6 +1832,8 @@ def _revision_context_from_diagnostics(
     for diagnostics_for_category in diagnostics_by_category.values():
         by_role_category_count: dict[tuple[str, str], int] = {}
         for diagnostic in diagnostics_for_category:
+            if _is_non_routing_diagnostic(diagnostic):
+                continue
             category = str(diagnostic.get("category", ""))
             for role in diagnostic.get("target_roles", []):
                 key = (str(role), category)
@@ -1072,7 +1852,7 @@ def _revision_context_from_diagnostics(
             [
                 str(item.get("category", ""))
                 for item in diagnostics
-                if str(item.get("severity", "")) == "blocker" and str(item.get("category", ""))
+                if str(item.get("severity", "")) == "blocker" and str(item.get("category", "")) and not _is_non_routing_diagnostic(item)
             ]
         ),
         "surviving_wrong_solution_details": copy.deepcopy(survivor_details) if isinstance(survivor_details, list) else [],
@@ -1113,6 +1893,440 @@ def _flatten_diagnostics(revision_context: dict[str, Any]) -> list[dict[str, Any
             seen.add(fingerprint)
             diagnostics.append({**copy.deepcopy(item), "issue_fingerprint": fingerprint})
     return diagnostics
+
+
+def _component_gate_inputs(package: dict[str, Any], regression_cases: list[TestCase]) -> list[TestCase]:
+    cases: list[TestCase] = []
+    spec = package.get("execution_spec")
+    if isinstance(spec, ExecutionSpec):
+        for index, sample in enumerate(spec.sample_tests[:3], start=1):
+            if not isinstance(sample, dict) or not str(sample.get("input", "")).strip():
+                continue
+            cases.append(
+                TestCase(
+                    input=str(sample.get("input", "")),
+                    source=str(sample.get("source") or f"sample_{index}"),
+                    purpose=str(sample.get("purpose") or "样例门禁"),
+                    expect_oracle=True,
+                    is_sample=True,
+                    is_large=False,
+                    metadata={"sample_output": str(sample.get("output", ""))},
+                )
+            )
+    cases.extend(regression_cases[:5])
+    return _dedupe_tests(cases)
+
+
+def _prepend_regression_cases(regression_cases: list[TestCase], tests: list[TestCase]) -> list[TestCase]:
+    return _dedupe_tests([*regression_cases, *tests])
+
+
+def _prepend_priority_cases(priority_cases: list[TestCase], tests: list[TestCase]) -> list[TestCase]:
+    return _dedupe_tests([*priority_cases, *tests])
+
+
+def _mark_case_group(cases: list[TestCase], group: str) -> list[TestCase]:
+    marked: list[TestCase] = []
+    for case in cases:
+        metadata = dict(case.metadata)
+        metadata[group] = True
+        metadata["case_group"] = group
+        marked.append(
+            TestCase(
+                input=case.input,
+                source=case.source,
+                purpose=case.purpose,
+                expect_oracle=case.expect_oracle,
+                is_sample=case.is_sample,
+                is_large=case.is_large,
+                metadata=metadata,
+            )
+        )
+    return marked
+
+
+def _is_known_good_case(test: TestCase) -> bool:
+    return bool(test.metadata.get("known_good"))
+
+
+def _should_record_known_good_case(test: TestCase) -> bool:
+    return bool(
+        test.is_sample
+        or test.is_large
+        or test.expect_oracle
+        or test.metadata.get("regression")
+        or test.metadata.get("active")
+    )
+
+
+def _as_known_good_case(test: TestCase) -> TestCase:
+    metadata = dict(test.metadata)
+    metadata["known_good"] = True
+    metadata["known_good_source"] = metadata.get("case_group") or "validated"
+    return TestCase(
+        input=test.input,
+        source=f"known_good:{_normalize_test_source(test.source)}",
+        purpose=test.purpose or "历史已通过用例",
+        expect_oracle=test.expect_oracle,
+        is_sample=test.is_sample,
+        is_large=test.is_large,
+        metadata=metadata,
+    )
+
+
+def _build_known_good_failure_issue(test: TestCase, source_issue: FailureIssue) -> FailureIssue:
+    evidence = copy.deepcopy(source_issue.evidence)
+    evidence["known_good_case"] = {
+        "source": test.source,
+        "purpose": test.purpose,
+        "is_sample": test.is_sample,
+        "is_large": test.is_large,
+        "expect_oracle": test.expect_oracle,
+        "metadata": dict(test.metadata),
+    }
+    evidence["source_failure_category"] = source_issue.category
+    return FailureIssue(
+        category="known_good_case_failed",
+        severity="blocker",
+        title="候选包破坏已通过用例",
+        detail=f"已记录为 known-good 的用例 {test.source} 在当前验证中失败，原始失败类别为 {source_issue.category}。",
+        evidence_refs=[test.source],
+        evidence=evidence,
+        fix_hint="保留上一轮组件；下一轮只能修复 active 问题，不能破坏 known-good 路径。",
+    )
+
+
+def _case_identity(test: TestCase) -> str:
+    return hashlib.sha1(test.input.encode("utf-8")).hexdigest()[:16]
+
+
+def _dedupe_tests(tests: list[TestCase]) -> list[TestCase]:
+    seen: set[str] = set()
+    result: list[TestCase] = []
+    for test in tests:
+        key = test.input
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append(test)
+    return result
+
+
+def _extract_regression_cases(report: ValidationReport) -> list[TestCase]:
+    cases: list[TestCase] = []
+    for issue in report.issues:
+        if not isinstance(issue, dict):
+            continue
+        evidence = issue.get("evidence") if isinstance(issue.get("evidence"), dict) else {}
+        test = evidence.get("test") if isinstance(evidence.get("test"), dict) else {}
+        input_data = evidence.get("input")
+        if not isinstance(input_data, str) or not input_data.strip():
+            continue
+        source = _normalize_test_source(str(test.get("source") or evidence.get("test_source") or issue.get("category") or "regression"))
+        metadata = dict(test.get("metadata", {}) or {}) if isinstance(test.get("metadata"), dict) else {}
+        metadata.update(
+            {
+                "regression": True,
+                "source_issue_category": issue.get("category", ""),
+                "source_issue_title": issue.get("title", ""),
+            }
+        )
+        cases.append(
+            TestCase(
+                input=input_data,
+                source=f"regression:{source}",
+                purpose=str(test.get("purpose") or issue.get("title") or "历史失败反例"),
+                expect_oracle=bool(test.get("expect_oracle", False)),
+                is_sample=bool(test.get("is_sample", False)),
+                is_large=bool(test.get("is_large", False)),
+                metadata=metadata,
+            )
+        )
+    return cases
+
+
+def _extract_active_failure_cases(report: ValidationReport, *, limit: int = 20) -> list[TestCase]:
+    cases: list[TestCase] = []
+    for issue in report.issues:
+        if not isinstance(issue, dict):
+            continue
+        severity = str(issue.get("severity", ""))
+        if severity not in {"blocker", "high"}:
+            continue
+        evidence = issue.get("evidence") if isinstance(issue.get("evidence"), dict) else {}
+        input_data = evidence.get("input")
+        if not isinstance(input_data, str) or not input_data.strip():
+            continue
+        test = evidence.get("test") if isinstance(evidence.get("test"), dict) else {}
+        metadata = dict(test.get("metadata", {}) or {}) if isinstance(test.get("metadata"), dict) else {}
+        metadata.update(
+            {
+                "active": True,
+                "source_issue_category": issue.get("category", ""),
+                "source_issue_title": issue.get("title", ""),
+            }
+        )
+        cases.append(
+            TestCase(
+                input=input_data,
+                source=f"active:{_normalize_test_source(str(test.get('source') or issue.get('category') or 'active'))}",
+                purpose=str(test.get("purpose") or issue.get("title") or "active 失败反例"),
+                expect_oracle=bool(test.get("expect_oracle", not bool(test.get("is_large", False)))),
+                is_sample=bool(test.get("is_sample", False)),
+                is_large=bool(test.get("is_large", False)),
+                metadata=metadata,
+            )
+        )
+    return _dedupe_tests(cases)[:limit]
+
+
+def _merge_regression_cases(existing: list[TestCase], new_cases: list[TestCase], *, limit: int = 50) -> list[TestCase]:
+    return _dedupe_tests([*existing, *new_cases])[:limit]
+
+
+def _extract_known_good_cases(report: ValidationReport) -> list[TestCase]:
+    cases: list[TestCase] = []
+    for item in report.known_good_results.get("passed_cases", []):
+        if not isinstance(item, dict):
+            continue
+        input_text = str(item.get("input", "")).strip()
+        if not input_text:
+            continue
+        metadata = dict(item.get("metadata", {}) or {}) if isinstance(item.get("metadata"), dict) else {}
+        metadata["known_good"] = True
+        cases.append(
+            TestCase(
+                input=input_text,
+                source=str(item.get("source") or "known_good"),
+                purpose=str(item.get("purpose") or "历史已通过用例"),
+                expect_oracle=bool(item.get("expect_oracle", True)),
+                is_sample=bool(item.get("is_sample", False)),
+                is_large=bool(item.get("is_large", False)),
+                metadata=metadata,
+            )
+        )
+    return cases
+
+
+def _merge_known_good_cases(existing: list[TestCase], new_cases: list[TestCase], *, limit: int = 80) -> list[TestCase]:
+    return _dedupe_tests([*existing, *new_cases])[:limit]
+
+
+def _score_candidate_package(
+    *,
+    previous_report: ValidationReport,
+    candidate_report: ValidationReport,
+) -> dict[str, Any]:
+    previous_active_fingerprints = _high_issue_fingerprints(previous_report)
+    candidate_fingerprints = _high_issue_fingerprints(candidate_report)
+    fixed_fingerprints = sorted(previous_active_fingerprints - candidate_fingerprints)
+    previous_high_categories = _high_issue_categories(previous_report)
+    candidate_high_categories = _high_issue_categories(candidate_report)
+    introduced_categories = sorted(candidate_high_categories - previous_high_categories)
+    previous_high_count = len(previous_active_fingerprints)
+    candidate_high_count = len(candidate_fingerprints)
+    active_improved = bool(fixed_fingerprints) or candidate_high_count < previous_high_count or not previous_active_fingerprints
+
+    known_good_results = candidate_report.known_good_results or {}
+    known_good_failed_sources = list(known_good_results.get("failed_sources", []))
+    known_good_passed = int(known_good_results.get("failed_count", 0) or 0) == 0
+
+    semantic_not_increased = len(candidate_report.semantic_gate_issues) <= len(previous_report.semantic_gate_issues)
+    kill_rate_not_decreased = _kill_rate_not_decreased(previous_report, candidate_report)
+
+    rejection_reasons: list[str] = []
+    if not active_improved:
+        rejection_reasons.append("candidate_not_better_than_current")
+    if introduced_categories:
+        rejection_reasons.append("new_blocker_high_category")
+    if not known_good_passed:
+        rejection_reasons.append("known_good_case_failed")
+    if not semantic_not_increased:
+        rejection_reasons.append("semantic_gate_issues_increased")
+    if not kill_rate_not_decreased:
+        rejection_reasons.append("kill_rate_decreased")
+
+    regression_detected = bool(
+        introduced_categories
+        or known_good_failed_sources
+        or not semantic_not_increased
+        or not kill_rate_not_decreased
+    )
+    return {
+        "passed": not rejection_reasons,
+        "rejection_reasons": rejection_reasons,
+        "regression_detected": regression_detected,
+        "fixed_issue_fingerprints": fixed_fingerprints,
+        "introduced_blocker_high_categories": introduced_categories,
+        "known_good_failed_sources": known_good_failed_sources,
+        "active_high_before": previous_high_count,
+        "active_high_after": candidate_high_count,
+        "active_improved": active_improved,
+        "known_good_passed": known_good_passed,
+        "semantic_not_increased": semantic_not_increased,
+        "kill_rate_not_decreased": kill_rate_not_decreased,
+    }
+
+
+def _high_issue_fingerprints(report: ValidationReport) -> set[str]:
+    fingerprints: set[str] = set()
+    for diagnostic in _flatten_diagnostics(report.revision_context):
+        if str(diagnostic.get("severity", "")) not in {"blocker", "high"}:
+            continue
+        if str(diagnostic.get("category", "")) in CANDIDATE_GATE_DIAGNOSTIC_CATEGORIES:
+            continue
+        if _is_non_routing_diagnostic(diagnostic):
+            continue
+        fingerprints.add(str(diagnostic.get("issue_fingerprint", "") or _issue_fingerprint(diagnostic)))
+    return fingerprints
+
+
+def _high_issue_categories(report: ValidationReport) -> set[str]:
+    categories: set[str] = set()
+    for issue in report.issues:
+        if not isinstance(issue, dict):
+            continue
+        severity = str(issue.get("severity", ""))
+        category = str(issue.get("category", ""))
+        if (
+            severity in {"blocker", "high"}
+            and category
+            and category not in DERIVED_NON_ROUTING_CATEGORIES
+            and category not in CANDIDATE_GATE_DIAGNOSTIC_CATEGORIES
+        ):
+            categories.add(category)
+    return categories
+
+
+def _kill_rate_not_decreased(previous_report: ValidationReport, candidate_report: ValidationReport) -> bool:
+    if not previous_report.base_consistency.get("passed") or not candidate_report.base_consistency.get("passed"):
+        return True
+    previous_stats = previous_report.wrong_solution_stats or {}
+    candidate_stats = candidate_report.wrong_solution_stats or {}
+    if previous_stats.get("valid") is not True or candidate_stats.get("valid") is not True:
+        return True
+    previous_kill_rate = previous_stats.get("kill_rate")
+    candidate_kill_rate = candidate_stats.get("kill_rate")
+    if not isinstance(previous_kill_rate, (int, float)) or not isinstance(candidate_kill_rate, (int, float)):
+        return True
+    return float(candidate_kill_rate) >= float(previous_kill_rate)
+
+
+def _build_candidate_gate_issue(component_key: str, result: dict[str, Any]) -> FailureIssue:
+    reasons = [str(item) for item in result.get("rejection_reasons", [])]
+    regression_detected = bool(result.get("regression_detected"))
+    category = "candidate_regression_detected" if regression_detected else "candidate_not_better_than_current"
+    title = "候选包触发不退化门禁" if regression_detected else "候选包未优于当前题包"
+    detail_parts = [
+        f"组件 {component_key} 的候选通过轻量门禁，但包级验证未晋级。",
+        f"拒绝原因：{', '.join(reasons) if reasons else '未知'}。",
+    ]
+    fixed = result.get("fixed_issue_fingerprints", [])
+    introduced = result.get("introduced_blocker_high_categories", [])
+    known_good_failed = result.get("known_good_failed_sources", [])
+    if fixed:
+        detail_parts.append(f"已修复 issue_fingerprint：{', '.join(str(item) for item in fixed[:5])}。")
+    if introduced:
+        detail_parts.append(f"新增 blocker/high 类别：{', '.join(str(item) for item in introduced)}。")
+    if known_good_failed:
+        detail_parts.append(f"被 known-good 用例拦下：{', '.join(str(item) for item in known_good_failed[:5])}。")
+    return FailureIssue(
+        category=category,
+        severity="blocker",
+        title=title,
+        detail=" ".join(detail_parts),
+        evidence={"component": component_key, "candidate_gate_result": result},
+        fix_hint="保留上一轮组件；下一轮候选必须同时减少 active 问题且不破坏 known-good、语义门禁和杀伤率。",
+    )
+
+
+def _candidate_delta_summary_from_gate_results(gate_results: dict[str, Any]) -> dict[str, Any]:
+    if not gate_results:
+        return {}
+    rejected = {
+        name: result
+        for name, result in gate_results.items()
+        if isinstance(result, dict) and not result.get("passed")
+    }
+    return {
+        "candidate_count": len(gate_results),
+        "accepted_count": len(gate_results) - len(rejected),
+        "rejected_count": len(rejected),
+        "rejected_components": sorted(rejected),
+        "rejection_reasons": sorted(
+            {
+                str(reason)
+                for result in rejected.values()
+                for reason in result.get("rejection_reasons", [])
+            }
+        ),
+    }
+
+
+def _evaluate_semantic_gate(spec: ExecutionSpec, checker: GeneratedCodeArtifact) -> list[FailureIssue]:
+    if spec.judge_type != "checker":
+        return []
+    contract_text = json.dumps(
+        {
+            "output_contract": spec.output_contract,
+            "ambiguity_notes": spec.ambiguity_notes,
+        },
+        ensure_ascii=False,
+        sort_keys=True,
+    ).lower()
+    minimal_markers = ("字典序最小", "最小冲突", "lexicographically smallest", "lexicographic", "smallest")
+    if not any(marker in contract_text for marker in minimal_markers):
+        return []
+
+    checker_code = checker.code.lower()
+    checker_mentions_minimal = any(
+        marker in checker_code
+        for marker in ("字典序", "lexicographic", "smallest", "minimal", "min_l", "min_r", "best_l", "best_r")
+    )
+    enumerates_prior_candidates = (
+        ("for" in checker_code and ("range(l" in checker_code or "range(0" in checker_code))
+        or "expected_str" in checker_code
+    )
+    if checker_mentions_minimal and enumerates_prior_candidates:
+        return []
+    return [
+        FailureIssue(
+            category="semantic_kernel_required",
+            severity="blocker",
+            title="checker 未证明最小证书语义",
+            detail=(
+                "execution_spec 要求输出字典序最小或最小冲突证书，但 checker 代码未体现最小性校验。"
+                "该类证书往往需要共享可审计的语义内核，否则标准解、oracle 和 checker 会产生不同判定口径。"
+            ),
+            evidence={
+                "judge_type": spec.judge_type,
+                "output_contract": spec.output_contract,
+                "checker_metadata": checker.metadata,
+            },
+            fix_hint="为 checker/oracle/标准解提供共享的最小证书校验语义内核，或回到题面生成流程澄清/降低证书要求。",
+        )
+    ]
+
+
+def _render_not_deliverable_note(
+    *,
+    final_status: str,
+    stop_reason: str,
+    final_round_index: int,
+    regression_case_count: int,
+) -> str:
+    return "\n".join(
+        [
+            "# NOT DELIVERABLE",
+            "",
+            f"- final_status: {final_status}",
+            f"- stop_reason: {stop_reason}",
+            f"- final_round_index: {final_round_index}",
+            f"- regression_case_count: {regression_case_count}",
+            "",
+            "当前运行未通过严格交付门禁，`last_attempt/` 仅用于排查，不应作为最终题包使用。",
+        ]
+    )
 
 
 def _write_code_artifact(path: Path, artifact: GeneratedCodeArtifact) -> None:
@@ -1195,13 +2409,23 @@ def _result_evidence(result: Any) -> dict[str, Any]:
 
 
 def _build_diagnostic(issue: FailureIssue) -> dict[str, Any]:
+    target_roles = list(_TARGET_ROLES_BY_CATEGORY.get(issue.category, []))
+    if issue.category in {"component_gate_failed", "candidate_regression_detected", "candidate_not_better_than_current"}:
+        component = str((issue.evidence or {}).get("component", "")).strip()
+        target_roles = {
+            "standard_solution": ["StandardSolutionGenerator"],
+            "oracle_solution": ["OracleGenerator"],
+            "validator": ["ValidatorGenerator"],
+            "checker": ["CheckerGenerator"],
+            "test_generator": ["TestGenerator"],
+        }.get(component, target_roles)
     diagnostic = {
         "category": issue.category,
         "severity": issue.severity,
         "title": issue.title,
         "detail": issue.detail,
         "fix_hint": issue.fix_hint,
-        "target_roles": list(_TARGET_ROLES_BY_CATEGORY.get(issue.category, [])),
+        "target_roles": target_roles,
         "evidence": _summarize_evidence(issue.evidence),
     }
     diff = _build_output_diff(issue.evidence)
@@ -1222,13 +2446,26 @@ def _issue_fingerprint(diagnostic: dict[str, Any]) -> str:
     basis = {
         "category": diagnostic.get("category", ""),
         "target_roles": sorted(str(role) for role in diagnostic.get("target_roles", [])),
-        "test_source": test.get("source") or evidence.get("test_source") or "",
+        "test_source": _normalize_test_source(str(test.get("source") or evidence.get("test_source") or "")),
         "title": diagnostic.get("title", ""),
         "diff_shape": _fingerprint_diff_shape(diagnostic.get("diff", {})),
         "result_statuses": result_statuses,
     }
     raw = json.dumps(basis, ensure_ascii=False, sort_keys=True)
     return hashlib.sha1(raw.encode("utf-8")).hexdigest()[:16]
+
+
+def _normalize_test_source(source: str) -> str:
+    value = str(source or "")
+    for _ in range(10):
+        matched = False
+        for prefix in ("regression:", "active:", "known_good:"):
+            if value.startswith(prefix):
+                value = value.removeprefix(prefix)
+                matched = True
+        if not matched:
+            break
+    return value
 
 
 def _fingerprint_diff_shape(diff: Any) -> dict[str, Any]:
@@ -1268,7 +2505,10 @@ def _build_revision_summary(diagnostics_by_category: dict[str, list[dict[str, An
 
 def _surviving_wrong_solution_details(curation: dict[str, Any]) -> list[dict[str, Any]]:
     details: list[dict[str, Any]] = []
-    for item in curation.get("independent_solutions", []):
+    survivors = curation.get("high_value_survivors")
+    if not isinstance(survivors, list):
+        survivors = curation.get("independent_solutions", [])
+    for item in survivors:
         details.append(
             {
                 "solution_id": item.get("solution_id", ""),
@@ -1281,6 +2521,30 @@ def _surviving_wrong_solution_details(curation: dict[str, Any]) -> list[dict[str
             }
         )
     return details
+
+
+def _build_wrong_solution_gate_detail(
+    *,
+    wrong_stats: dict[str, Any],
+    high_value_survivors: list[dict[str, Any]],
+    unexpected_correct_candidates: list[dict[str, Any]],
+) -> str:
+    kill_rate = wrong_stats.get("kill_rate")
+    threshold = wrong_stats.get("kill_rate_threshold")
+    high_value_survivor_count = len(high_value_survivors)
+    unexpected_correct_count = len(unexpected_correct_candidates)
+    only_unexpected_correct_left = high_value_survivor_count == 0 and unexpected_correct_count > 0
+    detail_parts = [
+        f"当前杀伤率 {kill_rate}，阈值 {threshold}。",
+        f"高价值幸存错误解 {high_value_survivor_count} 个。",
+        f"unexpected_correct 候选 {unexpected_correct_count} 个。",
+        f"是否仅剩 unexpected_correct 候选：{'是' if only_unexpected_correct_left else '否'}。",
+    ]
+    if kill_rate is not None and threshold is not None and kill_rate < threshold:
+        detail_parts.append("当前杀伤率尚未达标。")
+    if high_value_survivor_count > 0:
+        detail_parts.append("当前仍有应被测试击穿但未被杀掉的高价值幸存错误解。")
+    return " ".join(detail_parts)
 
 
 def _summarize_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
@@ -1425,6 +2689,8 @@ def _skipped_wrong_solution_stats(*, candidate_count: int, kill_rate_threshold: 
         "candidate_count": candidate_count,
         "valuable_count": 0,
         "independent_count": 0,
+        "high_value_survivor_count": 0,
+        "unexpected_correct_count": 0,
         "rejected_count": 0,
         "kill_rate": None,
         "kill_rate_threshold": kill_rate_threshold,

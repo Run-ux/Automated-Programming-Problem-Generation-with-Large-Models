@@ -49,8 +49,9 @@ class SpecExtractor:
 
 
 class StandardSolutionGenerator:
-    def __init__(self, client: Any):
+    def __init__(self, client: Any, timeout_s: int | None = None):
         self.client = client
+        self.timeout_s = timeout_s
 
     def generate(
         self,
@@ -62,6 +63,8 @@ class StandardSolutionGenerator:
             system_prompt=build_code_system_prompt("StandardSolutionGenerator"),
             user_prompt=build_standard_solution_prompt(context, to_dict(spec), revision_context),
             temperature=0.15,
+            timeout_s=self.timeout_s,
+            request_name="standard_solution_generation",
         )
         return GeneratedCodeArtifact(
             name="standard_solution",
@@ -105,8 +108,9 @@ class OracleGenerator:
 
 
 class ToolGenerator:
-    def __init__(self, client: Any):
+    def __init__(self, client: Any, timeout_s: int | None = None):
         self.client = client
+        self.timeout_s = timeout_s
 
     def generate(
         self,
@@ -114,54 +118,83 @@ class ToolGenerator:
         spec: ExecutionSpec,
         revision_context: dict[str, Any] | None = None,
     ) -> dict[str, GeneratedCodeArtifact]:
-        spec_payload = to_dict(spec)
-        validator_payload = self.client.chat_json(
-            system_prompt=build_code_system_prompt("ValidatorGenerator"),
-            user_prompt=build_validator_prompt(context, spec_payload, revision_context),
-            temperature=0.1,
-        )
-        validator = GeneratedCodeArtifact(
-            name="validator",
-            role="validator",
-            code=_clean_code(str(validator_payload.get("validator_code", ""))),
-            metadata={"notes": validator_payload.get("notes", ""), "stage": "validator"},
-        )
-
-        checker_payload = self.client.chat_json(
-            system_prompt=build_code_system_prompt("CheckerGenerator"),
-            user_prompt=build_checker_prompt(context, spec_payload, to_dict(validator), revision_context),
-            temperature=0.1,
-        )
-        checker = GeneratedCodeArtifact(
-            name="checker",
-            role="checker",
-            code=_clean_code(str(checker_payload.get("checker_code", ""))),
-            metadata={"notes": checker_payload.get("notes", ""), "stage": "checker"},
-        )
-
-        test_generator_payload = self.client.chat_json(
-            system_prompt=build_code_system_prompt("TestGenerator"),
-            user_prompt=build_test_generator_prompt(
-                context,
-                spec_payload,
-                to_dict(validator),
-                to_dict(checker),
-                revision_context,
-            ),
-            temperature=0.1,
-        )
-        test_generator = GeneratedCodeArtifact(
-            name="test_generator",
-            role="test_generator",
-            code=_clean_code(str(test_generator_payload.get("test_generator_code", ""))),
-            metadata={"notes": test_generator_payload.get("notes", ""), "stage": "test_generator"},
-        )
-
+        validator = self.generate_validator(context, spec, revision_context)
+        checker = self.generate_checker(context, spec, validator, revision_context)
+        test_generator = self.generate_test_generator(context, spec, validator, checker, revision_context)
         return {
             "validator": validator,
             "checker": checker,
             "test_generator": test_generator,
         }
+
+    def generate_validator(
+        self,
+        context: dict[str, Any],
+        spec: ExecutionSpec,
+        revision_context: dict[str, Any] | None = None,
+    ) -> GeneratedCodeArtifact:
+        payload = self.client.chat_json(
+            system_prompt=build_code_system_prompt("ValidatorGenerator"),
+            user_prompt=build_validator_prompt(context, to_dict(spec), revision_context),
+            temperature=0.1,
+            timeout_s=self.timeout_s,
+            request_name="validator_generation",
+        )
+        return GeneratedCodeArtifact(
+            name="validator",
+            role="validator",
+            code=_clean_code(str(payload.get("validator_code", ""))),
+            metadata={"notes": payload.get("notes", ""), "stage": "validator"},
+        )
+
+    def generate_checker(
+        self,
+        context: dict[str, Any],
+        spec: ExecutionSpec,
+        validator: GeneratedCodeArtifact,
+        revision_context: dict[str, Any] | None = None,
+    ) -> GeneratedCodeArtifact:
+        payload = self.client.chat_json(
+            system_prompt=build_code_system_prompt("CheckerGenerator"),
+            user_prompt=build_checker_prompt(context, to_dict(spec), to_dict(validator), revision_context),
+            temperature=0.1,
+            timeout_s=self.timeout_s,
+            request_name="checker_generation",
+        )
+        return GeneratedCodeArtifact(
+            name="checker",
+            role="checker",
+            code=_clean_code(str(payload.get("checker_code", ""))),
+            metadata={"notes": payload.get("notes", ""), "stage": "checker"},
+        )
+
+    def generate_test_generator(
+        self,
+        context: dict[str, Any],
+        spec: ExecutionSpec,
+        validator: GeneratedCodeArtifact,
+        checker: GeneratedCodeArtifact,
+        revision_context: dict[str, Any] | None = None,
+    ) -> GeneratedCodeArtifact:
+        payload = self.client.chat_json(
+            system_prompt=build_code_system_prompt("TestGenerator"),
+            user_prompt=build_test_generator_prompt(
+                context,
+                to_dict(spec),
+                to_dict(validator),
+                to_dict(checker),
+                revision_context,
+            ),
+            temperature=0.1,
+            timeout_s=self.timeout_s,
+            request_name="test_generator_generation",
+        )
+        return GeneratedCodeArtifact(
+            name="test_generator",
+            role="test_generator",
+            code=_clean_code(str(payload.get("test_generator_code", ""))),
+            metadata={"notes": payload.get("notes", ""), "stage": "test_generator"},
+        )
 
 
 class WeakPlayerGenerator:

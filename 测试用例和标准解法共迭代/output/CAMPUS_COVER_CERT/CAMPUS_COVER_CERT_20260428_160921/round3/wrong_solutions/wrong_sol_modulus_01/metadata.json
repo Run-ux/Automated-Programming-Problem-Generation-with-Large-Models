@@ -1,0 +1,45 @@
+{
+  "solution_id": "wrong_sol_modulus_01",
+  "code": "def solve(input_str: str) -> str:\n    data = input_str.split()\n    if not data:\n        return ''\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    output = []\n    for _ in range(q):\n        op = int(next(it))\n        if op == 1:\n            a = int(next(it))\n            teams.append((len(teams)+1, a))\n        else:\n            K = int(next(it))\n            used = [False]*len(teams)\n            assign = []\n            possible = True\n            for s in range(K):\n                found = -1\n                for idx, (tid, a) in enumerate(teams):\n                    if not used[idx] and (a == s or a+1 == s):\n                        found = idx\n                        break\n                if found == -1:\n                    possible = False\n                    output.append(\"NO\")\n                    output.append(f\"{s} {s}\")\n                    break\n                used[found] = True\n                assign.append((tid, s))\n            if possible:\n                output.append(\"YES\")\n                for tid, s in assign:\n                    output.append(f\"{tid} {s}\")\n    return '\\n'.join(output)",
+  "source": "schema_aware_llm_player",
+  "bug_type": "构造遗漏",
+  "expected_failure": "当队伍a_i较大且需要跨周期分配时（如a=2, x=3, 查询区间[0,1]），正确解可将队伍分配至取模后的时段0，而此错误解仅考虑数值2和3均不在区间内，误判无解。",
+  "metadata": {
+    "mistake_id": "modulus_misread",
+    "mistake_point": {
+      "mistake_id": "modulus_misread",
+      "schema_basis": [
+        "adjacency_coverage 约束：队伍 i 被允许分配至时段 s 当且仅当 s ≡ a_i (mod x) 或 s ≡ a_i+1 (mod x)。该约束明确定义了模意义下的两个余数类，而非两个具体数值。"
+      ],
+      "player_visible_misread": "将模条件误解为：队伍只能被分配到 a_i 或 a_i+1 这两个具体的整数时段（尤其当 a_i 较小且没有出现跨周期样例时），忽略 s 可以取满足余数条件的任意非负整数（包括远大于 a_i 的时段）。",
+      "wrong_strategy": "构造分配方案时，直接将队伍分配到 a_i 或 a_i+1 的数值上（不对 x 取模），若两个数值均不在目标区间 [0, K-1] 内则认为该队伍无法覆盖区间，从而错误判断无解或分配失败。",
+      "target_failure_bucket": "小规模反例",
+      "expected_counterexample_shape": "x=3, 操作序列：1 2, 2 2。队伍 a=2，合法时段为 {2 mod 3=2, 3 mod 3=0} 即 {0,2}。查询 K=2 需要覆盖 [0,1]，队伍可以分配到时段 0，正确输出 YES 和 1 0。错误解因只考虑 2 和 3，均不在 [0,1] 内，输出 NO 或错误分配。",
+      "triviality_risk": "需确保选手确实理解了模运算概念，但凭直观误以为分配时段只能是题面中出现的 a_i 或 a_i+1 数值。反例通过设置 a_i 较大（如接近 1e9）或使其模结果跨过 0 边界增强暴露能力，避免退化为根本没读模运算说明的低级错误。",
+      "raw": {
+        "mistake_id": "modulus_misread",
+        "schema_basis": "adjacency_coverage 约束：队伍 i 被允许分配至时段 s 当且仅当 s ≡ a_i (mod x) 或 s ≡ a_i+1 (mod x)。该约束明确定义了模意义下的两个余数类，而非两个具体数值。",
+        "player_visible_misread": "将模条件误解为：队伍只能被分配到 a_i 或 a_i+1 这两个具体的整数时段（尤其当 a_i 较小且没有出现跨周期样例时），忽略 s 可以取满足余数条件的任意非负整数（包括远大于 a_i 的时段）。",
+        "wrong_strategy": "构造分配方案时，直接将队伍分配到 a_i 或 a_i+1 的数值上（不对 x 取模），若两个数值均不在目标区间 [0, K-1] 内则认为该队伍无法覆盖区间，从而错误判断无解或分配失败。",
+        "target_failure_bucket": "小规模反例",
+        "expected_counterexample_shape": "x=3, 操作序列：1 2, 2 2。队伍 a=2，合法时段为 {2 mod 3=2, 3 mod 3=0} 即 {0,2}。查询 K=2 需要覆盖 [0,1]，队伍可以分配到时段 0，正确输出 YES 和 1 0。错误解因只考虑 2 和 3，均不在 [0,1] 内，输出 NO 或错误分配。",
+        "triviality_risk": "需确保选手确实理解了模运算概念，但凭直观误以为分配时段只能是题面中出现的 a_i 或 a_i+1 数值。反例通过设置 a_i 较大（如接近 1e9）或使其模结果跨过 0 边界增强暴露能力，避免退化为根本没读模运算说明的低级错误。"
+      }
+    },
+    "schema_signals": [
+      "adjacency_coverage"
+    ],
+    "raw": {
+      "solution_id": "wrong_sol_modulus_01",
+      "mistake_id": "modulus_misread",
+      "code": "def solve(input_str: str) -> str:\n    data = input_str.split()\n    if not data:\n        return ''\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    output = []\n    for _ in range(q):\n        op = int(next(it))\n        if op == 1:\n            a = int(next(it))\n            teams.append((len(teams)+1, a))\n        else:\n            K = int(next(it))\n            used = [False]*len(teams)\n            assign = []\n            possible = True\n            for s in range(K):\n                found = -1\n                for idx, (tid, a) in enumerate(teams):\n                    if not used[idx] and (a == s or a+1 == s):\n                        found = idx\n                        break\n                if found == -1:\n                    possible = False\n                    output.append(\"NO\")\n                    output.append(f\"{s} {s}\")\n                    break\n                used[found] = True\n                assign.append((tid, s))\n            if possible:\n                output.append(\"YES\")\n                for tid, s in assign:\n                    output.append(f\"{tid} {s}\")\n    return '\\n'.join(output)",
+      "player_profile": "模运算误读型：未理解模周期归约，错误将分配时段局限为a_i和a_i+1两个具体数值，忽略模意义下的无限延伸。",
+      "target_failure_bucket": "小规模反例",
+      "bug_type": "构造遗漏",
+      "expected_failure": "当队伍a_i较大且需要跨周期分配时（如a=2, x=3, 查询区间[0,1]），正确解可将队伍分配至取模后的时段0，而此错误解仅考虑数值2和3均不在区间内，误判无解。",
+      "schema_signals": [
+        "adjacency_coverage"
+      ]
+    }
+  }
+}

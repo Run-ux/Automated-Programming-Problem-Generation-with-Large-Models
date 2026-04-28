@@ -14,9 +14,11 @@ from config import (
     DEFAULT_REVISION_ADVISOR_MODEL,
     DEFAULT_REVISION_ADVISOR_TIMEOUT_S,
     DEFAULT_ROUNDS,
+    DEFAULT_STANDARD_GENERATION_TIMEOUT_S,
     DEFAULT_TIMEOUT_S,
+    DEFAULT_TOOL_GENERATION_TIMEOUT_S,
 )
-from generators import RevisionAdvisor
+from generators import RevisionAdvisor, StandardSolutionGenerator, ToolGenerator
 from llm_client import LlmClient
 from pipeline import PackageValidationPipeline
 
@@ -30,6 +32,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--model", default=DEFAULT_MODEL, help="LLM 模型名称。")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="兼容 OpenAI 的接口地址。")
     parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT_S, help="LLM 请求超时秒数。")
+    parser.add_argument(
+        "--standard-timeout",
+        type=int,
+        default=DEFAULT_STANDARD_GENERATION_TIMEOUT_S,
+        help="标准解生成请求超时秒数。",
+    )
+    parser.add_argument(
+        "--tool-timeout",
+        type=int,
+        default=DEFAULT_TOOL_GENERATION_TIMEOUT_S,
+        help="validator/checker/test_generator 生成请求超时秒数。",
+    )
     parser.add_argument("--revision-advisor-model", default=DEFAULT_REVISION_ADVISOR_MODEL, help="RevisionAdvisor 使用的 LLM 模型名称。")
     parser.add_argument("--revision-advisor-base-url", default=DEFAULT_REVISION_ADVISOR_BASE_URL, help="RevisionAdvisor 使用的兼容 OpenAI 接口地址。")
     parser.add_argument("--revision-advisor-timeout", type=int, default=DEFAULT_REVISION_ADVISOR_TIMEOUT_S, help="RevisionAdvisor 请求超时秒数。")
@@ -63,6 +77,8 @@ def main() -> int:
         client=client,
         output_dir=args.output_dir,
         kill_rate_threshold=args.kill_rate_threshold,
+        standard_generator=StandardSolutionGenerator(client, timeout_s=args.standard_timeout),
+        tool_generator=ToolGenerator(client, timeout_s=args.tool_timeout),
         revision_advisor=RevisionAdvisor(advisor_client),
     )
     result = pipeline.run(

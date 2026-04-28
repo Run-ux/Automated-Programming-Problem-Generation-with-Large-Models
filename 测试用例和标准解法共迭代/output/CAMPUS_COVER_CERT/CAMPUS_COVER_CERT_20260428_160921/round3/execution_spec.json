@@ -1,0 +1,110 @@
+{
+  "problem_id": "CAMPUS_COVER_CERT",
+  "input_contract": {
+    "description": "输入第一行包含两个整数 x 和 q (1 ≤ x, q ≤ 4×10^5)，分别表示周期长度和操作数。接下来 q 行，每行表示一个操作：'1 a_i' 表示第 i 支队伍抵达，偏好时间 a_i (0 ≤ a_i ≤ 10^9)；'2 K' 表示一次覆盖查询，要求覆盖区间 [0, K-1] (1 ≤ K ≤ 10^9)。队伍编号按抵达顺序从 1 开始递增。",
+    "fields": [
+      {
+        "name": "x",
+        "type": "integer",
+        "range": "[1, 400000]"
+      },
+      {
+        "name": "q",
+        "type": "integer",
+        "range": "[1, 400000]"
+      },
+      {
+        "name": "operations",
+        "type": "array",
+        "length": "q",
+        "element": {
+          "type": "union",
+          "options": [
+            {
+              "type": "1 a_i",
+              "a_i": {
+                "type": "integer",
+                "range": "[0, 1000000000]"
+              }
+            },
+            {
+              "type": "2 K",
+              "K": {
+                "type": "integer",
+                "range": "[1, 1000000000]"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "output_contract": {
+    "description": "对于每个操作 2 K，输出一行。若存在合法覆盖方案，第一行输出 'YES'，紧接着 K 行每行两个整数 id s，表示分配队伍 id 到时段 s，且 0 ≤ s < K。若不存在，第一行输出 'NO'，第二行输出两个整数 L R，表示字典序最小的冲突区间 [L, R] (0 ≤ L ≤ R < K)。任何满足约束的合法分配方案均可被接受。",
+    "format": "每行整数用单个空格分隔。YES/NO 必须大写。",
+    "notes": "YES 时输出的 id 必须是有效的队伍编号，且所有时段 0..K-1 各恰好被分配一次。NO 时输出的 L, R 必须是字典序最小的区间，满足覆盖该区间的队伍数 < R-L+1。"
+  },
+  "judge_type": "checker",
+  "oracle_limits": {
+    "max_x": 200,
+    "max_q": 200,
+    "max_K": 200,
+    "rationale": "在小规模下，可以通过暴力枚举所有分配方案或构建二分图最大匹配来验证覆盖性，并通过枚举所有子区间检查 Hall 条件及字典序最小冲突区间。该范围能保证蛮力 oracle 在几秒内完成。"
+  },
+  "test_buckets": [
+    {
+      "name": "small_brute_force",
+      "purpose": "验证算法在小规模上（与暴力一致）的正确性，覆盖各种 YES/NO 情况。",
+      "size_hint": "x ≤ 10, q ≤ 50, K ≤ 10"
+    },
+    {
+      "name": "edge_cases",
+      "purpose": "测试边界条件：x=1（所有队伍覆盖所有时段），x 极大值，K=1，K 极大但队伍数不足，a_i 接近上下界。",
+      "size_hint": "混合，部分 q 很小但参数极端"
+    },
+    {
+      "name": "random_small",
+      "purpose": "随机生成操作序列，检验正确性，关注 YES/NO 频率。",
+      "size_hint": "x, q ≤ 1000, K 总和 ≤ 10^4"
+    },
+    {
+      "name": "adversarial",
+      "purpose": "构造刻意让贪心分配失败的情况，检验构造阶段的正确性；构造导致特定字典序冲突区间的情况；制造 Hall 条件触发的边界。",
+      "size_hint": "x, q 中等，专门设计"
+    },
+    {
+      "name": "performance_max",
+      "purpose": "用最大约束测试时间与内存：x=400000, q=400000，混合操作，使 K 总和接近 400000 且均触发 YES，确保高效数据结构。",
+      "size_hint": "x=400000, q=400000, total K ≈ 400000"
+    }
+  ],
+  "sample_tests": [
+    {
+      "input": "3 4\n1 0\n1 1\n2 2\n2 3\n",
+      "output": "YES\n1 0\n2 1\nNO\n0 2\n",
+      "source": "题面样例1",
+      "purpose": "展示 YES 时输出方案、NO 时输出冲突区间的最小字典序。"
+    },
+    {
+      "input": "5 4\n1 0\n1 3\n1 3\n2 4\n",
+      "output": "NO\n0 1\n",
+      "source": "题面样例2",
+      "purpose": "展示当无解时，因覆盖不足导致冲突区间 [0,1] 是最小字典序。"
+    }
+  ],
+  "performance_limits": {
+    "time_limit_seconds": 2.0,
+    "memory_limit_mb": 512,
+    "max_operations": 400000,
+    "max_x": 400000,
+    "max_K": 1000000000,
+    "total_K_in_yes_queries_sum_bound": 400000,
+    "notes": "保证所有 YES 查询的 K 总和不超过 4×10^5，因此输出规模可控。其余查询可能 K 很大但仅需输出一行数字。"
+  },
+  "ambiguity_notes": [
+    "Checker 的具体验证逻辑未在题面中详细给出，但应确保：YES 时检查分配的队伍是否属于已抵达队伍，是否满足 mod 条件，时段是否恰好覆盖 0..K-1 且不重复；NO 时检查输出的区间是否满足覆盖队伍数 < 区间长度，并且是字典序最小的。实现 checker 时需明确定义。",
+    "Oracle_limits 中的界限是保守估计，实际暴力可承受范围可能更大，但出于安全考虑选择了较小值。",
+    "未明确多解时方案 id 的输出顺序是否有要求（例如按队伍排序或任意），样例似乎按输入顺序 id 递增给出，但题面只要求任意合法方案，故 checker 不应强求特定顺序。",
+    "字典序冲突区间可能存在多个相同左端点但不同右端点，需确保 checker 正确处理。"
+  ]
+}

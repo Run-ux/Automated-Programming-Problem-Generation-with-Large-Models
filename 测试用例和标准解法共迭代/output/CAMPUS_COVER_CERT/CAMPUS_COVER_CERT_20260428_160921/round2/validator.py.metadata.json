@@ -1,0 +1,9 @@
+{
+  "name": "validator",
+  "role": "validator",
+  "code": "def validate(input_str: str) -> bool:\n    parts = input_str.split()\n    if not parts:\n        return False\n    try:\n        idx = 0\n        x = int(parts[idx]); idx += 1\n        q = int(parts[idx]); idx += 1\n        if not (1 <= x <= 400000) or not (1 <= q <= 400000):\n            return False\n        for _ in range(q):\n            if idx >= len(parts):\n                return False\n            op = int(parts[idx]); idx += 1\n            if op == 1:\n                if idx >= len(parts):\n                    return False\n                a = int(parts[idx]); idx += 1\n                if a < 0 or a > 1000000000:\n                    return False\n            elif op == 2:\n                if idx >= len(parts):\n                    return False\n                K = int(parts[idx]); idx += 1\n                if K < 1 or K > 1000000000:\n                    return False\n            else:\n                return False\n        if idx != len(parts):\n            return False\n        return True\n    except (ValueError, IndexError):\n        return False",
+  "metadata": {
+    "notes": "Validates input strictly according to the contract: first line contains two integers x and q (1 ≤ x, q ≤ 400000). Next q lines each contain either '1 a_i' with 0 ≤ a_i ≤ 10^9 or '2 K' with 1 ≤ K ≤ 10^9. No extra tokens are allowed. The validator does not enforce the output-related constraint that total K in YES queries does not exceed 4×10^5, as that is guaranteed by the problem and not part of input validity. All parsing errors or out-of-range values cause rejection.",
+    "stage": "validator"
+  }
+}

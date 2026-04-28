@@ -78,6 +78,12 @@ class ValidationReport:
     wrong_solution_stats: dict[str, Any]
     revision_context: dict[str, Any]
     base_consistency: dict[str, Any] = field(default_factory=dict)
+    component_gate_results: dict[str, Any] = field(default_factory=dict)
+    regression_results: dict[str, Any] = field(default_factory=dict)
+    semantic_gate_issues: list[dict[str, Any]] = field(default_factory=list)
+    candidate_package_gate_results: dict[str, Any] = field(default_factory=dict)
+    known_good_results: dict[str, Any] = field(default_factory=dict)
+    candidate_delta_summary: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -93,6 +99,14 @@ class IterationSummary:
     new_issue_count: int = 0
     resolved_issue_count: int = 0
     carried_issue_count: int = 0
+    deliverable_dir: str = ""
+    last_attempt_dir: str = ""
+    semantic_gate_status: str = "not_evaluated"
+    prompt_payload_bytes_by_round: list[dict[str, Any]] = field(default_factory=list)
+    regression_case_count: int = 0
+    known_good_case_count: int = 0
+    candidate_gate_rejection_count: int = 0
+    regression_prevention_count: int = 0
 
 
 def to_dict(value: Any) -> Any:

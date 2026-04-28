@@ -1,0 +1,47 @@
+{
+  "solution_id": "wrong_sol_lex_interval_01",
+  "code": "def solve(input_str: str) -> str:\n    data = input_str.split()\n    if not data:\n        return ''\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    output = []\n    for _ in range(q):\n        op = int(next(it))\n        if op == 1:\n            a = int(next(it))\n            teams.append((len(teams)+1, a))\n        else:\n            K = int(next(it))\n            if len(teams) < K:\n                output.append(\"NO\")\n                output.append(f\"0 {K-1}\")\n                continue\n            cover = [False]*x\n            for _, a in teams:\n                r = a % x\n                cover[r] = True\n                cover[(r+1)%x] = True\n            all_covered = True\n            for r in range(min(x, K)):\n                if not cover[r]:\n                    all_covered = False\n                    break\n            if all_covered:\n                output.append(\"YES\")\n                used = [False]*len(teams)\n                assign = []\n                possible = True\n                for s in range(K):\n                    found = -1\n                    for idx, (tid, a) in enumerate(teams):\n                        if not used[idx] and (s % x == a % x or s % x == (a+1) % x):\n                            found = idx\n                            break\n                    if found == -1:\n                        possible = False\n                        break\n                    used[found] = True\n                    assign.append((tid, s))\n                if possible:\n                    for tid, s in assign:\n                        output.append(f\"{tid} {s}\")\n                else:\n                    for s in range(K):\n                        for tid, a in teams:\n                            if s % x == a % x or s % x == (a+1) % x:\n                                output.append(f\"{tid} {s}\")\n                                break\n                        else:\n                            output.append(f\"{teams[0][0]} {s}\")\n            else:\n                output.append(\"NO\")\n                output.append(f\"0 {K-1}\")\n    return '\\n'.join(output)",
+  "source": "schema_aware_llm_player",
+  "bug_type": "规范顺序忽略型",
+  "expected_failure": "当存在更小字典序的冲突区间时（如x=2,仅1队a=0,K=4，正确应输出[0,1]），此解直接输出[0,3]，无法通过字典序检查。",
+  "metadata": {
+    "mistake_id": "lexicographic_interval_misread",
+    "mistake_point": {
+      "mistake_id": "lexicographic_interval_misread",
+      "schema_basis": [
+        "objective 要求：若无解，输出字典序最小的冲突区间 [L,R]（优先最小化 L，其次最小化 R）。invariant hall_interval_minimality 暗示极小冲突区间可通过数据结构定位，但选手可能忽略字典序的完整优先级。"
+      ],
+      "player_visible_misread": "误以为只需找到任意一个冲突区间并输出即可，或简单认为输出找到的第一个区间（如扫描中最早遇见的）就是答案，没有进一步比较字典序，尤其是当左端点 L 相同时没有比较右端点 R。",
+      "wrong_strategy": "采用某种顺序（如从左到右扫描 L，对每个 L 倍增或二分寻找第一个 R 使得 [L,R] 成为冲突区间）找到首个满足条件的区间后直接输出，而不继续检查是否存在 L 相同但 R 更小的冲突区间。",
+      "target_failure_bucket": "小规模反例",
+      "expected_counterexample_shape": "x=2, 仅有 1 支队伍 a=0，查询 K=4。正确冲突区间应为字典序最小的 [0,1]（因为 [0,1] 已冲突且 L=0, R=1 小于其他以 0 为左端点的冲突区间）。若错误策略先从 L=0 开始找到冲突区间 [0,3] 便输出，则输出 [0,3]，无法通过检查。反例输入：2 2\n1 0\n2 4",
+      "triviality_risk": "需强调字典序不仅要求左端点最小，在左端点相同时还需右端点最小；错误解通常是因为认为找到任意一个冲突区间即可，而非未能读取字典序定义。反例设计为存在多个 L=0 的冲突区间，迫使展现完整字典序比较。",
+      "raw": {
+        "mistake_id": "lexicographic_interval_misread",
+        "schema_basis": "objective 要求：若无解，输出字典序最小的冲突区间 [L,R]（优先最小化 L，其次最小化 R）。invariant hall_interval_minimality 暗示极小冲突区间可通过数据结构定位，但选手可能忽略字典序的完整优先级。",
+        "player_visible_misread": "误以为只需找到任意一个冲突区间并输出即可，或简单认为输出找到的第一个区间（如扫描中最早遇见的）就是答案，没有进一步比较字典序，尤其是当左端点 L 相同时没有比较右端点 R。",
+        "wrong_strategy": "采用某种顺序（如从左到右扫描 L，对每个 L 倍增或二分寻找第一个 R 使得 [L,R] 成为冲突区间）找到首个满足条件的区间后直接输出，而不继续检查是否存在 L 相同但 R 更小的冲突区间。",
+        "target_failure_bucket": "小规模反例",
+        "expected_counterexample_shape": "x=2, 仅有 1 支队伍 a=0，查询 K=4。正确冲突区间应为字典序最小的 [0,1]（因为 [0,1] 已冲突且 L=0, R=1 小于其他以 0 为左端点的冲突区间）。若错误策略先从 L=0 开始找到冲突区间 [0,3] 便输出，则输出 [0,3]，无法通过检查。反例输入：2 2\n1 0\n2 4",
+        "triviality_risk": "需强调字典序不仅要求左端点最小，在左端点相同时还需右端点最小；错误解通常是因为认为找到任意一个冲突区间即可，而非未能读取字典序定义。反例设计为存在多个 L=0 的冲突区间，迫使展现完整字典序比较。"
+      }
+    },
+    "schema_signals": [
+      "objective",
+      "invariant_hall_interval_minimality"
+    ],
+    "raw": {
+      "solution_id": "wrong_sol_lex_interval_01",
+      "mistake_id": "lexicographic_interval_misread",
+      "code": "def solve(input_str: str) -> str:\n    data = input_str.split()\n    if not data:\n        return ''\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    output = []\n    for _ in range(q):\n        op = int(next(it))\n        if op == 1:\n            a = int(next(it))\n            teams.append((len(teams)+1, a))\n        else:\n            K = int(next(it))\n            if len(teams) < K:\n                output.append(\"NO\")\n                output.append(f\"0 {K-1}\")\n                continue\n            cover = [False]*x\n            for _, a in teams:\n                r = a % x\n                cover[r] = True\n                cover[(r+1)%x] = True\n            all_covered = True\n            for r in range(min(x, K)):\n                if not cover[r]:\n                    all_covered = False\n                    break\n            if all_covered:\n                output.append(\"YES\")\n                used = [False]*len(teams)\n                assign = []\n                possible = True\n                for s in range(K):\n                    found = -1\n                    for idx, (tid, a) in enumerate(teams):\n                        if not used[idx] and (s % x == a % x or s % x == (a+1) % x):\n                            found = idx\n                            break\n                    if found == -1:\n                        possible = False\n                        break\n                    used[found] = True\n                    assign.append((tid, s))\n                if possible:\n                    for tid, s in assign:\n                        output.append(f\"{tid} {s}\")\n                else:\n                    for s in range(K):\n                        for tid, a in teams:\n                            if s % x == a % x or s % x == (a+1) % x:\n                                output.append(f\"{tid} {s}\")\n                                break\n                        else:\n                            output.append(f\"{teams[0][0]} {s}\")\n            else:\n                output.append(\"NO\")\n                output.append(f\"0 {K-1}\")\n    return '\\n'.join(output)",
+      "player_profile": "字典序忽略型：在输出冲突区间时仅输出整个查询区间[0, K-1]，未按题意寻找字典序最小（先左端点最小，再右端点最小）的冲突子区间。",
+      "target_failure_bucket": "小规模反例",
+      "bug_type": "规范顺序忽略型",
+      "expected_failure": "当存在更小字典序的冲突区间时（如x=2,仅1队a=0,K=4，正确应输出[0,1]），此解直接输出[0,3]，无法通过字典序检查。",
+      "schema_signals": [
+        "objective",
+        "invariant_hall_interval_minimality"
+      ]
+    }
+  }
+}

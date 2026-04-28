@@ -1,0 +1,47 @@
+{
+  "solution_id": "wrong_sol_each_slot_01",
+  "code": "def solve(input_str: str) -> str:\n    data = input_str.split()\n    if not data:\n        return ''\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    output = []\n    for _ in range(q):\n        op = int(next(it))\n        if op == 1:\n            a = int(next(it))\n            teams.append((len(teams)+1, a))\n        else:\n            K = int(next(it))\n            if len(teams) < K:\n                output.append(\"NO\")\n                output.append(f\"0 {K-1}\")\n                continue\n            cover = [False]*x\n            for _, a in teams:\n                r = a % x\n                cover[r] = True\n                cover[(r+1)%x] = True\n            all_covered = True\n            for r in range(min(x, K)):\n                if not cover[r]:\n                    all_covered = False\n                    break\n            if all_covered:\n                output.append(\"YES\")\n                for s in range(K):\n                    assigned = False\n                    for tid, a in teams:\n                        if s % x == a % x or s % x == (a+1) % x:\n                            output.append(f\"{tid} {s}\")\n                            assigned = True\n                            break\n                    if not assigned:\n                        output.append(f\"{teams[0][0]} {s}\")\n            else:\n                output.append(\"NO\")\n                output.append(f\"0 {K-1}\")\n    return '\\n'.join(output)",
+  "source": "schema_aware_llm_player",
+  "bug_type": "约束耦合误判",
+  "expected_failure": "当点覆盖与总数条件满足但存在区间瓶颈时（如x=6, 6支队伍分布使得区间[2,5]仅3支可覆盖），错误判YES并产出非法分配方案（复用队伍），实际应判NO。",
+  "metadata": {
+    "mistake_id": "each_slot_covered_sufficient",
+    "mistake_point": {
+      "mistake_id": "each_slot_covered_sufficient",
+      "schema_basis": [
+        "core_constraints 的 slot_uniqueness 与 invariant hall_interval_minimality 共同表明，完美覆盖不仅要求每个时段都有队伍能去，还要求对于任意子区间，可覆盖该区间的队伍数不小于区间长度（Hall 条件）。仅检查点覆盖会忽视区间级瓶颈。"
+      ],
+      "player_visible_misread": "将完美覆盖的充要条件简化为两个更容易判断的条件：(1) 当前队伍总数 ≥ K；(2) 对每个时段 s∈[0,K-1]，至少存在一支已抵达的队伍能覆盖 s。认为满足这两条就一定存在合法分配。",
+      "wrong_strategy": "对每个查询 K，先判断总数是否 >=K；然后检查每个时段的覆盖队伍集合是否非空（可用 bitset 或余数类计数快速检查）。若均满足，即输出 YES 并采用简单贪心或随意分配输出方案。",
+      "target_failure_bucket": "小规模反例",
+      "expected_counterexample_shape": "x=6, 队伍：3 支 a=0 (0,1), 2 支 a=2 (2,3), 1 支 a=4 (4,5), 查询 K=6。队伍总数=6，每个时段都有队伍覆盖，但区间 [2,5] 的可覆盖队伍仅 3 支（2 支 a=2 和 1 支 a=4），小于区间长度 4，实际无解。正确输出 NO 和最小冲突区间（如 [2,5]）；错误解输出 YES。",
+      "triviality_risk": "避免退化为总数不足或存在完全无覆盖时段的明显反例；必须设计队伍总数充足且点覆盖密度足够，但仍不满足 Hall 条件的情况，从而强调区间约束的必要性。",
+      "raw": {
+        "mistake_id": "each_slot_covered_sufficient",
+        "schema_basis": "core_constraints 的 slot_uniqueness 与 invariant hall_interval_minimality 共同表明，完美覆盖不仅要求每个时段都有队伍能去，还要求对于任意子区间，可覆盖该区间的队伍数不小于区间长度（Hall 条件）。仅检查点覆盖会忽视区间级瓶颈。",
+        "player_visible_misread": "将完美覆盖的充要条件简化为两个更容易判断的条件：(1) 当前队伍总数 ≥ K；(2) 对每个时段 s∈[0,K-1]，至少存在一支已抵达的队伍能覆盖 s。认为满足这两条就一定存在合法分配。",
+        "wrong_strategy": "对每个查询 K，先判断总数是否 >=K；然后检查每个时段的覆盖队伍集合是否非空（可用 bitset 或余数类计数快速检查）。若均满足，即输出 YES 并采用简单贪心或随意分配输出方案。",
+        "target_failure_bucket": "小规模反例",
+        "expected_counterexample_shape": "x=6, 队伍：3 支 a=0 (0,1), 2 支 a=2 (2,3), 1 支 a=4 (4,5), 查询 K=6。队伍总数=6，每个时段都有队伍覆盖，但区间 [2,5] 的可覆盖队伍仅 3 支（2 支 a=2 和 1 支 a=4），小于区间长度 4，实际无解。正确输出 NO 和最小冲突区间（如 [2,5]）；错误解输出 YES。",
+        "triviality_risk": "避免退化为总数不足或存在完全无覆盖时段的明显反例；必须设计队伍总数充足且点覆盖密度足够，但仍不满足 Hall 条件的情况，从而强调区间约束的必要性。"
+      }
+    },
+    "schema_signals": [
+      "slot_uniqueness",
+      "hall_interval_minimality"
+    ],
+    "raw": {
+      "solution_id": "wrong_sol_each_slot_01",
+      "mistake_id": "each_slot_covered_sufficient",
+      "code": "def solve(input_str: str) -> str:\n    data = input_str.split()\n    if not data:\n        return ''\n    it = iter(data)\n    x = int(next(it))\n    q = int(next(it))\n    teams = []\n    output = []\n    for _ in range(q):\n        op = int(next(it))\n        if op == 1:\n            a = int(next(it))\n            teams.append((len(teams)+1, a))\n        else:\n            K = int(next(it))\n            if len(teams) < K:\n                output.append(\"NO\")\n                output.append(f\"0 {K-1}\")\n                continue\n            cover = [False]*x\n            for _, a in teams:\n                r = a % x\n                cover[r] = True\n                cover[(r+1)%x] = True\n            all_covered = True\n            for r in range(min(x, K)):\n                if not cover[r]:\n                    all_covered = False\n                    break\n            if all_covered:\n                output.append(\"YES\")\n                for s in range(K):\n                    assigned = False\n                    for tid, a in teams:\n                        if s % x == a % x or s % x == (a+1) % x:\n                            output.append(f\"{tid} {s}\")\n                            assigned = True\n                            break\n                    if not assigned:\n                        output.append(f\"{teams[0][0]} {s}\")\n            else:\n                output.append(\"NO\")\n                output.append(f\"0 {K-1}\")\n    return '\\n'.join(output)",
+      "player_profile": "点覆盖充分误判型：误以为每个时段均有队伍可去且队伍总数足够即能完美覆盖，忽略Hall区间条件可能导致的分配冲突。",
+      "target_failure_bucket": "小规模反例",
+      "bug_type": "约束耦合误判",
+      "expected_failure": "当点覆盖与总数条件满足但存在区间瓶颈时（如x=6, 6支队伍分布使得区间[2,5]仅3支可覆盖），错误判YES并产出非法分配方案（复用队伍），实际应判NO。",
+      "schema_signals": [
+        "slot_uniqueness",
+        "hall_interval_minimality"
+      ]
+    }
+  }
+}
