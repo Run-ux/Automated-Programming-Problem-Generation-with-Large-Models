@@ -3,22 +3,22 @@ from __future__ import annotations
 import copy
 from typing import Any
 
-from execution_spec import normalize_execution_spec
-from models import ExecutionSpec, GeneratedCodeArtifact, WrongSolution, to_dict
-from prompt_builder import (
-    build_checker_prompt,
-    build_code_system_prompt,
-    build_oracle_prompt,
-    build_revision_advisor_system_prompt,
-    build_revision_advisor_user_prompt,
-    build_schema_aware_wrong_solution_prompt,
-    build_schema_mistake_analysis_prompt,
-    build_spec_system_prompt,
-    build_spec_user_prompt,
-    build_standard_solution_prompt,
-    build_test_generator_prompt,
-    build_validator_prompt,
-    build_weak_player_prompt,
+from artifact_context import normalize_small_challenge_tests
+from models import GeneratedCodeArtifact, WrongSolution
+from prompts import prompt_revision_advisor, prompt_sections
+from prompts.bruteforce_solution import prompt_bruteforce_solution
+from prompts.standard_solution import prompt_standard_solution
+from prompts.tool_generation import (
+    prompt_adversarial_test_input,
+    prompt_checker,
+    prompt_random_test_input,
+    prompt_small_challenge_test_input,
+    prompt_validator,
+)
+from prompts.wrong_solution import (
+    prompt_fixed_category_wrong_solution,
+    prompt_schema_mistake_analysis,
+    prompt_strategy_wrong_solution,
 )
 
 
@@ -28,24 +28,11 @@ class RevisionAdvisor:
 
     def generate(self, failure_packet: dict[str, Any]) -> dict[str, Any]:
         payload = self.client.chat_json(
-            system_prompt=build_revision_advisor_system_prompt(),
-            user_prompt=build_revision_advisor_user_prompt(failure_packet),
+            system_prompt=prompt_revision_advisor.build_system_prompt(),
+            user_prompt=prompt_revision_advisor.build_user_prompt(failure_packet),
             temperature=0.1,
         )
         return _normalize_advisor_revision(payload, failure_packet)
-
-
-class SpecExtractor:
-    def __init__(self, client: Any):
-        self.client = client
-
-    def generate(self, context: dict[str, Any], revision_context: dict[str, Any] | None = None) -> ExecutionSpec:
-        payload = self.client.chat_json(
-            system_prompt=build_spec_system_prompt(),
-            user_prompt=build_spec_user_prompt(context, revision_context),
-            temperature=0.1,
-        )
-        return normalize_execution_spec(payload)
 
 
 class StandardSolutionGenerator:
@@ -56,12 +43,11 @@ class StandardSolutionGenerator:
     def generate(
         self,
         context: dict[str, Any],
-        spec: ExecutionSpec,
         revision_context: dict[str, Any] | None = None,
     ) -> GeneratedCodeArtifact:
         payload = self.client.chat_json(
-            system_prompt=build_code_system_prompt("StandardSolutionGenerator"),
-            user_prompt=build_standard_solution_prompt(context, to_dict(spec), revision_context),
+            system_prompt=prompt_standard_solution.build_system_prompt(),
+            user_prompt=prompt_standard_solution.build_user_prompt(context, revision_context),
             temperature=0.15,
             timeout_s=self.timeout_s,
             request_name="standard_solution_generation",
@@ -71,8 +57,7 @@ class StandardSolutionGenerator:
             role="standard_solution",
             code=_clean_code(str(payload.get("code", ""))),
             metadata={
-                "algorithm": payload.get("algorithm", ""),
-                "correctness": payload.get("correctness", ""),
+                "solution_markdown": payload.get("solution_markdown", ""),
                 "time_complexity": payload.get("time_complexity", ""),
                 "space_complexity": payload.get("space_complexity", ""),
                 "notes": payload.get("notes", ""),
@@ -80,28 +65,31 @@ class StandardSolutionGenerator:
         )
 
 
-class OracleGenerator:
-    def __init__(self, client: Any):
+class BruteForceSolutionGenerator:
+    def __init__(self, client: Any, timeout_s: int | None = None):
         self.client = client
+        self.timeout_s = timeout_s
 
     def generate(
         self,
         context: dict[str, Any],
-        spec: ExecutionSpec,
         revision_context: dict[str, Any] | None = None,
     ) -> GeneratedCodeArtifact:
         payload = self.client.chat_json(
-            system_prompt=build_code_system_prompt("OracleGenerator"),
-            user_prompt=build_oracle_prompt(context, to_dict(spec), revision_context),
+            system_prompt=prompt_bruteforce_solution.build_system_prompt(),
+            user_prompt=prompt_bruteforce_solution.build_user_prompt(context, revision_context),
             temperature=0.1,
+            timeout_s=self.timeout_s,
+            request_name="bruteforce_solution_generation",
         )
         return GeneratedCodeArtifact(
-            name="oracle_solution",
-            role="oracle_solution",
+            name="bruteforce_solution",
+            role="bruteforce_solution",
             code=_clean_code(str(payload.get("code", ""))),
             metadata={
-                "oracle_scope": payload.get("oracle_scope", {}),
-                "method": payload.get("method", ""),
+                "bruteforce_markdown": payload.get("bruteforce_markdown", ""),
+                "time_complexity": payload.get("time_complexity", ""),
+                "space_complexity": payload.get("space_complexity", ""),
                 "notes": payload.get("notes", ""),
             },
         )
@@ -115,27 +103,29 @@ class ToolGenerator:
     def generate(
         self,
         context: dict[str, Any],
-        spec: ExecutionSpec,
         revision_context: dict[str, Any] | None = None,
-    ) -> dict[str, GeneratedCodeArtifact]:
-        validator = self.generate_validator(context, spec, revision_context)
-        checker = self.generate_checker(context, spec, validator, revision_context)
-        test_generator = self.generate_test_generator(context, spec, validator, checker, revision_context)
+    ) -> dict[str, Any]:
+        validator = self.generate_validator(context, revision_context)
+        checker = self.generate_checker(context, validator, revision_context)
+        random_generator = self.generate_random_test_generator(context, revision_context)
+        adversarial_generator = self.generate_adversarial_test_generator(context, revision_context)
+        small_challenge_tests = self.generate_small_challenge_tests(context, revision_context)
         return {
             "validator": validator,
             "checker": checker,
-            "test_generator": test_generator,
+            "random_test_generator": random_generator,
+            "adversarial_test_generator": adversarial_generator,
+            "small_challenge_tests": small_challenge_tests,
         }
 
     def generate_validator(
         self,
         context: dict[str, Any],
-        spec: ExecutionSpec,
         revision_context: dict[str, Any] | None = None,
     ) -> GeneratedCodeArtifact:
         payload = self.client.chat_json(
-            system_prompt=build_code_system_prompt("ValidatorGenerator"),
-            user_prompt=build_validator_prompt(context, to_dict(spec), revision_context),
+            system_prompt=prompt_validator.build_system_prompt(),
+            user_prompt=prompt_validator.build_user_prompt(context, revision_context),
             temperature=0.1,
             timeout_s=self.timeout_s,
             request_name="validator_generation",
@@ -150,13 +140,12 @@ class ToolGenerator:
     def generate_checker(
         self,
         context: dict[str, Any],
-        spec: ExecutionSpec,
         validator: GeneratedCodeArtifact,
         revision_context: dict[str, Any] | None = None,
     ) -> GeneratedCodeArtifact:
         payload = self.client.chat_json(
-            system_prompt=build_code_system_prompt("CheckerGenerator"),
-            user_prompt=build_checker_prompt(context, to_dict(spec), to_dict(validator), revision_context),
+            system_prompt=prompt_checker.build_system_prompt(),
+            user_prompt=prompt_checker.build_user_prompt(context, _artifact_dict(validator), revision_context),
             temperature=0.1,
             timeout_s=self.timeout_s,
             request_name="checker_generation",
@@ -168,61 +157,95 @@ class ToolGenerator:
             metadata={"notes": payload.get("notes", ""), "stage": "checker"},
         )
 
-    def generate_test_generator(
+    def generate_random_test_generator(
         self,
         context: dict[str, Any],
-        spec: ExecutionSpec,
-        validator: GeneratedCodeArtifact,
-        checker: GeneratedCodeArtifact,
         revision_context: dict[str, Any] | None = None,
     ) -> GeneratedCodeArtifact:
         payload = self.client.chat_json(
-            system_prompt=build_code_system_prompt("TestGenerator"),
-            user_prompt=build_test_generator_prompt(
-                context,
-                to_dict(spec),
-                to_dict(validator),
-                to_dict(checker),
-                revision_context,
-            ),
-            temperature=0.1,
+            system_prompt=prompt_random_test_input.build_system_prompt(),
+            user_prompt=prompt_random_test_input.build_user_prompt(context, revision_context),
+            temperature=0.25,
             timeout_s=self.timeout_s,
-            request_name="test_generator_generation",
+            request_name="random_test_input_generation",
         )
         return GeneratedCodeArtifact(
-            name="test_generator",
-            role="test_generator",
+            name="random_test_generator",
+            role="test_input_generator",
             code=_clean_code(str(payload.get("test_generator_code", ""))),
-            metadata={"notes": payload.get("notes", ""), "stage": "test_generator"},
+            metadata={"notes": payload.get("notes", ""), "stage": "random_test_input"},
         )
 
+    def generate_adversarial_test_generator(
+        self,
+        context: dict[str, Any],
+        revision_context: dict[str, Any] | None = None,
+    ) -> GeneratedCodeArtifact:
+        payload = self.client.chat_json(
+            system_prompt=prompt_adversarial_test_input.build_system_prompt(),
+            user_prompt=prompt_adversarial_test_input.build_user_prompt(context, revision_context),
+            temperature=0.25,
+            timeout_s=self.timeout_s,
+            request_name="adversarial_test_input_generation",
+        )
+        return GeneratedCodeArtifact(
+            name="adversarial_test_generator",
+            role="test_input_generator",
+            code=_clean_code(str(payload.get("test_generator_code", ""))),
+            metadata={"notes": payload.get("notes", ""), "stage": "adversarial_test_input"},
+        )
 
-class WeakPlayerGenerator:
+    def generate_small_challenge_tests(
+        self,
+        context: dict[str, Any],
+        revision_context: dict[str, Any] | None = None,
+    ) -> list[dict[str, Any]]:
+        payload = self.client.chat_json(
+            system_prompt=prompt_small_challenge_test_input.build_system_prompt(),
+            user_prompt=prompt_small_challenge_test_input.build_user_prompt(context, revision_context),
+            temperature=0.2,
+            timeout_s=self.timeout_s,
+            request_name="small_challenge_test_input_generation",
+        )
+        return normalize_small_challenge_tests(payload.get("tests", []))
+
+
+class FixedCategoryWrongSolutionGenerator:
     def __init__(self, client: Any):
         self.client = client
 
     def generate(
         self,
-        statement_only_context: dict[str, Any],
+        context: dict[str, Any],
         revision_context: dict[str, Any] | None = None,
     ) -> list[WrongSolution]:
-        payload = self.client.chat_json(
-            system_prompt=build_code_system_prompt("WeakPlayerGenerator"),
-            user_prompt=build_weak_player_prompt(statement_only_context, revision_context),
-            temperature=0.75,
-        )
-        return [
-            WrongSolution(
-                solution_id=str(item.get("solution_id", f"weak_player_{index}")),
-                code=_clean_code(str(item.get("code", ""))),
-                source=str(item.get("source", "weak_llm_player")),
-                bug_type=str(item.get("bug_type", "unknown")),
-                expected_failure=str(item.get("expected_failure", "")),
-                metadata={"raw": copy.deepcopy(item)},
+        del revision_context
+        if self.client is None:
+            return []
+        wrong_solutions: list[WrongSolution] = []
+        for index, category in enumerate(prompt_sections.FIXED_WRONG_CATEGORIES, start=1):
+            code = self.client.chat_text(
+                system_prompt=prompt_fixed_category_wrong_solution.build_system_prompt(),
+                user_prompt=prompt_fixed_category_wrong_solution.build_user_prompt(context, category),
+                temperature=0.65,
+                request_name=f"fixed_wrong_solution_{index}",
             )
-            for index, item in enumerate(payload.get("wrong_solutions", []), start=1)
-            if isinstance(item, dict)
-        ]
+            wrong_solutions.append(
+                WrongSolution(
+                    solution_id=f"fixed_wrong_{index}_{_safe_id(category)}",
+                    code=_clean_code(code),
+                    source="fixed_category_llm_player",
+                    bug_type=category,
+                    expected_failure=f"固定错误策略类别：{category}",
+                    metadata={
+                        "source_kind": "fixed_category",
+                        "strategy_category": category,
+                        "strategy_text": f"按固定错误策略类别生成：{category}",
+                        "expected_failure_feature": f"固定错误策略类别：{category}",
+                    },
+                )
+            )
+        return wrong_solutions
 
 
 class SchemaMistakeAnalyzer:
@@ -232,16 +255,16 @@ class SchemaMistakeAnalyzer:
     def generate(
         self,
         context: dict[str, Any],
-        spec: ExecutionSpec,
         revision_context: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
-        if not context.get("new_schema") or self.client is None:
+        if not (context.get("new_schema") or context.get("new_schema_snapshot")) or self.client is None:
             return []
 
         payload = self.client.chat_json(
-            system_prompt=build_code_system_prompt("SchemaMistakeAnalyzer"),
-            user_prompt=build_schema_mistake_analysis_prompt(context, to_dict(spec), revision_context),
+            system_prompt=prompt_schema_mistake_analysis.build_system_prompt(),
+            user_prompt=prompt_schema_mistake_analysis.build_user_prompt(context, revision_context),
             temperature=0.35,
+            request_name="schema_mistake_analysis",
         )
         mistake_points = payload.get("mistake_points", [])
         if not isinstance(mistake_points, list):
@@ -253,52 +276,41 @@ class SchemaMistakeAnalyzer:
         ]
 
 
-class SchemaAwareWrongSolutionGenerator:
+class StrategyWrongSolutionGenerator:
     def __init__(self, client: Any):
         self.client = client
 
     def generate(
         self,
         context: dict[str, Any],
-        spec: ExecutionSpec,
         mistake_points: list[dict[str, Any]],
         revision_context: dict[str, Any] | None = None,
     ) -> list[WrongSolution]:
-        if not context.get("new_schema") or not mistake_points or self.client is None:
+        del revision_context
+        if not mistake_points or self.client is None:
             return []
-
-        payload = self.client.chat_json(
-            system_prompt=build_code_system_prompt("SchemaAwareWrongSolutionGenerator"),
-            user_prompt=build_schema_aware_wrong_solution_prompt(context, to_dict(spec), mistake_points, revision_context),
-            temperature=0.65,
-        )
-        mistake_by_id = {str(item.get("mistake_id", "")).strip(): item for item in mistake_points}
-        default_schema_signals = _extract_schema_signal_names(context.get("new_schema"))
         wrong_solutions: list[WrongSolution] = []
-        raw_items = payload.get("wrong_solutions", [])
-        if not isinstance(raw_items, list):
-            return wrong_solutions
-
-        for index, item in enumerate(raw_items, start=1):
-            if not isinstance(item, dict):
-                continue
-            mistake_id = str(item.get("mistake_id", "")).strip()
-            mistake_point = mistake_by_id.get(mistake_id, {})
-            schema_signals = item.get("schema_signals")
-            if not isinstance(schema_signals, list):
-                schema_signals = default_schema_signals
+        for index, mistake in enumerate(mistake_points, start=1):
+            code = self.client.chat_text(
+                system_prompt=prompt_strategy_wrong_solution.build_system_prompt(),
+                user_prompt=prompt_strategy_wrong_solution.build_user_prompt(context, mistake),
+                temperature=0.65,
+                request_name=f"strategy_wrong_solution_{index}",
+            )
+            strategy_id = str(mistake.get("strategy_id") or f"free_strategy_{index}").strip()
             wrong_solutions.append(
                 WrongSolution(
-                    solution_id=str(item.get("solution_id", f"{spec.problem_id}_schema_wrong_{index}")),
-                    code=_clean_code(str(item.get("code", ""))),
-                    source="schema_aware_llm_player",
-                    bug_type=str(item.get("bug_type", "schema_misread")),
-                    expected_failure=str(item.get("expected_failure", "")),
+                    solution_id=f"free_wrong_{index}_{_safe_id(strategy_id)}",
+                    code=_clean_code(code),
+                    source="free_strategy_llm_player",
+                    bug_type=str(mistake.get("category", "free_strategy")),
+                    expected_failure=str(mistake.get("failure_reason") or mistake.get("trigger_shape") or ""),
                     metadata={
-                        "mistake_id": mistake_id,
-                        "mistake_point": copy.deepcopy(mistake_point),
-                        "schema_signals": [str(signal) for signal in schema_signals if str(signal).strip()],
-                        "raw": copy.deepcopy(item),
+                        "source_kind": "free_strategy",
+                        "strategy_category": str(mistake.get("category", "free_strategy")),
+                        "strategy_text": str(mistake.get("wrong_strategy", "")),
+                        "expected_failure_feature": str(mistake.get("failure_reason") or mistake.get("trigger_shape") or ""),
+                        "strategy": copy.deepcopy(mistake),
                     },
                 )
             )
@@ -307,48 +319,24 @@ class SchemaAwareWrongSolutionGenerator:
 
 def _normalize_mistake_point(item: dict[str, Any], index: int) -> dict[str, Any]:
     return {
-        "mistake_id": str(item.get("mistake_id", f"schema_mistake_{index}")).strip() or f"schema_mistake_{index}",
-        "schema_basis": _normalize_string_list(item.get("schema_basis")),
-        "player_visible_misread": str(item.get("player_visible_misread", "")).strip(),
+        "strategy_id": str(item.get("strategy_id", f"free_strategy_{index}")).strip() or f"free_strategy_{index}",
+        "category": str(item.get("category", "")).strip(),
+        "title": str(item.get("title", "")).strip(),
         "wrong_strategy": str(item.get("wrong_strategy", "")).strip(),
-        "target_failure_bucket": str(item.get("target_failure_bucket", "")).strip(),
-        "expected_counterexample_shape": str(item.get("expected_counterexample_shape", "")).strip(),
-        "triviality_risk": str(item.get("triviality_risk", "")).strip(),
+        "plausible_reason": str(item.get("plausible_reason", "")).strip(),
+        "failure_reason": str(item.get("failure_reason", "")).strip(),
+        "trigger_shape": str(item.get("trigger_shape", "")).strip(),
         "raw": copy.deepcopy(item),
     }
 
 
-def _extract_schema_signal_names(new_schema: Any) -> list[str]:
-    if not isinstance(new_schema, dict):
-        return []
-    signals: list[str] = []
-    objective = new_schema.get("objective", {})
-    if isinstance(objective, dict):
-        objective_type = str(objective.get("type", "")).strip()
-        if objective_type:
-            signals.append(f"objective:{objective_type}")
-
-    constraints = new_schema.get("core_constraints", {}).get("constraints", [])
-    if isinstance(constraints, list):
-        for item in constraints:
-            if isinstance(item, dict) and str(item.get("name", "")).strip():
-                signals.append(f"constraint:{item['name']}")
-
-    invariants = new_schema.get("invariant", {}).get("invariants", [])
-    if isinstance(invariants, list):
-        for item in invariants:
-            if isinstance(item, dict) and str(item.get("name", "")).strip():
-                signals.append(f"invariant:{item['name']}")
-    return signals
-
-
-def _normalize_string_list(value: Any) -> list[str]:
-    if isinstance(value, list):
-        return [str(item).strip() for item in value if str(item).strip()]
-    if value is None:
-        return []
-    text = str(value).strip()
-    return [text] if text else []
+def _artifact_dict(artifact: GeneratedCodeArtifact) -> dict[str, Any]:
+    return {
+        "name": artifact.name,
+        "role": artifact.role,
+        "code": artifact.code,
+        "metadata": artifact.metadata,
+    }
 
 
 def _normalize_advisor_revision(payload: dict[str, Any], failure_packet: dict[str, Any]) -> dict[str, Any]:
@@ -370,6 +358,15 @@ def _normalize_advisor_revision(payload: dict[str, Any], failure_packet: dict[st
     }
 
 
+def _normalize_string_list(value: Any) -> list[str]:
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    if value is None:
+        return []
+    text = str(value).strip()
+    return [text] if text else []
+
+
 def _clean_code(text: str) -> str:
     cleaned = text.strip()
     if "```" not in cleaned:
@@ -383,3 +380,10 @@ def _clean_code(text: str) -> str:
         if candidate.startswith("def ") or candidate.startswith("import ") or candidate.startswith("from "):
             return candidate
     return cleaned.replace("```python", "").replace("```", "").strip()
+
+
+def _safe_id(text: str) -> str:
+    cleaned = "".join(char.lower() if char.isalnum() else "_" for char in str(text))
+    while "__" in cleaned:
+        cleaned = cleaned.replace("__", "_")
+    return cleaned.strip("_") or "wrong"

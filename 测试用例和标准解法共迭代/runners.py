@@ -72,7 +72,7 @@ class CodeRunner:
             timeout_s=timeout_s,
         )
 
-    def run_generate_tests(
+    def run_generate_test_input(
         self,
         *,
         artifact_name: str,
@@ -82,9 +82,26 @@ class CodeRunner:
         return self.run_function(
             artifact_name=artifact_name,
             code=code,
-            function_name="generate_tests",
+            function_name="generate_test_input",
             args=[],
-            test_source="test_generator",
+            test_source=artifact_name,
+            timeout_s=timeout_s,
+        )
+
+    def run_validate_test_input(
+        self,
+        *,
+        artifact_name: str,
+        code: str,
+        input_data: str,
+        timeout_s: float | None = None,
+    ) -> ExecutionResult:
+        return self.run_function(
+            artifact_name=artifact_name,
+            code=code,
+            function_name="validate_test_input",
+            args=[input_data],
+            test_source=artifact_name,
             timeout_s=timeout_s,
         )
 
@@ -246,4 +263,3 @@ def main() -> int:
 if __name__ == "__main__":
     raise SystemExit(main())
 """
-

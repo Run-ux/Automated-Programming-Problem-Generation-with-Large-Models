@@ -16,23 +16,22 @@ from config import (
     DEFAULT_RUN_TIMEOUT_S,
     DEFAULT_STALLING_BASELINE_ROUNDS,
 )
+from artifact_context import build_problem_context, normalize_tests
 from curation import WrongSolutionCurator
-from execution_spec import normalize_tests
 from generators import (
-    OracleGenerator,
+    BruteForceSolutionGenerator,
+    FixedCategoryWrongSolutionGenerator,
     RevisionAdvisor,
-    SchemaAwareWrongSolutionGenerator,
     SchemaMistakeAnalyzer,
-    SpecExtractor,
     StandardSolutionGenerator,
+    StrategyWrongSolutionGenerator,
     ToolGenerator,
-    WeakPlayerGenerator,
 )
 from models import (
-    ExecutionSpec,
     FailureIssue,
     GeneratedCodeArtifact,
     IterationSummary,
+    ProblemContext,
     TestCase,
     ValidationReport,
     WrongSolution,
@@ -52,13 +51,12 @@ class PackageValidationPipeline:
         kill_rate_threshold: float = DEFAULT_KILL_RATE_THRESHOLD,
         run_timeout_s: float = DEFAULT_RUN_TIMEOUT_S,
         large_run_timeout_s: float = DEFAULT_LARGE_RUN_TIMEOUT_S,
-        spec_extractor: SpecExtractor | None = None,
         standard_generator: StandardSolutionGenerator | None = None,
-        oracle_generator: OracleGenerator | None = None,
+        bruteforce_generator: BruteForceSolutionGenerator | None = None,
         tool_generator: ToolGenerator | None = None,
-        weak_player_generator: WeakPlayerGenerator | None = None,
+        fixed_wrong_solution_generator: FixedCategoryWrongSolutionGenerator | None = None,
         schema_mistake_analyzer: SchemaMistakeAnalyzer | None = None,
-        schema_wrong_solution_generator: SchemaAwareWrongSolutionGenerator | None = None,
+        strategy_wrong_solution_generator: StrategyWrongSolutionGenerator | None = None,
         revision_advisor: Any | None = None,
         progress_writer: Any | None = None,
         max_revision_context_bytes: int = DEFAULT_MAX_REVISION_CONTEXT_BYTES,
@@ -70,13 +68,12 @@ class PackageValidationPipeline:
         self.kill_rate_threshold = kill_rate_threshold
         self.run_timeout_s = run_timeout_s
         self.large_run_timeout_s = large_run_timeout_s
-        self.spec_extractor = spec_extractor or SpecExtractor(client)
         self.standard_generator = standard_generator or StandardSolutionGenerator(client)
-        self.oracle_generator = oracle_generator or OracleGenerator(client)
+        self.bruteforce_generator = bruteforce_generator or BruteForceSolutionGenerator(client)
         self.tool_generator = tool_generator or ToolGenerator(client)
-        self.weak_player_generator = weak_player_generator or WeakPlayerGenerator(client)
+        self.fixed_wrong_solution_generator = fixed_wrong_solution_generator or FixedCategoryWrongSolutionGenerator(client)
         self.schema_mistake_analyzer = schema_mistake_analyzer or SchemaMistakeAnalyzer(client)
-        self.schema_wrong_solution_generator = schema_wrong_solution_generator or SchemaAwareWrongSolutionGenerator(client)
+        self.strategy_wrong_solution_generator = strategy_wrong_solution_generator or StrategyWrongSolutionGenerator(client)
         self.revision_advisor = revision_advisor if revision_advisor is not None else (RevisionAdvisor(client) if client is not None else None)
         self.progress_writer = progress_writer or (lambda message: print(message, flush=True))
         self.max_revision_context_bytes = max_revision_context_bytes
@@ -341,57 +338,52 @@ class PackageValidationPipeline:
             return package
         self._emit(f"[生成] 增量修订：命中角色 {', '.join(sorted(roles))}。")
 
-        if "SpecExtractor" in roles:
+        if "ProblemContextBuilder" in roles:
             roles.update(
                 {
                     "StandardSolutionGenerator",
-                    "OracleGenerator",
+                    "BruteForceSolutionGenerator",
                     "ValidatorGenerator",
                     "CheckerGenerator",
                     "TestGenerator",
                     "SchemaMistakeAnalyzer",
-                    "SchemaAwareWrongSolutionGenerator",
+                    "FixedCategoryWrongSolutionGenerator",
+                    "StrategyWrongSolutionGenerator",
                 }
             )
-            self._emit("[生成] 增量修订：重生成 execution_spec，并级联重生成依赖组件。")
-            package["execution_spec"] = self.spec_extractor.generate(
-                context,
-                _revision_context_for_roles(revision_context, {"SpecExtractor"}, current_package),
-            )
+            self._emit("[生成] 增量修订：重建 artifact 题面上下文，并级联重生成依赖组件。")
+            package["problem_context"] = build_problem_context(context)
 
-        spec = package["execution_spec"]
         if "StandardSolutionGenerator" in roles:
             self._emit("[生成] 增量修订：重生成标准解。")
             candidate = self.standard_generator.generate(
                 context,
-                spec,
                 _revision_context_for_roles(revision_context, {"StandardSolutionGenerator"}, current_package),
             )
             self._promote_component_candidate(package, current_package, "standard_solution", candidate, revision_context)
-        if "OracleGenerator" in roles:
-            self._emit("[生成] 增量修订：重生成 oracle。")
-            candidate = self.oracle_generator.generate(
+        if "BruteForceSolutionGenerator" in roles:
+            self._emit("[生成] 增量修订：重生成正确暴力解。")
+            candidate = self.bruteforce_generator.generate(
                 context,
-                spec,
-                _revision_context_for_roles(revision_context, {"OracleGenerator"}, current_package),
+                _revision_context_for_roles(revision_context, {"BruteForceSolutionGenerator"}, current_package),
             )
-            self._promote_component_candidate(package, current_package, "oracle_solution", candidate, revision_context)
+            self._promote_component_candidate(package, current_package, "bruteforce_solution", candidate, revision_context)
         if "ToolGenerator" in roles:
-            self._emit("[生成] 增量修订：重生成 validator、checker 和 test_generator。")
+            self._emit("[生成] 增量修订：重生成 validator、checker 和三类测试输入。")
             tools = self.tool_generator.generate(
                 context,
-                spec,
                 _revision_context_for_roles(revision_context, {"ToolGenerator"}, current_package),
             )
             self._promote_component_candidate(package, current_package, "validator", tools["validator"], revision_context)
             self._promote_component_candidate(package, current_package, "checker", tools["checker"], revision_context)
-            self._promote_component_candidate(package, current_package, "test_generator", tools["test_generator"], revision_context)
+            self._promote_component_candidate(package, current_package, "random_test_generator", tools["random_test_generator"], revision_context)
+            self._promote_component_candidate(package, current_package, "adversarial_test_generator", tools["adversarial_test_generator"], revision_context)
+            package["small_challenge_tests"] = tools["small_challenge_tests"]
         else:
             if "ValidatorGenerator" in roles:
                 self._emit("[生成] 增量修订：只重生成 validator。")
                 candidate = self._generate_validator_component(
                     context,
-                    spec,
                     _revision_context_for_roles(revision_context, {"ValidatorGenerator"}, current_package),
                 )
                 self._promote_component_candidate(package, current_package, "validator", candidate, revision_context)
@@ -399,52 +391,48 @@ class PackageValidationPipeline:
                 self._emit("[生成] 增量修订：只重生成 checker。")
                 candidate = self._generate_checker_component(
                     context,
-                    spec,
                     package["validator"],
                     _revision_context_for_roles(revision_context, {"CheckerGenerator"}, current_package),
                 )
                 self._promote_component_candidate(package, current_package, "checker", candidate, revision_context)
             if "TestGenerator" in roles:
-                self._emit("[生成] 增量修订：只重生成 test_generator。")
-                candidate = self._generate_test_generator_component(
+                self._emit("[生成] 增量修订：重生成三类测试输入。")
+                tools = self.tool_generator.generate(
                     context,
-                    spec,
-                    package["validator"],
-                    package["checker"],
                     _revision_context_for_roles(revision_context, {"TestGenerator"}, current_package),
                 )
-                self._promote_component_candidate(package, current_package, "test_generator", candidate, revision_context)
+                self._promote_component_candidate(package, current_package, "random_test_generator", tools["random_test_generator"], revision_context)
+                self._promote_component_candidate(package, current_package, "adversarial_test_generator", tools["adversarial_test_generator"], revision_context)
+                package["small_challenge_tests"] = tools["small_challenge_tests"]
 
-        weak_wrong, schema_wrong = _split_wrong_solutions(package.get("wrong_solutions", []))
+        fixed_wrong, strategy_wrong = _split_wrong_solutions(package.get("wrong_solutions", []))
         skip_wrong_revision = bool(revision_context.get("baseline_repair_mode", False))
-        if "WeakPlayerGenerator" in roles and not skip_wrong_revision:
-            self._emit("[生成] 增量修订：重生成弱选手错误解。")
-            weak_wrong = self.weak_player_generator.generate(
-                _statement_only_context(context),
-                _revision_context_for_roles(revision_context, {"WeakPlayerGenerator"}, current_package),
+        if "FixedCategoryWrongSolutionGenerator" in roles and not skip_wrong_revision:
+            self._emit("[生成] 增量修订：重生成固定五类错误解。")
+            fixed_wrong = self.fixed_wrong_solution_generator.generate(
+                context,
+                _revision_context_for_roles(revision_context, {"FixedCategoryWrongSolutionGenerator"}, current_package),
             )
-            self._emit(f"[生成] 增量修订：弱选手错误解 {len(weak_wrong)} 个。")
+            self._emit(f"[生成] 增量修订：固定五类错误解 {len(fixed_wrong)} 个。")
         if "SchemaMistakeAnalyzer" in roles and not skip_wrong_revision:
-            self._emit("[生成] 增量修订：重新分析 schema 误解点。")
+            self._emit("[生成] 增量修订：重新分析自由错误策略。")
             package["schema_mistake_points"] = self.schema_mistake_analyzer.generate(
                 context,
-                spec,
                 _revision_context_for_roles(revision_context, {"SchemaMistakeAnalyzer"}, current_package),
             )
-            self._emit(f"[生成] 增量修订：schema 误解点 {len(package['schema_mistake_points'])} 个。")
-            roles.add("SchemaAwareWrongSolutionGenerator")
-        if "SchemaAwareWrongSolutionGenerator" in roles and not skip_wrong_revision:
-            self._emit("[生成] 增量修订：重生成 schema-aware 错误解。")
-            schema_wrong = self.schema_wrong_solution_generator.generate(
+            self._emit(f"[生成] 增量修订：自由错误策略 {len(package['schema_mistake_points'])} 个。")
+            roles.add("StrategyWrongSolutionGenerator")
+        if "StrategyWrongSolutionGenerator" in roles and not skip_wrong_revision:
+            self._emit("[生成] 增量修订：逐策略重生成错误解。")
+            strategy_wrong = self.strategy_wrong_solution_generator.generate(
                 context,
-                spec,
                 package.get("schema_mistake_points", []),
-                _revision_context_for_roles(revision_context, {"SchemaAwareWrongSolutionGenerator"}, current_package),
+                _revision_context_for_roles(revision_context, {"StrategyWrongSolutionGenerator"}, current_package),
             )
-            self._emit(f"[生成] 增量修订：schema-aware 错误解 {len(schema_wrong)} 个。")
+            self._emit(f"[生成] 增量修订：自由策略错误解 {len(strategy_wrong)} 个。")
         if skip_wrong_revision:
             self._emit("[生成] 增量修订：当前处于基础自洽修复模式，跳过错误解池改动。")
-        package["wrong_solutions"] = [*weak_wrong, *schema_wrong]
+        package["wrong_solutions"] = [*fixed_wrong, *strategy_wrong]
         self._emit(f"[生成] 增量修订完成：错误解候选共 {len(package['wrong_solutions'])} 个。")
         return package
 
@@ -455,22 +443,24 @@ class PackageValidationPipeline:
         *,
         include_wrong_solutions: bool = True,
     ) -> dict[str, Any]:
-        self._emit("[生成] 抽取 execution_spec。")
-        spec = self.spec_extractor.generate(context, revision_context)
+        self._emit("[生成] 构造 artifact 题面上下文。")
+        problem_context = build_problem_context(context)
         self._emit("[生成] 生成标准解。")
-        standard = self.standard_generator.generate(context, spec, revision_context)
-        self._emit("[生成] 生成 oracle。")
-        oracle = self.oracle_generator.generate(context, spec, revision_context)
-        self._emit("[生成] 生成 validator、checker 和 test_generator。")
-        tools = self.tool_generator.generate(context, spec, revision_context)
+        standard = self.standard_generator.generate(context, revision_context)
+        self._emit("[生成] 生成正确暴力解。")
+        bruteforce = self.bruteforce_generator.generate(context, revision_context)
+        self._emit("[生成] 生成 validator、checker 和三类测试输入。")
+        tools = self.tool_generator.generate(context, revision_context)
         package = {
             "context": context,
-            "execution_spec": spec,
+            "problem_context": problem_context,
             "standard_solution": standard,
-            "oracle_solution": oracle,
+            "bruteforce_solution": bruteforce,
             "validator": tools["validator"],
             "checker": tools["checker"],
-            "test_generator": tools["test_generator"],
+            "random_test_generator": tools["random_test_generator"],
+            "adversarial_test_generator": tools["adversarial_test_generator"],
+            "small_challenge_tests": tools["small_challenge_tests"],
             "schema_mistake_points": [],
             "wrong_solutions": [],
         }
@@ -487,56 +477,40 @@ class PackageValidationPipeline:
         revision_context: dict[str, Any],
     ) -> dict[str, Any]:
         package = copy.deepcopy(package)
-        spec = package["execution_spec"]
-        self._emit("[生成] 生成弱选手错误解。")
-        weak_wrong = self.weak_player_generator.generate(_statement_only_context(context), revision_context)
-        self._emit(f"[生成] 弱选手错误解 {len(weak_wrong)} 个。")
-        self._emit("[生成] 分析 schema 误解点。")
-        mistake_points = self.schema_mistake_analyzer.generate(context, spec, revision_context)
-        self._emit(f"[生成] schema 误解点 {len(mistake_points)} 个。")
-        self._emit("[生成] 生成 schema-aware 错误解。")
-        schema_wrong = self.schema_wrong_solution_generator.generate(context, spec, mistake_points, revision_context)
-        self._emit(f"[生成] schema-aware 错误解 {len(schema_wrong)} 个。")
+        self._emit("[生成] 生成固定五类错误解。")
+        fixed_wrong = self.fixed_wrong_solution_generator.generate(context, revision_context)
+        self._emit(f"[生成] 固定五类错误解 {len(fixed_wrong)} 个。")
+        self._emit("[生成] 分析自由错误策略。")
+        mistake_points = self.schema_mistake_analyzer.generate(context, revision_context)
+        self._emit(f"[生成] 自由错误策略 {len(mistake_points)} 个。")
+        self._emit("[生成] 逐策略生成错误解。")
+        strategy_wrong = self.strategy_wrong_solution_generator.generate(context, mistake_points, revision_context)
+        self._emit(f"[生成] 自由策略错误解 {len(strategy_wrong)} 个。")
         package["schema_mistake_points"] = mistake_points
-        package["wrong_solutions"] = [*weak_wrong, *schema_wrong]
+        package["wrong_solutions"] = [*fixed_wrong, *strategy_wrong]
         self._emit(f"[生成] 错误解池生成完成：候选共 {len(package['wrong_solutions'])} 个。")
         return package
 
     def _generate_validator_component(
         self,
         context: dict[str, Any],
-        spec: ExecutionSpec,
         revision_context: dict[str, Any],
     ) -> GeneratedCodeArtifact:
         generator = getattr(self.tool_generator, "generate_validator", None)
         if callable(generator):
-            return generator(context, spec, revision_context)
-        return self.tool_generator.generate(context, spec, revision_context)["validator"]
+            return generator(context, revision_context)
+        return self.tool_generator.generate(context, revision_context)["validator"]
 
     def _generate_checker_component(
         self,
         context: dict[str, Any],
-        spec: ExecutionSpec,
         validator: GeneratedCodeArtifact,
         revision_context: dict[str, Any],
     ) -> GeneratedCodeArtifact:
         generator = getattr(self.tool_generator, "generate_checker", None)
         if callable(generator):
-            return generator(context, spec, validator, revision_context)
-        return self.tool_generator.generate(context, spec, revision_context)["checker"]
-
-    def _generate_test_generator_component(
-        self,
-        context: dict[str, Any],
-        spec: ExecutionSpec,
-        validator: GeneratedCodeArtifact,
-        checker: GeneratedCodeArtifact,
-        revision_context: dict[str, Any],
-    ) -> GeneratedCodeArtifact:
-        generator = getattr(self.tool_generator, "generate_test_generator", None)
-        if callable(generator):
-            return generator(context, spec, validator, checker, revision_context)
-        return self.tool_generator.generate(context, spec, revision_context)["test_generator"]
+            return generator(context, validator, revision_context)
+        return self.tool_generator.generate(context, revision_context)["checker"]
 
     def _promote_component_candidate(
         self,
@@ -604,10 +578,10 @@ class PackageValidationPipeline:
             )
             return False, result, issue
 
-        if component_key in {"standard_solution", "oracle_solution"}:
+        if component_key in {"standard_solution", "bruteforce_solution"}:
             artifact_name = candidate.name
             for test in checks:
-                if component_key == "oracle_solution" and (test.is_large or not test.expect_oracle):
+                if component_key == "bruteforce_solution" and (test.is_large or not test.expect_bruteforce):
                     continue
                 execution = self.runner.run_solve(
                     artifact_name=artifact_name,
@@ -667,21 +641,33 @@ class PackageValidationPipeline:
                     return fail(f"checker 候选接口或语法错误：{syntax_check.error_reason or syntax_check.status}")
             return True, result, None
 
-        if component_key == "test_generator":
-            execution = self.runner.run_generate_tests(
+        if component_key in {"random_test_generator", "adversarial_test_generator"}:
+            execution = self.runner.run_generate_test_input(
                 artifact_name=candidate.name,
                 code=candidate.code,
                 timeout_s=self.run_timeout_s,
             )
             result["checks"].append(to_dict(execution))
             if execution.status != "ok":
-                return fail(f"test_generator 候选执行失败：{execution.error_reason or execution.status}")
+                return fail(f"{component_key} 候选执行失败：{execution.error_reason or execution.status}")
             try:
-                generated_tests = normalize_tests(execution.result, candidate_package["execution_spec"])
+                problem = candidate_package["problem_context"]
+                generated_tests = normalize_tests(
+                    [
+                        {
+                            "input": str(execution.result),
+                            "source": candidate.name,
+                            "purpose": "候选测试输入门禁",
+                            "expect_bruteforce": True,
+                            "is_large": False,
+                        }
+                    ],
+                    problem,
+                )
             except ValueError as exc:
-                return fail(f"test_generator 候选返回结构非法：{exc}")
+                return fail(f"{component_key} 候选返回结构非法：{exc}")
             if not generated_tests:
-                return fail("test_generator 候选未生成任何可执行测试。")
+                return fail(f"{component_key} 候选未生成任何可执行测试。")
             validator = candidate_package["validator"]
             for test in generated_tests[:3]:
                 validation = self.runner.run_validate(
@@ -693,7 +679,7 @@ class PackageValidationPipeline:
                 )
                 result["checks"].append(to_dict(validation))
                 if validation.status != "ok" or validation.result is not True:
-                    return fail(f"test_generator 候选生成了 validator 拒绝的用例 {test.source}。")
+                    return fail(f"{component_key} 候选生成了 validator 拒绝的用例 {test.source}。")
             return True, result, None
 
         return True, result, None
@@ -754,6 +740,118 @@ class PackageValidationPipeline:
             return result, None
         return result, _build_candidate_gate_issue(component_key, result)
 
+    def _collect_generated_tests(
+        self,
+        package: dict[str, Any],
+    ) -> tuple[list[TestCase], list[FailureIssue], list[dict[str, Any]]]:
+        problem: ProblemContext = package["problem_context"]
+        issues: list[FailureIssue] = []
+        matrix: list[dict[str, Any]] = []
+        raw_tests: list[dict[str, Any]] = []
+
+        for key, source, purpose in [
+            ("random_test_generator", "random_test_input", "随机测试输入"),
+            ("adversarial_test_generator", "adversarial_test_input", "边界与最坏情况测试输入"),
+        ]:
+            artifact = package.get(key)
+            if not isinstance(artifact, GeneratedCodeArtifact):
+                issues.append(
+                    FailureIssue(
+                        category="test_generator_failed",
+                        severity="blocker",
+                        title="测试输入生成器缺失",
+                        detail=f"缺少 {key} 产物。",
+                        fix_hint="回流 TestGenerator，重新生成三类测试输入产物。",
+                    )
+                )
+                continue
+            execution = self.runner.run_generate_test_input(
+                artifact_name=artifact.name,
+                code=artifact.code,
+                timeout_s=self.run_timeout_s,
+            )
+            matrix.append(to_dict(execution))
+            if execution.status != "ok":
+                issues.append(
+                    FailureIssue(
+                        category="test_generator_failed",
+                        severity="blocker",
+                        title="测试输入生成器执行失败",
+                        detail=f"{key} 执行失败：{execution.error_reason or execution.status}",
+                        fix_hint="回流 TestGenerator，修复 generate_test_input 接口或运行错误。",
+                    )
+                )
+                continue
+            input_text = str(execution.result).strip()
+            if not input_text:
+                issues.append(
+                    FailureIssue(
+                        category="test_generator_failed",
+                        severity="blocker",
+                        title="测试输入生成器返回空输入",
+                        detail=f"{key} 返回空字符串。",
+                        fix_hint="回流 TestGenerator，要求 generate_test_input 返回完整合法输入。",
+                    )
+                )
+                continue
+            validate_func = self.runner.run_validate_test_input(
+                artifact_name=artifact.name,
+                code=artifact.code,
+                input_data=input_text,
+                timeout_s=self.run_timeout_s,
+            )
+            matrix.append(to_dict(validate_func))
+            if validate_func.status == "ok" and validate_func.result is not True:
+                issues.append(
+                    FailureIssue(
+                        category="test_generator_failed",
+                        severity="high",
+                        title="测试输入生成器自校验失败",
+                        detail=f"{key} 生成的输入未通过自身 validate_test_input。",
+                        fix_hint="回流 TestGenerator，统一生成逻辑与校验逻辑。",
+                    )
+                )
+                continue
+            raw_tests.append(
+                {
+                    "input": input_text,
+                    "source": source,
+                    "purpose": purpose,
+                    "expect_bruteforce": source != "adversarial_test_input",
+                    "is_large": source == "adversarial_test_input",
+                    "metadata": {"generator": key},
+                }
+            )
+
+        small_tests = package.get("small_challenge_tests", [])
+        if isinstance(small_tests, list):
+            raw_tests.extend(small_tests)
+        else:
+            issues.append(
+                FailureIssue(
+                    category="test_generator_failed",
+                    severity="blocker",
+                    title="小规模挑战输入结构非法",
+                    detail="small_challenge_tests 必须是列表。",
+                    fix_hint="回流 TestGenerator，重新生成小规模挑战输入列表。",
+                )
+            )
+
+        try:
+            tests = normalize_tests(raw_tests, problem)
+        except ValueError as exc:
+            issues.append(
+                FailureIssue(
+                    category="test_generator_failed",
+                    severity="blocker",
+                    title="测试输入归一化失败",
+                    detail=str(exc),
+                    fix_hint="回流 TestGenerator，修正测试输入产物结构。",
+                )
+            )
+            tests = []
+        return tests, issues, matrix
+
     def _validate_package(
         self,
         package: dict[str, Any],
@@ -767,12 +865,11 @@ class PackageValidationPipeline:
         candidate_package_gate_results: dict[str, Any] | None = None,
         build_revision_advice: bool = True,
     ) -> ValidationReport:
-        spec: ExecutionSpec = package["execution_spec"]
+        problem: ProblemContext = package["problem_context"]
         standard: GeneratedCodeArtifact = package["standard_solution"]
-        oracle: GeneratedCodeArtifact = package["oracle_solution"]
+        bruteforce: GeneratedCodeArtifact = package["bruteforce_solution"]
         validator: GeneratedCodeArtifact = package["validator"]
         checker: GeneratedCodeArtifact = package["checker"]
-        test_generator: GeneratedCodeArtifact = package["test_generator"]
         wrong_solutions: list[WrongSolution] = package["wrong_solutions"]
 
         effective_regression_cases = self._regression_cases if regression_cases is None else regression_cases
@@ -805,49 +902,21 @@ class PackageValidationPipeline:
             "failed_sources": [],
             "passed_cases": [],
         }
-        semantic_gate_issues = _evaluate_semantic_gate(spec, checker)
+        semantic_gate_issues = _evaluate_semantic_gate(problem, checker)
         issues.extend(semantic_gate_issues)
         base_checks: dict[str, Any] = {
             "passed": True,
             "failed_categories": [],
             "validated_test_count": 0,
             "standard_checked_count": 0,
-            "oracle_checked_count": 0,
+            "bruteforce_checked_count": 0,
             "wrong_solution_curation_skipped": False,
         }
 
-        self._emit("[验证] 运行 test_generator，生成测试用例。")
-        generated_tests_result = self.runner.run_generate_tests(
-            artifact_name=test_generator.name,
-            code=test_generator.code,
-            timeout_s=self.run_timeout_s,
-        )
-        matrix.append(to_dict(generated_tests_result))
-        if generated_tests_result.status != "ok":
-            issues.append(
-                FailureIssue(
-                    category="test_generator_failed",
-                    severity="blocker",
-                    title="测试生成器执行失败",
-                    detail=generated_tests_result.error_reason,
-                    fix_hint="回流 ToolGenerator，修复 test_generator 接口或运行错误。",
-                )
-            )
-            tests: list[TestCase] = []
-        else:
-            try:
-                tests = normalize_tests(generated_tests_result.result, spec)
-            except ValueError as exc:
-                issues.append(
-                    FailureIssue(
-                        category="test_generator_failed",
-                        severity="blocker",
-                        title="测试生成器返回结构非法",
-                        detail=str(exc),
-                        fix_hint="回流 ToolGenerator，要求 generate_tests 返回 list[dict]。",
-                    )
-                )
-                tests = []
+        self._emit("[验证] 运行三类测试输入生成器，生成测试用例。")
+        tests, generation_issues, generation_matrix = self._collect_generated_tests(package)
+        issues.extend(generation_issues)
+        matrix.extend(generation_matrix)
         if effective_regression_cases:
             tests = _prepend_priority_cases(_mark_case_group(effective_regression_cases, "regression"), tests)
             regression_results["executed_count"] = len(effective_regression_cases)
@@ -862,8 +931,8 @@ class PackageValidationPipeline:
                     category="test_suite_empty",
                     severity="blocker",
                     title="测试生成器未产出有效测试",
-                    detail="generate_tests 未返回任何可执行输入，无法验证标准解、oracle 和错误解池。",
-                    fix_hint="回流 ToolGenerator，要求 test_generator 至少生成样例、边界和基础随机测试。",
+                    detail="三类测试输入产物未返回任何可执行输入，无法验证标准解、正确暴力解和错误解池。",
+                    fix_hint="回流 TestGenerator，要求至少生成样例、边界和基础随机测试。",
                 )
             )
 
@@ -945,39 +1014,39 @@ class PackageValidationPipeline:
                 continue
             expected_outputs[test.source] = str(standard_result.result)
 
-            oracle_expected: str | None = None
-            oracle_mismatch = False
-            if test.expect_oracle and not test.is_large:
-                self._emit(f"[验证] 测试 {test_index}/{len(tests)}（{test_label}）：运行 oracle。")
-                oracle_result = self.runner.run_solve(
-                    artifact_name=oracle.name,
-                    code=oracle.code,
+            bruteforce_expected: str | None = None
+            bruteforce_mismatch = False
+            if test.expect_bruteforce and not test.is_large:
+                self._emit(f"[验证] 测试 {test_index}/{len(tests)}（{test_label}）：运行正确暴力解。")
+                bruteforce_result = self.runner.run_solve(
+                    artifact_name=bruteforce.name,
+                    code=bruteforce.code,
                     input_data=test.input,
                     test_source=test.source,
                     timeout_s=self.run_timeout_s,
                 )
-                matrix.append(to_dict(oracle_result))
-                if oracle_result.status != "ok":
+                matrix.append(to_dict(bruteforce_result))
+                if bruteforce_result.status != "ok":
                     test_failed = append_issue_for_test(
                         FailureIssue(
-                            category="oracle_failed",
+                            category="bruteforce_failed",
                             severity="high",
-                            title="oracle 执行失败",
-                            detail=oracle_result.error_reason or oracle_result.status,
+                            title="正确暴力解执行失败",
+                            detail=bruteforce_result.error_reason or bruteforce_result.status,
                             evidence_refs=[test.source],
                             evidence=_build_failure_evidence(
                                 test=test,
                                 standard_output=standard_result.result,
-                                oracle_result=oracle_result,
+                                bruteforce_result=bruteforce_result,
                             ),
-                            fix_hint="回流 OracleGenerator，修正暴力逻辑或适用范围。",
+                            fix_hint="回流 BruteForceSolutionGenerator，修正暴力逻辑或适用范围。",
                         ),
                         test,
                     )
                 else:
-                    oracle_expected = str(oracle_result.result)
-                    if spec.judge_type == "exact" and _normalize_output(oracle_expected) != _normalize_output(str(standard_result.result)):
-                        oracle_mismatch = True
+                    bruteforce_expected = str(bruteforce_result.result)
+                    if problem.judge_type == "exact" and _normalize_output(bruteforce_expected) != _normalize_output(str(standard_result.result)):
+                        bruteforce_mismatch = True
 
             self._emit(f"[验证] 测试 {test_index}/{len(tests)}（{test_label}）：运行 checker 校验标准解输出。")
             checker_result = self.runner.run_check(
@@ -985,26 +1054,26 @@ class PackageValidationPipeline:
                 code=checker.code,
                 input_data=test.input,
                 output_data=str(standard_result.result),
-                expected_data=oracle_expected,
+                expected_data=bruteforce_expected,
                 test_source=test.source,
                 timeout_s=self.run_timeout_s,
             )
             matrix.append(to_dict(checker_result))
-            if oracle_mismatch:
+            if bruteforce_mismatch:
                 test_failed = append_issue_for_test(
                     FailureIssue(
-                        category="standard_oracle_mismatch",
+                        category="standard_bruteforce_mismatch",
                         severity="blocker",
-                        title="标准解与 oracle 不一致",
-                        detail=f"测试 {test.source} 上标准解输出与 oracle 输出不同。",
+                        title="标准解与正确暴力解不一致",
+                        detail=f"测试 {test.source} 上标准解输出与正确暴力解输出不同。",
                         evidence_refs=[test.source],
                         evidence=_build_failure_evidence(
                             test=test,
                             standard_output=standard_result.result,
-                            oracle_output=oracle_expected,
+                            bruteforce_output=bruteforce_expected,
                             checker_result=checker_result,
                         ),
-                        fix_hint="回流 StandardSolutionGenerator 与 OracleGenerator，定位反例。",
+                        fix_hint="回流 StandardSolutionGenerator 与 BruteForceSolutionGenerator，定位反例。",
                     ),
                     test,
                 )
@@ -1014,14 +1083,14 @@ class PackageValidationPipeline:
                         category="checker_rejects_standard_output",
                         severity="blocker",
                         title="checker 拒绝标准解输出",
-                        detail=_checker_reject_detail(spec, checker_result.error_reason or f"测试 {test.source} 的标准输出未被 checker 接受。"),
+                        detail=_checker_reject_detail(problem, checker_result.error_reason or f"测试 {test.source} 的标准输出未被 checker 接受。"),
                         evidence_refs=[test.source],
-                        evidence=_build_failure_evidence(
-                            test=test,
-                            standard_output=standard_result.result,
-                            oracle_output=oracle_expected,
-                            checker_result=checker_result,
-                        ),
+                            evidence=_build_failure_evidence(
+                                test=test,
+                                standard_output=standard_result.result,
+                                bruteforce_output=bruteforce_expected,
+                                checker_result=checker_result,
+                            ),
                         fix_hint="回流 ToolGenerator 和 StandardSolutionGenerator，确认 checker 合法性谓词与标准解输出。",
                     ),
                     test,
@@ -1029,41 +1098,41 @@ class PackageValidationPipeline:
             else:
                 base_checks["standard_checked_count"] += 1
 
-            if spec.judge_type == "checker" and oracle_expected is not None:
-                self._emit(f"[验证] 测试 {test_index}/{len(tests)}（{test_label}）：运行 checker 校验 oracle 输出。")
-                oracle_checker_result = self.runner.run_check(
+            if problem.judge_type == "checker" and bruteforce_expected is not None:
+                self._emit(f"[验证] 测试 {test_index}/{len(tests)}（{test_label}）：运行 checker 校验正确暴力解输出。")
+                bruteforce_checker_result = self.runner.run_check(
                     artifact_name=checker.name,
                     code=checker.code,
                     input_data=test.input,
-                    output_data=oracle_expected,
-                    expected_data=oracle_expected,
+                    output_data=bruteforce_expected,
+                    expected_data=bruteforce_expected,
                     test_source=test.source,
                     timeout_s=self.run_timeout_s,
                 )
-                matrix.append(to_dict(oracle_checker_result))
-                if oracle_checker_result.status != "ok" or oracle_checker_result.result is not True:
+                matrix.append(to_dict(bruteforce_checker_result))
+                if bruteforce_checker_result.status != "ok" or bruteforce_checker_result.result is not True:
                     test_failed = append_issue_for_test(
                         FailureIssue(
-                            category="oracle_output_rejected_by_checker",
+                            category="bruteforce_output_rejected_by_checker",
                             severity="blocker",
-                            title="checker 拒绝 oracle 输出",
+                            title="checker 拒绝正确暴力解输出",
                             detail=_checker_reject_detail(
-                                spec,
-                                oracle_checker_result.error_reason or f"测试 {test.source} 的 oracle 输出未被 checker 接受。",
+                                problem,
+                                bruteforce_checker_result.error_reason or f"测试 {test.source} 的正确暴力解输出未被 checker 接受。",
                             ),
                             evidence_refs=[test.source],
                             evidence=_build_failure_evidence(
                                 test=test,
                                 standard_output=standard_result.result,
-                                oracle_output=oracle_expected,
-                                checker_result=oracle_checker_result,
+                                bruteforce_output=bruteforce_expected,
+                                checker_result=bruteforce_checker_result,
                             ),
-                            fix_hint="回流 ToolGenerator 和 OracleGenerator，确认 checker 合法性谓词与 oracle 输出。",
+                            fix_hint="回流 ToolGenerator 和 BruteForceSolutionGenerator，确认 checker 合法性谓词与暴力解输出。",
                         ),
                         test,
                     )
                 else:
-                    base_checks["oracle_checked_count"] += 1
+                    base_checks["bruteforce_checked_count"] += 1
 
             finalize_case(test, failed=test_failed)
 
@@ -1094,7 +1163,7 @@ class PackageValidationPipeline:
                     category="kill_rate_skipped_due_to_invalid_baseline",
                     severity="high",
                     title="基础自洽失败，跳过错误解杀伤率统计",
-                    detail="validator、标准解、oracle 或 checker 的基础自洽检查未通过，本轮杀伤率不可作为可信指标。",
+                    detail="validator、标准解、正确暴力解或 checker 的基础自洽检查未通过，本轮杀伤率不可作为可信指标。",
                     fix_hint="优先修复基础自洽问题，再重新执行错误解筛选。",
                 )
             )
@@ -1164,8 +1233,8 @@ class PackageValidationPipeline:
 
     def _write_round_package(self, round_dir: Path, package: dict[str, Any]) -> None:
         round_dir.mkdir(parents=True, exist_ok=True)
-        (round_dir / "execution_spec.json").write_text(
-            json.dumps(to_dict(package["execution_spec"]), ensure_ascii=False, indent=2),
+        (round_dir / "problem_context.json").write_text(
+            json.dumps(to_dict(package["problem_context"]), ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
         (round_dir / "schema_mistake_points.json").write_text(
@@ -1173,10 +1242,17 @@ class PackageValidationPipeline:
             encoding="utf-8",
         )
         _write_code_artifact(round_dir / "standard_solution.py", package["standard_solution"])
-        _write_code_artifact(round_dir / "oracle_solution.py", package["oracle_solution"])
+        _write_code_artifact(round_dir / "bruteforce_solution.py", package["bruteforce_solution"])
         _write_code_artifact(round_dir / "validator.py", package["validator"])
         _write_code_artifact(round_dir / "checker.py", package["checker"])
-        _write_code_artifact(round_dir / "test_generator.py", package["test_generator"])
+        test_input_dir = round_dir / "test_inputs"
+        test_input_dir.mkdir(parents=True, exist_ok=True)
+        _write_code_artifact(test_input_dir / "random_generator.py", package["random_test_generator"])
+        _write_code_artifact(test_input_dir / "adversarial_generator.py", package["adversarial_test_generator"])
+        (test_input_dir / "small_challenge_inputs.json").write_text(
+            json.dumps(to_dict(package.get("small_challenge_tests", [])), ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
         wrong_dir = round_dir / "wrong_solutions"
         if wrong_dir.exists():
             shutil.rmtree(wrong_dir)
@@ -1222,10 +1298,8 @@ def _build_context(
         "markdown_path": str(markdown_path) if markdown_path else "",
         "statement_markdown": markdown,
         "generated_problem": generated_problem,
+        "new_schema_snapshot": new_schema,
         "new_schema": new_schema,
-        "algorithmic_delta_claim": artifact.get("algorithmic_delta_claim", {}),
-        "difference_plan": artifact.get("difference_plan", {}),
-        "applied_rule": artifact.get("applied_rule", ""),
     }
 
 
@@ -1316,7 +1390,7 @@ def _compact_evidence_for_prompt(evidence: dict[str, Any]) -> dict[str, Any]:
     for key in ("test", "test_source"):
         if key in evidence:
             compact[key] = copy.deepcopy(evidence[key])
-    for key in ("input", "standard_output", "oracle_output"):
+    for key in ("input", "standard_output", "bruteforce_output"):
         if key in evidence:
             compact[key] = _compact_text(evidence[key], limit=1000)
     for key, value in evidence.items():
@@ -1356,7 +1430,7 @@ def _regression_case_summaries(regression_cases: list[TestCase]) -> list[dict[st
                 "source": case.source,
                 "purpose": case.purpose,
                 "is_large": case.is_large,
-                "expect_oracle": case.expect_oracle,
+                "expect_bruteforce": case.expect_bruteforce,
                 "metadata": dict(case.metadata),
                 "input_excerpt": _compact_text(case.input, limit=500),
             }
@@ -1373,7 +1447,7 @@ def _known_good_case_summaries(known_good_cases: list[TestCase]) -> list[dict[st
                 "purpose": case.purpose,
                 "is_sample": case.is_sample,
                 "is_large": case.is_large,
-                "expect_oracle": case.expect_oracle,
+                "expect_bruteforce": case.expect_bruteforce,
                 "metadata": dict(case.metadata),
                 "input_excerpt": _compact_text(case.input, limit=500),
             }
@@ -1534,14 +1608,14 @@ def _revision_context_for_roles(
 
 
 def _split_wrong_solutions(wrong_solutions: list[WrongSolution]) -> tuple[list[WrongSolution], list[WrongSolution]]:
-    weak_wrong: list[WrongSolution] = []
-    schema_wrong: list[WrongSolution] = []
+    fixed_wrong: list[WrongSolution] = []
+    strategy_wrong: list[WrongSolution] = []
     for item in wrong_solutions:
-        if item.source == "schema_aware_llm_player":
-            schema_wrong.append(item)
+        if item.source == "fixed_category_llm_player":
+            fixed_wrong.append(item)
         else:
-            weak_wrong.append(item)
-    return weak_wrong, schema_wrong
+            strategy_wrong.append(item)
+    return fixed_wrong, strategy_wrong
 
 
 def _current_artifact_summary(current_package: dict[str, Any] | None, roles: set[str] | None) -> dict[str, Any]:
@@ -1549,21 +1623,23 @@ def _current_artifact_summary(current_package: dict[str, Any] | None, roles: set
         return {}
     include_all = roles is None
     summary: dict[str, Any] = {}
-    if include_all or "SpecExtractor" in roles:
-        summary["execution_spec"] = to_dict(current_package.get("execution_spec"))
+    if include_all or "ProblemContextBuilder" in roles:
+        summary["problem_context"] = to_dict(current_package.get("problem_context"))
     if include_all or "StandardSolutionGenerator" in roles:
         summary["standard_solution"] = _code_artifact_for_context(current_package.get("standard_solution"))
-    if include_all or "OracleGenerator" in roles:
-        summary["oracle_solution"] = _code_artifact_for_context(current_package.get("oracle_solution"))
+    if include_all or "BruteForceSolutionGenerator" in roles:
+        summary["bruteforce_solution"] = _code_artifact_for_context(current_package.get("bruteforce_solution"))
     if include_all or {"ToolGenerator", "ValidatorGenerator"} & roles:
         summary["validator"] = _code_artifact_for_context(current_package.get("validator"))
     if include_all or {"ToolGenerator", "CheckerGenerator"} & roles:
         summary["checker"] = _code_artifact_for_context(current_package.get("checker"))
     if include_all or {"ToolGenerator", "TestGenerator"} & roles:
-        summary["test_generator"] = _code_artifact_for_context(current_package.get("test_generator"))
+        summary["random_test_generator"] = _code_artifact_for_context(current_package.get("random_test_generator"))
+        summary["adversarial_test_generator"] = _code_artifact_for_context(current_package.get("adversarial_test_generator"))
+        summary["small_challenge_tests"] = to_dict(current_package.get("small_challenge_tests", []))
     if include_all or "SchemaMistakeAnalyzer" in roles:
         summary["schema_mistake_points"] = to_dict(current_package.get("schema_mistake_points", []))
-    if include_all or {"WeakPlayerGenerator", "SchemaAwareWrongSolutionGenerator"} & roles:
+    if include_all or {"FixedCategoryWrongSolutionGenerator", "StrategyWrongSolutionGenerator"} & roles:
         summary["wrong_solutions"] = [
             {
                 "solution_id": item.solution_id,
@@ -1593,16 +1669,14 @@ def _code_artifact_for_context(value: Any) -> dict[str, Any]:
 def _frozen_contract_summary(current_package: dict[str, Any] | None) -> dict[str, Any]:
     if not current_package:
         return {}
-    spec = current_package.get("execution_spec")
-    if not isinstance(spec, ExecutionSpec):
+    problem = current_package.get("problem_context")
+    if not isinstance(problem, ProblemContext):
         return {}
     return {
-        "problem_id": spec.problem_id,
-        "judge_type": spec.judge_type,
-        "input_contract": spec.input_contract,
-        "output_contract": spec.output_contract,
-        "oracle_limits": spec.oracle_limits,
-        "performance_limits": spec.performance_limits,
+        "problem_id": problem.problem_id,
+        "judge_type": problem.judge_type,
+        "generated_problem": problem.generated_problem,
+        "schema_snapshot": problem.schema_snapshot,
     }
 
 
@@ -1615,18 +1689,18 @@ _TARGET_ROLES_BY_CATEGORY = {
     "checker_rejects_standard_output": ["CheckerGenerator", "StandardSolutionGenerator"],
     "standard_solution_failed": ["StandardSolutionGenerator"],
     "performance_failure": ["StandardSolutionGenerator"],
-    "oracle_failed": ["OracleGenerator"],
-    "oracle_output_rejected_by_checker": ["CheckerGenerator", "OracleGenerator"],
-    "standard_oracle_mismatch": ["StandardSolutionGenerator", "OracleGenerator"],
-    "wrong_solution_survived": ["TestGenerator", "WeakPlayerGenerator", "SchemaMistakeAnalyzer", "SchemaAwareWrongSolutionGenerator"],
-    "kill_rate_skipped_due_to_invalid_baseline": ["TestGenerator", "StandardSolutionGenerator", "OracleGenerator"],
-    "component_gate_failed": ["ValidatorGenerator", "CheckerGenerator", "TestGenerator", "StandardSolutionGenerator", "OracleGenerator"],
-    "revision_payload_too_large": ["TestGenerator", "StandardSolutionGenerator", "OracleGenerator"],
-    "semantic_kernel_required": ["CheckerGenerator", "SpecExtractor"],
-    "statement_revision_required": ["SpecExtractor"],
-    "candidate_regression_detected": ["ValidatorGenerator", "CheckerGenerator", "TestGenerator", "StandardSolutionGenerator", "OracleGenerator"],
-    "known_good_case_failed": ["ValidatorGenerator", "CheckerGenerator", "TestGenerator", "StandardSolutionGenerator", "OracleGenerator"],
-    "candidate_not_better_than_current": ["ValidatorGenerator", "CheckerGenerator", "TestGenerator", "StandardSolutionGenerator", "OracleGenerator"],
+    "bruteforce_failed": ["BruteForceSolutionGenerator"],
+    "bruteforce_output_rejected_by_checker": ["CheckerGenerator", "BruteForceSolutionGenerator"],
+    "standard_bruteforce_mismatch": ["StandardSolutionGenerator", "BruteForceSolutionGenerator"],
+    "wrong_solution_survived": ["TestGenerator", "FixedCategoryWrongSolutionGenerator", "SchemaMistakeAnalyzer", "StrategyWrongSolutionGenerator"],
+    "kill_rate_skipped_due_to_invalid_baseline": ["TestGenerator", "StandardSolutionGenerator", "BruteForceSolutionGenerator"],
+    "component_gate_failed": ["ValidatorGenerator", "CheckerGenerator", "TestGenerator", "StandardSolutionGenerator", "BruteForceSolutionGenerator"],
+    "revision_payload_too_large": ["TestGenerator", "StandardSolutionGenerator", "BruteForceSolutionGenerator"],
+    "semantic_kernel_required": ["CheckerGenerator", "ProblemContextBuilder"],
+    "statement_revision_required": ["ProblemContextBuilder"],
+    "candidate_regression_detected": ["ValidatorGenerator", "CheckerGenerator", "TestGenerator", "StandardSolutionGenerator", "BruteForceSolutionGenerator"],
+    "known_good_case_failed": ["ValidatorGenerator", "CheckerGenerator", "TestGenerator", "StandardSolutionGenerator", "BruteForceSolutionGenerator"],
+    "candidate_not_better_than_current": ["ValidatorGenerator", "CheckerGenerator", "TestGenerator", "StandardSolutionGenerator", "BruteForceSolutionGenerator"],
 }
 
 DERIVED_NON_ROUTING_CATEGORIES = {"kill_rate_skipped_due_to_invalid_baseline"}
@@ -1897,9 +1971,9 @@ def _flatten_diagnostics(revision_context: dict[str, Any]) -> list[dict[str, Any
 
 def _component_gate_inputs(package: dict[str, Any], regression_cases: list[TestCase]) -> list[TestCase]:
     cases: list[TestCase] = []
-    spec = package.get("execution_spec")
-    if isinstance(spec, ExecutionSpec):
-        for index, sample in enumerate(spec.sample_tests[:3], start=1):
+    problem = package.get("problem_context")
+    if isinstance(problem, ProblemContext):
+        for index, sample in enumerate(problem.sample_tests[:3], start=1):
             if not isinstance(sample, dict) or not str(sample.get("input", "")).strip():
                 continue
             cases.append(
@@ -1907,7 +1981,7 @@ def _component_gate_inputs(package: dict[str, Any], regression_cases: list[TestC
                     input=str(sample.get("input", "")),
                     source=str(sample.get("source") or f"sample_{index}"),
                     purpose=str(sample.get("purpose") or "样例门禁"),
-                    expect_oracle=True,
+                    expect_bruteforce=True,
                     is_sample=True,
                     is_large=False,
                     metadata={"sample_output": str(sample.get("output", ""))},
@@ -1936,7 +2010,7 @@ def _mark_case_group(cases: list[TestCase], group: str) -> list[TestCase]:
                 input=case.input,
                 source=case.source,
                 purpose=case.purpose,
-                expect_oracle=case.expect_oracle,
+                expect_bruteforce=case.expect_bruteforce,
                 is_sample=case.is_sample,
                 is_large=case.is_large,
                 metadata=metadata,
@@ -1953,7 +2027,7 @@ def _should_record_known_good_case(test: TestCase) -> bool:
     return bool(
         test.is_sample
         or test.is_large
-        or test.expect_oracle
+        or test.expect_bruteforce
         or test.metadata.get("regression")
         or test.metadata.get("active")
     )
@@ -1967,7 +2041,7 @@ def _as_known_good_case(test: TestCase) -> TestCase:
         input=test.input,
         source=f"known_good:{_normalize_test_source(test.source)}",
         purpose=test.purpose or "历史已通过用例",
-        expect_oracle=test.expect_oracle,
+        expect_bruteforce=test.expect_bruteforce,
         is_sample=test.is_sample,
         is_large=test.is_large,
         metadata=metadata,
@@ -1981,7 +2055,7 @@ def _build_known_good_failure_issue(test: TestCase, source_issue: FailureIssue) 
         "purpose": test.purpose,
         "is_sample": test.is_sample,
         "is_large": test.is_large,
-        "expect_oracle": test.expect_oracle,
+        "expect_bruteforce": test.expect_bruteforce,
         "metadata": dict(test.metadata),
     }
     evidence["source_failure_category"] = source_issue.category
@@ -2036,7 +2110,7 @@ def _extract_regression_cases(report: ValidationReport) -> list[TestCase]:
                 input=input_data,
                 source=f"regression:{source}",
                 purpose=str(test.get("purpose") or issue.get("title") or "历史失败反例"),
-                expect_oracle=bool(test.get("expect_oracle", False)),
+                expect_bruteforce=_bool_with_legacy(test, "expect_bruteforce", "expect_oracle", False),
                 is_sample=bool(test.get("is_sample", False)),
                 is_large=bool(test.get("is_large", False)),
                 metadata=metadata,
@@ -2071,7 +2145,12 @@ def _extract_active_failure_cases(report: ValidationReport, *, limit: int = 20) 
                 input=input_data,
                 source=f"active:{_normalize_test_source(str(test.get('source') or issue.get('category') or 'active'))}",
                 purpose=str(test.get("purpose") or issue.get("title") or "active 失败反例"),
-                expect_oracle=bool(test.get("expect_oracle", not bool(test.get("is_large", False)))),
+                expect_bruteforce=_bool_with_legacy(
+                    test,
+                    "expect_bruteforce",
+                    "expect_oracle",
+                    not bool(test.get("is_large", False)),
+                ),
                 is_sample=bool(test.get("is_sample", False)),
                 is_large=bool(test.get("is_large", False)),
                 metadata=metadata,
@@ -2099,7 +2178,7 @@ def _extract_known_good_cases(report: ValidationReport) -> list[TestCase]:
                 input=input_text,
                 source=str(item.get("source") or "known_good"),
                 purpose=str(item.get("purpose") or "历史已通过用例"),
-                expect_oracle=bool(item.get("expect_oracle", True)),
+                expect_bruteforce=_bool_with_legacy(item, "expect_bruteforce", "expect_oracle", True),
                 is_sample=bool(item.get("is_sample", False)),
                 is_large=bool(item.get("is_large", False)),
                 metadata=metadata,
@@ -2263,13 +2342,13 @@ def _candidate_delta_summary_from_gate_results(gate_results: dict[str, Any]) -> 
     }
 
 
-def _evaluate_semantic_gate(spec: ExecutionSpec, checker: GeneratedCodeArtifact) -> list[FailureIssue]:
-    if spec.judge_type != "checker":
+def _evaluate_semantic_gate(problem: ProblemContext, checker: GeneratedCodeArtifact) -> list[FailureIssue]:
+    if problem.judge_type != "checker":
         return []
     contract_text = json.dumps(
         {
-            "output_contract": spec.output_contract,
-            "ambiguity_notes": spec.ambiguity_notes,
+            "generated_problem": problem.generated_problem,
+            "schema_snapshot": problem.schema_snapshot,
         },
         ensure_ascii=False,
         sort_keys=True,
@@ -2295,15 +2374,15 @@ def _evaluate_semantic_gate(spec: ExecutionSpec, checker: GeneratedCodeArtifact)
             severity="blocker",
             title="checker 未证明最小证书语义",
             detail=(
-                "execution_spec 要求输出字典序最小或最小冲突证书，但 checker 代码未体现最小性校验。"
-                "该类证书往往需要共享可审计的语义内核，否则标准解、oracle 和 checker 会产生不同判定口径。"
+                "题面或 schema 要求输出字典序最小或最小冲突证书，但 checker 代码未体现最小性校验。"
+                "该类证书往往需要共享可审计的语义内核，否则标准解、正确暴力解和 checker 会产生不同判定口径。"
             ),
             evidence={
-                "judge_type": spec.judge_type,
-                "output_contract": spec.output_contract,
+                "judge_type": problem.judge_type,
+                "generated_problem": problem.generated_problem,
                 "checker_metadata": checker.metadata,
             },
-            fix_hint="为 checker/oracle/标准解提供共享的最小证书校验语义内核，或回到题面生成流程澄清/降低证书要求。",
+            fix_hint="为 checker/正确暴力解/标准解提供共享的最小证书校验语义内核，或回到题面生成流程澄清/降低证书要求。",
         )
     ]
 
@@ -2354,8 +2433,8 @@ def _normalize_output(text: str) -> str:
     return "\n".join(line.rstrip() for line in str(text).strip().splitlines()).strip()
 
 
-def _checker_reject_detail(spec: ExecutionSpec, detail: str) -> str:
-    if spec.judge_type != "checker":
+def _checker_reject_detail(problem: ProblemContext, detail: str) -> str:
+    if problem.judge_type != "checker":
         return detail
     return f"{detail} checker 题允许多解，不能用字符串相等判断合法性。"
 
@@ -2366,15 +2445,15 @@ def _build_failure_evidence(
     validator_result: Any | None = None,
     standard_result: Any | None = None,
     standard_output: Any | None = None,
-    oracle_result: Any | None = None,
-    oracle_output: Any | None = None,
+    bruteforce_result: Any | None = None,
+    bruteforce_output: Any | None = None,
     checker_result: Any | None = None,
 ) -> dict[str, Any]:
     evidence: dict[str, Any] = {
         "test": {
             "source": test.source,
             "purpose": test.purpose,
-            "expect_oracle": test.expect_oracle,
+            "expect_bruteforce": test.expect_bruteforce,
             "is_sample": test.is_sample,
             "is_large": test.is_large,
             "metadata": dict(test.metadata),
@@ -2388,10 +2467,10 @@ def _build_failure_evidence(
         evidence["standard_result"] = _result_evidence(standard_result)
     if standard_output is not None:
         evidence["standard_output"] = str(standard_output)
-    if oracle_result is not None:
-        evidence["oracle_result"] = _result_evidence(oracle_result)
-    if oracle_output is not None:
-        evidence["oracle_output"] = str(oracle_output)
+    if bruteforce_result is not None:
+        evidence["bruteforce_result"] = _result_evidence(bruteforce_result)
+    if bruteforce_output is not None:
+        evidence["bruteforce_output"] = str(bruteforce_output)
     if checker_result is not None:
         evidence["checker_result"] = _result_evidence(checker_result)
     return evidence
@@ -2414,10 +2493,12 @@ def _build_diagnostic(issue: FailureIssue) -> dict[str, Any]:
         component = str((issue.evidence or {}).get("component", "")).strip()
         target_roles = {
             "standard_solution": ["StandardSolutionGenerator"],
-            "oracle_solution": ["OracleGenerator"],
+            "bruteforce_solution": ["BruteForceSolutionGenerator"],
             "validator": ["ValidatorGenerator"],
             "checker": ["CheckerGenerator"],
-            "test_generator": ["TestGenerator"],
+            "random_test_generator": ["TestGenerator"],
+            "adversarial_test_generator": ["TestGenerator"],
+            "small_challenge_tests": ["TestGenerator"],
         }.get(component, target_roles)
     diagnostic = {
         "category": issue.category,
@@ -2555,9 +2636,17 @@ def _summarize_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
     summarized: dict[str, Any] = {}
     for key, value in evidence.items():
         if key == "input":
-            summarized[key] = _summarize_text(value, is_large=is_large, prefer_full=bool(test.get("expect_oracle")) and not is_large)
-        elif key in {"standard_output", "oracle_output"}:
-            summarized[key] = _summarize_text(value, is_large=is_large, prefer_full=bool(test.get("expect_oracle")) and not is_large)
+            summarized[key] = _summarize_text(
+                value,
+                is_large=is_large,
+                prefer_full=_bool_with_legacy(test, "expect_bruteforce", "expect_oracle", False) and not is_large,
+            )
+        elif key in {"standard_output", "bruteforce_output", "oracle_output"}:
+            summarized[key] = _summarize_text(
+                value,
+                is_large=is_large,
+                prefer_full=_bool_with_legacy(test, "expect_bruteforce", "expect_oracle", False) and not is_large,
+            )
         elif key.endswith("_result") and isinstance(value, dict):
             summarized[key] = _summarize_result(value, is_large=is_large)
         else:
@@ -2632,36 +2721,36 @@ def _summarize_traceback(text: str) -> dict[str, Any]:
 
 def _build_output_diff(evidence: dict[str, Any]) -> dict[str, Any]:
     standard = evidence.get("standard_output")
-    oracle = evidence.get("oracle_output")
-    if standard is None or oracle is None:
+    bruteforce = evidence.get("bruteforce_output", evidence.get("oracle_output"))
+    if standard is None or bruteforce is None:
         return {}
     standard_text = str(standard)
-    oracle_text = str(oracle)
-    if _normalize_output(standard_text) == _normalize_output(oracle_text):
+    bruteforce_text = str(bruteforce)
+    if _normalize_output(standard_text) == _normalize_output(bruteforce_text):
         return {}
     standard_tokens = standard_text.split()
-    oracle_tokens = oracle_text.split()
+    bruteforce_tokens = bruteforce_text.split()
     token_index = 0
-    while token_index < min(len(standard_tokens), len(oracle_tokens)) and standard_tokens[token_index] == oracle_tokens[token_index]:
+    while token_index < min(len(standard_tokens), len(bruteforce_tokens)) and standard_tokens[token_index] == bruteforce_tokens[token_index]:
         token_index += 1
     standard_lines = standard_text.splitlines()
-    oracle_lines = oracle_text.splitlines()
+    bruteforce_lines = bruteforce_text.splitlines()
     line_index = 0
-    while line_index < min(len(standard_lines), len(oracle_lines)) and standard_lines[line_index].rstrip() == oracle_lines[line_index].rstrip():
+    while line_index < min(len(standard_lines), len(bruteforce_lines)) and standard_lines[line_index].rstrip() == bruteforce_lines[line_index].rstrip():
         line_index += 1
     return {
         "first_different_token": {
             "index": token_index,
             "standard": standard_tokens[token_index] if token_index < len(standard_tokens) else None,
-            "oracle": oracle_tokens[token_index] if token_index < len(oracle_tokens) else None,
+            "bruteforce": bruteforce_tokens[token_index] if token_index < len(bruteforce_tokens) else None,
         },
         "first_different_line": {
             "index": line_index,
             "standard": standard_lines[line_index] if line_index < len(standard_lines) else None,
-            "oracle": oracle_lines[line_index] if line_index < len(oracle_lines) else None,
+            "bruteforce": bruteforce_lines[line_index] if line_index < len(bruteforce_lines) else None,
         },
         "standard_window": _window(standard_lines, line_index, _DIFF_WINDOW),
-        "oracle_window": _window(oracle_lines, line_index, _DIFF_WINDOW),
+        "bruteforce_window": _window(bruteforce_lines, line_index, _DIFF_WINDOW),
     }
 
 
@@ -2682,6 +2771,14 @@ def _dedupe(items: list[str]) -> list[str]:
         seen.add(item)
         result.append(item)
     return result
+
+
+def _bool_with_legacy(item: dict[str, Any], key: str, legacy_key: str, default: bool) -> bool:
+    if key in item:
+        return bool(item.get(key))
+    if legacy_key in item:
+        return bool(item.get(legacy_key))
+    return bool(default)
 
 
 def _skipped_wrong_solution_stats(*, candidate_count: int, kill_rate_threshold: float) -> dict[str, Any]:

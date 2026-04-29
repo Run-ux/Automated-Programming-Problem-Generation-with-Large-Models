@@ -1,6 +1,6 @@
 # 题包生成验证
 
-该模块实现“测试用例与标准解法共迭代”的后续流程。它接收 `生成题面` 的 artifact 与 Markdown 题面，生成可执行规格、标准解法、oracle、validator、checker、测试生成器和错误解池，并通过真实执行报告判断题包是否可交付。
+该模块实现“测试用例与标准解法共迭代”的后续流程。它接收 `生成题面` 的 artifact 与 Markdown 题面，直接基于题面字段和 schema 四字段生成标准解、正确暴力解、validator、checker、三类测试输入和错误解池，并通过真实执行报告判断题包是否可交付。
 
 ## 运行
 
@@ -19,6 +19,14 @@ REVISION_ADVISOR_LLM_MODEL=
 REVISION_ADVISOR_LLM_TIMEOUT_S=360
 ```
 
+安装运行依赖：
+
+```bash
+pip install -r requirements.txt
+```
+
+`requirements.txt` 固定包含 `cyaron==0.7.0`。随机与对抗测试输入生成器允许使用该依赖，其它生成代码仍只允许使用 Python 标准库。
+
 ```bash
 python main.py ^
   --artifact D:\AutoProblemGen\生成题面\artifacts\...\round1.json ^
@@ -30,9 +38,10 @@ python main.py ^
 
 代码生成阶段的上下文策略如下：
 
-- 保留 `statement_markdown` 作为题意与样例的主来源。
-- 完整透传 `new_schema`、`difference_plan`、`algorithmic_delta_claim`，避免摘要丢失结构性信息。
-- 不再注入 `generated_problem` 摘要，避免与 Markdown 题面重复并形成双份语义来源。
+- `prompts/` 继续按功能再分成 `standard_solution/`、`bruteforce_solution/`、`tool_generation/`、`wrong_solution/` 四个子包；每个子包内统一提供 `build_system_prompt()` / `build_user_prompt(...)`，并在各自模块内直接维护完整 prompt 文本，不再通过 `prompt_builder.py` 或共享 prompt composer 聚合系统/用户提示词。
+- 统一构造 `problem_context.json`，只抽取 `generated_problem.title/description/input_format/output_format/constraints/samples/notes`。
+- schema 只透传 `new_schema_snapshot` 或 `new_schema` 中的 `input_structure/core_constraints/objective/invariant`；`invariant` 缺失时按 `{}` 透传。
+- 标准解、正确暴力解、validator、checker、测试输入和错误解生成器都不接收 `algorithmic_delta_claim`。
 
 默认输出到：
 
@@ -51,36 +60,38 @@ python main.py ^
 
 ## 产物合同
 
-- `execution_spec.json`：输入约束、输出合同、判题方式、oracle 小规模范围和测试桶。
+- `problem_context.json`：artifact 上下文快照，包含题面字段、schema 四字段、样例测试和推断的 `judge_type`。
 - `standard_solution.py`：标准解法，必须实现 `solve(input_str: str) -> str`。
-- `oracle_solution.py`：小规模暴力 oracle，必须实现 `solve(input_str: str) -> str`。
+- `bruteforce_solution.py`：正确暴力解，必须实现 `solve(input_str: str) -> str`，只在样例和小规模测试上强校验。
 - `validator.py`：必须实现 `validate(input_str: str) -> bool`。
 - `checker.py`：必须实现 `check(input_str: str, output_str: str, expected_str: str | None) -> bool`。
-- `test_generator.py`：必须实现 `generate_tests() -> list[dict]`。
-- `schema_mistake_points.json`：基于 `new_schema` 抽取的真实选手误解点，用于审计 schema 创新点如何映射到错误解。
-- `wrong_solutions/`：候选错误解池，每份错误解实现 `solve(input_str: str) -> str`。错误解来源包含只看题面的弱选手模拟，以及内部使用 `new_schema` 的 schema-aware 误解点模拟。
+- `test_inputs/random_generator.py`：随机测试输入生成器，必须实现 `generate_test_input() -> str` 和 `validate_test_input(input_string: str) -> bool`，允许使用 `cyaron==0.7.0`。
+- `test_inputs/adversarial_generator.py`：对抗/边界测试输入生成器，接口同上，允许使用 `cyaron==0.7.0`。
+- `test_inputs/small_challenge_inputs.json`：小规模挑战输入列表，每项包含 `input/source/purpose/expect_bruteforce/is_large/metadata`。
+- `schema_mistake_points.json`：LLM 根据具体题面和 schema 四字段自由分析出的真实错误策略，不设置固定数量、不自动补齐数量。
+- `wrong_solutions/`：候选错误解池，每份错误解实现 `solve(input_str: str) -> str`。错误解来源包含固定五类错误策略和自由策略逐条生成两路。
 - `execution_report.json`：执行矩阵、失败分类、错误解杀伤率和回流摘要。
-- `known_good_cases.json`：累计记录已通过的样例、小规模 oracle 用例、历史回归用例和关键性能用例；下一轮候选包必须全部通过。
+- `known_good_cases.json`：累计记录已通过的样例、小规模暴力校验用例、历史回归用例和关键性能用例；下一轮候选包必须全部通过。
 - `candidate_gate_history.json`：记录候选包级不退化门禁的晋级/拒绝历史。
 
 ## 报告可信度门禁
 
-`execution_report.json` 中的 `base_consistency` 表示基础产物是否自洽。只有当 validator、标准解、oracle（适用时）与 checker 的基础检查全部通过时，错误解杀伤率才是可信指标。
+`execution_report.json` 中的 `base_consistency` 表示基础产物是否自洽。只有当 validator、标准解、正确暴力解（适用时）与 checker 的基础检查全部通过时，错误解杀伤率才是可信指标。
 
 - `wrong_solution_stats.valid == true`：已执行错误解筛选，`kill_rate` 可用于判断测试集杀伤效果。
 - `wrong_solution_stats.valid == false`：基础自洽失败，已跳过错误解筛选，`kill_rate` 不可用。
-- `wrong_solution_stats.skip_reason == "baseline_validation_failed"`：跳过原因是标准解、oracle、validator 或 checker 至少一处基础校验失败。
+- `wrong_solution_stats.skip_reason == "baseline_validation_failed"`：跳过原因是标准解、正确暴力解、validator 或 checker 至少一处基础校验失败。
 - `kill_rate_threshold` 是错误解质量门槛的必要条件，不再单独构成 `pass` 的充分条件；即使杀伤率达标，只要仍存在高价值幸存错误解，题包也不会判为通过。
 
-对于 `judge_type == "checker"` 的题包，标准解与 oracle 都允许输出任意合法证书。流程不会再用字符串相等判断二者是否一致，而是分别用 checker 校验它们的输出合法性。对于 `judge_type == "exact"` 的题包，仍保留规范化字符串比较。
+对于 `judge_type == "checker"` 的题包，标准解与正确暴力解都允许输出任意合法证书。流程不会再用字符串相等判断二者是否一致，而是分别用 checker 校验它们的输出合法性。对于 `judge_type == "exact"` 的题包，仍保留规范化字符串比较。
 
-基础自洽未通过时，流程不生成新的错误解池，也不执行错误解筛选。只有基础组件通过 validator、标准解、oracle、checker 与语义门禁后，才会进入弱选手错误解、schema 误解点和 schema-aware 错误解生成阶段。
+基础自洽未通过时，流程不生成新的错误解池，也不执行错误解筛选。只有基础组件通过 validator、标准解、正确暴力解、checker 与语义门禁后，才会进入固定五类错误解、自由策略分析和逐策略错误解生成阶段。
 
-增量修订采用“候选组件晋级”策略：新生成的标准解、oracle、validator、checker 或 test_generator 会先经过语法、接口、样例/历史反例等轻量门禁；候选失败时保留上一轮组件，并把 `component_gate_failed` 写入报告回流。
+增量修订采用“候选组件晋级”策略：新生成的标准解、正确暴力解、validator、checker 或测试输入产物会先经过语法、接口、样例/历史反例等轻量门禁；候选失败时保留上一轮组件，并把 `component_gate_failed` 写入报告回流。
 
 轻量门禁通过后，流程会临时组装 `candidate_package` 执行包级不退化门禁。候选必须同时满足：上一轮 active blocker/high 问题减少或命中的 active issue 消失、不新增 blocker/high 类别、`known_good_cases` 全部通过、`semantic_gate_issues` 不增加、且基础自洽通过后的 `kill_rate` 不下降。失败时不会覆盖旧组件，并记录 `candidate_regression_detected` 或 `candidate_not_better_than_current`。
 
-`regression_cases.json` 会记录历史失败反例。下一轮验证会优先执行这些回归反例，再执行 test_generator 生成的新用例，避免同类失败在不同随机样本上反复出现。
+`regression_cases.json` 会记录历史失败反例。下一轮验证会优先执行这些回归反例，再执行三类测试输入产物生成的新用例，避免同类失败在不同随机样本上反复出现。
 
 `known_good_cases.json` 与 `regression_cases.json` 分工不同：前者是“不得回退”的已通过路径，候选包失败会报告 `known_good_case_failed`；后者是“必须重测”的历史失败反例，用于确认旧问题是否真正消失。
 
@@ -101,13 +112,13 @@ python main.py ^
 - `revision_audit_history.json`：完整保留每一轮 `revision_context`，用于审计和追踪。
 - 下一轮 LLM 使用的 active 修订上下文：只保留当前仍未解决的问题。每轮验证后，如果某个历史问题的 `issue_fingerprint` 不再出现，就视为已解决，并从下一轮 active 上下文中移除。
 
-从第 2 轮开始，流程不再全量重写题包，而是在上一轮工作副本基础上只重生成 active 诊断命中的角色；未命中的组件直接沿用当前工作副本。若规格抽取器被明确命中，则会级联重生成依赖 `execution_spec` 的组件。
+从第 2 轮开始，流程不再全量重写题包，而是在上一轮工作副本基础上只重生成 active 诊断命中的角色；未命中的组件直接沿用当前工作副本。若 artifact 上下文构造被明确命中，则会级联重生成依赖题面字段和 schema 四字段的组件。
 
 当前结构如下：
 
 - `summary`：按失败类别聚合的概览，记录类别、次数、最高严重级别和代表性测试来源。
 - `diagnostics_by_category`：按 `category -> diagnostic[]` 保存诊断对象。
-- `role_diagnostics`：按生成器角色保存行动诊断，例如 `StandardSolutionGenerator`、`OracleGenerator`、`ToolGenerator`、`WeakPlayerGenerator`、`SchemaMistakeAnalyzer`、`SchemaAwareWrongSolutionGenerator`。
+- `role_diagnostics`：按生成器角色保存行动诊断，例如 `StandardSolutionGenerator`、`BruteForceSolutionGenerator`、`ValidatorGenerator`、`CheckerGenerator`、`TestGenerator`、`FixedCategoryWrongSolutionGenerator`、`SchemaMistakeAnalyzer`、`StrategyWrongSolutionGenerator`。
 - `failed_hard_checks`：去重后的 `severity == blocker` 类别名。
 - `surviving_wrong_solution_details`：未被当前测试杀死的高价值错误解详情，不包含 `unexpected_correct` 这类误生成的正确候选；字段包含 `solution_id`、`bug_type`、`expected_failure`、`reason`、`passed_tests`、`killed_tests` 和 `metadata`。
 
@@ -116,29 +127,29 @@ python main.py ^
 - `category`、`severity`、`title`、`detail`、`fix_hint`
 - `issue_fingerprint`：用于跨轮判断同一问题是否仍然存在
 - `target_roles`：下一轮应消费该诊断的生成器角色
-- `evidence`：失败测试、输入摘要、执行结果、标准输出、oracle 输出、checker 结果等结构化证据
-- `diff`：仅在标准解输出与 oracle 输出不一致时出现，记录首个不同 token/行和差异窗口
+- `evidence`：失败测试、输入摘要、执行结果、标准输出、正确暴力解输出、checker 结果等结构化证据
+- `diff`：仅在标准解输出与正确暴力解输出不一致时出现，记录首个不同 token/行和差异窗口
 - `advisor_revision`：由 RevisionAdvisor 基于失败证据包生成的定向修订建议，包含 `root_cause`、`revision_advice`、`target_roles`、`evidence_used`、`confidence` 和 `risk_notes`。
 
 RevisionAdvisor 会在验证矩阵生成结构化诊断后运行。它接收的失败证据包包括诊断身份、失败现场、输出差异、命中角色相关的当前工作副本、幸存错误解详情，以及 carried issue 的上一轮建议。生成器 prompt 会优先使用 `advisor_revision.revision_advice` 作为回流上下文；`fix_hint` 仅保留为报告中的原始模板线索。若 RevisionAdvisor 调用失败或返回缺少 `revision_advice`，本轮流程会直接失败暴露错误，不继续使用旧模板建议回流。
 
 同一失败类别出现大量重复样本时，RevisionAdvisor 最多分析 3 个代表诊断；其余同类诊断复用代表建议并标记 `cluster_reused`，避免重复消耗 LLM 调用。
 
-角色路由以 RevisionAdvisor 的 `advisor_revision.target_roles` 为优先级最高的定向结果；只有 advisor 未给出有效角色时，才回退到类别级默认路由。因此当 advisor 明确只修 `StandardSolutionGenerator` 时，下一轮不会再因为类别默认值额外重生成 `ToolGenerator` 或 `OracleGenerator`。
+角色路由以 RevisionAdvisor 的 `advisor_revision.target_roles` 为优先级最高的定向结果；只有 advisor 未给出有效角色时，才回退到类别级默认路由。因此当 advisor 明确只修 `StandardSolutionGenerator` 时，下一轮不会再因为类别默认值额外重生成 `CheckerGenerator` 或 `BruteForceSolutionGenerator`。
 
 证据保留策略：
 
-- 小规模、`expect_oracle == true`、非 large 的失败反例优先完整保留输入输出。
+- 小规模、`expect_bruteforce == true`、非 large 的失败反例优先完整保留输入输出。
 - 大输入或大输出只保留规模信息、头尾片段和差异窗口，并标注 `truncated`、`original_length`、`kept_strategy`。
 - traceback 会提取异常类型、最后几层调用栈和最终错误行。
 - 超时、运行错误和 checker 拒绝都会保留执行状态、耗时、错误原因和测试 metadata。
 
 角色路由规则：
 
-- 标准解生成器重点接收标准解运行失败、性能失败、标准解/checker 冲突和标准解/oracle 差异。
-- oracle 生成器重点接收 oracle 运行失败、oracle 输出被 checker 拒绝和标准解/oracle 差异。
-- 工具生成器重点接收 test_generator、validator、checker 相关失败。
-- 测试生成器职责所在的工具生成器、弱选手错误解生成器和 schema-aware 错误解生成器会接收 `surviving_wrong_solution_details`，用于补定向反例或调整错误模式。
+- 标准解生成器重点接收标准解运行失败、性能失败、标准解/checker 冲突和标准解/正确暴力解差异。
+- 正确暴力解生成器重点接收暴力解运行失败、暴力解输出被 checker 拒绝和标准解/正确暴力解差异。
+- 工具生成器重点接收测试输入、validator、checker 相关失败。
+- 测试输入生成器、固定分类错误解生成器、自由策略分析器和逐策略错误解生成器会接收 `surviving_wrong_solution_details`，用于补定向反例或调整错误模式。
 - `kill_rate_skipped_due_to_invalid_baseline` 是报告型派生问题：它仍会出现在 `issues`、`execution_report.json` 和 `execution_report.md` 中说明本轮杀伤率不可用，但不进入下一轮 `role_diagnostics`，也不参与角色决策或基线停滞判定。
 
 `wrong_solution_stats` 额外记录：

@@ -5,16 +5,12 @@ from typing import Any
 
 
 @dataclass
-class ExecutionSpec:
+class ProblemContext:
     problem_id: str
-    input_contract: dict[str, Any]
-    output_contract: dict[str, Any]
+    generated_problem: dict[str, Any]
+    schema_snapshot: dict[str, Any]
     judge_type: str
-    oracle_limits: dict[str, Any]
-    test_buckets: list[dict[str, Any]]
     sample_tests: list[dict[str, Any]] = field(default_factory=list)
-    performance_limits: dict[str, Any] = field(default_factory=dict)
-    ambiguity_notes: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -30,7 +26,7 @@ class TestCase:
     input: str
     source: str
     purpose: str
-    expect_oracle: bool = True
+    expect_bruteforce: bool = True
     is_sample: bool = False
     is_large: bool = False
     metadata: dict[str, Any] = field(default_factory=dict)

@@ -18,7 +18,7 @@ from config import (
     DEFAULT_TIMEOUT_S,
     DEFAULT_TOOL_GENERATION_TIMEOUT_S,
 )
-from generators import RevisionAdvisor, StandardSolutionGenerator, ToolGenerator
+from generators import BruteForceSolutionGenerator, RevisionAdvisor, StandardSolutionGenerator, ToolGenerator
 from llm_client import LlmClient
 from pipeline import PackageValidationPipeline
 
@@ -78,6 +78,7 @@ def main() -> int:
         output_dir=args.output_dir,
         kill_rate_threshold=args.kill_rate_threshold,
         standard_generator=StandardSolutionGenerator(client, timeout_s=args.standard_timeout),
+        bruteforce_generator=BruteForceSolutionGenerator(client, timeout_s=args.standard_timeout),
         tool_generator=ToolGenerator(client, timeout_s=args.tool_timeout),
         revision_advisor=RevisionAdvisor(advisor_client),
     )

@@ -61,6 +61,41 @@ class LlmClient:
             ) from exc
         return _extract_json_object(content)
 
+    def chat_text(
+        self,
+        *,
+        system_prompt: str,
+        user_prompt: str,
+        temperature: float = 0.2,
+        max_retries: int = 3,
+        timeout_s: int | None = None,
+        request_name: str = "chat_text",
+    ) -> str:
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            "temperature": temperature,
+        }
+        raw = self._post_json(
+            url=f"{self.base_url}/chat/completions",
+            payload=payload,
+            max_retries=max_retries,
+            timeout_s=timeout_s or self.timeout_s,
+            request_name=request_name,
+        )
+        try:
+            response_payload = json.loads(raw)
+            return str(response_payload["choices"][0]["message"]["content"])
+        except (KeyError, IndexError, TypeError, json.JSONDecodeError) as exc:
+            preview = raw[:500].replace("\n", "\\n")
+            raise RuntimeError(
+                f"LLM 文本返回解析失败：request={request_name}; model={self.model}; "
+                f"response_preview={preview}; error={exc}"
+            ) from exc
+
     def _post_json(
         self,
         *,
