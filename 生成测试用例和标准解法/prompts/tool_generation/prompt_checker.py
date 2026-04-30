@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .._common import generated_problem_section, json_contract
+from .._common import generated_problem_section, json_contract, schema_section
 
 
 def build_system_prompt() -> str:
@@ -16,6 +16,7 @@ def build_user_prompt(artifact: dict) -> str:
         [
             "我会向你提供一道编程题的题目描述。只有当题目不是唯一答案时，才需要生成 checker。",
             generated_problem_section(artifact),
+            schema_section(artifact),
             """# 判断步骤
 1. 先判断该题是否需要 checker。
 2. 判断依据包括：是否允许多组合法输出、是否为构造题、是否只要求满足性质、是否存在“任意一个合法解均可接受”、输出顺序或方案是否不唯一。

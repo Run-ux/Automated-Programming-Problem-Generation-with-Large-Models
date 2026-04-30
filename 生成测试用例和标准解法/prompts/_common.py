@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from artifact_context import extract_generated_problem, extract_schema_snapshot, format_prompt_value
+try:  # 兼容包内导入与当前目录直接运行两种方式。
+    from ..artifact_context import extract_generated_problem, extract_schema_snapshot, format_prompt_value
+except ImportError:  # pragma: no cover - 当前测试以顶层模块方式导入。
+    from artifact_context import extract_generated_problem, extract_schema_snapshot, format_prompt_value
 
 
 JSON_ONLY_RULE = (

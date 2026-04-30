@@ -63,7 +63,6 @@ class PromptModuleTests(unittest.TestCase):
             prompt_random_test_input.build_user_prompt(self.artifact),
             prompt_adversarial_test_input.build_user_prompt(self.artifact),
             prompt_small_challenge_test_input.build_user_prompt(self.artifact),
-            prompt_checker.build_user_prompt(self.artifact),
             prompt_fixed_category_wrong_solution.build_user_prompt(self.artifact, "目标/输出义务误读"),
         ]
         for prompt in prompts:
@@ -74,6 +73,7 @@ class PromptModuleTests(unittest.TestCase):
 
     def test_schema_prompts_include_schema_four_fields(self) -> None:
         prompts = [
+            prompt_checker.build_user_prompt(self.artifact),
             prompt_standard_solution.build_user_prompt(self.artifact),
             prompt_bruteforce_solution.build_user_prompt(self.artifact),
             prompt_schema_mistake_analysis.build_user_prompt(self.artifact),

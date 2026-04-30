@@ -1,12 +1,81 @@
 # 生成测试用例和标准解法
 
-本目录当前只实现 LLM prompt 构建层，用于从上游 artifact 中抽取题面与 schema 信息，并生成各类 LLM 调用所需的 system/user prompt。
+本目录实现从上游 artifact 构建 LLM prompt，并通过 OpenAI 兼容 Chat Completions API 真实生成以下产物：
+
+- 标准解
+- 暴力解
+- 随机测试输入生成器
+- 对抗测试输入生成器
+- 小规模挑战测试输入
+- checker
+- 固定类别错误解
+- 基于 schema 错误策略分析的错误解
 
 ## 范围边界
 
-- 已实现：artifact 字段抽取、prompt 模块、JSON 输出合同、单元测试。
-- 未实现：LLM API 调用、prompt 返回 JSON 的解析、生成代码的执行、对拍验证、题包流水线、旧项目迁移。
+- 已实现：artifact 字段抽取、prompt 模块、LLM API 调用、严格 JSON 解析、JSON 输出合同校验、单元测试。
+- 未实现：生成代码的执行、对拍验证、题包流水线、CLI、旧项目迁移。
 - 不复用 `D:\AutoProblemGen\测试用例和标准解法共迭代` 的代码实现。
+
+## 环境配置
+
+安装依赖：
+
+```powershell
+pip install -r requirements.txt
+```
+
+复制 `.env.example` 为 `.env`，并填写真实配置：
+
+```dotenv
+OPENAI_API_KEY=
+OPENAI_BASE_URL=
+OPENAI_MODEL=
+OPENAI_TEMPERATURE=0.2
+OPENAI_TIMEOUT_SECONDS=60
+OPENAI_MAX_RETRIES=2
+```
+
+说明：
+
+- `.env` 用于本地密钥，已被 `.gitignore` 忽略。
+- `.env.example` 只保存空值或安全默认值，可提交。
+- `OPENAI_API_KEY` 和 `OPENAI_MODEL` 必填，缺失时会 fail-fast。
+- `OPENAI_BASE_URL` 可选；使用 OpenAI 兼容服务时填写对应 `/v1` 地址。
+- `.env` 解析只支持空行、`#` 注释、`KEY=VALUE` 和简单单双引号，不支持变量插值或复杂 shell 语法。
+
+## 库函数入口
+
+```python
+from generation_pipeline import generate_all_artifacts
+from llm_config import LLMConfig
+
+config = LLMConfig.from_dotenv()
+result = generate_all_artifacts(artifact, config)
+```
+
+返回结构：
+
+```python
+{
+    "standard_solution": {...},
+    "bruteforce_solution": {...},
+    "test_inputs": {
+        "random": {...},
+        "adversarial": {...},
+        "small_challenge": {...},
+    },
+    "checker": {...},
+    "wrong_solutions": {
+        "fixed_categories": {...},
+        "strategy_analysis": {...},
+        "strategy_based": [...],
+    },
+    "metadata": {...},
+}
+```
+
+调用默认启用 `response_format={"type": "json_object"}`。本模块只解析和校验 LLM 返回的 JSON，不执行返回代码，不生成标准输出，不落盘。
 
 ## Artifact 字段
 
@@ -20,7 +89,7 @@
 - `samples`
 - `notes`
 
-需要题目结构信息的 prompt 额外读取 `new_schema_snapshot` 的以下字段：
+需要题目结构信息的 prompt 额外读取 `new_schema_snapshot` 的以下字段；当前标准解、暴力解、checker、schema 错误策略分析和按策略错误解会读取这些字段：
 
 - `input_structure`
 - `core_constraints`
@@ -55,7 +124,7 @@ def build_user_prompt(...) -> str:
 
 ## JSON 输出合同
 
-所有 prompt 都要求 LLM 最终只输出单个 JSON 对象，不允许 JSON 外解释或 Markdown 代码块。
+所有 prompt 都要求 LLM 最终只输出单个 JSON 对象，不允许 JSON 外解释或 Markdown 代码块。流水线会严格 `json.loads`，不会尝试修复脏文本。
 
 - 随机/对抗测试输入：`constraint_analysis`、`generate_test_input_code`、`validate_test_input_code`
 - 小规模挑战输入：`test_input`
@@ -72,9 +141,15 @@ def solve(input_str: str) -> str:
     ...
 ```
 
+checker 代码统一要求实现：
+
+```python
+def check_output(input_string, output_string) -> bool:
+    ...
+```
+
 ## 测试
 
 ```powershell
 python -m unittest discover -s tests
 ```
-
