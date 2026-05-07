@@ -10,7 +10,7 @@
 | `finiteness_verification` | 通过 Pilot、Phase 1、Phase 2 验证四维标签集合是否有限、稳定、可覆盖                            | 标签体系验证           |
 | `生成题面`                | 基于四元组、规则文件和两阶段 LLM 规划生成结构化题面                                            | 当前生成器             |
 | `题目质量评价`            | 对生成 artifact 做题面质量评分、反换皮判定、硬约束检查，并输出 `revision_brief`              | 当前质量闭环           |
-| `题包生成验证`            | 生成标准解、oracle、validator、checker、测试生成器和错误解池，并真实执行验证                   | 当前交付验证           |
+| `生成测试用例和标准解法`  | 基于上游 artifact 生成标准解、暴力解、测试输入生成器、checker 和错误解池，并执行本地验证闭环   | 交付验证能力建设       |
 
 ## 主线流程
 
@@ -70,7 +70,7 @@ python normalize.py --input output\batch\raw\ --output output\batch\normalized\ 
 - [`finiteness_verification/README_PHASE1.md`](finiteness_verification/README_PHASE1.md)
 - [`finiteness_verification/README_PHASE2.md`](finiteness_verification/README_PHASE2.md)
 
-## 5. `生成题面`
+### 4. `生成题面`
 
 `生成题面` 是当前正式生成器。它读取归一化四元组，结合 `planning_rules.json` 和规则 handler 完成规则资格审查、规划校验、题面生成、题面审查与产物落盘。
 
@@ -122,7 +122,7 @@ artifact 会记录 `mode`、`source_problem_ids`、`applied_rule`、`rule_select
 
 详细 CLI、规则合同和 artifact 字段见 [`生成题面/README.md`](生成题面/README.md)。
 
-## 6. `题目质量评价`
+### 5. `题目质量评价`
 
 `题目质量评价` 直接消费 `生成题面` 的 artifact，并结合源 schema 与原题做综合评估。
 
@@ -152,73 +152,40 @@ python main.py ^
 
 详细合同见 [`题目质量评价/README.md`](题目质量评价/README.md)。
 
-### 6. 题包生成验证
+### 6. `生成测试用例和标准解法`
 
-`题包生成验证` 是当前链路的后续交付验证模块。它接收生成题面的 artifact 与 Markdown 题面，生成并执行：
+`生成测试用例和标准解法` 是当前链路的后续交付验证能力模块。它接收 `生成题面` 的结构化 artifact，在库函数入口中通过 OpenAI 兼容 Chat Completions API 生成并验证：
 
-- `execution_spec.json`
-- `standard_solution.py`
-- `oracle_solution.py`
-- `validator.py`
-- `checker.py`
-- `test_generator.py`
-- `wrong_solutions/`
-- `execution_report.json`
+- 标准解
+- 暴力解
+- 随机测试输入生成器
+- 对抗测试输入生成器
+- 小规模挑战测试输入
+- checker
+- 固定类别错误解
+- 基于 schema 错误策略分析的错误解
 
-运行示例：
+当前已实现 artifact 字段抽取、prompt 组织、LLM JSON 调用、严格 JSON 解析、输出合同校验、生成后本地验证闭环、错误解池增强验证和单元测试。暂未实现独立 CLI、题包流水线和落盘式输出目录。
+
+只生成产物时使用：
 
 ```powershell
-cd D:\AutoProblemGen\题包生成验证
+cd D:\AutoProblemGen\生成测试用例和标准解法
 
-python main.py ^
-  --artifact D:\AutoProblemGen\生成题面\artifacts\...\round1.json ^
-  --markdown D:\AutoProblemGen\生成题面\output\...\round1.md ^
-  --rounds 3
+python -c "import json; from generation_pipeline import generate_all_artifacts; from llm_config import LLMConfig; artifact=json.load(open(r'D:\AutoProblemGen\生成题面\artifacts\...\round1.json', encoding='utf-8')); result=generate_all_artifacts(artifact, LLMConfig.from_dotenv()); print(result.keys())"
 ```
 
-默认输出：
+需要执行测试输入、暴力解、checker 与错误解池验证闭环时，调用 `generate_verified_artifacts`：
 
-```text
-题包生成验证/output/<problem_id>/<run_id>/
-  round1/
-  round2/
-  final/
-  iteration_summary.json
+```python
+from generation_pipeline import generate_verified_artifacts
+from llm_config import LLMConfig
+
+config = LLMConfig.from_dotenv()
+result = generate_verified_artifacts(artifact, config)
 ```
 
-v1 只支持 Python 代码执行，不自动修改上游题面。若题面或输出合同存在歧义，报告会标记为 `statement_revision_required` 或相关失败类型，由上游生成流程处理。详细说明见 [`题包生成验证/README.md`](题包生成验证/README.md)。
-
-## Schema Distance V2
-
-生成器当前使用结构化距离衡量原始 schema 与实例化 schema 的差异：
-
-```text
-total = 0.25 * I + 0.30 * C + 0.25 * O + 0.20 * V
-```
-
-四轴含义：
-
-- `I`：输入结构距离，基于输入树编辑距离
-- `C`：核心约束距离，基于集合匹配
-- `O`：目标函数距离，由目标类型距离和目标文本距离组合
-- `V`：不变量距离，基于集合匹配
-
-`distance_breakdown` 顶层字段包括：
-
-- `distance_version`
-- `backend`
-- `total`
-- `axis_scores`
-- `components`
-
-当前 `生成题面` 模块要求 embedding 后端可用；embedding 客户端缺失、调用失败或返回结构异常时会直接报错，不再回退到词法相似度。
-
-`changed_axes_realized` 使用固定阈值判断变化是否落地：
-
-- `I >= 0.18`
-- `C >= 0.25`
-- `O >= 0.18`
-- `V >= 0.18`
+验证入口会在受限子进程中执行生成代码，并把修复后的暴力解法与 checker 写回返回结果；它不自动修改上游题面，也不承担题面歧义修订。详细说明见 [`生成测试用例和标准解法/README.md`](生成测试用例和标准解法/README.md)。
 
 ## 环境配置
 
@@ -227,8 +194,9 @@ total = 0.25 * I + 0.30 * C + 0.25 * O + 0.20 * V
 - `四元组抽取/.env.example`
 - `生成题面/.env.example`
 - `题目质量评价/.env.example`
+- `生成测试用例和标准解法/.env.example`
 
-常用配置项：
+`四元组抽取`、`生成题面`、`题目质量评价` 使用 Qwen / DashScope 兼容配置，常用项如下：
 
 ```dotenv
 DASHSCOPE_API_KEY=your_key
@@ -236,10 +204,27 @@ QWEN_API_KEY=your_key
 QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 QWEN_MODEL=qwen3.6-plus
 QWEN_EMBEDDING_MODEL=text-embedding-v4
-QWEN_TIMEOUT_S=180
+QWEN_TIMEOUT_S=360
 ```
 
-不同模块的默认模型、超时与输出目录以各自 `config.py` 为准。
+`生成测试用例和标准解法` 使用 OpenAI 兼容配置，常用项如下：
+
+```dotenv
+OPENAI_API_KEY=your_key
+OPENAI_BASE_URL=https://example.com/v1
+OPENAI_MODEL=your-model
+OPENAI_TEMPERATURE=0.2
+OPENAI_TIMEOUT_SECONDS=1200
+OPENAI_MAX_RETRIES=3
+EXECUTION_TEST_INPUT_TIMEOUT_SECONDS=5
+EXECUTION_TEST_INPUT_MEMORY_LIMIT_MB=512
+EXECUTION_BRUTEFORCE_TIMEOUT_SECONDS=5
+EXECUTION_BRUTEFORCE_MEMORY_LIMIT_MB=512
+EXECUTION_CHECKER_TIMEOUT_SECONDS=5
+EXECUTION_CHECKER_MEMORY_LIMIT_MB=512
+```
+
+不同模块的默认模型、超时与输出目录以各自 `config.py` 或 `llm_config.py`、`execution_config.py` 为准。
 
 ## 测试
 
@@ -250,7 +235,7 @@ python -m unittest discover -s D:\AutoProblemGen\生成题面\tests -v
 
 python -m unittest discover -s D:\AutoProblemGen\题目质量评价\tests -v
 
-python -m unittest discover -s D:\AutoProblemGen\题包生成验证\tests -v
+python -m unittest discover -s D:\AutoProblemGen\生成测试用例和标准解法\tests -v
 ```
 
 `四元组抽取` 可运行：
