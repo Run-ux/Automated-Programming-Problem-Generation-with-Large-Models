@@ -9,6 +9,7 @@ from prompts.tool_generation import (
     prompt_checker,
     prompt_random_test_input,
     prompt_small_challenge_test_input,
+    prompt_wrong_solution_targeted_test_input,
 )
 from prompts.verification import (
     prompt_bruteforce_debug,
@@ -46,6 +47,7 @@ class PromptModuleTests(unittest.TestCase):
             prompt_random_test_input,
             prompt_adversarial_test_input,
             prompt_small_challenge_test_input,
+            prompt_wrong_solution_targeted_test_input,
             prompt_checker,
             prompt_standard_solution,
             prompt_bruteforce_solution,
@@ -245,6 +247,35 @@ class PromptModuleTests(unittest.TestCase):
         self.assertIn("FORGED_UNRELATED_OUTPUT：伪造错误，输出格式看似合理，但内容与输入无关，不能满足题意。", counterexample_prompt)
         for prompt in [brute_prompt, false_reject_prompt, false_accept_prompt, counterexample_prompt]:
             self.assertIn("最终只输出单个 JSON 对象", prompt)
+
+    def test_wrong_pool_prompts_have_strict_json_contracts(self) -> None:
+        candidate = {
+            "candidate_id": "wrong_001",
+            "source": "strategy_based",
+            "strategy": {
+                "title": "忽略负数",
+                "wrong_idea": "只累加正数。",
+                "plausible_reason": "样例都是正数。",
+                "failure_reason": "题面允许负数。",
+                "trigger_case": "包含负数的数组。",
+            },
+            "code": "def solve(input_str):\n    return '0'",
+        }
+        targeted_prompt = prompt_wrong_solution_targeted_test_input.build_user_prompt(
+            self.artifact,
+            wrong_solution_candidate=candidate,
+            verified_input_cases=[{"case_id": "case_001", "source": "random", "input": "1\n1"}],
+        )
+
+        self.assertIn('"test_input"', targeted_prompt)
+        self.assertIn("当前尚未暴露问题的错误解候选", targeted_prompt)
+        self.assertIn("当前已验证输入摘要", targeted_prompt)
+        self.assertIn("不要照搬已有输入", targeted_prompt)
+        self.assertIn("请在内部逐步分析", targeted_prompt)
+        self.assertIn("不要输出推理过程", targeted_prompt)
+        self.assertIn("自检流程", targeted_prompt)
+        self.assertNotIn("correct_output", targeted_prompt)
+        self.assertIn("最终只输出单个 JSON 对象", prompt_wrong_solution_targeted_test_input.build_system_prompt())
 
 
 if __name__ == "__main__":

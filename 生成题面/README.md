@@ -1,4 +1,4 @@
-# 生成题面 Codex
+# 生成题面
 
 该目录实现了“规则驱动的四元组生成器”。当前版本采用“规则声明 + 代码执行”架构：规则文件负责声明元信息、审计标签与合同入口，`rule_handlers.py` 负责组织资格判断、规划校验、题面校验与审计事件生成。资格判断阶段会先调用 LLM，并通过角色审查式提示词完成单规则准入审查；规划校验和题面校验会先经过代码级通用硬门槛，再由每条规则各自的 LLM 审查提示词完成专属语义审查。默认输入来自 `D:/AutoProblemGen/四元组抽取/output/batch/normalized/*.json`，生成链路围绕四元组 `input_structure / core_constraints / objective / invariant` 展开，输出包括：
 
@@ -94,25 +94,25 @@ python main.py --mode single --problem-ids CF25E --quality-iterations 3
 
 `main.py` 当前支持的 CLI 参数如下。
 
-| 参数 | 说明 | 默认值 | 适用范围 |
-| --- | --- | --- | --- |
-| `--mode single\|same_family` | 运行模式，`single` 对应 `single_seed_extension`，`same_family` 对应 `same_family_fusion` | 必填 | 全局 |
-| `--problem-ids <id...>` | `single` 模式下指定待生成的 `problem id` 列表；省略时进入目录批量生成 | 空列表 | 仅 `single` |
-| `--seed-a <id>` | `same_family` 模式下的第一个种子题 `problem id` | 无 | 仅 `same_family` |
-| `--seed-b <id>` | `same_family` 模式下的第二个种子题 `problem id` | 无 | 仅 `same_family` |
-| `--variants <数量>` | 每个任务生成的变体数 | `1` | 全局 |
-| `--theme <theme id>` | 固定主题，当前可选 `cyber_city`、`arcane_lab`、`interstellar_logistics`、`campus_ops` | 无 | 全局 |
-| `--source-dir <schema目录>` | 原始 schema JSON 目录 | `D:/AutoProblemGen/四元组抽取/output/batch/normalized` | 全局 |
-| `--output-dir <md输出目录>` | Markdown 题面输出目录 | 见 `config.py` | 全局 |
-| `--artifact-dir <json输出目录>` | 结构化产物输出目录 | 见 `config.py` | 全局 |
-| `--report-dir <过程报告目录>` | 过程说明 Markdown 输出目录 | 见 `config.py` | 全局 |
-| `--rule-file <规则文件>` | 规则 JSON 文件路径 | 见 `config.py` | 全局 |
-| `--timeout <秒数>` | 模型接口请求超时秒数 | `QWEN_TIMEOUT_S` 或 `180` | 全局 |
-| `--temperature <采样温度>` | 题面生成采样温度 | `0.2` | 全局 |
-| `--seed <随机种子>` | 规则规划随机种子 | `20260312` | 全局 |
-| `--quality-iterations <轮数>` | 质量闭环轮数，只支持 `0`、`1`、`2`、`3` | `0` | 仅 `single` |
-| `--quality-full-score-max-iterations <轮数>` | `pass` 后五维质量未满分时的题面打磨追加轮数上限 | `10` | 仅 `single` 质量闭环 |
-| `--rule-override <rule id>` | 限定可用规则 id，可重复传入，也可用逗号分隔 | 空列表 | 全局 |
+| 参数                                           | 说明                                                                                             | 默认值                                                   | 适用范围               |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------- | ---------------------- |
+| `--mode single\|same_family`                  | 运行模式，`single` 对应 `single_seed_extension`，`same_family` 对应 `same_family_fusion` | 必填                                                     | 全局                   |
+| `--problem-ids <id...>`                      | `single` 模式下指定待生成的 `problem id` 列表；省略时进入目录批量生成                        | 空列表                                                   | 仅 `single`          |
+| `--seed-a <id>`                              | `same_family` 模式下的第一个种子题 `problem id`                                              | 无                                                       | 仅 `same_family`     |
+| `--seed-b <id>`                              | `same_family` 模式下的第二个种子题 `problem id`                                              | 无                                                       | 仅 `same_family`     |
+| `--variants <数量>`                          | 每个任务生成的变体数                                                                             | `1`                                                    | 全局                   |
+| `--theme <theme id>`                         | 固定主题，当前可选 `cyber_city`、`arcane_lab`、`interstellar_logistics`、`campus_ops`    | 无                                                       | 全局                   |
+| `--source-dir <schema目录>`                  | 原始 schema JSON 目录                                                                            | `D:/AutoProblemGen/四元组抽取/output/batch/normalized` | 全局                   |
+| `--output-dir <md输出目录>`                  | Markdown 题面输出目录                                                                            | 见 `config.py`                                         | 全局                   |
+| `--artifact-dir <json输出目录>`              | 结构化产物输出目录                                                                               | 见 `config.py`                                         | 全局                   |
+| `--report-dir <过程报告目录>`                | 过程说明 Markdown 输出目录                                                                       | 见 `config.py`                                         | 全局                   |
+| `--rule-file <规则文件>`                     | 规则 JSON 文件路径                                                                               | 见 `config.py`                                         | 全局                   |
+| `--timeout <秒数>`                           | 模型接口请求超时秒数                                                                             | `QWEN_TIMEOUT_S` 或 `180`                            | 全局                   |
+| `--temperature <采样温度>`                   | 题面生成采样温度                                                                                 | `0.2`                                                  | 全局                   |
+| `--seed <随机种子>`                          | 规则规划随机种子                                                                                 | `20260312`                                             | 全局                   |
+| `--quality-iterations <轮数>`                | 质量闭环轮数，只支持 `0`、`1`、`2`、`3`                                                  | `0`                                                    | 仅 `single`          |
+| `--quality-full-score-max-iterations <轮数>` | `pass` 后五维质量未满分时的题面打磨追加轮数上限                                                | `10`                                                   | 仅 `single` 质量闭环 |
+| `--rule-override <rule id>`                  | 限定可用规则 id，可重复传入，也可用逗号分隔                                                      | 空列表                                                   | 全局                   |
 
 参数校验规则：
 

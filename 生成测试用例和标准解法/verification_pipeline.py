@@ -26,7 +26,7 @@ try:  # 兼容包内导入与当前目录直接运行两种方式。
         run_solution,
         run_validate_test_input,
     )
-    from .prompts.tool_generation import prompt_small_challenge_test_input
+    from .prompts.tool_generation import prompt_small_challenge_test_input, prompt_wrong_solution_targeted_test_input
     from .prompts.verification import (
         prompt_bruteforce_debug,
         prompt_checker_counterexample,
@@ -55,7 +55,7 @@ except ImportError:  # pragma: no cover - 当前测试以顶层模块方式导�
         run_solution,
         run_validate_test_input,
     )
-    from prompts.tool_generation import prompt_small_challenge_test_input
+    from prompts.tool_generation import prompt_small_challenge_test_input, prompt_wrong_solution_targeted_test_input
     from prompts.verification import (
         prompt_bruteforce_debug,
         prompt_checker_counterexample,
@@ -67,6 +67,8 @@ except ImportError:  # pragma: no cover - 当前测试以顶层模块方式导�
 logger = logging.getLogger(__name__)
 
 Validator = Callable[[dict[str, Any]], dict[str, Any]]
+
+WRONG_POOL_STOP_KILL_RATIO = 0.8
 
 
 class VerificationError(RuntimeError):
@@ -652,6 +654,474 @@ def verify_checker(
     }
 
 
+def _flatten_wrong_solution_candidates(wrong_solutions: dict[str, Any]) -> list[dict[str, Any]]:
+    candidates: list[dict[str, Any]] = []
+    for category, payload in wrong_solutions.get("fixed_categories", {}).items():
+        code = payload.get("code") if isinstance(payload, dict) else None
+        if not isinstance(code, str) or not code.strip():
+            continue
+        candidates.append(
+            {
+                "candidate_id": f"wrong_{len(candidates) + 1:03d}",
+                "source": "fixed_category",
+                "category": category,
+                "strategy": {
+                    "title": category,
+                    "wrong_idea": f"固定类别错误解：{category}",
+                    "plausible_reason": "由固定错误类别生成。",
+                    "failure_reason": "需要通过测试执行确认。",
+                    "trigger_case": "由定向测试输入生成阶段补充。",
+                },
+                "code": code,
+            }
+        )
+
+    for item in wrong_solutions.get("strategy_based", []):
+        if not isinstance(item, dict):
+            continue
+        solution = item.get("solution")
+        strategy = item.get("strategy")
+        code = solution.get("code") if isinstance(solution, dict) else None
+        if not isinstance(strategy, dict) or not isinstance(code, str) or not code.strip():
+            continue
+        candidates.append(
+            {
+                "candidate_id": f"wrong_{len(candidates) + 1:03d}",
+                "source": "strategy_based",
+                "category": "",
+                "strategy": strategy,
+                "code": code,
+            }
+        )
+    return candidates
+
+
+def _candidate_prompt_payload(candidate: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "candidate_id": candidate["candidate_id"],
+        "source": candidate["source"],
+        "category": candidate.get("category", ""),
+        "strategy": candidate["strategy"],
+        "code": candidate["code"],
+    }
+
+
+def _verified_input_prompt_summary(solved_cases: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    summary: list[dict[str, Any]] = []
+    for case in solved_cases:
+        summary.append(
+            {
+                "case_id": case["case_id"],
+                "source": case["source"],
+                "input": _truncate_middle(case["input"], 1200),
+            }
+        )
+    return summary
+
+
+def _generate_wrong_solution_targeted_input(
+    artifact: dict[str, Any],
+    client: ChatLLMClient,
+    *,
+    round_index: int,
+    candidate: dict[str, Any],
+    solved_cases: list[dict[str, Any]],
+) -> dict[str, Any]:
+    task_name = f"wrong_solution_targeted_input:{round_index}:{candidate['candidate_id']}"
+    return _call_prompt(
+        client,
+        task_name=task_name,
+        system_prompt=prompt_wrong_solution_targeted_test_input.build_system_prompt(),
+        user_prompt=prompt_wrong_solution_targeted_test_input.build_user_prompt(
+            artifact,
+            wrong_solution_candidate=_candidate_prompt_payload(candidate),
+            verified_input_cases=_verified_input_prompt_summary(solved_cases),
+        ),
+        validator=lambda payload, task_name=task_name: validate_small_challenge_response(
+            payload,
+            task_name=task_name,
+        ),
+    )
+
+
+def _append_targeted_input_if_solved(
+    *,
+    verified_test_inputs: dict[str, Any],
+    solved_cases: list[dict[str, Any]],
+    input_string: str,
+    validate_code: str,
+    bruteforce_code: str,
+    execution_config: ExecutionConfig,
+) -> dict[str, Any]:
+    for case in verified_test_inputs["cases"]:
+        if case["input"] == input_string:
+            return {"status": "skipped", "reason": "duplicate_input", "input": input_string}
+
+    validate_result = run_validate_test_input(
+        validate_code,
+        input_string,
+        timeout_seconds=execution_config.test_input_timeout_seconds,
+        memory_limit_mb=execution_config.test_input_memory_limit_mb,
+    )
+    if validate_result.status != EXECUTION_OK or validate_result.return_value is not True:
+        return {
+            "status": "skipped",
+            "reason": "invalid_input",
+            "input": input_string,
+            "validation_result": _result_summary(validate_result),
+        }
+
+    solve_result = run_solution(
+        bruteforce_code,
+        input_string,
+        timeout_seconds=execution_config.bruteforce_timeout_seconds,
+        memory_limit_mb=execution_config.bruteforce_memory_limit_mb,
+    )
+    if solve_result.status != EXECUTION_OK or not isinstance(solve_result.return_value, str):
+        return {
+            "status": "skipped",
+            "reason": "bruteforce_unsolved",
+            "input": input_string,
+            "execution_result": _result_summary(solve_result),
+        }
+
+    source_counts = verified_test_inputs.setdefault("source_counts", {})
+    source_index = int(source_counts.get("wrong_pool_targeted", 0)) + 1
+    case_id = f"case_{len(verified_test_inputs['cases']) + 1:03d}"
+    input_case = {
+        "case_id": case_id,
+        "source": "wrong_pool_targeted",
+        "source_index": source_index,
+        "input": input_string,
+    }
+    solved_case = {
+        "case_id": case_id,
+        "source": "wrong_pool_targeted",
+        "input": input_string,
+        "output": solve_result.return_value,
+    }
+    verified_test_inputs["cases"].append(input_case)
+    verified_test_inputs["count"] = len(verified_test_inputs["cases"])
+    source_counts["wrong_pool_targeted"] = source_index
+    solved_cases.append(solved_case)
+    return {
+        "status": "added",
+        "case_id": case_id,
+        "source_index": source_index,
+        "input": input_string,
+        "output": solve_result.return_value,
+    }
+
+
+def _evaluate_wrong_solution_candidate(
+    candidate: dict[str, Any],
+    solved_cases: list[dict[str, Any]],
+    *,
+    checker_code: str | None,
+    execution_config: ExecutionConfig,
+) -> dict[str, Any]:
+    checked_count = 0
+    for case in solved_cases:
+        solution_result = run_solution(
+            candidate["code"],
+            case["input"],
+            timeout_seconds=execution_config.bruteforce_timeout_seconds,
+            memory_limit_mb=execution_config.bruteforce_memory_limit_mb,
+        )
+        if solution_result.status != EXECUTION_OK or not isinstance(solution_result.return_value, str):
+            return {
+                "candidate": _candidate_prompt_payload(candidate),
+                "status": "invalid",
+                "failed_case_id": case["case_id"],
+                "execution_result": _result_summary(solution_result),
+                "checked_count": checked_count,
+            }
+
+        checked_count += 1
+        wrong_output = solution_result.return_value
+        if checker_code is None:
+            if wrong_output != case["output"]:
+                return {
+                    "candidate": _candidate_prompt_payload(candidate),
+                    "status": "killed",
+                    "verdict": "output_mismatch",
+                    "failed_case_id": case["case_id"],
+                    "input": case["input"],
+                    "correct_output": case["output"],
+                    "wrong_output": wrong_output,
+                    "checked_count": checked_count,
+                }
+            continue
+
+        checker_result = run_checker(
+            checker_code,
+            case["input"],
+            wrong_output,
+            timeout_seconds=execution_config.checker_timeout_seconds,
+            memory_limit_mb=execution_config.checker_memory_limit_mb,
+        )
+        if checker_result.status == EXECUTION_OK and checker_result.return_value is False:
+            return {
+                "candidate": _candidate_prompt_payload(candidate),
+                "status": "killed",
+                "verdict": "checker_rejected",
+                "failed_case_id": case["case_id"],
+                "input": case["input"],
+                "correct_output": case["output"],
+                "wrong_output": wrong_output,
+                "checker_execution_result": _result_summary(checker_result),
+                "checked_count": checked_count,
+            }
+
+    return {
+        "candidate": _candidate_prompt_payload(candidate),
+        "status": "survived",
+        "checked_count": checked_count,
+    }
+
+
+def _evaluate_wrong_solution_pool(
+    candidates: list[dict[str, Any]],
+    solved_cases: list[dict[str, Any]],
+    *,
+    checker_code: str | None,
+    execution_config: ExecutionConfig,
+) -> list[dict[str, Any]]:
+    return [
+        _evaluate_wrong_solution_candidate(
+            candidate,
+            solved_cases,
+            checker_code=checker_code,
+            execution_config=execution_config,
+        )
+        for candidate in candidates
+    ]
+
+
+def _wrong_pool_status_counts(evaluation_records: list[dict[str, Any]]) -> dict[str, int]:
+    return {
+        "killed_count": sum(1 for record in evaluation_records if record["status"] == "killed"),
+        "survived_count": sum(1 for record in evaluation_records if record["status"] == "survived"),
+        "invalid_count": sum(1 for record in evaluation_records if record["status"] == "invalid"),
+    }
+
+
+def _killed_original_survivor_ids(
+    evaluation_records: list[dict[str, Any]],
+    original_survivor_ids: set[str],
+) -> set[str]:
+    return {
+        record["candidate"]["candidate_id"]
+        for record in evaluation_records
+        if record["status"] == "killed" and record["candidate"]["candidate_id"] in original_survivor_ids
+    }
+
+
+def _kill_ratio(killed_ids: set[str], original_survivor_ids: set[str]) -> float:
+    if not original_survivor_ids:
+        return 1.0
+    return len(killed_ids) / len(original_survivor_ids)
+
+
+def verify_wrong_solution_pool(
+    artifact: dict[str, Any],
+    generated_artifacts: dict[str, Any],
+    verified_test_inputs: dict[str, Any],
+    bruteforce_verification: dict[str, Any],
+    checker_verification: dict[str, Any],
+    client: ChatLLMClient,
+    execution_config: ExecutionConfig,
+) -> dict[str, Any]:
+    """执行单题临时错误解池增强验证，并返回更新后的真值用例和 checker。"""
+
+    candidates = _flatten_wrong_solution_candidates(generated_artifacts["wrong_solutions"])
+    current_verified_inputs = {
+        **verified_test_inputs,
+        "cases": list(verified_test_inputs["cases"]),
+        "source_counts": dict(verified_test_inputs.get("source_counts", {})),
+    }
+    solved_cases = list(bruteforce_verification["solved_cases"])
+    checker_code = checker_verification.get("final_checker_code")
+    if not generated_artifacts["checker"].get("needs_checker"):
+        checker_code = None
+
+    if not candidates:
+        return {
+            "verification": {
+                "status": "skipped",
+                "reason": "没有可执行的错误解候选。",
+                "rounds": [],
+                "candidate_count": 0,
+                "killed_count": 0,
+                "survived_count": 0,
+                "invalid_count": 0,
+                "targeted_input_count": 0,
+                "original_survivor_count": 0,
+                "cumulative_killed_original_survivor_count": 0,
+                "kill_ratio": 1.0,
+            },
+            "verified_test_inputs": current_verified_inputs,
+            "solved_cases": solved_cases,
+        }
+    if not solved_cases:
+        return {
+            "verification": {
+                "status": "skipped",
+                "reason": "没有可由暴力解法产出真值的测试用例，无法评估错误解池。",
+                "rounds": [],
+                "candidate_count": len(candidates),
+                "killed_count": 0,
+                "survived_count": len(candidates),
+                "invalid_count": 0,
+                "targeted_input_count": 0,
+                "original_survivor_count": 0,
+                "cumulative_killed_original_survivor_count": 0,
+                "kill_ratio": 1.0,
+            },
+            "verified_test_inputs": current_verified_inputs,
+            "solved_cases": solved_cases,
+        }
+
+    validate_code = generated_artifacts["test_inputs"]["random"]["validate_test_input_code"]
+    bruteforce_code = bruteforce_verification["final_code"]
+    round_records: list[dict[str, Any]] = []
+    targeted_inputs: list[dict[str, Any]] = []
+    final_evaluation = _evaluate_wrong_solution_pool(
+        candidates=candidates,
+        solved_cases=solved_cases,
+        checker_code=checker_code,
+        execution_config=execution_config,
+    )
+    original_survivor_ids = {
+        record["candidate"]["candidate_id"]
+        for record in final_evaluation
+        if record["status"] == "survived"
+    }
+    if not original_survivor_ids:
+        initial_counts = _wrong_pool_status_counts(final_evaluation)
+        return {
+            "verification": {
+                "status": "ok",
+                "rounds": [
+                    {
+                        "round": 0,
+                        **initial_counts,
+                        "selected_candidate_ids": [],
+                        "targeted_inputs": [],
+                        "original_survivor_count": 0,
+                        "cumulative_killed_original_survivor_count": 0,
+                        "kill_ratio": 1.0,
+                        "stop_reason": "no_survivor",
+                    }
+                ],
+                "candidate_count": len(candidates),
+                **initial_counts,
+                "targeted_input_count": 0,
+                "original_survivor_count": 0,
+                "cumulative_killed_original_survivor_count": 0,
+                "kill_ratio": 1.0,
+                "targeted_inputs": targeted_inputs,
+                "final_evaluation": final_evaluation,
+            },
+            "verified_test_inputs": current_verified_inputs,
+            "solved_cases": solved_cases,
+        }
+
+    round_index = 0
+    while True:
+        round_index += 1
+        current_counts = _wrong_pool_status_counts(final_evaluation)
+        killed_original_ids = _killed_original_survivor_ids(final_evaluation, original_survivor_ids)
+        current_kill_ratio = _kill_ratio(killed_original_ids, original_survivor_ids)
+        selected = [
+            record
+            for record in final_evaluation
+            if record["status"] == "survived"
+            and record["candidate"]["candidate_id"] in original_survivor_ids
+        ]
+        round_record = {
+            "round": round_index,
+            **current_counts,
+            "selected_candidate_ids": [record["candidate"]["candidate_id"] for record in selected],
+            "targeted_inputs": [],
+            "original_survivor_count": len(original_survivor_ids),
+            "cumulative_killed_original_survivor_count": len(killed_original_ids),
+            "kill_ratio": current_kill_ratio,
+        }
+        if current_kill_ratio >= WRONG_POOL_STOP_KILL_RATIO:
+            round_record["stop_reason"] = "kill_ratio_reached"
+            round_records.append(round_record)
+            break
+        if not selected:
+            round_record["stop_reason"] = "no_valid_targeted_input"
+            round_records.append(round_record)
+            break
+
+        added_count = 0
+        for record in selected:
+            candidate_id = record["candidate"]["candidate_id"]
+            candidate = next(item for item in candidates if item["candidate_id"] == candidate_id)
+            payload = _generate_wrong_solution_targeted_input(
+                artifact,
+                client,
+                round_index=round_index,
+                candidate=candidate,
+                solved_cases=solved_cases,
+            )
+            append_result = _append_targeted_input_if_solved(
+                verified_test_inputs=current_verified_inputs,
+                solved_cases=solved_cases,
+                input_string=payload["test_input"],
+                validate_code=validate_code,
+                bruteforce_code=bruteforce_code,
+                execution_config=execution_config,
+            )
+            append_result = {
+                "candidate_id": candidate_id,
+                "payload": payload,
+                **append_result,
+            }
+            targeted_inputs.append(append_result)
+            round_record["targeted_inputs"].append(append_result)
+            if append_result["status"] == "added":
+                added_count += 1
+
+        if added_count == 0:
+            round_record["stop_reason"] = "no_valid_targeted_input"
+            round_records.append(round_record)
+            break
+
+        final_evaluation = _evaluate_wrong_solution_pool(
+            candidates=candidates,
+            solved_cases=solved_cases,
+            checker_code=checker_code,
+            execution_config=execution_config,
+        )
+        round_records.append(round_record)
+
+    final_counts = _wrong_pool_status_counts(final_evaluation)
+    killed_original_ids = _killed_original_survivor_ids(final_evaluation, original_survivor_ids)
+    final_kill_ratio = _kill_ratio(killed_original_ids, original_survivor_ids)
+    added_targeted_count = sum(1 for item in targeted_inputs if item["status"] == "added")
+
+    return {
+        "verification": {
+            "status": "ok",
+            "rounds": round_records,
+            "candidate_count": len(candidates),
+            **final_counts,
+            "targeted_input_count": added_targeted_count,
+            "original_survivor_count": len(original_survivor_ids),
+            "cumulative_killed_original_survivor_count": len(killed_original_ids),
+            "kill_ratio": final_kill_ratio,
+            "targeted_inputs": targeted_inputs,
+            "final_evaluation": final_evaluation,
+        },
+        "verified_test_inputs": current_verified_inputs,
+        "solved_cases": solved_cases,
+    }
+
+
 def generate_verified_artifacts(
     artifact: dict[str, Any],
     config: LLMConfig | None = None,
@@ -685,6 +1155,21 @@ def generate_verified_artifacts(
         active_client,
         active_execution_config,
     )
+    wrong_solution_pool_result = verify_wrong_solution_pool(
+        artifact,
+        generated_artifacts,
+        verified_test_inputs,
+        bruteforce_verification,
+        checker_verification,
+        active_client,
+        active_execution_config,
+    )
+    verified_test_inputs = wrong_solution_pool_result["verified_test_inputs"]
+    bruteforce_verification = {
+        **bruteforce_verification,
+        "solved_cases": wrong_solution_pool_result["solved_cases"],
+        "solved_case_count": len(wrong_solution_pool_result["solved_cases"]),
+    }
 
     result = dict(generated_artifacts)
     final_checker_code = checker_verification.get("final_checker_code")
@@ -710,6 +1195,7 @@ def generate_verified_artifacts(
             "verified_test_inputs": verified_test_inputs,
             "bruteforce_verification": bruteforce_verification,
             "checker_verification": checker_verification,
+            "wrong_solution_pool_verification": wrong_solution_pool_result["verification"],
             "execution_metadata": {
                 "execution_config": {
                     "test_input_timeout_seconds": active_execution_config.test_input_timeout_seconds,
@@ -722,6 +1208,11 @@ def generate_verified_artifacts(
                 "verified_test_input_count": verified_test_inputs["count"],
                 "solved_case_count": bruteforce_verification["solved_case_count"],
                 "large_scale_input_count": bruteforce_verification["large_scale_input_count"],
+                "wrong_solution_pool_targeted_input_count": wrong_solution_pool_result["verification"][
+                    "targeted_input_count"
+                ],
+                "wrong_solution_pool_killed_count": wrong_solution_pool_result["verification"]["killed_count"],
+                "wrong_solution_pool_survived_count": wrong_solution_pool_result["verification"]["survived_count"],
             },
         }
     )

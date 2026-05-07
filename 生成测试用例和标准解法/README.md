@@ -13,7 +13,7 @@
 
 ## 范围边界
 
-- 已实现：artifact 字段抽取、prompt 模块、LLM API 调用、严格 JSON 解析、JSON 输出合同校验、生成后本地验证闭环、单元测试。
+- 已实现：artifact 字段抽取、prompt 模块、LLM API 调用、严格 JSON 解析、JSON 输出合同校验、生成后本地验证闭环、错误解池增强验证、单元测试。
 - 未实现：题包流水线、CLI、旧项目迁移。
 - 不复用 `D:\AutoProblemGen\测试用例和标准解法共迭代` 的代码实现。
 
@@ -99,7 +99,7 @@ result = generate_verified_artifacts(artifact, config)
     "verified_test_inputs": {
         "status": "ok",
         "cases": [...],
-        "count": 30,
+        "count": 30,  # 基础输入数量；错误解池阶段可能追加 targeted 输入
         "source_counts": {
             "random": 10,
             "adversarial": 10,
@@ -114,6 +114,7 @@ result = generate_verified_artifacts(artifact, config)
         "repair_history": [...],
     },
     "checker_verification": {...},
+    "wrong_solution_pool_verification": {...},
     "execution_metadata": {...},
 }
 ```
@@ -126,9 +127,11 @@ result = generate_verified_artifacts(artifact, config)
 
 - 输入收集：随机输入和对抗输入各运行生成器 10 次，并通过各自 `validate_test_input`；小规模挑战输入使用初始返回加 9 次额外 LLM 调用凑满 10 条，并用随机输入的 validate 函数校验。
 - 暴力解法：对 30 条输入逐一运行 `solve`。编译错误、接口错误和运行时错误会触发暴力 debug LLM 修复，并从头重新验证；超时或超内存输入会归为 `large_scale_inputs`，不触发 debug。
-- 真值用例：最终只保留暴力解法能正常返回字符串输出的 `solved_cases`，数量允许少于 30。
+- 真值用例：最终只保留暴力解法能正常返回字符串输出的 `solved_cases`，数量允许少于已验证输入总数。
 - checker：当 `needs_checker=false` 时跳过 checker 闭环；当需要 checker 时，先用 `solved_cases` 验证不误拒合法输出，再由反例生成 LLM 构造错误输出集合验证不误收非法输出。
 - 修复循环：暴力解法、checker 误拒和 checker 误收修复均不设轮数上限，直到本地执行结果通过对应阶段。
+- 错误解池增强：基础 checker 验证完成后，默认执行单题临时错误解池；无 checker 题使用输出字符串差异识别错误解问题，有 checker 题只使用已修复 checker 判定错误解输出是否暴露问题。
+- 定向补测：错误解池会为全部当前尚未暴露问题的错误解生成单条 targeted 输入；输入通过现有 validate 函数且暴力解能产出真值时，会追加到 `verified_test_inputs` 和 `solved_cases`。当原始未暴露问题的错误解累计暴露比例达到 0.8，或某轮没有新增有效输入时停止。
 
 ## Artifact 字段
 
@@ -175,6 +178,7 @@ def build_user_prompt(...) -> str:
 - `prompts.verification.prompt_checker_counterexample`
 - `prompts.verification.prompt_checker_false_accept_debug`
 - `prompts.verification.prompt_checker_false_reject_debug`
+- `prompts.tool_generation.prompt_wrong_solution_targeted_test_input`
 - `prompts.wrong_solution.prompt_fixed_category_wrong_solution`
 - `prompts.wrong_solution.prompt_schema_mistake_analysis`
 - `prompts.wrong_solution.prompt_strategy_wrong_solution`
@@ -191,6 +195,7 @@ def build_user_prompt(...) -> str:
 - 暴力 debug：`code`
 - checker 误拒/误收修复：`analysis`、`fix_plan`、`checker_code`
 - checker 反例生成：`counterexamples`、`skipped`；进入 `counterexamples` 的反例 `confidence` 必须大于等于 `0.85`
+- 错误解池定向输入：`test_input`
 - schema 错误策略分析：`strategies` 列表，每项包含 `title`、`wrong_idea`、`plausible_reason`、`failure_reason`、`trigger_case`
 - 固定错误解/按策略错误解：`code`
 

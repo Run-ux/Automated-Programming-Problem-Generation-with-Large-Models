@@ -5,6 +5,7 @@ from . import (
     prompt_checker,
     prompt_random_test_input,
     prompt_small_challenge_test_input,
+    prompt_wrong_solution_targeted_test_input,
 )
 
 __all__ = [
@@ -12,5 +13,5 @@ __all__ = [
     "prompt_checker",
     "prompt_random_test_input",
     "prompt_small_challenge_test_input",
+    "prompt_wrong_solution_targeted_test_input",
 ]
-

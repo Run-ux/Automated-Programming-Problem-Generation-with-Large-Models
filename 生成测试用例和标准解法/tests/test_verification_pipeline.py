@@ -13,11 +13,13 @@ from local_execution import (
     ExecutionResult,
 )
 from verification_pipeline import (
+    _candidate_prompt_payload,
     _result_summary,
     collect_verified_test_inputs,
     generate_verified_artifacts,
     verify_bruteforce_solution,
     verify_checker,
+    verify_wrong_solution_pool,
 )
 
 
@@ -147,6 +149,8 @@ class FakeLLMClient:
                 {"analysis": "过松", "fix_plan": "校验答案值", "checker_code": "reject_wrong"},
                 ensure_ascii=False,
             )
+        if task_name.startswith("wrong_solution_targeted_input:"):
+            return json.dumps({"test_input": "1\n2"}, ensure_ascii=False)
         raise AssertionError(f"未预期的任务: {task_name}")
 
 
@@ -183,6 +187,21 @@ class VerificationPipelineTests(unittest.TestCase):
             self.assertTrue(summary[key].startswith(head))
             self.assertTrue(summary[key].endswith(tail))
             self.assertIn("...<truncated>...", summary[key])
+
+    def test_candidate_prompt_payload_keeps_full_wrong_solution_code(self) -> None:
+        long_code = "def solve(input_str):\n" + "\n".join(f"    x_{index} = {index}" for index in range(1200))
+        candidate = {
+            "candidate_id": "wrong_001",
+            "source": "strategy_based",
+            "category": "",
+            "strategy": {"title": "长代码错误解"},
+            "code": long_code,
+        }
+
+        payload = _candidate_prompt_payload(candidate)
+
+        self.assertEqual(payload["code"], long_code)
+        self.assertNotIn("...<truncated>...", payload["code"])
 
     @patch("verification_pipeline.run_validate_test_input")
     @patch("verification_pipeline.run_generate_test_input")
@@ -288,6 +307,348 @@ class VerificationPipelineTests(unittest.TestCase):
         self.assertEqual(result["property_2"]["status"], "ok")
         self.assertEqual(result["repair_iteration_count"], 2)
 
+    @patch("verification_pipeline.run_validate_test_input")
+    @patch("verification_pipeline.run_solution")
+    def test_wrong_solution_pool_generates_targeted_input_for_no_checker_survivor(
+        self,
+        fake_run_solution,
+        fake_validate,
+    ) -> None:
+        fake_validate.return_value = ExecutionResult(status=EXECUTION_OK, return_value=True)
+
+        def solution_side_effect(code, input_string, *, timeout_seconds, memory_limit_mb):
+            if code == "wrong_survivor":
+                return ExecutionResult(status=EXECUTION_OK, return_value="1" if input_string == "1\n1" else "0")
+            if code == "brute":
+                return ExecutionResult(status=EXECUTION_OK, return_value="1" if input_string == "1\n1" else "2")
+            raise AssertionError((code, input_string))
+
+        fake_run_solution.side_effect = solution_side_effect
+        generated_artifacts = {
+            "wrong_solutions": {
+                "fixed_categories": {"边界/最小性错误": {"code": "wrong_survivor"}},
+                "strategy_based": [],
+            },
+            "test_inputs": {"random": {"validate_test_input_code": "validate"}},
+            "checker": {"needs_checker": False, "reason": "唯一答案题。"},
+        }
+        verified_inputs = {
+            "status": "ok",
+            "cases": [{"case_id": "case_001", "source": "random", "source_index": 1, "input": "1\n1"}],
+            "count": 1,
+            "source_counts": {"random": 1},
+        }
+        brute_result = {
+            "final_code": "brute",
+            "solved_cases": [{"case_id": "case_001", "source": "random", "input": "1\n1", "output": "1"}],
+        }
+
+        result = verify_wrong_solution_pool(
+            sample_artifact(),
+            generated_artifacts,
+            verified_inputs,
+            brute_result,
+            {"status": "skipped"},
+            FakeLLMClient(),
+            self.config,
+        )
+
+        self.assertEqual(result["verification"]["targeted_input_count"], 1)
+        self.assertEqual(result["verification"]["killed_count"], 1)
+        self.assertEqual(result["verification"]["original_survivor_count"], 1)
+        self.assertEqual(result["verification"]["cumulative_killed_original_survivor_count"], 1)
+        self.assertEqual(result["verification"]["kill_ratio"], 1.0)
+        self.assertEqual(result["verification"]["rounds"][-1]["stop_reason"], "kill_ratio_reached")
+        self.assertEqual(result["verified_test_inputs"]["count"], 2)
+        self.assertEqual(result["solved_cases"][-1]["output"], "2")
+
+    @patch("verification_pipeline.run_validate_test_input")
+    @patch("verification_pipeline.run_solution")
+    def test_wrong_solution_pool_generates_targeted_input_for_all_current_survivors(
+        self,
+        fake_run_solution,
+        fake_validate,
+    ) -> None:
+        class MultiTargetClient(FakeLLMClient):
+            def __init__(self) -> None:
+                super().__init__()
+                self.index = 0
+
+            def complete_json(self, *, task_name: str, system_prompt: str, user_prompt: str) -> str:
+                if task_name.startswith("wrong_solution_targeted_input:"):
+                    self.calls.append(task_name)
+                    self.index += 1
+                    return json.dumps({"test_input": f"1\n{self.index + 1}"}, ensure_ascii=False)
+                return super().complete_json(
+                    task_name=task_name,
+                    system_prompt=system_prompt,
+                    user_prompt=user_prompt,
+                )
+
+        fake_validate.return_value = ExecutionResult(status=EXECUTION_OK, return_value=True)
+
+        def solution_side_effect(code, input_string, *, timeout_seconds, memory_limit_mb):
+            if code == "brute":
+                return ExecutionResult(status=EXECUTION_OK, return_value="1" if input_string == "1\n1" else "2")
+            if code.startswith("wrong_"):
+                return ExecutionResult(status=EXECUTION_OK, return_value="1" if input_string == "1\n1" else "0")
+            raise AssertionError((code, input_string))
+
+        fake_run_solution.side_effect = solution_side_effect
+        generated_artifacts = {
+            "wrong_solutions": {
+                "fixed_categories": {},
+                "strategy_based": [
+                    {
+                        "strategy": {
+                            "title": f"错误策略 {index}",
+                            "wrong_idea": "只处理基础输入。",
+                            "plausible_reason": "样例简单。",
+                            "failure_reason": "其它输入答案不同。",
+                            "trigger_case": "非基础输入。",
+                        },
+                        "solution": {"code": f"wrong_{index}"},
+                    }
+                    for index in range(1, 4)
+                ],
+            },
+            "test_inputs": {"random": {"validate_test_input_code": "validate"}},
+            "checker": {"needs_checker": False, "reason": "唯一答案题。"},
+        }
+        verified_inputs = {
+            "status": "ok",
+            "cases": [{"case_id": "case_001", "source": "random", "source_index": 1, "input": "1\n1"}],
+            "count": 1,
+            "source_counts": {"random": 1},
+        }
+        brute_result = {
+            "final_code": "brute",
+            "solved_cases": [{"case_id": "case_001", "source": "random", "input": "1\n1", "output": "1"}],
+        }
+        client = MultiTargetClient()
+
+        result = verify_wrong_solution_pool(
+            sample_artifact(),
+            generated_artifacts,
+            verified_inputs,
+            brute_result,
+            {"status": "skipped"},
+            client,
+            self.config,
+        )
+
+        targeted_calls = [call for call in client.calls if call.startswith("wrong_solution_targeted_input:")]
+        self.assertEqual(len(targeted_calls), 3)
+        self.assertEqual(result["verification"]["targeted_input_count"], 3)
+        self.assertEqual(result["verification"]["original_survivor_count"], 3)
+        self.assertEqual(result["verification"]["cumulative_killed_original_survivor_count"], 3)
+        self.assertEqual(result["verification"]["kill_ratio"], 1.0)
+        self.assertEqual(result["verification"]["rounds"][0]["selected_candidate_ids"], ["wrong_001", "wrong_002", "wrong_003"])
+        self.assertEqual(result["verification"]["rounds"][-1]["stop_reason"], "kill_ratio_reached")
+
+    @patch("verification_pipeline.run_validate_test_input")
+    @patch("verification_pipeline.run_solution")
+    def test_wrong_solution_pool_stops_when_targeted_input_is_not_valid(
+        self,
+        fake_run_solution,
+        fake_validate,
+    ) -> None:
+        fake_validate.return_value = ExecutionResult(status=EXECUTION_OK, return_value=False)
+
+        def solution_side_effect(code, input_string, *, timeout_seconds, memory_limit_mb):
+            if code == "wrong_survivor":
+                return ExecutionResult(status=EXECUTION_OK, return_value="1")
+            if code == "brute":
+                return ExecutionResult(status=EXECUTION_OK, return_value="1")
+            raise AssertionError((code, input_string))
+
+        fake_run_solution.side_effect = solution_side_effect
+        generated_artifacts = {
+            "wrong_solutions": {
+                "fixed_categories": {"边界/最小性错误": {"code": "wrong_survivor"}},
+                "strategy_based": [],
+            },
+            "test_inputs": {"random": {"validate_test_input_code": "validate"}},
+            "checker": {"needs_checker": False, "reason": "唯一答案题。"},
+        }
+        verified_inputs = {
+            "status": "ok",
+            "cases": [{"case_id": "case_001", "source": "random", "source_index": 1, "input": "1\n1"}],
+            "count": 1,
+            "source_counts": {"random": 1},
+        }
+        brute_result = {
+            "final_code": "brute",
+            "solved_cases": [{"case_id": "case_001", "source": "random", "input": "1\n1", "output": "1"}],
+        }
+
+        result = verify_wrong_solution_pool(
+            sample_artifact(),
+            generated_artifacts,
+            verified_inputs,
+            brute_result,
+            {"status": "skipped"},
+            FakeLLMClient(),
+            self.config,
+        )
+
+        self.assertEqual(result["verification"]["targeted_input_count"], 0)
+        self.assertEqual(result["verification"]["kill_ratio"], 0.0)
+        self.assertEqual(result["verification"]["rounds"][-1]["stop_reason"], "no_valid_targeted_input")
+
+    @patch("verification_pipeline.run_solution")
+    def test_wrong_solution_pool_does_not_generate_targeted_input_without_initial_survivor(
+        self,
+        fake_run_solution,
+    ) -> None:
+        fake_run_solution.return_value = ExecutionResult(status=EXECUTION_OK, return_value="0")
+        generated_artifacts = {
+            "wrong_solutions": {
+                "fixed_categories": {"边界/最小性错误": {"code": "wrong_killed"}},
+                "strategy_based": [],
+            },
+            "test_inputs": {"random": {"validate_test_input_code": "validate"}},
+            "checker": {"needs_checker": False, "reason": "唯一答案题。"},
+        }
+        verified_inputs = {
+            "status": "ok",
+            "cases": [{"case_id": "case_001", "source": "random", "source_index": 1, "input": "1\n1"}],
+            "count": 1,
+            "source_counts": {"random": 1},
+        }
+        brute_result = {
+            "final_code": "brute",
+            "solved_cases": [{"case_id": "case_001", "source": "random", "input": "1\n1", "output": "1"}],
+        }
+        client = FakeLLMClient()
+
+        result = verify_wrong_solution_pool(
+            sample_artifact(),
+            generated_artifacts,
+            verified_inputs,
+            brute_result,
+            {"status": "skipped"},
+            client,
+            self.config,
+        )
+
+        targeted_calls = [call for call in client.calls if call.startswith("wrong_solution_targeted_input:")]
+        self.assertEqual(targeted_calls, [])
+        self.assertEqual(result["verification"]["targeted_input_count"], 0)
+        self.assertEqual(result["verification"]["rounds"][-1]["stop_reason"], "no_survivor")
+
+    @patch("verification_pipeline.run_validate_test_input")
+    @patch("verification_pipeline.run_checker")
+    @patch("verification_pipeline.run_solution")
+    def test_wrong_solution_pool_checker_accept_means_case_does_not_expose_issue(
+        self,
+        fake_run_solution,
+        fake_run_checker,
+        fake_validate,
+    ) -> None:
+        fake_run_solution.return_value = ExecutionResult(status=EXECUTION_OK, return_value="2")
+        fake_run_checker.return_value = ExecutionResult(status=EXECUTION_OK, return_value=True)
+        fake_validate.return_value = ExecutionResult(status=EXECUTION_OK, return_value=False)
+        generated_artifacts = {
+            "wrong_solutions": {
+                "fixed_categories": {},
+                "strategy_based": [
+                    {
+                        "strategy": {
+                            "title": "输出另一个可接受答案",
+                            "wrong_idea": "输出与参考值不同的答案。",
+                            "plausible_reason": "题目可能存在多解。",
+                            "failure_reason": "需要 checker 才能判定。",
+                            "trigger_case": "多解输出。",
+                        },
+                        "solution": {"code": "wrong_code"},
+                    }
+                ],
+            },
+            "test_inputs": {"random": {"validate_test_input_code": "validate"}},
+            "checker": {"needs_checker": True, "checker_code": "verified_checker"},
+        }
+        verified_inputs = {
+            "status": "ok",
+            "cases": [{"case_id": "case_001", "source": "random", "source_index": 1, "input": "1\n1"}],
+            "count": 1,
+            "source_counts": {"random": 1},
+        }
+        brute_result = {
+            "final_code": "brute",
+            "solved_cases": [{"case_id": "case_001", "source": "random", "input": "1\n1", "output": "1"}],
+        }
+        client = FakeLLMClient(checker=True)
+
+        result = verify_wrong_solution_pool(
+            sample_artifact(),
+            generated_artifacts,
+            verified_inputs,
+            brute_result,
+            {"status": "ok", "final_checker_code": "verified_checker", "repair_history": []},
+            client,
+            self.config,
+        )
+
+        self.assertEqual(result["verification"]["killed_count"], 0)
+        self.assertEqual(result["verification"]["survived_count"], 1)
+        self.assertEqual(result["verification"]["targeted_input_count"], 0)
+        self.assertEqual(result["verification"]["rounds"][-1]["stop_reason"], "no_valid_targeted_input")
+        self.assertFalse(any(call == "checker_false_accept_debug" for call in client.calls))
+
+    @patch("verification_pipeline.run_checker")
+    @patch("verification_pipeline.run_solution")
+    def test_wrong_solution_pool_checker_reject_marks_candidate_killed(
+        self,
+        fake_run_solution,
+        fake_run_checker,
+    ) -> None:
+        fake_run_solution.return_value = ExecutionResult(status=EXECUTION_OK, return_value="2")
+        fake_run_checker.return_value = ExecutionResult(status=EXECUTION_OK, return_value=False)
+        generated_artifacts = {
+            "wrong_solutions": {
+                "fixed_categories": {},
+                "strategy_based": [
+                    {
+                        "strategy": {
+                            "title": "输出固定错误值",
+                            "wrong_idea": "总输出 2。",
+                            "plausible_reason": "样例误导。",
+                            "failure_reason": "答案依赖输入。",
+                            "trigger_case": "答案为 1 的输入。",
+                        },
+                        "solution": {"code": "wrong_code"},
+                    }
+                ],
+            },
+            "test_inputs": {"random": {"validate_test_input_code": "validate"}},
+            "checker": {"needs_checker": True, "checker_code": "verified_checker"},
+        }
+        verified_inputs = {
+            "status": "ok",
+            "cases": [{"case_id": "case_001", "source": "random", "source_index": 1, "input": "1\n1"}],
+            "count": 1,
+            "source_counts": {"random": 1},
+        }
+        brute_result = {
+            "final_code": "brute",
+            "solved_cases": [{"case_id": "case_001", "source": "random", "input": "1\n1", "output": "1"}],
+        }
+
+        result = verify_wrong_solution_pool(
+            sample_artifact(),
+            generated_artifacts,
+            verified_inputs,
+            brute_result,
+            {"status": "ok", "final_checker_code": "verified_checker", "repair_history": []},
+            FakeLLMClient(checker=True),
+            self.config,
+        )
+
+        self.assertEqual(result["verification"]["killed_count"], 1)
+        self.assertEqual(result["verification"]["rounds"][-1]["stop_reason"], "no_survivor")
+        self.assertEqual(result["verification"]["final_evaluation"][0]["verdict"], "checker_rejected")
+
     @patch("verification_pipeline.run_solution")
     @patch("verification_pipeline.run_validate_test_input")
     @patch("verification_pipeline.run_generate_test_input")
@@ -299,7 +660,13 @@ class VerificationPipelineTests(unittest.TestCase):
     ) -> None:
         fake_generate.return_value = ExecutionResult(status=EXECUTION_OK, return_value="1\n1")
         fake_validate.return_value = ExecutionResult(status=EXECUTION_OK, return_value=True)
-        fake_solution.return_value = ExecutionResult(status=EXECUTION_OK, return_value="1")
+
+        def side_effect(code, input_string, *, timeout_seconds, memory_limit_mb):
+            if "return '0'" in code:
+                return ExecutionResult(status=EXECUTION_OK, return_value="0")
+            return ExecutionResult(status=EXECUTION_OK, return_value="1")
+
+        fake_solution.side_effect = side_effect
         client = FakeLLMClient()
 
         result = generate_verified_artifacts(
@@ -308,11 +675,13 @@ class VerificationPipelineTests(unittest.TestCase):
             execution_config=self.config,
         )
 
-        self.assertEqual(result["verified_test_inputs"]["count"], 30)
+        self.assertGreaterEqual(result["verified_test_inputs"]["count"], 30)
         self.assertEqual(result["bruteforce_verification"]["solved_case_count"], 30)
         self.assertEqual(result["bruteforce_solution"]["code"], result["bruteforce_solution"]["verified_code"])
         self.assertIn("initial_code", result["bruteforce_solution"])
         self.assertEqual(result["checker_verification"]["status"], "skipped")
+        self.assertIn("wrong_solution_pool_verification", result)
+        self.assertGreater(result["wrong_solution_pool_verification"]["killed_count"], 0)
         self.assertEqual(result["execution_metadata"]["large_scale_input_count"], 0)
 
 
