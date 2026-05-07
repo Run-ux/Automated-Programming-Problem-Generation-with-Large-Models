@@ -204,3 +204,24 @@ def generate_all_artifacts(
         "metadata": _metadata(resolved_config, active_client, len(strategies)),
     }
 
+
+def generate_verified_artifacts(
+    artifact: dict[str, Any],
+    config: LLMConfig | None = None,
+    *,
+    client: ChatLLMClient | None = None,
+    execution_config: Any | None = None,
+) -> dict[str, Any]:
+    """生成全部产物，并执行测试输入、暴力解法和 checker 验证闭环。"""
+
+    try:  # 延迟导入，避免 verification_pipeline 复用 generate_all_artifacts 时循环导入。
+        from .verification_pipeline import generate_verified_artifacts as _generate_verified_artifacts
+    except ImportError:  # pragma: no cover - 当前测试以顶层模块方式导入。
+        from verification_pipeline import generate_verified_artifacts as _generate_verified_artifacts
+
+    return _generate_verified_artifacts(
+        artifact,
+        config,
+        client=client,
+        execution_config=execution_config,
+    )

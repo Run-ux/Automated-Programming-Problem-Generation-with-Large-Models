@@ -35,6 +35,12 @@ def _require_string(payload: dict[str, Any], key: str, task_name: str) -> None:
         raise LLMResponseError(f"{task_name}.{key} 必须是字符串。")
 
 
+def _require_number(payload: dict[str, Any], key: str, task_name: str) -> None:
+    value = payload.get(key)
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        raise LLMResponseError(f"{task_name}.{key} 必须是数字。")
+
+
 def validate_solution_response(payload: dict[str, Any], *, task_name: str, markdown_key: str) -> dict[str, Any]:
     _require_keys(
         payload,
@@ -118,3 +124,62 @@ def validate_wrong_solution_response(payload: dict[str, Any], *, task_name: str)
     _require_non_empty_string(payload, "code", task_name)
     return payload
 
+
+def validate_code_repair_response(payload: dict[str, Any], *, task_name: str) -> dict[str, Any]:
+    _require_keys(payload, ("code",), task_name)
+    _require_non_empty_string(payload, "code", task_name)
+    return payload
+
+
+def validate_checker_repair_response(payload: dict[str, Any], *, task_name: str) -> dict[str, Any]:
+    _require_keys(payload, ("analysis", "fix_plan", "checker_code"), task_name)
+    _require_non_empty_string(payload, "analysis", task_name)
+    _require_non_empty_string(payload, "fix_plan", task_name)
+    _require_non_empty_string(payload, "checker_code", task_name)
+    return payload
+
+
+def validate_counterexample_response(payload: dict[str, Any], *, task_name: str) -> dict[str, Any]:
+    _require_keys(payload, ("counterexamples", "skipped"), task_name)
+    counterexamples = payload["counterexamples"]
+    skipped = payload["skipped"]
+    if not isinstance(counterexamples, list):
+        raise LLMResponseError(f"{task_name}.counterexamples 必须是列表。")
+    if not isinstance(skipped, list):
+        raise LLMResponseError(f"{task_name}.skipped 必须是列表。")
+
+    required_counterexample_fields = (
+        "source_case_id",
+        "input",
+        "correct_output",
+        "wrong_output",
+        "primary_strategy",
+        "strategy_group",
+        "expected_verdict",
+        "reason",
+        "confidence",
+    )
+    for index, item in enumerate(counterexamples):
+        item_task_name = f"{task_name}.counterexamples[{index}]"
+        if not isinstance(item, dict):
+            raise LLMResponseError(f"{item_task_name} 必须是对象。")
+        _require_keys(item, required_counterexample_fields, item_task_name)
+        for field in required_counterexample_fields[:-1]:
+            _require_string(item, field, item_task_name)
+        _require_number(item, "confidence", item_task_name)
+        if item["expected_verdict"] != "WA":
+            raise LLMResponseError(f"{item_task_name}.expected_verdict 必须是 WA。")
+        if item["confidence"] < 0.85:
+            raise LLMResponseError(f"{item_task_name}.confidence 必须大于等于 0.85。")
+        if item["wrong_output"] == item["correct_output"]:
+            raise LLMResponseError(f"{item_task_name}.wrong_output 不能等于 correct_output。")
+
+    for index, item in enumerate(skipped):
+        item_task_name = f"{task_name}.skipped[{index}]"
+        if not isinstance(item, dict):
+            raise LLMResponseError(f"{item_task_name} 必须是对象。")
+        _require_keys(item, ("source_case_id", "strategy", "reason"), item_task_name)
+        _require_string(item, "source_case_id", item_task_name)
+        _require_string(item, "strategy", item_task_name)
+        _require_string(item, "reason", item_task_name)
+    return payload

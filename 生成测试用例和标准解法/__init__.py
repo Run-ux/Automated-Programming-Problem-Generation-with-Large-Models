@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from .generation_pipeline import generate_all_artifacts
+from .generation_pipeline import generate_all_artifacts, generate_verified_artifacts
 from .llm_config import LLMConfig
 
-__all__ = ["LLMConfig", "generate_all_artifacts"]
+__all__ = ["LLMConfig", "generate_all_artifacts", "generate_verified_artifacts"]
 

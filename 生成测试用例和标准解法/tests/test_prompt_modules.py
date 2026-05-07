@@ -10,6 +10,12 @@ from prompts.tool_generation import (
     prompt_random_test_input,
     prompt_small_challenge_test_input,
 )
+from prompts.verification import (
+    prompt_bruteforce_debug,
+    prompt_checker_counterexample,
+    prompt_checker_false_accept_debug,
+    prompt_checker_false_reject_debug,
+)
 from prompts.wrong_solution import (
     prompt_fixed_category_wrong_solution,
     prompt_schema_mistake_analysis,
@@ -46,6 +52,10 @@ class PromptModuleTests(unittest.TestCase):
             prompt_fixed_category_wrong_solution,
             prompt_schema_mistake_analysis,
             prompt_strategy_wrong_solution,
+            prompt_bruteforce_debug,
+            prompt_checker_counterexample,
+            prompt_checker_false_accept_debug,
+            prompt_checker_false_reject_debug,
         ]
 
     def test_modules_expose_uniform_build_functions(self) -> None:
@@ -193,6 +203,48 @@ class PromptModuleTests(unittest.TestCase):
     def test_strategy_wrong_solution_rejects_strategy_list(self) -> None:
         with self.assertRaisesRegex(ValueError, "单条策略"):
             prompt_strategy_wrong_solution.build_user_prompt(self.artifact, [{"title": "错误策略"}])
+
+    def test_verification_prompts_have_strict_json_contracts(self) -> None:
+        brute_prompt = prompt_bruteforce_debug.build_user_prompt(
+            self.artifact,
+            bruteforce_code="def solve(input_str):\n    return ''",
+            failing_input="1\n1",
+            error_report="Traceback",
+        )
+        false_reject_prompt = prompt_checker_false_reject_debug.build_user_prompt(
+            self.artifact,
+            checker_code="def check_output(input_string, output_string):\n    return False",
+            failing_input="1\n1",
+            failing_output="1",
+            error_report="返回 False",
+        )
+        false_accept_prompt = prompt_checker_false_accept_debug.build_user_prompt(
+            self.artifact,
+            checker_code="def check_output(input_string, output_string):\n    return True",
+            failing_input="1\n1",
+            wrong_output="2",
+            error_report="返回 True",
+        )
+        counterexample_prompt = prompt_checker_counterexample.build_user_prompt(
+            self.artifact,
+            solved_cases=[{"case_id": "case_001", "input": "1\n1", "correct_output": "1"}],
+        )
+
+        self.assertIn('"code"', brute_prompt)
+        self.assertIn('"checker_code"', false_reject_prompt)
+        self.assertIn('"checker_code"', false_accept_prompt)
+        self.assertIn('"counterexamples"', counterexample_prompt)
+        self.assertIn("confidence", counterexample_prompt)
+        self.assertIn("可用破坏策略是候选启发清单", counterexample_prompt)
+        self.assertIn("不是必须逐项使用，也不是唯一允许的思路", counterexample_prompt)
+        self.assertIn("可归入最接近的策略", counterexample_prompt)
+        self.assertIn("FORMAT_MISSING_OUTPUT：格式错误，少输出必要 token、行或字段。", counterexample_prompt)
+        self.assertIn("RANGE_INDEX_BASE_CONFUSION：范围错误，制造 0/1 基下标混淆。", counterexample_prompt)
+        self.assertIn("CONSTRAINT_DISCONNECTED_PATH：约束错误，构造不连续路径、不相邻转移或不可达序列。", counterexample_prompt)
+        self.assertIn("NUMERIC_NAN_INF：数值错误，输出 nan、inf、-inf 等非法数值。", counterexample_prompt)
+        self.assertIn("FORGED_UNRELATED_OUTPUT：伪造错误，输出格式看似合理，但内容与输入无关，不能满足题意。", counterexample_prompt)
+        for prompt in [brute_prompt, false_reject_prompt, false_accept_prompt, counterexample_prompt]:
+            self.assertIn("最终只输出单个 JSON 对象", prompt)
 
 
 if __name__ == "__main__":

@@ -6,6 +6,9 @@ from llm_json import (
     LLMResponseError,
     parse_json_object,
     validate_checker_response,
+    validate_checker_repair_response,
+    validate_code_repair_response,
+    validate_counterexample_response,
     validate_solution_response,
     validate_strategy_analysis_response,
     validate_test_generator_response,
@@ -91,7 +94,50 @@ class LLMJsonTests(unittest.TestCase):
         with self.assertRaisesRegex(LLMResponseError, "code"):
             validate_wrong_solution_response({}, task_name="fixed_wrong_solution")
 
+    def test_repair_responses_require_code_fields(self) -> None:
+        self.assertEqual(
+            validate_code_repair_response({"code": "def solve(input_str):\n    return ''"}, task_name="debug")["code"],
+            "def solve(input_str):\n    return ''",
+        )
+        self.assertEqual(
+            validate_checker_repair_response(
+                {
+                    "analysis": "过严",
+                    "fix_plan": "修复解析",
+                    "checker_code": "def check_output(input_string, output_string):\n    return True",
+                },
+                task_name="checker_debug",
+            )["analysis"],
+            "过严",
+        )
+
+    def test_counterexample_response_requires_high_confidence_wa(self) -> None:
+        payload = {
+            "counterexamples": [
+                {
+                    "source_case_id": "case_001",
+                    "input": "1\n1",
+                    "correct_output": "1",
+                    "wrong_output": "2",
+                    "primary_strategy": "OBJECTIVE_INCONSISTENT_VALUE",
+                    "strategy_group": "目标错误",
+                    "expected_verdict": "WA",
+                    "reason": "答案不一致。",
+                    "confidence": 0.9,
+                }
+            ],
+            "skipped": [{"source_case_id": "case_001", "strategy": "FORMAT_TYPE_ERROR", "reason": "不适用"}],
+        }
+
+        self.assertIs(validate_counterexample_response(payload, task_name="counterexample"), payload)
+
+        bad_payload = {
+            **payload,
+            "counterexamples": [{**payload["counterexamples"][0], "confidence": 0.7}],
+        }
+        with self.assertRaisesRegex(LLMResponseError, "confidence"):
+            validate_counterexample_response(bad_payload, task_name="counterexample")
+
 
 if __name__ == "__main__":
     unittest.main()
-

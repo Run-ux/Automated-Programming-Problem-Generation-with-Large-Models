@@ -13,8 +13,8 @@
 
 ## 范围边界
 
-- 已实现：artifact 字段抽取、prompt 模块、LLM API 调用、严格 JSON 解析、JSON 输出合同校验、单元测试。
-- 未实现：生成代码的执行、对拍验证、题包流水线、CLI、旧项目迁移。
+- 已实现：artifact 字段抽取、prompt 模块、LLM API 调用、严格 JSON 解析、JSON 输出合同校验、生成后本地验证闭环、单元测试。
+- 未实现：题包流水线、CLI、旧项目迁移。
 - 不复用 `D:\AutoProblemGen\测试用例和标准解法共迭代` 的代码实现。
 
 ## 环境配置
@@ -32,8 +32,14 @@ OPENAI_API_KEY=
 OPENAI_BASE_URL=
 OPENAI_MODEL=
 OPENAI_TEMPERATURE=0.2
-OPENAI_TIMEOUT_SECONDS=60
-OPENAI_MAX_RETRIES=2
+OPENAI_TIMEOUT_SECONDS=1200
+OPENAI_MAX_RETRIES=3
+EXECUTION_TEST_INPUT_TIMEOUT_SECONDS=5
+EXECUTION_TEST_INPUT_MEMORY_LIMIT_MB=512
+EXECUTION_BRUTEFORCE_TIMEOUT_SECONDS=5
+EXECUTION_BRUTEFORCE_MEMORY_LIMIT_MB=512
+EXECUTION_CHECKER_TIMEOUT_SECONDS=5
+EXECUTION_CHECKER_MEMORY_LIMIT_MB=512
 ```
 
 说明：
@@ -42,6 +48,7 @@ OPENAI_MAX_RETRIES=2
 - `.env.example` 只保存空值或安全默认值，可提交。
 - `OPENAI_API_KEY` 和 `OPENAI_MODEL` 必填，缺失时会 fail-fast。
 - `OPENAI_BASE_URL` 可选；使用 OpenAI 兼容服务时填写对应 `/v1` 地址。
+- `EXECUTION_*` 只控制本地子进程执行生成器、暴力解法和 checker 的时间/空间限制，不影响 LLM 调用。
 - `.env` 解析只支持空行、`#` 注释、`KEY=VALUE` 和简单单双引号，不支持变量插值或复杂 shell 语法。
 
 ## 库函数入口
@@ -52,6 +59,16 @@ from llm_config import LLMConfig
 
 config = LLMConfig.from_dotenv()
 result = generate_all_artifacts(artifact, config)
+```
+
+只生成产物时使用 `generate_all_artifacts`。需要执行需求 1-5 的验证闭环时使用：
+
+```python
+from generation_pipeline import generate_verified_artifacts
+from llm_config import LLMConfig
+
+config = LLMConfig.from_dotenv()
+result = generate_verified_artifacts(artifact, config)
 ```
 
 返回结构：
@@ -75,7 +92,43 @@ result = generate_all_artifacts(artifact, config)
 }
 ```
 
-调用默认启用 `response_format={"type": "json_object"}`。本模块只解析和校验 LLM 返回的 JSON，不执行返回代码，不生成标准输出，不落盘。
+`generate_verified_artifacts` 在上述结构基础上额外返回：
+
+```python
+{
+    "verified_test_inputs": {
+        "status": "ok",
+        "cases": [...],
+        "count": 30,
+        "source_counts": {
+            "random": 10,
+            "adversarial": 10,
+            "small_challenge": 10,
+        },
+    },
+    "bruteforce_verification": {
+        "status": "ok",
+        "final_code": "...",
+        "solved_cases": [...],
+        "large_scale_inputs": [...],
+        "repair_history": [...],
+    },
+    "checker_verification": {...},
+    "execution_metadata": {...},
+}
+```
+
+验证入口会把修复后的暴力解法写回 `bruteforce_solution.code`，并保留 `bruteforce_solution.initial_code`；需要 checker 且完成验证时，也会把修复后的 checker 写回 `checker.checker_code`，并保留 `checker.initial_checker_code`。
+
+调用默认启用 `response_format={"type": "json_object"}`。普通生成入口只解析和校验 LLM 返回的 JSON；验证入口会在受限子进程中执行生成代码，但不落盘。
+
+## 验证闭环行为
+
+- 输入收集：随机输入和对抗输入各运行生成器 10 次，并通过各自 `validate_test_input`；小规模挑战输入使用初始返回加 9 次额外 LLM 调用凑满 10 条，并用随机输入的 validate 函数校验。
+- 暴力解法：对 30 条输入逐一运行 `solve`。编译错误、接口错误和运行时错误会触发暴力 debug LLM 修复，并从头重新验证；超时或超内存输入会归为 `large_scale_inputs`，不触发 debug。
+- 真值用例：最终只保留暴力解法能正常返回字符串输出的 `solved_cases`，数量允许少于 30。
+- checker：当 `needs_checker=false` 时跳过 checker 闭环；当需要 checker 时，先用 `solved_cases` 验证不误拒合法输出，再由反例生成 LLM 构造错误输出集合验证不误收非法输出。
+- 修复循环：暴力解法、checker 误拒和 checker 误收修复均不设轮数上限，直到本地执行结果通过对应阶段。
 
 ## Artifact 字段
 
@@ -118,6 +171,10 @@ def build_user_prompt(...) -> str:
 - `prompts.tool_generation.prompt_checker`
 - `prompts.standard_solution.prompt_standard_solution`
 - `prompts.bruteforce_solution.prompt_bruteforce_solution`
+- `prompts.verification.prompt_bruteforce_debug`
+- `prompts.verification.prompt_checker_counterexample`
+- `prompts.verification.prompt_checker_false_accept_debug`
+- `prompts.verification.prompt_checker_false_reject_debug`
 - `prompts.wrong_solution.prompt_fixed_category_wrong_solution`
 - `prompts.wrong_solution.prompt_schema_mistake_analysis`
 - `prompts.wrong_solution.prompt_strategy_wrong_solution`
@@ -131,6 +188,9 @@ def build_user_prompt(...) -> str:
 - 标准解：`status`、`block_reason`、`solution_markdown`、`code`、`time_complexity`、`space_complexity`
 - 暴力解：`status`、`block_reason`、`bruteforce_markdown`、`code`、`time_complexity`、`space_complexity`
 - checker：不需要时返回 `needs_checker=false`、`reason`；需要时返回 `needs_checker=true`、`output_rule_analysis`、`checker_code`、`notes`
+- 暴力 debug：`code`
+- checker 误拒/误收修复：`analysis`、`fix_plan`、`checker_code`
+- checker 反例生成：`counterexamples`、`skipped`；进入 `counterexamples` 的反例 `confidence` 必须大于等于 `0.85`
 - schema 错误策略分析：`strategies` 列表，每项包含 `title`、`wrong_idea`、`plausible_reason`、`failure_reason`、`trigger_case`
 - 固定错误解/按策略错误解：`code`
 
